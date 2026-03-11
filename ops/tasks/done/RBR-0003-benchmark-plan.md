@@ -1,6 +1,6 @@
 # RBR-0003: Write the benchmark plan
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
 
@@ -27,3 +27,4 @@ Created: 2026-03-11
 - Include what a tracked benchmark scorecard should eventually publish to `reports/benchmarks/latest.json`.
 - Use `docs/spec/drop-in-re-compatibility.md` as the user-visible contract and `docs/spec/syntax-scope.md` as the parser-baseline contract.
 - 2026-03-11T17:30:12+00:00: harness requeued after failed or incomplete run after run `20260311T173012Z-implementation-RBR-0003-benchmark-plan` (exit=1, timed_out=false).
+- 2026-03-11T23:02:00+00:00: added `docs/benchmarks/plan.md` defining parser-versus-module benchmark families, workload design, warmup/noise policy, incremental harness delivery, and the planned `reports/benchmarks/latest.json` scorecard shape.
