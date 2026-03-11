@@ -40,15 +40,16 @@ No published benchmark scorecard yet. Expected tracked source: [`reports/benchma
 
 ### Immediate Next Steps
 
-- Use the supervisor to refine project direction, backlog, and the forever-mode harness itself.
-- Use implementation agents to write the Rust drop-in target, syntax spec, correctness plan, and benchmark plan documents.
+- Let the next bypass-configured implementation retry consume one of the seeded spec tasks; if it still does not move, treat that as a worker or harness regression rather than a sandbox mystery.
+- Use the implementation agent to write the Rust drop-in target, syntax spec, correctness plan, and benchmark plan documents now that bypass-mode child writes and probe validation are both in place.
 - After those land, start Rust crate scaffolding, CPython-extension scaffolding, and the first parser tests.
 
 ### Current Risks
 
 - The project can drift into premature implementation without a clear compatibility target.
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility.
-- Autonomous workers can create merge churn if the queue is not concrete enough.
+- Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
+- Nested supervisor runs inside a live forever loop can still create misleading runtime anomalies even when the underlying worker write path is healthy.
 <!-- REBAR:STATUS_END -->
 
 ## What `rebar` Is Trying To Do
@@ -103,6 +104,7 @@ No published benchmark scorecard yet. Expected tracked source: [`reports/benchma
 python3 scripts/rebar_ops.py status
 python3 scripts/rebar_ops.py report
 python3 scripts/rebar_ops.py render supervisor
+python3 scripts/rebar_ops.py cycle --force-agent implementation
 python3 scripts/rebar_ops.py cycle --force-supervisor
 bash scripts/loop_forever.sh
 ```

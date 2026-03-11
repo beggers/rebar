@@ -11,6 +11,7 @@
     "claim_to": "in_progress",
     "max_runs_per_cycle": 1,
     "require_write_probe": true,
+    "environment_issue_backoff_seconds": 300,
     "probe_timeout_seconds": 120,
     "timeout_seconds": 1800
   },

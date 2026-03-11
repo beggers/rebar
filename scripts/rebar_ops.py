@@ -848,12 +848,13 @@ def requested_sandbox(config: dict[str, Any], agent: AgentSpec) -> str | None:
     return str(sandbox)
 
 
-def observed_sandbox(stdout_text: str) -> str | None:
-    for raw_line in stdout_text.splitlines():
-        line = raw_line.strip()
-        if line.startswith("sandbox:"):
-            value = line.split(":", 1)[1].strip()
-            return value or None
+def observed_sandbox(*texts: str) -> str | None:
+    for text in texts:
+        for raw_line in text.splitlines():
+            line = raw_line.strip()
+            if line.startswith("sandbox:"):
+                value = line.split(":", 1)[1].strip()
+                return value or None
     return None
 
 
@@ -865,19 +866,45 @@ def detect_environment_issue(
     stderr_text: str,
     last_message_text: str,
 ) -> str | None:
-    if requested == "workspace-write" and observed == "read-only":
+    requested_writable = requested not in {None, "", "read-only"}
+    if requested_writable and observed == "read-only":
         return "sandbox_clamped_to_read_only"
     combined = "\n".join([stdout_text, stderr_text, last_message_text]).lower()
-    if requested == "workspace-write" and (
+    if requested_writable and (
         "this codex session is read-only" in combined
         or "sandboxed `read-only`" in combined
+        or "sandbox: read-only" in combined
         or "read-only filesystem" in combined
+        or "writing outside of the project; rejected by user approval settings" in combined
         or "rerun this task in a writable checkout" in combined
     ):
         return "sandbox_clamped_to_read_only"
     if "permissionerror" in combined and "/.cache/codex/meta.json" in combined:
         return "codex_cache_not_writable"
     return None
+
+
+def parse_iso8601_timestamp(value: str | None) -> datetime | None:
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(UTC)
+    except ValueError:
+        return None
+
+
+def agent_in_environment_backoff(agent: AgentSpec, loop_state: dict[str, Any]) -> bool:
+    backoff_seconds = int(agent.dispatch.get("environment_issue_backoff_seconds", 0))
+    if backoff_seconds <= 0:
+        return False
+    last = agent_last_state(loop_state, agent.name)
+    if not last.get("environment_issue"):
+        return False
+    finished_at = parse_iso8601_timestamp(last.get("finished_at"))
+    if finished_at is None:
+        return False
+    delta = datetime.now(UTC) - finished_at
+    return delta.total_seconds() < backoff_seconds
 
 
 def task_timeout_seconds(config: dict[str, Any], agent: AgentSpec) -> int:
@@ -931,7 +958,7 @@ def run_agent(agent: AgentSpec, config: dict[str, Any], task_path: Path | None =
         stderr_text = normalize_subprocess_text(exc.stderr)
 
     finished_at = utcnow()
-    observed = observed_sandbox(stdout_text)
+    observed = observed_sandbox(stdout_text, stderr_text)
     write_text(stdout_path, stdout_text)
     write_text(stderr_path, stderr_text)
     if not output_path.exists():
@@ -1039,7 +1066,7 @@ def run_write_probe(agent: AgentSpec, config: dict[str, Any]) -> RunResult:
         stderr_text = normalize_subprocess_text(exc.stderr)
 
     finished_at = utcnow()
-    observed = observed_sandbox(stdout_text)
+    observed = observed_sandbox(stdout_text, stderr_text)
     write_text(stdout_path, stdout_text)
     write_text(stderr_path, stderr_text)
     if not output_path.exists():
@@ -1049,7 +1076,7 @@ def run_write_probe(agent: AgentSpec, config: dict[str, Any]) -> RunResult:
     probe_ok = False
     if probe_path.exists():
         try:
-            probe_ok = probe_path.read_text(encoding="utf-8") == probe_token
+            probe_ok = probe_path.read_text(encoding="utf-8").rstrip("\r\n") == probe_token
         except OSError:
             probe_ok = False
         try:
@@ -1119,6 +1146,8 @@ def agent_last_state(loop_state: dict[str, Any], agent_name: str) -> dict[str, A
 
 
 def agent_is_due(agent: AgentSpec, loop_state: dict[str, Any], *, force: bool = False) -> bool:
+    if not force and agent_in_environment_backoff(agent, loop_state):
+        return False
     mode = str(agent.dispatch.get("mode", "every_cycle"))
     if mode == "every_cycle":
         return True
@@ -1127,14 +1156,10 @@ def agent_is_due(agent: AgentSpec, loop_state: dict[str, Any], *, force: bool = 
             return True
         interval_seconds = int(agent.dispatch.get("interval_seconds", 300))
         last = agent_last_state(loop_state, agent.name)
-        finished_at = last.get("finished_at")
-        if not isinstance(finished_at, str):
+        finished_at = parse_iso8601_timestamp(last.get("finished_at"))
+        if finished_at is None:
             return True
-        try:
-            last_dt = datetime.fromisoformat(finished_at.replace("Z", "+00:00"))
-        except ValueError:
-            return True
-        delta = datetime.now(UTC) - last_dt.astimezone(UTC)
+        delta = datetime.now(UTC) - finished_at
         return delta.total_seconds() >= interval_seconds
     if mode == "task_queue":
         queue = str(agent.dispatch.get("queue", "ready"))
@@ -1738,7 +1763,9 @@ def refresh_reports(config: dict[str, Any]) -> dict[str, Any]:
     return report
 
 
-def run_cycle(config: dict[str, Any], *, force_supervisor: bool = False) -> int:
+def run_cycle(
+    config: dict[str, Any], *, force_supervisor: bool = False, force_agents: set[str] | None = None
+) -> int:
     paths = runtime_paths(config)
     ensure_runtime_dirs(paths)
     task_state = load_task_state(paths)
@@ -1750,8 +1777,9 @@ def run_cycle(config: dict[str, Any], *, force_supervisor: bool = False) -> int:
         loop_state = {}
 
     results: list[RunResult] = []
+    forced = force_agents or set()
     for agent in agents:
-        force = force_supervisor and agent.kind == "supervisor"
+        force = agent.name in forced or (force_supervisor and agent.kind == "supervisor")
         results.extend(dispatch_agent(agent, config, loop_state, force=force))
 
     recovery_actions = list(stale_actions)
@@ -1803,8 +1831,15 @@ def cmd_render(config: dict[str, Any], agent_name: str, task: str | None) -> int
     return 0
 
 
-def cmd_cycle(config: dict[str, Any], force_supervisor: bool) -> int:
-    return run_cycle(config, force_supervisor=force_supervisor)
+def cmd_cycle(
+    config: dict[str, Any], force_supervisor: bool, force_agents: list[str] | None
+) -> int:
+    force_agent_names = {name for name in (force_agents or []) if name}
+    return run_cycle(
+        config,
+        force_supervisor=force_supervisor,
+        force_agents=force_agent_names,
+    )
 
 
 def cmd_sleep_seconds(config: dict[str, Any], exit_code: int) -> int:
@@ -1838,6 +1873,13 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Force the supervisor to run even if its future dispatch policy becomes interval-based.",
     )
+    cycle_parser.add_argument(
+        "--force-agent",
+        action="append",
+        default=[],
+        metavar="AGENT",
+        help="Force the named agent to run even if environment backoff would skip it.",
+    )
 
     sleep_parser = subparsers.add_parser(
         "sleep-seconds",
@@ -1862,7 +1904,7 @@ def main() -> int:
     if args.command == "render":
         return cmd_render(config, args.agent, args.task)
     if args.command == "cycle":
-        return cmd_cycle(config, args.force_supervisor)
+        return cmd_cycle(config, args.force_supervisor, args.force_agent)
     if args.command == "sleep-seconds":
         return cmd_sleep_seconds(config, args.exit_code)
     if args.command == "report":
