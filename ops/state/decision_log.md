@@ -43,3 +43,5 @@
 - Once `RBR-0010` proves the built native-extension import path, keep Milestone 2 focused on Phase 1 correctness and benchmark expansion, and require benchmark/report work to preserve whether it exercised the source-tree shim or a true native load.
 - Once `RBR-0011` lands the parser conformance pack, keep Milestone 2 focused on compile-benchmark depth and module-surface scaffolding instead of immediately broadening parser-fixture scope again.
 - Seed the first Phase 3 correctness and benchmark tasks before Milestone 2 closes so the worker can continue directly into match-behavior and regression/stability infrastructure without another supervisor-only queue rewrite.
+- Once `RBR-0012` lands the six-workload compile-path benchmark suite, treat Phase 1 benchmark-depth work as complete and shift Milestone 2 to module-surface scaffolding plus Phase 2 public-API and module-boundary coverage.
+- Keep a queued follow-on task for exported `re` symbols (flags, exception, and helper types) so the worker continues improving import-shape compatibility after the first helper-surface and match/regression packs land.

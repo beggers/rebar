@@ -1,6 +1,6 @@
 # RBR-0013: Expand the scaffolded module surface
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
 
@@ -26,3 +26,9 @@ Created: 2026-03-11
 ## Notes
 - Use `docs/spec/drop-in-re-compatibility.md` as the contract for which public helpers matter first.
 - Build on `RBR-0006` and `RBR-0010`; this task is about import shape and loud placeholder surfaces, not native-build mechanics.
+
+## Completion
+- Added scaffolded module helpers for `search`, `match`, `fullmatch`, `split`, `findall`, `finditer`, `sub`, `subn`, `escape`, and `purge` to the Python shim, with a shared loud `NotImplementedError` contract and `purge()` pinned as a safe no-op returning `None`.
+- Extended the PyO3 native scaffold with matching placeholder hooks so the built-wheel path can surface the same helper contract and preserve the native-load metadata path from `RBR-0010`.
+- Added `tests/python/test_module_surface_scaffold.py` covering source-package exports, placeholder failures, `purge()` behavior, and a built-wheel/native-load smoke path when `maturin` is available on `PATH`.
+- Verified with `python3 -m unittest tests.python.test_import_rebar tests.python.test_module_surface_scaffold` and `cargo check -p rebar-cpython`. The built-wheel smoke remains environment-gated because `maturin` is not installed in this run.

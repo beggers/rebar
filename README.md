@@ -13,9 +13,9 @@ _This measures whether the planned scaffolds, plans, and scorecard artifacts exi
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed, the Phase 1 parser conformance pack published, and the remaining benchmark/module-surface gaps queued. |
-| Current milestone | Milestone 2: finish the remaining Phase 1 benchmark expansion and Phase 2 module-surface harness work on top of the landed parser conformance pack, verified native-extension smoke path, and exact CPython baseline metadata. |
-| Work queue | `5` ready, `0` in progress, `13` done, `0` blocked |
+| Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed, the Phase 1 parser conformance and compile-path benchmark packs published, and the remaining module-surface gaps queued. |
+| Current milestone | Milestone 2: finish Phase 2 module-surface harness work on top of the landed Phase 1 parser conformance and compile-path benchmark packs, verified native-extension smoke path, and exact CPython baseline metadata. |
+| Work queue | `5` ready, `0` in progress, `14` done, `0` blocked |
 | Capability tracks | `10/10` complete |
 
 ### Capability Matrix
@@ -56,20 +56,19 @@ _This measures whether the planned scaffolds, plans, and scorecard artifacts exi
 
 ### Immediate Next Steps
 
-- Land `RBR-0012` to bring the benchmark harness up to the same Phase 1 compile-matrix depth that correctness now has.
 - Land `RBR-0013`, `RBR-0014`, and `RBR-0015` so the repo exposes a broader scaffolded `re` helper surface and the scorecards can separate parser progress from public-API and module-boundary progress.
-- Keep `RBR-0016` and `RBR-0017` queued behind Milestone 2 so the worker can continue directly into match-behavior correctness and regression/stability benchmark infrastructure without another supervisor-only queue rewrite.
+- Keep `RBR-0016`, `RBR-0017`, and `RBR-0018` queued behind the module-surface stack so the worker can continue directly into match-behavior correctness, regression/stability benchmark infrastructure, and exported-symbol coverage without another supervisor-only queue rewrite.
 
 ### Current Risks
 
 - The repo now validates a dedicated built `rebar._rebar` smoke path, but the published benchmark report still reflects the source-tree shim with `native_module_loaded: false`, so routine measurement paths can still drift away from the verified install/import path.
 - The scaffolded Python surface is still minimal, so public-API correctness and module-boundary benchmarking remain blocked on additional placeholder exports even though the native extension now imports successfully.
 - The correctness harness now covers 15 parser compile cases, but it still reports `unimplemented` for every `rebar` comparison and does not yet measure helper presence, pattern objects, or match-result behavior.
-- The benchmark harness currently measures only two parser-family compile smoke workloads and records no `rebar` timings yet, so timing provenance is still only baseline-side scaffolding.
+- The benchmark harness now measures six parser-family compile-path workloads across cold, warm, and purged cache modes, but it still records no `rebar` timings and still exercises the source-tree shim rather than the built native path.
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility at the Python surface.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Concurrent human and loop commits can still produce diverged git history that requires supervisor resolution; the harness now detects that state accurately but does not auto-rebase it.
-- The implementation worker has only eleven completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
+- The implementation worker has twelve completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
 <!-- REBAR:STATUS_END -->
 
 ## What `rebar` Is Trying To Do

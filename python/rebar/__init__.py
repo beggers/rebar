@@ -25,10 +25,33 @@ __all__ = [
     "SCAFFOLD_STATUS",
     "TARGET_CPYTHON_SERIES",
     "compile",
+    "escape",
+    "findall",
+    "finditer",
+    "fullmatch",
+    "match",
     "native_module_loaded",
     "native_scaffold_status",
     "native_target_cpython_series",
+    "purge",
+    "search",
+    "split",
+    "sub",
+    "subn",
 ]
+
+
+def _placeholder_message(helper_name: str) -> str:
+    return (
+        f"rebar.{helper_name}() is a scaffold placeholder; "
+        "the `re`-compatible API is not implemented yet"
+    )
+
+
+def _raise_placeholder(helper_name: str) -> object:
+    if _native is not None:
+        return _native.scaffold_raise(helper_name)
+    raise NotImplementedError(_placeholder_message(helper_name))
 
 
 def native_module_loaded() -> bool:
@@ -56,9 +79,66 @@ def native_target_cpython_series() -> str | None:
 def compile(*_args: object, **_kwargs: object) -> object:
     """Placeholder for the future drop-in `re.compile` surface."""
 
+    return _raise_placeholder("compile")
+
+
+def search(*_args: object, **_kwargs: object) -> object:
+    """Placeholder for the future drop-in `re.search` surface."""
+
+    return _raise_placeholder("search")
+
+
+def match(*_args: object, **_kwargs: object) -> object:
+    """Placeholder for the future drop-in `re.match` surface."""
+
+    return _raise_placeholder("match")
+
+
+def fullmatch(*_args: object, **_kwargs: object) -> object:
+    """Placeholder for the future drop-in `re.fullmatch` surface."""
+
+    return _raise_placeholder("fullmatch")
+
+
+def split(*_args: object, **_kwargs: object) -> object:
+    """Placeholder for the future drop-in `re.split` surface."""
+
+    return _raise_placeholder("split")
+
+
+def findall(*_args: object, **_kwargs: object) -> object:
+    """Placeholder for the future drop-in `re.findall` surface."""
+
+    return _raise_placeholder("findall")
+
+
+def finditer(*_args: object, **_kwargs: object) -> object:
+    """Placeholder for the future drop-in `re.finditer` surface."""
+
+    return _raise_placeholder("finditer")
+
+
+def sub(*_args: object, **_kwargs: object) -> object:
+    """Placeholder for the future drop-in `re.sub` surface."""
+
+    return _raise_placeholder("sub")
+
+
+def subn(*_args: object, **_kwargs: object) -> object:
+    """Placeholder for the future drop-in `re.subn` surface."""
+
+    return _raise_placeholder("subn")
+
+
+def escape(*_args: object, **_kwargs: object) -> object:
+    """Placeholder for the future drop-in `re.escape` surface."""
+
+    return _raise_placeholder("escape")
+
+
+def purge() -> None:
+    """Placeholder for the future cache-management hook."""
+
     if _native is not None:
-        return _native.scaffold_compile(*_args, **_kwargs)
-    raise NotImplementedError(
-        "rebar.compile() is a scaffold placeholder; the native `re`-compatible API "
-        "has not been implemented yet"
-    )
+        _native.scaffold_purge()
+    return None
