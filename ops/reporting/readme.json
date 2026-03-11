@@ -1,0 +1,57 @@
+{
+  "readme_path": "README.md",
+  "capability_tracks": [
+    {
+      "label": "Syntax compatibility scope",
+      "description": "Initial parser compatibility document for regex syntax support.",
+      "paths_any": [
+        "docs/spec/syntax-scope.md"
+      ],
+      "task": "RBR-0001-initial-syntax-scope.md"
+    },
+    {
+      "label": "Correctness plan",
+      "description": "Plan for differential tests, fixtures, and parser assertions.",
+      "paths_any": [
+        "docs/testing/correctness-plan.md"
+      ],
+      "task": "RBR-0002-correctness-harness-plan.md"
+    },
+    {
+      "label": "Benchmark methodology",
+      "description": "Plan for parser throughput measurement against CPython.",
+      "paths_any": [
+        "docs/benchmarks/plan.md"
+      ],
+      "task": "RBR-0003-benchmark-plan.md"
+    },
+    {
+      "label": "Parser package scaffold",
+      "description": "First tracked parser package or module tree.",
+      "globs_any": [
+        "src/rebar/**/*.py",
+        "python/rebar/**/*.py",
+        "rebar/**/*.py"
+      ]
+    },
+    {
+      "label": "Automated conformance harness",
+      "description": "Tracked correctness tests for parser behavior.",
+      "globs_any": [
+        "tests/**/*.py",
+        "test/**/*.py"
+      ]
+    },
+    {
+      "label": "Published benchmark scorecard",
+      "description": "Committed summary of parser benchmark results.",
+      "paths_any": [
+        "reports/benchmarks/latest.json"
+      ]
+    }
+  ],
+  "benchmark_scorecard": {
+    "title": "Parser Benchmark Scorecard",
+    "path": "reports/benchmarks/latest.json"
+  }
+}

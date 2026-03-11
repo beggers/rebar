@@ -18,6 +18,9 @@ OPS_ROOT = REPO_ROOT / "ops"
 CONFIG_PATH = OPS_ROOT / "config" / "loop.json"
 TASK_ROOT = OPS_ROOT / "tasks"
 STATE_ROOT = OPS_ROOT / "state"
+README_REPORTING_CONFIG_PATH = OPS_ROOT / "reporting" / "readme.json"
+README_STATUS_START = "<!-- REBAR:STATUS_START -->"
+README_STATUS_END = "<!-- REBAR:STATUS_END -->"
 DEFAULT_CONTEXT_FILES = [
     REPO_ROOT / "AGENTS.md",
     REPO_ROOT / "README.md",
@@ -344,6 +347,294 @@ def task_state_entry(task_state: dict[str, Any], task_name: str) -> dict[str, An
         entry = {}
     task_state[task_name] = entry
     return entry
+
+
+def load_readme_reporting_config(config: dict[str, Any]) -> dict[str, Any]:
+    reporting_cfg = config.get("reporting", {})
+    path = resolve_repo_path(
+        reporting_cfg.get("readme_config_path", str(README_REPORTING_CONFIG_PATH))
+    )
+    payload = read_json(path, default={})
+    if not isinstance(payload, dict):
+        return {"readme_path": "README.md", "capability_tracks": [], "benchmark_scorecard": {}}
+    payload.setdefault("readme_path", "README.md")
+    payload.setdefault("capability_tracks", [])
+    payload.setdefault("benchmark_scorecard", {})
+    return payload
+
+
+def markdown_sections(path: Path) -> dict[str, list[str]]:
+    if not path.exists():
+        return {}
+    sections: dict[str, list[str]] = {}
+    current: str | None = None
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.startswith("## "):
+            current = line[3:].strip()
+            sections[current] = []
+            continue
+        if current is not None:
+            sections[current].append(line)
+    return sections
+
+
+def first_nonempty_line(lines: list[str]) -> str:
+    for line in lines:
+        stripped = line.strip()
+        if stripped:
+            return stripped
+    return ""
+
+
+def bullet_lines(lines: list[str]) -> list[str]:
+    bullets: list[str] = []
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("- "):
+            bullets.append(stripped[2:].strip())
+    return bullets
+
+
+def task_queue_index() -> dict[str, dict[str, Any]]:
+    index: dict[str, dict[str, Any]] = {}
+    for status in TASK_STATUSES:
+        for path in list_task_files(status):
+            index[path.name] = {"status": status, "path": path}
+    return index
+
+
+def matching_repo_paths(entry: dict[str, Any]) -> list[Path]:
+    matches: list[Path] = []
+    seen: set[str] = set()
+    for raw in entry.get("paths_any", []):
+        if not isinstance(raw, str) or not raw:
+            continue
+        path = resolve_repo_path(raw)
+        if path.exists():
+            key = str(path)
+            if key not in seen:
+                matches.append(path)
+                seen.add(key)
+    for raw in entry.get("globs_any", []):
+        if not isinstance(raw, str) or not raw:
+            continue
+        for path in sorted(REPO_ROOT.glob(raw)):
+            if not path.is_file():
+                continue
+            key = str(path)
+            if key not in seen:
+                matches.append(path)
+                seen.add(key)
+    return matches
+
+
+def markdown_link(path: Path | str) -> str:
+    raw = str(path)
+    return f"[`{raw}`]({raw})"
+
+
+def capability_track_rows(config: dict[str, Any]) -> list[dict[str, Any]]:
+    reporting_cfg = load_readme_reporting_config(config)
+    queue_index = task_queue_index()
+    rows: list[dict[str, Any]] = []
+    status_score = {
+        "complete": 1.0,
+        "in progress": 0.6,
+        "planned": 0.25,
+        "blocked": 0.1,
+        "not started": 0.0,
+    }
+
+    for raw_entry in reporting_cfg.get("capability_tracks", []):
+        if not isinstance(raw_entry, dict):
+            continue
+        entry = dict(raw_entry)
+        label = str(entry.get("label", "Unnamed capability")).strip() or "Unnamed capability"
+        description = str(entry.get("description", "")).strip()
+        matches = matching_repo_paths(entry)
+        task_name = entry.get("task")
+        task_info = queue_index.get(str(task_name)) if task_name else None
+
+        if matches:
+            status = "complete"
+            evidence = markdown_link(relpath(matches[0]))
+        elif task_info is not None:
+            status = {
+                "ready": "planned",
+                "in_progress": "in progress",
+                "blocked": "blocked",
+                "done": "complete",
+            }.get(str(task_info["status"]), "planned")
+            evidence = markdown_link(relpath(task_info["path"]))
+        else:
+            status = "not started"
+            evidence = "`not yet queued`"
+
+        rows.append(
+            {
+                "label": label,
+                "description": description,
+                "status": status,
+                "score": status_score.get(status, 0.0),
+                "evidence": evidence,
+            }
+        )
+    return rows
+
+
+def benchmark_scorecard(config: dict[str, Any]) -> dict[str, Any]:
+    reporting_cfg = load_readme_reporting_config(config)
+    raw = reporting_cfg.get("benchmark_scorecard", {})
+    if not isinstance(raw, dict):
+        raw = {}
+    rel = str(raw.get("path", "reports/benchmarks/latest.json"))
+    path = resolve_repo_path(rel)
+    scorecard: dict[str, Any] = {
+        "title": str(raw.get("title", "Parser Benchmark Scorecard")),
+        "path": relpath(path),
+        "available": False,
+    }
+    if not path.exists():
+        return scorecard
+
+    payload = read_json(path, default=None)
+    if not isinstance(payload, dict):
+        scorecard["error"] = "invalid_json"
+        return scorecard
+
+    summary = payload.get("summary")
+    if not isinstance(summary, dict):
+        summary = {}
+
+    workloads = payload.get("workloads")
+    if not isinstance(workloads, list):
+        workloads = []
+
+    scorecard.update(
+        {
+            "available": True,
+            "generated_at": payload.get("generated_at") or summary.get("generated_at"),
+            "baseline": payload.get("baseline") or summary.get("baseline"),
+            "candidate": payload.get("candidate") or summary.get("candidate") or "rebar",
+            "workload_count": len(workloads),
+            "geomean_speedup": summary.get("geomean_speedup_vs_baseline"),
+            "median_speedup": summary.get("median_speedup_vs_baseline"),
+        }
+    )
+    return scorecard
+
+
+def tracked_project_snapshot(config: dict[str, Any]) -> dict[str, Any]:
+    status_sections = markdown_sections(STATE_ROOT / "current_status.md")
+    backlog_sections = markdown_sections(STATE_ROOT / "backlog.md")
+    tracks = capability_track_rows(config)
+    total_tracks = len(tracks)
+    total_score = sum(float(item.get("score", 0.0)) for item in tracks)
+    completion_ratio = 0.0 if total_tracks == 0 else total_score / total_tracks
+
+    return {
+        "phase": first_nonempty_line(status_sections.get("Phase", [])),
+        "milestone": first_nonempty_line(backlog_sections.get("Current Milestone", [])),
+        "next_steps": bullet_lines(status_sections.get("Immediate Next Steps", [])),
+        "risks": bullet_lines(status_sections.get("Risks", [])),
+        "queue_counts": queue_counts(),
+        "capability_tracks": tracks,
+        "completion_ratio": completion_ratio,
+        "complete_tracks": sum(1 for item in tracks if item.get("status") == "complete"),
+        "benchmark_scorecard": benchmark_scorecard(config),
+    }
+
+
+def ascii_progress_bar(ratio: float, width: int = 18) -> str:
+    bounded = max(0.0, min(1.0, ratio))
+    filled = int(round(bounded * width))
+    return "[" + "#" * filled + "." * (width - filled) + "]"
+
+
+def replace_markdown_block(text: str, start_marker: str, end_marker: str, block: str) -> str:
+    normalized = block.rstrip("\n")
+    if start_marker in text and end_marker in text:
+        prefix, remainder = text.split(start_marker, 1)
+        _, suffix = remainder.split(end_marker, 1)
+        return prefix + start_marker + "\n" + normalized + "\n" + end_marker + suffix
+    base = text.rstrip("\n")
+    return base + "\n\n" + start_marker + "\n" + normalized + "\n" + end_marker + "\n"
+
+
+def render_readme_status(config: dict[str, Any]) -> str:
+    snapshot = tracked_project_snapshot(config)
+    queue = snapshot["queue_counts"]
+    tracks = snapshot["capability_tracks"]
+    benchmark = snapshot["benchmark_scorecard"]
+    total_tracks = len(tracks)
+    completion_ratio = float(snapshot["completion_ratio"])
+    lines = [
+        "## Current State",
+        "",
+        f"Feature completeness: `{ascii_progress_bar(completion_ratio)} {int(round(completion_ratio * 100))}%`",
+        "",
+        "| Signal | Value |",
+        "| --- | --- |",
+        f"| Phase | {snapshot['phase'] or 'Unknown'} |",
+        f"| Current milestone | {snapshot['milestone'] or 'Unknown'} |",
+        f"| Work queue | `{queue['ready']}` ready, `{queue['in_progress']}` in progress, `{queue['done']}` done, `{queue['blocked']}` blocked |",
+        f"| Capability tracks | `{snapshot['complete_tracks']}/{total_tracks}` complete |",
+        "",
+        "### Capability Matrix",
+        "",
+        "| Capability | Status | Evidence |",
+        "| --- | --- | --- |",
+    ]
+
+    for item in tracks:
+        lines.append(f"| {item['label']} | {item['status']} | {item['evidence']} |")
+
+    lines.extend(["", f"### {benchmark['title']}", ""])
+    if not benchmark.get("available"):
+        lines.append(
+            f"No published benchmark scorecard yet. Expected tracked source: {markdown_link(benchmark['path'])}."
+        )
+    else:
+        lines.extend(
+            [
+                "| Metric | Value |",
+                "| --- | --- |",
+                f"| Baseline | {benchmark.get('baseline') or 'Unknown'} |",
+                f"| Candidate | {benchmark.get('candidate') or 'rebar'} |",
+                f"| Workloads | `{benchmark.get('workload_count', 0)}` |",
+                f"| Geomean speedup vs baseline | `{benchmark.get('geomean_speedup')}` |",
+                f"| Median speedup vs baseline | `{benchmark.get('median_speedup')}` |",
+                f"| Source | {markdown_link(benchmark['path'])} |",
+            ]
+        )
+
+    next_steps = snapshot.get("next_steps", [])
+    if next_steps:
+        lines.extend(["", "### Immediate Next Steps", ""])
+        for item in next_steps:
+            lines.append(f"- {item}")
+
+    risks = snapshot.get("risks", [])
+    if risks:
+        lines.extend(["", "### Current Risks", ""])
+        for item in risks:
+            lines.append(f"- {item}")
+
+    return "\n".join(lines) + "\n"
+
+
+def sync_readme_status(config: dict[str, Any]) -> None:
+    reporting_cfg = load_readme_reporting_config(config)
+    readme_path = resolve_repo_path(str(reporting_cfg.get("readme_path", "README.md")))
+    current = readme_path.read_text(encoding="utf-8")
+    updated = replace_markdown_block(
+        current,
+        README_STATUS_START,
+        README_STATUS_END,
+        render_readme_status(config),
+    )
+    if updated != current:
+        write_text(readme_path, updated)
 
 
 def load_agent_specs(config: dict[str, Any]) -> list[AgentSpec]:
@@ -1256,6 +1547,7 @@ def run_cycle(config: dict[str, Any], *, force_supervisor: bool = False) -> int:
         recovery_actions.extend(finalize_task_result(config, result, task_state))
 
     write_json(paths["task_state"], task_state)
+    sync_readme_status(config)
     prune_action = prune_run_dirs(config, paths)
     git_action = maybe_commit_and_push(config, results, recovery_actions)
     state = update_loop_state(config, agents, results, recovery_actions, git_action, prune_action)
@@ -1309,6 +1601,7 @@ def cmd_sleep_seconds(config: dict[str, Any], exit_code: int) -> int:
 
 
 def cmd_report(config: dict[str, Any], output_format: str) -> int:
+    sync_readme_status(config)
     report = build_report(config)
     if output_format == "json":
         print(json.dumps(report, indent=2, sort_keys=True))

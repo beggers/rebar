@@ -23,6 +23,7 @@
   "reporting": {
     "status_json_path": ".rebar/runtime/dashboard.json",
     "status_markdown_path": ".rebar/runtime/dashboard.md",
+    "readme_config_path": "ops/reporting/readme.json",
     "recent_runs": 12,
     "recent_tasks": 10,
     "recent_commits": 10

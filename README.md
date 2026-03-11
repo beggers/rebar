@@ -1,34 +1,104 @@
 # rebar
 
-`rebar` is an agent-operated regex parser R&D repo. The target is a parser that is eventually faster than the one CPython uses, without giving up syntax compatibility or correctness.
+`rebar` is an agent-operated regex parser project with a simple goal: build a parser that can eventually beat CPython's regex parser on throughput without giving up syntax compatibility, parse-tree correctness, or useful diagnostics.
 
-This repo is currently bootstrapped as a control plane:
-- `ops/` contains role prompts, durable project state, loop policy, and the task queue.
-- `ops/agents/*.json` defines the active agent set that the supervisor may change over time.
-- `scripts/rebar_ops.py` runs supervisor-first cycles and dispatches the enabled agents.
-- `scripts/loop_forever.sh` is a thin outer loop that re-invokes bounded cycles so harness edits take effect on the next pass.
-- `.rebar/` is the ignored runtime area for prompts, logs, and run metadata.
+This repository is run autonomously, but it is meant to be legible to humans first. If you want the short version of what `rebar` is, what exists today, and how far along it is, start with the generated status block below.
 
-## Current Development Order
-1. Define the compatibility target and parser scope.
-2. Build correctness and benchmark harnesses.
-3. Implement the parser.
-4. Optimize based on measured bottlenecks.
+<!-- REBAR:STATUS_START -->
+## Current State
+
+Feature completeness: `[##................] 12%`
+
+| Signal | Value |
+| --- | --- |
+| Phase | Phase 1: harness bootstrap and project-definition work. |
+| Current milestone | Milestone 1: define the project well enough that implementation work can start without re-litigating scope each run. |
+| Work queue | `3` ready, `0` in progress, `0` done, `0` blocked |
+| Capability tracks | `0/6` complete |
+
+### Capability Matrix
+
+| Capability | Status | Evidence |
+| --- | --- | --- |
+| Syntax compatibility scope | planned | [`ops/tasks/ready/RBR-0001-initial-syntax-scope.md`](ops/tasks/ready/RBR-0001-initial-syntax-scope.md) |
+| Correctness plan | planned | [`ops/tasks/ready/RBR-0002-correctness-harness-plan.md`](ops/tasks/ready/RBR-0002-correctness-harness-plan.md) |
+| Benchmark methodology | planned | [`ops/tasks/ready/RBR-0003-benchmark-plan.md`](ops/tasks/ready/RBR-0003-benchmark-plan.md) |
+| Parser package scaffold | not started | `not yet queued` |
+| Automated conformance harness | not started | `not yet queued` |
+| Published benchmark scorecard | not started | `not yet queued` |
+
+### Parser Benchmark Scorecard
+
+No published benchmark scorecard yet. Expected tracked source: [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json).
+
+### Immediate Next Steps
+
+- Use the supervisor to refine project direction, backlog, and the forever-mode harness itself.
+- Use implementation agents to write the first spec, correctness-plan, and benchmark-plan documents.
+- After those land, start parser package scaffolding and the first parser tests.
+
+### Current Risks
+
+- The project can drift into premature implementation without a clear compatibility target.
+- Autonomous workers can create merge churn if the queue is not concrete enough.
+<!-- REBAR:STATUS_END -->
+
+## What `rebar` Is Trying To Do
+
+- Match the parser-facing behavior that matters from CPython's regex stack.
+- Prove correctness before making speed claims.
+- Publish benchmark results against a concrete baseline instead of hand-waving about performance.
+- Keep project state durable in tracked files so autonomous runs can pick up where the last one left off.
+
+## How The Project Works
+
+`rebar` is organized around a supervisor/worker split:
+
+- The supervisor owns direction, backlog quality, harness health, reporting, and the long-term outcome of the loop making progress forever.
+- Implementation agents own bounded tasks such as spec docs, test harnesses, benchmark harnesses, parser code, and performance work.
+- The outer loop is intentionally tiny. It re-runs one bounded cycle at a time so changes to prompts, config, code, and active agents apply on the next iteration.
+
+## Development Priorities
+
+1. Define the exact syntax and compatibility target.
+2. Build correctness infrastructure.
+3. Build benchmark infrastructure.
+4. Implement the parser.
+5. Optimize only after measurement makes the bottlenecks obvious.
+
+## Repository Map
+
+| Path | Purpose |
+| --- | --- |
+| `ops/` | Durable project operating system: prompts, state, reporting config, backlog, and task queue. |
+| `ops/state/` | Human-readable project status, backlog, charter, and decision log. |
+| `ops/tasks/` | Ready, in-progress, done, and blocked task queues for implementation work. |
+| `ops/reporting/` | Tracked config that defines README-facing capability and benchmark reporting. |
+| `scripts/rebar_ops.py` | Main harness entrypoint for bounded cycles, reporting, task recovery, and git sync. |
+| `scripts/loop_forever.sh` | Thin forever-loop wrapper around repeated bounded cycles. |
+| `.rebar/runtime/` | Ignored runtime artifacts such as logs, prompts, dashboard output, and loop state. |
+| `docs/` | Specs, plans, and eventually parser-related design and testing docs. |
+| `reports/` | Tracked published outputs such as benchmark scorecards. |
+
+## Human Check-In Surfaces
+
+- `README.md` is the tracked landing page for high-level current state and project capabilities.
+- `.rebar/runtime/dashboard.md` is the runtime dashboard for operational details from the latest completed cycle.
+- `ops/state/current_status.md` is the durable project-state document the supervisor is expected to keep accurate.
+- `reports/benchmarks/latest.json` is the planned source of truth for the latest committed parser benchmark scorecard once benchmarking exists.
 
 ## Useful Commands
 
 ```bash
 python3 scripts/rebar_ops.py status
+python3 scripts/rebar_ops.py report
 python3 scripts/rebar_ops.py render supervisor
 python3 scripts/rebar_ops.py cycle --force-supervisor
-python3 scripts/rebar_ops.py sleep-seconds --exit-code 0
-python3 scripts/rebar_ops.py report
 bash scripts/loop_forever.sh
 ```
 
-The normal place to tune cadence and worker counts is `ops/config/loop.json`. The outer shell loop is intentionally tiny so supervisor changes to Python code, config, prompts, or agent specs take effect on the next iteration.
+## Operating Notes
 
-## Daily Check-In
-- Open `.rebar/runtime/dashboard.md` for the current project dashboard.
-- Use `python3 scripts/rebar_ops.py report --format json` if you want the same information as structured data.
-- `.rebar/runtime/loop.log` is the thin outer-loop log.
+- Run the forever loop from a normal shell on a writable checkout.
+- Avoid launching the loop from inside another sandboxed Codex session; nested sandboxes can clamp child agents or their cache writes.
+- The supervisor is allowed to change the harness, prompts, repo structure, reporting config, and active agent set when that is the pragmatic way to keep the project moving.

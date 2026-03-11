@@ -11,6 +11,7 @@ Phase 1: harness bootstrap and project-definition work.
 - A dynamic agent registry under `ops/agents/*.json` that the supervisor can edit.
 - A tiny outer shell loop in `scripts/loop_forever.sh` that re-runs bounded cycles so supervisor changes apply on the next iteration.
 - Auto-commit, auto-push, stale-task recovery, runtime retention, and dashboard generation policy in the harness.
+- A tracked `README.md` landing page with an auto-synced current-state section for humans.
 - One live bounded burn-in cycle that exercised runtime state writes, recovery, dashboard generation, and automatic commit/push.
 - Tracked state, task queue directories, and seeded ready tasks under `ops/`.
 
