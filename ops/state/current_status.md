@@ -11,6 +11,7 @@ Phase 1: harness bootstrap and project-definition work.
 - A dynamic agent registry under `ops/agents/*.json` that the supervisor can edit.
 - A tiny outer shell loop in `scripts/loop_forever.sh` that re-runs bounded cycles so supervisor changes apply on the next iteration.
 - Auto-commit, auto-push, stale-task recovery, runtime retention, and dashboard generation policy in the harness.
+- One live bounded burn-in cycle that exercised runtime state writes, recovery, dashboard generation, and automatic commit/push.
 - Tracked state, task queue directories, and seeded ready tasks under `ops/`.
 
 ## What Does Not Exist Yet
@@ -18,6 +19,9 @@ Phase 1: harness bootstrap and project-definition work.
 - Correctness test harness.
 - Benchmark harness.
 - Concrete syntax compatibility documents under `docs/`.
+
+## Operational Notes
+- Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can clamp child agents to read-only and prevent durable task progress.
 
 ## Immediate Next Steps
 - Use the supervisor to refine project direction, backlog, and the forever-mode harness itself.

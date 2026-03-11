@@ -55,6 +55,9 @@ class RunResult:
     task_initial_path: Path | None
     task_final_path: Path | None
     task_final_status: str | None
+    requested_sandbox: str | None = None
+    observed_sandbox: str | None = None
+    environment_issue: str | None = None
     recovery_actions: list[dict[str, Any]] = field(default_factory=list)
 
 
@@ -315,6 +318,14 @@ def move_task_with_note(path: Path, dest_status: str, note: str) -> Path:
     return dest
 
 
+def move_task(path: Path, dest_status: str) -> Path:
+    dest = TASK_ROOT / dest_status / path.name
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if path != dest:
+        path.replace(dest)
+    return dest
+
+
 def load_task_state(paths: dict[str, Path]) -> dict[str, Any]:
     payload = read_json(paths["task_state"], default={})
     return payload if isinstance(payload, dict) else {}
@@ -478,6 +489,29 @@ def normalize_subprocess_text(value: str | bytes | None) -> str:
     return value
 
 
+def requested_sandbox(config: dict[str, Any], agent: AgentSpec) -> str | None:
+    defaults = config.get("codex_defaults", {})
+    sandbox = agent.codex.get("sandbox", defaults.get("sandbox"))
+    if sandbox is None:
+        return None
+    return str(sandbox)
+
+
+def observed_sandbox(stdout_text: str) -> str | None:
+    for raw_line in stdout_text.splitlines():
+        line = raw_line.strip()
+        if line.startswith("sandbox:"):
+            value = line.split(":", 1)[1].strip()
+            return value or None
+    return None
+
+
+def detect_environment_issue(*, requested: str | None, observed: str | None) -> str | None:
+    if requested == "workspace-write" and observed == "read-only":
+        return "sandbox_clamped_to_read_only"
+    return None
+
+
 def task_timeout_seconds(config: dict[str, Any], agent: AgentSpec) -> int:
     runtime_cfg = config.get("runtime", {})
     return int(agent.dispatch.get("timeout_seconds", runtime_cfg.get("default_timeout_seconds", 1800)))
@@ -504,6 +538,7 @@ def run_agent(agent: AgentSpec, config: dict[str, Any], task_path: Path | None =
     command = build_codex_command(config=config, agent=agent, output_path=output_path, cwd=REPO_ROOT)
     env = build_codex_env(config)
     timeout_seconds = task_timeout_seconds(config, agent)
+    requested = requested_sandbox(config, agent)
     started_at = utcnow()
     timed_out = False
 
@@ -528,6 +563,8 @@ def run_agent(agent: AgentSpec, config: dict[str, Any], task_path: Path | None =
         stderr_text = normalize_subprocess_text(exc.stderr)
 
     finished_at = utcnow()
+    observed = observed_sandbox(stdout_text)
+    environment_issue = detect_environment_issue(requested=requested, observed=observed)
     write_text(stdout_path, stdout_text)
     write_text(stderr_path, stderr_text)
     if not output_path.exists():
@@ -551,6 +588,9 @@ def run_agent(agent: AgentSpec, config: dict[str, Any], task_path: Path | None =
         "finished_at": finished_at,
         "exit_code": exit_code,
         "timed_out": timed_out,
+        "requested_sandbox": requested,
+        "observed_sandbox": observed,
+        "environment_issue": environment_issue,
         "timeout_seconds": timeout_seconds,
         "prompt_path": relpath(prompt_path),
         "stdout_path": relpath(stdout_path),
@@ -568,6 +608,9 @@ def run_agent(agent: AgentSpec, config: dict[str, Any], task_path: Path | None =
         task_initial_path=task_path,
         task_final_path=task_final_path,
         task_final_status=task_final_status,
+        requested_sandbox=requested,
+        observed_sandbox=observed,
+        environment_issue=environment_issue,
     )
 
 
@@ -710,6 +753,26 @@ def finalize_task_result(
         result.recovery_actions.append(action)
         entry["last_action"] = action["action"]
         entry["current_status"] = "unknown"
+        return [action]
+
+    if result.environment_issue == "sandbox_clamped_to_read_only":
+        dest_status = "ready"
+        action_name = "requeued_environment_sandbox_mismatch"
+        severity = "error"
+        new_path = move_task(final_path, dest_status)
+        result.task_final_status = dest_status
+        result.task_final_path = new_path
+        entry["current_status"] = dest_status
+        entry["last_action"] = action_name
+        entry["last_environment_issue"] = result.environment_issue
+        action = {
+            "task_name": task_name,
+            "action": action_name,
+            "severity": severity,
+            "final_status": dest_status,
+            "path": relpath(new_path),
+        }
+        result.recovery_actions.append(action)
         return [action]
 
     policy = recovery_policy(config)
@@ -934,6 +997,7 @@ def update_loop_state(
             "timed_out": result.timed_out,
             "finished_at": utcnow(),
             "task_final_status": result.task_final_status,
+            "environment_issue": result.environment_issue,
         }
 
     state.update(
@@ -965,6 +1029,7 @@ def update_loop_state(
                     "task_final_path": None
                     if result.task_final_path is None
                     else relpath(result.task_final_path),
+                    "environment_issue": result.environment_issue,
                 }
                 for result in results
             ],
@@ -1078,9 +1143,14 @@ def render_markdown_report(report: dict[str, Any]) -> str:
     runs = report.get("last_cycle_runs", [])
     if runs:
         for item in runs:
-            lines.append(
-                f"- `{item['agent_name']}` exit=`{item['exit_code']}` timed_out=`{item['timed_out']}` task=`{item['task_initial_path']}` final=`{item['task_final_status']}`"
+            line = (
+                f"- `{item['agent_name']}` exit=`{item['exit_code']}` "
+                f"timed_out=`{item['timed_out']}` task=`{item['task_initial_path']}` "
+                f"final=`{item['task_final_status']}`"
             )
+            if item.get("environment_issue"):
+                line += f" issue=`{item['environment_issue']}`"
+            lines.append(line)
     else:
         lines.append("- none")
 
