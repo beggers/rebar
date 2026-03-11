@@ -4,12 +4,12 @@
 Milestone 2: finish Phase 2 module-surface harness work on top of the landed Phase 1 parser conformance and compile-path benchmark packs, verified native-extension smoke path, and exact CPython baseline metadata.
 
 ## Ordered Work
-1. Land `RBR-0013` to expose a broader scaffolded module helper surface so Phase 2 correctness and benchmark work can measure `re`-shaped import behavior instead of only missing symbols.
-2. Land `RBR-0014` to expand the correctness harness into a Phase 2 public-API surface pack that reports parser versus module-surface progress separately.
-3. Land `RBR-0015` to expand the benchmark harness into a Phase 2 module-boundary suite with import, helper-call, and cache-state measurements.
-4. Land `RBR-0016` to expand the correctness harness into the first Layer 3 match-behavior pack with tiny success/no-match fixtures and structured result observations.
-5. Land `RBR-0017` to expand the benchmark harness into a small regression/stability pack with curated workloads and a repeatable smoke subset.
-6. Land `RBR-0018` to expose CPython-shaped exported flags, types, and exceptions so import-surface compatibility keeps advancing after the first module helper scaffold lands.
+1. Land `RBR-0014` to expand the correctness harness into a Phase 2 public-API surface pack that reports parser versus module-surface progress separately on top of the landed helper scaffold.
+2. Land `RBR-0015` to expand the benchmark harness into a Phase 2 module-boundary suite with import, helper-call, and cache-state measurements.
+3. Land `RBR-0016` to expand the correctness harness into the first Layer 3 match-behavior pack with tiny success/no-match fixtures and structured result observations.
+4. Land `RBR-0017` to expand the benchmark harness into a small regression/stability pack with curated workloads and a repeatable smoke subset.
+5. Land `RBR-0018` to expose CPython-shaped exported flags, types, and exceptions so import-surface compatibility keeps advancing after the first module helper scaffold lands.
+6. Land `RBR-0019` to scaffold compiled-pattern objects and their early observable attributes/method surfaces so Layer 2 correctness can advance beyond module-level helpers.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
@@ -25,3 +25,4 @@ Milestone 2: finish Phase 2 module-surface harness work on top of the landed Pha
 - With `RBR-0011` and `RBR-0012` landed, keep Milestone 2 centered on module-surface, public-API, and module-boundary catch-up rather than reopening parser-fixture or parser-benchmark breadth immediately.
 - Queue the first Phase 3 correctness and benchmark tasks before Milestone 2 closes so the worker can roll straight into match-behavior and regression/stability infrastructure once the current ready stack clears.
 - Keep a follow-on exported-symbol scaffold task queued behind the first module-surface and match/regression packs so the ready queue keeps moving toward full `re` import-shape compatibility instead of stopping at helper functions alone.
+- Once the helper-surface scaffold lands, queue a dedicated compiled-pattern scaffold task behind the exported-symbol work so Layer 2 correctness can observe real `Pattern` placeholders and attributes instead of treating `compile()` as permanently unimplemented.

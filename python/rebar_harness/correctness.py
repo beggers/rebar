@@ -1,4 +1,4 @@
-"""Differential correctness harness for parser compile conformance cases."""
+"""Differential correctness harness for parser and public API conformance cases."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import sys
 import warnings
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, Iterable, Sequence
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -26,52 +26,120 @@ from rebar_harness.metadata import build_cpython_baseline
 TARGET_CPYTHON_SERIES = "3.12.x"
 REPORT_SCHEMA_VERSION = "1.0"
 FIXTURE_SCHEMA_VERSION = 1
-DEFAULT_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.json"
+DEFAULT_FIXTURE_PATHS = (
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.json",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "public_api_surface.json",
+)
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
+PHASE_BY_LAYER = {
+    "parser_acceptance_and_diagnostics": "phase1-parser-conformance-pack",
+    "module_api_surface": "phase2-public-api-surface-pack",
+    "match_behavior": "phase3-match-behavior-pack",
+    "regression_and_coverage": "phase4-regression-and-coverage-pack",
+}
+PHASE_ORDER = tuple(PHASE_BY_LAYER)
+
+
+@dataclass(frozen=True)
+class FixtureManifest:
+    path: pathlib.Path
+    manifest_id: str
+    layer: str
+    suite_id: str
+    schema_version: int
+    defaults: dict[str, Any]
+    raw: dict[str, Any]
 
 
 @dataclass(frozen=True)
 class FixtureCase:
-    """Single compile-oriented differential case."""
+    """Single differential correctness case."""
 
     case_id: str
+    manifest_id: str
+    suite_id: str
+    layer: str
     family: str
     operation: str
-    pattern: str
-    flags: int
-    text_model: str
-    pattern_encoding: str
     notes: list[str]
     categories: list[str]
+    pattern: str | None
+    flags: int | None
+    text_model: str | None
+    pattern_encoding: str
+    helper: str | None
+    args: list[Any]
+    kwargs: dict[str, Any]
 
     @classmethod
-    def from_dict(cls, raw_case: dict[str, Any], defaults: dict[str, Any]) -> "FixtureCase":
+    def from_dict(cls, manifest: FixtureManifest, raw_case: dict[str, Any]) -> "FixtureCase":
+        defaults = manifest.defaults
         return cls(
             case_id=str(raw_case["id"]),
-            family=str(raw_case.get("family", defaults.get("family", "parser"))),
+            manifest_id=manifest.manifest_id,
+            suite_id=str(raw_case.get("suite_id", manifest.suite_id)),
+            layer=str(raw_case.get("layer", manifest.layer)),
+            family=str(raw_case.get("family", defaults.get("family", manifest.manifest_id))),
             operation=str(raw_case.get("operation", defaults.get("operation", "compile"))),
-            pattern=str(raw_case["pattern"]),
-            flags=int(raw_case.get("flags", defaults.get("flags", 0))),
-            text_model=str(raw_case.get("text_model", defaults.get("text_model", "str"))),
+            notes=[str(note) for note in raw_case.get("notes", [])],
+            categories=[str(category) for category in raw_case.get("categories", [])],
+            pattern=_optional_string(raw_case.get("pattern")),
+            flags=_optional_int(raw_case.get("flags", defaults.get("flags"))),
+            text_model=_optional_string(raw_case.get("text_model", defaults.get("text_model"))),
             pattern_encoding=str(
                 raw_case.get(
                     "pattern_encoding",
                     defaults.get("pattern_encoding", "latin-1"),
                 )
             ),
-            notes=[str(note) for note in raw_case.get("notes", [])],
-            categories=[str(category) for category in raw_case.get("categories", [])],
+            helper=_optional_string(raw_case.get("helper")),
+            args=_materialize_fixture_value(raw_case.get("args", defaults.get("args", []))),
+            kwargs=_materialize_fixture_value(raw_case.get("kwargs", defaults.get("kwargs", {}))),
         )
 
     def pattern_payload(self) -> str | bytes:
+        if self.pattern is None:
+            raise ValueError(f"case {self.case_id!r} is missing a pattern payload")
         if self.text_model == "str":
             return self.pattern
         if self.text_model == "bytes":
             return self.pattern.encode(self.pattern_encoding)
         raise ValueError(f"unsupported text model {self.text_model!r}")
 
+    def serialized_args(self) -> list[Any]:
+        return [_normalize_value(argument) for argument in self.args]
 
-def load_fixture_manifest(path: pathlib.Path) -> tuple[dict[str, Any], list[FixtureCase]]:
+    def serialized_kwargs(self) -> dict[str, Any]:
+        return {key: _normalize_value(value) for key, value in sorted(self.kwargs.items())}
+
+
+def _optional_string(value: Any) -> str | None:
+    if value is None:
+        return None
+    return str(value)
+
+
+def _optional_int(value: Any) -> int | None:
+    if value is None:
+        return None
+    return int(value)
+
+
+def _materialize_fixture_value(value: Any) -> Any:
+    if isinstance(value, list):
+        return [_materialize_fixture_value(item) for item in value]
+    if isinstance(value, dict):
+        if value.get("type") == "bytes":
+            encoding = str(value.get("encoding", "latin-1"))
+            return str(value["value"]).encode(encoding)
+        return {
+            str(key): _materialize_fixture_value(item_value)
+            for key, item_value in value.items()
+        }
+    return value
+
+
+def load_fixture_manifest(path: pathlib.Path) -> tuple[FixtureManifest, list[FixtureCase]]:
     raw_manifest = json.loads(path.read_text(encoding="utf-8"))
     schema_version = raw_manifest.get("schema_version")
     if schema_version != FIXTURE_SCHEMA_VERSION:
@@ -84,10 +152,39 @@ def load_fixture_manifest(path: pathlib.Path) -> tuple[dict[str, Any], list[Fixt
     if not isinstance(defaults, dict):
         raise ValueError("fixture manifest defaults must be an object")
 
-    cases = [
-        FixtureCase.from_dict(raw_case, defaults) for raw_case in raw_manifest.get("cases", [])
-    ]
-    return raw_manifest, cases
+    default_operation = str(defaults.get("operation", "compile"))
+    default_suite_id = str(
+        raw_manifest.get(
+            "suite_id",
+            "parser.compile"
+            if raw_manifest.get("layer", "parser_acceptance_and_diagnostics")
+            == "parser_acceptance_and_diagnostics"
+            and default_operation == "compile"
+            else raw_manifest["manifest_id"],
+        )
+    )
+
+    manifest = FixtureManifest(
+        path=path,
+        manifest_id=str(raw_manifest["manifest_id"]),
+        layer=str(raw_manifest.get("layer", "parser_acceptance_and_diagnostics")),
+        suite_id=default_suite_id,
+        schema_version=schema_version,
+        defaults=defaults,
+        raw=raw_manifest,
+    )
+    cases = [FixtureCase.from_dict(manifest, raw_case) for raw_case in raw_manifest.get("cases", [])]
+    return manifest, cases
+
+
+def load_fixture_manifests(paths: Sequence[pathlib.Path]) -> tuple[list[FixtureManifest], list[FixtureCase]]:
+    manifests: list[FixtureManifest] = []
+    cases: list[FixtureCase] = []
+    for path in paths:
+        manifest, manifest_cases = load_fixture_manifest(path)
+        manifests.append(manifest)
+        cases.extend(manifest_cases)
+    return manifests, cases
 
 
 def normalize_warning_records(records: list[warnings.WarningMessage]) -> list[dict[str, str]]:
@@ -100,7 +197,16 @@ def normalize_warning_records(records: list[warnings.WarningMessage]) -> list[di
     ]
 
 
-def normalize_success_metadata(compiled_pattern: Any) -> dict[str, Any]:
+def normalize_pattern_value(pattern: str | bytes) -> str | dict[str, str]:
+    if isinstance(pattern, bytes):
+        return {
+            "encoding": "latin-1",
+            "value": pattern.decode("latin-1"),
+        }
+    return pattern
+
+
+def normalize_pattern_metadata(compiled_pattern: Any) -> dict[str, Any]:
     groupindex = getattr(compiled_pattern, "groupindex", {})
     return {
         "pattern": normalize_pattern_value(compiled_pattern.pattern),
@@ -111,13 +217,42 @@ def normalize_success_metadata(compiled_pattern: Any) -> dict[str, Any]:
     }
 
 
-def normalize_pattern_value(pattern: str | bytes) -> str | dict[str, str]:
-    if isinstance(pattern, bytes):
-        return {
-            "encoding": "latin-1",
-            "value": pattern.decode("latin-1"),
-        }
-    return pattern
+def normalize_match_metadata(match: Any) -> dict[str, Any]:
+    return {
+        "matched": bool(match),
+        "group0": _normalize_value(match.group(0)),
+        "groups": [_normalize_value(group) for group in match.groups()],
+        "groupdict": {
+            key: _normalize_value(value) for key, value in sorted(match.groupdict().items())
+        },
+        "lastgroup": match.lastgroup,
+        "lastindex": match.lastindex,
+        "pos": match.pos,
+        "endpos": match.endpos,
+        "span": list(match.span()),
+        "string_type": type(match.string).__name__,
+    }
+
+
+def _normalize_value(value: Any) -> Any:
+    if value is None or isinstance(value, (bool, int, float, str)):
+        return value
+    if isinstance(value, bytes):
+        return normalize_pattern_value(value)
+    if isinstance(value, list):
+        return [_normalize_value(item) for item in value]
+    if isinstance(value, tuple):
+        return [_normalize_value(item) for item in value]
+    if isinstance(value, dict):
+        return {str(key): _normalize_value(item) for key, item in sorted(value.items())}
+    if all(hasattr(value, attribute) for attribute in ("pattern", "flags", "groups", "groupindex")):
+        return normalize_pattern_metadata(value)
+    if all(hasattr(value, attribute) for attribute in ("span", "group", "groups", "groupdict")):
+        return normalize_match_metadata(value)
+    return {
+        "type": type(value).__name__,
+        "repr": repr(value),
+    }
 
 
 def normalize_exception(exc: BaseException) -> dict[str, Any]:
@@ -133,24 +268,56 @@ def normalize_exception(exc: BaseException) -> dict[str, Any]:
     return payload
 
 
-class CompileAdapter:
-    """Adapter boundary for compile-oriented observations."""
+class Adapter:
+    """Adapter boundary for correctness observations."""
 
     adapter_name: str
+    module: Any
+
+    def observe(self, case: FixtureCase) -> dict[str, Any]:
+        if case.operation == "compile":
+            return self.observe_compile(case)
+        if case.operation == "module_has_attr":
+            return self.observe_module_has_attr(case)
+        if case.operation == "module_call":
+            return self.observe_module_call(case)
+        raise ValueError(f"unsupported operation {case.operation!r}")
 
     def observe_compile(self, case: FixtureCase) -> dict[str, Any]:
         raise NotImplementedError
 
+    def observe_module_has_attr(self, case: FixtureCase) -> dict[str, Any]:
+        if case.helper is None:
+            raise ValueError(f"case {case.case_id!r} requires a helper name")
+        attribute = getattr(self.module, case.helper, None)
+        return finalize_observation(
+            adapter=self.adapter_name,
+            case=case,
+            outcome="success",
+            warnings_payload=[],
+            result={
+                "present": attribute is not None,
+                "callable": callable(attribute) if attribute is not None else None,
+            },
+        )
 
-class CpythonReAdapter(CompileAdapter):
-    adapter_name = "cpython.re"
+    def observe_module_call(self, case: FixtureCase) -> dict[str, Any]:
+        if case.helper is None:
+            raise ValueError(f"case {case.case_id!r} requires a helper name")
 
-    def observe_compile(self, case: FixtureCase) -> dict[str, Any]:
-        pattern = case.pattern_payload()
+        helper = getattr(self.module, case.helper)
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always")
             try:
-                compiled = cpython_re.compile(pattern, case.flags)
+                result = helper(*case.args, **case.kwargs)
+            except NotImplementedError as exc:
+                return finalize_observation(
+                    adapter=self.adapter_name,
+                    case=case,
+                    outcome="unimplemented",
+                    warnings_payload=normalize_warning_records(caught),
+                    exception=normalize_exception(exc),
+                )
             except Exception as exc:  # pragma: no cover - exercised by fixtures
                 return finalize_observation(
                     adapter=self.adapter_name,
@@ -165,19 +332,48 @@ class CpythonReAdapter(CompileAdapter):
             case=case,
             outcome="success",
             warnings_payload=normalize_warning_records(caught),
-            result=normalize_success_metadata(compiled),
+            result=_normalize_value(result),
         )
 
 
-class RebarAdapter(CompileAdapter):
-    adapter_name = "rebar"
+class CpythonReAdapter(Adapter):
+    adapter_name = "cpython.re"
+    module = cpython_re
 
     def observe_compile(self, case: FixtureCase) -> dict[str, Any]:
         pattern = case.pattern_payload()
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always")
             try:
-                compiled = rebar.compile(pattern, case.flags)
+                compiled = cpython_re.compile(pattern, case.flags or 0)
+            except Exception as exc:  # pragma: no cover - exercised by fixtures
+                return finalize_observation(
+                    adapter=self.adapter_name,
+                    case=case,
+                    outcome="exception",
+                    warnings_payload=normalize_warning_records(caught),
+                    exception=normalize_exception(exc),
+                )
+
+        return finalize_observation(
+            adapter=self.adapter_name,
+            case=case,
+            outcome="success",
+            warnings_payload=normalize_warning_records(caught),
+            result=normalize_pattern_metadata(compiled),
+        )
+
+
+class RebarAdapter(Adapter):
+    adapter_name = "rebar"
+    module = rebar
+
+    def observe_compile(self, case: FixtureCase) -> dict[str, Any]:
+        pattern = case.pattern_payload()
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            try:
+                compiled = rebar.compile(pattern, case.flags or 0)
             except NotImplementedError as exc:
                 return finalize_observation(
                     adapter=self.adapter_name,
@@ -200,7 +396,7 @@ class RebarAdapter(CompileAdapter):
             case=case,
             outcome="success",
             warnings_payload=normalize_warning_records(caught),
-            result=normalize_success_metadata(compiled),
+            result=normalize_pattern_metadata(compiled),
         )
 
 
@@ -210,7 +406,7 @@ def finalize_observation(
     case: FixtureCase,
     outcome: str,
     warnings_payload: list[dict[str, str]],
-    result: dict[str, Any] | None = None,
+    result: dict[str, Any] | list[Any] | str | int | float | bool | None = None,
     exception: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return {
@@ -223,11 +419,11 @@ def finalize_observation(
     }
 
 
-def compare_compile_observations(
+def compare_observations(
     cpython_observation: dict[str, Any], rebar_observation: dict[str, Any]
 ) -> tuple[str, list[str]]:
     if rebar_observation["outcome"] == "unimplemented":
-        return "unimplemented", ["rebar adapter reports compile support as unimplemented"]
+        return "unimplemented", ["rebar adapter reports support as unimplemented"]
 
     mismatches: list[str] = []
     if cpython_observation["outcome"] != rebar_observation["outcome"]:
@@ -248,25 +444,18 @@ def compare_compile_observations(
     return ("pass", []) if not mismatches else ("fail", mismatches)
 
 
-def evaluate_case(
-    case: FixtureCase, cpython_adapter: CompileAdapter, rebar_adapter: CompileAdapter
-) -> dict[str, Any]:
-    if case.operation != "compile":
-        raise ValueError(f"unsupported operation {case.operation!r}")
+def evaluate_case(case: FixtureCase, cpython_adapter: Adapter, rebar_adapter: Adapter) -> dict[str, Any]:
+    cpython_observation = cpython_adapter.observe(case)
+    rebar_observation = rebar_adapter.observe(case)
+    comparison, mismatch_notes = compare_observations(cpython_observation, rebar_observation)
 
-    cpython_observation = cpython_adapter.observe_compile(case)
-    rebar_observation = rebar_adapter.observe_compile(case)
-    comparison, mismatch_notes = compare_compile_observations(
-        cpython_observation, rebar_observation
-    )
-
-    return {
+    result = {
         "id": case.case_id,
+        "manifest_id": case.manifest_id,
+        "suite_id": case.suite_id,
+        "layer": case.layer,
         "family": case.family,
         "operation": case.operation,
-        "text_model": case.text_model,
-        "pattern": case.pattern,
-        "flags": case.flags,
         "notes": case.notes,
         "categories": case.categories,
         "comparison": comparison,
@@ -276,6 +465,20 @@ def evaluate_case(
             "rebar": rebar_observation,
         },
     }
+
+    if case.text_model is not None:
+        result["text_model"] = case.text_model
+    if case.pattern is not None:
+        result["pattern"] = case.pattern
+    if case.flags is not None:
+        result["flags"] = case.flags
+    if case.helper is not None:
+        result["helper"] = case.helper
+    if case.args:
+        result["args"] = case.serialized_args()
+    if case.kwargs:
+        result["kwargs"] = case.serialized_kwargs()
+    return result
 
 
 def build_summary(case_results: list[dict[str, Any]]) -> dict[str, int]:
@@ -339,33 +542,63 @@ def build_diagnostics_summary(case_results: list[dict[str, Any]]) -> dict[str, A
     }
 
 
+def _sorted_unique_strings(values: Iterable[Any]) -> list[str]:
+    return sorted({str(value) for value in values if value is not None})
+
+
 def build_suite_summary(
     *,
     suite_id: str,
     layer: str,
+    manifest_ids: list[str],
     case_results: list[dict[str, Any]],
 ) -> dict[str, Any]:
     return {
         "id": suite_id,
         "layer": layer,
+        "manifest_ids": manifest_ids,
         "case_count": len(case_results),
-        "families": sorted({result["family"] for result in case_results}),
-        "text_models": sorted({result["text_model"] for result in case_results}),
+        "families": _sorted_unique_strings(result["family"] for result in case_results),
+        "operations": _sorted_unique_strings(result["operation"] for result in case_results),
+        "text_models": _sorted_unique_strings(result.get("text_model") for result in case_results),
         "summary": build_summary(case_results),
         "diagnostics": build_diagnostics_summary(case_results),
     }
 
 
+def build_layer_summaries(case_results: list[dict[str, Any]]) -> dict[str, Any]:
+    layers: dict[str, Any] = {}
+    for layer in _sorted_unique_strings(result["layer"] for result in case_results):
+        layer_cases = [result for result in case_results if result["layer"] == layer]
+        layers[layer] = {
+            "manifest_ids": _sorted_unique_strings(result["manifest_id"] for result in layer_cases),
+            "suite_ids": _sorted_unique_strings(result["suite_id"] for result in layer_cases),
+            "case_count": len(layer_cases),
+            "families": _sorted_unique_strings(result["family"] for result in layer_cases),
+            "operations": _sorted_unique_strings(result["operation"] for result in layer_cases),
+            "text_models": _sorted_unique_strings(result.get("text_model") for result in layer_cases),
+            "summary": build_summary(layer_cases),
+            "diagnostics": build_diagnostics_summary(layer_cases),
+        }
+    return layers
+
+
 def build_family_summaries(case_results: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    families = sorted({result["family"] for result in case_results})
+    families = _sorted_unique_strings(result["family"] for result in case_results)
     return [
         {
             "id": family,
             "case_count": len(
                 [result for result in case_results if result["family"] == family]
             ),
-            "text_models": sorted(
-                {result["text_model"] for result in case_results if result["family"] == family}
+            "layers": _sorted_unique_strings(
+                result["layer"] for result in case_results if result["family"] == family
+            ),
+            "operations": _sorted_unique_strings(
+                result["operation"] for result in case_results if result["family"] == family
+            ),
+            "text_models": _sorted_unique_strings(
+                result.get("text_model") for result in case_results if result["family"] == family
             ),
             "summary": build_summary(
                 [result for result in case_results if result["family"] == family]
@@ -375,17 +608,91 @@ def build_family_summaries(case_results: list[dict[str, Any]]) -> list[dict[str,
     ]
 
 
+def determine_phase(layer_summaries: dict[str, Any]) -> str:
+    active_layers = [layer for layer in PHASE_ORDER if layer in layer_summaries]
+    if not active_layers:
+        return PHASE_BY_LAYER["parser_acceptance_and_diagnostics"]
+    return PHASE_BY_LAYER[active_layers[-1]]
+
+
+def build_fixture_summary(manifests: Sequence[FixtureManifest], case_results: list[dict[str, Any]]) -> dict[str, Any]:
+    summary = {
+        "manifest_count": len(manifests),
+        "manifest_ids": [manifest.manifest_id for manifest in manifests],
+        "paths": [str(manifest.path.relative_to(REPO_ROOT)) for manifest in manifests],
+        "case_count": len(case_results),
+    }
+    if len(manifests) == 1:
+        manifest = manifests[0]
+        summary.update(
+            {
+                "path": str(manifest.path.relative_to(REPO_ROOT)),
+                "schema_version": manifest.schema_version,
+                "manifest_id": manifest.manifest_id,
+            }
+        )
+    return summary
+
+
+def build_suite_summaries(
+    manifests: Sequence[FixtureManifest], case_results: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    suite_summaries: list[dict[str, Any]] = []
+    for manifest in manifests:
+        manifest_cases = [result for result in case_results if result["manifest_id"] == manifest.manifest_id]
+        if not manifest_cases:
+            continue
+
+        suite_summaries.append(
+            build_suite_summary(
+                suite_id=manifest.suite_id,
+                layer=manifest.layer,
+                manifest_ids=[manifest.manifest_id],
+                case_results=manifest_cases,
+            )
+        )
+
+        text_models = _sorted_unique_strings(result.get("text_model") for result in manifest_cases)
+        for text_model in text_models:
+            suite_summaries.append(
+                build_suite_summary(
+                    suite_id=f"{manifest.suite_id}.{text_model}",
+                    layer=manifest.layer,
+                    manifest_ids=[manifest.manifest_id],
+                    case_results=[
+                        result for result in manifest_cases if result.get("text_model") == text_model
+                    ],
+                )
+            )
+
+        operations = _sorted_unique_strings(result["operation"] for result in manifest_cases)
+        if len(operations) > 1:
+            for operation in operations:
+                suite_summaries.append(
+                    build_suite_summary(
+                        suite_id=f"{manifest.suite_id}.{operation}",
+                        layer=manifest.layer,
+                        manifest_ids=[manifest.manifest_id],
+                        case_results=[
+                            result for result in manifest_cases if result["operation"] == operation
+                        ],
+                    )
+                )
+
+    return suite_summaries
+
+
 def build_scorecard(
     *,
-    fixture_path: pathlib.Path,
-    raw_manifest: dict[str, Any],
+    manifests: Sequence[FixtureManifest],
     case_results: list[dict[str, Any]],
 ) -> dict[str, Any]:
     summary = build_summary(case_results)
+    layers = build_layer_summaries(case_results)
     return {
         "schema_version": REPORT_SCHEMA_VERSION,
         "suite": "correctness",
-        "phase": "phase1-parser-conformance-pack",
+        "phase": determine_phase(layers),
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
         "generator": "python -m rebar_harness.correctness",
         "baseline": {
@@ -393,32 +700,11 @@ def build_scorecard(
             "oracle": "cpython-stdlib-re",
             "target_module": "rebar",
         },
-        "fixtures": {
-            "path": str(fixture_path.relative_to(REPO_ROOT)),
-            "schema_version": raw_manifest["schema_version"],
-            "manifest_id": raw_manifest["manifest_id"],
-            "case_count": len(case_results),
-        },
+        "fixtures": build_fixture_summary(manifests, case_results),
         "summary": summary,
+        "layers": layers,
         "diagnostics": build_diagnostics_summary(case_results),
-        "suites": [
-            build_suite_summary(
-                suite_id="parser.compile",
-                layer="parser_acceptance_and_diagnostics",
-                case_results=case_results,
-            ),
-            *[
-                build_suite_summary(
-                    suite_id=f"parser.compile.{text_model}",
-                    layer="parser_acceptance_and_diagnostics",
-                    case_results=[
-                        result for result in case_results if result["text_model"] == text_model
-                    ],
-                )
-                for text_model in ("str", "bytes")
-                if any(result["text_model"] == text_model for result in case_results)
-            ],
-        ],
+        "suites": build_suite_summaries(manifests, case_results),
         "families": build_family_summaries(case_results),
         "cases": case_results,
     }
@@ -430,20 +716,16 @@ def write_scorecard(scorecard: dict[str, Any], report_path: pathlib.Path) -> Non
 
 
 def run_correctness_harness(
-    fixture_path: pathlib.Path = DEFAULT_FIXTURES_PATH,
+    fixture_paths: Sequence[pathlib.Path] = DEFAULT_FIXTURE_PATHS,
     report_path: pathlib.Path = DEFAULT_REPORT_PATH,
 ) -> dict[str, Any]:
-    fixture_path = fixture_path.resolve()
+    resolved_fixture_paths = [path.resolve() for path in fixture_paths]
     report_path = report_path.resolve()
-    raw_manifest, cases = load_fixture_manifest(fixture_path)
+    manifests, cases = load_fixture_manifests(resolved_fixture_paths)
     cpython_adapter = CpythonReAdapter()
     rebar_adapter = RebarAdapter()
     case_results = [evaluate_case(case, cpython_adapter, rebar_adapter) for case in cases]
-    scorecard = build_scorecard(
-        fixture_path=fixture_path,
-        raw_manifest=raw_manifest,
-        case_results=case_results,
-    )
+    scorecard = build_scorecard(manifests=manifests, case_results=case_results)
     write_scorecard(scorecard, report_path)
     return scorecard
 
@@ -453,8 +735,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--fixtures",
         type=pathlib.Path,
-        default=DEFAULT_FIXTURES_PATH,
-        help="Path to the correctness fixture manifest.",
+        nargs="+",
+        default=list(DEFAULT_FIXTURE_PATHS),
+        help="One or more correctness fixture manifests to execute.",
     )
     parser.add_argument(
         "--report",
@@ -467,7 +750,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    scorecard = run_correctness_harness(fixture_path=args.fixtures, report_path=args.report)
+    scorecard = run_correctness_harness(fixture_paths=args.fixtures, report_path=args.report)
     print(json.dumps(scorecard["summary"], sort_keys=True))
     return 0
 

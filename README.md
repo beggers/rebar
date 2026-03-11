@@ -13,9 +13,9 @@ _This measures whether the planned scaffolds, plans, and scorecard artifacts exi
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed, the Phase 1 parser conformance and compile-path benchmark packs published, and the remaining module-surface gaps queued. |
+| Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed, the Phase 1 parser conformance and compile-path benchmark packs published, the helper-surface scaffold in place, and the remaining module-surface and pattern-object gaps queued. |
 | Current milestone | Milestone 2: finish Phase 2 module-surface harness work on top of the landed Phase 1 parser conformance and compile-path benchmark packs, verified native-extension smoke path, and exact CPython baseline metadata. |
-| Work queue | `5` ready, `0` in progress, `14` done, `0` blocked |
+| Work queue | `5` ready, `0` in progress, `15` done, `0` blocked |
 | Capability tracks | `10/10` complete |
 
 ### Capability Matrix
@@ -38,9 +38,9 @@ _This measures whether the planned scaffolds, plans, and scorecard artifacts exi
 | Metric | Value |
 | --- | --- |
 | Candidate | rebar |
-| Cases | `0` / `15` |
-| Pass rate | `0.0` |
-| Parity rate | `0.0` |
+| Cases | `4` / `22` |
+| Pass rate | `0.1818` |
+| Parity rate | `1.0` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
 ### Parser Benchmark Scorecard
@@ -56,19 +56,19 @@ _This measures whether the planned scaffolds, plans, and scorecard artifacts exi
 
 ### Immediate Next Steps
 
-- Land `RBR-0013`, `RBR-0014`, and `RBR-0015` so the repo exposes a broader scaffolded `re` helper surface and the scorecards can separate parser progress from public-API and module-boundary progress.
-- Keep `RBR-0016`, `RBR-0017`, and `RBR-0018` queued behind the module-surface stack so the worker can continue directly into match-behavior correctness, regression/stability benchmark infrastructure, and exported-symbol coverage without another supervisor-only queue rewrite.
+- Land `RBR-0014` and `RBR-0015` so the correctness and benchmark scorecards separate parser progress from public-API and module-boundary progress on top of the landed helper surface.
+- Keep `RBR-0016`, `RBR-0017`, `RBR-0018`, and `RBR-0019` queued behind that Phase 2 harness work so the worker can continue directly into match-behavior correctness, regression/stability benchmark infrastructure, exported-symbol coverage, and compiled-pattern scaffolding without another supervisor-only queue rewrite.
 
 ### Current Risks
 
 - The repo now validates a dedicated built `rebar._rebar` smoke path, but the published benchmark report still reflects the source-tree shim with `native_module_loaded: false`, so routine measurement paths can still drift away from the verified install/import path.
-- The scaffolded Python surface is still minimal, so public-API correctness and module-boundary benchmarking remain blocked on additional placeholder exports even though the native extension now imports successfully.
-- The correctness harness now covers 15 parser compile cases, but it still reports `unimplemented` for every `rebar` comparison and does not yet measure helper presence, pattern objects, or match-result behavior.
+- The scaffolded Python surface now includes the first helper layer, but public-API correctness and module-boundary benchmarking still lag behind the landed export surface and do not yet cover pattern objects, flags/constants, or match results.
+- The correctness harness now covers 15 parser compile cases, but it still reports `unimplemented` for every `rebar` comparison and does not yet measure the landed helper surface, pattern objects, or match-result behavior.
 - The benchmark harness now measures six parser-family compile-path workloads across cold, warm, and purged cache modes, but it still records no `rebar` timings and still exercises the source-tree shim rather than the built native path.
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility at the Python surface.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Concurrent human and loop commits can still produce diverged git history that requires supervisor resolution; the harness now detects that state accurately but does not auto-rebase it.
-- The implementation worker has twelve completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
+- The implementation worker has thirteen completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
 <!-- REBAR:STATUS_END -->
 
 ## What `rebar` Is Trying To Do

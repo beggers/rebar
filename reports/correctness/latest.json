@@ -22,11 +22,13 @@
       ],
       "comparison": "unimplemented",
       "comparison_notes": [
-        "rebar adapter reports compile support as unimplemented"
+        "rebar adapter reports support as unimplemented"
       ],
       "family": "pattern_text_model",
       "flags": 0,
       "id": "str-literal-success",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_id": "parser-matrix",
       "notes": [
         "Baseline literal compile case for the default str parser path."
       ],
@@ -48,7 +50,7 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
             "type": "NotImplementedError"
           },
           "operation": "compile",
@@ -59,6 +61,7 @@
       },
       "operation": "compile",
       "pattern": "abc",
+      "suite_id": "parser.compile",
       "text_model": "str"
     },
     {
@@ -69,11 +72,13 @@
       ],
       "comparison": "unimplemented",
       "comparison_notes": [
-        "rebar adapter reports compile support as unimplemented"
+        "rebar adapter reports support as unimplemented"
       ],
       "family": "character_classes",
       "flags": 2,
       "id": "str-character-class-ignorecase-success",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_id": "parser-matrix",
       "notes": [
         "Exercises bracket-class parsing plus API-level IGNORECASE flags."
       ],
@@ -95,7 +100,7 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
             "type": "NotImplementedError"
           },
           "operation": "compile",
@@ -106,6 +111,7 @@
       },
       "operation": "compile",
       "pattern": "[A-Z_][a-z0-9_]+",
+      "suite_id": "parser.compile",
       "text_model": "str"
     },
     {
@@ -115,11 +121,13 @@
       ],
       "comparison": "unimplemented",
       "comparison_notes": [
-        "rebar adapter reports compile support as unimplemented"
+        "rebar adapter reports support as unimplemented"
       ],
       "family": "quantifiers",
       "flags": 0,
       "id": "str-possessive-quantifier-success",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_id": "parser-matrix",
       "notes": [
         "Covers the CPython 3.12 possessive quantifier syntax."
       ],
@@ -141,7 +149,7 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
             "type": "NotImplementedError"
           },
           "operation": "compile",
@@ -152,6 +160,7 @@
       },
       "operation": "compile",
       "pattern": "a*+",
+      "suite_id": "parser.compile",
       "text_model": "str"
     },
     {
@@ -161,11 +170,13 @@
       ],
       "comparison": "unimplemented",
       "comparison_notes": [
-        "rebar adapter reports compile support as unimplemented"
+        "rebar adapter reports support as unimplemented"
       ],
       "family": "grouping",
       "flags": 0,
       "id": "str-atomic-group-success",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_id": "parser-matrix",
       "notes": [
         "Exercises atomic-group parsing without requiring match-engine parity."
       ],
@@ -187,7 +198,7 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
             "type": "NotImplementedError"
           },
           "operation": "compile",
@@ -198,6 +209,7 @@
       },
       "operation": "compile",
       "pattern": "(?>ab|a)b",
+      "suite_id": "parser.compile",
       "text_model": "str"
     },
     {
@@ -207,11 +219,13 @@
       ],
       "comparison": "unimplemented",
       "comparison_notes": [
-        "rebar adapter reports compile support as unimplemented"
+        "rebar adapter reports support as unimplemented"
       ],
       "family": "assertions",
       "flags": 0,
       "id": "str-fixed-width-lookbehind-success",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_id": "parser-matrix",
       "notes": [
         "Captures a valid fixed-width lookbehind compile path."
       ],
@@ -233,7 +247,7 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
             "type": "NotImplementedError"
           },
           "operation": "compile",
@@ -244,6 +258,7 @@
       },
       "operation": "compile",
       "pattern": "(?<=ab)c",
+      "suite_id": "parser.compile",
       "text_model": "str"
     },
     {
@@ -254,11 +269,13 @@
       ],
       "comparison": "unimplemented",
       "comparison_notes": [
-        "rebar adapter reports compile support as unimplemented"
+        "rebar adapter reports support as unimplemented"
       ],
       "family": "character_classes",
       "flags": 0,
       "id": "str-nested-set-warning",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_id": "parser-matrix",
       "notes": [
         "Captures a compile-time FutureWarning from ambiguous nested-set syntax."
       ],
@@ -285,7 +302,7 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
             "type": "NotImplementedError"
           },
           "operation": "compile",
@@ -296,6 +313,7 @@
       },
       "operation": "compile",
       "pattern": "[[a]",
+      "suite_id": "parser.compile",
       "text_model": "str"
     },
     {
@@ -305,11 +323,13 @@
       ],
       "comparison": "unimplemented",
       "comparison_notes": [
-        "rebar adapter reports compile support as unimplemented"
+        "rebar adapter reports support as unimplemented"
       ],
       "family": "quantifiers",
       "flags": 0,
       "id": "str-invalid-repeat-error",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_id": "parser-matrix",
       "notes": [
         "Exercises malformed repeat diagnostics with position metadata."
       ],
@@ -331,7 +351,7 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
             "type": "NotImplementedError"
           },
           "operation": "compile",
@@ -342,6 +362,7 @@
       },
       "operation": "compile",
       "pattern": "*abc",
+      "suite_id": "parser.compile",
       "text_model": "str"
     },
     {
@@ -352,11 +373,13 @@
       ],
       "comparison": "unimplemented",
       "comparison_notes": [
-        "rebar adapter reports compile support as unimplemented"
+        "rebar adapter reports support as unimplemented"
       ],
       "family": "flags",
       "flags": 0,
       "id": "str-invalid-inline-flag-position-error",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_id": "parser-matrix",
       "notes": [
         "Covers the global-inline-flag placement restriction for str patterns."
       ],
@@ -378,7 +401,7 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
             "type": "NotImplementedError"
           },
           "operation": "compile",
@@ -389,6 +412,7 @@
       },
       "operation": "compile",
       "pattern": "a(?i)b",
+      "suite_id": "parser.compile",
       "text_model": "str"
     },
     {
@@ -398,11 +422,13 @@
       ],
       "comparison": "unimplemented",
       "comparison_notes": [
-        "rebar adapter reports compile support as unimplemented"
+        "rebar adapter reports support as unimplemented"
       ],
       "family": "assertions",
       "flags": 0,
       "id": "str-variable-width-lookbehind-error",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_id": "parser-matrix",
       "notes": [
         "Captures fixed-width validation failures for lookbehind assertions."
       ],
@@ -421,7 +447,7 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
             "type": "NotImplementedError"
           },
           "operation": "compile",
@@ -432,6 +458,7 @@
       },
       "operation": "compile",
       "pattern": "(?<=a+)b",
+      "suite_id": "parser.compile",
       "text_model": "str"
     },
     {
@@ -442,11 +469,13 @@
       ],
       "comparison": "unimplemented",
       "comparison_notes": [
-        "rebar adapter reports compile support as unimplemented"
+        "rebar adapter reports support as unimplemented"
       ],
       "family": "flags",
       "flags": 0,
       "id": "str-inline-unicode-flag-success",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_id": "parser-matrix",
       "notes": [
         "Mirrors a bytes-only restriction: inline u is valid for str patterns."
       ],
@@ -468,7 +497,7 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
             "type": "NotImplementedError"
           },
           "operation": "compile",
@@ -479,6 +508,7 @@
       },
       "operation": "compile",
       "pattern": "(?u:a)",
+      "suite_id": "parser.compile",
       "text_model": "str"
     },
     {
@@ -489,11 +519,13 @@
       ],
       "comparison": "unimplemented",
       "comparison_notes": [
-        "rebar adapter reports compile support as unimplemented"
+        "rebar adapter reports support as unimplemented"
       ],
       "family": "flags",
       "flags": 0,
       "id": "str-inline-locale-flag-error",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_id": "parser-matrix",
       "notes": [
         "Mirrors a bytes-only success case: inline L is rejected for str patterns."
       ],
@@ -515,7 +547,7 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
             "type": "NotImplementedError"
           },
           "operation": "compile",
@@ -526,6 +558,7 @@
       },
       "operation": "compile",
       "pattern": "(?L:a)",
+      "suite_id": "parser.compile",
       "text_model": "str"
     },
     {
@@ -535,11 +568,13 @@
       ],
       "comparison": "unimplemented",
       "comparison_notes": [
-        "rebar adapter reports compile support as unimplemented"
+        "rebar adapter reports support as unimplemented"
       ],
       "family": "pattern_text_model",
       "flags": 0,
       "id": "bytes-literal-success",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_id": "parser-matrix",
       "notes": [
         "Baseline literal compile case for the bytes parser path."
       ],
@@ -564,7 +599,7 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
             "type": "NotImplementedError"
           },
           "operation": "compile",
@@ -575,6 +610,7 @@
       },
       "operation": "compile",
       "pattern": "abc",
+      "suite_id": "parser.compile",
       "text_model": "bytes"
     },
     {
@@ -585,11 +621,13 @@
       ],
       "comparison": "unimplemented",
       "comparison_notes": [
-        "rebar adapter reports compile support as unimplemented"
+        "rebar adapter reports support as unimplemented"
       ],
       "family": "flags",
       "flags": 0,
       "id": "bytes-inline-unicode-flag-error",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_id": "parser-matrix",
       "notes": [
         "Mirrors the str success case: inline u is rejected for bytes patterns."
       ],
@@ -611,7 +649,7 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
             "type": "NotImplementedError"
           },
           "operation": "compile",
@@ -622,6 +660,7 @@
       },
       "operation": "compile",
       "pattern": "(?u:a)",
+      "suite_id": "parser.compile",
       "text_model": "bytes"
     },
     {
@@ -632,11 +671,13 @@
       ],
       "comparison": "unimplemented",
       "comparison_notes": [
-        "rebar adapter reports compile support as unimplemented"
+        "rebar adapter reports support as unimplemented"
       ],
       "family": "flags",
       "flags": 0,
       "id": "bytes-inline-locale-flag-success",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_id": "parser-matrix",
       "notes": [
         "Mirrors the str failure case: inline L is valid for bytes patterns."
       ],
@@ -661,7 +702,7 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
             "type": "NotImplementedError"
           },
           "operation": "compile",
@@ -672,6 +713,7 @@
       },
       "operation": "compile",
       "pattern": "(?L:a)",
+      "suite_id": "parser.compile",
       "text_model": "bytes"
     },
     {
@@ -682,11 +724,13 @@
       ],
       "comparison": "unimplemented",
       "comparison_notes": [
-        "rebar adapter reports compile support as unimplemented"
+        "rebar adapter reports support as unimplemented"
       ],
       "family": "literals_and_escapes",
       "flags": 0,
       "id": "bytes-unicode-escape-error",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_id": "parser-matrix",
       "notes": [
         "Bytes patterns reject Unicode escape forms that the str grammar accepts."
       ],
@@ -708,7 +752,7 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
             "type": "NotImplementedError"
           },
           "operation": "compile",
@@ -719,7 +763,323 @@
       },
       "operation": "compile",
       "pattern": "\\u1234",
+      "suite_id": "parser.compile",
       "text_model": "bytes"
+    },
+    {
+      "categories": [
+        "surface",
+        "helper"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "helper_presence",
+      "helper": "compile",
+      "id": "helper-compile-present",
+      "layer": "module_api_surface",
+      "manifest_id": "public-api-surface",
+      "notes": [
+        "Both modules should expose compile at the top level."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_has_attr",
+          "outcome": "success",
+          "result": {
+            "callable": true,
+            "present": true
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_has_attr",
+          "outcome": "success",
+          "result": {
+            "callable": true,
+            "present": true
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_has_attr",
+      "suite_id": "module.surface"
+    },
+    {
+      "categories": [
+        "surface",
+        "helper"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "helper_presence",
+      "helper": "search",
+      "id": "helper-search-present",
+      "layer": "module_api_surface",
+      "manifest_id": "public-api-surface",
+      "notes": [
+        "Both modules should expose search at the top level."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_has_attr",
+          "outcome": "success",
+          "result": {
+            "callable": true,
+            "present": true
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_has_attr",
+          "outcome": "success",
+          "result": {
+            "callable": true,
+            "present": true
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_has_attr",
+      "suite_id": "module.surface"
+    },
+    {
+      "categories": [
+        "surface",
+        "cache"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "cache_surface",
+      "helper": "purge",
+      "id": "helper-purge-present",
+      "layer": "module_api_surface",
+      "manifest_id": "public-api-surface",
+      "notes": [
+        "Both modules should expose purge so cache-management smoke tests can run."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_has_attr",
+          "outcome": "success",
+          "result": {
+            "callable": true,
+            "present": true
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_has_attr",
+          "outcome": "success",
+          "result": {
+            "callable": true,
+            "present": true
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_has_attr",
+      "suite_id": "module.surface"
+    },
+    {
+      "categories": [
+        "cache",
+        "smoke"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "cache_surface",
+      "helper": "purge",
+      "id": "purge-noop-success",
+      "layer": "module_api_surface",
+      "manifest_id": "public-api-surface",
+      "notes": [
+        "The scaffold keeps purge as a safe no-op that mirrors stdlib return shape."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "module.surface"
+    },
+    {
+      "args": [
+        "abc"
+      ],
+      "categories": [
+        "placeholder",
+        "compile"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "placeholder_behavior",
+      "helper": "compile",
+      "id": "compile-placeholder-notimplemented",
+      "layer": "module_api_surface",
+      "manifest_id": "public-api-surface",
+      "notes": [
+        "Rebar should still fail loudly for compile instead of pretending to support pattern objects."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "abc",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "module.surface"
+    },
+    {
+      "args": [
+        "abc",
+        "abc"
+      ],
+      "categories": [
+        "placeholder",
+        "search"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "placeholder_behavior",
+      "helper": "search",
+      "id": "search-placeholder-notimplemented",
+      "layer": "module_api_surface",
+      "manifest_id": "public-api-surface",
+      "notes": [
+        "Rebar should still fail loudly for search instead of delegating to stdlib matching."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "abc",
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.search() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "module.surface"
+    },
+    {
+      "args": [
+        "abc"
+      ],
+      "categories": [
+        "placeholder",
+        "escape"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "placeholder_behavior",
+      "helper": "escape",
+      "id": "escape-placeholder-notimplemented",
+      "layer": "module_api_surface",
+      "manifest_id": "public-api-surface",
+      "notes": [
+        "Escape is exported but intentionally unimplemented in the scaffold."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": "abc",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.escape() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "module.surface"
     }
   ],
   "diagnostics": {
@@ -731,7 +1091,7 @@
         },
         "outcomes": {
           "exception": 6,
-          "success": 9
+          "success": 16
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -739,12 +1099,13 @@
         }
       },
       "rebar": {
-        "exception_case_count": 15,
+        "exception_case_count": 18,
         "exception_types": {
-          "NotImplementedError": 15
+          "NotImplementedError": 18
         },
         "outcomes": {
-          "unimplemented": 15
+          "success": 4,
+          "unimplemented": 18
         },
         "warning_case_count": 0,
         "warning_categories": {}
@@ -755,6 +1116,12 @@
     {
       "case_count": 2,
       "id": "assertions",
+      "layers": [
+        "parser_acceptance_and_diagnostics"
+      ],
+      "operations": [
+        "compile"
+      ],
       "summary": {
         "executed_cases": 2,
         "failed_cases": 0,
@@ -769,7 +1136,33 @@
     },
     {
       "case_count": 2,
+      "id": "cache_surface",
+      "layers": [
+        "module_api_surface"
+      ],
+      "operations": [
+        "module_call",
+        "module_has_attr"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 2,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 0
+      },
+      "text_models": []
+    },
+    {
+      "case_count": 2,
       "id": "character_classes",
+      "layers": [
+        "parser_acceptance_and_diagnostics"
+      ],
+      "operations": [
+        "compile"
+      ],
       "summary": {
         "executed_cases": 2,
         "failed_cases": 0,
@@ -785,6 +1178,12 @@
     {
       "case_count": 5,
       "id": "flags",
+      "layers": [
+        "parser_acceptance_and_diagnostics"
+      ],
+      "operations": [
+        "compile"
+      ],
       "summary": {
         "executed_cases": 5,
         "failed_cases": 0,
@@ -801,6 +1200,12 @@
     {
       "case_count": 1,
       "id": "grouping",
+      "layers": [
+        "parser_acceptance_and_diagnostics"
+      ],
+      "operations": [
+        "compile"
+      ],
       "summary": {
         "executed_cases": 1,
         "failed_cases": 0,
@@ -814,8 +1219,33 @@
       ]
     },
     {
+      "case_count": 2,
+      "id": "helper_presence",
+      "layers": [
+        "module_api_surface"
+      ],
+      "operations": [
+        "module_has_attr"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 2,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 0
+      },
+      "text_models": []
+    },
+    {
       "case_count": 1,
       "id": "literals_and_escapes",
+      "layers": [
+        "parser_acceptance_and_diagnostics"
+      ],
+      "operations": [
+        "compile"
+      ],
       "summary": {
         "executed_cases": 1,
         "failed_cases": 0,
@@ -831,6 +1261,12 @@
     {
       "case_count": 2,
       "id": "pattern_text_model",
+      "layers": [
+        "parser_acceptance_and_diagnostics"
+      ],
+      "operations": [
+        "compile"
+      ],
       "summary": {
         "executed_cases": 2,
         "failed_cases": 0,
@@ -845,8 +1281,33 @@
       ]
     },
     {
+      "case_count": 3,
+      "id": "placeholder_behavior",
+      "layers": [
+        "module_api_surface"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 3,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 3,
+        "unimplemented_cases": 3
+      },
+      "text_models": []
+    },
+    {
       "case_count": 2,
       "id": "quantifiers",
+      "layers": [
+        "parser_acceptance_and_diagnostics"
+      ],
+      "operations": [
+        "compile"
+      ],
       "summary": {
         "executed_cases": 2,
         "failed_cases": 0,
@@ -861,14 +1322,136 @@
     }
   ],
   "fixtures": {
-    "case_count": 15,
-    "manifest_id": "parser-matrix",
-    "path": "tests/conformance/fixtures/parser_matrix.json",
-    "schema_version": 1
+    "case_count": 22,
+    "manifest_count": 2,
+    "manifest_ids": [
+      "parser-matrix",
+      "public-api-surface"
+    ],
+    "paths": [
+      "tests/conformance/fixtures/parser_matrix.json",
+      "tests/conformance/fixtures/public_api_surface.json"
+    ]
   },
-  "generated_at": "2026-03-11T23:06:42Z",
+  "generated_at": "2026-03-11T23:42:04Z",
   "generator": "python -m rebar_harness.correctness",
-  "phase": "phase1-parser-conformance-pack",
+  "layers": {
+    "module_api_surface": {
+      "case_count": 7,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 7
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 3,
+            "exception_types": {
+              "NotImplementedError": 3
+            },
+            "outcomes": {
+              "success": 4,
+              "unimplemented": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "cache_surface",
+        "helper_presence",
+        "placeholder_behavior"
+      ],
+      "manifest_ids": [
+        "public-api-surface"
+      ],
+      "operations": [
+        "module_call",
+        "module_has_attr"
+      ],
+      "suite_ids": [
+        "module.surface"
+      ],
+      "summary": {
+        "executed_cases": 7,
+        "failed_cases": 0,
+        "passed_cases": 4,
+        "skipped_cases": 0,
+        "total_cases": 7,
+        "unimplemented_cases": 3
+      },
+      "text_models": []
+    },
+    "parser_acceptance_and_diagnostics": {
+      "case_count": 15,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 6,
+            "exception_types": {
+              "error": 6
+            },
+            "outcomes": {
+              "exception": 6,
+              "success": 9
+            },
+            "warning_case_count": 1,
+            "warning_categories": {
+              "FutureWarning": 1
+            }
+          },
+          "rebar": {
+            "exception_case_count": 15,
+            "exception_types": {
+              "NotImplementedError": 15
+            },
+            "outcomes": {
+              "unimplemented": 15
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "assertions",
+        "character_classes",
+        "flags",
+        "grouping",
+        "literals_and_escapes",
+        "pattern_text_model",
+        "quantifiers"
+      ],
+      "manifest_ids": [
+        "parser-matrix"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "suite_ids": [
+        "parser.compile"
+      ],
+      "summary": {
+        "executed_cases": 15,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 15,
+        "unimplemented_cases": 15
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    }
+  },
+  "phase": "phase2-public-api-surface-pack",
   "schema_version": "1.0",
   "suite": "correctness",
   "suites": [
@@ -914,6 +1497,12 @@
       ],
       "id": "parser.compile",
       "layer": "parser_acceptance_and_diagnostics",
+      "manifest_ids": [
+        "parser-matrix"
+      ],
+      "operations": [
+        "compile"
+      ],
       "summary": {
         "executed_cases": 15,
         "failed_cases": 0,
@@ -925,6 +1514,60 @@
       "text_models": [
         "bytes",
         "str"
+      ]
+    },
+    {
+      "case_count": 4,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "error": 2
+            },
+            "outcomes": {
+              "exception": 2,
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 4,
+            "exception_types": {
+              "NotImplementedError": 4
+            },
+            "outcomes": {
+              "unimplemented": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "flags",
+        "literals_and_escapes",
+        "pattern_text_model"
+      ],
+      "id": "parser.compile.bytes",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_ids": [
+        "parser-matrix"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 4
+      },
+      "text_models": [
+        "bytes"
       ]
     },
     {
@@ -968,6 +1611,12 @@
       ],
       "id": "parser.compile.str",
       "layer": "parser_acceptance_and_diagnostics",
+      "manifest_ids": [
+        "parser-matrix"
+      ],
+      "operations": [
+        "compile"
+      ],
       "summary": {
         "executed_cases": 11,
         "failed_cases": 0,
@@ -981,28 +1630,26 @@
       ]
     },
     {
-      "case_count": 4,
+      "case_count": 7,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
-            "exception_case_count": 2,
-            "exception_types": {
-              "error": 2
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "exception": 2,
-              "success": 2
+              "success": 7
             },
             "warning_case_count": 0,
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 4,
+            "exception_case_count": 3,
             "exception_types": {
-              "NotImplementedError": 4
+              "NotImplementedError": 3
             },
             "outcomes": {
-              "unimplemented": 4
+              "success": 4,
+              "unimplemented": 3
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -1010,31 +1657,131 @@
         }
       },
       "families": [
-        "flags",
-        "literals_and_escapes",
-        "pattern_text_model"
+        "cache_surface",
+        "helper_presence",
+        "placeholder_behavior"
       ],
-      "id": "parser.compile.bytes",
-      "layer": "parser_acceptance_and_diagnostics",
+      "id": "module.surface",
+      "layer": "module_api_surface",
+      "manifest_ids": [
+        "public-api-surface"
+      ],
+      "operations": [
+        "module_call",
+        "module_has_attr"
+      ],
+      "summary": {
+        "executed_cases": 7,
+        "failed_cases": 0,
+        "passed_cases": 4,
+        "skipped_cases": 0,
+        "total_cases": 7,
+        "unimplemented_cases": 3
+      },
+      "text_models": []
+    },
+    {
+      "case_count": 4,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 3,
+            "exception_types": {
+              "NotImplementedError": 3
+            },
+            "outcomes": {
+              "success": 1,
+              "unimplemented": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "cache_surface",
+        "placeholder_behavior"
+      ],
+      "id": "module.surface.module_call",
+      "layer": "module_api_surface",
+      "manifest_ids": [
+        "public-api-surface"
+      ],
+      "operations": [
+        "module_call"
+      ],
       "summary": {
         "executed_cases": 4,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 1,
         "skipped_cases": 0,
         "total_cases": 4,
-        "unimplemented_cases": 4
+        "unimplemented_cases": 3
       },
-      "text_models": [
-        "bytes"
-      ]
+      "text_models": []
+    },
+    {
+      "case_count": 3,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "cache_surface",
+        "helper_presence"
+      ],
+      "id": "module.surface.module_has_attr",
+      "layer": "module_api_surface",
+      "manifest_ids": [
+        "public-api-surface"
+      ],
+      "operations": [
+        "module_has_attr"
+      ],
+      "summary": {
+        "executed_cases": 3,
+        "failed_cases": 0,
+        "passed_cases": 3,
+        "skipped_cases": 0,
+        "total_cases": 3,
+        "unimplemented_cases": 0
+      },
+      "text_models": []
     }
   ],
   "summary": {
-    "executed_cases": 15,
+    "executed_cases": 22,
     "failed_cases": 0,
-    "passed_cases": 0,
+    "passed_cases": 4,
     "skipped_cases": 0,
-    "total_cases": 15,
-    "unimplemented_cases": 15
+    "total_cases": 22,
+    "unimplemented_cases": 18
   }
 }

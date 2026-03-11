@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "manifest_id": "public-api-surface",
+  "layer": "module_api_surface",
+  "suite_id": "module.surface",
+  "cases": [
+    {
+      "id": "helper-compile-present",
+      "operation": "module_has_attr",
+      "family": "helper_presence",
+      "helper": "compile",
+      "categories": ["surface", "helper"],
+      "notes": [
+        "Both modules should expose compile at the top level."
+      ]
+    },
+    {
+      "id": "helper-search-present",
+      "operation": "module_has_attr",
+      "family": "helper_presence",
+      "helper": "search",
+      "categories": ["surface", "helper"],
+      "notes": [
+        "Both modules should expose search at the top level."
+      ]
+    },
+    {
+      "id": "helper-purge-present",
+      "operation": "module_has_attr",
+      "family": "cache_surface",
+      "helper": "purge",
+      "categories": ["surface", "cache"],
+      "notes": [
+        "Both modules should expose purge so cache-management smoke tests can run."
+      ]
+    },
+    {
+      "id": "purge-noop-success",
+      "operation": "module_call",
+      "family": "cache_surface",
+      "helper": "purge",
+      "categories": ["cache", "smoke"],
+      "notes": [
+        "The scaffold keeps purge as a safe no-op that mirrors stdlib return shape."
+      ]
+    },
+    {
+      "id": "compile-placeholder-notimplemented",
+      "operation": "module_call",
+      "family": "placeholder_behavior",
+      "helper": "compile",
+      "args": ["abc"],
+      "categories": ["placeholder", "compile"],
+      "notes": [
+        "Rebar should still fail loudly for compile instead of pretending to support pattern objects."
+      ]
+    },
+    {
+      "id": "search-placeholder-notimplemented",
+      "operation": "module_call",
+      "family": "placeholder_behavior",
+      "helper": "search",
+      "args": ["abc", "abc"],
+      "categories": ["placeholder", "search"],
+      "notes": [
+        "Rebar should still fail loudly for search instead of delegating to stdlib matching."
+      ]
+    },
+    {
+      "id": "escape-placeholder-notimplemented",
+      "operation": "module_call",
+      "family": "placeholder_behavior",
+      "helper": "escape",
+      "args": ["abc"],
+      "categories": ["placeholder", "escape"],
+      "notes": [
+        "Escape is exported but intentionally unimplemented in the scaffold."
+      ]
+    }
+  ]
+}

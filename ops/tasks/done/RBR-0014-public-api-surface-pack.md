@@ -1,6 +1,6 @@
 # RBR-0014: Expand the correctness harness into a public-API surface pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
 
@@ -27,3 +27,6 @@ Created: 2026-03-11
 ## Notes
 - Use `docs/testing/correctness-plan.md` as the primary task spec, especially the Phase 2 public API surface pack guidance.
 - Build on `RBR-0010`, `RBR-0011`, and `RBR-0013`; the public-API pack should observe the scaffold that exists rather than restating it in prose.
+
+## Completion Note
+- 2026-03-11: Expanded `python/rebar_harness/correctness.py` to load multiple manifests, added `tests/conformance/fixtures/public_api_surface.json`, regenerated `reports/correctness/latest.json` with separate parser/module-surface layer totals, and verified the combined scorecard with `python3 -m unittest tests.conformance.test_correctness_smoke tests.conformance.test_correctness_parser_matrix tests.conformance.test_correctness_public_api_surface tests.python.test_readme_reporting`.
