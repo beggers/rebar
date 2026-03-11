@@ -25,6 +25,7 @@ if str(PYTHON_SOURCE) not in sys.path:
     sys.path.insert(0, str(PYTHON_SOURCE))
 
 import rebar
+from rebar_harness.metadata import build_cpython_baseline
 
 
 TARGET_CPYTHON_SERIES = "3.12.x"
@@ -390,12 +391,7 @@ def build_scorecard(
         "phase": "phase0-runner-skeleton",
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
         "generator": "python -m rebar_harness.benchmarks",
-        "baseline": {
-            "python_implementation": platform.python_implementation(),
-            "python_version": platform.python_version(),
-            "python_version_family": TARGET_CPYTHON_SERIES,
-            "re_module": "re",
-        },
+        "baseline": build_cpython_baseline(version_family=TARGET_CPYTHON_SERIES),
         "implementation": {
             "module_name": "rebar",
             "adapter": "rebar.compile",

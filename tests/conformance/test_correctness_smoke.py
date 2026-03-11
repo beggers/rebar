@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import pathlib
+import platform
 import subprocess
 import sys
 import tempfile
@@ -51,7 +52,20 @@ class CorrectnessHarnessSmokeTest(unittest.TestCase):
             scorecard = json.loads(report_path.read_text(encoding="utf-8"))
 
         self.assertEqual(scorecard["schema_version"], "1.0")
-        self.assertEqual(scorecard["baseline"]["python_family"], "3.12.x")
+        self.assertEqual(scorecard["baseline"]["python_implementation"], platform.python_implementation())
+        self.assertEqual(scorecard["baseline"]["python_version"], platform.python_version())
+        self.assertEqual(scorecard["baseline"]["python_version_family"], "3.12.x")
+        self.assertEqual(
+            scorecard["baseline"]["python_build"],
+            {
+                "name": platform.python_build()[0],
+                "date": platform.python_build()[1],
+            },
+        )
+        self.assertEqual(scorecard["baseline"]["python_compiler"], platform.python_compiler())
+        self.assertEqual(scorecard["baseline"]["platform"], platform.platform())
+        self.assertEqual(scorecard["baseline"]["executable"], sys.executable)
+        self.assertEqual(scorecard["baseline"]["re_module"], "re")
         self.assertEqual(scorecard["fixtures"]["manifest_id"], "parser-smoke")
         self.assertEqual(scorecard["summary"], summary)
         self.assertEqual(len(scorecard["cases"]), 2)

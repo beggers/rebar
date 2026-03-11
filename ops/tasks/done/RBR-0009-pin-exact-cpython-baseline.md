@@ -1,6 +1,6 @@
 # RBR-0009: Pin the exact CPython baseline metadata
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
 
@@ -30,3 +30,12 @@ Created: 2026-03-11
 - This task depends on `RBR-0007` and `RBR-0008` having landed first; it is queued behind them so the worker sees it only after both harness scaffolds exist.
 - Use `docs/testing/correctness-plan.md` and `docs/benchmarks/plan.md` for the expected report shapes.
 - Keep the correctness and benchmark metadata schema aligned so README/report consumers can compare both scorecards without special cases.
+
+## Completion
+- Added `python/rebar_harness/metadata.py` so both harnesses derive the exact CPython baseline from the live interpreter in one place instead of duplicating patch/build metadata logic.
+- Updated `python/rebar_harness/correctness.py` and `python/rebar_harness/benchmarks.py` to publish aligned baseline metadata including exact Python version, build tuple, compiler, platform, executable path, and `re` module identity.
+- Regenerated `reports/correctness/latest.json` and `reports/benchmarks/latest.json` from the current `/usr/bin/python3` interpreter so the tracked scorecards now reflect the real CPython `3.12.3` baseline and build provenance.
+- Expanded the correctness and benchmark smoke tests to lock the metadata path, and fixed the correctness runner to resolve CLI paths before writing reports so relative-path invocations regenerate the tracked scorecard cleanly.
+
+## Follow-Up Notes
+- Benchmark timing samples remain environment-dependent; future tasks should continue treating `reports/benchmarks/latest.json` as a point-in-time measurement artifact rather than a stable golden timing fixture.

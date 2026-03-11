@@ -30,6 +30,7 @@ Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPyt
 - A sixth completed implementation task, `RBR-0006`, with a root `pyproject.toml`, an importable `python/rebar` scaffold package, a `crates/rebar-cpython` PyO3 extension crate, and a Python smoke test that validates the source-package shim without falling back to stdlib `re`.
 - A seventh completed implementation task, `RBR-0007`, with `python/rebar_harness/correctness.py`, `tests/conformance/fixtures/parser_smoke.json`, `tests/conformance/test_correctness_smoke.py`, and `reports/correctness/latest.json`, establishing the first runnable differential correctness harness skeleton and an honest placeholder scorecard with `unimplemented` outcomes.
 - An eighth completed implementation task, `RBR-0008`, with `python/rebar_harness/benchmarks.py`, `benchmarks/workloads/compile_smoke.json`, `tests/benchmarks/test_benchmark_smoke.py`, and `reports/benchmarks/latest.json`, establishing the first runnable compile-path benchmark harness skeleton and an honest placeholder scorecard with baseline-only timings plus explicit `rebar` gaps.
+- A refreshed ready queue that now extends beyond the initial Phase 1 harness-expansion tickets with queued follow-on work for a broader scaffolded module surface, Phase 2 public-API conformance coverage, and Phase 2 module-boundary benchmarks.
 - Report rendering that recomputes last-cycle environment issues from run artifacts so dashboard anomalies do not stay stale after a detection fix.
 - A fetch-before-push git sync path that measures ahead/behind state against fresh upstream refs and reports diverged branches explicitly instead of pushing against stale remote-tracking data.
 - README capability reporting that now keys scaffold and scorecard tracks to concrete artifact paths and distinguishes the benchmark harness from the published benchmark report.
@@ -58,6 +59,7 @@ Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPyt
 - Land `RBR-0009` so the correctness and benchmark reports record an exact CPython `3.12.x` patch/build instead of only the family line.
 - Land `RBR-0010` to exercise a built `rebar._rebar` import path instead of relying only on source-package smoke coverage.
 - Keep `RBR-0011` and `RBR-0012` queued behind that milestone so the worker can move directly into Phase 1 parser-conformance and compile-path benchmark expansion.
+- Follow those with `RBR-0013` through `RBR-0015` so the queue keeps moving into scaffolded module-surface work, public-API conformance, and module-boundary benchmarking without another supervisor-only rewrite pass.
 
 ## Risks
 - The repo now validates the source-package scaffold, but the built-extension install/import path for `rebar._rebar` still has no exercised artifact.

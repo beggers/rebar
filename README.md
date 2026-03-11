@@ -13,7 +13,7 @@ Feature completeness: `[##################] 100%`
 | --- | --- |
 | Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed, the Phase 0 correctness harness published, and the remaining benchmark/native-smoke gaps queued. |
 | Current milestone | Milestone 2: close out the initial measurement/bootstrap loop by landing the benchmark scaffold, exact CPython baseline metadata, and a verified native-extension import path on top of the existing Rust/Python scaffolds and placeholder correctness scorecard. |
-| Work queue | `4` ready, `0` in progress, `9` done, `0` blocked |
+| Work queue | `6` ready, `0` in progress, `10` done, `0` blocked |
 | Capability tracks | `10/10` complete |
 
 ### Capability Matrix
@@ -36,16 +36,16 @@ Feature completeness: `[##################] 100%`
 | Metric | Value |
 | --- | --- |
 | Candidate | rebar |
-| Cases | `None` / `None` |
-| Pass rate | `None` |
-| Parity rate | `None` |
+| Cases | `0` / `2` |
+| Pass rate | `0.0` |
+| Parity rate | `0.0` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
 ### Parser Benchmark Scorecard
 
 | Metric | Value |
 | --- | --- |
-| Baseline | {'python_implementation': 'CPython', 'python_version': '3.12.3', 'python_version_family': '3.12.x', 're_module': 're'} |
+| Baseline | {'executable': '/usr/bin/python3', 'platform': 'Linux-6.14.0-1018-aws-x86_64-with-glibc2.39', 'python_build': {'date': 'Mar  3 2026 12:15:18', 'name': 'main'}, 'python_compiler': 'GCC 13.3.0', 'python_implementation': 'CPython', 'python_version': '3.12.3', 'python_version_family': '3.12.x', 're_module': 're'} |
 | Candidate | rebar |
 | Workloads | `2` |
 | Geomean speedup vs baseline | `None` |
@@ -57,6 +57,7 @@ Feature completeness: `[##################] 100%`
 - Land `RBR-0009` so the correctness and benchmark reports record an exact CPython `3.12.x` patch/build instead of only the family line.
 - Land `RBR-0010` to exercise a built `rebar._rebar` import path instead of relying only on source-package smoke coverage.
 - Keep `RBR-0011` and `RBR-0012` queued behind that milestone so the worker can move directly into Phase 1 parser-conformance and compile-path benchmark expansion.
+- Follow those with `RBR-0013` through `RBR-0015` so the queue keeps moving into scaffolded module-surface work, public-API conformance, and module-boundary benchmarking without another supervisor-only rewrite pass.
 
 ### Current Risks
 

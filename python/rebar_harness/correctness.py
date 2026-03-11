@@ -20,6 +20,7 @@ if str(PYTHON_SOURCE) not in sys.path:
     sys.path.insert(0, str(PYTHON_SOURCE))
 
 import rebar
+from rebar_harness.metadata import build_cpython_baseline
 
 
 TARGET_CPYTHON_SERIES = "3.12.x"
@@ -271,7 +272,7 @@ def build_scorecard(
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
         "generator": "python -m rebar_harness.correctness",
         "baseline": {
-            "python_family": TARGET_CPYTHON_SERIES,
+            **build_cpython_baseline(version_family=TARGET_CPYTHON_SERIES),
             "oracle": "cpython-stdlib-re",
             "target_module": "rebar",
         },
@@ -302,6 +303,8 @@ def run_correctness_harness(
     fixture_path: pathlib.Path = DEFAULT_FIXTURES_PATH,
     report_path: pathlib.Path = DEFAULT_REPORT_PATH,
 ) -> dict[str, Any]:
+    fixture_path = fixture_path.resolve()
+    report_path = report_path.resolve()
     raw_manifest, cases = load_fixture_manifest(fixture_path)
     cpython_adapter = CpythonReAdapter()
     rebar_adapter = RebarAdapter()

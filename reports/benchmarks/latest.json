@@ -5,6 +5,13 @@
     "raw_samples": null
   },
   "baseline": {
+    "executable": "/usr/bin/python3",
+    "platform": "Linux-6.14.0-1018-aws-x86_64-with-glibc2.39",
+    "python_build": {
+      "date": "Mar  3 2026 12:15:18",
+      "name": "main"
+    },
+    "python_compiler": "GCC 13.3.0",
     "python_implementation": "CPython",
     "python_version": "3.12.3",
     "python_version_family": "3.12.x",
@@ -46,7 +53,7 @@
     },
     "parser": {
       "known_gap_count": 2,
-      "median_baseline_ns": 4155,
+      "median_baseline_ns": 8462,
       "median_implementation_ns": null,
       "median_speedup_vs_cpython": null,
       "notes": [
@@ -56,12 +63,12 @@
       "workload_count": 2
     }
   },
-  "generated_at": "2026-03-11T22:26:21Z",
+  "generated_at": "2026-03-11T22:37:20Z",
   "generator": "python -m rebar_harness.benchmarks",
   "implementation": {
     "adapter": "rebar.compile",
     "build_mode": "source-tree-shim",
-    "git_commit": "f49df6b11a9575207792ee53c816826fd63c873c",
+    "git_commit": "5e41a55997d68788dcc62fc275655f0a0c52c1b7",
     "module_name": "rebar",
     "native_module_loaded": false
   },
@@ -81,23 +88,23 @@
   },
   "workloads": [
     {
-      "baseline_ns": 8076,
+      "baseline_ns": 16439,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 9121,
-        "mean_ns": 8247,
-        "median_ns": 8076,
-        "min_ns": 7905,
+        "max_ns": 20009,
+        "mean_ns": 16751,
+        "median_ns": 16439,
+        "min_ns": 14735,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          9121,
-          8169,
-          8076,
-          8041,
-          7905,
-          8372,
-          8042
+          20009,
+          16439,
+          16545,
+          14735,
+          15540,
+          17775,
+          16216
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -127,32 +134,32 @@
       "text_model": "str",
       "variance": {
         "baseline": {
-          "max_ns": 9121,
-          "mean_ns": 8247,
-          "min_ns": 7905,
+          "max_ns": 20009,
+          "mean_ns": 16751,
+          "min_ns": 14735,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 234,
+      "baseline_ns": 486,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 247,
-        "mean_ns": 234,
-        "median_ns": 234,
-        "min_ns": 222,
+        "max_ns": 511,
+        "mean_ns": 491,
+        "median_ns": 486,
+        "min_ns": 472,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          234,
-          247,
-          222,
-          235,
-          227,
-          244,
-          231
+          511,
+          510,
+          479,
+          501,
+          472,
+          486,
+          475
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -183,9 +190,9 @@
       "text_model": "str",
       "variance": {
         "baseline": {
-          "max_ns": 247,
-          "mean_ns": 234,
-          "min_ns": 222,
+          "max_ns": 511,
+          "mean_ns": 491,
+          "min_ns": 472,
           "sample_count": 7
         },
         "implementation": null

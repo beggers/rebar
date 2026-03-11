@@ -1,7 +1,17 @@
 {
   "baseline": {
+    "executable": "/usr/bin/python3",
     "oracle": "cpython-stdlib-re",
-    "python_family": "3.12.x",
+    "platform": "Linux-6.14.0-1018-aws-x86_64-with-glibc2.39",
+    "python_build": {
+      "date": "Mar  3 2026 12:15:18",
+      "name": "main"
+    },
+    "python_compiler": "GCC 13.3.0",
+    "python_implementation": "CPython",
+    "python_version": "3.12.3",
+    "python_version_family": "3.12.x",
+    "re_module": "re",
     "target_module": "rebar"
   },
   "cases": [
@@ -94,7 +104,7 @@
     "path": "tests/conformance/fixtures/parser_smoke.json",
     "schema_version": 1
   },
-  "generated_at": "2026-03-11T22:13:12Z",
+  "generated_at": "2026-03-11T22:37:20Z",
   "generator": "python -m rebar_harness.correctness",
   "phase": "phase0-harness-skeleton",
   "schema_version": "1.0",
