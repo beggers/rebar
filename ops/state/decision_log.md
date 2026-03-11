@@ -19,3 +19,4 @@
 - Require implementation agents to verify write failure in the current run before claiming an environment blocker, and limit worker dispatch to one task per cycle while the forever loop is still being hardened.
 - Run a child-Codex write probe before task-worker claims so environments that cannot give agents write access fail closed without moving tasks out of `ready/`.
 - Default dedicated-VM child Codex runs to `danger-full-access` because the `workspace-write` sandbox has produced false `Permission denied` write failures on EC2 even when the harness itself can write the checkout.
+- Prefer Codex's explicit `--dangerously-bypass-approvals-and-sandbox` flag on the dedicated VM path; on EC2 it succeeds where `--sandbox danger-full-access --ask-for-approval never` still yields read-only `exec` sessions.

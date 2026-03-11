@@ -781,12 +781,21 @@ def build_codex_command(
     defaults = config.get("codex_defaults", {})
     cmd = [str(defaults.get("bin", "codex"))]
 
+    bypass_all = bool(
+        agent.codex.get(
+            "dangerously_bypass_approvals_and_sandbox",
+            defaults.get("dangerously_bypass_approvals_and_sandbox", False),
+        )
+    )
     sandbox = agent.codex.get("sandbox", defaults.get("sandbox"))
     ask_for_approval = agent.codex.get("ask_for_approval", defaults.get("ask_for_approval"))
-    if sandbox:
-        cmd.extend(["--sandbox", str(sandbox)])
-    if ask_for_approval:
-        cmd.extend(["--ask-for-approval", str(ask_for_approval)])
+    if bypass_all:
+        cmd.append("--dangerously-bypass-approvals-and-sandbox")
+    else:
+        if sandbox:
+            cmd.extend(["--sandbox", str(sandbox)])
+        if ask_for_approval:
+            cmd.extend(["--ask-for-approval", str(ask_for_approval)])
 
     model = agent.codex.get("model")
     if model:

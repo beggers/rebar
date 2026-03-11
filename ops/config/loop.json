@@ -34,6 +34,7 @@
   "codex_defaults": {
     "bin": "codex",
     "codex_home": "~/.codex",
+    "dangerously_bypass_approvals_and_sandbox": true,
     "sandbox": "danger-full-access",
     "ask_for_approval": "never",
     "common_config": [
