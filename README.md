@@ -4,7 +4,8 @@
 
 This repo is currently bootstrapped as a control plane:
 - `ops/` contains role prompts, durable project state, loop policy, and the task queue.
-- `scripts/rebar_ops.py` runs supervisor and implementation passes.
+- `ops/agents/*.json` defines the active agent set that the supervisor may change over time.
+- `scripts/rebar_ops.py` runs supervisor-first cycles and dispatches the enabled agents.
 - `.rebar/` is the ignored runtime area for prompts, logs, and run metadata.
 
 ## Current Development Order

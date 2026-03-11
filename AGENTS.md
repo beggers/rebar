@@ -16,15 +16,23 @@
 ## Roles
 
 ### Supervisor
+- Owns the outcome of the project making progress indefinitely.
 - Owns the harness, prompts, loop config, backlog shape, and project direction.
 - May edit any file when it improves the operating system or unblocks the roadmap.
+- May add, remove, enable, disable, or retune non-supervisor agents by editing `ops/agents/*.json` and their prompt files.
 - Must keep `ops/state/` and `ops/tasks/` accurate enough that the next agent does not need to rediscover context.
+- Should treat stalled progress, harness failures, or workflow bottlenecks as problems it is expected to fix directly.
 - Should prefer slicing work into concrete implementation tasks instead of doing large feature work directly.
 
 ### Implementation Agent
 - Owns exactly one concrete task at a time.
 - Should focus on code, tests, benchmarks, or docs required by that task.
 - Must not change `AGENTS.md`, `ops/agents/`, `ops/config/`, `scripts/rebar_ops.py`, or `scripts/loop_forever.sh` unless the task explicitly authorizes it.
+
+## Active Agent Set
+- The forever loop loads enabled agent specs from `ops/agents/*.json`.
+- Exactly one enabled agent with `kind: supervisor` must exist; that agent runs first every cycle.
+- Other agents are optional and are entirely under supervisor control.
 
 ## Task Lifecycle
 - `ops/tasks/ready/`: actionable tasks that an implementation agent can pick up.
@@ -39,6 +47,7 @@ When you finish work, move the task file to `done/` or `blocked/` and update its
 - Ephemeral execution artifacts live under ignored `.rebar/`.
 - Add meaningful architectural or workflow decisions to `ops/state/decision_log.md`.
 - Update `ops/state/current_status.md` whenever the active phase, key risks, or next steps materially change.
+- Runtime health for the forever loop lives in `.rebar/runtime/loop_state.json` and per-run directories under `.rebar/runtime/runs/`.
 
 ## Project Priorities
 1. Nail the compatibility target and parser scope against CPython.

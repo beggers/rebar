@@ -31,13 +31,30 @@ DEFAULT_CONTEXT_FILES = [
 TASK_STATUSES = ("ready", "in_progress", "done", "blocked")
 
 
+@dataclass(frozen=True)
+class AgentSpec:
+    name: str
+    kind: str
+    description: str
+    enabled: bool
+    cycle_order: int
+    spec_path: Path
+    prompt_path: Path
+    dispatch: dict[str, Any]
+    codex: dict[str, Any]
+
+
 @dataclass
 class RunResult:
-    role: str
+    agent_name: str
+    agent_kind: str
     run_id: str
     exit_code: int
+    timed_out: bool
     run_dir: Path
-    task_path: Path | None
+    task_initial_path: Path | None
+    task_final_path: Path | None
+    task_final_status: str | None
 
 
 def utcnow() -> str:
@@ -80,15 +97,12 @@ def runtime_paths(config: dict[str, Any]) -> dict[str, Path]:
         "runs_root": artifact_root / "runs",
         "loop_state": artifact_root / "loop_state.json",
         "loop_lock": artifact_root / "loop.lock",
-        "home_dir": resolve_repo_path(runtime_cfg.get("home_dir", ".rebar/home")),
     }
 
 
 def ensure_runtime_dirs(paths: dict[str, Path]) -> None:
     paths["artifact_root"].mkdir(parents=True, exist_ok=True)
     paths["runs_root"].mkdir(parents=True, exist_ok=True)
-    paths["home_dir"].mkdir(parents=True, exist_ok=True)
-    (paths["home_dir"] / ".cache").mkdir(parents=True, exist_ok=True)
 
 
 def repo_is_git_checkout(path: Path) -> bool:
@@ -126,29 +140,98 @@ def queue_counts() -> dict[str, int]:
     return {status: len(list_task_files(status)) for status in TASK_STATUSES}
 
 
-def claim_ready_tasks(limit: int) -> list[Path]:
+def claim_tasks(queue: str, claim_to: str, limit: int) -> list[Path]:
     claimed: list[Path] = []
-    for src in list_task_files("ready")[:limit]:
-        dest = TASK_ROOT / "in_progress" / src.name
+    dest_dir = TASK_ROOT / claim_to
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    for src in list_task_files(queue)[:limit]:
+        dest = dest_dir / src.name
         src.rename(dest)
         claimed.append(dest)
     return claimed
 
 
-def render_prompt(role: str, config: dict[str, Any], task_path: Path | None = None) -> str:
-    role_cfg = config["roles"][role]
-    prompt_path = resolve_repo_path(role_cfg["prompt_path"])
-    role_body = prompt_path.read_text(encoding="utf-8").strip()
+def locate_task_file(task_name: str) -> tuple[str | None, Path | None]:
+    matches: list[tuple[str, Path]] = []
+    for status in TASK_STATUSES:
+        candidate = TASK_ROOT / status / task_name
+        if candidate.exists():
+            matches.append((status, candidate))
+    if len(matches) == 1:
+        return matches[0]
+    if not matches:
+        return None, None
+    return "multiple", None
 
+
+def load_agent_specs(config: dict[str, Any]) -> list[AgentSpec]:
+    agents_cfg = config.get("agents", {})
+    agent_dir = resolve_repo_path(agents_cfg.get("directory", "ops/agents"))
+    specs: list[AgentSpec] = []
+    names: set[str] = set()
+
+    for spec_path in sorted(agent_dir.glob("*.json")):
+        raw = read_json(spec_path, default=None)
+        if not isinstance(raw, dict):
+            raise RuntimeError(f"Invalid agent spec: {spec_path}")
+        name = str(raw.get("name", spec_path.stem))
+        if name in names:
+            raise RuntimeError(f"Duplicate agent name: {name}")
+        names.add(name)
+        prompt_path_raw = raw.get("prompt_path")
+        if not isinstance(prompt_path_raw, str) or not prompt_path_raw:
+            raise RuntimeError(f"Agent {name} missing prompt_path")
+        prompt_path = resolve_repo_path(prompt_path_raw)
+        if not prompt_path.exists():
+            raise RuntimeError(f"Agent {name} prompt not found: {prompt_path}")
+        specs.append(
+            AgentSpec(
+                name=name,
+                kind=str(raw.get("kind", "worker")),
+                description=str(raw.get("description", "")).strip(),
+                enabled=bool(raw.get("enabled", True)),
+                cycle_order=int(raw.get("cycle_order", 100)),
+                spec_path=spec_path,
+                prompt_path=prompt_path,
+                dispatch=dict(raw.get("dispatch", {})),
+                codex=dict(raw.get("codex", {})),
+            )
+        )
+
+    enabled = [spec for spec in specs if spec.enabled]
+    enabled_supervisors = [spec for spec in enabled if spec.kind == "supervisor"]
+    if len(enabled_supervisors) != 1:
+        raise RuntimeError("Exactly one enabled supervisor agent spec is required.")
+    return sorted(enabled, key=lambda spec: (spec.cycle_order, spec.name))
+
+
+def write_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
+
+
+def render_prompt(agent: AgentSpec, config: dict[str, Any], task_path: Path | None = None) -> str:
+    paths = runtime_paths(config)
+    agent_body = agent.prompt_path.read_text(encoding="utf-8").strip()
     lines = [
-        f"# Rebar {role.title()} Run",
+        f"# Rebar Agent Run: {agent.name}",
         "",
         f"Repository root: {REPO_ROOT}",
+        f"Agent spec: {relpath(agent.spec_path)}",
         "",
         "Read these files first:",
     ]
     for path in DEFAULT_CONTEXT_FILES:
         lines.append(f"- {relpath(path)}")
+    lines.extend(
+        [
+            "",
+            "Runtime files worth checking when relevant:",
+            f"- loop state: {relpath(paths['loop_state'])}",
+            f"- run artifacts: {relpath(paths['runs_root'])}",
+            f"- agent registry: {relpath(resolve_repo_path(config.get('agents', {}).get('directory', 'ops/agents')))}",
+        ]
+    )
     if task_path is not None:
         lines.extend(
             [
@@ -166,7 +249,7 @@ def render_prompt(role: str, config: dict[str, Any], task_path: Path | None = No
             f"- done: {relpath(TASK_ROOT / 'done')}",
             f"- blocked: {relpath(TASK_ROOT / 'blocked')}",
             "",
-            role_body,
+            agent_body,
             "",
             "Leave durable state in tracked files under ops/ when it matters.",
         ]
@@ -177,33 +260,32 @@ def render_prompt(role: str, config: dict[str, Any], task_path: Path | None = No
 def build_codex_command(
     *,
     config: dict[str, Any],
-    role: str,
+    agent: AgentSpec,
     output_path: Path,
     cwd: Path,
 ) -> list[str]:
-    codex_cfg = config.get("codex", {})
-    role_cfg = config["roles"][role]
-    cmd = [str(codex_cfg.get("bin", "codex"))]
+    defaults = config.get("codex_defaults", {})
+    cmd = [str(defaults.get("bin", "codex"))]
 
-    sandbox = role_cfg.get("sandbox", codex_cfg.get("sandbox"))
-    ask_for_approval = role_cfg.get("ask_for_approval", codex_cfg.get("ask_for_approval"))
+    sandbox = agent.codex.get("sandbox", defaults.get("sandbox"))
+    ask_for_approval = agent.codex.get("ask_for_approval", defaults.get("ask_for_approval"))
     if sandbox:
         cmd.extend(["--sandbox", str(sandbox)])
     if ask_for_approval:
         cmd.extend(["--ask-for-approval", str(ask_for_approval)])
 
-    model = role_cfg.get("model")
+    model = agent.codex.get("model")
     if model:
         cmd.extend(["--model", str(model)])
 
-    for item in codex_cfg.get("common_config", []):
+    for item in defaults.get("common_config", []):
         cmd.extend(["-c", str(item)])
-    for item in role_cfg.get("config", []):
+    for item in agent.codex.get("config", []):
         cmd.extend(["-c", str(item)])
 
-    for item in codex_cfg.get("extra_cli_args", []):
+    for item in defaults.get("extra_cli_args", []):
         cmd.append(str(item))
-    for item in role_cfg.get("extra_cli_args", []):
+    for item in agent.codex.get("extra_cli_args", []):
         cmd.append(str(item))
 
     cmd.append("exec")
@@ -213,18 +295,31 @@ def build_codex_command(
     return cmd
 
 
-def build_codex_env(config: dict[str, Any], paths: dict[str, Path]) -> dict[str, str]:
-    codex_cfg = config.get("codex", {})
-    actual_home = Path.home()
+def build_codex_env(config: dict[str, Any]) -> dict[str, str]:
+    defaults = config.get("codex_defaults", {})
     env = os.environ.copy()
-    env["HOME"] = str(paths["home_dir"])
-    env["CODEX_HOME"] = str(Path(codex_cfg.get("codex_home", "~/.codex")).expanduser())
-    env["GIT_CONFIG_GLOBAL"] = str(actual_home / ".gitconfig")
+    codex_home = defaults.get("codex_home")
+    if codex_home:
+        env["CODEX_HOME"] = str(Path(str(codex_home)).expanduser())
     env["GIT_TERMINAL_PROMPT"] = "0"
     env["REBAR_LOOP"] = "1"
-    for key, value in codex_cfg.get("extra_env", {}).items():
+    env.setdefault("CODEX_NO_UPDATE", "1")
+    for key, value in defaults.get("extra_env", {}).items():
         env[str(key)] = str(value)
     return env
+
+
+def normalize_subprocess_text(value: str | bytes | None) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
+    return value
+
+
+def task_timeout_seconds(config: dict[str, Any], agent: AgentSpec) -> int:
+    runtime_cfg = config.get("runtime", {})
+    return int(agent.dispatch.get("timeout_seconds", runtime_cfg.get("default_timeout_seconds", 1800)))
 
 
 class LoopLock:
@@ -254,22 +349,17 @@ class LoopLock:
             self.handle.close()
 
 
-def write_text(path: Path, text: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text, encoding="utf-8")
-
-
-def run_role(role: str, config: dict[str, Any], task_path: Path | None = None) -> RunResult:
+def run_agent(agent: AgentSpec, config: dict[str, Any], task_path: Path | None = None) -> RunResult:
     paths = runtime_paths(config)
     ensure_runtime_dirs(paths)
 
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
-    suffix = role if task_path is None else f"{role}-{task_path.stem}"
+    suffix = agent.name if task_path is None else f"{agent.name}-{task_path.stem}"
     run_id = f"{stamp}-{suffix}"
     run_dir = paths["runs_root"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
 
-    prompt_text = render_prompt(role, config, task_path=task_path)
+    prompt_text = render_prompt(agent, config, task_path=task_path)
     prompt_path = run_dir / "prompt.md"
     output_path = run_dir / "last_message.md"
     stdout_path = run_dir / "stdout.log"
@@ -277,137 +367,263 @@ def run_role(role: str, config: dict[str, Any], task_path: Path | None = None) -
     metadata_path = run_dir / "metadata.json"
     write_text(prompt_path, prompt_text)
 
-    command = build_codex_command(config=config, role=role, output_path=output_path, cwd=REPO_ROOT)
-    env = build_codex_env(config, paths)
+    command = build_codex_command(config=config, agent=agent, output_path=output_path, cwd=REPO_ROOT)
+    env = build_codex_env(config)
+    timeout_seconds = task_timeout_seconds(config, agent)
     started_at = utcnow()
-    proc = subprocess.run(
-        command,
-        input=prompt_text,
-        text=True,
-        capture_output=True,
-        cwd=str(REPO_ROOT),
-        env=env,
-        check=False,
-    )
+    timed_out = False
+    try:
+        proc = subprocess.run(
+            command,
+            input=prompt_text,
+            text=True,
+            capture_output=True,
+            cwd=str(REPO_ROOT),
+            env=env,
+            check=False,
+            timeout=timeout_seconds,
+        )
+        exit_code = proc.returncode
+        stdout_text = normalize_subprocess_text(proc.stdout)
+        stderr_text = normalize_subprocess_text(proc.stderr)
+    except subprocess.TimeoutExpired as exc:
+        timed_out = True
+        exit_code = 124
+        stdout_text = normalize_subprocess_text(exc.stdout)
+        stderr_text = normalize_subprocess_text(exc.stderr)
     finished_at = utcnow()
 
-    write_text(stdout_path, proc.stdout)
-    write_text(stderr_path, proc.stderr)
+    write_text(stdout_path, stdout_text)
+    write_text(stderr_path, stderr_text)
     if not output_path.exists():
         write_text(output_path, "")
 
+    task_final_status: str | None = None
+    task_final_path: Path | None = None
+    if task_path is not None:
+        task_final_status, task_final_path = locate_task_file(task_path.name)
+
     metadata = {
-        "role": role,
+        "agent_name": agent.name,
+        "agent_kind": agent.kind,
         "run_id": run_id,
-        "task_path": None if task_path is None else relpath(task_path),
+        "task_initial_path": None if task_path is None else relpath(task_path),
+        "task_final_status": task_final_status,
+        "task_final_path": None if task_final_path is None else relpath(task_final_path),
         "command": command,
         "cwd": str(REPO_ROOT),
         "started_at": started_at,
         "finished_at": finished_at,
-        "exit_code": proc.returncode,
+        "exit_code": exit_code,
+        "timed_out": timed_out,
+        "timeout_seconds": timeout_seconds,
         "prompt_path": relpath(prompt_path),
         "stdout_path": relpath(stdout_path),
         "stderr_path": relpath(stderr_path),
         "last_message_path": relpath(output_path),
     }
     write_json(metadata_path, metadata)
-    return RunResult(role=role, run_id=run_id, exit_code=proc.returncode, run_dir=run_dir, task_path=task_path)
+    return RunResult(
+        agent_name=agent.name,
+        agent_kind=agent.kind,
+        run_id=run_id,
+        exit_code=exit_code,
+        timed_out=timed_out,
+        run_dir=run_dir,
+        task_initial_path=task_path,
+        task_final_path=task_final_path,
+        task_final_status=task_final_status,
+    )
 
 
-def update_loop_state(
-    config: dict[str, Any],
-    *,
-    supervisor_run: RunResult | None,
-    worker_runs: list[RunResult],
-) -> None:
+def agent_last_state(loop_state: dict[str, Any], agent_name: str) -> dict[str, Any]:
+    agents = loop_state.get("agents")
+    if not isinstance(agents, dict):
+        return {}
+    agent_state = agents.get(agent_name)
+    return agent_state if isinstance(agent_state, dict) else {}
+
+
+def agent_is_due(agent: AgentSpec, loop_state: dict[str, Any], *, force: bool = False) -> bool:
+    mode = str(agent.dispatch.get("mode", "every_cycle"))
+    if mode == "every_cycle":
+        return True
+    if mode == "interval":
+        if force:
+            return True
+        interval_seconds = int(agent.dispatch.get("interval_seconds", 300))
+        last = agent_last_state(loop_state, agent.name)
+        finished_at = last.get("finished_at")
+        if not isinstance(finished_at, str):
+            return True
+        try:
+            last_dt = datetime.fromisoformat(finished_at.replace("Z", "+00:00"))
+        except ValueError:
+            return True
+        delta = datetime.now(UTC) - last_dt.astimezone(UTC)
+        return delta.total_seconds() >= interval_seconds
+    if mode == "task_queue":
+        queue = str(agent.dispatch.get("queue", "ready"))
+        return bool(list_task_files(queue))
+    raise RuntimeError(f"Unsupported dispatch mode for {agent.name}: {mode}")
+
+
+def dispatch_agent(agent: AgentSpec, config: dict[str, Any], loop_state: dict[str, Any], *, force: bool = False) -> list[RunResult]:
+    if not agent_is_due(agent, loop_state, force=force):
+        return []
+
+    mode = str(agent.dispatch.get("mode", "every_cycle"))
+    if mode in {"every_cycle", "interval"}:
+        return [run_agent(agent, config)]
+    if mode == "task_queue":
+        queue = str(agent.dispatch.get("queue", "ready"))
+        claim_to = str(agent.dispatch.get("claim_to", "in_progress"))
+        max_runs = int(agent.dispatch.get("max_runs_per_cycle", 1))
+        claimed = claim_tasks(queue, claim_to, max_runs)
+        return [run_agent(agent, config, task_path=task_path) for task_path in claimed]
+    raise RuntimeError(f"Unsupported dispatch mode for {agent.name}: {mode}")
+
+
+def build_anomalies(results: list[RunResult]) -> list[dict[str, Any]]:
+    anomalies: list[dict[str, Any]] = []
+    for result in results:
+        if result.exit_code != 0:
+            anomalies.append(
+                {
+                    "agent_name": result.agent_name,
+                    "run_id": result.run_id,
+                    "type": "nonzero_exit",
+                    "exit_code": result.exit_code,
+                    "timed_out": result.timed_out,
+                }
+            )
+        if result.task_initial_path is not None and result.task_final_status not in {"done", "blocked"}:
+            anomalies.append(
+                {
+                    "agent_name": result.agent_name,
+                    "run_id": result.run_id,
+                    "type": "task_not_terminated",
+                    "task_initial_path": relpath(result.task_initial_path),
+                    "task_final_status": result.task_final_status,
+                    "task_final_path": None
+                    if result.task_final_path is None
+                    else relpath(result.task_final_path),
+                }
+            )
+    return anomalies
+
+
+def update_loop_state(config: dict[str, Any], agents: list[AgentSpec], results: list[RunResult]) -> None:
     paths = runtime_paths(config)
     state = read_json(paths["loop_state"], default={})
     if not isinstance(state, dict):
         state = {}
+
+    agent_state = state.get("agents")
+    if not isinstance(agent_state, dict):
+        agent_state = {}
+
+    for result in results:
+        agent_state[result.agent_name] = {
+            "agent_kind": result.agent_kind,
+            "run_id": result.run_id,
+            "exit_code": result.exit_code,
+            "timed_out": result.timed_out,
+            "finished_at": utcnow(),
+            "task_final_status": result.task_final_status,
+        }
+
     state.update(
         {
             "updated_at": utcnow(),
-            "queue_counts": queue_counts(),
-            "last_cycle_worker_runs": [
+            "agents": agent_state,
+            "agent_registry": [
                 {
+                    "name": agent.name,
+                    "kind": agent.kind,
+                    "cycle_order": agent.cycle_order,
+                    "dispatch_mode": agent.dispatch.get("mode", "every_cycle"),
+                    "spec_path": relpath(agent.spec_path),
+                }
+                for agent in agents
+            ],
+            "queue_counts": queue_counts(),
+            "last_cycle_runs": [
+                {
+                    "agent_name": result.agent_name,
+                    "agent_kind": result.agent_kind,
                     "run_id": result.run_id,
                     "exit_code": result.exit_code,
-                    "task_path": None if result.task_path is None else relpath(result.task_path),
+                    "timed_out": result.timed_out,
+                    "task_initial_path": None
+                    if result.task_initial_path is None
+                    else relpath(result.task_initial_path),
+                    "task_final_status": result.task_final_status,
+                    "task_final_path": None
+                    if result.task_final_path is None
+                    else relpath(result.task_final_path),
                 }
-                for result in worker_runs
+                for result in results
             ],
+            "last_cycle_anomalies": build_anomalies(results),
         }
     )
-    if supervisor_run is not None:
-        state["last_supervisor_run"] = {
-            "run_id": supervisor_run.run_id,
-            "exit_code": supervisor_run.exit_code,
-            "finished_at": utcnow(),
-        }
     write_json(paths["loop_state"], state)
 
 
-def supervisor_is_due(config: dict[str, Any]) -> bool:
-    paths = runtime_paths(config)
-    state = read_json(paths["loop_state"], default={})
-    if not isinstance(state, dict):
-        return True
-    supervisor_cfg = config["roles"]["supervisor"]
-    interval_seconds = int(supervisor_cfg.get("interval_seconds", 300))
-    last = state.get("last_supervisor_run")
-    if not isinstance(last, dict):
-        return True
-    finished_at = last.get("finished_at")
-    if not isinstance(finished_at, str):
-        return True
-    try:
-        last_dt = datetime.fromisoformat(finished_at.replace("Z", "+00:00"))
-    except ValueError:
-        return True
-    delta = datetime.now(UTC) - last_dt.astimezone(UTC)
-    return delta.total_seconds() >= interval_seconds
-
-
 def run_cycle(config: dict[str, Any], *, force_supervisor: bool = False) -> int:
-    supervisor_cfg = config["roles"]["supervisor"]
-    implementation_cfg = config["roles"]["implementation"]
-    supervisor_run: RunResult | None = None
-    worker_runs: list[RunResult] = []
+    agents = load_agent_specs(config)
+    paths = runtime_paths(config)
+    ensure_runtime_dirs(paths)
+    loop_state = read_json(paths["loop_state"], default={})
+    if not isinstance(loop_state, dict):
+        loop_state = {}
+
+    results: list[RunResult] = []
     failures = 0
+    for agent in agents:
+        force = force_supervisor and agent.kind == "supervisor"
+        agent_results = dispatch_agent(agent, config, loop_state, force=force)
+        results.extend(agent_results)
+        failures += sum(int(result.exit_code != 0) for result in agent_results)
 
-    if supervisor_cfg.get("enabled", True) and (force_supervisor or supervisor_is_due(config)):
-        supervisor_run = run_role("supervisor", config)
-        failures += int(supervisor_run.exit_code != 0)
-
-    if implementation_cfg.get("enabled", True):
-        max_runs = int(implementation_cfg.get("max_runs_per_cycle", 1))
-        for task_path in claim_ready_tasks(max_runs):
-            result = run_role("implementation", config, task_path=task_path)
-            worker_runs.append(result)
-            failures += int(result.exit_code != 0)
-
-    update_loop_state(config, supervisor_run=supervisor_run, worker_runs=worker_runs)
+    update_loop_state(config, agents, results)
     return 0 if failures == 0 else 1
 
 
 def cmd_status(config: dict[str, Any]) -> int:
+    agents = load_agent_specs(config)
     paths = runtime_paths(config)
     state = read_json(paths["loop_state"], default={})
+    if not isinstance(state, dict):
+        state = {}
     status = {
         "repo_root": str(REPO_ROOT),
-        "queue_counts": queue_counts(),
         "runtime_dir": str(paths["artifact_root"]),
-        "supervisor_due": supervisor_is_due(config),
-        "last_supervisor_run": state.get("last_supervisor_run"),
-        "last_cycle_worker_runs": state.get("last_cycle_worker_runs", []),
+        "queue_counts": queue_counts(),
+        "agents": [
+            {
+                "name": agent.name,
+                "kind": agent.kind,
+                "dispatch_mode": agent.dispatch.get("mode", "every_cycle"),
+                "cycle_order": agent.cycle_order,
+            }
+            for agent in agents
+        ],
+        "last_cycle_runs": state.get("last_cycle_runs", []),
+        "last_cycle_anomalies": state.get("last_cycle_anomalies", []),
     }
     print(json.dumps(status, indent=2, sort_keys=True))
     return 0
 
 
-def cmd_render(config: dict[str, Any], role: str, task: str | None) -> int:
+def cmd_render(config: dict[str, Any], agent_name: str, task: str | None) -> int:
+    agents = {agent.name: agent for agent in load_agent_specs(config)}
+    agent = agents.get(agent_name)
+    if agent is None:
+        raise RuntimeError(f"Unknown agent: {agent_name}")
     task_path = None if task is None else resolve_repo_path(task)
-    sys.stdout.write(render_prompt(role, config, task_path=task_path))
+    sys.stdout.write(render_prompt(agent, config, task_path=task_path))
     return 0
 
 
@@ -433,20 +649,20 @@ def cmd_loop(config: dict[str, Any], *, force_supervisor: bool, max_cycles: int 
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run the rebar supervisor/implementation loop.")
+    parser = argparse.ArgumentParser(description="Run the rebar forever harness.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    subparsers.add_parser("status", help="Print queue and runtime status.")
+    subparsers.add_parser("status", help="Print queue, agent, and runtime status.")
 
-    render_parser = subparsers.add_parser("render", help="Render a prompt for a role.")
-    render_parser.add_argument("role", choices=("supervisor", "implementation"))
-    render_parser.add_argument("--task", help="Optional task path for implementation prompts.")
+    render_parser = subparsers.add_parser("render", help="Render a prompt for an agent.")
+    render_parser.add_argument("agent", help="Agent name from ops/agents/*.json")
+    render_parser.add_argument("--task", help="Optional task path for task-worker prompts.")
 
-    cycle_parser = subparsers.add_parser("cycle", help="Run one supervisor/implementation cycle.")
+    cycle_parser = subparsers.add_parser("cycle", help="Run one full agent cycle.")
     cycle_parser.add_argument(
         "--force-supervisor",
         action="store_true",
-        help="Run the supervisor even if the configured interval has not elapsed.",
+        help="Force the supervisor to run even if its future dispatch policy becomes interval-based.",
     )
 
     loop_parser = subparsers.add_parser("loop", help="Run cycles forever.")
@@ -469,15 +685,11 @@ def main() -> int:
     if args.command == "status":
         return cmd_status(config)
     if args.command == "render":
-        return cmd_render(config, args.role, args.task)
+        return cmd_render(config, args.agent, args.task)
     if args.command == "cycle":
         return cmd_cycle(config, args.force_supervisor)
     if args.command == "loop":
-        return cmd_loop(
-            config,
-            force_supervisor=args.force_supervisor,
-            max_cycles=args.max_cycles,
-        )
+        return cmd_loop(config, force_supervisor=args.force_supervisor, max_cycles=args.max_cycles)
     raise RuntimeError(f"Unknown command: {args.command}")
 
 

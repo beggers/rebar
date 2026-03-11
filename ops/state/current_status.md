@@ -7,7 +7,8 @@ Phase 1: harness bootstrap and project-definition work.
 
 ## What Exists
 - A repo-local `AGENTS.md` that separates supervisor and implementation roles.
-- A config-driven loop runner in `scripts/rebar_ops.py`.
+- A config-driven, supervisor-first loop runner in `scripts/rebar_ops.py`.
+- A dynamic agent registry under `ops/agents/*.json` that the supervisor can edit.
 - Tracked state, task queue directories, and seeded ready tasks under `ops/`.
 
 ## What Does Not Exist Yet
@@ -17,7 +18,7 @@ Phase 1: harness bootstrap and project-definition work.
 - Concrete syntax compatibility documents under `docs/`.
 
 ## Immediate Next Steps
-- Use the supervisor to refine project direction and backlog.
+- Use the supervisor to refine project direction, backlog, and the forever-mode harness itself.
 - Use implementation agents to write the first spec, correctness-plan, and benchmark-plan documents.
 - After those land, start parser package scaffolding and the first parser tests.
 

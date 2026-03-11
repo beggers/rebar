@@ -1,0 +1,17 @@
+{
+  "name": "supervisor",
+  "kind": "supervisor",
+  "description": "Owns indefinite project progress and may change the harness, project structure, and active agent set.",
+  "enabled": true,
+  "cycle_order": 0,
+  "prompt_path": "ops/agents/supervisor.md",
+  "dispatch": {
+    "mode": "every_cycle",
+    "timeout_seconds": 1800
+  },
+  "codex": {
+    "config": [
+      "model_reasoning_effort=\"high\""
+    ]
+  }
+}

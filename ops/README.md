@@ -3,16 +3,17 @@
 This directory is the tracked operating system for the project.
 
 ## Layout
-- `agents/`: prompt bodies for the supervisor and implementation roles.
+- `agents/`: prompt bodies plus JSON agent specs that define who runs.
 - `config/`: loop policy and Codex runner settings.
 - `state/`: durable project context that future runs should read first.
 - `tasks/`: task queue and task template.
 
 ## Workflow
-1. The supervisor reads the state files, updates project direction, and makes sure `tasks/ready/` contains concrete work.
-2. Implementation agents consume ready tasks one at a time.
-3. Each implementation run should either move its task to `done/` or `blocked/`.
-4. Runtime prompts, logs, and metadata are written to ignored `.rebar/runtime/`.
+1. The loop loads enabled agent specs from `ops/agents/*.json`.
+2. The enabled supervisor runs first every cycle and owns keeping the system making progress forever.
+3. Other enabled agents run afterward according to their dispatch policy.
+4. Task workers consume ready tasks one at a time and should move them to `done/` or `blocked`.
+5. Runtime prompts, logs, metadata, and anomaly summaries are written to ignored `.rebar/runtime/`.
 
 ## Why It Exists
 - Future agent runs should not need to infer project history from scratch.

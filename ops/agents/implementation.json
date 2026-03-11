@@ -1,0 +1,20 @@
+{
+  "name": "implementation",
+  "kind": "task_worker",
+  "description": "Consumes concrete backlog tasks one at a time.",
+  "enabled": true,
+  "cycle_order": 100,
+  "prompt_path": "ops/agents/implementer.md",
+  "dispatch": {
+    "mode": "task_queue",
+    "queue": "ready",
+    "claim_to": "in_progress",
+    "max_runs_per_cycle": 3,
+    "timeout_seconds": 1800
+  },
+  "codex": {
+    "config": [
+      "model_reasoning_effort=\"medium\""
+    ]
+  }
+}

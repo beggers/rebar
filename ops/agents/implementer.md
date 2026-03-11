@@ -16,6 +16,7 @@ Constraints:
 - Do not edit `AGENTS.md`, `ops/agents/`, `ops/config/`, `scripts/rebar_ops.py`, or `scripts/loop_forever.sh` unless the task explicitly says to.
 - Prefer real deliverables over meta commentary.
 - If you discover follow-up work, note it in the task file so the supervisor can convert it into new tasks.
+- The supervisor owns the harness and active agent set; if you uncover a system-level issue, record it for the supervisor instead of freelancing a harness rewrite.
 
 Definition of done:
 - The requested artifact exists and meets the task's acceptance criteria.

@@ -6,3 +6,5 @@
 - Keep ephemeral prompts, logs, and run metadata in ignored `.rebar/`.
 - Keep the forever loop thin and config-driven; tune cadence and worker counts in `ops/config/loop.json` instead of baking policy into shell.
 - Default implementation execution to multiple bounded runs per cycle, but still in a single checkout, to avoid premature merge orchestration complexity.
+- Promote the supervisor to the explicit owner of indefinite progress, with authority to change the harness, project structure, and active non-supervisor agents as gaps appear.
+- Load active agents from `ops/agents/*.json` so the supervisor can evolve the worker set without rewriting the loop controller each time.
