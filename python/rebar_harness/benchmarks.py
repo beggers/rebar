@@ -1,4 +1,4 @@
-"""Phase 0 benchmark harness for compile-oriented smoke workloads."""
+"""Phase 1 benchmark harness for compile-path workload matrices."""
 
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ from rebar_harness.metadata import build_cpython_baseline
 TARGET_CPYTHON_SERIES = "3.12.x"
 REPORT_SCHEMA_VERSION = "1.0"
 MANIFEST_SCHEMA_VERSION = 1
-DEFAULT_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_smoke.json"
+DEFAULT_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.json"
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
 
 
@@ -40,28 +40,33 @@ class Workload:
     """Single benchmark workload definition."""
 
     workload_id: str
+    bucket: str
     family: str
     operation: str
     pattern: str
     flags: int
     text_model: str
     cache_mode: str
+    timing_scope: str
     warmup_iterations: int
     sample_iterations: int
     timed_samples: int
     notes: list[str]
     categories: list[str]
+    syntax_features: list[str]
 
     @classmethod
     def from_dict(cls, raw_workload: dict[str, Any], defaults: dict[str, Any]) -> "Workload":
         return cls(
             workload_id=str(raw_workload["id"]),
+            bucket=str(raw_workload.get("bucket", "unbucketed")),
             family=str(raw_workload.get("family", "parser")),
             operation=str(raw_workload["operation"]),
             pattern=str(raw_workload["pattern"]),
             flags=int(raw_workload.get("flags", 0)),
             text_model=str(raw_workload.get("text_model", "str")),
             cache_mode=str(raw_workload.get("cache_mode", "cold")),
+            timing_scope=str(raw_workload.get("timing_scope", "compile-path-proxy")),
             warmup_iterations=int(
                 raw_workload.get("warmup_iterations", defaults.get("warmup_iterations", 2))
             ),
@@ -71,6 +76,10 @@ class Workload:
             timed_samples=int(raw_workload.get("timed_samples", defaults.get("timed_samples", 5))),
             notes=[str(note) for note in raw_workload.get("notes", [])],
             categories=[str(category) for category in raw_workload.get("categories", [])],
+            syntax_features=[
+                str(feature)
+                for feature in raw_workload.get("syntax_features", raw_workload.get("categories", []))
+            ],
         )
 
     def pattern_payload(self) -> str | bytes:
@@ -95,7 +104,8 @@ def load_manifest(path: pathlib.Path) -> tuple[dict[str, Any], list[Workload]]:
         raise ValueError("benchmark manifest defaults must be an object")
 
     workloads = [
-        Workload.from_dict(raw_workload, defaults) for raw_workload in raw_manifest.get("workloads", [])
+        Workload.from_dict(raw_workload, defaults)
+        for raw_workload in raw_manifest.get("workloads", [])
     ]
     return raw_manifest, workloads
 
@@ -206,7 +216,9 @@ class RebarBenchmarkAdapter(BenchmarkAdapter):
         return {"adapter": self.adapter_name, **timing}
 
 
-def calculate_speedup(baseline_timing: dict[str, Any], implementation_timing: dict[str, Any]) -> float | None:
+def calculate_speedup(
+    baseline_timing: dict[str, Any], implementation_timing: dict[str, Any]
+) -> float | None:
     baseline_ns = baseline_timing.get("median_ns")
     implementation_ns = implementation_timing.get("median_ns")
     if not isinstance(baseline_ns, int) or not isinstance(implementation_ns, int):
@@ -228,6 +240,12 @@ def build_variance_summary(timing: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
+def ns_to_ops_per_second(value: int | None) -> float | None:
+    if not isinstance(value, int) or value <= 0:
+        return None
+    return round(1_000_000_000 / value, 2)
+
+
 def evaluate_workload(
     workload: Workload,
     baseline_adapter: BenchmarkAdapter,
@@ -244,18 +262,25 @@ def evaluate_workload(
             "Implementation timing is unavailable until the rebar compile surface exists."
         )
 
+    baseline_ns = baseline_timing.get("median_ns")
+    implementation_ns = implementation_timing.get("median_ns")
     return {
         "id": workload.workload_id,
+        "bucket": workload.bucket,
         "family": workload.family,
         "operation": workload.operation,
         "cache_mode": workload.cache_mode,
+        "timing_scope": workload.timing_scope,
         "text_model": workload.text_model,
         "pattern": workload.pattern,
         "flags": workload.flags,
         "categories": workload.categories,
+        "syntax_features": workload.syntax_features,
         "status": status,
-        "baseline_ns": baseline_timing.get("median_ns"),
-        "implementation_ns": implementation_timing.get("median_ns"),
+        "baseline_ns": baseline_ns,
+        "baseline_ops_per_second": ns_to_ops_per_second(baseline_ns),
+        "implementation_ns": implementation_ns,
+        "implementation_ops_per_second": ns_to_ops_per_second(implementation_ns),
         "speedup_vs_cpython": speedup,
         "notes": notes,
         "baseline_timing": baseline_timing,
@@ -287,6 +312,35 @@ def _geomean(values: list[float]) -> float | None:
     return round(math.exp(statistics.fmean(math.log(value) for value in values)), 4)
 
 
+def build_cache_mode_summary(workloads: list[dict[str, Any]]) -> dict[str, Any]:
+    summary: dict[str, Any] = {}
+    for cache_mode in ("cold", "warm", "purged"):
+        cache_workloads = [workload for workload in workloads if workload["cache_mode"] == cache_mode]
+        baseline_samples = [
+            workload["baseline_ns"]
+            for workload in cache_workloads
+            if isinstance(workload.get("baseline_ns"), int)
+        ]
+        implementation_samples = [
+            workload["implementation_ns"]
+            for workload in cache_workloads
+            if isinstance(workload.get("implementation_ns"), int)
+        ]
+        speedups = [
+            workload["speedup_vs_cpython"]
+            for workload in cache_workloads
+            if isinstance(workload.get("speedup_vs_cpython"), float)
+        ]
+        summary[cache_mode] = {
+            "workload_count": len(cache_workloads),
+            "known_gap_count": sum(1 for workload in cache_workloads if workload["status"] != "measured"),
+            "median_baseline_ns": _median(baseline_samples),
+            "median_implementation_ns": _median(implementation_samples),
+            "median_speedup_vs_cpython": _median_float(speedups),
+        }
+    return summary
+
+
 def build_family_summary(workloads: list[dict[str, Any]], family: str) -> dict[str, Any]:
     family_workloads = [workload for workload in workloads if workload["family"] == family]
     baseline_samples = [
@@ -314,10 +368,13 @@ def build_family_summary(workloads: list[dict[str, Any]], family: str) -> dict[s
         "median_baseline_ns": _median(baseline_samples),
         "median_implementation_ns": _median(implementation_samples),
         "median_speedup_vs_cpython": _median_float(speedups),
+        "cache_modes": build_cache_mode_summary(family_workloads),
         "notes": (
-            ["Phase 0 scaffold currently covers compile-path proxy workloads only."]
+            [
+                "Phase 1 compile-path suite uses compile() as a parser proxy until a narrower benchmark hook exists."
+            ]
             if family == "parser"
-            else ["Phase 0 scaffold defers module-boundary timings."]
+            else ["Module-boundary timings remain deferred to RBR-0015."]
         ),
     }
 
@@ -338,6 +395,14 @@ def build_summary(workloads: list[dict[str, Any]]) -> dict[str, Any]:
         for workload in workloads
         if isinstance(workload.get("speedup_vs_cpython"), float)
     ]
+    baseline_samples = [
+        workload["baseline_ns"] for workload in workloads if isinstance(workload.get("baseline_ns"), int)
+    ]
+    implementation_samples = [
+        workload["implementation_ns"]
+        for workload in workloads
+        if isinstance(workload.get("implementation_ns"), int)
+    ]
     known_gap_count = sum(1 for workload in workloads if workload["status"] != "measured")
     return {
         "total_workloads": len(workloads),
@@ -345,10 +410,18 @@ def build_summary(workloads: list[dict[str, Any]]) -> dict[str, Any]:
         "module_workloads": sum(1 for workload in workloads if workload["family"] == "module"),
         "measured_workloads": len(all_speedups),
         "known_gap_count": known_gap_count,
+        "baseline_median_ns": _median(baseline_samples),
+        "baseline_median_ops_per_second": ns_to_ops_per_second(_median(baseline_samples)),
+        "implementation_median_ns": _median(implementation_samples),
+        "implementation_median_ops_per_second": ns_to_ops_per_second(_median(implementation_samples)),
         "median_speedup_vs_baseline": _median_float(all_speedups),
         "geomean_speedup_vs_baseline": _geomean(all_speedups),
         "parser_median_speedup_vs_cpython": _median_float(parser_speedups),
         "module_median_speedup_vs_cpython": _median_float(module_speedups),
+        "workloads_by_cache_mode": {
+            cache_mode: sum(1 for workload in workloads if workload["cache_mode"] == cache_mode)
+            for cache_mode in ("cold", "warm", "purged")
+        },
     }
 
 
@@ -378,6 +451,21 @@ def cpu_model() -> str:
     return platform.processor() or "unknown"
 
 
+def build_implementation_metadata() -> dict[str, Any]:
+    native_loaded = rebar.native_module_loaded()
+    return {
+        "module_name": "rebar",
+        "adapter": "rebar.compile",
+        "build_mode": "native-extension" if native_loaded else "source-tree-shim",
+        "timing_path": "native-extension" if native_loaded else "source-tree-shim",
+        "native_module_loaded": native_loaded,
+        "native_module_name": rebar.NATIVE_MODULE_NAME,
+        "native_scaffold_status": rebar.native_scaffold_status(),
+        "native_target_cpython_series": rebar.native_target_cpython_series(),
+        "git_commit": git_commit(),
+    }
+
+
 def build_scorecard(
     *,
     manifest_path: pathlib.Path,
@@ -388,17 +476,11 @@ def build_scorecard(
     return {
         "schema_version": REPORT_SCHEMA_VERSION,
         "suite": "benchmarks",
-        "phase": "phase0-runner-skeleton",
+        "phase": "phase1-compile-path-suite",
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
         "generator": "python -m rebar_harness.benchmarks",
         "baseline": build_cpython_baseline(version_family=TARGET_CPYTHON_SERIES),
-        "implementation": {
-            "module_name": "rebar",
-            "adapter": "rebar.compile",
-            "build_mode": "source-tree-shim",
-            "native_module_loaded": rebar.native_module_loaded(),
-            "git_commit": git_commit(),
-        },
+        "implementation": build_implementation_metadata(),
         "environment": {
             "hostname": platform.node(),
             "os": platform.system(),
@@ -407,18 +489,20 @@ def build_scorecard(
             "cpu_model": cpu_model(),
             "logical_cpus": os.cpu_count(),
             "runner": "perf_counter_ns",
-            "runner_version": "phase0",
+            "runner_version": "phase1",
+            "execution_model": "single-process in-process adapter comparison",
         },
         "summary": summary,
         "families": {
             "parser": build_family_summary(workloads, "parser"),
             "module": build_family_summary(workloads, "module"),
         },
+        "cache_modes": build_cache_mode_summary(workloads),
         "workloads": workloads,
         "deferred": [
             {
                 "area": "module-boundary",
-                "reason": "Phase 0 benchmark scaffold measures compile-path proxy workloads only.",
+                "reason": "Phase 1 benchmark suite measures compile-path workloads only.",
                 "follow_up": "RBR-0015",
             },
             {
@@ -430,6 +514,7 @@ def build_scorecard(
         "artifacts": {
             "manifest": str(manifest_path.relative_to(REPO_ROOT)),
             "manifest_id": raw_manifest["manifest_id"],
+            "manifest_schema_version": raw_manifest["schema_version"],
             "raw_samples": None,
         },
     }

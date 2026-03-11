@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "manifest_id": "compile-matrix",
+  "defaults": {
+    "warmup_iterations": 2,
+    "sample_iterations": 5,
+    "timed_samples": 7
+  },
+  "workloads": [
+    {
+      "id": "compile-literal-anchors-cold",
+      "bucket": "tiny-literal",
+      "family": "parser",
+      "operation": "compile",
+      "pattern": "^abc$",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "categories": [
+        "literal",
+        "anchors",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "literal-text",
+        "assertions-and-anchors"
+      ],
+      "notes": [
+        "Tiny literal compile proxy for the lowest-overhead parser path."
+      ]
+    },
+    {
+      "id": "compile-grouped-class-warm",
+      "bucket": "grouped-class",
+      "family": "parser",
+      "operation": "compile",
+      "pattern": "(?P<word>[A-Z][a-z]+)(?:[-_](?:[A-Z]{2}|\\d{2,4}))?",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "categories": [
+        "grouping",
+        "character-class",
+        "alternation",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "grouping-forms",
+        "character-classes-and-sets",
+        "concatenation-and-alternation"
+      ],
+      "notes": [
+        "Warm compile proxy for a medium pattern that mixes named groups, classes, and alternation."
+      ]
+    },
+    {
+      "id": "compile-parser-stress-cold",
+      "bucket": "parser-stress",
+      "family": "parser",
+      "operation": "compile",
+      "pattern": "(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\\d{2}))?(?:(?<=foo)bar)?(?P=lemma)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "categories": [
+        "atomic-group",
+        "possessive-quantifier",
+        "lookbehind",
+        "backreference",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "grouping-forms",
+        "quantifiers",
+        "assertions-and-anchors",
+        "backreferences-and-conditionals",
+        "flag-syntax"
+      ],
+      "notes": [
+        "Heavier parser-stress compile proxy covering modern CPython 3.12 syntax families."
+      ]
+    },
+    {
+      "id": "compile-bytes-class-cold",
+      "bucket": "bytes-class",
+      "family": "parser",
+      "operation": "compile",
+      "pattern": "[A-Z_][A-Z0-9_]{2,7}",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "cold",
+      "categories": [
+        "bytes",
+        "character-class",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "pattern-text-model",
+        "character-classes-and-sets"
+      ],
+      "notes": [
+        "Mirrored bytes compile path to keep separate text-model coverage visible in the scorecard."
+      ]
+    },
+    {
+      "id": "compile-bytes-backreference-warm",
+      "bucket": "bytes-backreference",
+      "family": "parser",
+      "operation": "compile",
+      "pattern": "(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "categories": [
+        "bytes",
+        "named-group",
+        "backreference",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-text-model",
+        "grouping-forms",
+        "backreferences-and-conditionals",
+        "quantifiers"
+      ],
+      "notes": [
+        "Warm bytes compile proxy for a cached named-group and backreference path."
+      ]
+    },
+    {
+      "id": "compile-verbose-purged",
+      "bucket": "verbose-flags",
+      "family": "parser",
+      "operation": "compile",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "flags": 72,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "categories": [
+        "verbose",
+        "multiline",
+        "possessive-quantifier",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "grouping-forms",
+        "quantifiers"
+      ],
+      "notes": [
+        "Purged-cache compile proxy that keeps flag handling and cache reset labeling visible."
+      ]
+    }
+  ]
+}

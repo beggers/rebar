@@ -1,6 +1,6 @@
 # RBR-0012: Expand the benchmark harness into a compile-path suite
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
 
@@ -29,3 +29,9 @@ Created: 2026-03-11
 - Build on `RBR-0008`, `RBR-0009`, and the native-load truth from `RBR-0010`; this task should extend the runner and workload corpus, not replace the Phase 0 smoke path.
 - The suite does not need to benchmark a built wheel yet, but it must keep the report honest about whether the timing path is a source-tree shim or a native-loaded module.
 - Keep the workload corpus small enough for one implementation-agent run and a fast local verification loop.
+
+## Completion Notes
+- Expanded `python/rebar_harness/benchmarks.py` into a Phase 1 compile-matrix runner with cache-mode summaries, explicit implementation provenance, and richer per-workload reporting while keeping the exact CPython baseline metadata shape aligned with the correctness harness.
+- Added `benchmarks/workloads/compile_matrix.json` with six representative parser workloads covering cold, warm, and purged cache modes plus mirrored `bytes` cases tied to the syntax-scope construct families.
+- Added `tests/benchmarks/test_compile_benchmark_matrix.py`, kept the existing smoke benchmark path working, and regenerated `reports/benchmarks/latest.json` from the new default compile matrix.
+- Follow-up note for supervisor: once `RBR-0013` lands broader module helpers, the next benchmark expansion can reuse the new scorecard/cache-mode structure for `RBR-0015` module-boundary timings instead of inventing a separate schema.

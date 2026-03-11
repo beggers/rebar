@@ -1,7 +1,8 @@
 {
   "artifacts": {
-    "manifest": "benchmarks/workloads/compile_smoke.json",
-    "manifest_id": "compile-smoke",
+    "manifest": "benchmarks/workloads/compile_matrix.json",
+    "manifest_id": "compile-matrix",
+    "manifest_schema_version": 1,
     "raw_samples": null
   },
   "baseline": {
@@ -17,11 +18,34 @@
     "python_version_family": "3.12.x",
     "re_module": "re"
   },
+  "cache_modes": {
+    "cold": {
+      "known_gap_count": 3,
+      "median_baseline_ns": 30648,
+      "median_implementation_ns": null,
+      "median_speedup_vs_cpython": null,
+      "workload_count": 3
+    },
+    "purged": {
+      "known_gap_count": 1,
+      "median_baseline_ns": 67596,
+      "median_implementation_ns": null,
+      "median_speedup_vs_cpython": null,
+      "workload_count": 1
+    },
+    "warm": {
+      "known_gap_count": 2,
+      "median_baseline_ns": 233,
+      "median_implementation_ns": null,
+      "median_speedup_vs_cpython": null,
+      "workload_count": 2
+    }
+  },
   "deferred": [
     {
       "area": "module-boundary",
       "follow_up": "RBR-0015",
-      "reason": "Phase 0 benchmark scaffold measures compile-path proxy workloads only."
+      "reason": "Phase 1 benchmark suite measures compile-path workloads only."
     },
     {
       "area": "regex-execution-throughput",
@@ -32,167 +56,513 @@
   "environment": {
     "architecture": "x86_64",
     "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+    "execution_model": "single-process in-process adapter comparison",
     "hostname": "ip-172-31-21-77",
     "logical_cpus": 4,
     "os": "Linux",
     "os_release": "6.14.0-1018-aws",
     "runner": "perf_counter_ns",
-    "runner_version": "phase0"
+    "runner_version": "phase1"
   },
   "families": {
     "module": {
+      "cache_modes": {
+        "cold": {
+          "known_gap_count": 0,
+          "median_baseline_ns": null,
+          "median_implementation_ns": null,
+          "median_speedup_vs_cpython": null,
+          "workload_count": 0
+        },
+        "purged": {
+          "known_gap_count": 0,
+          "median_baseline_ns": null,
+          "median_implementation_ns": null,
+          "median_speedup_vs_cpython": null,
+          "workload_count": 0
+        },
+        "warm": {
+          "known_gap_count": 0,
+          "median_baseline_ns": null,
+          "median_implementation_ns": null,
+          "median_speedup_vs_cpython": null,
+          "workload_count": 0
+        }
+      },
       "known_gap_count": 0,
       "median_baseline_ns": null,
       "median_implementation_ns": null,
       "median_speedup_vs_cpython": null,
       "notes": [
-        "Phase 0 scaffold defers module-boundary timings."
+        "Module-boundary timings remain deferred to RBR-0015."
       ],
       "readiness": "scaffold-only",
       "workload_count": 0
     },
     "parser": {
-      "known_gap_count": 2,
-      "median_baseline_ns": 4211,
+      "cache_modes": {
+        "cold": {
+          "known_gap_count": 3,
+          "median_baseline_ns": 30648,
+          "median_implementation_ns": null,
+          "median_speedup_vs_cpython": null,
+          "workload_count": 3
+        },
+        "purged": {
+          "known_gap_count": 1,
+          "median_baseline_ns": 67596,
+          "median_implementation_ns": null,
+          "median_speedup_vs_cpython": null,
+          "workload_count": 1
+        },
+        "warm": {
+          "known_gap_count": 2,
+          "median_baseline_ns": 233,
+          "median_implementation_ns": null,
+          "median_speedup_vs_cpython": null,
+          "workload_count": 2
+        }
+      },
+      "known_gap_count": 6,
+      "median_baseline_ns": 19866,
       "median_implementation_ns": null,
       "median_speedup_vs_cpython": null,
       "notes": [
-        "Phase 0 scaffold currently covers compile-path proxy workloads only."
+        "Phase 1 compile-path suite uses compile() as a parser proxy until a narrower benchmark hook exists."
       ],
       "readiness": "scaffold-only",
-      "workload_count": 2
+      "workload_count": 6
     }
   },
-  "generated_at": "2026-03-11T22:46:16Z",
+  "generated_at": "2026-03-11T23:19:00Z",
   "generator": "python -m rebar_harness.benchmarks",
   "implementation": {
     "adapter": "rebar.compile",
     "build_mode": "source-tree-shim",
-    "git_commit": "28fd49cdbf49bd62b8d57c11c5e302d65dc61046",
+    "git_commit": "2ab1d9d7c5d9c6088fb90fb6570ae5676d34363e",
     "module_name": "rebar",
-    "native_module_loaded": false
+    "native_module_loaded": false,
+    "native_module_name": "rebar._rebar",
+    "native_scaffold_status": null,
+    "native_target_cpython_series": null,
+    "timing_path": "source-tree-shim"
   },
-  "phase": "phase0-runner-skeleton",
+  "phase": "phase1-compile-path-suite",
   "schema_version": "1.0",
   "suite": "benchmarks",
   "summary": {
+    "baseline_median_ns": 19866,
+    "baseline_median_ops_per_second": 50337.26,
     "geomean_speedup_vs_baseline": null,
-    "known_gap_count": 2,
+    "implementation_median_ns": null,
+    "implementation_median_ops_per_second": null,
+    "known_gap_count": 6,
     "measured_workloads": 0,
     "median_speedup_vs_baseline": null,
     "module_median_speedup_vs_cpython": null,
     "module_workloads": 0,
     "parser_median_speedup_vs_cpython": null,
-    "parser_workloads": 2,
-    "total_workloads": 2
+    "parser_workloads": 6,
+    "total_workloads": 6,
+    "workloads_by_cache_mode": {
+      "cold": 3,
+      "purged": 1,
+      "warm": 2
+    }
   },
   "workloads": [
     {
-      "baseline_ns": 8188,
+      "baseline_ns": 9085,
+      "baseline_ops_per_second": 110071.55,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 8531,
-        "mean_ns": 8161,
-        "median_ns": 8188,
-        "min_ns": 7633,
+        "max_ns": 9590,
+        "mean_ns": 9159,
+        "median_ns": 9085,
+        "min_ns": 8776,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          8531,
-          8121,
-          8289,
-          8188,
-          7633,
-          8334,
-          8030
+          9542,
+          9157,
+          9057,
+          8905,
+          8776,
+          9590,
+          9085
         ],
         "status": "measured",
         "warmup_iterations": 2
       },
+      "bucket": "tiny-literal",
       "cache_mode": "cold",
       "categories": [
         "literal",
-        "smoke"
+        "anchors",
+        "cold-cache"
       ],
       "family": "parser",
       "flags": 0,
-      "id": "compile-literal-cold",
+      "id": "compile-literal-anchors-cold",
       "implementation_ns": null,
+      "implementation_ops_per_second": null,
       "implementation_timing": {
         "adapter": "rebar",
         "reason": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
         "status": "unimplemented"
       },
       "notes": [
-        "Phase 0 cold compile proxy workload against stdlib re.",
+        "Tiny literal compile proxy for the lowest-overhead parser path.",
         "Implementation timing is unavailable until the rebar compile surface exists."
       ],
       "operation": "compile",
-      "pattern": "abc",
+      "pattern": "^abc$",
       "speedup_vs_cpython": null,
       "status": "unimplemented",
+      "syntax_features": [
+        "literal-text",
+        "assertions-and-anchors"
+      ],
       "text_model": "str",
+      "timing_scope": "compile-path-proxy",
       "variance": {
         "baseline": {
-          "max_ns": 8531,
-          "mean_ns": 8161,
-          "min_ns": 7633,
+          "max_ns": 9590,
+          "mean_ns": 9159,
+          "min_ns": 8776,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 234,
+      "baseline_ns": 240,
+      "baseline_ops_per_second": 4166666.67,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 264,
+        "max_ns": 261,
         "mean_ns": 240,
-        "median_ns": 234,
-        "min_ns": 219,
+        "median_ns": 240,
+        "min_ns": 223,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          255,
-          264,
-          245,
-          234,
-          232,
-          228,
-          219
+          261,
+          256,
+          240,
+          240,
+          231,
+          227,
+          223
         ],
         "status": "measured",
         "warmup_iterations": 2
       },
+      "bucket": "grouped-class",
       "cache_mode": "warm",
       "categories": [
+        "grouping",
         "character-class",
-        "warm-cache",
-        "smoke"
+        "alternation",
+        "warm-cache"
       ],
       "family": "parser",
       "flags": 0,
-      "id": "compile-character-class-warm",
+      "id": "compile-grouped-class-warm",
       "implementation_ns": null,
+      "implementation_ops_per_second": null,
       "implementation_timing": {
         "adapter": "rebar",
         "reason": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
         "status": "unimplemented"
       },
       "notes": [
-        "Phase 0 warm compile proxy workload to keep cache-state labeling visible.",
+        "Warm compile proxy for a medium pattern that mixes named groups, classes, and alternation.",
         "Implementation timing is unavailable until the rebar compile surface exists."
       ],
       "operation": "compile",
-      "pattern": "[A-Z][a-z]+",
+      "pattern": "(?P<word>[A-Z][a-z]+)(?:[-_](?:[A-Z]{2}|\\d{2,4}))?",
       "speedup_vs_cpython": null,
       "status": "unimplemented",
+      "syntax_features": [
+        "grouping-forms",
+        "character-classes-and-sets",
+        "concatenation-and-alternation"
+      ],
       "text_model": "str",
+      "timing_scope": "compile-path-proxy",
       "variance": {
         "baseline": {
-          "max_ns": 264,
+          "max_ns": 261,
           "mean_ns": 240,
-          "min_ns": 219,
+          "min_ns": 223,
+          "sample_count": 7
+        },
+        "implementation": null
+      }
+    },
+    {
+      "baseline_ns": 142630,
+      "baseline_ops_per_second": 7011.15,
+      "baseline_timing": {
+        "adapter": "cpython.re",
+        "max_ns": 146010,
+        "mean_ns": 142659,
+        "median_ns": 142630,
+        "min_ns": 139370,
+        "sample_count": 7,
+        "sample_iterations": 5,
+        "samples_ns": [
+          146010,
+          142311,
+          139370,
+          142957,
+          142630,
+          140190,
+          145142
+        ],
+        "status": "measured",
+        "warmup_iterations": 2
+      },
+      "bucket": "parser-stress",
+      "cache_mode": "cold",
+      "categories": [
+        "atomic-group",
+        "possessive-quantifier",
+        "lookbehind",
+        "backreference",
+        "cold-cache"
+      ],
+      "family": "parser",
+      "flags": 0,
+      "id": "compile-parser-stress-cold",
+      "implementation_ns": null,
+      "implementation_ops_per_second": null,
+      "implementation_timing": {
+        "adapter": "rebar",
+        "reason": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+        "status": "unimplemented"
+      },
+      "notes": [
+        "Heavier parser-stress compile proxy covering modern CPython 3.12 syntax families.",
+        "Implementation timing is unavailable until the rebar compile surface exists."
+      ],
+      "operation": "compile",
+      "pattern": "(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\\d{2}))?(?:(?<=foo)bar)?(?P=lemma)",
+      "speedup_vs_cpython": null,
+      "status": "unimplemented",
+      "syntax_features": [
+        "grouping-forms",
+        "quantifiers",
+        "assertions-and-anchors",
+        "backreferences-and-conditionals",
+        "flag-syntax"
+      ],
+      "text_model": "str",
+      "timing_scope": "compile-path-proxy",
+      "variance": {
+        "baseline": {
+          "max_ns": 146010,
+          "mean_ns": 142659,
+          "min_ns": 139370,
+          "sample_count": 7
+        },
+        "implementation": null
+      }
+    },
+    {
+      "baseline_ns": 30648,
+      "baseline_ops_per_second": 32628.56,
+      "baseline_timing": {
+        "adapter": "cpython.re",
+        "max_ns": 34905,
+        "mean_ns": 31520,
+        "median_ns": 30648,
+        "min_ns": 29980,
+        "sample_count": 7,
+        "sample_iterations": 5,
+        "samples_ns": [
+          34905,
+          30859,
+          30648,
+          30415,
+          29980,
+          30625,
+          33211
+        ],
+        "status": "measured",
+        "warmup_iterations": 2
+      },
+      "bucket": "bytes-class",
+      "cache_mode": "cold",
+      "categories": [
+        "bytes",
+        "character-class",
+        "cold-cache"
+      ],
+      "family": "parser",
+      "flags": 0,
+      "id": "compile-bytes-class-cold",
+      "implementation_ns": null,
+      "implementation_ops_per_second": null,
+      "implementation_timing": {
+        "adapter": "rebar",
+        "reason": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+        "status": "unimplemented"
+      },
+      "notes": [
+        "Mirrored bytes compile path to keep separate text-model coverage visible in the scorecard.",
+        "Implementation timing is unavailable until the rebar compile surface exists."
+      ],
+      "operation": "compile",
+      "pattern": "[A-Z_][A-Z0-9_]{2,7}",
+      "speedup_vs_cpython": null,
+      "status": "unimplemented",
+      "syntax_features": [
+        "pattern-text-model",
+        "character-classes-and-sets"
+      ],
+      "text_model": "bytes",
+      "timing_scope": "compile-path-proxy",
+      "variance": {
+        "baseline": {
+          "max_ns": 34905,
+          "mean_ns": 31520,
+          "min_ns": 29980,
+          "sample_count": 7
+        },
+        "implementation": null
+      }
+    },
+    {
+      "baseline_ns": 227,
+      "baseline_ops_per_second": 4405286.34,
+      "baseline_timing": {
+        "adapter": "cpython.re",
+        "max_ns": 282,
+        "mean_ns": 242,
+        "median_ns": 227,
+        "min_ns": 209,
+        "sample_count": 7,
+        "sample_iterations": 5,
+        "samples_ns": [
+          282,
+          265,
+          227,
+          258,
+          209,
+          226,
+          226
+        ],
+        "status": "measured",
+        "warmup_iterations": 2
+      },
+      "bucket": "bytes-backreference",
+      "cache_mode": "warm",
+      "categories": [
+        "bytes",
+        "named-group",
+        "backreference",
+        "warm-cache"
+      ],
+      "family": "parser",
+      "flags": 0,
+      "id": "compile-bytes-backreference-warm",
+      "implementation_ns": null,
+      "implementation_ops_per_second": null,
+      "implementation_timing": {
+        "adapter": "rebar",
+        "reason": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+        "status": "unimplemented"
+      },
+      "notes": [
+        "Warm bytes compile proxy for a cached named-group and backreference path.",
+        "Implementation timing is unavailable until the rebar compile surface exists."
+      ],
+      "operation": "compile",
+      "pattern": "(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}",
+      "speedup_vs_cpython": null,
+      "status": "unimplemented",
+      "syntax_features": [
+        "pattern-text-model",
+        "grouping-forms",
+        "backreferences-and-conditionals",
+        "quantifiers"
+      ],
+      "text_model": "bytes",
+      "timing_scope": "compile-path-proxy",
+      "variance": {
+        "baseline": {
+          "max_ns": 282,
+          "mean_ns": 242,
+          "min_ns": 209,
+          "sample_count": 7
+        },
+        "implementation": null
+      }
+    },
+    {
+      "baseline_ns": 67596,
+      "baseline_ops_per_second": 14793.77,
+      "baseline_timing": {
+        "adapter": "cpython.re",
+        "max_ns": 71481,
+        "mean_ns": 68575,
+        "median_ns": 67596,
+        "min_ns": 66719,
+        "sample_count": 7,
+        "sample_iterations": 5,
+        "samples_ns": [
+          69994,
+          67596,
+          67181,
+          71481,
+          66719,
+          66931,
+          70125
+        ],
+        "status": "measured",
+        "warmup_iterations": 2
+      },
+      "bucket": "verbose-flags",
+      "cache_mode": "purged",
+      "categories": [
+        "verbose",
+        "multiline",
+        "possessive-quantifier",
+        "purged-cache"
+      ],
+      "family": "parser",
+      "flags": 72,
+      "id": "compile-verbose-purged",
+      "implementation_ns": null,
+      "implementation_ops_per_second": null,
+      "implementation_timing": {
+        "adapter": "rebar",
+        "reason": "rebar.compile() is a scaffold placeholder; the native `re`-compatible API has not been implemented yet",
+        "status": "unimplemented"
+      },
+      "notes": [
+        "Purged-cache compile proxy that keeps flag handling and cache reset labeling visible.",
+        "Implementation timing is unavailable until the rebar compile surface exists."
+      ],
+      "operation": "compile",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "speedup_vs_cpython": null,
+      "status": "unimplemented",
+      "syntax_features": [
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "grouping-forms",
+        "quantifiers"
+      ],
+      "text_model": "str",
+      "timing_scope": "compile-path-proxy",
+      "variance": {
+        "baseline": {
+          "max_ns": 71481,
+          "mean_ns": 68575,
+          "min_ns": 66719,
           "sample_count": 7
         },
         "implementation": null

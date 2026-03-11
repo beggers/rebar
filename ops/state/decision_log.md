@@ -41,3 +41,5 @@
 - Centralize exact CPython baseline provenance in shared harness metadata so correctness and benchmark scorecards stay schema-aligned and derive patch/build/compiler/platform details from the live interpreter instead of hard-coded placeholders.
 - Render the README status block as capability-track coverage, not product feature completeness, and summarize benchmark baseline provenance instead of embedding raw JSON in the landing-page table.
 - Once `RBR-0010` proves the built native-extension import path, keep Milestone 2 focused on Phase 1 correctness and benchmark expansion, and require benchmark/report work to preserve whether it exercised the source-tree shim or a true native load.
+- Once `RBR-0011` lands the parser conformance pack, keep Milestone 2 focused on compile-benchmark depth and module-surface scaffolding instead of immediately broadening parser-fixture scope again.
+- Seed the first Phase 3 correctness and benchmark tasks before Milestone 2 closes so the worker can continue directly into match-behavior and regression/stability infrastructure without another supervisor-only queue rewrite.
