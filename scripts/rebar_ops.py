@@ -2,12 +2,10 @@
 from __future__ import annotations
 
 import argparse
-import fcntl
 import json
 import os
 import subprocess
 import sys
-import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -96,7 +94,6 @@ def runtime_paths(config: dict[str, Any]) -> dict[str, Path]:
         "artifact_root": artifact_root,
         "runs_root": artifact_root / "runs",
         "loop_state": artifact_root / "loop_state.json",
-        "loop_lock": artifact_root / "loop.lock",
     }
 
 
@@ -320,33 +317,6 @@ def normalize_subprocess_text(value: str | bytes | None) -> str:
 def task_timeout_seconds(config: dict[str, Any], agent: AgentSpec) -> int:
     runtime_cfg = config.get("runtime", {})
     return int(agent.dispatch.get("timeout_seconds", runtime_cfg.get("default_timeout_seconds", 1800)))
-
-
-class LoopLock:
-    def __init__(self, path: Path) -> None:
-        self.path = path
-        self.handle: Any | None = None
-
-    def __enter__(self) -> "LoopLock":
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.handle = open(self.path, "a+", encoding="utf-8")
-        try:
-            fcntl.flock(self.handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError as exc:
-            raise RuntimeError(f"Loop already running: {self.path}") from exc
-        self.handle.seek(0)
-        self.handle.truncate()
-        self.handle.write(f"pid={os.getpid()} started_at={utcnow()}\n")
-        self.handle.flush()
-        return self
-
-    def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
-        if self.handle is None:
-            return
-        try:
-            fcntl.flock(self.handle.fileno(), fcntl.LOCK_UN)
-        finally:
-            self.handle.close()
 
 
 def run_agent(agent: AgentSpec, config: dict[str, Any], task_path: Path | None = None) -> RunResult:
@@ -631,21 +601,16 @@ def cmd_cycle(config: dict[str, Any], force_supervisor: bool) -> int:
     return run_cycle(config, force_supervisor=force_supervisor)
 
 
-def cmd_loop(config: dict[str, Any], *, force_supervisor: bool, max_cycles: int | None) -> int:
+def sleep_seconds_for_exit(config: dict[str, Any], exit_code: int) -> int:
     runtime_cfg = config.get("runtime", {})
-    sleep_seconds = int(runtime_cfg.get("sleep_seconds", 300))
-    failure_backoff_seconds = int(runtime_cfg.get("failure_backoff_seconds", 30))
-    paths = runtime_paths(config)
-    ensure_runtime_dirs(paths)
+    if exit_code == 0:
+        return int(runtime_cfg.get("sleep_seconds", 300))
+    return int(runtime_cfg.get("failure_backoff_seconds", 30))
 
-    with LoopLock(paths["loop_lock"]):
-        cycles = 0
-        while True:
-            exit_code = run_cycle(config, force_supervisor=(force_supervisor or cycles == 0))
-            cycles += 1
-            if max_cycles is not None and cycles >= max_cycles:
-                return exit_code
-            time.sleep(sleep_seconds if exit_code == 0 else failure_backoff_seconds)
+
+def cmd_sleep_seconds(config: dict[str, Any], exit_code: int) -> int:
+    print(sleep_seconds_for_exit(config, exit_code))
+    return 0
 
 
 def parse_args() -> argparse.Namespace:
@@ -665,17 +630,11 @@ def parse_args() -> argparse.Namespace:
         help="Force the supervisor to run even if its future dispatch policy becomes interval-based.",
     )
 
-    loop_parser = subparsers.add_parser("loop", help="Run cycles forever.")
-    loop_parser.add_argument(
-        "--force-supervisor",
-        action="store_true",
-        help="Force the first cycle to run the supervisor.",
+    sleep_parser = subparsers.add_parser(
+        "sleep-seconds",
+        help="Print the configured post-cycle sleep based on the previous exit code.",
     )
-    loop_parser.add_argument(
-        "--max-cycles",
-        type=int,
-        help="Optional upper bound for local testing.",
-    )
+    sleep_parser.add_argument("--exit-code", type=int, required=True)
     return parser.parse_args()
 
 
@@ -688,8 +647,8 @@ def main() -> int:
         return cmd_render(config, args.agent, args.task)
     if args.command == "cycle":
         return cmd_cycle(config, args.force_supervisor)
-    if args.command == "loop":
-        return cmd_loop(config, force_supervisor=args.force_supervisor, max_cycles=args.max_cycles)
+    if args.command == "sleep-seconds":
+        return cmd_sleep_seconds(config, args.exit_code)
     raise RuntimeError(f"Unknown command: {args.command}")
 
 
