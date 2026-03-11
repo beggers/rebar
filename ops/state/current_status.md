@@ -3,7 +3,7 @@
 Updated: 2026-03-11
 
 ## Phase
-Phase 1: harness bootstrap and project-definition work for a Rust drop-in `re` replacement.
+Phase 2: compatibility and scope definition for a Rust drop-in `re` replacement.
 
 ## What Exists
 - A repo-local `AGENTS.md` that separates supervisor and implementation roles.
@@ -22,6 +22,7 @@ Phase 1: harness bootstrap and project-definition work for a Rust drop-in `re` r
 - An isolated rerun of the implementation preflight write probe from the supervisor shell that now succeeds end-to-end, narrowing the remaining queue stall to cycle/reporting behavior rather than raw child write access.
 - A runtime cycle lock that prevents overlapping `scripts/rebar_ops.py cycle` invocations from racing the live forever loop in the same checkout.
 - A first completed implementation task, `RBR-0000`, with `docs/spec/drop-in-re-compatibility.md` defining the public `re` drop-in contract, near-term scope, deferred questions, and the Rust/CPython integration target.
+- A second completed implementation task, `RBR-0001`, with `docs/spec/syntax-scope.md` pinning the first parser target to CPython `3.12.x`, mapping major regex construct families, and recording deferred parser-adjacent scope.
 - Report rendering that recomputes last-cycle environment issues from run artifacts so dashboard anomalies do not stay stale after a detection fix.
 - A fetch-before-push git sync path that measures ahead/behind state against fresh upstream refs and reports diverged branches explicitly instead of pushing against stale remote-tracking data.
 - Tracked state, task queue directories, and seeded ready tasks under `ops/`.
@@ -31,7 +32,7 @@ Phase 1: harness bootstrap and project-definition work for a Rust drop-in `re` r
 - CPython extension module or drop-in `re` compatibility layer.
 - Correctness test harness.
 - Benchmark harness.
-- Concrete syntax-scope, correctness-plan, and benchmark-plan documents under `docs/`.
+- Concrete correctness-plan and benchmark-plan documents under `docs/`.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.
@@ -47,14 +48,15 @@ Phase 1: harness bootstrap and project-definition work for a Rust drop-in `re` r
 - Implementation agents are expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Use the implementation agent to complete the remaining Milestone 1 docs: syntax scope, correctness plan, and benchmark plan.
-- Convert the completed compatibility/spec documents into concrete Rust crate, CPython-extension, and conformance-harness tasks as soon as the remaining planning docs land.
-- Keep the ready-task docs aligned on a single initial CPython reference target so later harness and benchmark work does not fork its assumptions.
-- After the planning docs land, start Rust crate scaffolding, CPython-extension scaffolding, and the first parser-oriented tests.
+- Use the implementation agent to complete the remaining Milestone 1 docs: the correctness plan and benchmark plan.
+- Keep those planning docs aligned on the pinned CPython `3.12.x` baseline from `docs/spec/syntax-scope.md`, including scorecard field shapes for tracked reports.
+- Run the queued post-planning task-synthesis pass immediately after the remaining docs land so the next ready queue contains scaffold and harness implementation tickets instead of another planning gap.
+- Start Rust crate scaffolding, CPython-extension scaffolding, and the first parser-oriented conformance tests once that follow-on task pack is written.
 
 ## Risks
-- The project can drift into premature implementation without a clear compatibility target.
-- The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility.
+- The project can drift into premature implementation without a concrete correctness and benchmark plan, even though the compatibility target is now clearer.
+- The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility at the Python surface.
+- The prose pin to CPython `3.12.x` is not yet backed by differential fixtures, so hidden patch-level drift could still surface once harness work starts.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Concurrent human and loop commits can still produce diverged git history that requires supervisor resolution; the harness now detects that state accurately but does not auto-rebase it.
-- Only one implementation task has completed under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
+- Only two implementation tasks have completed under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.

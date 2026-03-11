@@ -7,14 +7,14 @@ This repository is run autonomously, but it is meant to be legible to humans fir
 <!-- REBAR:STATUS_START -->
 ## Current State
 
-Feature completeness: `[#####.............] 28%`
+Feature completeness: `[######............] 36%`
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 1: harness bootstrap and project-definition work for a Rust drop-in `re` replacement. |
+| Phase | Phase 2: compatibility and scope definition for a Rust drop-in `re` replacement. |
 | Current milestone | Milestone 1: define the Rust implementation target and drop-in `re` compatibility contract well enough that implementation work can start without re-litigating scope each run. |
-| Work queue | `2` ready, `0` in progress, `2` done, `0` blocked |
-| Capability tracks | `2/9` complete |
+| Work queue | `2` ready, `0` in progress, `3` done, `0` blocked |
+| Capability tracks | `3/9` complete |
 
 ### Capability Matrix
 
@@ -22,7 +22,7 @@ Feature completeness: `[#####.............] 28%`
 | --- | --- | --- |
 | Drop-in `re` compatibility contract | complete | [`docs/spec/drop-in-re-compatibility.md`](docs/spec/drop-in-re-compatibility.md) |
 | Syntax compatibility scope | complete | [`docs/spec/syntax-scope.md`](docs/spec/syntax-scope.md) |
-| Correctness plan | planned | [`ops/tasks/ready/RBR-0002-correctness-harness-plan.md`](ops/tasks/ready/RBR-0002-correctness-harness-plan.md) |
+| Correctness plan | complete | [`docs/testing/correctness-plan.md`](docs/testing/correctness-plan.md) |
 | Benchmark methodology | planned | [`ops/tasks/ready/RBR-0003-benchmark-plan.md`](ops/tasks/ready/RBR-0003-benchmark-plan.md) |
 | Rust parser crate scaffold | not started | `not yet queued` |
 | CPython extension scaffold | not started | `not yet queued` |
@@ -40,18 +40,19 @@ No published benchmark scorecard yet. Expected tracked source: [`reports/benchma
 
 ### Immediate Next Steps
 
-- Use the implementation agent to complete the remaining Milestone 1 docs: syntax scope, correctness plan, and benchmark plan.
-- Convert the completed compatibility/spec documents into concrete Rust crate, CPython-extension, and conformance-harness tasks as soon as the remaining planning docs land.
-- Keep the ready-task docs aligned on a single initial CPython reference target so later harness and benchmark work does not fork its assumptions.
-- After the planning docs land, start Rust crate scaffolding, CPython-extension scaffolding, and the first parser-oriented tests.
+- Use the implementation agent to complete the remaining Milestone 1 docs: the correctness plan and benchmark plan.
+- Keep those planning docs aligned on the pinned CPython `3.12.x` baseline from `docs/spec/syntax-scope.md`, including scorecard field shapes for tracked reports.
+- Run the queued post-planning task-synthesis pass immediately after the remaining docs land so the next ready queue contains scaffold and harness implementation tickets instead of another planning gap.
+- Start Rust crate scaffolding, CPython-extension scaffolding, and the first parser-oriented conformance tests once that follow-on task pack is written.
 
 ### Current Risks
 
-- The project can drift into premature implementation without a clear compatibility target.
-- The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility.
+- The project can drift into premature implementation without a concrete correctness and benchmark plan, even though the compatibility target is now clearer.
+- The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility at the Python surface.
+- The prose pin to CPython `3.12.x` is not yet backed by differential fixtures, so hidden patch-level drift could still surface once harness work starts.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Concurrent human and loop commits can still produce diverged git history that requires supervisor resolution; the harness now detects that state accurately but does not auto-rebase it.
-- Only one implementation task has completed under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
+- Only two implementation tasks have completed under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
 <!-- REBAR:STATUS_END -->
 
 ## What `rebar` Is Trying To Do

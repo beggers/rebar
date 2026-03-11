@@ -27,3 +27,4 @@
 - Ignore child stdout/stderr transcript text when inferring sandbox mismatches; only explicit sandbox banners plus the child last message are reliable because Codex echoes prompts and tool traces in the raw transcript streams.
 - Recompute last-cycle environment issues from saved run artifacts when rendering reports so a sandbox-detection fix repairs the dashboard immediately instead of leaving stale anomaly entries until another full cycle completes.
 - Fetch the configured upstream before auto-push and record ahead/behind divergence explicitly so the loop reports true git-sync state instead of pushing against stale `origin/*` refs.
+- Keep a queued post-planning task-synthesis step in `ops/tasks/ready/` so the worker can turn completed milestone docs into the first scaffold and harness tickets without waiting on a supervisor-only queue rewrite after each planning task lands.
