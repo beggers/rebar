@@ -12,8 +12,8 @@ Feature completeness: `[##################] 100%`
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed, the Phase 0 correctness harness published, and the remaining benchmark/native-smoke gaps queued. |
-| Current milestone | Milestone 2: close out the initial measurement/bootstrap loop by landing the benchmark scaffold, exact CPython baseline metadata, and a verified native-extension import path on top of the existing Rust/Python scaffolds and placeholder correctness scorecard. |
-| Work queue | `6` ready, `0` in progress, `10` done, `0` blocked |
+| Current milestone | Milestone 2: close out the initial measurement/bootstrap loop by landing a verified native-extension import path and the first Phase 1 harness expansions on top of the now-published exact CPython baseline metadata. |
+| Work queue | `5` ready, `0` in progress, `11` done, `0` blocked |
 | Capability tracks | `10/10` complete |
 
 ### Capability Matrix
@@ -54,22 +54,21 @@ Feature completeness: `[##################] 100%`
 
 ### Immediate Next Steps
 
-- Land `RBR-0009` so the correctness and benchmark reports record an exact CPython `3.12.x` patch/build instead of only the family line.
-- Land `RBR-0010` to exercise a built `rebar._rebar` import path instead of relying only on source-package smoke coverage.
-- Keep `RBR-0011` and `RBR-0012` queued behind that milestone so the worker can move directly into Phase 1 parser-conformance and compile-path benchmark expansion.
-- Follow those with `RBR-0013` through `RBR-0015` so the queue keeps moving into scaffolded module-surface work, public-API conformance, and module-boundary benchmarking without another supervisor-only rewrite pass.
+- Land `RBR-0010` so the repo exercises a built `rebar._rebar` artifact and stops relying on source-package smoke coverage as the only native-module signal.
+- Land `RBR-0011` and `RBR-0012` to expand the two-case smoke scaffolds into the first parser-conformance and compile-path benchmark packs on top of the now-pinned CPython `3.12.3` baseline metadata.
+- Keep `RBR-0013` through `RBR-0015` queued behind that work so the worker can continue directly into scaffolded module-surface, public-API correctness, and module-boundary benchmark expansion without another supervisor-only queue rewrite.
 
 ### Current Risks
 
 - The repo now validates the source-package scaffold, but the built-extension install/import path for `rebar._rebar` still has no exercised artifact.
+- The published benchmark report still reflects the source-tree shim with `native_module_loaded: false`, so native-module drift will remain hidden until `RBR-0010` lands.
 - The first CPython-extension scaffold locked in PyO3/maturin and module layout choices, but any mismatch between the source shim and built native module will stay hidden until a dedicated native-load smoke path lands.
 - The correctness harness currently covers only two compile smoke cases and reports `unimplemented` for every `rebar` comparison, so most compatibility drift is still unmeasured.
 - The benchmark harness currently measures only two parser-family compile smoke workloads and records no `rebar` timings yet, so timing provenance is still only baseline-side scaffolding.
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility at the Python surface.
-- The harness outputs still pin CPython only as `3.12.x`, so hidden patch-level drift could surface until `RBR-0009` records the exact interpreter build.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Concurrent human and loop commits can still produce diverged git history that requires supervisor resolution; the harness now detects that state accurately but does not auto-rebase it.
-- The implementation worker has only eight completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
+- The implementation worker has only nine completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
 <!-- REBAR:STATUS_END -->
 
 ## What `rebar` Is Trying To Do

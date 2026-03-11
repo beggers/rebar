@@ -1,6 +1,6 @@
 # RBR-0010: Exercise the built native-extension import path
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
 
@@ -26,3 +26,9 @@ Created: 2026-03-11
 ## Notes
 - Use `pyproject.toml`, `crates/rebar-cpython/src/lib.rs`, and `tests/python/test_import_rebar.py` as the starting point.
 - This task is intentionally queued behind `RBR-0007` through `RBR-0009`; harness scaffolds still have higher milestone priority, but the native-load gap should be closed before parser-heavy work begins.
+
+## Completion
+- Added `tests/python/test_native_extension_smoke.py`, which creates an isolated venv, builds a wheel with `maturin build`, installs it, and asserts that `import rebar` loads `rebar._rebar` with `native_module_loaded() is True`.
+- Tightened `python/rebar/__init__.py` so only a truly missing extension is treated as optional; if a discovered native module is broken during import, `import rebar` now surfaces that failure instead of silently masking it.
+- Documented the smoke command in `pyproject.toml` under `tool.rebar.smoke`.
+- Verified with `python3 -m unittest tests.python.test_import_rebar`, `cargo test -p rebar-cpython`, and `PATH=/home/ubuntu/rebar/.venv-rbr0010/bin:$PATH python3 -m unittest tests.python.test_native_extension_smoke`.

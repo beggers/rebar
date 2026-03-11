@@ -419,7 +419,7 @@ def build_scorecard(
             {
                 "area": "module-boundary",
                 "reason": "Phase 0 benchmark scaffold measures compile-path proxy workloads only.",
-                "follow_up": "RBR-0012",
+                "follow_up": "RBR-0015",
             },
             {
                 "area": "regex-execution-throughput",

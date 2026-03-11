@@ -688,6 +688,33 @@ def ascii_progress_bar(ratio: float, width: int = 18) -> str:
     return "[" + "#" * filled + "." * (width - filled) + "]"
 
 
+def summarize_benchmark_baseline(raw_baseline: Any) -> str:
+    if not isinstance(raw_baseline, dict):
+        return str(raw_baseline) if raw_baseline else "Unknown"
+
+    implementation = str(raw_baseline.get("python_implementation") or "").strip()
+    version = str(
+        raw_baseline.get("python_version") or raw_baseline.get("python_version_family") or ""
+    ).strip()
+    executable = str(raw_baseline.get("executable") or "").strip()
+    re_module = str(raw_baseline.get("re_module") or "").strip()
+
+    headline = " ".join(part for part in (implementation, version) if part)
+    details: list[str] = []
+    if re_module:
+        details.append(f"module `{re_module}`")
+    if executable:
+        details.append(f"exe `{executable}`")
+
+    if headline and details:
+        return f"{headline} ({', '.join(details)})"
+    if headline:
+        return headline
+    if details:
+        return ", ".join(details)
+    return "Unknown"
+
+
 def replace_markdown_block(text: str, start_marker: str, end_marker: str, block: str) -> str:
     normalized = block.rstrip("\n")
     if start_marker in text and end_marker in text:
@@ -709,7 +736,9 @@ def render_readme_status(config: dict[str, Any]) -> str:
     lines = [
         "## Current State",
         "",
-        f"Feature completeness: `{ascii_progress_bar(completion_ratio)} {int(round(completion_ratio * 100))}%`",
+        f"Capability-track coverage: `{ascii_progress_bar(completion_ratio)} {int(round(completion_ratio * 100))}%`",
+        "",
+        "_This measures whether the planned scaffolds, plans, and scorecard artifacts exist. It does not mean `rebar` already matches CPython's `re` feature-for-feature._",
         "",
         "| Signal | Value |",
         "| --- | --- |",
@@ -755,7 +784,7 @@ def render_readme_status(config: dict[str, Any]) -> str:
             [
                 "| Metric | Value |",
                 "| --- | --- |",
-                f"| Baseline | {benchmark.get('baseline') or 'Unknown'} |",
+                f"| Baseline | {summarize_benchmark_baseline(benchmark.get('baseline'))} |",
                 f"| Candidate | {benchmark.get('candidate') or 'rebar'} |",
                 f"| Workloads | `{benchmark.get('workload_count', 0)}` |",
                 f"| Geomean speedup vs baseline | `{benchmark.get('geomean_speedup')}` |",

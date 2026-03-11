@@ -69,6 +69,8 @@ class BenchmarkHarnessSmokeTest(unittest.TestCase):
         self.assertEqual(scorecard["summary"]["known_gap_count"], 2)
         self.assertEqual(scorecard["summary"]["total_workloads"], 2)
         self.assertEqual(scorecard["artifacts"]["manifest"], "benchmarks/workloads/compile_smoke.json")
+        self.assertEqual(scorecard["deferred"][0]["area"], "module-boundary")
+        self.assertEqual(scorecard["deferred"][0]["follow_up"], "RBR-0015")
         self.assertEqual(len(scorecard["workloads"]), 2)
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 

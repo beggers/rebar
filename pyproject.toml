@@ -22,3 +22,7 @@ bindings = "pyo3"
 manifest-path = "crates/rebar-cpython/Cargo.toml"
 module-name = "rebar._rebar"
 python-source = "python"
+
+[tool.rebar.smoke]
+native_extension_test = "python3 -m unittest tests.python.test_native_extension_smoke"
+native_extension_build = "maturin build --manifest-path crates/rebar-cpython/Cargo.toml --interpreter <venv-python> --out <wheel-dir>"

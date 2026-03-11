@@ -104,7 +104,7 @@
     "path": "tests/conformance/fixtures/parser_smoke.json",
     "schema_version": 1
   },
-  "generated_at": "2026-03-11T22:37:20Z",
+  "generated_at": "2026-03-11T22:46:16Z",
   "generator": "python -m rebar_harness.correctness",
   "phase": "phase0-harness-skeleton",
   "schema_version": "1.0",
