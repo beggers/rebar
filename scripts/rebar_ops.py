@@ -918,7 +918,10 @@ def detect_environment_issue(
     requested_writable = requested not in {None, "", "read-only"}
     if requested_writable and observed == "read-only":
         return "sandbox_clamped_to_read_only"
-    combined = "\n".join([stdout_text, stderr_text, last_message_text]).lower()
+    # Codex stdout/stderr can both contain the echoed prompt and tool transcript, so
+    # only the explicit sandbox banner and the agent-authored last message are stable
+    # enough to classify environment failures.
+    combined = last_message_text.lower()
     if requested_writable and (
         "this codex session is read-only" in combined
         or "sandboxed `read-only`" in combined

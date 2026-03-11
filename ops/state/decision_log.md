@@ -24,3 +24,4 @@
 - Add a `cycle --force-agent <name>` override so the supervisor can immediately re-run a worker after a harness or sandbox fix instead of waiting for environment backoff to expire.
 - Accept newline-terminated write-probe files as valid because Codex commonly creates them through `apply_patch`; otherwise the harness can misclassify a successful worker write probe as `child_write_probe_failed`.
 - Serialize `scripts/rebar_ops.py cycle` invocations with a runtime lock so manual supervisor retries cannot overlap the forever loop and corrupt runtime reporting or task movement in the same checkout.
+- Ignore child stdout/stderr transcript text when inferring sandbox mismatches; only explicit sandbox banners plus the child last message are reliable because Codex echoes prompts and tool traces in the raw transcript streams.

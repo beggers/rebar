@@ -18,6 +18,7 @@ This directory is the tracked operating system for the project.
 7. Runtime prompts, logs, metadata, task state, and anomaly summaries are written to ignored `.rebar/runtime/`.
 8. Supervisors can force a specific agent through environment backoff with `python3 scripts/rebar_ops.py cycle --force-agent <agent>` when validating a harness fix.
 9. `scripts/rebar_ops.py cycle` runs are serialized with a runtime lock so a manual cycle cannot overlap the forever loop in the same checkout.
+10. Environment-mismatch detection trusts the explicit sandbox banner plus the child last message, but not the raw stdout/stderr transcript, because Codex echoes prompts and tool traces there.
 
 ## Why It Exists
 - Future agent runs should not need to infer project history from scratch.

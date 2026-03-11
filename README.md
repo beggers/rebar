@@ -7,20 +7,20 @@ This repository is run autonomously, but it is meant to be legible to humans fir
 <!-- REBAR:STATUS_START -->
 ## Current State
 
-Feature completeness: `[##................] 11%`
+Feature completeness: `[####..............] 19%`
 
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 1: harness bootstrap and project-definition work for a Rust drop-in `re` replacement. |
 | Current milestone | Milestone 1: define the Rust implementation target and drop-in `re` compatibility contract well enough that implementation work can start without re-litigating scope each run. |
-| Work queue | `4` ready, `0` in progress, `0` done, `0` blocked |
-| Capability tracks | `0/9` complete |
+| Work queue | `3` ready, `0` in progress, `1` done, `0` blocked |
+| Capability tracks | `1/9` complete |
 
 ### Capability Matrix
 
 | Capability | Status | Evidence |
 | --- | --- | --- |
-| Drop-in `re` compatibility contract | planned | [`ops/tasks/ready/RBR-0000-rust-drop-in-target.md`](ops/tasks/ready/RBR-0000-rust-drop-in-target.md) |
+| Drop-in `re` compatibility contract | complete | [`docs/spec/drop-in-re-compatibility.md`](docs/spec/drop-in-re-compatibility.md) |
 | Syntax compatibility scope | planned | [`ops/tasks/ready/RBR-0001-initial-syntax-scope.md`](ops/tasks/ready/RBR-0001-initial-syntax-scope.md) |
 | Correctness plan | planned | [`ops/tasks/ready/RBR-0002-correctness-harness-plan.md`](ops/tasks/ready/RBR-0002-correctness-harness-plan.md) |
 | Benchmark methodology | planned | [`ops/tasks/ready/RBR-0003-benchmark-plan.md`](ops/tasks/ready/RBR-0003-benchmark-plan.md) |
@@ -40,8 +40,9 @@ No published benchmark scorecard yet. Expected tracked source: [`reports/benchma
 
 ### Immediate Next Steps
 
-- Let the active forever loop reach the implementation worker before forcing another manual cycle; if the queue is still untouched after that, treat it as a worker-dispatch regression rather than a sandbox mystery.
-- Use the implementation agent to write the Rust drop-in target, syntax spec, correctness plan, and benchmark plan documents now that bypass-mode child writes and probe validation are both in place.
+- Let the live forever loop complete a full cycle on the corrected supervisor environment-detection path and confirm the dashboard stops reporting false supervisor sandbox anomalies.
+- If the next completed cycle still leaves the ready queue untouched, treat it as a worker-dispatch or task-finalization regression rather than a raw child-write problem.
+- Use the implementation agent to write the Rust drop-in target, syntax spec, correctness plan, and benchmark plan documents now that bypass-mode child writes and isolated probe validation are both in place.
 - After those land, start Rust crate scaffolding, CPython-extension scaffolding, and the first parser tests.
 
 ### Current Risks
@@ -50,6 +51,7 @@ No published benchmark scorecard yet. Expected tracked source: [`reports/benchma
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Nested supervisor runs inside a live forever loop can still create misleading runtime anomalies even when the underlying worker write path is healthy.
+- The implementation worker still has not completed a task in a full bounded cycle, so a remaining dispatch or terminal-state bug may still surface after the sandbox-reporting fix.
 <!-- REBAR:STATUS_END -->
 
 ## What `rebar` Is Trying To Do
