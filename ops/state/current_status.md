@@ -15,6 +15,7 @@ Phase 1: harness bootstrap and project-definition work for a Rust drop-in `re` r
 - A README reporting model that can surface correctness and benchmark scorecards once tracked result artifacts exist.
 - One live bounded burn-in cycle that exercised runtime state writes, recovery, dashboard generation, and automatic commit/push.
 - A follow-up harness fix that requeues read-only worker runs instead of poisoning tasks as blocked.
+- A task-worker write probe that prevents task claims when child Codex runs cannot write in the current environment.
 - Tracked state, task queue directories, and seeded ready tasks under `ops/`.
 
 ## What Does Not Exist Yet
@@ -26,6 +27,7 @@ Phase 1: harness bootstrap and project-definition work for a Rust drop-in `re` r
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can clamp child agents to read-only and prevent durable task progress.
+- Implementation agents are expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
 - Use the supervisor to refine project direction, backlog, and the forever-mode harness itself.

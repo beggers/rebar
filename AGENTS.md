@@ -1,7 +1,7 @@
 # Rebar Agent Guide
 
 ## Mission
-- Build `rebar` into a regex parsing library that can eventually beat CPython's parser on throughput without regressing accepted syntax, parse trees, or diagnostics.
+- Build `rebar` into a Rust-backed, CPython-facing, bug-for-bug compatible replacement for Python's `re` module that can eventually beat CPython on parser throughput without regressing accepted syntax, public API behavior, parse trees, or diagnostics.
 - The current phase is infrastructure-first: harness, spec, correctness corpus, and benchmarks come before serious optimization work.
 
 ## Mandatory Read Order
@@ -27,6 +27,7 @@
 ### Implementation Agent
 - Owns exactly one concrete task at a time.
 - Should focus on code, tests, benchmarks, or docs required by that task.
+- Must not infer a read-only environment from prior logs alone; if it claims an environment blocker, that claim must come from a direct write attempt in the current run.
 - Must not change `AGENTS.md`, `ops/agents/`, `ops/config/`, `scripts/rebar_ops.py`, or `scripts/loop_forever.sh` unless the task explicitly authorizes it.
 
 ## Active Agent Set
@@ -50,7 +51,7 @@ When you finish work, move the task file to `done/` or `blocked/` and update its
 - Runtime health for the forever loop lives in `.rebar/runtime/loop_state.json`, `.rebar/runtime/dashboard.md`, `.rebar/runtime/task_state.json`, `.rebar/runtime/loop.log`, and per-run directories under `.rebar/runtime/runs/`.
 
 ## Project Priorities
-1. Nail the compatibility target and parser scope against CPython.
+1. Nail the drop-in `re` compatibility target and parser scope against CPython.
 2. Build correctness infrastructure before optimization claims.
-3. Add benchmarks that measure parser throughput, latency, and allocation behavior.
-4. Only then push hard on implementation speed.
+3. Add benchmarks that measure parser and module-level performance against CPython.
+4. Only then push hard on Rust implementation speed.

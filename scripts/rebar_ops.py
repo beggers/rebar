@@ -761,6 +761,16 @@ def render_prompt(agent: AgentSpec, config: dict[str, Any], task_path: Path | No
     return "\n".join(lines) + "\n"
 
 
+def render_write_probe_prompt(probe_relpath: str, token: str) -> str:
+    return (
+        "# Rebar Worker Write Probe\n\n"
+        "Create exactly one file at the path below with the exact token shown below, then stop.\n"
+        "This is an environment probe, not project work. Do not edit tracked files.\n\n"
+        f"Probe path: `{probe_relpath}`\n"
+        f"Required contents: `{token}`\n"
+    )
+
+
 def build_codex_command(
     *,
     config: dict[str, Any],
@@ -970,6 +980,127 @@ def run_agent(agent: AgentSpec, config: dict[str, Any], task_path: Path | None =
     )
 
 
+def run_write_probe(agent: AgentSpec, config: dict[str, Any]) -> RunResult:
+    paths = runtime_paths(config)
+    ensure_runtime_dirs(paths)
+
+    stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    run_id = f"{stamp}-{agent.name}-preflight-write-probe"
+    run_dir = paths["runs_root"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    probe_dir = paths["artifact_root"] / "probes"
+    probe_dir.mkdir(parents=True, exist_ok=True)
+    probe_path = probe_dir / f"{run_id}.txt"
+    probe_token = run_id
+
+    prompt_text = render_write_probe_prompt(relpath(probe_path), probe_token)
+    prompt_path = run_dir / "prompt.md"
+    output_path = run_dir / "last_message.md"
+    stdout_path = run_dir / "stdout.log"
+    stderr_path = run_dir / "stderr.log"
+    metadata_path = run_dir / "metadata.json"
+    write_text(prompt_path, prompt_text)
+
+    command = build_codex_command(config=config, agent=agent, output_path=output_path, cwd=REPO_ROOT)
+    env = build_codex_env(config)
+    timeout_seconds = int(agent.dispatch.get("probe_timeout_seconds", 120))
+    requested = requested_sandbox(config, agent)
+    started_at = utcnow()
+    timed_out = False
+
+    try:
+        proc = subprocess.run(
+            command,
+            input=prompt_text,
+            text=True,
+            capture_output=True,
+            cwd=str(REPO_ROOT),
+            env=env,
+            check=False,
+            timeout=timeout_seconds,
+        )
+        exit_code = proc.returncode
+        stdout_text = normalize_subprocess_text(proc.stdout)
+        stderr_text = normalize_subprocess_text(proc.stderr)
+    except subprocess.TimeoutExpired as exc:
+        timed_out = True
+        exit_code = 124
+        stdout_text = normalize_subprocess_text(exc.stdout)
+        stderr_text = normalize_subprocess_text(exc.stderr)
+
+    finished_at = utcnow()
+    observed = observed_sandbox(stdout_text)
+    write_text(stdout_path, stdout_text)
+    write_text(stderr_path, stderr_text)
+    if not output_path.exists():
+        write_text(output_path, "")
+    last_message_text = output_path.read_text(encoding="utf-8")
+
+    probe_ok = False
+    if probe_path.exists():
+        try:
+            probe_ok = probe_path.read_text(encoding="utf-8") == probe_token
+        except OSError:
+            probe_ok = False
+        try:
+            probe_path.unlink()
+        except OSError:
+            pass
+
+    environment_issue = detect_environment_issue(
+        requested=requested,
+        observed=observed,
+        stdout_text=stdout_text,
+        stderr_text=stderr_text,
+        last_message_text=last_message_text,
+    )
+    if not probe_ok and environment_issue is None:
+        environment_issue = "child_write_probe_failed"
+
+    metadata = {
+        "agent_name": agent.name,
+        "agent_kind": agent.kind,
+        "run_id": run_id,
+        "task_initial_path": None,
+        "task_final_status": None,
+        "task_final_path": None,
+        "command": command,
+        "cwd": str(REPO_ROOT),
+        "started_at": started_at,
+        "finished_at": finished_at,
+        "exit_code": exit_code,
+        "timed_out": timed_out,
+        "requested_sandbox": requested,
+        "observed_sandbox": observed,
+        "environment_issue": environment_issue,
+        "probe_path": relpath(probe_path),
+        "probe_ok": probe_ok,
+        "timeout_seconds": timeout_seconds,
+        "prompt_path": relpath(prompt_path),
+        "stdout_path": relpath(stdout_path),
+        "stderr_path": relpath(stderr_path),
+        "last_message_path": relpath(output_path),
+    }
+    write_json(metadata_path, metadata)
+
+    effective_exit_code = exit_code if probe_ok and environment_issue is None else max(exit_code, 75)
+    return RunResult(
+        agent_name=agent.name,
+        agent_kind=agent.kind,
+        run_id=run_id,
+        exit_code=effective_exit_code,
+        timed_out=timed_out,
+        run_dir=run_dir,
+        task_initial_path=None,
+        task_final_path=None,
+        task_final_status=None,
+        requested_sandbox=requested,
+        observed_sandbox=observed,
+        environment_issue=environment_issue,
+    )
+
+
 def agent_last_state(loop_state: dict[str, Any], agent_name: str) -> dict[str, Any]:
     agents = loop_state.get("agents")
     if not isinstance(agents, dict):
@@ -1019,6 +1150,10 @@ def dispatch_agent(
         queue = str(agent.dispatch.get("queue", "ready"))
         claim_to = str(agent.dispatch.get("claim_to", "in_progress"))
         max_runs = int(agent.dispatch.get("max_runs_per_cycle", 1))
+        if bool(agent.dispatch.get("require_write_probe", False)) and list_task_files(queue):
+            probe_result = run_write_probe(agent, config)
+            if probe_result.environment_issue is not None or probe_result.exit_code != 0:
+                return [probe_result]
         claimed = claim_tasks(queue, claim_to, max_runs)
         return [run_agent(agent, config, task_path=task_path) for task_path in claimed]
     raise RuntimeError(f"Unsupported dispatch mode for {agent.name}: {mode}")
@@ -1323,6 +1458,16 @@ def build_anomalies(
                     "run_id": result.run_id,
                     "exit_code": result.exit_code,
                     "timed_out": result.timed_out,
+                }
+            )
+        if result.environment_issue is not None:
+            anomalies.append(
+                {
+                    "type": "agent_environment_issue",
+                    "severity": "error",
+                    "agent_name": result.agent_name,
+                    "run_id": result.run_id,
+                    "environment_issue": result.environment_issue,
                 }
             )
     anomalies.extend(
