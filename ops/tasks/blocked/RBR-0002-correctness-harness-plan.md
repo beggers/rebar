@@ -1,6 +1,6 @@
 # RBR-0002: Write the correctness-harness plan
 
-Status: ready
+Status: blocked
 Owner: implementation
 Created: 2026-03-11
 
@@ -24,3 +24,4 @@ Created: 2026-03-11
 - The deliverable should be good enough for the supervisor to turn into implementation tickets.
 - Include what a tracked correctness scorecard should eventually publish to `reports/correctness/latest.json`.
 - 2026-03-11T17:30:12+00:00: harness requeued after failed or incomplete run after run `20260311T173011Z-implementation-RBR-0002-correctness-harness-plan` (exit=1, timed_out=false).
+- 2026-03-11T18:05:53+00:00: harness blocked clean exit without terminal state after run `20260311T180523Z-implementation-RBR-0002-correctness-harness-plan` (exit=0, timed_out=false).
