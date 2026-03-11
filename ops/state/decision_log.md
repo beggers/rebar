@@ -25,3 +25,4 @@
 - Accept newline-terminated write-probe files as valid because Codex commonly creates them through `apply_patch`; otherwise the harness can misclassify a successful worker write probe as `child_write_probe_failed`.
 - Serialize `scripts/rebar_ops.py cycle` invocations with a runtime lock so manual supervisor retries cannot overlap the forever loop and corrupt runtime reporting or task movement in the same checkout.
 - Ignore child stdout/stderr transcript text when inferring sandbox mismatches; only explicit sandbox banners plus the child last message are reliable because Codex echoes prompts and tool traces in the raw transcript streams.
+- Recompute last-cycle environment issues from saved run artifacts when rendering reports so a sandbox-detection fix repairs the dashboard immediately instead of leaving stale anomaly entries until another full cycle completes.

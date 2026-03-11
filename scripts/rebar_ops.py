@@ -936,6 +936,96 @@ def detect_environment_issue(
     return None
 
 
+def read_text_if_exists(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except OSError:
+        return ""
+
+
+def run_artifact_path(run_dir: Path, raw_path: Any, fallback_name: str) -> Path:
+    if isinstance(raw_path, str) and raw_path:
+        return resolve_repo_path(raw_path)
+    return run_dir / fallback_name
+
+
+def normalize_report_run(paths: dict[str, Path], raw_run: dict[str, Any]) -> dict[str, Any]:
+    record = dict(raw_run)
+    run_id = str(record.get("run_id", "")).strip()
+    if not run_id:
+        return record
+
+    run_dir = paths["runs_root"] / run_id
+    metadata = read_json(run_dir / "metadata.json", default={})
+    if not isinstance(metadata, dict):
+        metadata = {}
+
+    stdout_path = run_artifact_path(run_dir, metadata.get("stdout_path"), "stdout.log")
+    stderr_path = run_artifact_path(run_dir, metadata.get("stderr_path"), "stderr.log")
+    last_message_path = run_artifact_path(
+        run_dir, metadata.get("last_message_path"), "last_message.md"
+    )
+    stdout_text = read_text_if_exists(stdout_path)
+    stderr_text = read_text_if_exists(stderr_path)
+    last_message_text = read_text_if_exists(last_message_path)
+    requested = metadata.get("requested_sandbox", record.get("requested_sandbox"))
+    observed = observed_sandbox(stdout_text, stderr_text)
+    record["environment_issue"] = detect_environment_issue(
+        requested=requested if isinstance(requested, str) else None,
+        observed=observed,
+        stdout_text=stdout_text,
+        stderr_text=stderr_text,
+        last_message_text=last_message_text,
+    )
+    return record
+
+
+def build_report_anomalies(
+    last_cycle_runs: list[dict[str, Any]],
+    recovery_actions: list[dict[str, Any]],
+    git_action: dict[str, Any],
+) -> list[dict[str, Any]]:
+    anomalies: list[dict[str, Any]] = []
+    for item in last_cycle_runs:
+        exit_code = item.get("exit_code")
+        if isinstance(exit_code, int) and exit_code != 0:
+            anomalies.append(
+                {
+                    "type": "agent_nonzero_exit",
+                    "severity": "error",
+                    "agent_name": item.get("agent_name"),
+                    "run_id": item.get("run_id"),
+                    "exit_code": exit_code,
+                    "timed_out": item.get("timed_out"),
+                }
+            )
+        environment_issue = item.get("environment_issue")
+        if environment_issue is not None:
+            anomalies.append(
+                {
+                    "type": "agent_environment_issue",
+                    "severity": "error",
+                    "agent_name": item.get("agent_name"),
+                    "run_id": item.get("run_id"),
+                    "environment_issue": environment_issue,
+                }
+            )
+    anomalies.extend(
+        {
+            "type": "task_recovery",
+            "severity": action["severity"],
+            "task_name": action["task_name"],
+            "action": action["action"],
+            "final_status": action["final_status"],
+            "path": action["path"],
+        }
+        for action in recovery_actions
+    )
+    for message in git_action.get("errors", []):
+        anomalies.append({"type": "git_sync_error", "severity": "error", "message": message})
+    return anomalies
+
+
 def parse_iso8601_timestamp(value: str | None) -> datetime | None:
     if not isinstance(value, str) or not value:
         return None
@@ -1678,6 +1768,20 @@ def build_report(config: dict[str, Any]) -> dict[str, Any]:
     recent_runs_limit = int(reporting_cfg.get("recent_runs", 12))
     recent_tasks_limit = int(reporting_cfg.get("recent_tasks", 10))
     recent_commits_limit = int(reporting_cfg.get("recent_commits", 10))
+    recovery_actions = state.get("last_cycle_recovery_actions", [])
+    if not isinstance(recovery_actions, list):
+        recovery_actions = []
+    git_action = state.get("last_git_action", {})
+    if not isinstance(git_action, dict):
+        git_action = {}
+    raw_last_cycle_runs = state.get("last_cycle_runs", [])
+    if not isinstance(raw_last_cycle_runs, list):
+        raw_last_cycle_runs = []
+    last_cycle_runs = [
+        normalize_report_run(paths, item)
+        for item in raw_last_cycle_runs[:recent_runs_limit]
+        if isinstance(item, dict)
+    ]
 
     report = {
         "generated_at": utcnow(),
@@ -1699,10 +1803,14 @@ def build_report(config: dict[str, Any]) -> dict[str, Any]:
             }
             for agent in live_agents
         ],
-        "last_cycle_runs": list(state.get("last_cycle_runs", []))[:recent_runs_limit],
-        "last_cycle_anomalies": state.get("last_cycle_anomalies", []),
-        "last_cycle_recovery_actions": state.get("last_cycle_recovery_actions", []),
-        "last_git_action": state.get("last_git_action", {}),
+        "last_cycle_runs": last_cycle_runs,
+        "last_cycle_anomalies": build_report_anomalies(
+            last_cycle_runs,
+            recovery_actions,
+            git_action,
+        ),
+        "last_cycle_recovery_actions": recovery_actions,
+        "last_git_action": git_action,
         "last_prune_action": state.get("last_prune_action", {}),
         "recent_done_tasks": recent_tasks("done", recent_tasks_limit),
         "recent_blocked_tasks": recent_tasks("blocked", recent_tasks_limit),

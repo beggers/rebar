@@ -40,10 +40,10 @@ No published benchmark scorecard yet. Expected tracked source: [`reports/benchma
 
 ### Immediate Next Steps
 
-- Let the live forever loop complete a full cycle on the corrected supervisor environment-detection path and confirm the dashboard stops reporting false supervisor sandbox anomalies.
-- If the next completed cycle still leaves the ready queue untouched, treat it as a worker-dispatch or task-finalization regression rather than a raw child-write problem.
-- Use the implementation agent to write the Rust drop-in target, syntax spec, correctness plan, and benchmark plan documents now that bypass-mode child writes and isolated probe validation are both in place.
-- After those land, start Rust crate scaffolding, CPython-extension scaffolding, and the first parser tests.
+- Use the implementation agent to complete the remaining Milestone 1 docs: syntax scope, correctness plan, and benchmark plan.
+- Convert the completed compatibility/spec documents into concrete Rust crate, CPython-extension, and conformance-harness tasks as soon as the remaining planning docs land.
+- Let the next completed live cycle confirm the normalized dashboard matches the repaired environment detection path without needing manual interpretation of stale runtime metadata.
+- After the planning docs land, start Rust crate scaffolding, CPython-extension scaffolding, and the first parser-oriented tests.
 
 ### Current Risks
 
@@ -51,7 +51,7 @@ No published benchmark scorecard yet. Expected tracked source: [`reports/benchma
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Nested supervisor runs inside a live forever loop can still create misleading runtime anomalies even when the underlying worker write path is healthy.
-- The implementation worker still has not completed a task in a full bounded cycle, so a remaining dispatch or terminal-state bug may still surface after the sandbox-reporting fix.
+- Only one implementation task has completed under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
 <!-- REBAR:STATUS_END -->
 
 ## What `rebar` Is Trying To Do

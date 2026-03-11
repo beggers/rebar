@@ -21,6 +21,8 @@ Phase 1: harness bootstrap and project-definition work for a Rust drop-in `re` r
 - A probe validator that now accepts the newline-terminated files Codex writes via `apply_patch`, eliminating a false `child_write_probe_failed` result.
 - An isolated rerun of the implementation preflight write probe from the supervisor shell that now succeeds end-to-end, narrowing the remaining queue stall to cycle/reporting behavior rather than raw child write access.
 - A runtime cycle lock that prevents overlapping `scripts/rebar_ops.py cycle` invocations from racing the live forever loop in the same checkout.
+- A first completed implementation task, `RBR-0000`, with `docs/spec/drop-in-re-compatibility.md` defining the public `re` drop-in contract, near-term scope, deferred questions, and the Rust/CPython integration target.
+- Report rendering that recomputes last-cycle environment issues from run artifacts so dashboard anomalies do not stay stale after a detection fix.
 - Tracked state, task queue directories, and seeded ready tasks under `ops/`.
 
 ## What Does Not Exist Yet
@@ -28,7 +30,7 @@ Phase 1: harness bootstrap and project-definition work for a Rust drop-in `re` r
 - CPython extension module or drop-in `re` compatibility layer.
 - Correctness test harness.
 - Benchmark harness.
-- Concrete syntax and module-compatibility documents under `docs/`.
+- Concrete syntax-scope, correctness-plan, and benchmark-plan documents under `docs/`.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.
@@ -36,20 +38,21 @@ Phase 1: harness bootstrap and project-definition work for a Rust drop-in `re` r
 - On the current VM path, invoke Codex with `--dangerously-bypass-approvals-and-sandbox` instead of relying on `--sandbox danger-full-access --ask-for-approval never`. The explicit bypass flag has proven necessary for actual write access in non-interactive `exec` runs.
 - The harness now classifies any unexpected child `sandbox: read-only` result as an environment mismatch even when `danger-full-access` was requested, and it waits before retrying that worker again.
 - The harness now ignores the child stdout/stderr transcript when inferring sandbox mismatches and trusts only the explicit sandbox banner plus the child last message, because both streams can include echoed prompts and tool traces that mention `read-only` for unrelated reasons.
+- Dashboard/report rendering now recomputes last-cycle environment issues from the saved run artifacts, so fixing detection logic immediately fixes the reporting surface even before another full cycle overwrites `loop_state.json`.
 - Worker environment backoff is now five minutes instead of thirty so a false-positive probe or transient VM issue does not stall the ready queue for half an hour.
 - Supervisors can now run `python3 scripts/rebar_ops.py cycle --force-agent implementation` to validate a fixed worker path immediately instead of waiting for environment backoff to expire.
 - Supervisors should only force a manual `cycle` when no other cycle is already running in the checkout; the harness now rejects overlapping cycle attempts with a runtime lock instead of letting them race.
 - Implementation agents are expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Let the live forever loop complete a full cycle on the corrected supervisor environment-detection path and confirm the dashboard stops reporting false supervisor sandbox anomalies.
-- If the next completed cycle still leaves the ready queue untouched, treat it as a worker-dispatch or task-finalization regression rather than a raw child-write problem.
-- Use the implementation agent to write the Rust drop-in target, syntax spec, correctness plan, and benchmark plan documents now that bypass-mode child writes and isolated probe validation are both in place.
-- After those land, start Rust crate scaffolding, CPython-extension scaffolding, and the first parser tests.
+- Use the implementation agent to complete the remaining Milestone 1 docs: syntax scope, correctness plan, and benchmark plan.
+- Convert the completed compatibility/spec documents into concrete Rust crate, CPython-extension, and conformance-harness tasks as soon as the remaining planning docs land.
+- Let the next completed live cycle confirm the normalized dashboard matches the repaired environment detection path without needing manual interpretation of stale runtime metadata.
+- After the planning docs land, start Rust crate scaffolding, CPython-extension scaffolding, and the first parser-oriented tests.
 
 ## Risks
 - The project can drift into premature implementation without a clear compatibility target.
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Nested supervisor runs inside a live forever loop can still create misleading runtime anomalies even when the underlying worker write path is healthy.
-- The implementation worker still has not completed a task in a full bounded cycle, so a remaining dispatch or terminal-state bug may still surface after the sandbox-reporting fix.
+- Only one implementation task has completed under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
