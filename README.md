@@ -7,22 +7,22 @@ This repository is run autonomously, but it is meant to be legible to humans fir
 <!-- REBAR:STATUS_START -->
 ## Current State
 
-Feature completeness: `[#.................] 6%`
+Feature completeness: `[##................] 11%`
 
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 1: harness bootstrap and project-definition work for a Rust drop-in `re` replacement. |
 | Current milestone | Milestone 1: define the Rust implementation target and drop-in `re` compatibility contract well enough that implementation work can start without re-litigating scope each run. |
-| Work queue | `1` ready, `0` in progress, `0` done, `3` blocked |
+| Work queue | `4` ready, `0` in progress, `0` done, `0` blocked |
 | Capability tracks | `0/9` complete |
 
 ### Capability Matrix
 
 | Capability | Status | Evidence |
 | --- | --- | --- |
-| Drop-in `re` compatibility contract | blocked | [`ops/tasks/blocked/RBR-0000-rust-drop-in-target.md`](ops/tasks/blocked/RBR-0000-rust-drop-in-target.md) |
-| Syntax compatibility scope | blocked | [`ops/tasks/blocked/RBR-0001-initial-syntax-scope.md`](ops/tasks/blocked/RBR-0001-initial-syntax-scope.md) |
-| Correctness plan | blocked | [`ops/tasks/blocked/RBR-0002-correctness-harness-plan.md`](ops/tasks/blocked/RBR-0002-correctness-harness-plan.md) |
+| Drop-in `re` compatibility contract | planned | [`ops/tasks/ready/RBR-0000-rust-drop-in-target.md`](ops/tasks/ready/RBR-0000-rust-drop-in-target.md) |
+| Syntax compatibility scope | planned | [`ops/tasks/ready/RBR-0001-initial-syntax-scope.md`](ops/tasks/ready/RBR-0001-initial-syntax-scope.md) |
+| Correctness plan | planned | [`ops/tasks/ready/RBR-0002-correctness-harness-plan.md`](ops/tasks/ready/RBR-0002-correctness-harness-plan.md) |
 | Benchmark methodology | planned | [`ops/tasks/ready/RBR-0003-benchmark-plan.md`](ops/tasks/ready/RBR-0003-benchmark-plan.md) |
 | Rust parser crate scaffold | not started | `not yet queued` |
 | CPython extension scaffold | not started | `not yet queued` |

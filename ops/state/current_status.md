@@ -14,6 +14,7 @@ Phase 1: harness bootstrap and project-definition work for a Rust drop-in `re` r
 - A tracked `README.md` landing page with an auto-synced current-state section for humans.
 - A README reporting model that can surface correctness and benchmark scorecards once tracked result artifacts exist.
 - One live bounded burn-in cycle that exercised runtime state writes, recovery, dashboard generation, and automatic commit/push.
+- A follow-up harness fix that requeues read-only worker runs instead of poisoning tasks as blocked.
 - Tracked state, task queue directories, and seeded ready tasks under `ops/`.
 
 ## What Does Not Exist Yet

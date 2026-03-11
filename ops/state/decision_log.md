@@ -15,3 +15,4 @@
 - Treat `README.md` as the tracked landing page for humans, and auto-sync a generated current-state section from durable project state and reporting config instead of leaving it as an operator note.
 - Target a Rust implementation with CPython integration and bug-for-bug `re` module compatibility, so the north star is a drop-in replacement rather than only a fast standalone parser.
 - Plan for both correctness and benchmark scorecards to appear in `README.md` once tracked result artifacts exist under `reports/`.
+- Detect read-only worker runs from their final message and stderr as well as the Codex stdout banner, then requeue those tasks instead of blocking them.

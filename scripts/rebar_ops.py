@@ -838,9 +838,26 @@ def observed_sandbox(stdout_text: str) -> str | None:
     return None
 
 
-def detect_environment_issue(*, requested: str | None, observed: str | None) -> str | None:
+def detect_environment_issue(
+    *,
+    requested: str | None,
+    observed: str | None,
+    stdout_text: str,
+    stderr_text: str,
+    last_message_text: str,
+) -> str | None:
     if requested == "workspace-write" and observed == "read-only":
         return "sandbox_clamped_to_read_only"
+    combined = "\n".join([stdout_text, stderr_text, last_message_text]).lower()
+    if requested == "workspace-write" and (
+        "this codex session is read-only" in combined
+        or "sandboxed `read-only`" in combined
+        or "read-only filesystem" in combined
+        or "rerun this task in a writable checkout" in combined
+    ):
+        return "sandbox_clamped_to_read_only"
+    if "permissionerror" in combined and "/.cache/codex/meta.json" in combined:
+        return "codex_cache_not_writable"
     return None
 
 
@@ -896,11 +913,18 @@ def run_agent(agent: AgentSpec, config: dict[str, Any], task_path: Path | None =
 
     finished_at = utcnow()
     observed = observed_sandbox(stdout_text)
-    environment_issue = detect_environment_issue(requested=requested, observed=observed)
     write_text(stdout_path, stdout_text)
     write_text(stderr_path, stderr_text)
     if not output_path.exists():
         write_text(output_path, "")
+    last_message_text = output_path.read_text(encoding="utf-8")
+    environment_issue = detect_environment_issue(
+        requested=requested,
+        observed=observed,
+        stdout_text=stdout_text,
+        stderr_text=stderr_text,
+        last_message_text=last_message_text,
+    )
 
     task_final_status: str | None = None
     task_final_path: Path | None = None
@@ -1087,7 +1111,7 @@ def finalize_task_result(
         entry["current_status"] = "unknown"
         return [action]
 
-    if result.environment_issue == "sandbox_clamped_to_read_only":
+    if result.environment_issue in {"sandbox_clamped_to_read_only", "codex_cache_not_writable"}:
         dest_status = "ready"
         action_name = "requeued_environment_sandbox_mismatch"
         severity = "error"
