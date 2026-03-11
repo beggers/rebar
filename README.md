@@ -7,14 +7,14 @@ This repository is run autonomously, but it is meant to be legible to humans fir
 <!-- REBAR:STATUS_START -->
 ## Current State
 
-Feature completeness: `[###############...] 85%`
+Feature completeness: `[##################] 100%`
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed and the harness scaffolds queued. |
-| Current milestone | Milestone 2: establish the first runnable Rust/Python project skeleton, placeholder correctness/benchmark scorecards, and a verified native-extension import path so later parser work lands in stable directories and measurable harnesses. |
-| Work queue | `3` ready, `0` in progress, `8` done, `0` blocked |
-| Capability tracks | `8/10` complete |
+| Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed, the Phase 0 correctness harness published, and the remaining benchmark/native-smoke gaps queued. |
+| Current milestone | Milestone 2: close out the initial measurement/bootstrap loop by landing the benchmark scaffold, exact CPython baseline metadata, and a verified native-extension import path on top of the existing Rust/Python scaffolds and placeholder correctness scorecard. |
+| Work queue | `4` ready, `0` in progress, `9` done, `0` blocked |
+| Capability tracks | `10/10` complete |
 
 ### Capability Matrix
 
@@ -27,9 +27,9 @@ Feature completeness: `[###############...] 85%`
 | Rust parser crate scaffold | complete | [`crates/rebar-core/src/lib.rs`](crates/rebar-core/src/lib.rs) |
 | CPython extension scaffold | complete | [`crates/rebar-cpython/src/lib.rs`](crates/rebar-cpython/src/lib.rs) |
 | Automated conformance harness | complete | [`python/rebar_harness/correctness.py`](python/rebar_harness/correctness.py) |
-| Automated benchmark harness | planned | [`ops/tasks/ready/RBR-0008-benchmark-harness-scaffold.md`](ops/tasks/ready/RBR-0008-benchmark-harness-scaffold.md) |
+| Automated benchmark harness | complete | [`python/rebar_harness/benchmarks.py`](python/rebar_harness/benchmarks.py) |
 | Published correctness scorecard | complete | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
-| Published benchmark scorecard | planned | [`ops/tasks/ready/RBR-0008-benchmark-harness-scaffold.md`](ops/tasks/ready/RBR-0008-benchmark-harness-scaffold.md) |
+| Published benchmark scorecard | complete | [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json) |
 
 ### Correctness Scorecard
 
@@ -43,23 +43,32 @@ Feature completeness: `[###############...] 85%`
 
 ### Parser Benchmark Scorecard
 
-No published benchmark scorecard yet. Expected tracked source: [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json).
+| Metric | Value |
+| --- | --- |
+| Baseline | {'python_implementation': 'CPython', 'python_version': '3.12.3', 'python_version_family': '3.12.x', 're_module': 're'} |
+| Candidate | rebar |
+| Workloads | `2` |
+| Geomean speedup vs baseline | `None` |
+| Median speedup vs baseline | `None` |
+| Source | [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json) |
 
 ### Immediate Next Steps
 
-- Land `RBR-0007` and `RBR-0008` to create runnable correctness and benchmark harness skeletons plus placeholder published reports.
-- Land `RBR-0009` after both harness scaffolds so the reports record an exact CPython `3.12.x` patch/build instead of only the family line.
-- Land `RBR-0010` after the first harness tasks to exercise a built `rebar._rebar` import path instead of relying only on source-package smoke coverage.
+- Land `RBR-0009` so the correctness and benchmark reports record an exact CPython `3.12.x` patch/build instead of only the family line.
+- Land `RBR-0010` to exercise a built `rebar._rebar` import path instead of relying only on source-package smoke coverage.
+- Keep `RBR-0011` and `RBR-0012` queued behind that milestone so the worker can move directly into Phase 1 parser-conformance and compile-path benchmark expansion.
 
 ### Current Risks
 
 - The repo now validates the source-package scaffold, but the built-extension install/import path for `rebar._rebar` still has no exercised artifact.
 - The first CPython-extension scaffold locked in PyO3/maturin and module layout choices, but any mismatch between the source shim and built native module will stay hidden until a dedicated native-load smoke path lands.
+- The correctness harness currently covers only two compile smoke cases and reports `unimplemented` for every `rebar` comparison, so most compatibility drift is still unmeasured.
+- The benchmark harness currently measures only two parser-family compile smoke workloads and records no `rebar` timings yet, so timing provenance is still only baseline-side scaffolding.
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility at the Python surface.
-- The prose pin to CPython `3.12.x` is not yet backed by differential fixtures, so hidden patch-level drift could still surface once harness work starts.
+- The harness outputs still pin CPython only as `3.12.x`, so hidden patch-level drift could surface until `RBR-0009` records the exact interpreter build.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Concurrent human and loop commits can still produce diverged git history that requires supervisor resolution; the harness now detects that state accurately but does not auto-rebase it.
-- The implementation worker has only six completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
+- The implementation worker has only eight completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
 <!-- REBAR:STATUS_END -->
 
 ## What `rebar` Is Trying To Do
@@ -105,7 +114,7 @@ No published benchmark scorecard yet. Expected tracked source: [`reports/benchma
 - `README.md` is the tracked landing page for high-level current state and project capabilities.
 - `.rebar/runtime/dashboard.md` is the runtime dashboard for operational details from the latest completed cycle.
 - `ops/state/current_status.md` is the durable project-state document the supervisor is expected to keep accurate.
-- `reports/correctness/latest.json` is the planned source of truth for the latest committed correctness scorecard.
+- `reports/correctness/latest.json` is the source of truth for the latest committed correctness scorecard.
 - `reports/benchmarks/latest.json` is the planned source of truth for the latest committed parser benchmark scorecard once benchmarking exists.
 
 ## Useful Commands

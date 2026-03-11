@@ -3,7 +3,7 @@
 Updated: 2026-03-11
 
 ## Phase
-Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed and the harness scaffolds queued.
+Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed, the Phase 0 correctness harness published, and the remaining benchmark/native-smoke gaps queued.
 
 ## What Exists
 - A repo-local `AGENTS.md` that separates supervisor and implementation roles.
@@ -12,7 +12,7 @@ Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPyt
 - A tiny outer shell loop in `scripts/loop_forever.sh` that re-runs bounded cycles so supervisor changes apply on the next iteration.
 - Auto-commit, auto-push, stale-task recovery, runtime retention, and dashboard generation policy in the harness.
 - A tracked `README.md` landing page with an auto-synced current-state section for humans.
-- A README reporting model that can surface correctness and benchmark scorecards once tracked result artifacts exist.
+- A README reporting model that now surfaces the tracked correctness scorecard and will surface benchmark scorecards once `reports/benchmarks/latest.json` exists.
 - One live bounded burn-in cycle that exercised runtime state writes, recovery, dashboard generation, and automatic commit/push.
 - A follow-up harness fix that requeues read-only worker runs instead of poisoning tasks as blocked.
 - A task-worker write probe that prevents task claims when child Codex runs cannot write in the current environment.
@@ -28,6 +28,8 @@ Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPyt
 - A supervisor-completed queue-shaping task, `RBR-0004`, that split post-planning work into four concrete scaffold tickets for the Rust workspace, CPython extension, correctness harness, and benchmark harness.
 - A fifth completed implementation task, `RBR-0005`, with a root `Cargo.toml` workspace, a `crates/rebar-core` library crate, and a smoke-tested placeholder parser API pinned to the initial CPython `3.12.x` target line.
 - A sixth completed implementation task, `RBR-0006`, with a root `pyproject.toml`, an importable `python/rebar` scaffold package, a `crates/rebar-cpython` PyO3 extension crate, and a Python smoke test that validates the source-package shim without falling back to stdlib `re`.
+- A seventh completed implementation task, `RBR-0007`, with `python/rebar_harness/correctness.py`, `tests/conformance/fixtures/parser_smoke.json`, `tests/conformance/test_correctness_smoke.py`, and `reports/correctness/latest.json`, establishing the first runnable differential correctness harness skeleton and an honest placeholder scorecard with `unimplemented` outcomes.
+- An eighth completed implementation task, `RBR-0008`, with `python/rebar_harness/benchmarks.py`, `benchmarks/workloads/compile_smoke.json`, `tests/benchmarks/test_benchmark_smoke.py`, and `reports/benchmarks/latest.json`, establishing the first runnable compile-path benchmark harness skeleton and an honest placeholder scorecard with baseline-only timings plus explicit `rebar` gaps.
 - Report rendering that recomputes last-cycle environment issues from run artifacts so dashboard anomalies do not stay stale after a detection fix.
 - A fetch-before-push git sync path that measures ahead/behind state against fresh upstream refs and reports diverged branches explicitly instead of pushing against stale remote-tracking data.
 - README capability reporting that now keys scaffold and scorecard tracks to concrete artifact paths and distinguishes the benchmark harness from the published benchmark report.
@@ -35,8 +37,9 @@ Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPyt
 
 ## What Does Not Exist Yet
 - A smoke-tested built-extension import path that proves `rebar._rebar` loads through a maturin-built artifact instead of only through the source-package shim.
-- A runnable correctness harness or published correctness scorecard.
-- A runnable benchmark harness or published benchmark scorecard.
+- Exact CPython patch/build metadata in the published harness reports; the correctness scaffold still records only the broader `3.12.x` family line.
+- Correctness coverage beyond two compile-oriented smoke cases with `str` inputs and placeholder `rebar` `unimplemented` outcomes.
+- Measured `rebar` benchmark timings; the published benchmark scaffold still records CPython baseline samples plus explicit `unimplemented` implementation records.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.
@@ -52,15 +55,17 @@ Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPyt
 - Implementation agents are expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Land `RBR-0007` and `RBR-0008` to create runnable correctness and benchmark harness skeletons plus placeholder published reports.
-- Land `RBR-0009` after both harness scaffolds so the reports record an exact CPython `3.12.x` patch/build instead of only the family line.
-- Land `RBR-0010` after the first harness tasks to exercise a built `rebar._rebar` import path instead of relying only on source-package smoke coverage.
+- Land `RBR-0009` so the correctness and benchmark reports record an exact CPython `3.12.x` patch/build instead of only the family line.
+- Land `RBR-0010` to exercise a built `rebar._rebar` import path instead of relying only on source-package smoke coverage.
+- Keep `RBR-0011` and `RBR-0012` queued behind that milestone so the worker can move directly into Phase 1 parser-conformance and compile-path benchmark expansion.
 
 ## Risks
 - The repo now validates the source-package scaffold, but the built-extension install/import path for `rebar._rebar` still has no exercised artifact.
 - The first CPython-extension scaffold locked in PyO3/maturin and module layout choices, but any mismatch between the source shim and built native module will stay hidden until a dedicated native-load smoke path lands.
+- The correctness harness currently covers only two compile smoke cases and reports `unimplemented` for every `rebar` comparison, so most compatibility drift is still unmeasured.
+- The benchmark harness currently measures only two parser-family compile smoke workloads and records no `rebar` timings yet, so timing provenance is still only baseline-side scaffolding.
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility at the Python surface.
-- The prose pin to CPython `3.12.x` is not yet backed by differential fixtures, so hidden patch-level drift could still surface once harness work starts.
+- The harness outputs still pin CPython only as `3.12.x`, so hidden patch-level drift could surface until `RBR-0009` records the exact interpreter build.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Concurrent human and loop commits can still produce diverged git history that requires supervisor resolution; the harness now detects that state accurately but does not auto-rebase it.
-- The implementation worker has only six completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
+- The implementation worker has only eight completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.

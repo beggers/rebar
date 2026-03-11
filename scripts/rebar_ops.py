@@ -544,6 +544,23 @@ def capability_track_rows(config: dict[str, Any]) -> list[dict[str, Any]]:
     return rows
 
 
+def first_present(*values: Any) -> Any:
+    for value in values:
+        if value is not None:
+            return value
+    return None
+
+
+def numeric_ratio(numerator: Any, denominator: Any) -> float | None:
+    if isinstance(numerator, bool) or isinstance(denominator, bool):
+        return None
+    if not isinstance(numerator, (int, float)) or not isinstance(denominator, (int, float)):
+        return None
+    if denominator == 0:
+        return None
+    return round(float(numerator) / float(denominator), 4)
+
+
 def scorecard_from_config(config: dict[str, Any], key: str, default_title: str, default_path: str) -> dict[str, Any]:
     reporting_cfg = load_readme_reporting_config(config)
     raw = reporting_cfg.get(key, {})
@@ -572,19 +589,62 @@ def scorecard_from_config(config: dict[str, Any], key: str, default_title: str, 
     if not isinstance(workloads, list):
         workloads = []
 
+    baseline = payload.get("baseline")
+    if not isinstance(baseline, dict):
+        baseline = {}
+    implementation = payload.get("implementation")
+    if not isinstance(implementation, dict):
+        implementation = {}
+
+    cases_total = first_present(summary.get("cases_total"), summary.get("total_cases"))
+    cases_passed = first_present(
+        summary.get("cases_passed"),
+        summary.get("passed_cases"),
+        summary.get("passed"),
+    )
+    cases_failed = first_present(summary.get("failed_cases"), summary.get("failed"))
+    cases_skipped = first_present(summary.get("skipped_cases"), summary.get("skipped"), 0)
+    cases_unimplemented = first_present(
+        summary.get("unimplemented_cases"),
+        summary.get("known_gap_count"),
+        0,
+    )
+    implemented_cases = None
+    if isinstance(cases_total, (int, float)):
+        implemented_cases = cases_total
+        if isinstance(cases_skipped, (int, float)):
+            implemented_cases -= cases_skipped
+        if isinstance(cases_unimplemented, (int, float)):
+            implemented_cases -= cases_unimplemented
+        if implemented_cases < 0:
+            implemented_cases = None
+    pass_rate = first_present(summary.get("pass_rate"), numeric_ratio(cases_passed, cases_total))
+    parity_rate = first_present(
+        summary.get("parity_rate"),
+        numeric_ratio(cases_passed, implemented_cases),
+        pass_rate,
+    )
+    candidate = first_present(
+        payload.get("candidate"),
+        summary.get("candidate"),
+        implementation.get("module_name"),
+        baseline.get("target_module"),
+        "rebar",
+    )
+
     scorecard.update(
         {
             "available": True,
             "generated_at": payload.get("generated_at") or summary.get("generated_at"),
-            "baseline": payload.get("baseline") or summary.get("baseline"),
-            "candidate": payload.get("candidate") or summary.get("candidate") or "rebar",
+            "baseline": first_present(payload.get("baseline"), summary.get("baseline")),
+            "candidate": candidate,
             "workload_count": len(workloads),
             "geomean_speedup": summary.get("geomean_speedup_vs_baseline"),
             "median_speedup": summary.get("median_speedup_vs_baseline"),
-            "cases_total": summary.get("cases_total"),
-            "cases_passed": summary.get("cases_passed"),
-            "pass_rate": summary.get("pass_rate"),
-            "parity_rate": summary.get("parity_rate"),
+            "cases_total": cases_total,
+            "cases_passed": cases_passed,
+            "pass_rate": pass_rate,
+            "parity_rate": parity_rate,
         }
     )
     return scorecard
