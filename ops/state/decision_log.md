@@ -34,3 +34,4 @@
 - Tighten README capability detection to concrete scaffold paths and add a separate benchmark-harness track so status does not flip complete from generic `Cargo.toml` or `tests/**/*.py` files alone.
 - Make `python3 scripts/rebar_ops.py report` rewrite the runtime dashboard files as well as stdout/README so manual supervisor syncs keep `.rebar/runtime/dashboard.md` aligned with the current queue and git state between full cycles.
 - Seed the exact-CPython-baseline task in `ready/` immediately behind the correctness and benchmark scaffold tasks, because lexical queue order is enough to preserve the dependency while avoiding another supervisor-only queue rewrite once both harnesses land.
+- Queue a native-extension import-smoke task behind the first harness work so the project validates a built `rebar._rebar` artifact before parser-heavy implementation starts, rather than treating source-tree shim imports as sufficient proof of the CPython boundary.

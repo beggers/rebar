@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "manifest_id": "parser-smoke",
+  "cases": [
+    {
+      "id": "compile-literal-success",
+      "operation": "compile",
+      "pattern": "abc",
+      "flags": 0,
+      "text_model": "str",
+      "notes": [
+        "Exercises a successful compile path and parser metadata capture."
+      ]
+    },
+    {
+      "id": "compile-invalid-repeat",
+      "operation": "compile",
+      "pattern": "*abc",
+      "flags": 0,
+      "text_model": "str",
+      "notes": [
+        "Exercises a failing compile path and exception normalization."
+      ]
+    }
+  ]
+}

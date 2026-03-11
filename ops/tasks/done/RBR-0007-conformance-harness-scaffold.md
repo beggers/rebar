@@ -1,6 +1,6 @@
 # RBR-0007: Scaffold the correctness conformance harness
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
 
@@ -29,3 +29,12 @@ Created: 2026-03-11
 - Use `docs/testing/correctness-plan.md` as the primary task spec.
 - Use `docs/spec/drop-in-re-compatibility.md` and `docs/spec/syntax-scope.md` to decide which fields the fixture and observation format must preserve.
 - Keep the runner shape compatible with the benchmark harness plan in `docs/benchmarks/plan.md` so shared harness utilities can emerge later instead of two unrelated one-off scripts.
+
+## Completion
+- Added `python/rebar_harness/correctness.py` as a Phase 0 correctness runner with a versioned fixture loader, structured CPython/rebar adapter observations, explicit `unimplemented` handling, and JSON scorecard writing.
+- Added `tests/conformance/fixtures/parser_smoke.json` plus `tests/conformance/test_correctness_smoke.py` to exercise compile success and compile failure cases end to end.
+- Published the initial placeholder scorecard in `reports/correctness/latest.json` with honest `unimplemented` counts for the current scaffold-only `rebar` adapter.
+- Verified with `PYTHONPATH=python python3 -m rebar_harness.correctness` and `python3 -m unittest tests.conformance.test_correctness_smoke tests.python.test_import_rebar`.
+
+## Follow-Up Notes
+- Phase 1 should add generated parser fixture families, `bytes` cases, and parity comparisons beyond the current compile-only placeholder path.

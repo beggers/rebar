@@ -7,14 +7,14 @@ This repository is run autonomously, but it is meant to be legible to humans fir
 <!-- REBAR:STATUS_START -->
 ## Current State
 
-Feature completeness: `[#############.....] 70%`
+Feature completeness: `[###############...] 85%`
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace scaffold landed and the Python/package plus harness scaffolds queued. |
-| Current milestone | Milestone 2: establish the first runnable Rust/Python project skeleton and placeholder correctness/benchmark scorecards so later parser work lands in stable directories and measurable harnesses. |
-| Work queue | `3` ready, `0` in progress, `7` done, `0` blocked |
-| Capability tracks | `6/10` complete |
+| Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed and the harness scaffolds queued. |
+| Current milestone | Milestone 2: establish the first runnable Rust/Python project skeleton, placeholder correctness/benchmark scorecards, and a verified native-extension import path so later parser work lands in stable directories and measurable harnesses. |
+| Work queue | `3` ready, `0` in progress, `8` done, `0` blocked |
+| Capability tracks | `8/10` complete |
 
 ### Capability Matrix
 
@@ -26,14 +26,20 @@ Feature completeness: `[#############.....] 70%`
 | Benchmark methodology | complete | [`docs/benchmarks/plan.md`](docs/benchmarks/plan.md) |
 | Rust parser crate scaffold | complete | [`crates/rebar-core/src/lib.rs`](crates/rebar-core/src/lib.rs) |
 | CPython extension scaffold | complete | [`crates/rebar-cpython/src/lib.rs`](crates/rebar-cpython/src/lib.rs) |
-| Automated conformance harness | planned | [`ops/tasks/ready/RBR-0007-conformance-harness-scaffold.md`](ops/tasks/ready/RBR-0007-conformance-harness-scaffold.md) |
+| Automated conformance harness | complete | [`python/rebar_harness/correctness.py`](python/rebar_harness/correctness.py) |
 | Automated benchmark harness | planned | [`ops/tasks/ready/RBR-0008-benchmark-harness-scaffold.md`](ops/tasks/ready/RBR-0008-benchmark-harness-scaffold.md) |
-| Published correctness scorecard | planned | [`ops/tasks/ready/RBR-0007-conformance-harness-scaffold.md`](ops/tasks/ready/RBR-0007-conformance-harness-scaffold.md) |
+| Published correctness scorecard | complete | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 | Published benchmark scorecard | planned | [`ops/tasks/ready/RBR-0008-benchmark-harness-scaffold.md`](ops/tasks/ready/RBR-0008-benchmark-harness-scaffold.md) |
 
 ### Correctness Scorecard
 
-No published correctness scorecard yet. Expected tracked source: [`reports/correctness/latest.json`](reports/correctness/latest.json).
+| Metric | Value |
+| --- | --- |
+| Candidate | rebar |
+| Cases | `None` / `None` |
+| Pass rate | `None` |
+| Parity rate | `None` |
+| Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
 ### Parser Benchmark Scorecard
 
@@ -41,19 +47,19 @@ No published benchmark scorecard yet. Expected tracked source: [`reports/benchma
 
 ### Immediate Next Steps
 
-- Land `RBR-0006` to add a PyO3/maturin-backed CPython extension scaffold plus an importable `python/rebar` package on top of the new workspace.
 - Land `RBR-0007` and `RBR-0008` to create runnable correctness and benchmark harness skeletons plus placeholder published reports.
 - Land `RBR-0009` after both harness scaffolds so the reports record an exact CPython `3.12.x` patch/build instead of only the family line.
+- Land `RBR-0010` after the first harness tasks to exercise a built `rebar._rebar` import path instead of relying only on source-package smoke coverage.
 
 ### Current Risks
 
-- The repo now validates only the Rust core-crate path; Python packaging, native-module loading, and import-path assumptions still have no exercised artifact.
-- The first CPython-extension scaffold now needs to lock in packaging choices such as PyO3/maturin and module layout; if that remains implicit, later tasks will churn on setup instead of compatibility work.
+- The repo now validates the source-package scaffold, but the built-extension install/import path for `rebar._rebar` still has no exercised artifact.
+- The first CPython-extension scaffold locked in PyO3/maturin and module layout choices, but any mismatch between the source shim and built native module will stay hidden until a dedicated native-load smoke path lands.
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility at the Python surface.
 - The prose pin to CPython `3.12.x` is not yet backed by differential fixtures, so hidden patch-level drift could still surface once harness work starts.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Concurrent human and loop commits can still produce diverged git history that requires supervisor resolution; the harness now detects that state accurately but does not auto-rebase it.
-- The implementation worker has only five completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
+- The implementation worker has only six completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
 <!-- REBAR:STATUS_END -->
 
 ## What `rebar` Is Trying To Do
