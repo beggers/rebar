@@ -3,7 +3,7 @@
 Updated: 2026-03-11
 
 ## Phase
-Phase 2: compatibility and scope definition for a Rust drop-in `re` replacement, with correctness and benchmark planning complete and scaffold work next.
+Phase 3: implementation and harness bootstrap, with compatibility planning complete and the first scaffold task pack queued.
 
 ## What Exists
 - A repo-local `AGENTS.md` that separates supervisor and implementation roles.
@@ -25,16 +25,17 @@ Phase 2: compatibility and scope definition for a Rust drop-in `re` replacement,
 - A second completed implementation task, `RBR-0001`, with `docs/spec/syntax-scope.md` pinning the first parser target to CPython `3.12.x`, mapping major regex construct families, and recording deferred parser-adjacent scope.
 - A third completed implementation task, `RBR-0002`, with `docs/testing/correctness-plan.md` defining fixture sources, layered differential checks, parser-versus-module correctness boundaries, phased harness delivery, and the planned `reports/correctness/latest.json` scorecard shape.
 - A fourth completed implementation task, `RBR-0003`, with `docs/benchmarks/plan.md` defining parser-versus-module benchmark families, workload design, warmup/noise policy, incremental harness delivery, and the planned `reports/benchmarks/latest.json` scorecard shape.
+- A supervisor-completed queue-shaping task, `RBR-0004`, that split post-planning work into four concrete scaffold tickets for the Rust workspace, CPython extension, correctness harness, and benchmark harness.
 - Report rendering that recomputes last-cycle environment issues from run artifacts so dashboard anomalies do not stay stale after a detection fix.
 - A fetch-before-push git sync path that measures ahead/behind state against fresh upstream refs and reports diverged branches explicitly instead of pushing against stale remote-tracking data.
+- README capability reporting that now keys scaffold and scorecard tracks to concrete artifact paths and distinguishes the benchmark harness from the published benchmark report.
 - Tracked state, task queue directories, and seeded ready tasks under `ops/`.
 
 ## What Does Not Exist Yet
-- Rust parser source code.
-- CPython extension module or drop-in `re` compatibility layer.
-- Correctness test harness.
-- Benchmark harness runner and workload corpus.
-- Published correctness or benchmark scorecards.
+- A Rust workspace or parser crate source tree.
+- A CPython extension module or importable Python package scaffold for `rebar`.
+- A runnable correctness harness or published correctness scorecard.
+- A runnable benchmark harness or published benchmark scorecard.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.
@@ -50,14 +51,15 @@ Phase 2: compatibility and scope definition for a Rust drop-in `re` replacement,
 - Implementation agents are expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Run the queued post-planning task-synthesis pass now that `RBR-0003` has landed so the next ready queue contains scaffold and harness implementation tickets instead of another planning gap.
-- Start Rust workspace scaffolding, CPython-extension scaffolding, and correctness/benchmark harness scaffolding from that follow-on task pack.
-- Pin the first exact CPython `3.12.x` patch/build in harness configuration once correctness and benchmark runners exist.
+- Land `RBR-0005` to create the initial Cargo workspace and `rebar-core` parser crate scaffold.
+- Land `RBR-0006` to add a PyO3/maturin-backed CPython extension scaffold plus an importable `python/rebar` package.
+- Land `RBR-0007` and `RBR-0008` to create runnable correctness and benchmark harness skeletons plus placeholder published reports.
 
 ## Risks
-- The project can still drift into premature implementation if the post-planning task-synthesis pass is skipped, even though the compatibility target and both planning docs are now clearer.
+- No implementation scaffold exists yet, so the project still cannot validate Rust toolchain, Python packaging, or import-path assumptions on a real artifact.
+- The first CPython-extension scaffold now needs to lock in packaging choices such as PyO3/maturin and module layout; if that remains implicit, later tasks will churn on setup instead of compatibility work.
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility at the Python surface.
 - The prose pin to CPython `3.12.x` is not yet backed by differential fixtures, so hidden patch-level drift could still surface once harness work starts.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Concurrent human and loop commits can still produce diverged git history that requires supervisor resolution; the harness now detects that state accurately but does not auto-rebase it.
-- Only four implementation tasks have completed under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
+- The implementation worker has only four completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.

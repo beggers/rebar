@@ -29,3 +29,7 @@
 - Fetch the configured upstream before auto-push and record ahead/behind divergence explicitly so the loop reports true git-sync state instead of pushing against stale `origin/*` refs.
 - Keep a queued post-planning task-synthesis step in `ops/tasks/ready/` so the worker can turn completed milestone docs into the first scaffold and harness tickets without waiting on a supervisor-only queue rewrite after each planning task lands.
 - Keep the benchmark-plan task ahead of the post-planning task-synthesis pass so the first scaffold tickets inherit a settled CPython `3.12.x` baseline and benchmark scorecard shape.
+- Split the first post-planning queue into four bounded scaffold tasks: Rust workspace, CPython extension, correctness harness, and benchmark harness, instead of leaving a single synthesis task as the only actionable item.
+- Standardize the first implementation layout around a Cargo workspace under `crates/`, a CPython-facing Python package under `python/rebar`, and Python-driven harness/report artifacts under `python/rebar_harness`, `tests/`, `benchmarks/`, and `reports/`.
+- Tighten README capability detection to concrete scaffold paths and add a separate benchmark-harness track so status does not flip complete from generic `Cargo.toml` or `tests/**/*.py` files alone.
+- Make `python3 scripts/rebar_ops.py report` rewrite the runtime dashboard files as well as stdout/README so manual supervisor syncs keep `.rebar/runtime/dashboard.md` aligned with the current queue and git state between full cycles.

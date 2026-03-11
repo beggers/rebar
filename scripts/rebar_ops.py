@@ -2084,10 +2084,14 @@ def cmd_sleep_seconds(config: dict[str, Any], exit_code: int) -> int:
 def cmd_report(config: dict[str, Any], output_format: str) -> int:
     sync_readme_status(config)
     report = build_report(config)
+    paths = runtime_paths(config)
+    rendered = render_markdown_report(report)
+    write_json(paths["dashboard_json"], report)
+    write_text(paths["dashboard_markdown"], rendered)
     if output_format == "json":
         print(json.dumps(report, indent=2, sort_keys=True))
     else:
-        sys.stdout.write(render_markdown_report(report))
+        sys.stdout.write(rendered)
     return 0
 
 

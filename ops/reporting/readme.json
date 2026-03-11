@@ -36,42 +36,54 @@
     {
       "label": "Rust parser crate scaffold",
       "description": "First tracked Rust crate or module tree for the parser.",
-      "globs_any": [
-        "Cargo.toml",
-        "crates/rebar*/**/*.rs",
-        "src/**/*.rs"
-      ]
+      "paths_any": [
+        "crates/rebar-core/src/lib.rs"
+      ],
+      "task": "RBR-0005-rust-workspace-scaffold.md"
     },
     {
       "label": "CPython extension scaffold",
       "description": "Tracked extension module or Python packaging layer for importing as a replacement `re` implementation.",
-      "globs_any": [
-        "python/**/*.py",
-        "pyproject.toml",
-        "Cargo.toml"
-      ]
+      "paths_any": [
+        "crates/rebar-cpython/src/lib.rs",
+        "python/rebar/__init__.py",
+        "pyproject.toml"
+      ],
+      "task": "RBR-0006-cpython-extension-scaffold.md"
     },
     {
       "label": "Automated conformance harness",
       "description": "Tracked correctness tests for parser behavior.",
-      "globs_any": [
-        "tests/**/*.py",
-        "test/**/*.py"
-      ]
+      "paths_any": [
+        "python/rebar_harness/correctness.py",
+        "tests/conformance/test_correctness_smoke.py"
+      ],
+      "task": "RBR-0007-conformance-harness-scaffold.md"
+    },
+    {
+      "label": "Automated benchmark harness",
+      "description": "Tracked benchmark runner and workload manifest for parser and module-boundary measurements.",
+      "paths_any": [
+        "python/rebar_harness/benchmarks.py",
+        "benchmarks/workloads/compile_smoke.json"
+      ],
+      "task": "RBR-0008-benchmark-harness-scaffold.md"
     },
     {
       "label": "Published correctness scorecard",
       "description": "Committed summary of correctness coverage and parity.",
       "paths_any": [
         "reports/correctness/latest.json"
-      ]
+      ],
+      "task": "RBR-0007-conformance-harness-scaffold.md"
     },
     {
       "label": "Published benchmark scorecard",
       "description": "Committed summary of parser benchmark results.",
       "paths_any": [
         "reports/benchmarks/latest.json"
-      ]
+      ],
+      "task": "RBR-0008-benchmark-harness-scaffold.md"
     }
   ],
   "correctness_scorecard": {

@@ -1,0 +1,12 @@
+[workspace]
+members = ["crates/rebar-core"]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "MIT"
+rust-version = "1.78"
+
+[workspace.metadata.rebar]
+cpython_target = "3.12.x"
+notes = "Initial Rust workspace scaffold for the parser and CPython bridge crates."

@@ -1,7 +1,7 @@
 # RBR-0004: Seed the first implementation task pack
 
-Status: ready
-Owner: implementation
+Status: done
+Owner: supervisor
 Created: 2026-03-11
 
 ## Goal
@@ -28,3 +28,4 @@ Created: 2026-03-11
 ## Notes
 - This task is intentionally ordered after `RBR-0002` and `RBR-0003` so the worker reaches it only once the remaining planning docs exist.
 - The result should leave `ops/tasks/ready/` populated with the first post-planning implementation work without requiring another supervisor rewrite pass.
+- 2026-03-11T21:48:52Z: supervisor completed the queue-shaping pass by seeding `RBR-0005` through `RBR-0008` as concrete scaffold tasks for the Rust workspace, CPython extension, correctness harness, and benchmark harness.
