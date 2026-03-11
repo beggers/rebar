@@ -1,0 +1,35 @@
+{
+  "runtime": {
+    "artifact_dir": ".rebar/runtime",
+    "home_dir": ".rebar/home",
+    "sleep_seconds": 300,
+    "failure_backoff_seconds": 30
+  },
+  "codex": {
+    "bin": "codex",
+    "codex_home": "~/.codex",
+    "sandbox": "workspace-write",
+    "ask_for_approval": "never",
+    "common_config": [
+      "suppress_unstable_features_warning=true"
+    ]
+  },
+  "roles": {
+    "supervisor": {
+      "enabled": true,
+      "prompt_path": "ops/agents/supervisor.md",
+      "interval_seconds": 300,
+      "config": [
+        "model_reasoning_effort=\"high\""
+      ]
+    },
+    "implementation": {
+      "enabled": true,
+      "prompt_path": "ops/agents/implementer.md",
+      "max_runs_per_cycle": 3,
+      "config": [
+        "model_reasoning_effort=\"medium\""
+      ]
+    }
+  }
+}
