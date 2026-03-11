@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import atexit
 import json
 import os
 import shutil
@@ -116,6 +117,7 @@ def runtime_paths(config: dict[str, Any]) -> dict[str, Path]:
     return {
         "artifact_root": artifact_root,
         "runs_root": artifact_root / "runs",
+        "cycle_lock": artifact_root / "cycle.lock.d",
         "loop_state": artifact_root / "loop_state.json",
         "task_state": resolve_repo_path(
             recovery_cfg.get("state_path", ".rebar/runtime/task_state.json")
@@ -136,6 +138,53 @@ def ensure_runtime_dirs(paths: dict[str, Path]) -> None:
     paths["task_state"].parent.mkdir(parents=True, exist_ok=True)
     paths["dashboard_json"].parent.mkdir(parents=True, exist_ok=True)
     paths["dashboard_markdown"].parent.mkdir(parents=True, exist_ok=True)
+
+
+def pid_is_running(pid_text: str) -> bool:
+    try:
+        pid = int(pid_text)
+    except (TypeError, ValueError):
+        return False
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def acquire_cycle_lock(paths: dict[str, Path]) -> tuple[bool, str | None]:
+    lock_dir = paths["cycle_lock"]
+    pid_path = lock_dir / "pid"
+    owner_path = lock_dir / "owner"
+    owner_label = f"pid={os.getpid()} cmd={' '.join(sys.argv)}"
+
+    try:
+        lock_dir.mkdir()
+    except FileExistsError:
+        holder_pid = ""
+        if pid_path.exists():
+            try:
+                holder_pid = pid_path.read_text(encoding="utf-8").strip()
+            except OSError:
+                holder_pid = ""
+        if holder_pid and pid_is_running(holder_pid):
+            return False, holder_pid
+        shutil.rmtree(lock_dir, ignore_errors=True)
+        lock_dir.mkdir()
+
+    try:
+        pid_path.write_text(f"{os.getpid()}\n", encoding="utf-8")
+        owner_path.write_text(owner_label + "\n", encoding="utf-8")
+    except OSError:
+        shutil.rmtree(lock_dir, ignore_errors=True)
+        raise
+    return True, None
+
+
+def release_cycle_lock(paths: dict[str, Path]) -> None:
+    shutil.rmtree(paths["cycle_lock"], ignore_errors=True)
 
 
 def repo_is_git_checkout(path: Path) -> bool:
@@ -1835,11 +1884,27 @@ def cmd_cycle(
     config: dict[str, Any], force_supervisor: bool, force_agents: list[str] | None
 ) -> int:
     force_agent_names = {name for name in (force_agents or []) if name}
-    return run_cycle(
-        config,
-        force_supervisor=force_supervisor,
-        force_agents=force_agent_names,
-    )
+    paths = runtime_paths(config)
+    ensure_runtime_dirs(paths)
+    acquired, holder_pid = acquire_cycle_lock(paths)
+    if not acquired:
+        holder = holder_pid or "unknown"
+        print(
+            "Another `scripts/rebar_ops.py cycle` invocation is already running "
+            f"(holder pid: {holder}). Stop the live loop or wait for it to finish before "
+            "forcing another cycle in this checkout.",
+            file=sys.stderr,
+        )
+        return 73
+    atexit.register(release_cycle_lock, paths)
+    try:
+        return run_cycle(
+            config,
+            force_supervisor=force_supervisor,
+            force_agents=force_agent_names,
+        )
+    finally:
+        release_cycle_lock(paths)
 
 
 def cmd_sleep_seconds(config: dict[str, Any], exit_code: int) -> int:

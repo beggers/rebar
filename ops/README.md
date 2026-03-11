@@ -17,6 +17,7 @@ This directory is the tracked operating system for the project.
 6. The harness auto-recovers stale `in_progress` tasks, syncs the tracked README status block, auto-commits and auto-pushes repo changes, and writes a dashboard after each cycle.
 7. Runtime prompts, logs, metadata, task state, and anomaly summaries are written to ignored `.rebar/runtime/`.
 8. Supervisors can force a specific agent through environment backoff with `python3 scripts/rebar_ops.py cycle --force-agent <agent>` when validating a harness fix.
+9. `scripts/rebar_ops.py cycle` runs are serialized with a runtime lock so a manual cycle cannot overlap the forever loop in the same checkout.
 
 ## Why It Exists
 - Future agent runs should not need to infer project history from scratch.

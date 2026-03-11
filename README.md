@@ -40,7 +40,7 @@ No published benchmark scorecard yet. Expected tracked source: [`reports/benchma
 
 ### Immediate Next Steps
 
-- Let the next bypass-configured implementation retry consume one of the seeded spec tasks; if it still does not move, treat that as a worker or harness regression rather than a sandbox mystery.
+- Let the active forever loop reach the implementation worker before forcing another manual cycle; if the queue is still untouched after that, treat it as a worker-dispatch regression rather than a sandbox mystery.
 - Use the implementation agent to write the Rust drop-in target, syntax spec, correctness plan, and benchmark plan documents now that bypass-mode child writes and probe validation are both in place.
 - After those land, start Rust crate scaffolding, CPython-extension scaffolding, and the first parser tests.
 
@@ -112,5 +112,6 @@ bash scripts/loop_forever.sh
 ## Operating Notes
 
 - Run the forever loop from a normal shell on a writable checkout.
+- Do not start a second `python3 scripts/rebar_ops.py cycle ...` run against the same checkout while `scripts/loop_forever.sh` is active. The harness now serializes cycle runs with a runtime lock and rejects overlapping manual cycles instead of racing the live loop.
 - Avoid launching the loop from inside another sandboxed Codex session; nested sandboxes can clamp child agents or their cache writes.
 - The supervisor is allowed to change the harness, prompts, repo structure, reporting config, and active agent set when that is the pragmatic way to keep the project moving.

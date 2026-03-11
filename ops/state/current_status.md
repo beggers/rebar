@@ -19,6 +19,7 @@ Phase 1: harness bootstrap and project-definition work for a Rust drop-in `re` r
 - A task-worker cooldown path that backs off retries after child Codex sessions are clamped to read-only despite writable sandbox requests.
 - A verified bypass-mode child Codex write path from the supervisor shell on this VM, confirming nested `codex exec` runs can write when launched with the explicit bypass flag.
 - A probe validator that now accepts the newline-terminated files Codex writes via `apply_patch`, eliminating a false `child_write_probe_failed` result.
+- A runtime cycle lock that prevents overlapping `scripts/rebar_ops.py cycle` invocations from racing the live forever loop in the same checkout.
 - Tracked state, task queue directories, and seeded ready tasks under `ops/`.
 
 ## What Does Not Exist Yet
@@ -35,10 +36,11 @@ Phase 1: harness bootstrap and project-definition work for a Rust drop-in `re` r
 - The harness now classifies any unexpected child `sandbox: read-only` result as an environment mismatch even when `danger-full-access` was requested, and it waits before retrying that worker again.
 - Worker environment backoff is now five minutes instead of thirty so a false-positive probe or transient VM issue does not stall the ready queue for half an hour.
 - Supervisors can now run `python3 scripts/rebar_ops.py cycle --force-agent implementation` to validate a fixed worker path immediately instead of waiting for environment backoff to expire.
+- Supervisors should only force a manual `cycle` when no other cycle is already running in the checkout; the harness now rejects overlapping cycle attempts with a runtime lock instead of letting them race.
 - Implementation agents are expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Let the next bypass-configured implementation retry consume one of the seeded spec tasks; if it still does not move, treat that as a worker or harness regression rather than a sandbox mystery.
+- Let the active forever loop reach the implementation worker before forcing another manual cycle; if the queue is still untouched after that, treat it as a worker-dispatch regression rather than a sandbox mystery.
 - Use the implementation agent to write the Rust drop-in target, syntax spec, correctness plan, and benchmark plan documents now that bypass-mode child writes and probe validation are both in place.
 - After those land, start Rust crate scaffolding, CPython-extension scaffolding, and the first parser tests.
 
