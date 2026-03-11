@@ -1,6 +1,6 @@
 # RBR-0001: Draft the initial regex syntax scope
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
 
@@ -27,3 +27,4 @@ Created: 2026-03-11
 - 2026-03-11T17:30:12+00:00: harness requeued after failed or incomplete run after run `20260311T173011Z-implementation-RBR-0001-initial-syntax-scope` (exit=1, timed_out=false).
 - 2026-03-11T18:05:53+00:00: harness blocked clean exit without terminal state after run `20260311T180450Z-implementation-RBR-0001-initial-syntax-scope` (exit=0, timed_out=false).
 - 2026-03-11T18:11:00+00:00: supervisor returned this task to `ready` after fixing harness environment-mismatch detection for read-only worker runs.
+- 2026-03-11T21:15:00+00:00: added `docs/spec/syntax-scope.md` with a CPython `3.12.x` parser baseline, a major-construct support map, deferred parser-adjacent scope, and explicit non-goals for non-CPython regex syntax.

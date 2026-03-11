@@ -7,21 +7,21 @@ This repository is run autonomously, but it is meant to be legible to humans fir
 <!-- REBAR:STATUS_START -->
 ## Current State
 
-Feature completeness: `[####..............] 19%`
+Feature completeness: `[#####.............] 28%`
 
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 1: harness bootstrap and project-definition work for a Rust drop-in `re` replacement. |
 | Current milestone | Milestone 1: define the Rust implementation target and drop-in `re` compatibility contract well enough that implementation work can start without re-litigating scope each run. |
-| Work queue | `3` ready, `0` in progress, `1` done, `0` blocked |
-| Capability tracks | `1/9` complete |
+| Work queue | `2` ready, `0` in progress, `2` done, `0` blocked |
+| Capability tracks | `2/9` complete |
 
 ### Capability Matrix
 
 | Capability | Status | Evidence |
 | --- | --- | --- |
 | Drop-in `re` compatibility contract | complete | [`docs/spec/drop-in-re-compatibility.md`](docs/spec/drop-in-re-compatibility.md) |
-| Syntax compatibility scope | planned | [`ops/tasks/ready/RBR-0001-initial-syntax-scope.md`](ops/tasks/ready/RBR-0001-initial-syntax-scope.md) |
+| Syntax compatibility scope | complete | [`docs/spec/syntax-scope.md`](docs/spec/syntax-scope.md) |
 | Correctness plan | planned | [`ops/tasks/ready/RBR-0002-correctness-harness-plan.md`](ops/tasks/ready/RBR-0002-correctness-harness-plan.md) |
 | Benchmark methodology | planned | [`ops/tasks/ready/RBR-0003-benchmark-plan.md`](ops/tasks/ready/RBR-0003-benchmark-plan.md) |
 | Rust parser crate scaffold | not started | `not yet queued` |
@@ -42,7 +42,7 @@ No published benchmark scorecard yet. Expected tracked source: [`reports/benchma
 
 - Use the implementation agent to complete the remaining Milestone 1 docs: syntax scope, correctness plan, and benchmark plan.
 - Convert the completed compatibility/spec documents into concrete Rust crate, CPython-extension, and conformance-harness tasks as soon as the remaining planning docs land.
-- Let the next completed live cycle confirm the normalized dashboard matches the repaired environment detection path without needing manual interpretation of stale runtime metadata.
+- Keep the ready-task docs aligned on a single initial CPython reference target so later harness and benchmark work does not fork its assumptions.
 - After the planning docs land, start Rust crate scaffolding, CPython-extension scaffolding, and the first parser-oriented tests.
 
 ### Current Risks
@@ -50,7 +50,7 @@ No published benchmark scorecard yet. Expected tracked source: [`reports/benchma
 - The project can drift into premature implementation without a clear compatibility target.
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
-- Nested supervisor runs inside a live forever loop can still create misleading runtime anomalies even when the underlying worker write path is healthy.
+- Concurrent human and loop commits can still produce diverged git history that requires supervisor resolution; the harness now detects that state accurately but does not auto-rebase it.
 - Only one implementation task has completed under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
 <!-- REBAR:STATUS_END -->
 

@@ -250,14 +250,27 @@ def git_upstream_ref(config: dict[str, Any]) -> str:
 
 
 def git_ahead_count(config: dict[str, Any]) -> int | None:
+    ahead, _ = git_ahead_behind_counts(config)
+    return ahead
+
+
+def git_behind_count(config: dict[str, Any]) -> int | None:
+    _, behind = git_ahead_behind_counts(config)
+    return behind
+
+
+def git_ahead_behind_counts(config: dict[str, Any]) -> tuple[int | None, int | None]:
     upstream = git_upstream_ref(config)
-    result = git_run("rev-list", "--count", f"{upstream}..HEAD")
+    result = git_run("rev-list", "--left-right", "--count", f"HEAD...{upstream}")
     if result.returncode != 0:
-        return None
+        return None, None
+    parts = result.stdout.strip().split()
+    if len(parts) != 2:
+        return None, None
     try:
-        return int(result.stdout.strip())
+        return int(parts[0]), int(parts[1])
     except ValueError:
-        return None
+        return None, None
 
 
 def recent_git_commits(limit: int) -> list[dict[str, str]]:
@@ -1559,9 +1572,12 @@ def maybe_commit_and_push(
         "dirty_before": git_worktree_dirty(),
         "commit_created": False,
         "commit_sha": None,
+        "fetch_attempted": False,
+        "fetch_succeeded": False,
         "push_attempted": False,
         "push_succeeded": False,
         "ahead_before_push": None,
+        "behind_before_push": None,
         "command_timeout_seconds": command_timeout,
         "push_timeout_seconds": push_timeout,
         "errors": [],
@@ -1595,10 +1611,43 @@ def maybe_commit_and_push(
                         )
 
     if bool(policy.get("auto_push", True)):
-        ahead = git_ahead_count(config)
+        action["fetch_attempted"] = True
+        try:
+            fetch = git_run("fetch", remote, branch, timeout_seconds=command_timeout)
+        except subprocess.TimeoutExpired:
+            action["errors"].append(
+                f"git fetch {remote} {branch} timed out after {command_timeout}s."
+            )
+            fetch = None
+        else:
+            if fetch.returncode == 0:
+                action["fetch_succeeded"] = True
+            else:
+                action["errors"].append(
+                    (fetch.stderr or fetch.stdout or f"git fetch {remote} {branch} failed").strip()
+                )
+
+        ahead = behind = None
+        if action["fetch_succeeded"]:
+            ahead, behind = git_ahead_behind_counts(config)
         action["ahead_before_push"] = ahead
-        if ahead is None:
-            action["errors"].append(f"Unable to determine ahead count for {remote}/{branch}.")
+        action["behind_before_push"] = behind
+        if action["fetch_attempted"] and not action["fetch_succeeded"]:
+            pass
+        elif ahead is None or behind is None:
+            action["errors"].append(
+                f"Unable to determine ahead/behind state for {remote}/{branch}."
+            )
+        elif behind > 0:
+            if ahead > 0:
+                action["errors"].append(
+                    f"Local branch diverged from {remote}/{branch} after fetch "
+                    f"(ahead {ahead}, behind {behind}); skipped push."
+                )
+            else:
+                action["errors"].append(
+                    f"Local branch is behind {remote}/{branch} by {behind} commit(s) after fetch; skipped push."
+                )
         elif ahead > 0:
             action["push_attempted"] = True
             try:
@@ -1782,6 +1831,7 @@ def build_report(config: dict[str, Any]) -> dict[str, Any]:
         for item in raw_last_cycle_runs[:recent_runs_limit]
         if isinstance(item, dict)
     ]
+    ahead_of_upstream, behind_of_upstream = git_ahead_behind_counts(config)
 
     report = {
         "generated_at": utcnow(),
@@ -1789,7 +1839,11 @@ def build_report(config: dict[str, Any]) -> dict[str, Any]:
         "branch": git_branch(),
         "head": git_head(),
         "upstream": git_upstream_ref(config),
-        "ahead_of_upstream": git_ahead_count(config),
+        "ahead_of_upstream": ahead_of_upstream,
+        "behind_of_upstream": behind_of_upstream,
+        "diverged_from_upstream": bool(
+            (ahead_of_upstream or 0) > 0 and (behind_of_upstream or 0) > 0
+        ),
         "dirty_worktree": git_worktree_dirty(),
         "queue_counts": queue_counts(),
         "totals": state.get("totals", {}),
@@ -1833,6 +1887,8 @@ def render_markdown_report(report: dict[str, Any]) -> str:
         f"Upstream: `{report['upstream']}`",
         f"Dirty worktree: `{str(report['dirty_worktree']).lower()}`",
         f"Ahead of upstream: `{report['ahead_of_upstream']}`",
+        f"Behind upstream: `{report['behind_of_upstream']}`",
+        f"Diverged from upstream: `{str(report['diverged_from_upstream']).lower()}`",
         "",
         "## Totals",
     ]
@@ -1973,6 +2029,8 @@ def cmd_status(config: dict[str, Any]) -> int:
         "queue_counts": report["queue_counts"],
         "agents": report["agents"],
         "ahead_of_upstream": report["ahead_of_upstream"],
+        "behind_of_upstream": report["behind_of_upstream"],
+        "diverged_from_upstream": report["diverged_from_upstream"],
         "dirty_worktree": report["dirty_worktree"],
         "last_cycle_anomalies": report["last_cycle_anomalies"],
         "dashboard_path": report["dashboard_paths"]["markdown"],
