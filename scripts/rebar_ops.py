@@ -149,13 +149,20 @@ def repo_is_git_checkout(path: Path) -> bool:
     return result.returncode == 0 and result.stdout.strip().lower() == "true"
 
 
-def git_run(*args: str, capture_output: bool = True, check: bool = False, input_text: str | None = None) -> subprocess.CompletedProcess[str]:
+def git_run(
+    *args: str,
+    capture_output: bool = True,
+    check: bool = False,
+    input_text: str | None = None,
+    timeout_seconds: int | None = None,
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         ["git", "-C", str(REPO_ROOT), *args],
         input=input_text,
         text=True,
         capture_output=capture_output,
         check=check,
+        timeout=timeout_seconds,
     )
 
 
@@ -886,6 +893,8 @@ def maybe_commit_and_push(
     policy = config.get("git_policy", {})
     remote = str(policy.get("push_remote", "origin"))
     branch = str(policy.get("push_branch", git_branch() or "main"))
+    command_timeout = int(policy.get("command_timeout_seconds", 30))
+    push_timeout = int(policy.get("push_timeout_seconds", 120))
     action: dict[str, Any] = {
         "dirty_before": git_worktree_dirty(),
         "commit_created": False,
@@ -893,21 +902,37 @@ def maybe_commit_and_push(
         "push_attempted": False,
         "push_succeeded": False,
         "ahead_before_push": None,
+        "command_timeout_seconds": command_timeout,
+        "push_timeout_seconds": push_timeout,
         "errors": [],
     }
 
     if bool(policy.get("auto_commit", True)) and action["dirty_before"]:
-        git_run("add", "-A", capture_output=True)
-        if git_worktree_dirty():
-            message = compose_commit_message(config, results, recovery_actions)
-            commit = git_run("commit", "-F", "-", input_text=message)
-            if commit.returncode == 0:
-                action["commit_created"] = True
-                action["commit_sha"] = git_head()
-            else:
-                action["errors"].append(
-                    (commit.stderr or commit.stdout or "git commit failed").strip()
-                )
+        try:
+            git_run("add", "-A", capture_output=True, timeout_seconds=command_timeout)
+        except subprocess.TimeoutExpired:
+            action["errors"].append(f"git add timed out after {command_timeout}s.")
+        else:
+            if git_worktree_dirty():
+                message = compose_commit_message(config, results, recovery_actions)
+                try:
+                    commit = git_run(
+                        "commit",
+                        "-F",
+                        "-",
+                        input_text=message,
+                        timeout_seconds=command_timeout,
+                    )
+                except subprocess.TimeoutExpired:
+                    action["errors"].append(f"git commit timed out after {command_timeout}s.")
+                else:
+                    if commit.returncode == 0:
+                        action["commit_created"] = True
+                        action["commit_sha"] = git_head()
+                    else:
+                        action["errors"].append(
+                            (commit.stderr or commit.stdout or "git commit failed").strip()
+                        )
 
     if bool(policy.get("auto_push", True)):
         ahead = git_ahead_count(config)
@@ -915,14 +940,18 @@ def maybe_commit_and_push(
         if ahead is None:
             action["errors"].append(f"Unable to determine ahead count for {remote}/{branch}.")
         elif ahead > 0:
-            push = git_run("push", remote, branch)
             action["push_attempted"] = True
-            if push.returncode == 0:
-                action["push_succeeded"] = True
+            try:
+                push = git_run("push", remote, branch, timeout_seconds=push_timeout)
+            except subprocess.TimeoutExpired:
+                action["errors"].append(f"git push timed out after {push_timeout}s.")
             else:
-                action["errors"].append(
-                    (push.stderr or push.stdout or "git push failed").strip()
-                )
+                if push.returncode == 0:
+                    action["push_succeeded"] = True
+                else:
+                    action["errors"].append(
+                        (push.stderr or push.stdout or "git push failed").strip()
+                    )
 
     action["dirty_after"] = git_worktree_dirty()
     action["head_after"] = git_head()

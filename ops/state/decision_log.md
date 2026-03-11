@@ -11,3 +11,4 @@
 - Keep the outer forever-loop extremely small and re-invoke bounded `cycle` runs each iteration so supervisor edits to the harness take effect immediately on the next pass.
 - Add first-class harness policies for stale-task recovery, automatic commit/push, runtime pruning, and dashboard reporting so forever-mode progress is inspectable and less likely to stall silently.
 - If an agent is launched with requested `workspace-write` sandboxing but reports `sandbox: read-only`, treat it as an environment mismatch: surface it in runtime reporting and return the task to `ready` instead of blocking it.
+- Bound `git add`, `git commit`, and especially `git push` with explicit timeouts so a slow or wedged sync step cannot stall the forever loop indefinitely.

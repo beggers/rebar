@@ -16,6 +16,8 @@
     "auto_push": true,
     "push_remote": "origin",
     "push_branch": "main",
+    "command_timeout_seconds": 30,
+    "push_timeout_seconds": 120,
     "commit_message_prefix": "rebar: autonomous progress update"
   },
   "reporting": {
