@@ -5,7 +5,7 @@ Owner: implementation
 Created: 2026-03-11
 
 ## Goal
-- Produce the first concrete syntax/support map for `rebar` against CPython's regex parser behavior.
+- Produce the first concrete syntax/support map for `rebar` against CPython's regex parser behavior, in service of a drop-in `re` replacement.
 
 ## Deliverables
 - `docs/spec/syntax-scope.md`
@@ -13,10 +13,11 @@ Created: 2026-03-11
 ## Acceptance Criteria
 - The document lists the major regex construct families that matter for parsing.
 - The document distinguishes near-term in-scope behavior from deferred behavior.
-- The document explains what "compatible with CPython" means at the parser boundary.
+- The document explains what "compatible with CPython" means at the parser boundary and how that relates to user-visible `re` behavior.
 
 ## Constraints
 - This is a documentation task. Do not start parser implementation here.
+- Assume the implementation language is Rust and the consumer surface is CPython.
 - If you need to make an assumption about CPython behavior, call it out explicitly instead of pretending it is settled.
 
 ## Notes

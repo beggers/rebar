@@ -2,6 +2,14 @@
   "readme_path": "README.md",
   "capability_tracks": [
     {
+      "label": "Drop-in `re` compatibility contract",
+      "description": "Rust and CPython-extension target for bug-for-bug public API compatibility.",
+      "paths_any": [
+        "docs/spec/drop-in-re-compatibility.md"
+      ],
+      "task": "RBR-0000-rust-drop-in-target.md"
+    },
+    {
       "label": "Syntax compatibility scope",
       "description": "Initial parser compatibility document for regex syntax support.",
       "paths_any": [
@@ -26,12 +34,21 @@
       "task": "RBR-0003-benchmark-plan.md"
     },
     {
-      "label": "Parser package scaffold",
-      "description": "First tracked parser package or module tree.",
+      "label": "Rust parser crate scaffold",
+      "description": "First tracked Rust crate or module tree for the parser.",
       "globs_any": [
-        "src/rebar/**/*.py",
-        "python/rebar/**/*.py",
-        "rebar/**/*.py"
+        "Cargo.toml",
+        "crates/rebar*/**/*.rs",
+        "src/**/*.rs"
+      ]
+    },
+    {
+      "label": "CPython extension scaffold",
+      "description": "Tracked extension module or Python packaging layer for importing as a replacement `re` implementation.",
+      "globs_any": [
+        "python/**/*.py",
+        "pyproject.toml",
+        "Cargo.toml"
       ]
     },
     {
@@ -43,6 +60,13 @@
       ]
     },
     {
+      "label": "Published correctness scorecard",
+      "description": "Committed summary of correctness coverage and parity.",
+      "paths_any": [
+        "reports/correctness/latest.json"
+      ]
+    },
+    {
       "label": "Published benchmark scorecard",
       "description": "Committed summary of parser benchmark results.",
       "paths_any": [
@@ -50,6 +74,10 @@
       ]
     }
   ],
+  "correctness_scorecard": {
+    "title": "Correctness Scorecard",
+    "path": "reports/correctness/latest.json"
+  },
   "benchmark_scorecard": {
     "title": "Parser Benchmark Scorecard",
     "path": "reports/benchmarks/latest.json"

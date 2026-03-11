@@ -13,3 +13,5 @@
 - If an agent is launched with requested `workspace-write` sandboxing but reports `sandbox: read-only`, treat it as an environment mismatch: surface it in runtime reporting and return the task to `ready` instead of blocking it.
 - Bound `git add`, `git commit`, and especially `git push` with explicit timeouts so a slow or wedged sync step cannot stall the forever loop indefinitely.
 - Treat `README.md` as the tracked landing page for humans, and auto-sync a generated current-state section from durable project state and reporting config instead of leaving it as an operator note.
+- Target a Rust implementation with CPython integration and bug-for-bug `re` module compatibility, so the north star is a drop-in replacement rather than only a fast standalone parser.
+- Plan for both correctness and benchmark scorecards to appear in `README.md` once tracked result artifacts exist under `reports/`.

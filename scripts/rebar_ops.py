@@ -482,15 +482,15 @@ def capability_track_rows(config: dict[str, Any]) -> list[dict[str, Any]]:
     return rows
 
 
-def benchmark_scorecard(config: dict[str, Any]) -> dict[str, Any]:
+def scorecard_from_config(config: dict[str, Any], key: str, default_title: str, default_path: str) -> dict[str, Any]:
     reporting_cfg = load_readme_reporting_config(config)
-    raw = reporting_cfg.get("benchmark_scorecard", {})
+    raw = reporting_cfg.get(key, {})
     if not isinstance(raw, dict):
         raw = {}
-    rel = str(raw.get("path", "reports/benchmarks/latest.json"))
+    rel = str(raw.get("path", default_path))
     path = resolve_repo_path(rel)
     scorecard: dict[str, Any] = {
-        "title": str(raw.get("title", "Parser Benchmark Scorecard")),
+        "title": str(raw.get("title", default_title)),
         "path": relpath(path),
         "available": False,
     }
@@ -519,6 +519,10 @@ def benchmark_scorecard(config: dict[str, Any]) -> dict[str, Any]:
             "workload_count": len(workloads),
             "geomean_speedup": summary.get("geomean_speedup_vs_baseline"),
             "median_speedup": summary.get("median_speedup_vs_baseline"),
+            "cases_total": summary.get("cases_total"),
+            "cases_passed": summary.get("cases_passed"),
+            "pass_rate": summary.get("pass_rate"),
+            "parity_rate": summary.get("parity_rate"),
         }
     )
     return scorecard
@@ -541,7 +545,18 @@ def tracked_project_snapshot(config: dict[str, Any]) -> dict[str, Any]:
         "capability_tracks": tracks,
         "completion_ratio": completion_ratio,
         "complete_tracks": sum(1 for item in tracks if item.get("status") == "complete"),
-        "benchmark_scorecard": benchmark_scorecard(config),
+        "correctness_scorecard": scorecard_from_config(
+            config,
+            "correctness_scorecard",
+            "Correctness Scorecard",
+            "reports/correctness/latest.json",
+        ),
+        "benchmark_scorecard": scorecard_from_config(
+            config,
+            "benchmark_scorecard",
+            "Parser Benchmark Scorecard",
+            "reports/benchmarks/latest.json",
+        ),
     }
 
 
@@ -565,6 +580,7 @@ def render_readme_status(config: dict[str, Any]) -> str:
     snapshot = tracked_project_snapshot(config)
     queue = snapshot["queue_counts"]
     tracks = snapshot["capability_tracks"]
+    correctness = snapshot["correctness_scorecard"]
     benchmark = snapshot["benchmark_scorecard"]
     total_tracks = len(tracks)
     completion_ratio = float(snapshot["completion_ratio"])
@@ -588,6 +604,24 @@ def render_readme_status(config: dict[str, Any]) -> str:
 
     for item in tracks:
         lines.append(f"| {item['label']} | {item['status']} | {item['evidence']} |")
+
+    lines.extend(["", f"### {correctness['title']}", ""])
+    if not correctness.get("available"):
+        lines.append(
+            f"No published correctness scorecard yet. Expected tracked source: {markdown_link(correctness['path'])}."
+        )
+    else:
+        lines.extend(
+            [
+                "| Metric | Value |",
+                "| --- | --- |",
+                f"| Candidate | {correctness.get('candidate') or 'rebar'} |",
+                f"| Cases | `{correctness.get('cases_passed')}` / `{correctness.get('cases_total')}` |",
+                f"| Pass rate | `{correctness.get('pass_rate')}` |",
+                f"| Parity rate | `{correctness.get('parity_rate')}` |",
+                f"| Source | {markdown_link(correctness['path'])} |",
+            ]
+        )
 
     lines.extend(["", f"### {benchmark['title']}", ""])
     if not benchmark.get("available"):
