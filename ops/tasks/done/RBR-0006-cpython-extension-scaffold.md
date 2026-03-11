@@ -1,6 +1,6 @@
 # RBR-0006: Scaffold the CPython extension and Python package
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
 
@@ -29,3 +29,8 @@ Created: 2026-03-11
 - Use `docs/spec/drop-in-re-compatibility.md` as the public-module contract and `docs/spec/syntax-scope.md` as the parser baseline.
 - Keep the packaging and import shape friendly to the future correctness and benchmark adapters described in `docs/testing/correctness-plan.md` and `docs/benchmarks/plan.md`.
 - Assume `RBR-0005` has landed first and build on the crate names it establishes instead of re-litigating the workspace layout.
+
+## Completion Notes
+- Added a root `pyproject.toml` that points maturin at a new `crates/rebar-cpython` PyO3 extension crate and uses `python/` as the package source tree.
+- Added `python/rebar/__init__.py` with scaffold-only metadata plus a loud `compile()` placeholder that never falls back to stdlib `re`.
+- Added `tests/python/test_import_rebar.py` as a source-import smoke test, and verified `cargo test` plus `python3 -m unittest discover -s tests/python -p 'test_import_rebar.py'`.

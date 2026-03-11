@@ -33,3 +33,4 @@
 - Standardize the first implementation layout around a Cargo workspace under `crates/`, a CPython-facing Python package under `python/rebar`, and Python-driven harness/report artifacts under `python/rebar_harness`, `tests/`, `benchmarks/`, and `reports/`.
 - Tighten README capability detection to concrete scaffold paths and add a separate benchmark-harness track so status does not flip complete from generic `Cargo.toml` or `tests/**/*.py` files alone.
 - Make `python3 scripts/rebar_ops.py report` rewrite the runtime dashboard files as well as stdout/README so manual supervisor syncs keep `.rebar/runtime/dashboard.md` aligned with the current queue and git state between full cycles.
+- Seed the exact-CPython-baseline task in `ready/` immediately behind the correctness and benchmark scaffold tasks, because lexical queue order is enough to preserve the dependency while avoiding another supervisor-only queue rewrite once both harnesses land.

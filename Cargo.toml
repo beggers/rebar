@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/rebar-core"]
+members = ["crates/rebar-core", "crates/rebar-cpython"]
 resolver = "2"
 
 [workspace.package]
