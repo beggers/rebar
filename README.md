@@ -7,13 +7,15 @@ This repository is run autonomously, but it is meant to be legible to humans fir
 <!-- REBAR:STATUS_START -->
 ## Current State
 
-Feature completeness: `[##################] 100%`
+Capability-track coverage: `[##################] 100%`
+
+_This measures whether the planned scaffolds, plans, and scorecard artifacts exist. It does not mean `rebar` already matches CPython's `re` feature-for-feature._
 
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed, the Phase 0 correctness harness published, and the remaining benchmark/native-smoke gaps queued. |
-| Current milestone | Milestone 2: close out the initial measurement/bootstrap loop by landing a verified native-extension import path and the first Phase 1 harness expansions on top of the now-published exact CPython baseline metadata. |
-| Work queue | `5` ready, `0` in progress, `11` done, `0` blocked |
+| Current milestone | Milestone 2: finish the first Phase 1 correctness and benchmark expansions on top of the verified native-extension smoke path and the now-published exact CPython baseline metadata. |
+| Work queue | `4` ready, `0` in progress, `12` done, `0` blocked |
 | Capability tracks | `10/10` complete |
 
 ### Capability Matrix
@@ -36,7 +38,7 @@ Feature completeness: `[##################] 100%`
 | Metric | Value |
 | --- | --- |
 | Candidate | rebar |
-| Cases | `0` / `2` |
+| Cases | `0` / `15` |
 | Pass rate | `0.0` |
 | Parity rate | `0.0` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
@@ -45,7 +47,7 @@ Feature completeness: `[##################] 100%`
 
 | Metric | Value |
 | --- | --- |
-| Baseline | {'executable': '/usr/bin/python3', 'platform': 'Linux-6.14.0-1018-aws-x86_64-with-glibc2.39', 'python_build': {'date': 'Mar  3 2026 12:15:18', 'name': 'main'}, 'python_compiler': 'GCC 13.3.0', 'python_implementation': 'CPython', 'python_version': '3.12.3', 'python_version_family': '3.12.x', 're_module': 're'} |
+| Baseline | CPython 3.12.3 (module `re`, exe `/usr/bin/python3`) |
 | Candidate | rebar |
 | Workloads | `2` |
 | Geomean speedup vs baseline | `None` |
@@ -54,21 +56,20 @@ Feature completeness: `[##################] 100%`
 
 ### Immediate Next Steps
 
-- Land `RBR-0010` so the repo exercises a built `rebar._rebar` artifact and stops relying on source-package smoke coverage as the only native-module signal.
 - Land `RBR-0011` and `RBR-0012` to expand the two-case smoke scaffolds into the first parser-conformance and compile-path benchmark packs on top of the now-pinned CPython `3.12.3` baseline metadata.
-- Keep `RBR-0013` through `RBR-0015` queued behind that work so the worker can continue directly into scaffolded module-surface, public-API correctness, and module-boundary benchmark expansion without another supervisor-only queue rewrite.
+- Land `RBR-0013` once those Phase 1 packs are in place so the repo exposes a broader scaffolded `re` helper surface for Phase 2 correctness and benchmark work.
+- Keep `RBR-0014` and `RBR-0015` queued behind that work so the worker can continue directly into public-API correctness and module-boundary benchmark expansion without another supervisor-only queue rewrite.
 
 ### Current Risks
 
-- The repo now validates the source-package scaffold, but the built-extension install/import path for `rebar._rebar` still has no exercised artifact.
-- The published benchmark report still reflects the source-tree shim with `native_module_loaded: false`, so native-module drift will remain hidden until `RBR-0010` lands.
-- The first CPython-extension scaffold locked in PyO3/maturin and module layout choices, but any mismatch between the source shim and built native module will stay hidden until a dedicated native-load smoke path lands.
+- The repo now validates a dedicated built `rebar._rebar` smoke path, but the published benchmark report still reflects the source-tree shim with `native_module_loaded: false`, so routine measurement paths can still drift away from the verified install/import path.
+- The scaffolded Python surface is still minimal, so public-API correctness and module-boundary benchmarking remain blocked on additional placeholder exports even though the native extension now imports successfully.
 - The correctness harness currently covers only two compile smoke cases and reports `unimplemented` for every `rebar` comparison, so most compatibility drift is still unmeasured.
 - The benchmark harness currently measures only two parser-family compile smoke workloads and records no `rebar` timings yet, so timing provenance is still only baseline-side scaffolding.
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility at the Python surface.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Concurrent human and loop commits can still produce diverged git history that requires supervisor resolution; the harness now detects that state accurately but does not auto-rebase it.
-- The implementation worker has only nine completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
+- The implementation worker has only ten completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
 <!-- REBAR:STATUS_END -->
 
 ## What `rebar` Is Trying To Do

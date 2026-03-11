@@ -1,4 +1,4 @@
-"""Phase 0 differential correctness harness for compile-oriented smoke cases."""
+"""Differential correctness harness for parser compile conformance cases."""
 
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ from rebar_harness.metadata import build_cpython_baseline
 TARGET_CPYTHON_SERIES = "3.12.x"
 REPORT_SCHEMA_VERSION = "1.0"
 FIXTURE_SCHEMA_VERSION = 1
-DEFAULT_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_smoke.json"
+DEFAULT_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.json"
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 
 
@@ -35,22 +35,40 @@ class FixtureCase:
     """Single compile-oriented differential case."""
 
     case_id: str
+    family: str
     operation: str
     pattern: str
     flags: int
     text_model: str
+    pattern_encoding: str
     notes: list[str]
+    categories: list[str]
 
     @classmethod
-    def from_dict(cls, raw_case: dict[str, Any]) -> "FixtureCase":
+    def from_dict(cls, raw_case: dict[str, Any], defaults: dict[str, Any]) -> "FixtureCase":
         return cls(
             case_id=str(raw_case["id"]),
-            operation=str(raw_case["operation"]),
+            family=str(raw_case.get("family", defaults.get("family", "parser"))),
+            operation=str(raw_case.get("operation", defaults.get("operation", "compile"))),
             pattern=str(raw_case["pattern"]),
-            flags=int(raw_case.get("flags", 0)),
-            text_model=str(raw_case.get("text_model", "str")),
+            flags=int(raw_case.get("flags", defaults.get("flags", 0))),
+            text_model=str(raw_case.get("text_model", defaults.get("text_model", "str"))),
+            pattern_encoding=str(
+                raw_case.get(
+                    "pattern_encoding",
+                    defaults.get("pattern_encoding", "latin-1"),
+                )
+            ),
             notes=[str(note) for note in raw_case.get("notes", [])],
+            categories=[str(category) for category in raw_case.get("categories", [])],
         )
+
+    def pattern_payload(self) -> str | bytes:
+        if self.text_model == "str":
+            return self.pattern
+        if self.text_model == "bytes":
+            return self.pattern.encode(self.pattern_encoding)
+        raise ValueError(f"unsupported text model {self.text_model!r}")
 
 
 def load_fixture_manifest(path: pathlib.Path) -> tuple[dict[str, Any], list[FixtureCase]]:
@@ -62,7 +80,13 @@ def load_fixture_manifest(path: pathlib.Path) -> tuple[dict[str, Any], list[Fixt
             f"expected {FIXTURE_SCHEMA_VERSION}"
         )
 
-    cases = [FixtureCase.from_dict(raw_case) for raw_case in raw_manifest.get("cases", [])]
+    defaults = raw_manifest.get("defaults", {})
+    if not isinstance(defaults, dict):
+        raise ValueError("fixture manifest defaults must be an object")
+
+    cases = [
+        FixtureCase.from_dict(raw_case, defaults) for raw_case in raw_manifest.get("cases", [])
+    ]
     return raw_manifest, cases
 
 
@@ -79,12 +103,21 @@ def normalize_warning_records(records: list[warnings.WarningMessage]) -> list[di
 def normalize_success_metadata(compiled_pattern: Any) -> dict[str, Any]:
     groupindex = getattr(compiled_pattern, "groupindex", {})
     return {
-        "pattern": compiled_pattern.pattern,
+        "pattern": normalize_pattern_value(compiled_pattern.pattern),
         "flags": compiled_pattern.flags,
         "groups": compiled_pattern.groups,
         "groupindex": dict(sorted(groupindex.items())),
         "pattern_type": type(compiled_pattern.pattern).__name__,
     }
+
+
+def normalize_pattern_value(pattern: str | bytes) -> str | dict[str, str]:
+    if isinstance(pattern, bytes):
+        return {
+            "encoding": "latin-1",
+            "value": pattern.decode("latin-1"),
+        }
+    return pattern
 
 
 def normalize_exception(exc: BaseException) -> dict[str, Any]:
@@ -113,10 +146,11 @@ class CpythonReAdapter(CompileAdapter):
     adapter_name = "cpython.re"
 
     def observe_compile(self, case: FixtureCase) -> dict[str, Any]:
+        pattern = case.pattern_payload()
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always")
             try:
-                compiled = cpython_re.compile(case.pattern, case.flags)
+                compiled = cpython_re.compile(pattern, case.flags)
             except Exception as exc:  # pragma: no cover - exercised by fixtures
                 return finalize_observation(
                     adapter=self.adapter_name,
@@ -139,10 +173,11 @@ class RebarAdapter(CompileAdapter):
     adapter_name = "rebar"
 
     def observe_compile(self, case: FixtureCase) -> dict[str, Any]:
+        pattern = case.pattern_payload()
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always")
             try:
-                compiled = rebar.compile(case.pattern, case.flags)
+                compiled = rebar.compile(pattern, case.flags)
             except NotImplementedError as exc:
                 return finalize_observation(
                     adapter=self.adapter_name,
@@ -218,8 +253,6 @@ def evaluate_case(
 ) -> dict[str, Any]:
     if case.operation != "compile":
         raise ValueError(f"unsupported operation {case.operation!r}")
-    if case.text_model != "str":
-        raise ValueError(f"unsupported text model {case.text_model!r} in Phase 0 scaffold")
 
     cpython_observation = cpython_adapter.observe_compile(case)
     rebar_observation = rebar_adapter.observe_compile(case)
@@ -229,11 +262,13 @@ def evaluate_case(
 
     return {
         "id": case.case_id,
+        "family": case.family,
         "operation": case.operation,
         "text_model": case.text_model,
         "pattern": case.pattern,
         "flags": case.flags,
         "notes": case.notes,
+        "categories": case.categories,
         "comparison": comparison,
         "comparison_notes": mismatch_notes,
         "observations": {
@@ -258,6 +293,88 @@ def build_summary(case_results: list[dict[str, Any]]) -> dict[str, int]:
     }
 
 
+def build_observation_summary(observations: list[dict[str, Any]]) -> dict[str, Any]:
+    outcomes: dict[str, int] = {}
+    warning_categories: dict[str, int] = {}
+    exception_types: dict[str, int] = {}
+    warning_case_count = 0
+    exception_case_count = 0
+
+    for observation in observations:
+        outcome = str(observation["outcome"])
+        outcomes[outcome] = outcomes.get(outcome, 0) + 1
+
+        warnings_payload = observation.get("warnings", [])
+        if warnings_payload:
+            warning_case_count += 1
+            for warning_record in warnings_payload:
+                category = str(warning_record["category"])
+                warning_categories[category] = warning_categories.get(category, 0) + 1
+
+        exception = observation.get("exception")
+        if exception is not None:
+            exception_case_count += 1
+            exception_type = str(exception["type"])
+            exception_types[exception_type] = exception_types.get(exception_type, 0) + 1
+
+    return {
+        "outcomes": dict(sorted(outcomes.items())),
+        "warning_case_count": warning_case_count,
+        "exception_case_count": exception_case_count,
+        "warning_categories": dict(sorted(warning_categories.items())),
+        "exception_types": dict(sorted(exception_types.items())),
+    }
+
+
+def build_diagnostics_summary(case_results: list[dict[str, Any]]) -> dict[str, Any]:
+    return {
+        "by_adapter": {
+            "cpython": build_observation_summary(
+                [result["observations"]["cpython"] for result in case_results]
+            ),
+            "rebar": build_observation_summary(
+                [result["observations"]["rebar"] for result in case_results]
+            ),
+        }
+    }
+
+
+def build_suite_summary(
+    *,
+    suite_id: str,
+    layer: str,
+    case_results: list[dict[str, Any]],
+) -> dict[str, Any]:
+    return {
+        "id": suite_id,
+        "layer": layer,
+        "case_count": len(case_results),
+        "families": sorted({result["family"] for result in case_results}),
+        "text_models": sorted({result["text_model"] for result in case_results}),
+        "summary": build_summary(case_results),
+        "diagnostics": build_diagnostics_summary(case_results),
+    }
+
+
+def build_family_summaries(case_results: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    families = sorted({result["family"] for result in case_results})
+    return [
+        {
+            "id": family,
+            "case_count": len(
+                [result for result in case_results if result["family"] == family]
+            ),
+            "text_models": sorted(
+                {result["text_model"] for result in case_results if result["family"] == family}
+            ),
+            "summary": build_summary(
+                [result for result in case_results if result["family"] == family]
+            ),
+        }
+        for family in families
+    ]
+
+
 def build_scorecard(
     *,
     fixture_path: pathlib.Path,
@@ -268,7 +385,7 @@ def build_scorecard(
     return {
         "schema_version": REPORT_SCHEMA_VERSION,
         "suite": "correctness",
-        "phase": "phase0-harness-skeleton",
+        "phase": "phase1-parser-conformance-pack",
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
         "generator": "python -m rebar_harness.correctness",
         "baseline": {
@@ -283,13 +400,26 @@ def build_scorecard(
             "case_count": len(case_results),
         },
         "summary": summary,
+        "diagnostics": build_diagnostics_summary(case_results),
         "suites": [
-            {
-                "id": "parser.compile",
-                "layer": "parser_acceptance_and_diagnostics",
-                "summary": summary,
-            }
+            build_suite_summary(
+                suite_id="parser.compile",
+                layer="parser_acceptance_and_diagnostics",
+                case_results=case_results,
+            ),
+            *[
+                build_suite_summary(
+                    suite_id=f"parser.compile.{text_model}",
+                    layer="parser_acceptance_and_diagnostics",
+                    case_results=[
+                        result for result in case_results if result["text_model"] == text_model
+                    ],
+                )
+                for text_model in ("str", "bytes")
+                if any(result["text_model"] == text_model for result in case_results)
+            ],
         ],
+        "families": build_family_summaries(case_results),
         "cases": case_results,
     }
 

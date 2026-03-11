@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "manifest_id": "parser-matrix",
+  "defaults": {
+    "operation": "compile",
+    "flags": 0,
+    "text_model": "str",
+    "pattern_encoding": "latin-1"
+  },
+  "cases": [
+    {
+      "id": "str-literal-success",
+      "family": "pattern_text_model",
+      "pattern": "abc",
+      "categories": ["valid", "str"],
+      "notes": [
+        "Baseline literal compile case for the default str parser path."
+      ]
+    },
+    {
+      "id": "str-character-class-ignorecase-success",
+      "family": "character_classes",
+      "pattern": "[A-Z_][a-z0-9_]+",
+      "flags": 2,
+      "categories": ["valid", "str", "flags"],
+      "notes": [
+        "Exercises bracket-class parsing plus API-level IGNORECASE flags."
+      ]
+    },
+    {
+      "id": "str-possessive-quantifier-success",
+      "family": "quantifiers",
+      "pattern": "a*+",
+      "categories": ["valid", "str"],
+      "notes": [
+        "Covers the CPython 3.12 possessive quantifier syntax."
+      ]
+    },
+    {
+      "id": "str-atomic-group-success",
+      "family": "grouping",
+      "pattern": "(?>ab|a)b",
+      "categories": ["valid", "str"],
+      "notes": [
+        "Exercises atomic-group parsing without requiring match-engine parity."
+      ]
+    },
+    {
+      "id": "str-fixed-width-lookbehind-success",
+      "family": "assertions",
+      "pattern": "(?<=ab)c",
+      "categories": ["valid", "str"],
+      "notes": [
+        "Captures a valid fixed-width lookbehind compile path."
+      ]
+    },
+    {
+      "id": "str-nested-set-warning",
+      "family": "character_classes",
+      "pattern": "[[a]",
+      "categories": ["valid", "str", "warning"],
+      "notes": [
+        "Captures a compile-time FutureWarning from ambiguous nested-set syntax."
+      ]
+    },
+    {
+      "id": "str-invalid-repeat-error",
+      "family": "quantifiers",
+      "pattern": "*abc",
+      "categories": ["invalid", "str"],
+      "notes": [
+        "Exercises malformed repeat diagnostics with position metadata."
+      ]
+    },
+    {
+      "id": "str-invalid-inline-flag-position-error",
+      "family": "flags",
+      "pattern": "a(?i)b",
+      "categories": ["invalid", "str", "flags"],
+      "notes": [
+        "Covers the global-inline-flag placement restriction for str patterns."
+      ]
+    },
+    {
+      "id": "str-variable-width-lookbehind-error",
+      "family": "assertions",
+      "pattern": "(?<=a+)b",
+      "categories": ["invalid", "str"],
+      "notes": [
+        "Captures fixed-width validation failures for lookbehind assertions."
+      ]
+    },
+    {
+      "id": "str-inline-unicode-flag-success",
+      "family": "flags",
+      "pattern": "(?u:a)",
+      "categories": ["valid", "str", "flag-mirror"],
+      "notes": [
+        "Mirrors a bytes-only restriction: inline u is valid for str patterns."
+      ]
+    },
+    {
+      "id": "str-inline-locale-flag-error",
+      "family": "flags",
+      "pattern": "(?L:a)",
+      "categories": ["invalid", "str", "flag-mirror"],
+      "notes": [
+        "Mirrors a bytes-only success case: inline L is rejected for str patterns."
+      ]
+    },
+    {
+      "id": "bytes-literal-success",
+      "family": "pattern_text_model",
+      "pattern": "abc",
+      "text_model": "bytes",
+      "categories": ["valid", "bytes"],
+      "notes": [
+        "Baseline literal compile case for the bytes parser path."
+      ]
+    },
+    {
+      "id": "bytes-inline-unicode-flag-error",
+      "family": "flags",
+      "pattern": "(?u:a)",
+      "text_model": "bytes",
+      "categories": ["invalid", "bytes", "flag-mirror"],
+      "notes": [
+        "Mirrors the str success case: inline u is rejected for bytes patterns."
+      ]
+    },
+    {
+      "id": "bytes-inline-locale-flag-success",
+      "family": "flags",
+      "pattern": "(?L:a)",
+      "text_model": "bytes",
+      "categories": ["valid", "bytes", "flag-mirror"],
+      "notes": [
+        "Mirrors the str failure case: inline L is valid for bytes patterns."
+      ]
+    },
+    {
+      "id": "bytes-unicode-escape-error",
+      "family": "literals_and_escapes",
+      "pattern": "\\u1234",
+      "text_model": "bytes",
+      "categories": ["invalid", "bytes", "escape-restriction"],
+      "notes": [
+        "Bytes patterns reject Unicode escape forms that the str grammar accepts."
+      ]
+    }
+  ]
+}

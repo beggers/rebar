@@ -40,3 +40,4 @@
 - Seed the Phase 2 public-API correctness pack and module-boundary benchmark pack before Milestone 2 closes so the implementation queue still extends into the next compatibility/measurement slice once the exact-baseline and native-import gaps are closed.
 - Centralize exact CPython baseline provenance in shared harness metadata so correctness and benchmark scorecards stay schema-aligned and derive patch/build/compiler/platform details from the live interpreter instead of hard-coded placeholders.
 - Render the README status block as capability-track coverage, not product feature completeness, and summarize benchmark baseline provenance instead of embedding raw JSON in the landing-page table.
+- Once `RBR-0010` proves the built native-extension import path, keep Milestone 2 focused on Phase 1 correctness and benchmark expansion, and require benchmark/report work to preserve whether it exercised the source-tree shim or a true native load.

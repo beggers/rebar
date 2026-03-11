@@ -1,6 +1,6 @@
 # RBR-0011: Expand the correctness harness into a parser conformance pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
 
@@ -28,3 +28,8 @@ Created: 2026-03-11
 - Use `docs/testing/correctness-plan.md` as the primary task spec, especially the Phase 1 parser conformance pack guidance.
 - Use `docs/spec/syntax-scope.md` to choose the first construct families and `bytes` deltas to cover.
 - Build directly on `RBR-0007`; preserve the existing smoke fixture path and placeholder honesty for unimplemented `rebar` behavior.
+
+## Completion Note
+- Expanded `python/rebar_harness/correctness.py` to support parser-matrix fixtures, `bytes` payloads, per-suite summaries, family rollups, and explicit warning/exception diagnostics while keeping the Phase 0 smoke manifest runnable.
+- Added `tests/conformance/fixtures/parser_matrix.json` with 15 representative Layer 1 compile cases spanning valid syntax, invalid syntax, warning capture, and `str`/`bytes` flag-delta coverage.
+- Added `tests/conformance/test_correctness_parser_matrix.py`, regenerated `reports/correctness/latest.json`, and verified the harness with `python3 -m unittest tests.conformance.test_correctness_smoke tests.conformance.test_correctness_parser_matrix tests.python.test_readme_reporting`.
