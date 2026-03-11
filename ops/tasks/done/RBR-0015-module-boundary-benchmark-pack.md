@@ -1,6 +1,6 @@
 # RBR-0015: Expand the benchmark harness into a module-boundary suite
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
 
@@ -27,3 +27,10 @@ Created: 2026-03-11
 ## Notes
 - Use `docs/benchmarks/plan.md` as the primary task spec, especially the Phase 2 module-boundary suite guidance.
 - Build on `RBR-0012` and `RBR-0013`; the benchmark suite should exercise the actual scaffolded module surface the repo exposes at that point.
+
+## Completion
+- Completed 2026-03-11.
+- Generalized `python/rebar_harness/benchmarks.py` to load one or more manifests, execute compile-path plus module-boundary operations, and emit a combined scorecard that keeps parser and module families distinct.
+- Added `benchmarks/workloads/module_boundary.json` with cold import, module-level compile/search/match helper workloads, and explicit cold/warm/purged cache labels where they apply.
+- Added `tests/benchmarks/test_module_boundary_benchmarks.py` and regenerated `reports/benchmarks/latest.json`; the published report now contains both the six-workload parser compile pack and the eight-workload module-boundary pack, with honest `rebar` unimplemented results for helper calls.
+- Follow-up note for supervisor: `RBR-0020` should still harden per-run provenance beyond the current scorecard-level `timing_path` metadata, especially once built-native benchmark execution is introduced.

@@ -1,8 +1,9 @@
-"""Phase 1 benchmark harness for compile-path workload matrices."""
+"""Benchmark harness for compile-path and module-boundary workload suites."""
 
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
 import math
 import os
@@ -31,7 +32,10 @@ from rebar_harness.metadata import build_cpython_baseline
 TARGET_CPYTHON_SERIES = "3.12.x"
 REPORT_SCHEMA_VERSION = "1.0"
 MANIFEST_SCHEMA_VERSION = 1
-DEFAULT_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.json"
+DEFAULT_MANIFEST_PATHS = (
+    REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.json",
+    REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.json",
+)
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
 
 
@@ -39,11 +43,13 @@ DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
 class Workload:
     """Single benchmark workload definition."""
 
+    manifest_id: str
     workload_id: str
     bucket: str
     family: str
     operation: str
     pattern: str
+    haystack: str | None
     flags: int
     text_model: str
     cache_mode: str
@@ -56,13 +62,25 @@ class Workload:
     syntax_features: list[str]
 
     @classmethod
-    def from_dict(cls, raw_workload: dict[str, Any], defaults: dict[str, Any]) -> "Workload":
+    def from_dict(
+        cls,
+        *,
+        manifest_id: str,
+        raw_workload: dict[str, Any],
+        defaults: dict[str, Any],
+    ) -> "Workload":
         return cls(
+            manifest_id=manifest_id,
             workload_id=str(raw_workload["id"]),
             bucket=str(raw_workload.get("bucket", "unbucketed")),
             family=str(raw_workload.get("family", "parser")),
             operation=str(raw_workload["operation"]),
-            pattern=str(raw_workload["pattern"]),
+            pattern=str(raw_workload.get("pattern", "")),
+            haystack=(
+                None
+                if raw_workload.get("haystack") is None
+                else str(raw_workload.get("haystack"))
+            ),
             flags=int(raw_workload.get("flags", 0)),
             text_model=str(raw_workload.get("text_model", "str")),
             cache_mode=str(raw_workload.get("cache_mode", "cold")),
@@ -82,12 +100,20 @@ class Workload:
             ],
         )
 
-    def pattern_payload(self) -> str | bytes:
+    def _encode_text(self, value: str) -> str | bytes:
         if self.text_model == "str":
-            return self.pattern
+            return value
         if self.text_model == "bytes":
-            return self.pattern.encode("utf-8")
+            return value.encode("utf-8")
         raise ValueError(f"unsupported text model {self.text_model!r}")
+
+    def pattern_payload(self) -> str | bytes:
+        return self._encode_text(self.pattern)
+
+    def haystack_payload(self) -> str | bytes:
+        if self.haystack is None:
+            raise ValueError(f"workload {self.workload_id!r} requires a haystack payload")
+        return self._encode_text(self.haystack)
 
 
 def load_manifest(path: pathlib.Path) -> tuple[dict[str, Any], list[Workload]]:
@@ -103,27 +129,91 @@ def load_manifest(path: pathlib.Path) -> tuple[dict[str, Any], list[Workload]]:
     if not isinstance(defaults, dict):
         raise ValueError("benchmark manifest defaults must be an object")
 
+    manifest_id = str(raw_manifest["manifest_id"])
     workloads = [
-        Workload.from_dict(raw_workload, defaults)
+        Workload.from_dict(
+            manifest_id=manifest_id,
+            raw_workload=raw_workload,
+            defaults=defaults,
+        )
         for raw_workload in raw_manifest.get("workloads", [])
     ]
     return raw_manifest, workloads
 
 
+def load_manifests(paths: list[pathlib.Path]) -> tuple[list[dict[str, Any]], list[Workload]]:
+    raw_manifests: list[dict[str, Any]] = []
+    workloads: list[Workload] = []
+    manifest_ids: set[str] = set()
+    workload_ids: set[str] = set()
+
+    for path in paths:
+        raw_manifest, manifest_workloads = load_manifest(path)
+        manifest_id = str(raw_manifest["manifest_id"])
+        if manifest_id in manifest_ids:
+            raise ValueError(f"duplicate benchmark manifest id {manifest_id!r}")
+        manifest_ids.add(manifest_id)
+
+        for workload in manifest_workloads:
+            if workload.workload_id in workload_ids:
+                raise ValueError(f"duplicate benchmark workload id {workload.workload_id!r}")
+            workload_ids.add(workload.workload_id)
+
+        raw_manifests.append(raw_manifest)
+        workloads.extend(manifest_workloads)
+
+    return raw_manifests, workloads
+
+
 class BenchmarkAdapter:
-    """Adapter boundary for benchmarkable compile workloads."""
+    """Adapter boundary for benchmarkable workloads."""
 
     adapter_name: str
+    import_name: str
+    module: Any
 
     def run_workload(self, workload: Workload) -> dict[str, Any]:
         raise NotImplementedError
 
 
+def _clear_module(module_name: str) -> None:
+    module_prefix = f"{module_name}."
+    loaded_names = [
+        name for name in sys.modules if name == module_name or name.startswith(module_prefix)
+    ]
+    for name in loaded_names:
+        sys.modules.pop(name, None)
+    importlib.invalidate_caches()
+
+
+def import_callable(module_name: str, workload: Workload) -> Any:
+    if workload.operation != "import":
+        raise ValueError(f"unsupported import workload operation {workload.operation!r}")
+
+    if workload.cache_mode in {"cold", "purged"}:
+
+        def run_once() -> object:
+            _clear_module(module_name)
+            return importlib.import_module(module_name)
+
+        return run_once
+
+    if workload.cache_mode == "warm":
+        importlib.import_module(module_name)
+
+        def run_once() -> object:
+            return importlib.import_module(module_name)
+
+        return run_once
+
+    raise ValueError(f"unsupported cache mode {workload.cache_mode!r}")
+
+
 def compile_callable(module: Any, workload: Workload) -> Any:
     pattern = workload.pattern_payload()
 
-    if workload.operation != "compile":
-        raise ValueError(f"unsupported benchmark operation {workload.operation!r}")
+    if workload.operation not in {"compile", "module.compile"}:
+        raise ValueError(f"unsupported compile workload operation {workload.operation!r}")
 
     if workload.cache_mode == "cold":
 
@@ -157,6 +247,58 @@ def compile_callable(module: Any, workload: Workload) -> Any:
     raise ValueError(f"unsupported cache mode {workload.cache_mode!r}")
 
 
+def helper_callable(module: Any, workload: Workload, helper_name: str) -> Any:
+    pattern = workload.pattern_payload()
+    haystack = workload.haystack_payload()
+    helper = getattr(module, helper_name)
+
+    def invoke() -> object:
+        return helper(pattern, haystack, workload.flags)
+
+    if workload.cache_mode == "cold":
+
+        def run_once() -> object:
+            if hasattr(module, "purge"):
+                module.purge()
+            return invoke()
+
+        return run_once
+
+    if workload.cache_mode == "warm":
+        invoke()
+
+        def run_once() -> object:
+            return invoke()
+
+        return run_once
+
+    if workload.cache_mode == "purged":
+
+        def run_once() -> object:
+            if hasattr(module, "purge"):
+                module.purge()
+            result = invoke()
+            if hasattr(module, "purge"):
+                module.purge()
+            return result
+
+        return run_once
+
+    raise ValueError(f"unsupported cache mode {workload.cache_mode!r}")
+
+
+def build_callable(module: Any, import_name: str, workload: Workload) -> Any:
+    if workload.operation == "import":
+        return import_callable(import_name, workload)
+    if workload.operation in {"compile", "module.compile"}:
+        return compile_callable(module, workload)
+    if workload.operation == "module.search":
+        return helper_callable(module, workload, "search")
+    if workload.operation == "module.match":
+        return helper_callable(module, workload, "match")
+    raise ValueError(f"unsupported benchmark operation {workload.operation!r}")
+
+
 def measure_callable(workload: Workload, callback: Any) -> dict[str, Any]:
     for _ in range(workload.warmup_iterations):
         for _ in range(workload.sample_iterations):
@@ -187,19 +329,23 @@ def measure_callable(workload: Workload, callback: Any) -> dict[str, Any]:
 
 class CpythonReBenchmarkAdapter(BenchmarkAdapter):
     adapter_name = "cpython.re"
+    import_name = "re"
+    module = cpython_re
 
     def run_workload(self, workload: Workload) -> dict[str, Any]:
-        callback = compile_callable(cpython_re, workload)
+        callback = build_callable(self.module, self.import_name, workload)
         timing = measure_callable(workload, callback)
         return {"adapter": self.adapter_name, **timing}
 
 
 class RebarBenchmarkAdapter(BenchmarkAdapter):
     adapter_name = "rebar"
+    import_name = "rebar"
+    module = rebar
 
     def run_workload(self, workload: Workload) -> dict[str, Any]:
         try:
-            callback = compile_callable(rebar, workload)
+            callback = build_callable(self.module, self.import_name, workload)
             timing = measure_callable(workload, callback)
         except NotImplementedError as exc:
             return {
@@ -246,6 +392,14 @@ def ns_to_ops_per_second(value: int | None) -> float | None:
     return round(1_000_000_000 / value, 2)
 
 
+def gap_note_for_workload(workload: Workload) -> str:
+    if workload.family == "parser":
+        return "Implementation timing is unavailable until the rebar compile surface exists."
+    if workload.operation == "import":
+        return "Implementation import timing is unavailable until the rebar package can be imported in the benchmark environment."
+    return "Implementation timing is unavailable until the rebar module helper surface performs real work."
+
+
 def evaluate_workload(
     workload: Workload,
     baseline_adapter: BenchmarkAdapter,
@@ -258,14 +412,13 @@ def evaluate_workload(
     status = "measured" if speedup is not None else implementation_timing["status"]
     notes = list(workload.notes)
     if implementation_timing["status"] != "measured":
-        notes.append(
-            "Implementation timing is unavailable until the rebar compile surface exists."
-        )
+        notes.append(gap_note_for_workload(workload))
 
     baseline_ns = baseline_timing.get("median_ns")
     implementation_ns = implementation_timing.get("median_ns")
     return {
         "id": workload.workload_id,
+        "manifest_id": workload.manifest_id,
         "bucket": workload.bucket,
         "family": workload.family,
         "operation": workload.operation,
@@ -273,6 +426,7 @@ def evaluate_workload(
         "timing_scope": workload.timing_scope,
         "text_model": workload.text_model,
         "pattern": workload.pattern,
+        "haystack": workload.haystack,
         "flags": workload.flags,
         "categories": workload.categories,
         "syntax_features": workload.syntax_features,
@@ -341,6 +495,28 @@ def build_cache_mode_summary(workloads: list[dict[str, Any]]) -> dict[str, Any]:
     return summary
 
 
+def family_readiness(family_workloads: list[dict[str, Any]], known_gap_count: int) -> str:
+    if not family_workloads:
+        return "absent"
+    if known_gap_count == 0:
+        return "measured"
+    if known_gap_count < len(family_workloads):
+        return "partial"
+    return "scaffold-only"
+
+
+def family_notes(family: str, family_workloads: list[dict[str, Any]]) -> list[str]:
+    if family == "parser":
+        return [
+            "Phase 1 compile-path suite uses compile() as a parser proxy until a narrower benchmark hook exists."
+        ]
+    if family_workloads:
+        return [
+            "Phase 2 module-boundary timings use tiny import and helper-call workloads so the scorecard stays focused on public API overhead."
+        ]
+    return ["Module-boundary timings remain deferred to RBR-0015."]
+
+
 def build_family_summary(workloads: list[dict[str, Any]], family: str) -> dict[str, Any]:
     family_workloads = [workload for workload in workloads if workload["family"] == family]
     baseline_samples = [
@@ -359,23 +535,16 @@ def build_family_summary(workloads: list[dict[str, Any]], family: str) -> dict[s
         if isinstance(workload.get("speedup_vs_cpython"), float)
     ]
     known_gap_count = sum(1 for workload in family_workloads if workload["status"] != "measured")
-    readiness = "measured" if known_gap_count == 0 and family_workloads else "scaffold-only"
 
     return {
         "workload_count": len(family_workloads),
         "known_gap_count": known_gap_count,
-        "readiness": readiness,
+        "readiness": family_readiness(family_workloads, known_gap_count),
         "median_baseline_ns": _median(baseline_samples),
         "median_implementation_ns": _median(implementation_samples),
         "median_speedup_vs_cpython": _median_float(speedups),
         "cache_modes": build_cache_mode_summary(family_workloads),
-        "notes": (
-            [
-                "Phase 1 compile-path suite uses compile() as a parser proxy until a narrower benchmark hook exists."
-            ]
-            if family == "parser"
-            else ["Module-boundary timings remain deferred to RBR-0015."]
-        ),
+        "notes": family_notes(family, family_workloads),
     }
 
 
@@ -404,16 +573,18 @@ def build_summary(workloads: list[dict[str, Any]]) -> dict[str, Any]:
         if isinstance(workload.get("implementation_ns"), int)
     ]
     known_gap_count = sum(1 for workload in workloads if workload["status"] != "measured")
+    baseline_median_ns = _median(baseline_samples)
+    implementation_median_ns = _median(implementation_samples)
     return {
         "total_workloads": len(workloads),
         "parser_workloads": sum(1 for workload in workloads if workload["family"] == "parser"),
         "module_workloads": sum(1 for workload in workloads if workload["family"] == "module"),
         "measured_workloads": len(all_speedups),
         "known_gap_count": known_gap_count,
-        "baseline_median_ns": _median(baseline_samples),
-        "baseline_median_ops_per_second": ns_to_ops_per_second(_median(baseline_samples)),
-        "implementation_median_ns": _median(implementation_samples),
-        "implementation_median_ops_per_second": ns_to_ops_per_second(_median(implementation_samples)),
+        "baseline_median_ns": baseline_median_ns,
+        "baseline_median_ops_per_second": ns_to_ops_per_second(baseline_median_ns),
+        "implementation_median_ns": implementation_median_ns,
+        "implementation_median_ops_per_second": ns_to_ops_per_second(implementation_median_ns),
         "median_speedup_vs_baseline": _median_float(all_speedups),
         "geomean_speedup_vs_baseline": _geomean(all_speedups),
         "parser_median_speedup_vs_cpython": _median_float(parser_speedups),
@@ -451,11 +622,24 @@ def cpu_model() -> str:
     return platform.processor() or "unknown"
 
 
-def build_implementation_metadata() -> dict[str, Any]:
+def determine_phase(workloads: list[dict[str, Any]]) -> str:
+    if any(workload["family"] == "module" for workload in workloads):
+        return "phase2-module-boundary-suite"
+    return "phase1-compile-path-suite"
+
+
+def determine_runner_version(workloads: list[dict[str, Any]]) -> str:
+    if any(workload["family"] == "module" for workload in workloads):
+        return "phase2"
+    return "phase1"
+
+
+def build_implementation_metadata(workloads: list[dict[str, Any]]) -> dict[str, Any]:
     native_loaded = rebar.native_module_loaded()
+    includes_module_boundary = any(workload["family"] == "module" for workload in workloads)
     return {
         "module_name": "rebar",
-        "adapter": "rebar.compile",
+        "adapter": "rebar.module-surface" if includes_module_boundary else "rebar.compile",
         "build_mode": "native-extension" if native_loaded else "source-tree-shim",
         "timing_path": "native-extension" if native_loaded else "source-tree-shim",
         "native_module_loaded": native_loaded,
@@ -466,21 +650,70 @@ def build_implementation_metadata() -> dict[str, Any]:
     }
 
 
+def build_deferred_sections(workloads: list[dict[str, Any]]) -> list[dict[str, str]]:
+    deferred: list[dict[str, str]] = []
+    if not any(workload["family"] == "module" for workload in workloads):
+        deferred.append(
+            {
+                "area": "module-boundary",
+                "reason": "Phase 1 benchmark suite measures compile-path workloads only.",
+                "follow_up": "RBR-0015",
+            }
+        )
+    deferred.append(
+        {
+            "area": "regex-execution-throughput",
+            "reason": "Execution benchmarks stay deferred until parser and module-boundary harnesses exist.",
+            "follow_up": "future milestone",
+        }
+    )
+    return deferred
+
+
+def build_artifacts(
+    *,
+    manifest_paths: list[pathlib.Path],
+    raw_manifests: list[dict[str, Any]],
+) -> dict[str, Any]:
+    manifest_records = [
+        {
+            "manifest": str(path.relative_to(REPO_ROOT)),
+            "manifest_id": raw_manifest["manifest_id"],
+            "manifest_schema_version": raw_manifest["schema_version"],
+            "workload_count": len(raw_manifest.get("workloads", [])),
+        }
+        for path, raw_manifest in zip(manifest_paths, raw_manifests, strict=True)
+    ]
+    if len(manifest_records) == 1:
+        return {
+            **manifest_records[0],
+            "manifests": manifest_records,
+            "raw_samples": None,
+        }
+    return {
+        "manifest": None,
+        "manifest_id": "combined-benchmark-suite",
+        "manifest_schema_version": MANIFEST_SCHEMA_VERSION,
+        "manifests": manifest_records,
+        "raw_samples": None,
+    }
+
+
 def build_scorecard(
     *,
-    manifest_path: pathlib.Path,
-    raw_manifest: dict[str, Any],
+    manifest_paths: list[pathlib.Path],
+    raw_manifests: list[dict[str, Any]],
     workloads: list[dict[str, Any]],
 ) -> dict[str, Any]:
     summary = build_summary(workloads)
     return {
         "schema_version": REPORT_SCHEMA_VERSION,
         "suite": "benchmarks",
-        "phase": "phase1-compile-path-suite",
+        "phase": determine_phase(workloads),
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
         "generator": "python -m rebar_harness.benchmarks",
         "baseline": build_cpython_baseline(version_family=TARGET_CPYTHON_SERIES),
-        "implementation": build_implementation_metadata(),
+        "implementation": build_implementation_metadata(workloads),
         "environment": {
             "hostname": platform.node(),
             "os": platform.system(),
@@ -489,7 +722,7 @@ def build_scorecard(
             "cpu_model": cpu_model(),
             "logical_cpus": os.cpu_count(),
             "runner": "perf_counter_ns",
-            "runner_version": "phase1",
+            "runner_version": determine_runner_version(workloads),
             "execution_model": "single-process in-process adapter comparison",
         },
         "summary": summary,
@@ -499,24 +732,11 @@ def build_scorecard(
         },
         "cache_modes": build_cache_mode_summary(workloads),
         "workloads": workloads,
-        "deferred": [
-            {
-                "area": "module-boundary",
-                "reason": "Phase 1 benchmark suite measures compile-path workloads only.",
-                "follow_up": "RBR-0015",
-            },
-            {
-                "area": "regex-execution-throughput",
-                "reason": "Execution benchmarks stay deferred until parser and module-boundary harnesses exist.",
-                "follow_up": "future milestone",
-            },
-        ],
-        "artifacts": {
-            "manifest": str(manifest_path.relative_to(REPO_ROOT)),
-            "manifest_id": raw_manifest["manifest_id"],
-            "manifest_schema_version": raw_manifest["schema_version"],
-            "raw_samples": None,
-        },
+        "deferred": build_deferred_sections(workloads),
+        "artifacts": build_artifacts(
+            manifest_paths=manifest_paths,
+            raw_manifests=raw_manifests,
+        ),
     }
 
 
@@ -526,12 +746,14 @@ def write_scorecard(scorecard: dict[str, Any], report_path: pathlib.Path) -> Non
 
 
 def run_benchmarks(
-    manifest_path: pathlib.Path = DEFAULT_MANIFEST_PATH,
+    manifest_paths: list[pathlib.Path] | None = None,
     report_path: pathlib.Path = DEFAULT_REPORT_PATH,
 ) -> dict[str, Any]:
-    manifest_path = manifest_path.resolve()
+    resolved_manifest_paths = [
+        path.resolve() for path in (manifest_paths or list(DEFAULT_MANIFEST_PATHS))
+    ]
     report_path = report_path.resolve()
-    raw_manifest, manifest_workloads = load_manifest(manifest_path)
+    raw_manifests, manifest_workloads = load_manifests(resolved_manifest_paths)
     baseline_adapter = CpythonReBenchmarkAdapter()
     implementation_adapter = RebarBenchmarkAdapter()
     workloads = [
@@ -539,8 +761,8 @@ def run_benchmarks(
         for workload in manifest_workloads
     ]
     scorecard = build_scorecard(
-        manifest_path=manifest_path,
-        raw_manifest=raw_manifest,
+        manifest_paths=resolved_manifest_paths,
+        raw_manifests=raw_manifests,
         workloads=workloads,
     )
     write_scorecard(scorecard, report_path)
@@ -552,8 +774,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--manifest",
         type=pathlib.Path,
-        default=DEFAULT_MANIFEST_PATH,
-        help="Path to the benchmark workload manifest.",
+        action="append",
+        default=None,
+        help="Path to a benchmark workload manifest. Repeat to combine multiple manifests.",
     )
     parser.add_argument(
         "--report",
@@ -566,7 +789,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    scorecard = run_benchmarks(manifest_path=args.manifest, report_path=args.report)
+    scorecard = run_benchmarks(manifest_paths=args.manifest, report_path=args.report)
     smoke_summary = {
         "total_workloads": scorecard["summary"]["total_workloads"],
         "parser_workloads": scorecard["summary"]["parser_workloads"],
