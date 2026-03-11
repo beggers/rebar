@@ -1,6 +1,6 @@
 # RBR-0003: Write the benchmark plan
 
-Status: ready
+Status: blocked
 Owner: implementation
 Created: 2026-03-11
 
@@ -21,3 +21,4 @@ Created: 2026-03-11
 
 ## Notes
 - This plan should make later optimization work falsifiable.
+- 2026-03-11T17:27:15+00:00: harness blocked clean exit without terminal state after run `20260311T172649Z-implementation-RBR-0003-benchmark-plan` (exit=0, timed_out=false).

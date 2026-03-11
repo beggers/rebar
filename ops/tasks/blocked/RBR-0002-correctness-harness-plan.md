@@ -1,6 +1,6 @@
 # RBR-0002: Write the correctness-harness plan
 
-Status: ready
+Status: blocked
 Owner: implementation
 Created: 2026-03-11
 
@@ -21,3 +21,4 @@ Created: 2026-03-11
 
 ## Notes
 - The deliverable should be good enough for the supervisor to turn into implementation tickets.
+- 2026-03-11T17:27:15+00:00: harness blocked clean exit without terminal state after run `20260311T172540Z-implementation-RBR-0002-correctness-harness-plan` (exit=0, timed_out=false).

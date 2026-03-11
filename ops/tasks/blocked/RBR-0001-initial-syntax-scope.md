@@ -1,6 +1,6 @@
 # RBR-0001: Draft the initial regex syntax scope
 
-Status: ready
+Status: blocked
 Owner: implementation
 Created: 2026-03-11
 
@@ -21,3 +21,4 @@ Created: 2026-03-11
 
 ## Notes
 - This document should make later correctness and benchmark work less ambiguous.
+- 2026-03-11T17:27:15+00:00: harness blocked clean exit without terminal state after run `20260311T172513Z-implementation-RBR-0001-initial-syntax-scope` (exit=0, timed_out=false).
