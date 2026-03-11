@@ -18,3 +18,4 @@
 - Detect read-only worker runs from their final message and stderr as well as the Codex stdout banner, then requeue those tasks instead of blocking them.
 - Require implementation agents to verify write failure in the current run before claiming an environment blocker, and limit worker dispatch to one task per cycle while the forever loop is still being hardened.
 - Run a child-Codex write probe before task-worker claims so environments that cannot give agents write access fail closed without moving tasks out of `ready/`.
+- Default dedicated-VM child Codex runs to `danger-full-access` because the `workspace-write` sandbox has produced false `Permission denied` write failures on EC2 even when the harness itself can write the checkout.

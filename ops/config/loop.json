@@ -34,7 +34,7 @@
   "codex_defaults": {
     "bin": "codex",
     "codex_home": "~/.codex",
-    "sandbox": "workspace-write",
+    "sandbox": "danger-full-access",
     "ask_for_approval": "never",
     "common_config": [
       "suppress_unstable_features_warning=true"
