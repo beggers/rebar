@@ -9,3 +9,4 @@
 - Promote the supervisor to the explicit owner of indefinite progress, with authority to change the harness, project structure, and active non-supervisor agents as gaps appear.
 - Load active agents from `ops/agents/*.json` so the supervisor can evolve the worker set without rewriting the loop controller each time.
 - Keep the outer forever-loop extremely small and re-invoke bounded `cycle` runs each iteration so supervisor edits to the harness take effect immediately on the next pass.
+- Add first-class harness policies for stale-task recovery, automatic commit/push, runtime pruning, and dashboard reporting so forever-mode progress is inspectable and less likely to stall silently.

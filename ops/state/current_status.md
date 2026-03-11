@@ -10,6 +10,7 @@ Phase 1: harness bootstrap and project-definition work.
 - A config-driven, supervisor-first loop runner in `scripts/rebar_ops.py`.
 - A dynamic agent registry under `ops/agents/*.json` that the supervisor can edit.
 - A tiny outer shell loop in `scripts/loop_forever.sh` that re-runs bounded cycles so supervisor changes apply on the next iteration.
+- Auto-commit, auto-push, stale-task recovery, runtime retention, and dashboard generation policy in the harness.
 - Tracked state, task queue directories, and seeded ready tasks under `ops/`.
 
 ## What Does Not Exist Yet

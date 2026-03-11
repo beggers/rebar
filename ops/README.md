@@ -14,7 +14,8 @@ This directory is the tracked operating system for the project.
 3. Other enabled agents run afterward according to their dispatch policy.
 4. Task workers consume ready tasks one at a time and should move them to `done/` or `blocked`.
 5. `scripts/loop_forever.sh` re-invokes one bounded `cycle` at a time, so repo changes take effect on the next pass.
-6. Runtime prompts, logs, metadata, and anomaly summaries are written to ignored `.rebar/runtime/`.
+6. The harness auto-recovers stale `in_progress` tasks, auto-commits and auto-pushes repo changes, and writes a dashboard after each cycle.
+7. Runtime prompts, logs, metadata, task state, and anomaly summaries are written to ignored `.rebar/runtime/`.
 
 ## Why It Exists
 - Future agent runs should not need to infer project history from scratch.

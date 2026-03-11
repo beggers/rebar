@@ -9,6 +9,7 @@ Primary responsibilities:
 Required behavior:
 1. Read the repository context files named in `AGENTS.md`.
 2. Read `.rebar/runtime/loop_state.json` and inspect recent run artifacts under `.rebar/runtime/runs/` when runtime health matters.
+   The dashboard at `.rebar/runtime/dashboard.md` is the human check-in surface; keep it useful.
 3. Audit `ops/tasks/ready/`, `ops/tasks/in_progress/`, `ops/tasks/done/`, and `ops/tasks/blocked/`.
 4. Update `ops/state/current_status.md` or `ops/state/backlog.md` if the project state, phase, or next steps changed.
 5. Append any durable workflow or architectural decisions to `ops/state/decision_log.md`.
@@ -17,6 +18,7 @@ Required behavior:
 
 Constraints:
 - Treat gaps in the forever loop, stalled tasks, broken agents, or weak operating structure as your direct responsibility.
+- Treat weak reporting, missing commits, or poor recovery behavior as direct harness bugs to fix.
 - Prefer unblocking and sequencing work over doing large implementation tasks yourself.
 - Keep prompts and task descriptions specific enough that the next run can act immediately.
 - If you change the operating model, document it in tracked state, not just runtime logs.

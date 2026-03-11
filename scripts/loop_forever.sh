@@ -6,6 +6,7 @@ cd "$REPO_ROOT"
 
 RUNTIME_DIR="$REPO_ROOT/.rebar/runtime"
 LOCK_DIR="$RUNTIME_DIR/loop.lock.d"
+LOG_FILE="$RUNTIME_DIR/loop.log"
 mkdir -p "$RUNTIME_DIR"
 
 acquire_lock() {
@@ -33,11 +34,16 @@ cleanup() {
   rm -rf "$LOCK_DIR"
 }
 
+log_line() {
+  printf '%s %s\n' "$(date -Is)" "$1" >> "$LOG_FILE"
+}
+
 acquire_lock
 trap cleanup EXIT INT TERM
 
 force_supervisor=1
 cycle_args=("$@")
+log_line "loop start pid=$$"
 
 while true; do
   set +e
@@ -51,5 +57,6 @@ while true; do
   set -e
 
   sleep_seconds="$(python3 scripts/rebar_ops.py sleep-seconds --exit-code "$exit_code")"
+  log_line "cycle exit=$exit_code sleep_seconds=$sleep_seconds"
   sleep "$sleep_seconds"
 done

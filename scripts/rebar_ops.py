@@ -4,9 +4,10 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -27,6 +28,7 @@ DEFAULT_CONTEXT_FILES = [
     STATE_ROOT / "decision_log.md",
 ]
 TASK_STATUSES = ("ready", "in_progress", "done", "blocked")
+TRAILER = "Co-authored-by: Codex <noreply@openai.com>"
 
 
 @dataclass(frozen=True)
@@ -53,6 +55,7 @@ class RunResult:
     task_initial_path: Path | None
     task_final_path: Path | None
     task_final_status: str | None
+    recovery_actions: list[dict[str, Any]] = field(default_factory=list)
 
 
 def utcnow() -> str:
@@ -73,6 +76,11 @@ def write_json(path: Path, payload: Any) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def write_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
+
+
 def load_config() -> dict[str, Any]:
     config = read_json(CONFIG_PATH, default={})
     if not isinstance(config, dict):
@@ -87,19 +95,41 @@ def resolve_repo_path(raw: str | Path) -> Path:
     return REPO_ROOT / path
 
 
+def relpath(path: Path) -> str:
+    try:
+        return str(path.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
 def runtime_paths(config: dict[str, Any]) -> dict[str, Path]:
     runtime_cfg = config.get("runtime", {})
+    reporting_cfg = config.get("reporting", {})
+    recovery_cfg = config.get("task_recovery", {})
     artifact_root = resolve_repo_path(runtime_cfg.get("artifact_dir", ".rebar/runtime"))
     return {
         "artifact_root": artifact_root,
         "runs_root": artifact_root / "runs",
         "loop_state": artifact_root / "loop_state.json",
+        "task_state": resolve_repo_path(
+            recovery_cfg.get("state_path", ".rebar/runtime/task_state.json")
+        ),
+        "dashboard_json": resolve_repo_path(
+            reporting_cfg.get("status_json_path", ".rebar/runtime/dashboard.json")
+        ),
+        "dashboard_markdown": resolve_repo_path(
+            reporting_cfg.get("status_markdown_path", ".rebar/runtime/dashboard.md")
+        ),
+        "loop_log": artifact_root / "loop.log",
     }
 
 
 def ensure_runtime_dirs(paths: dict[str, Path]) -> None:
     paths["artifact_root"].mkdir(parents=True, exist_ok=True)
     paths["runs_root"].mkdir(parents=True, exist_ok=True)
+    paths["task_state"].parent.mkdir(parents=True, exist_ok=True)
+    paths["dashboard_json"].parent.mkdir(parents=True, exist_ok=True)
+    paths["dashboard_markdown"].parent.mkdir(parents=True, exist_ok=True)
 
 
 def repo_is_git_checkout(path: Path) -> bool:
@@ -116,11 +146,74 @@ def repo_is_git_checkout(path: Path) -> bool:
     return result.returncode == 0 and result.stdout.strip().lower() == "true"
 
 
-def relpath(path: Path) -> str:
+def git_run(*args: str, capture_output: bool = True, check: bool = False, input_text: str | None = None) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["git", "-C", str(REPO_ROOT), *args],
+        input=input_text,
+        text=True,
+        capture_output=capture_output,
+        check=check,
+    )
+
+
+def git_stdout(*args: str) -> str:
+    result = git_run(*args)
+    if result.returncode != 0:
+        return ""
+    return result.stdout.strip()
+
+
+def git_status_lines() -> list[str]:
+    output = git_stdout("status", "--porcelain")
+    return [line for line in output.splitlines() if line]
+
+
+def git_worktree_dirty() -> bool:
+    return bool(git_status_lines())
+
+
+def git_branch() -> str:
+    return git_stdout("branch", "--show-current")
+
+
+def git_head() -> str:
+    return git_stdout("rev-parse", "HEAD")
+
+
+def git_upstream_ref(config: dict[str, Any]) -> str:
+    policy = config.get("git_policy", {})
+    remote = str(policy.get("push_remote", "origin"))
+    branch = str(policy.get("push_branch", git_branch() or "main"))
+    return f"{remote}/{branch}"
+
+
+def git_ahead_count(config: dict[str, Any]) -> int | None:
+    upstream = git_upstream_ref(config)
+    result = git_run("rev-list", "--count", f"{upstream}..HEAD")
+    if result.returncode != 0:
+        return None
     try:
-        return str(path.relative_to(REPO_ROOT))
+        return int(result.stdout.strip())
     except ValueError:
-        return str(path)
+        return None
+
+
+def recent_git_commits(limit: int) -> list[dict[str, str]]:
+    if limit <= 0:
+        return []
+    output = git_stdout(
+        "log",
+        f"-n{limit}",
+        "--date=short",
+        "--format=%h%x09%ad%x09%s",
+    )
+    commits: list[dict[str, str]] = []
+    for line in output.splitlines():
+        parts = line.split("\t", 2)
+        if len(parts) != 3:
+            continue
+        commits.append({"sha": parts[0], "date": parts[1], "subject": parts[2]})
+    return commits
 
 
 def list_task_files(status: str) -> list[Path]:
@@ -131,6 +224,23 @@ def list_task_files(status: str) -> list[Path]:
         [path for path in queue_dir.iterdir() if path.is_file() and path.name != ".gitkeep"],
         key=lambda path: path.name,
     )
+
+
+def recent_tasks(status: str, limit: int) -> list[dict[str, str]]:
+    tasks = [path for path in list_task_files(status)]
+    tasks.sort(key=lambda path: path.stat().st_mtime, reverse=True)
+    rows: list[dict[str, str]] = []
+    for path in tasks[:limit]:
+        rows.append(
+            {
+                "name": path.name,
+                "path": relpath(path),
+                "updated_at": datetime.fromtimestamp(path.stat().st_mtime, UTC)
+                .replace(microsecond=0)
+                .isoformat(),
+            }
+        )
+    return rows
 
 
 def queue_counts() -> dict[str, int]:
@@ -161,20 +271,77 @@ def locate_task_file(task_name: str) -> tuple[str | None, Path | None]:
     return "multiple", None
 
 
+def set_task_status_line(text: str, status: str) -> str:
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        if line.startswith("Status: "):
+            lines[index] = f"Status: {status}"
+            break
+    else:
+        insert_at = 1 if lines else 0
+        lines.insert(insert_at, f"Status: {status}")
+    return "\n".join(lines).rstrip("\n") + "\n"
+
+
+def append_task_note(path: Path, note: str, *, status: str | None = None) -> None:
+    text = path.read_text(encoding="utf-8")
+    if status is not None:
+        text = set_task_status_line(text, status)
+    bullet = f"- {note}"
+    if "## Notes" not in text:
+        text = text.rstrip("\n") + "\n\n## Notes\n" + bullet + "\n"
+        write_text(path, text)
+        return
+
+    lines = text.splitlines()
+    notes_index = lines.index("## Notes")
+    insert_at = len(lines)
+    for index in range(notes_index + 1, len(lines)):
+        if lines[index].startswith("## "):
+            insert_at = index
+            while insert_at > notes_index + 1 and lines[insert_at - 1] == "":
+                insert_at -= 1
+            break
+    lines.insert(insert_at, bullet)
+    write_text(path, "\n".join(lines).rstrip("\n") + "\n")
+
+
+def move_task_with_note(path: Path, dest_status: str, note: str) -> Path:
+    dest = TASK_ROOT / dest_status / path.name
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if path != dest:
+        path.replace(dest)
+    append_task_note(dest, note, status=dest_status)
+    return dest
+
+
+def load_task_state(paths: dict[str, Path]) -> dict[str, Any]:
+    payload = read_json(paths["task_state"], default={})
+    return payload if isinstance(payload, dict) else {}
+
+
+def task_state_entry(task_state: dict[str, Any], task_name: str) -> dict[str, Any]:
+    entry = task_state.get(task_name)
+    if not isinstance(entry, dict):
+        entry = {}
+    task_state[task_name] = entry
+    return entry
+
+
 def load_agent_specs(config: dict[str, Any]) -> list[AgentSpec]:
     agents_cfg = config.get("agents", {})
     agent_dir = resolve_repo_path(agents_cfg.get("directory", "ops/agents"))
     specs: list[AgentSpec] = []
-    names: set[str] = set()
+    seen: set[str] = set()
 
     for spec_path in sorted(agent_dir.glob("*.json")):
         raw = read_json(spec_path, default=None)
         if not isinstance(raw, dict):
             raise RuntimeError(f"Invalid agent spec: {spec_path}")
         name = str(raw.get("name", spec_path.stem))
-        if name in names:
+        if name in seen:
             raise RuntimeError(f"Duplicate agent name: {name}")
-        names.add(name)
+        seen.add(name)
         prompt_path_raw = raw.get("prompt_path")
         if not isinstance(prompt_path_raw, str) or not prompt_path_raw:
             raise RuntimeError(f"Agent {name} missing prompt_path")
@@ -202,14 +369,9 @@ def load_agent_specs(config: dict[str, Any]) -> list[AgentSpec]:
     return sorted(enabled, key=lambda spec: (spec.cycle_order, spec.name))
 
 
-def write_text(path: Path, text: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text, encoding="utf-8")
-
-
 def render_prompt(agent: AgentSpec, config: dict[str, Any], task_path: Path | None = None) -> str:
     paths = runtime_paths(config)
-    agent_body = agent.prompt_path.read_text(encoding="utf-8").strip()
+    body = agent.prompt_path.read_text(encoding="utf-8").strip()
     lines = [
         f"# Rebar Agent Run: {agent.name}",
         "",
@@ -225,6 +387,8 @@ def render_prompt(agent: AgentSpec, config: dict[str, Any], task_path: Path | No
             "",
             "Runtime files worth checking when relevant:",
             f"- loop state: {relpath(paths['loop_state'])}",
+            f"- task state: {relpath(paths['task_state'])}",
+            f"- dashboard: {relpath(paths['dashboard_markdown'])}",
             f"- run artifacts: {relpath(paths['runs_root'])}",
             f"- agent registry: {relpath(resolve_repo_path(config.get('agents', {}).get('directory', 'ops/agents')))}",
         ]
@@ -246,7 +410,7 @@ def render_prompt(agent: AgentSpec, config: dict[str, Any], task_path: Path | No
             f"- done: {relpath(TASK_ROOT / 'done')}",
             f"- blocked: {relpath(TASK_ROOT / 'blocked')}",
             "",
-            agent_body,
+            body,
             "",
             "Leave durable state in tracked files under ops/ when it matters.",
         ]
@@ -342,6 +506,7 @@ def run_agent(agent: AgentSpec, config: dict[str, Any], task_path: Path | None =
     timeout_seconds = task_timeout_seconds(config, agent)
     started_at = utcnow()
     timed_out = False
+
     try:
         proc = subprocess.run(
             command,
@@ -361,8 +526,8 @@ def run_agent(agent: AgentSpec, config: dict[str, Any], task_path: Path | None =
         exit_code = 124
         stdout_text = normalize_subprocess_text(exc.stdout)
         stderr_text = normalize_subprocess_text(exc.stderr)
-    finished_at = utcnow()
 
+    finished_at = utcnow()
     write_text(stdout_path, stdout_text)
     write_text(stderr_path, stderr_text)
     if not output_path.exists():
@@ -438,7 +603,13 @@ def agent_is_due(agent: AgentSpec, loop_state: dict[str, Any], *, force: bool = 
     raise RuntimeError(f"Unsupported dispatch mode for {agent.name}: {mode}")
 
 
-def dispatch_agent(agent: AgentSpec, config: dict[str, Any], loop_state: dict[str, Any], *, force: bool = False) -> list[RunResult]:
+def dispatch_agent(
+    agent: AgentSpec,
+    config: dict[str, Any],
+    loop_state: dict[str, Any],
+    *,
+    force: bool = False,
+) -> list[RunResult]:
     if not agent_is_due(agent, loop_state, force=force):
         return []
 
@@ -454,45 +625,307 @@ def dispatch_agent(agent: AgentSpec, config: dict[str, Any], loop_state: dict[st
     raise RuntimeError(f"Unsupported dispatch mode for {agent.name}: {mode}")
 
 
-def build_anomalies(results: list[RunResult]) -> list[dict[str, Any]]:
+def recovery_policy(config: dict[str, Any]) -> dict[str, Any]:
+    return config.get("task_recovery", {})
+
+
+def recover_stale_in_progress_tasks(
+    config: dict[str, Any], task_state: dict[str, Any]
+) -> list[dict[str, Any]]:
+    policy = recovery_policy(config)
+    max_requeues = int(policy.get("max_requeues", 2))
+    actions: list[dict[str, Any]] = []
+
+    for path in list_task_files("in_progress"):
+        entry = task_state_entry(task_state, path.name)
+        requeue_count = int(entry.get("requeue_count", 0))
+        if requeue_count < max_requeues:
+            dest_status = "ready"
+            entry["requeue_count"] = requeue_count + 1
+            action_name = "requeued_stale_in_progress"
+            severity = "warning"
+        else:
+            dest_status = "blocked"
+            action_name = "blocked_stale_in_progress"
+            severity = "error"
+
+        note = (
+            f"{utcnow()}: harness {action_name.replace('_', ' ')} because the task was still "
+            "in `ops/tasks/in_progress/` at the start of a new bounded cycle."
+        )
+        new_path = move_task_with_note(path, dest_status, note)
+        entry.update(
+            {
+                "last_action": action_name,
+                "last_seen_at": utcnow(),
+                "current_status": dest_status,
+            }
+        )
+        actions.append(
+            {
+                "task_name": path.name,
+                "action": action_name,
+                "severity": severity,
+                "final_status": dest_status,
+                "path": relpath(new_path),
+            }
+        )
+    return actions
+
+
+def finalize_task_result(
+    config: dict[str, Any],
+    result: RunResult,
+    task_state: dict[str, Any],
+) -> list[dict[str, Any]]:
+    if result.task_initial_path is None:
+        return []
+
+    task_name = result.task_initial_path.name
+    entry = task_state_entry(task_state, task_name)
+    entry["attempt_count"] = int(entry.get("attempt_count", 0)) + 1
+    entry["last_run_id"] = result.run_id
+    entry["last_exit_code"] = result.exit_code
+    entry["last_seen_at"] = utcnow()
+
+    final_status, final_path = locate_task_file(task_name)
+    result.task_final_status = final_status
+    result.task_final_path = final_path
+
+    if final_status in {"done", "blocked"}:
+        entry["current_status"] = final_status
+        entry["last_action"] = "terminal"
+        if final_status == "done":
+            entry["requeue_count"] = 0
+        return []
+
+    if final_path is None:
+        action = {
+            "task_name": task_name,
+            "action": "missing_task_file_after_run",
+            "severity": "error",
+            "final_status": final_status,
+            "path": None,
+        }
+        result.recovery_actions.append(action)
+        entry["last_action"] = action["action"]
+        entry["current_status"] = "unknown"
+        return [action]
+
+    policy = recovery_policy(config)
+    max_requeues = int(policy.get("max_requeues", 2))
+    block_on_clean_exit = bool(policy.get("block_on_clean_exit_without_terminal_state", True))
+    requeue_count = int(entry.get("requeue_count", 0))
+
+    if result.exit_code == 0 and block_on_clean_exit:
+        dest_status = "blocked"
+        action_name = "blocked_clean_exit_without_terminal_state"
+        severity = "error"
+    elif requeue_count < max_requeues:
+        dest_status = "ready"
+        action_name = "requeued_after_failed_or_incomplete_run"
+        severity = "warning"
+        entry["requeue_count"] = requeue_count + 1
+    else:
+        dest_status = "blocked"
+        action_name = "blocked_after_requeue_budget_exhausted"
+        severity = "error"
+
+    note = (
+        f"{utcnow()}: harness {action_name.replace('_', ' ')} after run `{result.run_id}` "
+        f"(exit={result.exit_code}, timed_out={str(result.timed_out).lower()})."
+    )
+    new_path = move_task_with_note(final_path, dest_status, note)
+    result.task_final_status = dest_status
+    result.task_final_path = new_path
+    entry["current_status"] = dest_status
+    entry["last_action"] = action_name
+    action = {
+        "task_name": task_name,
+        "action": action_name,
+        "severity": severity,
+        "final_status": dest_status,
+        "path": relpath(new_path),
+    }
+    result.recovery_actions.append(action)
+    return [action]
+
+
+def prune_run_dirs(config: dict[str, Any], paths: dict[str, Path]) -> dict[str, Any]:
+    keep = int(config.get("runtime", {}).get("keep_run_dirs", 200))
+    run_dirs = sorted([path for path in paths["runs_root"].iterdir() if path.is_dir()])
+    if keep < 0:
+        keep = 0
+    to_remove = run_dirs[:-keep] if keep and len(run_dirs) > keep else run_dirs if keep == 0 else []
+    pruned: list[str] = []
+    for path in to_remove:
+        shutil.rmtree(path, ignore_errors=True)
+        pruned.append(relpath(path))
+    return {"keep_run_dirs": keep, "pruned_count": len(pruned), "pruned_paths": pruned}
+
+
+def compose_commit_message(
+    config: dict[str, Any],
+    results: list[RunResult],
+    recovery_actions: list[dict[str, Any]],
+) -> str:
+    prefix = str(
+        config.get("git_policy", {}).get(
+            "commit_message_prefix", "rebar: autonomous progress update"
+        )
+    )
+    completed = sorted(
+        {
+            result.task_final_path.name
+            for result in results
+            if result.task_final_path is not None and result.task_final_status == "done"
+        }
+    )
+    blocked = sorted(
+        {
+            result.task_final_path.name
+            for result in results
+            if result.task_final_path is not None and result.task_final_status == "blocked"
+        }
+    )
+
+    lines = [prefix, "", f"Cycle completed at {utcnow()}.", "", "Agent runs:"]
+    for result in results:
+        task_label = (
+            result.task_initial_path.name if result.task_initial_path is not None else "none"
+        )
+        lines.append(
+            f"- {result.agent_name}: exit={result.exit_code} timed_out={str(result.timed_out).lower()} task={task_label}"
+        )
+    if completed:
+        lines.extend(["", "Completed tasks:"])
+        for name in completed:
+            lines.append(f"- {name}")
+    if blocked:
+        lines.extend(["", "Blocked tasks:"])
+        for name in blocked:
+            lines.append(f"- {name}")
+    if recovery_actions:
+        lines.extend(["", "Recovery actions:"])
+        for action in recovery_actions:
+            lines.append(
+                f"- {action['task_name']}: {action['action']} -> {action['final_status']}"
+            )
+    lines.extend(["", TRAILER])
+    return "\n".join(lines) + "\n"
+
+
+def maybe_commit_and_push(
+    config: dict[str, Any],
+    results: list[RunResult],
+    recovery_actions: list[dict[str, Any]],
+) -> dict[str, Any]:
+    policy = config.get("git_policy", {})
+    remote = str(policy.get("push_remote", "origin"))
+    branch = str(policy.get("push_branch", git_branch() or "main"))
+    action: dict[str, Any] = {
+        "dirty_before": git_worktree_dirty(),
+        "commit_created": False,
+        "commit_sha": None,
+        "push_attempted": False,
+        "push_succeeded": False,
+        "ahead_before_push": None,
+        "errors": [],
+    }
+
+    if bool(policy.get("auto_commit", True)) and action["dirty_before"]:
+        git_run("add", "-A", capture_output=True)
+        if git_worktree_dirty():
+            message = compose_commit_message(config, results, recovery_actions)
+            commit = git_run("commit", "-F", "-", input_text=message)
+            if commit.returncode == 0:
+                action["commit_created"] = True
+                action["commit_sha"] = git_head()
+            else:
+                action["errors"].append(
+                    (commit.stderr or commit.stdout or "git commit failed").strip()
+                )
+
+    if bool(policy.get("auto_push", True)):
+        ahead = git_ahead_count(config)
+        action["ahead_before_push"] = ahead
+        if ahead is None:
+            action["errors"].append(f"Unable to determine ahead count for {remote}/{branch}.")
+        elif ahead > 0:
+            push = git_run("push", remote, branch)
+            action["push_attempted"] = True
+            if push.returncode == 0:
+                action["push_succeeded"] = True
+            else:
+                action["errors"].append(
+                    (push.stderr or push.stdout or "git push failed").strip()
+                )
+
+    action["dirty_after"] = git_worktree_dirty()
+    action["head_after"] = git_head()
+    return action
+
+
+def build_anomalies(
+    results: list[RunResult],
+    recovery_actions: list[dict[str, Any]],
+    git_action: dict[str, Any],
+) -> list[dict[str, Any]]:
     anomalies: list[dict[str, Any]] = []
     for result in results:
         if result.exit_code != 0:
             anomalies.append(
                 {
+                    "type": "agent_nonzero_exit",
+                    "severity": "error",
                     "agent_name": result.agent_name,
                     "run_id": result.run_id,
-                    "type": "nonzero_exit",
                     "exit_code": result.exit_code,
                     "timed_out": result.timed_out,
                 }
             )
-        if result.task_initial_path is not None and result.task_final_status not in {"done", "blocked"}:
-            anomalies.append(
-                {
-                    "agent_name": result.agent_name,
-                    "run_id": result.run_id,
-                    "type": "task_not_terminated",
-                    "task_initial_path": relpath(result.task_initial_path),
-                    "task_final_status": result.task_final_status,
-                    "task_final_path": None
-                    if result.task_final_path is None
-                    else relpath(result.task_final_path),
-                }
-            )
+    anomalies.extend(
+        {
+            "type": "task_recovery",
+            "severity": action["severity"],
+            "task_name": action["task_name"],
+            "action": action["action"],
+            "final_status": action["final_status"],
+            "path": action["path"],
+        }
+        for action in recovery_actions
+    )
+    for message in git_action.get("errors", []):
+        anomalies.append({"type": "git_sync_error", "severity": "error", "message": message})
     return anomalies
 
 
-def update_loop_state(config: dict[str, Any], agents: list[AgentSpec], results: list[RunResult]) -> None:
+def update_loop_state(
+    config: dict[str, Any],
+    agents: list[AgentSpec],
+    results: list[RunResult],
+    recovery_actions: list[dict[str, Any]],
+    git_action: dict[str, Any],
+    prune_action: dict[str, Any],
+) -> dict[str, Any]:
     paths = runtime_paths(config)
     state = read_json(paths["loop_state"], default={})
     if not isinstance(state, dict):
         state = {}
 
+    totals = state.get("totals")
+    if not isinstance(totals, dict):
+        totals = {}
+
+    anomalies = build_anomalies(results, recovery_actions, git_action)
+    error_count = sum(1 for item in anomalies if item.get("severity") == "error")
+    warning_count = sum(1 for item in anomalies if item.get("severity") == "warning")
+    cycle_completed = sum(1 for result in results if result.task_final_status == "done")
+    cycle_blocked = sum(1 for result in results if result.task_final_status == "blocked")
+
     agent_state = state.get("agents")
     if not isinstance(agent_state, dict):
         agent_state = {}
-
     for result in results:
         agent_state[result.agent_name] = {
             "agent_kind": result.agent_kind,
@@ -535,55 +968,225 @@ def update_loop_state(config: dict[str, Any], agents: list[AgentSpec], results: 
                 }
                 for result in results
             ],
-            "last_cycle_anomalies": build_anomalies(results),
+            "last_cycle_recovery_actions": recovery_actions,
+            "last_cycle_anomalies": anomalies,
+            "last_git_action": git_action,
+            "last_prune_action": prune_action,
+            "totals": {
+                "cycles": int(totals.get("cycles", 0)) + 1,
+                "agent_runs": int(totals.get("agent_runs", 0)) + len(results),
+                "task_runs": int(totals.get("task_runs", 0))
+                + sum(1 for result in results if result.task_initial_path is not None),
+                "tasks_completed": int(totals.get("tasks_completed", 0)) + cycle_completed,
+                "tasks_blocked": int(totals.get("tasks_blocked", 0)) + cycle_blocked,
+                "auto_commits": int(totals.get("auto_commits", 0))
+                + int(bool(git_action.get("commit_created"))),
+                "auto_pushes": int(totals.get("auto_pushes", 0))
+                + int(bool(git_action.get("push_succeeded"))),
+                "pruned_run_dirs": int(totals.get("pruned_run_dirs", 0))
+                + int(prune_action.get("pruned_count", 0)),
+                "warnings": int(totals.get("warnings", 0)) + warning_count,
+                "errors": int(totals.get("errors", 0)) + error_count,
+            },
         }
     )
     write_json(paths["loop_state"], state)
+    return state
+
+
+def build_report(config: dict[str, Any]) -> dict[str, Any]:
+    paths = runtime_paths(config)
+    state = read_json(paths["loop_state"], default={})
+    if not isinstance(state, dict):
+        state = {}
+    live_agents = load_agent_specs(config)
+    reporting_cfg = config.get("reporting", {})
+    recent_runs_limit = int(reporting_cfg.get("recent_runs", 12))
+    recent_tasks_limit = int(reporting_cfg.get("recent_tasks", 10))
+    recent_commits_limit = int(reporting_cfg.get("recent_commits", 10))
+
+    report = {
+        "generated_at": utcnow(),
+        "repo_root": str(REPO_ROOT),
+        "branch": git_branch(),
+        "head": git_head(),
+        "upstream": git_upstream_ref(config),
+        "ahead_of_upstream": git_ahead_count(config),
+        "dirty_worktree": git_worktree_dirty(),
+        "queue_counts": queue_counts(),
+        "totals": state.get("totals", {}),
+        "agents": [
+            {
+                "name": agent.name,
+                "kind": agent.kind,
+                "cycle_order": agent.cycle_order,
+                "dispatch_mode": agent.dispatch.get("mode", "every_cycle"),
+                "spec_path": relpath(agent.spec_path),
+            }
+            for agent in live_agents
+        ],
+        "last_cycle_runs": list(state.get("last_cycle_runs", []))[:recent_runs_limit],
+        "last_cycle_anomalies": state.get("last_cycle_anomalies", []),
+        "last_cycle_recovery_actions": state.get("last_cycle_recovery_actions", []),
+        "last_git_action": state.get("last_git_action", {}),
+        "last_prune_action": state.get("last_prune_action", {}),
+        "recent_done_tasks": recent_tasks("done", recent_tasks_limit),
+        "recent_blocked_tasks": recent_tasks("blocked", recent_tasks_limit),
+        "recent_commits": recent_git_commits(recent_commits_limit),
+        "dashboard_paths": {
+            "json": relpath(paths["dashboard_json"]),
+            "markdown": relpath(paths["dashboard_markdown"]),
+        },
+    }
+    return report
+
+
+def render_markdown_report(report: dict[str, Any]) -> str:
+    lines = [
+        "# Rebar Dashboard",
+        "",
+        f"Generated: {report['generated_at']}",
+        f"Branch: `{report['branch']}`",
+        f"HEAD: `{report['head']}`",
+        f"Upstream: `{report['upstream']}`",
+        f"Dirty worktree: `{str(report['dirty_worktree']).lower()}`",
+        f"Ahead of upstream: `{report['ahead_of_upstream']}`",
+        "",
+        "## Totals",
+    ]
+
+    totals = report.get("totals", {})
+    if isinstance(totals, dict):
+        for key in sorted(totals):
+            lines.append(f"- {key}: `{totals[key]}`")
+
+    lines.extend(["", "## Queue Counts"])
+    for key, value in report.get("queue_counts", {}).items():
+        lines.append(f"- {key}: `{value}`")
+
+    lines.extend(["", "## Active Agents"])
+    agents = report.get("agents", [])
+    if agents:
+        for item in agents:
+            lines.append(
+                f"- `{item['name']}` kind=`{item['kind']}` mode=`{item['dispatch_mode']}` order=`{item['cycle_order']}`"
+            )
+    else:
+        lines.append("- none")
+
+    lines.extend(["", "## Last Cycle Runs"])
+    runs = report.get("last_cycle_runs", [])
+    if runs:
+        for item in runs:
+            lines.append(
+                f"- `{item['agent_name']}` exit=`{item['exit_code']}` timed_out=`{item['timed_out']}` task=`{item['task_initial_path']}` final=`{item['task_final_status']}`"
+            )
+    else:
+        lines.append("- none")
+
+    lines.extend(["", "## Last Git Action"])
+    last_git = report.get("last_git_action", {})
+    if isinstance(last_git, dict):
+        for key in ("commit_created", "commit_sha", "push_attempted", "push_succeeded", "dirty_after"):
+            if key in last_git:
+                lines.append(f"- {key}: `{last_git[key]}`")
+        for message in last_git.get("errors", []):
+            lines.append(f"- git_error: `{message}`")
+
+    lines.extend(["", "## Last Cycle Anomalies"])
+    anomalies = report.get("last_cycle_anomalies", [])
+    if anomalies:
+        for item in anomalies:
+            lines.append(f"- {json.dumps(item, sort_keys=True)}")
+    else:
+        lines.append("- none")
+
+    lines.extend(["", "## Recent Done Tasks"])
+    done_tasks = report.get("recent_done_tasks", [])
+    if done_tasks:
+        for item in done_tasks:
+            lines.append(f"- `{item['name']}` at `{item['updated_at']}`")
+    else:
+        lines.append("- none")
+
+    lines.extend(["", "## Recent Blocked Tasks"])
+    blocked_tasks = report.get("recent_blocked_tasks", [])
+    if blocked_tasks:
+        for item in blocked_tasks:
+            lines.append(f"- `{item['name']}` at `{item['updated_at']}`")
+    else:
+        lines.append("- none")
+
+    lines.extend(["", "## Recent Commits"])
+    commits = report.get("recent_commits", [])
+    if commits:
+        for item in commits:
+            lines.append(f"- `{item['sha']}` `{item['date']}` {item['subject']}")
+    else:
+        lines.append("- none")
+
+    return "\n".join(lines) + "\n"
+
+
+def refresh_reports(config: dict[str, Any]) -> dict[str, Any]:
+    paths = runtime_paths(config)
+    report = build_report(config)
+    write_json(paths["dashboard_json"], report)
+    write_text(paths["dashboard_markdown"], render_markdown_report(report))
+    return report
 
 
 def run_cycle(config: dict[str, Any], *, force_supervisor: bool = False) -> int:
-    agents = load_agent_specs(config)
     paths = runtime_paths(config)
     ensure_runtime_dirs(paths)
+    task_state = load_task_state(paths)
+    stale_actions = recover_stale_in_progress_tasks(config, task_state)
+
+    agents = load_agent_specs(config)
     loop_state = read_json(paths["loop_state"], default={})
     if not isinstance(loop_state, dict):
         loop_state = {}
 
     results: list[RunResult] = []
-    failures = 0
     for agent in agents:
         force = force_supervisor and agent.kind == "supervisor"
-        agent_results = dispatch_agent(agent, config, loop_state, force=force)
-        results.extend(agent_results)
-        failures += sum(int(result.exit_code != 0) for result in agent_results)
+        results.extend(dispatch_agent(agent, config, loop_state, force=force))
 
-    update_loop_state(config, agents, results)
-    return 0 if failures == 0 else 1
+    recovery_actions = list(stale_actions)
+    for result in results:
+        recovery_actions.extend(finalize_task_result(config, result, task_state))
+
+    write_json(paths["task_state"], task_state)
+    prune_action = prune_run_dirs(config, paths)
+    git_action = maybe_commit_and_push(config, results, recovery_actions)
+    state = update_loop_state(config, agents, results, recovery_actions, git_action, prune_action)
+    refresh_reports(config)
+
+    anomalies = state.get("last_cycle_anomalies", [])
+    error_count = sum(1 for item in anomalies if item.get("severity") == "error")
+    return 0 if error_count == 0 else 1
+
+
+def sleep_seconds_for_exit(config: dict[str, Any], exit_code: int) -> int:
+    runtime_cfg = config.get("runtime", {})
+    if exit_code == 0:
+        return int(runtime_cfg.get("sleep_seconds", 300))
+    return int(runtime_cfg.get("failure_backoff_seconds", 30))
 
 
 def cmd_status(config: dict[str, Any]) -> int:
-    agents = load_agent_specs(config)
-    paths = runtime_paths(config)
-    state = read_json(paths["loop_state"], default={})
-    if not isinstance(state, dict):
-        state = {}
-    status = {
-        "repo_root": str(REPO_ROOT),
-        "runtime_dir": str(paths["artifact_root"]),
-        "queue_counts": queue_counts(),
-        "agents": [
-            {
-                "name": agent.name,
-                "kind": agent.kind,
-                "dispatch_mode": agent.dispatch.get("mode", "every_cycle"),
-                "cycle_order": agent.cycle_order,
-            }
-            for agent in agents
-        ],
-        "last_cycle_runs": state.get("last_cycle_runs", []),
-        "last_cycle_anomalies": state.get("last_cycle_anomalies", []),
+    report = build_report(config)
+    summary = {
+        "repo_root": report["repo_root"],
+        "runtime_dir": str(runtime_paths(config)["artifact_root"]),
+        "queue_counts": report["queue_counts"],
+        "agents": report["agents"],
+        "ahead_of_upstream": report["ahead_of_upstream"],
+        "dirty_worktree": report["dirty_worktree"],
+        "last_cycle_anomalies": report["last_cycle_anomalies"],
+        "dashboard_path": report["dashboard_paths"]["markdown"],
     }
-    print(json.dumps(status, indent=2, sort_keys=True))
+    print(json.dumps(summary, indent=2, sort_keys=True))
     return 0
 
 
@@ -601,15 +1204,17 @@ def cmd_cycle(config: dict[str, Any], force_supervisor: bool) -> int:
     return run_cycle(config, force_supervisor=force_supervisor)
 
 
-def sleep_seconds_for_exit(config: dict[str, Any], exit_code: int) -> int:
-    runtime_cfg = config.get("runtime", {})
-    if exit_code == 0:
-        return int(runtime_cfg.get("sleep_seconds", 300))
-    return int(runtime_cfg.get("failure_backoff_seconds", 30))
-
-
 def cmd_sleep_seconds(config: dict[str, Any], exit_code: int) -> int:
     print(sleep_seconds_for_exit(config, exit_code))
+    return 0
+
+
+def cmd_report(config: dict[str, Any], output_format: str) -> int:
+    report = build_report(config)
+    if output_format == "json":
+        print(json.dumps(report, indent=2, sort_keys=True))
+    else:
+        sys.stdout.write(render_markdown_report(report))
     return 0
 
 
@@ -617,7 +1222,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the rebar forever harness.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    subparsers.add_parser("status", help="Print queue, agent, and runtime status.")
+    subparsers.add_parser("status", help="Print queue, git, and runtime status.")
 
     render_parser = subparsers.add_parser("render", help="Render a prompt for an agent.")
     render_parser.add_argument("agent", help="Agent name from ops/agents/*.json")
@@ -635,6 +1240,13 @@ def parse_args() -> argparse.Namespace:
         help="Print the configured post-cycle sleep based on the previous exit code.",
     )
     sleep_parser.add_argument("--exit-code", type=int, required=True)
+
+    report_parser = subparsers.add_parser("report", help="Render the current dashboard.")
+    report_parser.add_argument(
+        "--format",
+        choices=("markdown", "json"),
+        default="markdown",
+    )
     return parser.parse_args()
 
 
@@ -649,6 +1261,8 @@ def main() -> int:
         return cmd_cycle(config, args.force_supervisor)
     if args.command == "sleep-seconds":
         return cmd_sleep_seconds(config, args.exit_code)
+    if args.command == "report":
+        return cmd_report(config, args.format)
     raise RuntimeError(f"Unknown command: {args.command}")
 
 

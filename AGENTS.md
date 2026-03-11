@@ -47,7 +47,7 @@ When you finish work, move the task file to `done/` or `blocked/` and update its
 - Ephemeral execution artifacts live under ignored `.rebar/`.
 - Add meaningful architectural or workflow decisions to `ops/state/decision_log.md`.
 - Update `ops/state/current_status.md` whenever the active phase, key risks, or next steps materially change.
-- Runtime health for the forever loop lives in `.rebar/runtime/loop_state.json` and per-run directories under `.rebar/runtime/runs/`.
+- Runtime health for the forever loop lives in `.rebar/runtime/loop_state.json`, `.rebar/runtime/dashboard.md`, `.rebar/runtime/task_state.json`, `.rebar/runtime/loop.log`, and per-run directories under `.rebar/runtime/runs/`.
 
 ## Project Priorities
 1. Nail the compatibility target and parser scope against CPython.

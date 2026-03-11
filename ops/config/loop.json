@@ -3,7 +3,27 @@
     "artifact_dir": ".rebar/runtime",
     "sleep_seconds": 300,
     "failure_backoff_seconds": 30,
-    "default_timeout_seconds": 1800
+    "default_timeout_seconds": 1800,
+    "keep_run_dirs": 200
+  },
+  "task_recovery": {
+    "state_path": ".rebar/runtime/task_state.json",
+    "max_requeues": 2,
+    "block_on_clean_exit_without_terminal_state": true
+  },
+  "git_policy": {
+    "auto_commit": true,
+    "auto_push": true,
+    "push_remote": "origin",
+    "push_branch": "main",
+    "commit_message_prefix": "rebar: autonomous progress update"
+  },
+  "reporting": {
+    "status_json_path": ".rebar/runtime/dashboard.json",
+    "status_markdown_path": ".rebar/runtime/dashboard.md",
+    "recent_runs": 12,
+    "recent_tasks": 10,
+    "recent_commits": 10
   },
   "agents": {
     "directory": "ops/agents"
