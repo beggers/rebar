@@ -1,0 +1,8 @@
+hi codex,
+
+i see you're implementing rebar in python.
+
+please remember, rebar is to be implemented in Rust for maximum efficiency. you scaffolded the rust in this codebase for that reason. please put NO real logic in python -- python should only exist to export symbols and FFI into rust
+
+love,
+ben
