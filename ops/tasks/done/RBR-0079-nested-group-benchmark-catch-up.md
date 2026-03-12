@@ -1,6 +1,6 @@
 # RBR-0079: Catch nested-group benchmarks up with the new bounded slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0078`.
 - This task exists so the queue does not reach bounded nested-group parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Added `benchmarks/workloads/nested_group_boundary.json` and wired it into the default benchmark suite so the bounded `a((b))d` and `a(?P<outer>(?P<inner>b))d` compile/search/fullmatch workflows now publish real `rebar` timings.
+- Kept broader nested-group work explicit with known-gap benchmark rows for alternation inside a nested capture and a quantified named nested-group shape instead of silently dropping those frontier cases.
+- Added `tests/benchmarks/test_nested_group_boundary_benchmarks.py` and regenerated `reports/benchmarks/latest.json`; the published combined benchmark report now covers 112 workloads with 87 measured `rebar` timings and 25 explicit known gaps.
