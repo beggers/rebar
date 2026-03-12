@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while keeping the correctness and benchmark publications caught up with each newly supported slice. |
-| Compatibility outlook | Early subset, not near drop-in feature parity yet: literals, captures, bounded replacement/backreference workflows, simple alternation, and one bounded optional-group quantifier slice now pass through the Rust boundary, but counted repeats, quantified alternation, conditionals, and broader backtracking remain ahead of the frontier. |
+| Compatibility outlook | Early subset, not near drop-in feature parity yet: literals, captures, bounded replacement/backreference workflows, simple alternation, one bounded optional-group quantifier slice, and one bounded exact-repeat quantified-group slice now pass through the Rust boundary, but ranged repeats, quantified alternation, conditionals, and broader backtracking remain ahead of the frontier. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `10` ready, `0` in progress, `102` done, `0` blocked |
+| Work queue | `9` ready, `0` in progress, `103` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,27 +28,26 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `25` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
-_These correctness counts cover only the published slice. Overall feature status: Early subset, not near drop-in feature parity yet: literals, captures, bounded replacement/backreference workflows, simple alternation, and one bounded optional-group quantifier slice now pass through the Rust boundary, but counted repeats, quantified alternation, conditionals, and broader backtracking remain ahead of the frontier._
+_These correctness counts cover only the published slice. Overall feature status: Early subset, not near drop-in feature parity yet: literals, captures, bounded replacement/backreference workflows, simple alternation, one bounded optional-group quantifier slice, and one bounded exact-repeat quantified-group slice now pass through the Rust boundary, but ranged repeats, quantified alternation, conditionals, and broader backtracking remain ahead of the frontier._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/usr/bin/python3`) |
-| Published workloads | `155` |
-| Workloads with real `rebar` timings | `125` |
-| Known-gap workloads | `30` |
+| Published workloads | `163` |
+| Workloads with real `rebar` timings | `131` |
+| Known-gap workloads | `32` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; built-native timing remains limited to [`reports/benchmarks/native_smoke.json`](reports/benchmarks/native_smoke.json)._
 
-_README speedup rollups stay omitted while only `125` of `155` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `131` of `163` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- Land `RBR-0096` so the first deterministic counted-repeat slice moves behind `rebar._rebar` instead of remaining publication-only coverage.
-- After `RBR-0096`, land `RBR-0097` so the first deterministic counted-repeat slice reaches the published benchmark surface promptly instead of becoming another correctness-only island.
+- Land `RBR-0097` so the first deterministic counted-repeat slice reaches the published benchmark surface promptly instead of becoming another correctness-only island.
 - After `RBR-0097`, land `RBR-0098` and `RBR-0099` so quantified execution broadens from exact counts into one bounded ranged-repeat slice before quantified alternation, conditionals, or broader backtracking reopen the frontier.
 - After `RBR-0099`, land `RBR-0100` so the first bounded counted-range slice reaches the published benchmark surface promptly instead of becoming another correctness-only island.
 - After `RBR-0100`, land `RBR-0101` and `RBR-0102` so the queue combines already-supported optional quantifiers and grouped alternation before conditionals or broader backtracking reopen the frontier.
@@ -59,26 +58,26 @@ _README speedup rollups stay omitted while only `125` of `155` published workloa
 ### Current Risks
 
 - The repo now publishes `reports/benchmarks/native_smoke.json` from a real built `rebar._rebar` path and the benchmark harness can distinguish shim versus built-native execution modes, but the primary `reports/benchmarks/latest.json` report still measures the default source-tree shim rather than the dedicated built-native timing path, so routine full-suite measurement can still drift away from the verified install/import path.
-- The supported compile, parser-diagnostic, literal-match, cache, `escape()`, collection/replacement helper, bounded replacement-template/callable replacement, bounded single-dot wildcard, inline-flag, bytes-`LOCALE`, grouped-literal replacement-template, grouped numbered-capture, grouped-segment parity, named-group metadata, bounded named-group replacement-template, bounded named-backreference, bounded numbered-backreference, bounded top-level literal-alternation, bounded grouped-alternation workflow slice, bounded grouped-alternation replacement-template workflow, bounded grouped-alternation callable-replacement workflow, bounded nested-group match workflow, bounded nested-group replacement-template workflow, bounded nested-group callable-replacement workflow, bounded nested-group alternation workflow, bounded branch-local backreference workflow, and bounded optional-group quantifier workflow now live behind `rebar._rebar`; counted repeats, quantified alternation, conditionals, and broader backtracking are still ahead of the active Rust-backed frontier.
-- The correctness harness now covers 176 published cases across parser, module-API, match-behavior, exported-symbol, pattern-object, module-workflow, collection/replacement, literal-flag, grouped-match, named-group, named-group replacement, named-backreference, numbered-backreference, grouped-segment, literal-alternation, grouped-alternation, grouped-alternation replacement, grouped-alternation callable-replacement, nested-group, nested-group replacement, nested-group callable-replacement, nested-group alternation, branch-local backreference, optional-group, and exact-repeat quantified-group layers, with 170 passes, 0 explicit failures, and 6 honest `unimplemented` outcomes; the active queued frontier is bounded exact-repeat quantified-group parity in `RBR-0096` before ranged repeats, optional-group alternation, and bounded conditional group-exists follow-ons.
+- The supported compile, parser-diagnostic, literal-match, cache, `escape()`, collection/replacement helper, bounded replacement-template/callable replacement, bounded single-dot wildcard, inline-flag, bytes-`LOCALE`, grouped-literal replacement-template, grouped numbered-capture, grouped-segment parity, named-group metadata, bounded named-group replacement-template, bounded named-backreference, bounded numbered-backreference, bounded top-level literal-alternation, bounded grouped-alternation workflow slice, bounded grouped-alternation replacement-template workflow, bounded grouped-alternation callable-replacement workflow, bounded nested-group match workflow, bounded nested-group replacement-template workflow, bounded nested-group callable-replacement workflow, bounded nested-group alternation workflow, bounded branch-local backreference workflow, bounded optional-group quantifier workflow, and bounded exact-repeat quantified-group workflow now live behind `rebar._rebar`; ranged repeats, quantified alternation, conditionals, and broader backtracking are still ahead of the active Rust-backed frontier.
+- The correctness harness now covers 176 published cases across parser, module-API, match-behavior, exported-symbol, pattern-object, module-workflow, collection/replacement, literal-flag, grouped-match, named-group, named-group replacement, named-backreference, numbered-backreference, grouped-segment, literal-alternation, grouped-alternation, grouped-alternation replacement, grouped-alternation callable-replacement, nested-group, nested-group replacement, nested-group callable-replacement, nested-group alternation, branch-local backreference, optional-group, and exact-repeat quantified-group layers, with 176 passes, 0 explicit failures, and 0 honest `unimplemented` outcomes; the active queued frontier is exact-repeat quantified-group benchmark catch-up in `RBR-0097` before ranged repeats, optional-group alternation, and bounded conditional group-exists follow-ons.
 - The benchmark harness now measures 155 published workloads across 19 manifests with explicit adapter-mode provenance, and 125 workloads now have real `rebar` timings; the remaining 30 known gaps are concentrated in the compile-matrix, module-boundary, grouped-named-boundary, numbered-backreference-boundary, grouped-alternation-boundary, grouped-alternation-replacement-boundary, grouped-alternation-callable-replacement-boundary, literal-flag-boundary, nested-group-boundary, nested-group-alternation-boundary, nested-group-replacement-boundary, nested-group-callable-replacement-boundary, branch-local-backreference-boundary, optional-group-boundary, and regression-matrix manifests, and the published suite still exercises the source-tree shim rather than the built native path.
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility at the Python surface.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Concurrent human and loop commits can still produce diverged git history that requires supervisor resolution; the harness now detects that state accurately but does not auto-rebase it.
-- The implementation worker has ninety-six completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
+- The implementation worker has ninety-seven completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
 <!-- REBAR:STATUS_END -->
 
 ## Implementation Snapshot
 
 `rebar` has the planning, harness, and reporting foundation in place, but it is still early in the actual regex-engine implementation. Today the repository contains a Rust core crate, a PyO3 extension scaffold, a Python-facing shim, and published correctness and benchmark reports that intentionally expose the current supported frontier and the remaining unsupported surface instead of pretending stdlib `re` compatibility already exists.
 
-On the Python surface, `rebar` now supports a real but still-bounded subset: literal compile/search/match/fullmatch, cache visibility, `escape()`, collection/replacement helpers, API-level `IGNORECASE`, grouped and named captures, bounded replacement-template and callable replacement workflows, bounded numbered and named backreferences, bounded grouped/nested alternation, bounded branch-local backreferences, and one bounded optional-group quantifier slice through both module and compiled-`Pattern` entrypoints. The published correctness scorecard now covers `176` cases across `25` manifests, with `170` passing comparisons and `6` honest published gaps concentrated in the newly published exact-repeat quantified-group slice; that reflects the current implemented slice, not overall stdlib `re` parity. The next queued frontier is bounded exact-repeat quantified-group parity in `RBR-0096`, then benchmark catch-up for that slice and the ranged-repeat publication/parity follow-ons.
+On the Python surface, `rebar` now supports a real but still-bounded subset: literal compile/search/match/fullmatch, cache visibility, `escape()`, collection/replacement helpers, API-level `IGNORECASE`, grouped and named captures, bounded replacement-template and callable replacement workflows, bounded numbered and named backreferences, bounded grouped/nested alternation, bounded branch-local backreferences, one bounded optional-group quantifier slice, and one bounded exact-repeat quantified-group slice through both module and compiled-`Pattern` entrypoints. The published correctness scorecard now covers `176` cases across `25` manifests, with `176` passing comparisons and `0` honest published gaps; that reflects the current implemented slice, not overall stdlib `re` parity. The next queued frontier is exact-repeat quantified-group benchmark catch-up in `RBR-0097`, then the ranged-repeat publication/parity/benchmark sequence in `RBR-0098` through `RBR-0100`.
 
 Benchmark publication is still partial by design. `reports/benchmarks/latest.json` now covers `155` workloads with `125` real `rebar` timings and `30` explicit known gaps, while the full suite still times the source-tree shim and the built-native path remains a separate six-workload smoke artifact in `reports/benchmarks/native_smoke.json`.
 
 ## What The Numbers Mean
 
-The correctness report is honest by construction: `170` passing comparisons out of `176` published cases means the currently published slice still carries `6` explicit `unimplemented` gaps in the new exact-repeat quantified-group manifest, not that overall stdlib `re` parity is close. Counted repeats, quantified alternation, conditionals, and broader backtracking remain ahead of the frontier, and the next expansion is the bounded exact-repeat parity and benchmark sequence queued in `RBR-0096` and `RBR-0097`.
+The correctness report is honest by construction: `176` passing comparisons out of `176` published cases means the currently published exact-repeat quantified-group slice now passes end-to-end, not that overall stdlib `re` parity is close. Ranged repeats, quantified alternation, conditionals, and broader backtracking still remain ahead of the frontier, and the next expansion is the exact-repeat benchmark catch-up in `RBR-0097` followed by the ranged-repeat publication/parity sequence.
 
 The benchmark report is also a coverage report before it is a performance story. It currently publishes `155` workloads with `125` measured `rebar` timings and `30` explicit gaps, and the main `reports/benchmarks/latest.json` run still exercises the source-tree shim rather than the full built-native path. Until compile and match workloads are both implemented and measured through the main publication path, performance headlines stay out of the landing page.
 

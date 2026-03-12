@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "manifest_id": "optional-group-boundary",
+  "manifest_id": "exact-repeat-quantified-group-boundary",
   "spec_refs": [
     "docs/benchmarks/plan.md",
     "docs/spec/drop-in-re-compatibility.md"
   ],
   "notes": [
-    "Optional-group boundary workloads keep captures, quantifiers, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded optional-group slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b)?d` and `a(?P<word>b)?d` compile/search/fullmatch paths directly, while quantified-alternation and conditional combinations stay as explicit known-gap rows until the queued optional-group alternation and conditional follow-ons land."
+    "Exact-repeat quantified-group boundary workloads keep captures, counted repeats, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded exact-repeat slice rather than regex throughput.",
+    "Measured rows cover the bounded `a(bc){2}d` and `a(?P<word>bc){2}d` compile/search/fullmatch paths directly, while ranged repeats and quantified-alternation combinations stay as explicit known-gap rows until the queued follow-on slices land."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -16,11 +16,11 @@
   },
   "workloads": [
     {
-      "id": "module-compile-optional-group-cold-str",
+      "id": "module-compile-numbered-exact-repeat-group-cold-str",
       "bucket": "module-compile",
       "family": "module",
       "operation": "module.compile",
-      "pattern": "a(b)?d",
+      "pattern": "a(bc){2}d",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "cold",
@@ -28,27 +28,28 @@
       "categories": [
         "compile",
         "grouped",
-        "optional-group",
         "quantifier",
+        "exact-repeat",
+        "counted-repeat",
         "cold-cache"
       ],
       "syntax_features": [
         "module-compile",
         "grouping-forms",
-        "optional-groups",
-        "quantifiers"
+        "quantifiers",
+        "counted-repeats"
       ],
       "notes": [
-        "Cold module.compile benchmark for the bounded optional-group slice so compile metadata timing reaches the published benchmark report."
+        "Cold module.compile benchmark for the bounded numbered exact-repeat quantified-group slice so compile metadata timing reaches the published benchmark report."
       ]
     },
     {
-      "id": "module-search-optional-group-present-warm-str",
+      "id": "module-search-numbered-exact-repeat-group-warm-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(b)?d",
-      "haystack": "zzabdzz",
+      "pattern": "a(bc){2}d",
+      "haystack": "zzabcbcdzz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
@@ -56,31 +57,31 @@
       "smoke": true,
       "categories": [
         "grouped",
-        "optional-group",
         "quantifier",
+        "exact-repeat",
+        "counted-repeat",
         "search",
         "module",
-        "present",
         "warm-cache",
         "smoke"
       ],
       "syntax_features": [
         "module-search",
         "grouping-forms",
-        "optional-groups",
-        "quantifiers"
+        "quantifiers",
+        "counted-repeats"
       ],
       "notes": [
-        "Warm module.search helper path for the bounded numbered optional-group workflow when the capture is present on a tiny haystack."
+        "Warm module.search helper path for the bounded numbered exact-repeat workflow on a tiny haystack."
       ]
     },
     {
-      "id": "pattern-fullmatch-optional-group-absent-purged-str",
+      "id": "pattern-fullmatch-numbered-exact-repeat-group-purged-str",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(b)?d",
-      "haystack": "ad",
+      "pattern": "a(bc){2}d",
+      "haystack": "abcbcd",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "purged",
@@ -88,29 +89,29 @@
       "categories": [
         "pattern",
         "grouped",
-        "optional-group",
         "quantifier",
+        "exact-repeat",
+        "counted-repeat",
         "fullmatch",
-        "absent",
         "purged-cache"
       ],
       "syntax_features": [
         "pattern-fullmatch",
         "grouping-forms",
-        "optional-groups",
         "quantifiers",
+        "counted-repeats",
         "cache-purge"
       ],
       "notes": [
-        "Purged-cache Pattern.fullmatch probe for the same bounded numbered optional-group workflow when the capture is omitted."
+        "Purged-cache Pattern.fullmatch probe for the same bounded numbered exact-repeat workflow."
       ]
     },
     {
-      "id": "module-compile-named-optional-group-warm-str",
+      "id": "module-compile-named-exact-repeat-group-warm-str",
       "bucket": "module-compile",
       "family": "module",
       "operation": "module.compile",
-      "pattern": "a(?P<word>b)?d",
+      "pattern": "a(?P<word>bc){2}d",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
@@ -118,61 +119,62 @@
       "categories": [
         "compile",
         "grouped",
-        "optional-group",
         "quantifier",
+        "exact-repeat",
+        "counted-repeat",
         "named-group",
         "warm-cache"
       ],
       "syntax_features": [
         "module-compile",
         "grouping-forms",
-        "optional-groups",
         "quantifiers",
+        "counted-repeats",
         "named-groups"
       ],
       "notes": [
-        "Warm module.compile path for the bounded named optional-group slice so named metadata timing reaches the benchmark report."
+        "Warm module.compile path for the bounded named exact-repeat slice so named metadata timing reaches the benchmark report."
       ]
     },
     {
-      "id": "module-search-named-optional-group-absent-warm-str",
+      "id": "module-search-named-exact-repeat-group-warm-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(?P<word>b)?d",
-      "haystack": "zzadzz",
+      "pattern": "a(?P<word>bc){2}d",
+      "haystack": "zzabcbcdzz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
       "timing_scope": "module-helper-call",
       "categories": [
         "grouped",
-        "optional-group",
         "quantifier",
+        "exact-repeat",
+        "counted-repeat",
         "named-group",
         "search",
         "module",
-        "absent",
         "warm-cache"
       ],
       "syntax_features": [
         "module-search",
         "grouping-forms",
-        "optional-groups",
         "quantifiers",
+        "counted-repeats",
         "named-groups"
       ],
       "notes": [
-        "Warm module.search helper path for a tiny named optional-group capture when the group is omitted so named runtime workflows produce real timings."
+        "Warm module.search helper path for a tiny named exact-repeat capture so named runtime workflows produce real timings."
       ]
     },
     {
-      "id": "pattern-fullmatch-named-optional-group-present-purged-str",
+      "id": "pattern-fullmatch-named-exact-repeat-group-purged-str",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(?P<word>b)?d",
-      "haystack": "abd",
+      "pattern": "a(?P<word>bc){2}d",
+      "haystack": "abcbcd",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "purged",
@@ -181,33 +183,33 @@
       "categories": [
         "pattern",
         "grouped",
-        "optional-group",
         "quantifier",
+        "exact-repeat",
+        "counted-repeat",
         "named-group",
         "fullmatch",
-        "present",
         "purged-cache",
         "smoke"
       ],
       "syntax_features": [
         "pattern-fullmatch",
         "grouping-forms",
-        "optional-groups",
         "quantifiers",
+        "counted-repeats",
         "named-groups",
         "cache-purge"
       ],
       "notes": [
-        "Smoke-sized Pattern.fullmatch probe for the bounded named optional-group workflow when the capture is present with compile cost kept outside the timed loop."
+        "Smoke-sized Pattern.fullmatch probe for the bounded named exact-repeat workflow with compile cost kept outside the timed loop."
       ]
     },
     {
-      "id": "module-search-numbered-optional-group-conditional-cold-gap",
+      "id": "module-search-numbered-ranged-repeat-group-cold-gap",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(b)?(?(1)c|d)e",
-      "haystack": "zzabcezz",
+      "pattern": "a(bc){1,2}d",
+      "haystack": "zzabcbcdzz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "cold",
@@ -215,8 +217,8 @@
       "categories": [
         "grouped",
         "quantifier",
-        "optional-group",
-        "conditional",
+        "ranged-repeat",
+        "counted-repeat",
         "search",
         "module",
         "unsupported",
@@ -225,21 +227,21 @@
       "syntax_features": [
         "module-search",
         "grouping-forms",
-        "optional-groups",
         "quantifiers",
-        "conditionals"
+        "counted-repeats",
+        "ranged-repeats"
       ],
       "notes": [
-        "Explicit conditional gap row so optional-group group-exists workflows stay visible instead of disappearing before the queued bounded conditional follow-on lands."
+        "Explicit ranged-repeat known-gap row so the next counted-range slice stays visible now that the exact-repeat frontier has real timings."
       ]
     },
     {
-      "id": "pattern-fullmatch-named-optional-group-alternation-purged-gap",
+      "id": "pattern-fullmatch-named-exact-repeat-group-alternation-purged-gap",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(?P<word>b|c)?d",
-      "haystack": "abd",
+      "pattern": "a(?P<word>bc|de){2}d",
+      "haystack": "abcbcd",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "purged",
@@ -247,8 +249,9 @@
       "categories": [
         "pattern",
         "grouped",
-        "optional-group",
         "quantifier",
+        "exact-repeat",
+        "counted-repeat",
         "alternation",
         "named-group",
         "fullmatch",
@@ -258,14 +261,14 @@
       "syntax_features": [
         "pattern-fullmatch",
         "grouping-forms",
-        "optional-groups",
         "quantifiers",
+        "counted-repeats",
         "alternation",
         "named-groups",
         "cache-purge"
       ],
       "notes": [
-        "Explicit quantified-alternation gap row so optional-group alternation stays visible instead of disappearing before the queued bounded alternation follow-on lands."
+        "Explicit quantified-alternation known-gap row so grouped alternation inside counted repeats stays on the benchmark surface instead of disappearing."
       ]
     }
   ]

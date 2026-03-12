@@ -1,6 +1,6 @@
 # RBR-0097: Catch exact-repeat quantified-group benchmarks up with the new bounded slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0096`.
 - This task exists so the queue does not reach bounded exact-repeat quantified-group parity and then leave that newly supported counted-repeat slice absent from benchmark reporting.
+
+## Completion
+- Added a dedicated `exact-repeat-quantified-group-boundary` benchmark manifest with bounded numbered and named compile/search/fullmatch workloads for `a(bc){2}d` and `a(?P<word>bc){2}d`, plus explicit ranged-repeat and quantified-alternation known-gap rows.
+- Wired the new manifest into the default benchmark suite, added regression coverage in `tests/benchmarks/test_exact_repeat_quantified_group_boundary_benchmarks.py`, and refreshed the adjacent optional-group benchmark pack so its remaining known-gap rows stay honest after exact-repeat timing landed.
+- Republished `reports/benchmarks/latest.json` with `163` total workloads, `131` measured `rebar` timings, and `32` explicit known gaps across the combined source-tree-shim suite.
