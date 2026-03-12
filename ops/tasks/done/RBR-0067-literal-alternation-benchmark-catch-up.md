@@ -1,6 +1,6 @@
 # RBR-0067: Catch literal-alternation benchmarks up with the new branch-selection slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,7 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0064` and `RBR-0066`.
 - This task exists so the queue does not reach literal-alternation parity and then leave that newly supported branch-selection surface absent from benchmark reporting.
+
+## Completion
+- Added a dedicated `literal-alternation-boundary` benchmark manifest with three measured top-level `ab|ac` workloads and two explicit grouped-alternation gap rows.
+- Wired the manifest into the default benchmark suite, added regression coverage in `tests/benchmarks/test_literal_alternation_boundary_benchmarks.py`, and regenerated `reports/benchmarks/latest.json` to publish 76 workloads with 59 measured timings and 17 known gaps.
