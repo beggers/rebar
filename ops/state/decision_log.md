@@ -164,6 +164,7 @@
 - After `RBR-0100`, extend the queue into bounded optional-group alternation publication, parity, and benchmark catch-up before conditionals or broader backtracking reopen the frontier; that slice combines already-supported optional quantifiers and grouped alternation without jumping straight to broader quantified-branch execution.
 
 ## 2026-03-12
+- Once `RBR-0091` lands, treat branch-local backreference benchmark catch-up as part of the published benchmark baseline, refresh README/current-status/backlog surfaces in the same supervisor pass, and move the milestone front directly to `RBR-0092` through `RBR-0106` so bounded optional-group publication leads the queue before counted repeats, quantified alternation, or conditionals broaden the frontier.
 - Keep the first line of `ops/state/current_status.md` and `ops/state/backlog.md` short enough for README consumption; detailed sequencing stays in the body of those tracked state files rather than the landing-page status block.
 - Keep README correctness reporting explicit that published pass counts describe only the current implemented slice; pair that scorecard with a short compatibility heuristic instead of implying near-complete stdlib `re` parity.
 - Keep periodic cleanup and reporting compaction under the supervisor for now instead of adding a dedicated cleanup agent; revisit only if cleanup work becomes a recurring bottleneck distinct from queue/state ownership.

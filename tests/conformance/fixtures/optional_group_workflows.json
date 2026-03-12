@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "manifest_id": "optional-group-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.optional_group",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "optional-group-compile-metadata-str",
+      "operation": "compile",
+      "family": "optional_group_compile_metadata",
+      "pattern": "a(b)?d",
+      "categories": ["grouped", "optional-group", "quantifier", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the bounded optional-group compile frontier for one numbered capture made optional with a single trailing question-mark quantifier inside literal prefix and suffix text."
+      ]
+    },
+    {
+      "id": "optional-group-module-search-present-str",
+      "operation": "module_call",
+      "family": "optional_group_module_present_workflow",
+      "helper": "search",
+      "args": ["a(b)?d", "zzabdzz"],
+      "categories": ["grouped", "optional-group", "quantifier", "search", "module", "present", "str", "gap"],
+      "notes": [
+        "Documents the module-level numbered optional-group search path when the optional capture is present and contributes a visible group value."
+      ]
+    },
+    {
+      "id": "optional-group-pattern-fullmatch-absent-str",
+      "operation": "pattern_call",
+      "family": "optional_group_pattern_absent_workflow",
+      "pattern": "a(b)?d",
+      "helper": "fullmatch",
+      "args": ["ad"],
+      "categories": ["grouped", "optional-group", "quantifier", "fullmatch", "pattern", "absent", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch numbered optional-group path when the capture is omitted so the scorecard records the observable None-valued group outcome."
+      ]
+    },
+    {
+      "id": "named-optional-group-compile-metadata-str",
+      "operation": "compile",
+      "family": "named_optional_group_compile_metadata",
+      "pattern": "a(?P<word>b)?d",
+      "categories": ["grouped", "optional-group", "quantifier", "named-group", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the matching named optional-group compile frontier for one named capture made optional with the same bounded question-mark quantifier shape."
+      ]
+    },
+    {
+      "id": "named-optional-group-module-search-absent-str",
+      "operation": "module_call",
+      "family": "named_optional_group_module_absent_workflow",
+      "helper": "search",
+      "args": ["a(?P<word>b)?d", "zzadzz"],
+      "categories": ["grouped", "optional-group", "quantifier", "named-group", "search", "module", "absent", "str", "gap"],
+      "notes": [
+        "Documents the module-level named optional-group search path when the capture is omitted so the named-group None payload remains explicit in the published gap."
+      ]
+    },
+    {
+      "id": "named-optional-group-pattern-fullmatch-present-str",
+      "operation": "pattern_call",
+      "family": "named_optional_group_pattern_present_workflow",
+      "pattern": "a(?P<word>b)?d",
+      "helper": "fullmatch",
+      "args": ["abd"],
+      "categories": ["grouped", "optional-group", "quantifier", "named-group", "fullmatch", "pattern", "present", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch named optional-group path when the capture is present without broadening into counted repeats, quantified alternation, replacement semantics, or conditionals."
+      ]
+    }
+  ]
+}

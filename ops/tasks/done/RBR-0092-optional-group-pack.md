@@ -1,8 +1,9 @@
 # RBR-0092: Publish a bounded optional-group correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Extend the published correctness scorecard with a bounded optional-group manifest so quantified execution reopens through the smallest capture-aware slice before counted repeats, quantified alternation, conditionals, or broader backtracking work resume.
@@ -28,3 +29,4 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0050`, `RBR-0078`, and `RBR-0091`.
 - This task exists so the worker can reopen quantified execution with a bounded capture-aware slice instead of jumping directly to counted repeats, quantified alternation, or conditionals.
+- Landed a new `optional-group-workflows` correctness manifest, wired it into the default combined scorecard, added a regression test for the combined publication path, and republished `reports/correctness/latest.json` at 170 total cases with 6 honest `unimplemented` optional-group outcomes.
