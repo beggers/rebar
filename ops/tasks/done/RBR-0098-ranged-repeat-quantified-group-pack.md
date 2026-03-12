@@ -1,6 +1,6 @@
 # RBR-0098: Publish a bounded ranged-repeat quantified-group correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,7 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0096` and `RBR-0097`.
 - This task exists so the worker can continue quantified execution from exact counts into one bounded ranged-repeat slice instead of jumping directly to quantified alternation, conditionals, or broader backtracking.
+
+## Completion
+- Added `ranged-repeat-quantified-group-workflows` to the default correctness manifest set with six bounded `{1,2}` numbered and named capture cases covering compile metadata plus lower-bound and upper-bound module/`Pattern` observations.
+- Regenerated `reports/correctness/latest.json`; the published combined scorecard now reports 182 total cases with 176 passes, 0 explicit failures, and 6 honest `unimplemented` ranged-repeat gaps.

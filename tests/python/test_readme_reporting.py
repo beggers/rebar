@@ -37,6 +37,10 @@ EXPECTED_MANIFEST_IDS = [
     "grouped-alternation-workflows",
     "grouped-alternation-replacement-workflows",
     "grouped-alternation-callable-replacement-workflows",
+    "branch-local-backreference-workflows",
+    "optional-group-workflows",
+    "exact-repeat-quantified-group-workflows",
+    "ranged-repeat-quantified-group-workflows",
 ]
 
 

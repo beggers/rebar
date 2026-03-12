@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "manifest_id": "ranged-repeat-quantified-group-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.ranged_repeat_quantified_group",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "ranged-repeat-numbered-group-compile-metadata-str",
+      "operation": "compile",
+      "family": "ranged_repeat_numbered_group_compile_metadata",
+      "pattern": "a(bc){1,2}d",
+      "categories": ["grouped", "quantifier", "ranged-repeat", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the bounded numbered ranged-repeat compile frontier for one literal capturing group repeated between one and two times inside literal prefix and suffix text."
+      ]
+    },
+    {
+      "id": "ranged-repeat-numbered-group-module-search-lower-bound-str",
+      "operation": "module_call",
+      "family": "ranged_repeat_numbered_group_module_search_lower_bound_workflow",
+      "helper": "search",
+      "args": ["a(bc){1,2}d", "zzabcdzz"],
+      "categories": ["grouped", "quantifier", "ranged-repeat", "search", "module", "lower-bound", "str", "gap"],
+      "notes": [
+        "Documents the module-level numbered ranged-repeat search path at the lower bound so the published scorecard records the single visible capture value that survives after the quantified group completes."
+      ]
+    },
+    {
+      "id": "ranged-repeat-numbered-group-pattern-fullmatch-upper-bound-str",
+      "operation": "pattern_call",
+      "family": "ranged_repeat_numbered_group_pattern_fullmatch_upper_bound_workflow",
+      "pattern": "a(bc){1,2}d",
+      "helper": "fullmatch",
+      "args": ["abcbcd"],
+      "categories": ["grouped", "quantifier", "ranged-repeat", "fullmatch", "pattern", "upper-bound", "str", "gap"],
+      "notes": [
+        "Documents the bounded Pattern.fullmatch numbered ranged-repeat path at the upper bound so the scorecard exposes the final capture value and span after the second repetition completes."
+      ]
+    },
+    {
+      "id": "ranged-repeat-named-group-compile-metadata-str",
+      "operation": "compile",
+      "family": "ranged_repeat_named_group_compile_metadata",
+      "pattern": "a(?P<word>bc){1,2}d",
+      "categories": ["grouped", "quantifier", "ranged-repeat", "named-group", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the matching named ranged-repeat compile frontier for one named literal capturing group repeated across the same bounded {1,2} shape."
+      ]
+    },
+    {
+      "id": "ranged-repeat-named-group-module-search-upper-bound-str",
+      "operation": "module_call",
+      "family": "ranged_repeat_named_group_module_search_upper_bound_workflow",
+      "helper": "search",
+      "args": ["a(?P<word>bc){1,2}d", "zzabcbcdzz"],
+      "categories": ["grouped", "quantifier", "ranged-repeat", "named-group", "search", "module", "upper-bound", "str", "gap"],
+      "notes": [
+        "Documents the module-level named ranged-repeat search path at the upper bound so the published gap records the final named-group payload exposed through the public match-object API."
+      ]
+    },
+    {
+      "id": "ranged-repeat-named-group-pattern-fullmatch-lower-bound-str",
+      "operation": "pattern_call",
+      "family": "ranged_repeat_named_group_pattern_fullmatch_lower_bound_workflow",
+      "pattern": "a(?P<word>bc){1,2}d",
+      "helper": "fullmatch",
+      "args": ["abcd"],
+      "categories": ["grouped", "quantifier", "ranged-repeat", "named-group", "fullmatch", "pattern", "lower-bound", "str", "gap"],
+      "notes": [
+        "Documents the bounded Pattern.fullmatch named ranged-repeat path at the lower bound without broadening into wider counted ranges, quantified alternation, replacement semantics, or broader backtracking."
+      ]
+    }
+  ]
+}
