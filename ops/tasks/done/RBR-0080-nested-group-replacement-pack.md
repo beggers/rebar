@@ -1,6 +1,6 @@
 # RBR-0080: Publish a nested-group replacement correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0078` and `RBR-0079`.
 - This task exists so the worker can expose the next concrete gap after bounded nested-group match parity without jumping straight to quantified branches or broader backtracking.
+
+## Completion
+- Added `tests/conformance/fixtures/nested_group_replacement_workflows.json` and wired it into `python/rebar_harness/correctness.py` so the combined scorecard now publishes a dedicated nested-group replacement manifest.
+- Added `tests/conformance/test_correctness_nested_group_replacement_workflows.py` and regenerated `reports/correctness/latest.json`; the published combined correctness report now covers 144 cases across 20 manifests with 136 passes and 8 explicit `unimplemented` nested-group replacement outcomes.
+- Kept runtime behavior unchanged: the new numbered and named nested-group replacement-template cases document the current unsupported frontier through honest `unimplemented` results instead of silently broadening execution semantics.
