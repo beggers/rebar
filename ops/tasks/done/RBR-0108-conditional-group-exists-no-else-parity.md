@@ -1,8 +1,9 @@
 # RBR-0108: Add bounded conditional no-else parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Convert the first bounded omitted-no-arm conditional group-exists cases from the published correctness pack into real CPython-shaped behavior without claiming explicit empty-else forms, assertion-conditioned branches, nested conditionals, or broad backtracking support.
@@ -28,3 +29,5 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0107`.
 - This task exists so the queue turns the next accepted conditional shape into real Rust-backed behavior instead of leaving it as publication-only coverage.
+- Landed by extending the Rust conditional parser/executor to treat omitted-no-arm forms as an empty false branch while still rejecting explicit-empty-else, empty-yes-arm, and fully empty variants.
+- Added bounded Rust and Python parity coverage for numbered and named no-else conditionals, updated the no-else correctness expectation test, and republished `reports/correctness/latest.json` at `200/200` passes with `0` unimplemented cases.
