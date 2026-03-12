@@ -4,15 +4,14 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0098` to publish a bounded ranged-repeat quantified-group correctness pack so quantified execution extends from exact counts into the smallest bounded range before quantified alternation, conditionals, or broader backtracking reopen the frontier.
-2. Land `RBR-0099` to convert the first bounded ranged-repeat quantified-group cases into real Rust-backed behavior instead of leaving that bounded range slice as publication-only coverage.
-3. Land `RBR-0100` to catch ranged-repeat quantified-group benchmarks up so the first bounded counted-range slice reaches the published benchmark surface before quantified alternation, conditionals, or broader backtracking reopen the frontier.
-4. Land `RBR-0101` to publish a bounded optional-group alternation correctness pack so quantified execution combines one optional quantifier and one grouped alternation before conditionals or broader backtracking reopen the frontier.
-5. Land `RBR-0102` to convert the first bounded optional-group alternation cases into real Rust-backed behavior instead of leaving that combined quantified-branch slice as publication-only coverage.
-6. Land `RBR-0103` to catch optional-group alternation benchmarks up so the first bounded quantified-alternation slice reaches the published benchmark surface before conditionals or broader backtracking reopen the frontier.
-7. Land `RBR-0104` to publish a bounded conditional group-exists correctness pack so the queue reopens conditional execution through the smallest capture-aware slice before assertion-conditioned branches or broader backtracking reopen the frontier.
-8. Land `RBR-0105` to convert the first bounded conditional group-exists cases into real Rust-backed behavior instead of leaving that conditional slice as publication-only coverage.
-9. Land `RBR-0106` to catch bounded conditional group-exists benchmarks up so the first conditional slice reaches the published benchmark surface before assertion-conditioned branches or broader backtracking reopen the frontier.
+1. Land `RBR-0099` to convert the first bounded ranged-repeat quantified-group cases from the newly published `RBR-0098` pack into real Rust-backed behavior instead of leaving that bounded range slice as publication-only coverage.
+2. Land `RBR-0100` to catch ranged-repeat quantified-group benchmarks up so the first bounded counted-range slice reaches the published benchmark surface before quantified alternation, conditionals, or broader backtracking reopen the frontier.
+3. Land `RBR-0101` to publish a bounded optional-group alternation correctness pack so quantified execution combines one optional quantifier and one grouped alternation before conditionals or broader backtracking reopen the frontier.
+4. Land `RBR-0102` to convert the first bounded optional-group alternation cases into real Rust-backed behavior instead of leaving that combined quantified-branch slice as publication-only coverage.
+5. Land `RBR-0103` to catch optional-group alternation benchmarks up so the first bounded quantified-alternation slice reaches the published benchmark surface before conditionals or broader backtracking reopen the frontier.
+6. Land `RBR-0104` to publish a bounded conditional group-exists correctness pack so the queue reopens conditional execution through the smallest capture-aware slice before assertion-conditioned branches or broader backtracking reopen the frontier.
+7. Land `RBR-0105` to convert the first bounded conditional group-exists cases into real Rust-backed behavior instead of leaving that conditional slice as publication-only coverage.
+8. Land `RBR-0106` to catch bounded conditional group-exists benchmarks up so the first conditional slice reaches the published benchmark surface before assertion-conditioned branches or broader backtracking reopen the frontier.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
@@ -78,6 +77,7 @@ Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier,
 - After `RBR-0102`, catch optional-group alternation benchmark coverage up before reopening correctness work, so the first bounded quantified-alternation slice reaches benchmark reporting promptly.
 - After `RBR-0103`, keep the ready queue extending into bounded conditional group-exists publication and parity so the worker reopens conditional execution through the smallest capture-aware slice before assertion-conditioned branches, replacement semantics, or broader backtracking reopen the frontier.
 - After `RBR-0105`, catch bounded conditional benchmark coverage up before reopening correctness work, so the first conditional slice reaches benchmark reporting promptly.
+- Keep the active queue front at `RBR-0099` through `RBR-0106`; do not skip ahead to assertion-conditioned branches while the first bounded conditional group-exists slice is still only queued.
 - After `RBR-0035`, retarget the queue to bounded parser compile-parity tasks because the remaining currently published correctness gaps then sat in parser-matrix compile cases rather than module-surface failures.
 - Keep compile-benchmark catch-up queued immediately behind the parser compile-parity tasks so the compile-path report starts measuring new parser support instead of lagging one milestone behind the correctness surface.
 - Treat `USER-ASK-2` as durable architectural direction: new compatibility behavior belongs in Rust, while `python/rebar/__init__.py` should stay limited to symbol export, object wrappers, argument normalization, cache plumbing, and FFI calls.

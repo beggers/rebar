@@ -1,6 +1,6 @@
 # RBR-0099: Add bounded ranged-repeat quantified-group parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0098`.
 - This task exists so the queue turns the first bounded counted-range cases into real Rust-backed behavior instead of leaving that slice as publication-only coverage.
+
+## Completion
+- Added a narrow Rust-core parser and matcher for literal-prefix/suffix quantified-group patterns shaped as `a(bc){1,2}d` and `a(?P<word>bc){1,2}d`, preserving CPython-style final-capture spans at both the lower and upper bounds.
+- Added native-path Python parity coverage in `tests/python/test_ranged_repeat_quantified_group_parity.py` and refreshed `tests/conformance/test_correctness_ranged_repeat_quantified_group_workflows.py` to expect published `pass` outcomes instead of `unimplemented`.
+- Republished `reports/correctness/latest.json`; the combined tracked scorecard now reports 182 passes, 0 failures, and 0 `unimplemented` cases across the 26 published manifests.
