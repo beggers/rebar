@@ -1,8 +1,9 @@
 # RBR-0064: Catch grouped-segment benchmarks up with the new literal-segment slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Extend the published benchmark surface so the bounded grouped-segment workflows supported by `RBR-0063` produce real `rebar` timings before the queue reopens a new correctness frontier.
@@ -27,3 +28,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0061` and `RBR-0063`.
 - This task exists so the queue does not reach grouped-segment parity and then leave that newly supported surface absent from benchmark reporting.
+
+## Completion Note
+- Added `benchmarks/workloads/grouped_segment_boundary.json` with six measured bounded grouped-segment workloads for `a(b)c` and `a(?P<word>b)c`, plus two explicit grouped-alternation known-gap rows.
+- Wired the new manifest into the default combined benchmark suite in `python/rebar_harness/benchmarks.py` and regenerated `reports/benchmarks/latest.json`, moving the published benchmark scorecard to 71 workloads with 56 measured timings and 15 known gaps.
+- Added `tests/benchmarks/test_grouped_segment_boundary_benchmarks.py` to lock the combined-suite counts plus the new manifest's measured-versus-gap behavior and smoke workload IDs.
