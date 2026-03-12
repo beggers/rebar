@@ -1,12 +1,13 @@
 # Rebar Charter
 
 ## Objective
-Create a Rust implementation of Python's `re` stack that is bug-for-bug compatible at the module boundary and eventually faster than CPython's parser when loaded through a CPython-facing extension module.
+Create a Rust implementation of Python's `re` stack that is bug-for-bug compatible at the module boundary and eventually faster than CPython across compile, match, and other common `re` workflows when loaded through a CPython-facing extension module.
 
 ## Ground Rules
 - Correctness before speed claims.
 - Spec before optimization.
 - Benchmarks must compare against a concrete baseline.
+- Benchmarks must keep compile, module-boundary, and later engine-throughput claims clearly separated.
 - Public `re` compatibility matters, not just internal parser acceptance.
 - The implementation language target is Rust, with CPython integration as a first-class requirement.
 - Durable project knowledge belongs in tracked files, not only in agent memory or logs.

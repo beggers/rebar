@@ -1,7 +1,7 @@
 # Rebar Agent Guide
 
 ## Mission
-- Build `rebar` into a Rust-backed, CPython-facing, bug-for-bug compatible replacement for Python's `re` module that can eventually beat CPython on parser throughput without regressing accepted syntax, public API behavior, parse trees, or diagnostics.
+- Build `rebar` into a Rust-backed, CPython-facing, bug-for-bug compatible replacement for Python's `re` module that can eventually beat CPython across compile, match, and other common `re` workflows without regressing accepted syntax, public API behavior, parse trees, or diagnostics.
 - The current phase is infrastructure-first: harness, spec, correctness corpus, and benchmarks come before serious optimization work.
 
 ## Mandatory Read Order

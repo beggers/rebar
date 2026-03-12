@@ -27,7 +27,7 @@
     },
     {
       "label": "Benchmark methodology",
-      "description": "Plan for parser throughput measurement against CPython.",
+      "description": "Plan for compile, match, and module-boundary performance measurement against CPython.",
       "paths_any": [
         "docs/benchmarks/plan.md"
       ],
@@ -87,11 +87,11 @@
     }
   ],
   "correctness_scorecard": {
-    "title": "Correctness Scorecard",
+    "title": "Correctness Snapshot",
     "path": "reports/correctness/latest.json"
   },
   "benchmark_scorecard": {
-    "title": "Parser Benchmark Scorecard",
+    "title": "Benchmark Snapshot",
     "path": "reports/benchmarks/latest.json"
   }
 }

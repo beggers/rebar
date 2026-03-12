@@ -2,12 +2,12 @@
 
 ## Purpose
 
-This document defines how `rebar` will measure performance against CPython once correctness is held constant. It turns the compatibility contract in [`docs/spec/drop-in-re-compatibility.md`](../spec/drop-in-re-compatibility.md) and the parser boundary in [`docs/spec/syntax-scope.md`](../spec/syntax-scope.md) into a reproducible benchmark methodology that later implementation tasks can build without guessing what "faster" means.
+This document defines how `rebar` will measure performance against CPython once correctness is held constant. It turns the compatibility contract in [`docs/spec/drop-in-re-compatibility.md`](../spec/drop-in-re-compatibility.md) and the parser boundary in [`docs/spec/syntax-scope.md`](../spec/syntax-scope.md) into a reproducible benchmark methodology for compile-path, match-path, and module-boundary work so later implementation tasks can build without guessing what "faster" means.
 
 The immediate goal is not broad regex-engine performance claims. The immediate goal is to measure:
 
 - parser and compile-path cost
-- Python-facing module overhead for importable `re`-compatible entry points
+- small match-path and Python-facing module overhead for importable `re`-compatible entry points
 - cold-versus-warm behavior where cache state changes the result
 
 ## Reference Boundary

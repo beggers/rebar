@@ -588,6 +588,9 @@ def scorecard_from_config(config: dict[str, Any], key: str, default_title: str, 
     workloads = payload.get("workloads")
     if not isinstance(workloads, list):
         workloads = []
+    cases = payload.get("cases")
+    if not isinstance(cases, list):
+        cases = []
 
     baseline = payload.get("baseline")
     if not isinstance(baseline, dict):
@@ -608,6 +611,13 @@ def scorecard_from_config(config: dict[str, Any], key: str, default_title: str, 
         summary.get("unimplemented_cases"),
         summary.get("known_gap_count"),
         0,
+    )
+    case_manifest_ids = sorted(
+        {
+            str(case.get("manifest_id")).strip()
+            for case in cases
+            if str(case.get("manifest_id") or "").strip()
+        }
     )
     implemented_cases = None
     if isinstance(cases_total, (int, float)):
@@ -638,13 +648,25 @@ def scorecard_from_config(config: dict[str, Any], key: str, default_title: str, 
             "generated_at": payload.get("generated_at") or summary.get("generated_at"),
             "baseline": first_present(payload.get("baseline"), summary.get("baseline")),
             "candidate": candidate,
-            "workload_count": len(workloads),
+            "workload_count": first_present(summary.get("total_workloads"), len(workloads)),
+            "measured_workloads": summary.get("measured_workloads"),
+            "known_gap_count": summary.get("known_gap_count"),
             "geomean_speedup": summary.get("geomean_speedup_vs_baseline"),
             "median_speedup": summary.get("median_speedup_vs_baseline"),
             "cases_total": cases_total,
             "cases_passed": cases_passed,
+            "cases_failed": cases_failed,
+            "cases_unimplemented": cases_unimplemented,
+            "case_manifest_count": len(case_manifest_ids),
+            "case_manifest_ids": case_manifest_ids,
             "pass_rate": pass_rate,
             "parity_rate": parity_rate,
+            "timing_path": first_present(
+                implementation.get("timing_path"),
+                implementation.get("adapter_mode_resolved"),
+                implementation.get("build_mode"),
+            ),
+            "native_module_loaded": implementation.get("native_module_loaded"),
         }
     )
     return scorecard
@@ -670,13 +692,13 @@ def tracked_project_snapshot(config: dict[str, Any]) -> dict[str, Any]:
         "correctness_scorecard": scorecard_from_config(
             config,
             "correctness_scorecard",
-            "Correctness Scorecard",
+            "Correctness Snapshot",
             "reports/correctness/latest.json",
         ),
         "benchmark_scorecard": scorecard_from_config(
             config,
             "benchmark_scorecard",
-            "Parser Benchmark Scorecard",
+            "Benchmark Snapshot",
             "reports/benchmarks/latest.json",
         ),
     }
@@ -736,25 +758,15 @@ def render_readme_status(config: dict[str, Any]) -> str:
     lines = [
         "## Current State",
         "",
-        f"Capability-track coverage: `{ascii_progress_bar(completion_ratio)} {int(round(completion_ratio * 100))}%`",
-        "",
-        "_This measures whether the planned scaffolds, plans, and scorecard artifacts exist. It does not mean `rebar` already matches CPython's `re` feature-for-feature._",
+        "_Foundation docs, harnesses, and scorecards are in place. The snapshot below focuses on implemented behavior and measured coverage, not long-term ambition._",
         "",
         "| Signal | Value |",
         "| --- | --- |",
         f"| Phase | {snapshot['phase'] or 'Unknown'} |",
         f"| Current milestone | {snapshot['milestone'] or 'Unknown'} |",
         f"| Work queue | `{queue['ready']}` ready, `{queue['in_progress']}` in progress, `{queue['done']}` done, `{queue['blocked']}` blocked |",
-        f"| Capability tracks | `{snapshot['complete_tracks']}/{total_tracks}` complete |",
-        "",
-        "### Capability Matrix",
-        "",
-        "| Capability | Status | Evidence |",
-        "| --- | --- | --- |",
+        f"| Foundation tracks | `{snapshot['complete_tracks']}/{total_tracks}` landed (`{ascii_progress_bar(completion_ratio)} {int(round(completion_ratio * 100))}%`) |",
     ]
-
-    for item in tracks:
-        lines.append(f"| {item['label']} | {item['status']} | {item['evidence']} |")
 
     lines.extend(["", f"### {correctness['title']}", ""])
     if not correctness.get("available"):
@@ -766,10 +778,11 @@ def render_readme_status(config: dict[str, Any]) -> str:
             [
                 "| Metric | Value |",
                 "| --- | --- |",
-                f"| Candidate | {correctness.get('candidate') or 'rebar'} |",
-                f"| Cases | `{correctness.get('cases_passed')}` / `{correctness.get('cases_total')}` |",
-                f"| Pass rate | `{correctness.get('pass_rate')}` |",
-                f"| Parity rate | `{correctness.get('parity_rate')}` |",
+                f"| Published cases | `{correctness.get('cases_total')}` |",
+                f"| Passing comparisons | `{correctness.get('cases_passed')}` |",
+                f"| Explicit failures | `{correctness.get('cases_failed')}` |",
+                f"| Honest gaps (`unimplemented`) | `{correctness.get('cases_unimplemented')}` |",
+                f"| Covered manifests | `{correctness.get('case_manifest_count')}` |",
                 f"| Source | {markdown_link(correctness['path'])} |",
             ]
         )
@@ -785,13 +798,26 @@ def render_readme_status(config: dict[str, Any]) -> str:
                 "| Metric | Value |",
                 "| --- | --- |",
                 f"| Baseline | {summarize_benchmark_baseline(benchmark.get('baseline'))} |",
-                f"| Candidate | {benchmark.get('candidate') or 'rebar'} |",
-                f"| Workloads | `{benchmark.get('workload_count', 0)}` |",
-                f"| Geomean speedup vs baseline | `{benchmark.get('geomean_speedup')}` |",
-                f"| Median speedup vs baseline | `{benchmark.get('median_speedup')}` |",
+                f"| Published workloads | `{benchmark.get('workload_count', 0)}` |",
+                f"| Workloads with real `rebar` timings | `{benchmark.get('measured_workloads')}` |",
+                f"| Known-gap workloads | `{benchmark.get('known_gap_count')}` |",
+                f"| Timing path | `{benchmark.get('timing_path') or 'unknown'}` |",
                 f"| Source | {markdown_link(benchmark['path'])} |",
             ]
         )
+        measured_workloads = benchmark.get("measured_workloads")
+        workload_count = benchmark.get("workload_count")
+        if (
+            isinstance(measured_workloads, (int, float))
+            and isinstance(workload_count, (int, float))
+            and measured_workloads < workload_count
+        ):
+            lines.extend(
+                [
+                    "",
+                    f"_README speedup rollups stay omitted while only `{int(measured_workloads)}` of `{int(workload_count)}` published workloads have real `rebar` timings._",
+                ]
+            )
 
     next_steps = snapshot.get("next_steps", [])
     if next_steps:
