@@ -1,8 +1,9 @@
 # RBR-0036: Fix compiled-pattern metadata parity for the supported literal slice
 
-Status: ready
-Owner: implementation
+Status: done
+Owner: supervisor
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Eliminate the remaining explicit correctness failures in compiled `Pattern` metadata for the currently supported literal-only `str` and `bytes` slice.
@@ -24,4 +25,9 @@ Created: 2026-03-12
 - Preserve compatibility with both `str` and `bytes` scaffolds and the environment-gated native smoke path from `RBR-0010`.
 
 ## Notes
-- Build on `RBR-0019`, `RBR-0022`, `RBR-0023`, and `RBR-0024`; this task exists to convert the current known-wrong pattern metadata cases into true compatibility wins before broader feature work resumes.
+- Build on `RBR-0019`, `RBR-0022`, `RBR-0023`, and `RBR-0024`; this task existed to convert the current known-wrong pattern metadata cases into true compatibility wins before broader feature work resumed.
+
+## Completion
+- Retired by the supervisor after `RBR-0035` landed. The exported-helper metadata and constructor-guard cleanup also fixed the previously published compiled-pattern metadata mismatches as a direct side effect.
+- `reports/correctness/latest.json` now reports `80` executed, `60` passed, `0` failed, and `20` unimplemented cases, so there is no remaining explicit compiled-pattern metadata debt for this task to close.
+- The milestone front moves directly to `RBR-0037` through `RBR-0042`, where the remaining visible correctness debt is concentrated in published parser-matrix cases.

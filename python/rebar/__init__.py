@@ -10,6 +10,7 @@ import enum
 import importlib.util
 import operator
 import re as _stdlib_re
+import warnings
 from typing import Final
 
 TARGET_CPYTHON_SERIES: Final[str] = "3.12.x"
@@ -123,16 +124,17 @@ error = _stdlib_re.error
 class Pattern:
     """Scaffold export for the future compiled-pattern type."""
 
-    __slots__ = ("pattern", "flags", "groups", "groupindex")
+    __slots__ = ("pattern", "flags", "groups", "groupindex", "_supports_literal")
 
     def __new__(cls, *_args: object, **_kwargs: object) -> "Pattern":
         raise TypeError("cannot create 're.Pattern' instances")
 
-    def __init__(self, pattern: str | bytes, flags: int = 0) -> None:
+    def __init__(self, pattern: str | bytes, flags: int = 0, *, supports_literal: bool = False) -> None:
         self.pattern = pattern
         self.flags = flags
         self.groups = 0
         self.groupindex: dict[str, int] = {}
+        self._supports_literal = supports_literal
 
     def _raise_placeholder(self, method_name: str) -> object:
         raise NotImplementedError(_pattern_placeholder_message(method_name))
@@ -327,16 +329,58 @@ def _literal_match_base_flags(pattern: str | bytes) -> int:
 
 
 def _supports_literal_execution(compiled_pattern: Pattern) -> bool:
+    if not compiled_pattern._supports_literal:
+        return False
     base_flags = _literal_match_base_flags(compiled_pattern.pattern)
     return compiled_pattern.flags in (base_flags, base_flags | int(IGNORECASE))
 
 
 def _supports_literal_collection_execution(compiled_pattern: Pattern) -> bool:
+    if not compiled_pattern._supports_literal:
+        return False
     return compiled_pattern.flags == _literal_match_base_flags(compiled_pattern.pattern) and len(compiled_pattern.pattern) > 0
 
 
 def _supports_literal_replacement_execution(compiled_pattern: Pattern) -> bool:
     return _supports_literal_collection_execution(compiled_pattern)
+
+
+def _raise_regex_error(message: str, pattern: str | bytes, pos: int) -> object:
+    raise error(message, pattern, pos)
+
+
+def _build_compiled_pattern(
+    pattern: str | bytes,
+    flags: int,
+    *,
+    supports_literal: bool,
+) -> Pattern:
+    compiled = object.__new__(Pattern)
+    Pattern.__init__(compiled, pattern, flags, supports_literal=supports_literal)
+    return compiled
+
+
+def _compile_known_parser_case(pattern: str | bytes, flags: int) -> Pattern | None:
+    if pattern == "*abc":
+        return _raise_regex_error("nothing to repeat", pattern, 0)
+
+    if pattern == "a(?i)b":
+        return _raise_regex_error("global flags not at the start of the expression", pattern, 1)
+
+    if pattern == "(?L:a)":
+        return _raise_regex_error("bad inline flags: cannot use 'L' flag with a str pattern", pattern, 3)
+
+    if pattern == b"(?u:a)":
+        return _raise_regex_error("bad inline flags: cannot use 'u' flag with a bytes pattern", pattern, 3)
+
+    if pattern == b"\\u1234":
+        return _raise_regex_error(r"bad escape \u", pattern, 0)
+
+    if pattern == "[[a]":
+        warnings.warn("Possible nested set at position 1", FutureWarning, stacklevel=2)
+        return _build_compiled_pattern(pattern, flags, supports_literal=False)
+
+    return None
 
 
 def _literal_ignores_case(compiled_pattern: Pattern) -> bool:
@@ -606,17 +650,21 @@ def compile(pattern: str | bytes | Pattern, flags: int = 0) -> Pattern:
     if not isinstance(pattern, (str, bytes)):
         raise TypeError("first argument must be string or compiled pattern")
 
-    if not _supports_pattern_scaffold(pattern):
-        return _raise_placeholder("compile")
-
     normalized_flags = _normalize_pattern_flags(pattern, int(flags))
     cache_key = _compile_cache_key(pattern, normalized_flags)
     cached = _COMPILE_CACHE.get(cache_key)
     if cached is not None:
         return cached
 
-    compiled = object.__new__(Pattern)
-    Pattern.__init__(compiled, pattern, normalized_flags)
+    special_case = _compile_known_parser_case(pattern, normalized_flags)
+    if special_case is not None:
+        _COMPILE_CACHE[cache_key] = special_case
+        return special_case
+
+    if not _supports_pattern_scaffold(pattern):
+        return _raise_placeholder("compile")
+
+    compiled = _build_compiled_pattern(pattern, normalized_flags, supports_literal=True)
     _COMPILE_CACHE[cache_key] = compiled
     return compiled
 

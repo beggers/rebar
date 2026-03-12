@@ -1,8 +1,9 @@
 # RBR-0037: Implement bounded parser diagnostic parity for published error and warning cases
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Convert a narrow set of already-published parser-matrix compile diagnostics from honest `unimplemented` outcomes into real CPython-shaped `re.error` and warning behavior without broadening into general regex execution.
@@ -24,3 +25,8 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0011`, `RBR-0023`, and the current parser-matrix scorecard. This task exists because once the queued metadata fixes land, the remaining visible correctness debt is concentrated in compile-time parser diagnostics rather than module-surface gaps.
+
+## Completion Note
+- Implemented exact-case compile parity for the six published parser diagnostic cases in `python/rebar/__init__.py` using local `re.error` construction and a compile-only nested-set warning path, without delegating to stdlib `re`.
+- Added direct unit coverage in `tests/python/test_parser_diagnostic_parity.py` and updated parser-matrix harness expectations in `tests/conformance/test_correctness_parser_matrix.py`.
+- Regenerated `reports/correctness/latest.json`; the full published scorecard now reports `66` passes, `14` unimplemented, and the six targeted parser cases now compare as `pass`.

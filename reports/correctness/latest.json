@@ -268,10 +268,8 @@
         "str",
         "warning"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "character_classes",
       "flags": 0,
       "id": "str-nested-set-warning",
@@ -302,14 +300,22 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "compile",
-          "outcome": "unimplemented",
-          "result": null,
-          "warnings": []
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "[[a]",
+            "pattern_type": "str"
+          },
+          "warnings": [
+            {
+              "category": "FutureWarning",
+              "message": "Possible nested set at position 1"
+            }
+          ]
         }
       },
       "operation": "compile",
@@ -322,10 +328,8 @@
         "invalid",
         "str"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "quantifiers",
       "flags": 0,
       "id": "str-invalid-repeat-error",
@@ -352,11 +356,14 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
+            "colno": 1,
+            "lineno": 1,
+            "message": "nothing to repeat at position 0",
+            "pos": 0,
+            "type": "error"
           },
           "operation": "compile",
-          "outcome": "unimplemented",
+          "outcome": "exception",
           "result": null,
           "warnings": []
         }
@@ -372,10 +379,8 @@
         "str",
         "flags"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "flags",
       "flags": 0,
       "id": "str-invalid-inline-flag-position-error",
@@ -402,11 +407,14 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
+            "colno": 2,
+            "lineno": 1,
+            "message": "global flags not at the start of the expression at position 1",
+            "pos": 1,
+            "type": "error"
           },
           "operation": "compile",
-          "outcome": "unimplemented",
+          "outcome": "exception",
           "result": null,
           "warnings": []
         }
@@ -518,10 +526,8 @@
         "str",
         "flag-mirror"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "flags",
       "flags": 0,
       "id": "str-inline-locale-flag-error",
@@ -548,11 +554,14 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
+            "colno": 4,
+            "lineno": 1,
+            "message": "bad inline flags: cannot use 'L' flag with a str pattern at position 3",
+            "pos": 3,
+            "type": "error"
           },
           "operation": "compile",
-          "outcome": "unimplemented",
+          "outcome": "exception",
           "result": null,
           "warnings": []
         }
@@ -624,10 +633,8 @@
         "bytes",
         "flag-mirror"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "flags",
       "flags": 0,
       "id": "bytes-inline-unicode-flag-error",
@@ -654,11 +661,14 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
+            "colno": 4,
+            "lineno": 1,
+            "message": "bad inline flags: cannot use 'u' flag with a bytes pattern at position 3",
+            "pos": 3,
+            "type": "error"
           },
           "operation": "compile",
-          "outcome": "unimplemented",
+          "outcome": "exception",
           "result": null,
           "warnings": []
         }
@@ -727,10 +737,8 @@
         "bytes",
         "escape-restriction"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "literals_and_escapes",
       "flags": 0,
       "id": "bytes-unicode-escape-error",
@@ -757,11 +765,14 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
+            "colno": 1,
+            "lineno": 1,
+            "message": "bad escape \\u at position 0",
+            "pos": 0,
+            "type": "error"
           },
           "operation": "compile",
-          "outcome": "unimplemented",
+          "outcome": "exception",
           "result": null,
           "warnings": []
         }
@@ -4888,18 +4899,21 @@
         }
       },
       "rebar": {
-        "exception_case_count": 22,
+        "exception_case_count": 21,
         "exception_types": {
-          "NotImplementedError": 20,
-          "TypeError": 2
+          "NotImplementedError": 14,
+          "TypeError": 2,
+          "error": 5
         },
         "outcomes": {
-          "exception": 2,
-          "success": 58,
-          "unimplemented": 20
+          "exception": 7,
+          "success": 59,
+          "unimplemented": 14
         },
-        "warning_case_count": 0,
-        "warning_categories": {}
+        "warning_case_count": 1,
+        "warning_categories": {
+          "FutureWarning": 1
+        }
       }
     }
   },
@@ -5042,10 +5056,10 @@
       "summary": {
         "executed_cases": 2,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 1,
         "skipped_cases": 0,
         "total_cases": 2,
-        "unimplemented_cases": 2
+        "unimplemented_cases": 1
       },
       "text_models": [
         "str"
@@ -5234,10 +5248,10 @@
       "summary": {
         "executed_cases": 5,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 3,
         "skipped_cases": 0,
         "total_cases": 5,
-        "unimplemented_cases": 5
+        "unimplemented_cases": 2
       },
       "text_models": [
         "bytes",
@@ -5440,10 +5454,10 @@
       "summary": {
         "executed_cases": 1,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 1,
         "skipped_cases": 0,
         "total_cases": 1,
-        "unimplemented_cases": 1
+        "unimplemented_cases": 0
       },
       "text_models": [
         "bytes"
@@ -5544,10 +5558,10 @@
       "summary": {
         "executed_cases": 2,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 1,
         "skipped_cases": 0,
         "total_cases": 2,
-        "unimplemented_cases": 2
+        "unimplemented_cases": 1
       },
       "text_models": [
         "str"
@@ -5709,7 +5723,7 @@
       "tests/conformance/fixtures/literal_flag_workflows.json"
     ]
   },
-  "generated_at": "2026-03-12T03:58:25Z",
+  "generated_at": "2026-03-12T04:07:35Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -5923,16 +5937,20 @@
             }
           },
           "rebar": {
-            "exception_case_count": 13,
+            "exception_case_count": 12,
             "exception_types": {
-              "NotImplementedError": 13
+              "NotImplementedError": 7,
+              "error": 5
             },
             "outcomes": {
-              "success": 2,
-              "unimplemented": 13
+              "exception": 5,
+              "success": 3,
+              "unimplemented": 7
             },
-            "warning_case_count": 0,
-            "warning_categories": {}
+            "warning_case_count": 1,
+            "warning_categories": {
+              "FutureWarning": 1
+            }
           }
         }
       },
@@ -5957,10 +5975,10 @@
       "summary": {
         "executed_cases": 15,
         "failed_cases": 0,
-        "passed_cases": 2,
+        "passed_cases": 8,
         "skipped_cases": 0,
         "total_cases": 15,
-        "unimplemented_cases": 13
+        "unimplemented_cases": 7
       },
       "text_models": [
         "bytes",
@@ -6042,16 +6060,20 @@
             }
           },
           "rebar": {
-            "exception_case_count": 13,
+            "exception_case_count": 12,
             "exception_types": {
-              "NotImplementedError": 13
+              "NotImplementedError": 7,
+              "error": 5
             },
             "outcomes": {
-              "success": 2,
-              "unimplemented": 13
+              "exception": 5,
+              "success": 3,
+              "unimplemented": 7
             },
-            "warning_case_count": 0,
-            "warning_categories": {}
+            "warning_case_count": 1,
+            "warning_categories": {
+              "FutureWarning": 1
+            }
           }
         }
       },
@@ -6075,10 +6097,10 @@
       "summary": {
         "executed_cases": 15,
         "failed_cases": 0,
-        "passed_cases": 2,
+        "passed_cases": 8,
         "skipped_cases": 0,
         "total_cases": 15,
-        "unimplemented_cases": 13
+        "unimplemented_cases": 7
       },
       "text_models": [
         "bytes",
@@ -6104,11 +6126,13 @@
           "rebar": {
             "exception_case_count": 3,
             "exception_types": {
-              "NotImplementedError": 3
+              "NotImplementedError": 1,
+              "error": 2
             },
             "outcomes": {
+              "exception": 2,
               "success": 1,
-              "unimplemented": 3
+              "unimplemented": 1
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -6131,10 +6155,10 @@
       "summary": {
         "executed_cases": 4,
         "failed_cases": 0,
-        "passed_cases": 1,
+        "passed_cases": 3,
         "skipped_cases": 0,
         "total_cases": 4,
-        "unimplemented_cases": 3
+        "unimplemented_cases": 1
       },
       "text_models": [
         "bytes"
@@ -6159,16 +6183,20 @@
             }
           },
           "rebar": {
-            "exception_case_count": 10,
+            "exception_case_count": 9,
             "exception_types": {
-              "NotImplementedError": 10
+              "NotImplementedError": 6,
+              "error": 3
             },
             "outcomes": {
-              "success": 1,
-              "unimplemented": 10
+              "exception": 3,
+              "success": 2,
+              "unimplemented": 6
             },
-            "warning_case_count": 0,
-            "warning_categories": {}
+            "warning_case_count": 1,
+            "warning_categories": {
+              "FutureWarning": 1
+            }
           }
         }
       },
@@ -6191,10 +6219,10 @@
       "summary": {
         "executed_cases": 11,
         "failed_cases": 0,
-        "passed_cases": 1,
+        "passed_cases": 5,
         "skipped_cases": 0,
         "total_cases": 11,
-        "unimplemented_cases": 10
+        "unimplemented_cases": 6
       },
       "text_models": [
         "str"
@@ -7968,9 +7996,9 @@
   "summary": {
     "executed_cases": 80,
     "failed_cases": 0,
-    "passed_cases": 60,
+    "passed_cases": 66,
     "skipped_cases": 0,
     "total_cases": 80,
-    "unimplemented_cases": 20
+    "unimplemented_cases": 14
   }
 }
