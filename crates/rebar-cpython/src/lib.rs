@@ -430,7 +430,7 @@ fn boundary_literal_template_subn(
 ) -> PyResult<(&'static str, PyObject, usize)> {
     let pattern_ref = py_pattern_ref(pattern)?;
     let string_ref = py_pattern_ref(string)?;
-    let (outcome, supports_capture_1) = match (pattern_ref, string_ref) {
+    let (outcome, supports_capture_1, capture_1_name) = match (pattern_ref, string_ref) {
         (PatternRef::Str(pattern_value), PatternRef::Str(string_value)) => {
             let literal_outcome =
                 match core_literal_find_spans(pattern_ref, flags, string_ref, 0, None) {
@@ -438,10 +438,19 @@ fn boundary_literal_template_subn(
                     Err(error) => return Err(PyTypeError::new_err(error.message())),
                 };
             if literal_outcome.status != MatchStatus::Unsupported {
-                (literal_outcome, false)
+                (literal_outcome, false, None)
             } else {
                 let compile_outcome = core_compile(pattern_ref, flags)
                     .map_err(|error| PyTypeError::new_err(error.message))?;
+                let supports_capture_1 = compile_outcome.group_count == 1;
+                let capture_1_name = if compile_outcome.group_count == 1 {
+                    compile_outcome
+                        .named_groups
+                        .first()
+                        .map(|group| group.name.clone())
+                } else {
+                    None
+                };
                 (
                     core_grouped_literal_find_spans_str(
                         pattern_value,
@@ -450,7 +459,8 @@ fn boundary_literal_template_subn(
                         0,
                         None,
                     ),
-                    compile_outcome.group_count == 1,
+                    supports_capture_1,
+                    capture_1_name,
                 )
             }
         }
@@ -459,7 +469,7 @@ fn boundary_literal_template_subn(
                 Ok(outcome) => outcome,
                 Err(error) => return Err(PyTypeError::new_err(error.message())),
             };
-            (outcome, false)
+            (outcome, false, None)
         }
     };
 
@@ -467,6 +477,7 @@ fn boundary_literal_template_subn(
         repl,
         "",
         if supports_capture_1 { Some("") } else { None },
+        capture_1_name.as_deref().map(|name| (name, "")),
     )
     .is_none()
     {
@@ -511,6 +522,7 @@ fn boundary_literal_template_subn(
                     } else {
                         None
                     },
+                    capture_1_name.as_deref().map(|name| (name, whole_match)),
                 )
                 .ok_or_else(|| PyTypeError::new_err("unsupported literal replacement template"))?;
                 output.push_str(&expanded);

@@ -89,10 +89,10 @@ class CorrectnessHarnessNamedGroupReplacementWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 93,
                     "failed_cases": 0,
-                    "passed_cases": 89,
+                    "passed_cases": 93,
                     "skipped_cases": 0,
                     "total_cases": 93,
-                    "unimplemented_cases": 4,
+                    "unimplemented_cases": 0,
                 },
             )
 
@@ -137,9 +137,9 @@ class CorrectnessHarnessNamedGroupReplacementWorkflowTest(unittest.TestCase):
 
         workflow_layer = scorecard["layers"]["module_workflow"]
         self.assertEqual(workflow_layer["summary"]["total_cases"], 40)
-        self.assertEqual(workflow_layer["summary"]["passed_cases"], 36)
+        self.assertEqual(workflow_layer["summary"]["passed_cases"], 40)
         self.assertEqual(workflow_layer["summary"]["failed_cases"], 0)
-        self.assertEqual(workflow_layer["summary"]["unimplemented_cases"], 4)
+        self.assertEqual(workflow_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             workflow_layer["manifest_ids"],
             [
@@ -172,9 +172,9 @@ class CorrectnessHarnessNamedGroupReplacementWorkflowTest(unittest.TestCase):
             suite for suite in scorecard["suites"] if suite["id"] == "collection.replacement.named_group"
         )
         self.assertEqual(named_replacement_suite["summary"]["total_cases"], 4)
-        self.assertEqual(named_replacement_suite["summary"]["passed_cases"], 0)
+        self.assertEqual(named_replacement_suite["summary"]["passed_cases"], 4)
         self.assertEqual(named_replacement_suite["summary"]["failed_cases"], 0)
-        self.assertEqual(named_replacement_suite["summary"]["unimplemented_cases"], 4)
+        self.assertEqual(named_replacement_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             named_replacement_suite["families"],
             ["named_group_replacement_workflow"],
@@ -183,42 +183,43 @@ class CorrectnessHarnessNamedGroupReplacementWorkflowTest(unittest.TestCase):
         module_sub_case = next(
             case for case in scorecard["cases"] if case["id"] == "module-sub-template-named-group-str"
         )
-        self.assertEqual(module_sub_case["comparison"], "unimplemented")
+        self.assertEqual(module_sub_case["comparison"], "pass")
         self.assertEqual(module_sub_case["helper"], "sub")
         self.assertEqual(module_sub_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(module_sub_case["observations"]["cpython"]["result"], "<abc><abc>")
-        self.assertEqual(module_sub_case["observations"]["rebar"]["outcome"], "unimplemented")
-        self.assertEqual(
-            module_sub_case["comparison_notes"],
-            ["rebar adapter reports support as unimplemented"],
-        )
+        self.assertEqual(module_sub_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(module_sub_case["observations"]["rebar"]["result"], "<abc><abc>")
+        self.assertEqual(module_sub_case["comparison_notes"], [])
 
         module_subn_case = next(
             case for case in scorecard["cases"] if case["id"] == "module-subn-template-named-group-str"
         )
-        self.assertEqual(module_subn_case["comparison"], "unimplemented")
+        self.assertEqual(module_subn_case["comparison"], "pass")
         self.assertEqual(module_subn_case["helper"], "subn")
         self.assertEqual(module_subn_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(module_subn_case["observations"]["cpython"]["result"], ["<abc>abc", 1])
-        self.assertEqual(module_subn_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(module_subn_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(module_subn_case["observations"]["rebar"]["result"], ["<abc>abc", 1])
 
         pattern_sub_case = next(
             case for case in scorecard["cases"] if case["id"] == "pattern-sub-template-named-group-str"
         )
-        self.assertEqual(pattern_sub_case["comparison"], "unimplemented")
+        self.assertEqual(pattern_sub_case["comparison"], "pass")
         self.assertEqual(pattern_sub_case["helper"], "sub")
         self.assertEqual(pattern_sub_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(pattern_sub_case["observations"]["cpython"]["result"], "<abc><abc>")
-        self.assertEqual(pattern_sub_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(pattern_sub_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(pattern_sub_case["observations"]["rebar"]["result"], "<abc><abc>")
 
         pattern_subn_case = next(
             case for case in scorecard["cases"] if case["id"] == "pattern-subn-template-named-group-str"
         )
-        self.assertEqual(pattern_subn_case["comparison"], "unimplemented")
+        self.assertEqual(pattern_subn_case["comparison"], "pass")
         self.assertEqual(pattern_subn_case["helper"], "subn")
         self.assertEqual(pattern_subn_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(pattern_subn_case["observations"]["cpython"]["result"], ["<abc>abc", 1])
-        self.assertEqual(pattern_subn_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(pattern_subn_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(pattern_subn_case["observations"]["rebar"]["result"], ["<abc>abc", 1])
 
 
 if __name__ == "__main__":

@@ -211,9 +211,7 @@ class Pattern:
             repl,
             unsupported=self._raise_placeholder,
             helper_name="sub",
-            allow_native_template_passthrough=_native is not None
-            and isinstance(self.pattern, str)
-            and _grouped_literal_body(self.pattern) is not None,
+            allow_native_template_passthrough=_allow_native_template_passthrough(self.pattern),
         )
         if _native is not None:
             return _run_native_literal_sub(self, compatible_replacement, string, count=count)
@@ -227,9 +225,7 @@ class Pattern:
             repl,
             unsupported=self._raise_placeholder,
             helper_name="subn",
-            allow_native_template_passthrough=_native is not None
-            and isinstance(self.pattern, str)
-            and _grouped_literal_body(self.pattern) is not None,
+            allow_native_template_passthrough=_allow_native_template_passthrough(self.pattern),
         )
         if _native is not None:
             return _run_native_literal_subn(self, compatible_replacement, string, count=count)
@@ -411,6 +407,10 @@ def _grouped_literal_body(pattern: str) -> str | None:
     if not body or not _supports_pattern_scaffold(body):
         return None
     return body
+
+
+def _allow_native_template_passthrough(pattern: str | bytes) -> bool:
+    return _native is not None and isinstance(pattern, str)
 
 
 def _literal_match_base_flags(pattern: str | bytes) -> int:
@@ -1285,9 +1285,7 @@ def sub(
             repl,
             unsupported=_raise_placeholder,
             helper_name="sub",
-            allow_native_template_passthrough=_native is not None
-            and isinstance(pattern, str)
-            and _grouped_literal_body(pattern) is not None,
+            allow_native_template_passthrough=_allow_native_template_passthrough(pattern),
         )
         if len(pattern) == 0:
             return _raise_placeholder("sub")
@@ -1316,9 +1314,7 @@ def subn(
             repl,
             unsupported=_raise_placeholder,
             helper_name="subn",
-            allow_native_template_passthrough=_native is not None
-            and isinstance(pattern, str)
-            and _grouped_literal_body(pattern) is not None,
+            allow_native_template_passthrough=_allow_native_template_passthrough(pattern),
         )
         if len(pattern) == 0:
             return _raise_placeholder("subn")

@@ -1,8 +1,9 @@
 # RBR-0055: Add bounded named-group replacement-template parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Convert the first named-group replacement-template cases from the published correctness pack into real CPython-shaped behavior without claiming broad named-group or replacement-template support.
@@ -28,3 +29,6 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0053`, `RBR-0054`, and the existing Rust-backed collection/replacement boundary.
 - This task exists so the named-group queue turns directly into concrete replacement behavior work instead of stopping at metadata-only support.
+- Completed with bounded Rust-backed `\g<name>` replacement-template support for the published `(?P<word>abc)` `sub()`/`subn()` module and compiled-pattern flows, while preserving the existing grouped `\1` template path.
+- Verified with `cargo test -p rebar-core replacement_template -- --nocapture`, `cargo build -p rebar-cpython`, `python3 -m unittest tests.python.test_grouped_literal_replacement_template tests.python.test_named_group_replacement_template_parity tests.python.test_named_group_literal_parity tests.python.test_rust_collection_replacement_boundary`, and `python3 -m unittest tests.conformance.test_correctness_named_group_replacement_workflows`.
+- Republished `reports/correctness/latest.json`; the combined 11-manifest scorecard now reports 93 passes, 0 failures, and 0 unimplemented cases.

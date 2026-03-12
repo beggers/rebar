@@ -310,6 +310,7 @@ pub fn expand_literal_replacement_template_str(
     template: &str,
     whole_match: &str,
     capture_1: Option<&str>,
+    named_capture_1: Option<(&str, &str)>,
 ) -> Option<String> {
     let mut expanded = String::new();
     let mut chars = template.chars();
@@ -322,13 +323,28 @@ pub fn expand_literal_replacement_template_str(
 
         match chars.next() {
             Some('g') => {
-                if chars.next() != Some('<')
-                    || chars.next() != Some('0')
-                    || chars.next() != Some('>')
-                {
+                if chars.next() != Some('<') {
                     return None;
                 }
-                expanded.push_str(whole_match);
+                let mut group_name = String::new();
+                loop {
+                    match chars.next() {
+                        Some('>') => break,
+                        Some(group_char) => group_name.push(group_char),
+                        None => return None,
+                    }
+                }
+                if group_name == "0" {
+                    expanded.push_str(whole_match);
+                } else if let Some((name, value)) = named_capture_1 {
+                    if group_name == name {
+                        expanded.push_str(value);
+                    } else {
+                        return None;
+                    }
+                } else {
+                    return None;
+                }
             }
             Some('1') => expanded.push_str(capture_1?),
             _ => return None,
@@ -1594,24 +1610,42 @@ mod tests {
 
     #[test]
     fn replacement_template_expands_whole_match_reference() {
-        let expanded = expand_literal_replacement_template_str(r"\g<0>x", "abc", None).unwrap();
+        let expanded =
+            expand_literal_replacement_template_str(r"\g<0>x", "abc", None, None).unwrap();
         assert_eq!(expanded, "abcx");
     }
 
     #[test]
     fn replacement_template_expands_group_1_reference_for_grouped_literal_case() {
-        let expanded = expand_literal_replacement_template_str(r"\1x", "abc", Some("abc")).unwrap();
+        let expanded =
+            expand_literal_replacement_template_str(r"\1x", "abc", Some("abc"), None).unwrap();
         assert_eq!(expanded, "abcx");
+    }
+
+    #[test]
+    fn replacement_template_expands_named_group_reference_for_named_group_case() {
+        let expanded = expand_literal_replacement_template_str(
+            r"<\g<word>>",
+            "abc",
+            Some("abc"),
+            Some(("word", "abc")),
+        )
+        .unwrap();
+        assert_eq!(expanded, "<abc>");
     }
 
     #[test]
     fn replacement_template_rejects_unsupported_backslash_forms() {
         assert_eq!(
-            expand_literal_replacement_template_str(r"\1x", "abc", None),
+            expand_literal_replacement_template_str(r"\1x", "abc", None, None),
             None
         );
         assert_eq!(
-            expand_literal_replacement_template_str("\\", "abc", None),
+            expand_literal_replacement_template_str("\\", "abc", None, None),
+            None
+        );
+        assert_eq!(
+            expand_literal_replacement_template_str(r"\g<word>", "abc", None, None),
             None
         );
     }
