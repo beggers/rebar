@@ -1,6 +1,6 @@
 # RBR-0091: Catch branch-local backreference benchmarks up with the new bounded slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,4 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0090`.
 - This task exists so the queue does not reach bounded branch-local backreference parity and then leave that newly supported slice absent from benchmark reporting.
+- Completed 2026-03-12: added `branch_local_backreference_boundary.json`, covered the combined benchmark publication with a dedicated regression test, and republished `reports/benchmarks/latest.json` at 147 total workloads with 119 measured timings and 28 explicit known gaps.
