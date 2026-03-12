@@ -1,6 +1,6 @@
 # RBR-0050: Publish a grouped-match and capture correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0047` and the existing `Match` scaffold surface.
 - This task exists so the worker can expose the next bounded compatibility frontier in the scorecard before or immediately after the current published module-workflow gaps close.
+
+## Completion Note
+- Added a ninth correctness manifest, `grouped-match-workflows`, covering grouped single-capture module and `Pattern` match metadata plus two-capture honest gaps.
+- Extended match-result normalization so grouped cases publish explicit `group(1)` and `span(1)` observations without changing runtime behavior.
+- Republished `reports/correctness/latest.json` from the combined default fixture set; the published scorecard now covers 86 cases across 9 manifests with 84 passes and 2 honest `unimplemented` grouped multi-capture gaps.

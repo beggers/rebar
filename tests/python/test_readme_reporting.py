@@ -23,6 +23,7 @@ EXPECTED_MANIFEST_IDS = [
     "module-workflow-surface",
     "collection-replacement-workflows",
     "literal-flag-workflows",
+    "grouped-match-workflows",
 ]
 
 

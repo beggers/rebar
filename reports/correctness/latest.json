@@ -4896,6 +4896,562 @@
       "operation": "module_call",
       "suite_id": "literal.flag.workflow",
       "text_model": "str"
+    },
+    {
+      "args": [
+        "(abc)",
+        "zzabczz"
+      ],
+      "categories": [
+        "grouped",
+        "search",
+        "capture",
+        "module",
+        "str"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "single_capture_module_workflow",
+      "helper": "search",
+      "id": "grouped-module-search-single-capture-str",
+      "layer": "match_behavior",
+      "manifest_id": "grouped-match-workflows",
+      "notes": [
+        "Pins grouped literal module search capture metadata including group(1), groups(), span(1), and lastindex."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abc",
+            "group1": "abc",
+            "group_spans": [
+              [
+                2,
+                5
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "abc"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "span1": [
+              2,
+              5
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abc",
+            "group1": "abc",
+            "group_spans": [
+              [
+                2,
+                5
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "abc"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "span1": [
+              2,
+              5
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.grouped",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "(abc)",
+        "abc"
+      ],
+      "categories": [
+        "grouped",
+        "fullmatch",
+        "capture",
+        "module",
+        "str"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "single_capture_module_workflow",
+      "helper": "fullmatch",
+      "id": "grouped-module-fullmatch-single-capture-str",
+      "layer": "match_behavior",
+      "manifest_id": "grouped-match-workflows",
+      "notes": [
+        "Mirrors the grouped single-capture module path on an exact fullmatch."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "abc",
+            "group1": "abc",
+            "group_spans": [
+              [
+                0,
+                3
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "abc"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "span1": [
+              0,
+              3
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "abc",
+            "group1": "abc",
+            "group_spans": [
+              [
+                0,
+                3
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "abc"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "span1": [
+              0,
+              3
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.grouped",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "zzabczz"
+      ],
+      "categories": [
+        "grouped",
+        "search",
+        "capture",
+        "pattern",
+        "str"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "single_capture_pattern_workflow",
+      "helper": "search",
+      "id": "grouped-pattern-search-single-capture-str",
+      "layer": "match_behavior",
+      "manifest_id": "grouped-match-workflows",
+      "notes": [
+        "Pins the bound Pattern.search grouped capture payload for the supported single-capture literal slice."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abc",
+            "group1": "abc",
+            "group_spans": [
+              [
+                2,
+                5
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "abc"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "span1": [
+              2,
+              5
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abc",
+            "group1": "abc",
+            "group_spans": [
+              [
+                2,
+                5
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "abc"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "span1": [
+              2,
+              5
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "(abc)",
+      "suite_id": "match.grouped",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abczz"
+      ],
+      "categories": [
+        "grouped",
+        "match",
+        "capture",
+        "pattern",
+        "str"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "single_capture_pattern_workflow",
+      "helper": "match",
+      "id": "grouped-pattern-match-single-capture-str",
+      "layer": "match_behavior",
+      "manifest_id": "grouped-match-workflows",
+      "notes": [
+        "Pins the anchored Pattern.match grouped capture payload for the supported single-capture literal slice."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 5,
+            "group0": "abc",
+            "group1": "abc",
+            "group_spans": [
+              [
+                0,
+                3
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "abc"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "span1": [
+              0,
+              3
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 5,
+            "group0": "abc",
+            "group1": "abc",
+            "group_spans": [
+              [
+                0,
+                3
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "abc"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "span1": [
+              0,
+              3
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "(abc)",
+      "suite_id": "match.grouped",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "(ab)(c)",
+        "abc"
+      ],
+      "categories": [
+        "grouped",
+        "fullmatch",
+        "capture",
+        "module",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "numbered_capture_gap_workflow",
+      "helper": "fullmatch",
+      "id": "grouped-module-fullmatch-two-capture-gap-str",
+      "layer": "match_behavior",
+      "manifest_id": "grouped-match-workflows",
+      "notes": [
+        "Documents the first numbered multi-capture module gap as an honest unimplemented case instead of leaving it unpublished."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "abc",
+            "group1": "ab",
+            "group_spans": [
+              [
+                0,
+                2
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "ab",
+              "c"
+            ],
+            "lastgroup": null,
+            "lastindex": 2,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "span1": [
+              0,
+              2
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.grouped",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abc"
+      ],
+      "categories": [
+        "grouped",
+        "fullmatch",
+        "capture",
+        "pattern",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "numbered_capture_gap_workflow",
+      "helper": "fullmatch",
+      "id": "grouped-pattern-fullmatch-two-capture-gap-str",
+      "layer": "match_behavior",
+      "manifest_id": "grouped-match-workflows",
+      "notes": [
+        "Documents the matching bound Pattern multi-capture gap before broader grouped-numbered behavior work lands."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "abc",
+            "group1": "ab",
+            "group_spans": [
+              [
+                0,
+                2
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "ab",
+              "c"
+            ],
+            "lastgroup": null,
+            "lastindex": 2,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "span1": [
+              0,
+              2
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "(ab)(c)",
+      "suite_id": "match.grouped",
+      "text_model": "str"
     }
   ],
   "diagnostics": {
@@ -4908,7 +5464,7 @@
         },
         "outcomes": {
           "exception": 8,
-          "success": 72
+          "success": 78
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -4916,14 +5472,16 @@
         }
       },
       "rebar": {
-        "exception_case_count": 8,
+        "exception_case_count": 10,
         "exception_types": {
+          "NotImplementedError": 2,
           "TypeError": 2,
           "error": 6
         },
         "outcomes": {
           "exception": 8,
-          "success": 72
+          "success": 76,
+          "unimplemented": 2
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -5563,6 +6121,28 @@
       ]
     },
     {
+      "case_count": 2,
+      "id": "numbered_capture_gap_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
       "case_count": 1,
       "id": "pattern_scaffold",
       "layers": [
@@ -5690,6 +6270,48 @@
       ]
     },
     {
+      "case_count": 2,
+      "id": "single_capture_module_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 2,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "id": "single_capture_pattern_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 2,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
       "case_count": 3,
       "id": "split_workflow",
       "layers": [
@@ -5736,8 +6358,8 @@
     }
   ],
   "fixtures": {
-    "case_count": 80,
-    "manifest_count": 8,
+    "case_count": 86,
+    "manifest_count": 9,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
@@ -5746,7 +6368,8 @@
       "pattern-object-surface",
       "module-workflow-surface",
       "collection-replacement-workflows",
-      "literal-flag-workflows"
+      "literal-flag-workflows",
+      "grouped-match-workflows"
     ],
     "paths": [
       "tests/conformance/fixtures/parser_matrix.json",
@@ -5756,30 +6379,34 @@
       "tests/conformance/fixtures/pattern_object_surface.json",
       "tests/conformance/fixtures/module_workflow_surface.json",
       "tests/conformance/fixtures/collection_replacement_workflows.json",
-      "tests/conformance/fixtures/literal_flag_workflows.json"
+      "tests/conformance/fixtures/literal_flag_workflows.json",
+      "tests/conformance/fixtures/grouped_match_workflows.json"
     ]
   },
-  "generated_at": "2026-03-12T06:56:54Z",
+  "generated_at": "2026-03-12T07:38:10Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
-      "case_count": 6,
+      "case_count": 12,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
             "exception_case_count": 0,
             "exception_types": {},
             "outcomes": {
-              "success": 6
+              "success": 12
             },
             "warning_case_count": 0,
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 0,
-            "exception_types": {},
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
             "outcomes": {
-              "success": 6
+              "success": 10,
+              "unimplemented": 2
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -5789,24 +6416,30 @@
       "families": [
         "fullmatch_result_shape",
         "match_result_shape",
-        "search_result_shape"
+        "numbered_capture_gap_workflow",
+        "search_result_shape",
+        "single_capture_module_workflow",
+        "single_capture_pattern_workflow"
       ],
       "manifest_ids": [
+        "grouped-match-workflows",
         "match-behavior-smoke"
       ],
       "operations": [
-        "module_call"
+        "module_call",
+        "pattern_call"
       ],
       "suite_ids": [
-        "match.behavior"
+        "match.behavior",
+        "match.grouped"
       ],
       "summary": {
-        "executed_cases": 6,
+        "executed_cases": 12,
         "failed_cases": 0,
-        "passed_cases": 6,
+        "passed_cases": 10,
         "skipped_cases": 0,
-        "total_cases": 6,
-        "unimplemented_cases": 0
+        "total_cases": 12,
+        "unimplemented_cases": 2
       },
       "text_models": [
         "bytes",
@@ -7999,14 +8632,222 @@
         "bytes",
         "str"
       ]
+    },
+    {
+      "case_count": 6,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "success": 4,
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "numbered_capture_gap_workflow",
+        "single_capture_module_workflow",
+        "single_capture_pattern_workflow"
+      ],
+      "id": "match.grouped",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "grouped-match-workflows"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 0,
+        "passed_cases": 4,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 6,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "success": 4,
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "numbered_capture_gap_workflow",
+        "single_capture_module_workflow",
+        "single_capture_pattern_workflow"
+      ],
+      "id": "match.grouped.str",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "grouped-match-workflows"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 0,
+        "passed_cases": 4,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 3,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 1,
+            "exception_types": {
+              "NotImplementedError": 1
+            },
+            "outcomes": {
+              "success": 2,
+              "unimplemented": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "numbered_capture_gap_workflow",
+        "single_capture_module_workflow"
+      ],
+      "id": "match.grouped.module_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "grouped-match-workflows"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 3,
+        "failed_cases": 0,
+        "passed_cases": 2,
+        "skipped_cases": 0,
+        "total_cases": 3,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 3,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 1,
+            "exception_types": {
+              "NotImplementedError": 1
+            },
+            "outcomes": {
+              "success": 2,
+              "unimplemented": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "numbered_capture_gap_workflow",
+        "single_capture_pattern_workflow"
+      ],
+      "id": "match.grouped.pattern_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "grouped-match-workflows"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 3,
+        "failed_cases": 0,
+        "passed_cases": 2,
+        "skipped_cases": 0,
+        "total_cases": 3,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
     }
   ],
   "summary": {
-    "executed_cases": 80,
+    "executed_cases": 86,
     "failed_cases": 0,
-    "passed_cases": 80,
+    "passed_cases": 84,
     "skipped_cases": 0,
-    "total_cases": 80,
-    "unimplemented_cases": 0
+    "total_cases": 86,
+    "unimplemented_cases": 2
   }
 }
