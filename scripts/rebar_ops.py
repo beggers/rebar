@@ -689,6 +689,9 @@ def tracked_project_snapshot(config: dict[str, Any]) -> dict[str, Any]:
 
     return {
         "phase": first_nonempty_line(status_sections.get("Phase", [])),
+        "compatibility_heuristic": first_nonempty_line(
+            status_sections.get("Compatibility Heuristic", [])
+        ),
         "milestone": first_nonempty_line(backlog_sections.get("Current Milestone", [])),
         "next_steps": bullet_lines(status_sections.get("Immediate Next Steps", [])),
         "risks": bullet_lines(status_sections.get("Risks", [])),
@@ -762,14 +765,16 @@ def render_readme_status(config: dict[str, Any]) -> str:
     benchmark = snapshot["benchmark_scorecard"]
     total_tracks = len(tracks)
     completion_ratio = float(snapshot["completion_ratio"])
+    compatibility = snapshot.get("compatibility_heuristic") or "Unknown"
     lines = [
         "## Current State",
         "",
-        "_Foundation docs, harnesses, and scorecards are in place. The snapshot below focuses on implemented behavior and measured coverage, not long-term ambition._",
+        "_This block reports the implemented slice and measurement coverage, not estimated end-state parity._",
         "",
         "| Signal | Value |",
         "| --- | --- |",
         f"| Phase | {snapshot['phase'] or 'Unknown'} |",
+        f"| Compatibility outlook | {compatibility} |",
         f"| Current milestone | {snapshot['milestone'] or 'Unknown'} |",
         f"| Work queue | `{queue['ready']}` ready, `{queue['in_progress']}` in progress, `{queue['done']}` done, `{queue['blocked']}` blocked |",
         f"| Foundation tracks | `{snapshot['complete_tracks']}/{total_tracks}` landed (`{ascii_progress_bar(completion_ratio)} {int(round(completion_ratio * 100))}%`) |",
@@ -786,11 +791,17 @@ def render_readme_status(config: dict[str, Any]) -> str:
                 "| Metric | Value |",
                 "| --- | --- |",
                 f"| Published cases | `{correctness.get('cases_total')}` |",
-                f"| Passing comparisons | `{correctness.get('cases_passed')}` |",
+                f"| Passing in published slice | `{correctness.get('cases_passed')}` |",
                 f"| Explicit failures | `{correctness.get('cases_failed')}` |",
                 f"| Honest gaps (`unimplemented`) | `{correctness.get('cases_unimplemented')}` |",
                 f"| Covered manifests | `{correctness.get('case_manifest_count')}` |",
                 f"| Source | {markdown_link(correctness['path'])} |",
+            ]
+        )
+        lines.extend(
+            [
+                "",
+                f"_These correctness counts cover only the published slice. Overall feature status: {compatibility}_",
             ]
         )
 
@@ -812,6 +823,15 @@ def render_readme_status(config: dict[str, Any]) -> str:
                 f"| Source | {markdown_link(benchmark['path'])} |",
             ]
         )
+        if benchmark.get("timing_path") == "source-tree-shim":
+            lines.extend(
+                [
+                    "",
+                    "_Full-suite benchmark publication still runs through the source-tree shim; built-native timing remains limited to "
+                    + markdown_link("reports/benchmarks/native_smoke.json")
+                    + "._",
+                ]
+            )
         measured_workloads = benchmark.get("measured_workloads")
         workload_count = benchmark.get("workload_count")
         if (
@@ -1119,8 +1139,12 @@ def build_report_anomalies(
     last_cycle_runs: list[dict[str, Any]],
     recovery_actions: list[dict[str, Any]],
     git_action: dict[str, Any],
+    *,
+    ahead_of_upstream: int | None = None,
+    behind_of_upstream: int | None = None,
 ) -> list[dict[str, Any]]:
     anomalies: list[dict[str, Any]] = []
+    current_diverged = bool((ahead_of_upstream or 0) > 0 and (behind_of_upstream or 0) > 0)
     for item in last_cycle_runs:
         exit_code = item.get("exit_code")
         if isinstance(exit_code, int) and exit_code != 0:
@@ -1157,6 +1181,12 @@ def build_report_anomalies(
         for action in recovery_actions
     )
     for message in git_action.get("errors", []):
+        if (
+            isinstance(message, str)
+            and "diverged" in message.lower()
+            and not current_diverged
+        ):
+            continue
         anomalies.append({"type": "git_sync_error", "severity": "error", "message": message})
     return anomalies
 
@@ -1984,6 +2014,8 @@ def build_report(config: dict[str, Any]) -> dict[str, Any]:
             last_cycle_runs,
             recovery_actions,
             git_action,
+            ahead_of_upstream=ahead_of_upstream,
+            behind_of_upstream=behind_of_upstream,
         ),
         "last_cycle_recovery_actions": recovery_actions,
         "last_git_action": git_action,

@@ -30,6 +30,7 @@ EXPECTED_MANIFEST_IDS = [
     "numbered-backreference-workflows",
     "grouped-segment-workflows",
     "nested-group-workflows",
+    "nested-group-alternation-workflows",
     "nested-group-replacement-workflows",
     "nested-group-callable-replacement-workflows",
     "literal-alternation-workflows",
@@ -112,12 +113,14 @@ class ReadmeReportingTest(unittest.TestCase):
 
         rendered = rebar_ops.render_readme_status(config)
         self.assertIn(f"| Published cases | `{expected_total}` |", rendered)
-        self.assertIn(f"| Passing comparisons | `{expected_passed}` |", rendered)
+        self.assertIn(f"| Passing in published slice | `{expected_passed}` |", rendered)
         expected_unimplemented = summary.get(
             "cases_unimplemented",
             summary.get("unimplemented_cases", summary.get("unimplemented")),
         )
         self.assertIn(f"| Honest gaps (`unimplemented`) | `{expected_unimplemented}` |", rendered)
+        self.assertIn("| Compatibility outlook |", rendered)
+        self.assertIn("These correctness counts cover only the published slice.", rendered)
 
 
 if __name__ == "__main__":

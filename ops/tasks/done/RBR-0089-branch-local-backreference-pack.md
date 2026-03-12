@@ -1,6 +1,6 @@
 # RBR-0089: Publish a bounded branch-local backreference correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,4 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0060`, `RBR-0087`, and `RBR-0088`.
 - This task exists so the worker can expose the next concrete gap after bounded nested-group alternation without jumping straight to quantified branches or broader backtracking semantics.
+- Completed 2026-03-12: added `branch_local_backreference_workflows.json`, covered it with a dedicated combined-scorecard regression test, and republished `reports/correctness/latest.json` at 164 total cases with 158 passes and 6 honest `unimplemented` branch-local backreference gaps.
