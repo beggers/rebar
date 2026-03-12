@@ -15,6 +15,7 @@ Created: 2026-03-12
 
 ## Acceptance Criteria
 - The compile-path benchmark runner records real `rebar` timings for the compile workloads whose patterns are now supported by the bounded parser tasks through `RBR-0041`, while leaving still-unsupported workloads explicit as known gaps.
+- The measured workloads exercise the Rust-backed compile path introduced by `RBR-0037A` and extended by `RBR-0038` through `RBR-0041`, not a Python-only fallback path.
 - `reports/benchmarks/latest.json` no longer leaves the compile-matrix manifest effectively unchanged from the earlier scaffold-only state once supported compile cases exist; the report should show partial measurement honestly rather than fabricating full coverage.
 - Unit or smoke coverage regenerates the compile benchmark report end to end and validates the updated workload/report expectations without regressing the existing adapter/provenance metadata.
 
@@ -24,4 +25,4 @@ Created: 2026-03-12
 - Preserve the existing source-tree-shim versus built-native provenance reporting from `RBR-0020`.
 
 ## Notes
-- Build on `RBR-0037` through `RBR-0041`. This task exists so benchmark reporting follows newly landed parser support instead of remaining one milestone behind the correctness surface.
+- Build on `RBR-0037A` through `RBR-0041`. This task exists so benchmark reporting follows newly landed Rust-backed parser support instead of remaining one milestone behind the correctness surface.

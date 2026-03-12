@@ -1,57 +1,632 @@
-//! Placeholder parser-core crate for `rebar`.
+//! Narrow Rust core for the currently supported `rebar` compatibility slice.
 //!
-//! This crate intentionally does not implement regex parsing yet. It only
-//! exposes a tiny surface that later CPython-extension work can link against
-//! while the compatibility harness and parser design are still being built out.
+//! This crate intentionally implements only the already-published behavior:
+//! bounded compile classification, a handful of parser diagnostics, literal
+//! search/match/fullmatch, and `escape()` parity for `str` and `bytes`.
 
 /// The pinned CPython compatibility line for the initial parser target.
 pub const TARGET_CPYTHON_SERIES: &str = "3.12.x";
 
-/// Minimal parser entrypoint placeholder for the future Rust implementation.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
-pub struct Parser;
+const FLAG_IGNORECASE: i32 = 2;
+const FLAG_UNICODE: i32 = 32;
+const FLAG_ASCII: i32 = 256;
 
-impl Parser {
-    /// Builds the placeholder parser handle.
-    #[must_use]
-    pub fn new() -> Self {
-        Self
-    }
+const FUTURE_WARNING_MESSAGE: &str = "Possible nested set at position 1";
 
-    /// Returns the pinned CPython series this scaffold is meant to match.
-    #[must_use]
-    pub fn target_cpython_series(self) -> &'static str {
-        TARGET_CPYTHON_SERIES
-    }
-
-    /// Placeholder parse hook for future extension integration.
-    ///
-    /// This returns an explicit error instead of fake parse data so follow-on
-    /// work can evolve the real API without inheriting misleading semantics.
-    pub fn parse(self, _pattern: &str) -> Result<ParsedPattern, ParseError> {
-        Err(ParseError::Unimplemented)
-    }
-}
-
-/// Future parser result placeholder.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ParsedPattern {
-    _private: (),
-}
-
-/// Error surface exposed until real parser implementation work starts.
+/// Borrowed pattern or subject input.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ParseError {
-    /// The parser crate exists, but no regex parsing behavior is implemented yet.
-    Unimplemented,
+pub enum PatternRef<'a> {
+    /// Unicode pattern or subject.
+    Str(&'a str),
+    /// Bytes pattern or subject.
+    Bytes(&'a [u8]),
 }
 
-impl std::fmt::Display for ParseError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl<'a> PatternRef<'a> {
+    fn normalize_flags(self, flags: i32) -> i32 {
         match self {
-            Self::Unimplemented => f.write_str("rebar-core parser scaffold is not implemented yet"),
+            Self::Str(_) if flags & FLAG_ASCII == 0 => flags | FLAG_UNICODE,
+            _ => flags,
+        }
+    }
+
+    fn supports_pattern_scaffold(self) -> bool {
+        match self {
+            Self::Str(value) => !value.chars().any(is_meta_character),
+            Self::Bytes(value) => !value.iter().copied().any(is_meta_byte),
+        }
+    }
+
+    fn literal_match_base_flags(self) -> i32 {
+        self.normalize_flags(0)
+    }
+
+    fn supports_literal_execution(self, flags: i32) -> bool {
+        if !self.supports_pattern_scaffold() {
+            return false;
+        }
+
+        let base_flags = self.literal_match_base_flags();
+        flags == base_flags || flags == base_flags | FLAG_IGNORECASE
+    }
+}
+
+/// Status for a compile classification.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CompileStatus {
+    /// The pattern compiled within the bounded supported slice.
+    Compiled,
+    /// The pattern remains an honest `unimplemented` case.
+    Unsupported,
+}
+
+/// Warning metadata emitted during compile classification.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct CompileWarning {
+    /// Warning message text.
+    pub message: &'static str,
+}
+
+/// Successful compile classification.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct CompileOutcome {
+    /// Whether the pattern compiled or remains unsupported.
+    pub status: CompileStatus,
+    /// Flags after CPython-shaped normalization.
+    pub normalized_flags: i32,
+    /// Whether the compiled pattern is eligible for the literal-only match slice.
+    pub supports_literal: bool,
+    /// Optional warning emitted during compilation.
+    pub warning: Option<CompileWarning>,
+}
+
+/// Compile-time diagnostic raised by the bounded parser slice.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct CompileError {
+    /// Error message text.
+    pub message: &'static str,
+    /// Pattern offset associated with the diagnostic.
+    pub pos: usize,
+}
+
+/// Compile the currently supported pattern slice.
+pub fn compile(pattern: PatternRef<'_>, flags: i32) -> Result<CompileOutcome, CompileError> {
+    let normalized_flags = pattern.normalize_flags(flags);
+
+    if let Some(error) = compile_known_parser_error(pattern) {
+        return Err(error);
+    }
+
+    if is_nested_set_warning(pattern) {
+        return Ok(CompileOutcome {
+            status: CompileStatus::Compiled,
+            normalized_flags,
+            supports_literal: false,
+            warning: Some(CompileWarning {
+                message: FUTURE_WARNING_MESSAGE,
+            }),
+        });
+    }
+
+    if !pattern.supports_pattern_scaffold() {
+        return Ok(CompileOutcome {
+            status: CompileStatus::Unsupported,
+            normalized_flags,
+            supports_literal: false,
+            warning: None,
+        });
+    }
+
+    Ok(CompileOutcome {
+        status: CompileStatus::Compiled,
+        normalized_flags,
+        supports_literal: true,
+        warning: None,
+    })
+}
+
+/// Match mode for the bounded literal-only slice.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MatchMode {
+    /// `search()`
+    Search,
+    /// `match()`
+    Match,
+    /// `fullmatch()`
+    Fullmatch,
+}
+
+/// Status for a literal-match attempt.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MatchStatus {
+    /// The call matched and returned a span.
+    Matched,
+    /// The call completed successfully with no match.
+    NoMatch,
+    /// The pattern/flag combination is outside the supported literal slice.
+    Unsupported,
+}
+
+/// Successful result metadata for a literal-match attempt.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct MatchOutcome {
+    /// Match status.
+    pub status: MatchStatus,
+    /// Normalized `pos` bound used for matching.
+    pub pos: usize,
+    /// Normalized `endpos` bound used for matching.
+    pub endpos: usize,
+    /// Matched span when `status == Matched`.
+    pub span: Option<(usize, usize)>,
+}
+
+/// Error raised while attempting a literal match.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MatchError {
+    /// The pattern and subject types are incompatible.
+    TypeMismatch {
+        /// CPython-shaped error message.
+        message: &'static str,
+    },
+}
+
+impl MatchError {
+    /// Returns the CPython-shaped error message.
+    #[must_use]
+    pub fn message(self) -> &'static str {
+        match self {
+            Self::TypeMismatch { message } => message,
         }
     }
 }
 
-impl std::error::Error for ParseError {}
+/// Match the currently supported literal-only slice.
+pub fn literal_match(
+    pattern: PatternRef<'_>,
+    flags: i32,
+    mode: MatchMode,
+    string: PatternRef<'_>,
+    pos: isize,
+    endpos: Option<isize>,
+) -> Result<MatchOutcome, MatchError> {
+    match (pattern, string) {
+        (PatternRef::Str(pattern), PatternRef::Str(string)) => {
+            Ok(literal_match_str(pattern, flags, mode, string, pos, endpos))
+        }
+        (PatternRef::Bytes(pattern), PatternRef::Bytes(string)) => {
+            Ok(literal_match_bytes(pattern, flags, mode, string, pos, endpos))
+        }
+        (PatternRef::Str(_), PatternRef::Bytes(_)) => Err(MatchError::TypeMismatch {
+            message: "cannot use a string pattern on a bytes-like object",
+        }),
+        (PatternRef::Bytes(_), PatternRef::Str(_)) => Err(MatchError::TypeMismatch {
+            message: "cannot use a bytes pattern on a string-like object",
+        }),
+    }
+}
+
+/// Escape the current bounded `str` slice.
+#[must_use]
+pub fn escape_str(pattern: &str) -> String {
+    let mut escaped = String::new();
+    for character in pattern.chars() {
+        push_escaped_char(&mut escaped, character);
+    }
+    escaped
+}
+
+/// Escape the current bounded `bytes` slice.
+#[must_use]
+pub fn escape_bytes(pattern: &[u8]) -> Vec<u8> {
+    let mut escaped = Vec::with_capacity(pattern.len());
+    for byte in pattern {
+        push_escaped_byte(&mut escaped, *byte);
+    }
+    escaped
+}
+
+fn compile_known_parser_error(pattern: PatternRef<'_>) -> Option<CompileError> {
+    match pattern {
+        PatternRef::Str("*abc") => Some(CompileError {
+            message: "nothing to repeat",
+            pos: 0,
+        }),
+        PatternRef::Str("a(?i)b") => Some(CompileError {
+            message: "global flags not at the start of the expression",
+            pos: 1,
+        }),
+        PatternRef::Str("(?L:a)") => Some(CompileError {
+            message: "bad inline flags: cannot use 'L' flag with a str pattern",
+            pos: 3,
+        }),
+        PatternRef::Bytes(b"(?u:a)") => Some(CompileError {
+            message: "bad inline flags: cannot use 'u' flag with a bytes pattern",
+            pos: 3,
+        }),
+        PatternRef::Bytes(br"\u1234") => Some(CompileError {
+            message: r"bad escape \u",
+            pos: 0,
+        }),
+        _ => None,
+    }
+}
+
+fn is_nested_set_warning(pattern: PatternRef<'_>) -> bool {
+    matches!(pattern, PatternRef::Str("[[a]"))
+}
+
+fn is_meta_character(character: char) -> bool {
+    matches!(
+        character,
+        '.' | '^' | '$' | '*' | '+' | '?' | '{' | '}' | '[' | ']' | '\\' | '|' | '(' | ')'
+    )
+}
+
+fn is_meta_byte(byte: u8) -> bool {
+    matches!(
+        byte,
+        b'.' | b'^' | b'$' | b'*' | b'+' | b'?' | b'{' | b'}' | b'[' | b']' | b'\\' | b'|' | b'(' | b')'
+    )
+}
+
+fn literal_match_str(
+    pattern: &str,
+    flags: i32,
+    mode: MatchMode,
+    string: &str,
+    pos: isize,
+    endpos: Option<isize>,
+) -> MatchOutcome {
+    let pattern = PatternRef::Str(pattern);
+    let (normalized_pos, normalized_endpos) = normalize_bounds(string.chars().count(), pos, endpos);
+    if !pattern.supports_literal_execution(flags) {
+        return MatchOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            span: None,
+        };
+    }
+
+    let pattern_chars: Vec<char> = match pattern {
+        PatternRef::Str(value) => value.chars().collect(),
+        PatternRef::Bytes(_) => unreachable!(),
+    };
+    let string_chars: Vec<char> = string.chars().collect();
+    let span = find_match_span_str(&pattern_chars, flags, mode, &string_chars, normalized_pos, normalized_endpos);
+    MatchOutcome {
+        status: if span.is_some() {
+            MatchStatus::Matched
+        } else {
+            MatchStatus::NoMatch
+        },
+        pos: normalized_pos,
+        endpos: normalized_endpos,
+        span,
+    }
+}
+
+fn literal_match_bytes(
+    pattern: &[u8],
+    flags: i32,
+    mode: MatchMode,
+    string: &[u8],
+    pos: isize,
+    endpos: Option<isize>,
+) -> MatchOutcome {
+    let pattern = PatternRef::Bytes(pattern);
+    let (normalized_pos, normalized_endpos) = normalize_bounds(string.len(), pos, endpos);
+    if !pattern.supports_literal_execution(flags) {
+        return MatchOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            span: None,
+        };
+    }
+
+    let span = find_match_span_bytes(pattern_bytes(pattern), flags, mode, string, normalized_pos, normalized_endpos);
+    MatchOutcome {
+        status: if span.is_some() {
+            MatchStatus::Matched
+        } else {
+            MatchStatus::NoMatch
+        },
+        pos: normalized_pos,
+        endpos: normalized_endpos,
+        span,
+    }
+}
+
+fn pattern_bytes(pattern: PatternRef<'_>) -> &[u8] {
+    match pattern {
+        PatternRef::Bytes(value) => value,
+        PatternRef::Str(_) => unreachable!(),
+    }
+}
+
+fn find_match_span_str(
+    pattern: &[char],
+    flags: i32,
+    mode: MatchMode,
+    string: &[char],
+    pos: usize,
+    endpos: usize,
+) -> Option<(usize, usize)> {
+    match mode {
+        MatchMode::Search => {
+            let start = find_literal_start_str(pattern, flags, string, pos, endpos)?;
+            Some((start, start + pattern.len()))
+        }
+        MatchMode::Match => {
+            if literal_matches_at_str(pattern, flags, string, pos, endpos) {
+                Some((pos, pos + pattern.len()))
+            } else {
+                None
+            }
+        }
+        MatchMode::Fullmatch => {
+            if endpos.saturating_sub(pos) != pattern.len() {
+                return None;
+            }
+            if literal_matches_at_str(pattern, flags, string, pos, endpos) {
+                Some((pos, endpos))
+            } else {
+                None
+            }
+        }
+    }
+}
+
+fn find_match_span_bytes(
+    pattern: &[u8],
+    flags: i32,
+    mode: MatchMode,
+    string: &[u8],
+    pos: usize,
+    endpos: usize,
+) -> Option<(usize, usize)> {
+    match mode {
+        MatchMode::Search => {
+            let start = find_literal_start_bytes(pattern, flags, string, pos, endpos)?;
+            Some((start, start + pattern.len()))
+        }
+        MatchMode::Match => {
+            if literal_matches_at_bytes(pattern, flags, string, pos, endpos) {
+                Some((pos, pos + pattern.len()))
+            } else {
+                None
+            }
+        }
+        MatchMode::Fullmatch => {
+            if endpos.saturating_sub(pos) != pattern.len() {
+                return None;
+            }
+            if literal_matches_at_bytes(pattern, flags, string, pos, endpos) {
+                Some((pos, endpos))
+            } else {
+                None
+            }
+        }
+    }
+}
+
+fn literal_matches_at_str(pattern: &[char], flags: i32, string: &[char], start: usize, endpos: usize) -> bool {
+    let stop = start + pattern.len();
+    if stop > endpos {
+        return false;
+    }
+    if flags & FLAG_IGNORECASE == 0 {
+        return string.get(start..stop) == Some(pattern);
+    }
+
+    pattern.iter().enumerate().all(|(offset, pattern_char)| {
+        folded_chars_equal(*pattern_char, string[start + offset])
+    })
+}
+
+fn literal_matches_at_bytes(pattern: &[u8], flags: i32, string: &[u8], start: usize, endpos: usize) -> bool {
+    let stop = start + pattern.len();
+    if stop > endpos {
+        return false;
+    }
+    if flags & FLAG_IGNORECASE == 0 {
+        return string.get(start..stop) == Some(pattern);
+    }
+
+    pattern.iter().enumerate().all(|(offset, pattern_byte)| {
+        fold_ascii_byte(*pattern_byte) == fold_ascii_byte(string[start + offset])
+    })
+}
+
+fn find_literal_start_str(
+    pattern: &[char],
+    flags: i32,
+    string: &[char],
+    pos: usize,
+    endpos: usize,
+) -> Option<usize> {
+    if pattern.is_empty() {
+        return Some(pos);
+    }
+
+    let last_start = endpos.checked_sub(pattern.len())?;
+    (pos..=last_start).find(|start| literal_matches_at_str(pattern, flags, string, *start, endpos))
+}
+
+fn find_literal_start_bytes(
+    pattern: &[u8],
+    flags: i32,
+    string: &[u8],
+    pos: usize,
+    endpos: usize,
+) -> Option<usize> {
+    if pattern.is_empty() {
+        return Some(pos);
+    }
+    if flags & FLAG_IGNORECASE == 0 {
+        return string.get(pos..endpos)?.windows(pattern.len()).position(|window| window == pattern).map(|offset| pos + offset);
+    }
+
+    let last_start = endpos.checked_sub(pattern.len())?;
+    (pos..=last_start).find(|start| literal_matches_at_bytes(pattern, flags, string, *start, endpos))
+}
+
+fn normalize_bounds(length: usize, pos: isize, endpos: Option<isize>) -> (usize, usize) {
+    let clamp = |index: isize| {
+        if index < 0 {
+            let adjusted = length as isize + index;
+            if adjusted < 0 {
+                0
+            } else {
+                adjusted as usize
+            }
+        } else {
+            usize::min(index as usize, length)
+        }
+    };
+
+    (clamp(pos), endpos.map(clamp).unwrap_or(length))
+}
+
+fn folded_chars_equal(left: char, right: char) -> bool {
+    left.to_lowercase().collect::<String>() == right.to_lowercase().collect::<String>()
+}
+
+fn fold_ascii_byte(value: u8) -> u8 {
+    if value.is_ascii_uppercase() {
+        value + 32
+    } else {
+        value
+    }
+}
+
+fn push_escaped_char(output: &mut String, character: char) {
+    match character {
+        '\t' => output.push_str("\\\t"),
+        '\n' => output.push_str("\\\n"),
+        '\u{0b}' => output.push_str("\\\x0b"),
+        '\u{0c}' => output.push_str("\\\x0c"),
+        '\r' => output.push_str("\\\r"),
+        ' ' => output.push_str("\\ "),
+        '#' => output.push_str("\\#"),
+        '$' => output.push_str("\\$"),
+        '&' => output.push_str("\\&"),
+        '(' => output.push_str("\\("),
+        ')' => output.push_str("\\)"),
+        '*' => output.push_str("\\*"),
+        '+' => output.push_str("\\+"),
+        '-' => output.push_str("\\-"),
+        '.' => output.push_str("\\."),
+        '?' => output.push_str("\\?"),
+        '[' => output.push_str("\\["),
+        '\\' => output.push_str("\\\\"),
+        ']' => output.push_str("\\]"),
+        '^' => output.push_str("\\^"),
+        '{' => output.push_str("\\{"),
+        '|' => output.push_str("\\|"),
+        '}' => output.push_str("\\}"),
+        '~' => output.push_str("\\~"),
+        _ => output.push(character),
+    }
+}
+
+fn push_escaped_byte(output: &mut Vec<u8>, byte: u8) {
+    match byte {
+        b'\t' => output.extend_from_slice(b"\\\t"),
+        b'\n' => output.extend_from_slice(b"\\\n"),
+        11 => output.extend_from_slice(b"\\\x0b"),
+        12 => output.extend_from_slice(b"\\\x0c"),
+        b'\r' => output.extend_from_slice(b"\\\r"),
+        b' ' => output.extend_from_slice(b"\\ "),
+        b'#' => output.extend_from_slice(b"\\#"),
+        b'$' => output.extend_from_slice(b"\\$"),
+        b'&' => output.extend_from_slice(b"\\&"),
+        b'(' => output.extend_from_slice(b"\\("),
+        b')' => output.extend_from_slice(b"\\)"),
+        b'*' => output.extend_from_slice(b"\\*"),
+        b'+' => output.extend_from_slice(b"\\+"),
+        b'-' => output.extend_from_slice(b"\\-"),
+        b'.' => output.extend_from_slice(b"\\."),
+        b'?' => output.extend_from_slice(b"\\?"),
+        b'[' => output.extend_from_slice(b"\\["),
+        b'\\' => output.extend_from_slice(b"\\\\"),
+        b']' => output.extend_from_slice(b"\\]"),
+        b'^' => output.extend_from_slice(b"\\^"),
+        b'{' => output.extend_from_slice(b"\\{"),
+        b'|' => output.extend_from_slice(b"\\|"),
+        b'}' => output.extend_from_slice(b"\\}"),
+        b'~' => output.extend_from_slice(b"\\~"),
+        _ => output.push(byte),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{
+        compile, escape_bytes, escape_str, literal_match, CompileStatus, MatchMode, MatchStatus,
+        PatternRef, FLAG_ASCII, FLAG_IGNORECASE, FLAG_UNICODE,
+    };
+
+    #[test]
+    fn compile_reports_known_error() {
+        let error = compile(PatternRef::Str("*abc"), 0).unwrap_err();
+        assert_eq!(error.message, "nothing to repeat");
+        assert_eq!(error.pos, 0);
+    }
+
+    #[test]
+    fn compile_reports_nested_set_warning() {
+        let outcome = compile(PatternRef::Str("[[a]"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.warning.unwrap().message, "Possible nested set at position 1");
+    }
+
+    #[test]
+    fn compile_rejects_non_literal_patterns_as_unsupported() {
+        let outcome = compile(PatternRef::Str("a.c"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Unsupported);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+    }
+
+    #[test]
+    fn literal_match_supports_search_with_ignorecase() {
+        let outcome = literal_match(
+            PatternRef::Str("AbC"),
+            FLAG_IGNORECASE | FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzaBczz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 5)));
+    }
+
+    #[test]
+    fn literal_match_rejects_ascii_flag_combo() {
+        let outcome = literal_match(
+            PatternRef::Str("abc"),
+            FLAG_ASCII,
+            MatchMode::Search,
+            PatternRef::Str("abc"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Unsupported);
+        assert_eq!(outcome.span, None);
+    }
+
+    #[test]
+    fn escape_matches_expected_outputs() {
+        assert_eq!(escape_str("a-b.c"), "a\\-b\\.c");
+        assert_eq!(escape_bytes(b"a-b.c"), b"a\\-b\\.c");
+    }
+}

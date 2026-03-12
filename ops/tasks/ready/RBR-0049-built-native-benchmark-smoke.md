@@ -23,4 +23,4 @@ Created: 2026-03-12
 - Do not fabricate native timings or hide native build/load failures behind a shim fallback.
 
 ## Notes
-- Build on `RBR-0020`, `RBR-0042`, and `RBR-0048`. This task exists because the benchmark harness can already distinguish shim versus built-native modes, but the tracked landing surfaces still only publish source-tree-shim timings.
+- Build on `RBR-0020`, `RBR-0037A`, `RBR-0042`, `RBR-0042A`, and `RBR-0048`. This task exists because the benchmark harness can already distinguish shim versus built-native modes, but the tracked landing surfaces still only publish source-tree-shim timings.

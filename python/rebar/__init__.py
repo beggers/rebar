@@ -137,22 +137,18 @@ class Pattern:
         self._supports_literal = supports_literal
 
     def _raise_placeholder(self, method_name: str) -> object:
+        if _native is not None:
+            return _native.scaffold_pattern_raise(method_name)
         raise NotImplementedError(_pattern_placeholder_message(method_name))
 
     def search(self, *_args: object, **_kwargs: object) -> object:
-        if not _supports_literal_execution(self):
-            return self._raise_placeholder("search")
-        return _run_literal_match(self, "search", *_args, **_kwargs)
+        return _dispatch_pattern_match(self, "search", *_args, **_kwargs)
 
     def match(self, *_args: object, **_kwargs: object) -> object:
-        if not _supports_literal_execution(self):
-            return self._raise_placeholder("match")
-        return _run_literal_match(self, "match", *_args, **_kwargs)
+        return _dispatch_pattern_match(self, "match", *_args, **_kwargs)
 
     def fullmatch(self, *_args: object, **_kwargs: object) -> object:
-        if not _supports_literal_execution(self):
-            return self._raise_placeholder("fullmatch")
-        return _run_literal_match(self, "fullmatch", *_args, **_kwargs)
+        return _dispatch_pattern_match(self, "fullmatch", *_args, **_kwargs)
 
     def split(self, string: object, maxsplit: int = 0) -> object:
         if not _supports_literal_collection_execution(self):
@@ -358,6 +354,40 @@ def _build_compiled_pattern(
     compiled = object.__new__(Pattern)
     Pattern.__init__(compiled, pattern, flags, supports_literal=supports_literal)
     return compiled
+
+
+def _build_native_compile_result(pattern: str | bytes, flags: int) -> Pattern:
+    status, normalized_flags, supports_literal = _native.boundary_compile(pattern, int(flags))
+    if status != "compiled":
+        return _raise_placeholder("compile")
+    return _build_compiled_pattern(pattern, normalized_flags, supports_literal=supports_literal)
+
+
+def _dispatch_pattern_match(
+    compiled_pattern: Pattern,
+    mode: str,
+    string: object,
+    pos: int = 0,
+    endpos: int | None = None,
+) -> Match | None:
+    if _native is not None:
+        status, normalized_pos, normalized_endpos, span = _native.boundary_literal_match(
+            compiled_pattern.pattern,
+            compiled_pattern.flags,
+            mode,
+            string,
+            pos,
+            endpos,
+        )
+        if status == "unsupported":
+            return compiled_pattern._raise_placeholder(mode)
+        if status == "no-match":
+            return None
+        return _build_match(compiled_pattern, _ensure_compatible_string(compiled_pattern.pattern, string), normalized_pos, normalized_endpos, span)
+
+    if not _supports_literal_execution(compiled_pattern):
+        return compiled_pattern._raise_placeholder(mode)
+    return _run_literal_match(compiled_pattern, mode, string, pos=pos, endpos=endpos)
 
 
 def _compile_known_parser_case(pattern: str | bytes, flags: int) -> Pattern | None:
@@ -656,6 +686,11 @@ def compile(pattern: str | bytes | Pattern, flags: int = 0) -> Pattern:
     if cached is not None:
         return cached
 
+    if _native is not None:
+        compiled = _build_native_compile_result(pattern, int(flags))
+        _COMPILE_CACHE[_compile_cache_key(pattern, compiled.flags)] = compiled
+        return compiled
+
     special_case = _compile_known_parser_case(pattern, normalized_flags)
     if special_case is not None:
         _COMPILE_CACHE[cache_key] = special_case
@@ -673,27 +708,36 @@ def search(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> Ma
     """Literal-only drop-in slice for `re.search`."""
 
     compiled = compile(pattern, flags)
-    if not _supports_literal_execution(compiled):
-        return _raise_placeholder("search")
-    return compiled.search(string)
+    try:
+        return compiled.search(string)
+    except NotImplementedError as exc:
+        if str(exc) == _pattern_placeholder_message("search"):
+            return _raise_placeholder("search")
+        raise
 
 
 def match(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> Match | None:
     """Literal-only drop-in slice for `re.match`."""
 
     compiled = compile(pattern, flags)
-    if not _supports_literal_execution(compiled):
-        return _raise_placeholder("match")
-    return compiled.match(string)
+    try:
+        return compiled.match(string)
+    except NotImplementedError as exc:
+        if str(exc) == _pattern_placeholder_message("match"):
+            return _raise_placeholder("match")
+        raise
 
 
 def fullmatch(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> Match | None:
     """Literal-only drop-in slice for `re.fullmatch`."""
 
     compiled = compile(pattern, flags)
-    if not _supports_literal_execution(compiled):
-        return _raise_placeholder("fullmatch")
-    return compiled.fullmatch(string)
+    try:
+        return compiled.fullmatch(string)
+    except NotImplementedError as exc:
+        if str(exc) == _pattern_placeholder_message("fullmatch"):
+            return _raise_placeholder("fullmatch")
+        raise
 
 
 def split(
@@ -786,6 +830,11 @@ def template(*_args: object, **_kwargs: object) -> object:
 
 def escape(pattern: object) -> str | bytes:
     """Return a CPython-compatible escaped pattern for `str` and bytes-like inputs."""
+
+    if _native is not None:
+        if isinstance(pattern, str):
+            return _native.boundary_escape(pattern)
+        return _native.boundary_escape(bytes(pattern))
 
     if isinstance(pattern, str):
         return pattern.translate(_ESCAPE_SPECIAL_CHARACTERS)

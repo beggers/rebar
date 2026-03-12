@@ -17,6 +17,7 @@ Created: 2026-03-12
 
 ## Acceptance Criteria
 - The benchmark runner records real `rebar` timings for whichever workloads are newly supported by `RBR-0043` through `RBR-0047`, while leaving still-unsupported workflows explicit as known gaps.
+- The measured workloads exercise the Rust-backed workflow path introduced by `RBR-0042A` and extended by `RBR-0043` through `RBR-0047`, not a Python-only fallback path.
 - `reports/benchmarks/latest.json` reflects those newly measured module, replacement, or flag-sensitive workloads honestly instead of leaving the benchmark surface frozen at the pre-follow-on state.
 - The benchmark manifests and tests stay explicit about cache mode, adapter provenance, and timing path, and they do not fabricate coverage for unsupported workflows or native paths that were not actually exercised.
 
@@ -26,4 +27,4 @@ Created: 2026-03-12
 - Do not fabricate benchmark wins for unsupported workflows.
 
 ## Notes
-- Build on `RBR-0043` through `RBR-0047`. This task exists so the benchmark report follows the next correctness wins instead of staying one milestone behind the published module-workflow surface.
+- Build on `RBR-0042A` through `RBR-0047`. This task exists so the benchmark report follows the next Rust-backed correctness wins instead of staying one milestone behind the published module-workflow surface.
