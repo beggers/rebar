@@ -40,6 +40,7 @@ DEFAULT_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "collection_replacement_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "literal_flag_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "grouped_named_boundary.json",
+    REPO_ROOT / "benchmarks" / "workloads" / "numbered_backreference_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.json",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"

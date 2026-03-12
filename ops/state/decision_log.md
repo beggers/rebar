@@ -118,3 +118,6 @@
 - Once `RBR-0058` lands, refresh tracked status/reporting in the same supervisor pass so README and current-status surfaces stop describing the older 45-workload and 36-measured benchmark frontier or `RBR-0058` as still pending work.
 - Once `RBR-0063` lands, catch grouped-segment benchmark coverage up immediately in `RBR-0064` so literal-segment behavior reaches the published benchmark surface before a new correctness frontier opens.
 - Seed `RBR-0065` and `RBR-0066` behind `RBR-0064` so the queue extends from grouped-segment work into bounded top-level literal alternation instead of stopping at a benchmark-only frontier.
+
+## 2026-03-12
+- Once `RBR-0060` lands, treat bounded numbered-backreference parity as part of the baseline published surface, refresh tracked status/reporting in the same supervisor pass, and move the milestone front directly to `RBR-0061` through `RBR-0066` so benchmark catch-up leads the queue before grouped-segment publication reopens the correctness frontier.

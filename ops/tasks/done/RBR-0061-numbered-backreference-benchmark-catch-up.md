@@ -1,8 +1,9 @@
 # RBR-0061: Catch numbered-backreference benchmarks up with the new grouped-reference slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Extend the published benchmark surface so the bounded numbered-backreference workflows supported by `RBR-0060` produce real `rebar` timings instead of leaving benchmark reporting behind the grouped-reference correctness frontier.
@@ -27,3 +28,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0058` and `RBR-0060`.
 - This task exists so the queue does not reach numbered-backreference parity and then leave that newly supported surface absent from benchmark reporting.
+
+## Completion Note
+- Added `benchmarks/workloads/numbered_backreference_boundary.json` with three measured bounded `(ab)\1` workloads plus two explicit grouped-segment known-gap rows.
+- Wired the new manifest into the default combined benchmark suite in `python/rebar_harness/benchmarks.py` and regenerated `reports/benchmarks/latest.json`, moving the published benchmark scorecard to 63 workloads with 50 measured timings and 13 known gaps.
+- Added `tests/benchmarks/test_numbered_backreference_boundary_benchmarks.py` to lock the combined-suite counts plus the new manifest's measured-versus-gap behavior and smoke workload IDs.
