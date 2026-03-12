@@ -50,6 +50,7 @@
 - Seed follow-on tasks for benchmark provenance, exported-symbol correctness, and compiled-pattern correctness before the current ready stack drains so the worker can move directly from scaffolding into scorecard coverage instead of stalling on supervisor-only queue maintenance.
 
 ## 2026-03-12
+- Once `RBR-0093` lands, treat bounded optional-group quantifier parity as part of the tracked Rust-backed baseline, refresh README/current-status/backlog surfaces in the same supervisor pass, and move the milestone front directly to `RBR-0094` through `RBR-0106` so benchmark catch-up leads before counted-repeat, quantified-alternation, or conditional expansion.
 - Once the exported-symbol, pattern-object, and match-behavior scaffolds are queued, extend the ready queue with narrow honest-behavior tasks rather than more placeholder-only surface work: first a literal-only `compile`/`search`/`match`/`fullmatch` slice with concrete `Match` objects, then compile-cache/purge observability, then `escape()` parity.
 - Keep the next benchmark and correctness tasks attached directly to that behavior slice so the published scorecards can start reflecting real module and pattern behavior as soon as those bounded capabilities land.
 - Once `RBR-0017` lands the regression/stability benchmark pack, retarget the front of Milestone 2 to `RBR-0018` through `RBR-0022` so import-shape scaffolding, compiled-pattern scaffolding, benchmark-provenance honesty, and their follow-on scorecards move before the literal-only behavior slice.

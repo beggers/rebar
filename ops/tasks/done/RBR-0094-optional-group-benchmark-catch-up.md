@@ -1,8 +1,9 @@
 # RBR-0094: Catch optional-group benchmarks up with the new bounded slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Extend the published benchmark surface so the bounded optional-group workflows supported by `RBR-0093` produce real `rebar` timings before counted repeats, quantified alternation, conditionals, or broader backtracking reopen the correctness frontier.
@@ -27,3 +28,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0093`.
 - This task exists so the queue does not reach bounded optional-group parity and then leave that newly supported quantifier slice absent from benchmark reporting.
+
+## Completion Notes
+- Added a dedicated `optional-group-boundary` benchmark manifest covering bounded numbered and named optional-group compile, module-search, and pattern-fullmatch workflows plus two explicit known-gap rows for queued exact-repeat and optional-group alternation follow-ons.
+- Wired the new manifest into the default benchmark harness publication path and added a combined-suite regression test that locks the new workload, cache-mode, manifest-count, and known-gap totals.
+- Republished `reports/benchmarks/latest.json`; the combined benchmark scorecard now reports 155 workloads with 125 measured `rebar` timings and 30 explicit known-gap rows across the published manifest set.
