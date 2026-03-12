@@ -504,6 +504,7 @@ struct RangedRepeatGroupPattern<'a> {
     prefix: &'a str,
     capture: LiteralCapture<'a>,
     suffix: &'a str,
+    max_repeat: usize,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -2007,7 +2008,14 @@ fn parse_ranged_repeat_group_pattern_str(pattern: &str) -> Option<RangedRepeatGr
         return None;
     }
 
-    let suffix = remainder[close_offset + 1..].strip_prefix("{1,2}")?;
+    let (max_repeat, suffix) = if let Some(suffix) = remainder[close_offset + 1..].strip_prefix("{1,2}")
+    {
+        (2, suffix)
+    } else if let Some(suffix) = remainder[close_offset + 1..].strip_prefix("{1,3}") {
+        (3, suffix)
+    } else {
+        return None;
+    };
     if suffix.is_empty() || suffix.chars().any(is_meta_character) {
         return None;
     }
@@ -2016,6 +2024,7 @@ fn parse_ranged_repeat_group_pattern_str(pattern: &str) -> Option<RangedRepeatGr
         prefix,
         capture: LiteralCapture { body, name },
         suffix,
+        max_repeat,
     })
 }
 
@@ -3349,21 +3358,37 @@ fn ranged_repeat_group_matches_at_str(
         return None;
     }
 
-    let second_capture_end = capture_end + capture_chars.len();
-    if literal_matches_at_str(capture_chars.as_slice(), flags, string, capture_end, endpos)
+    let mut repeat_count = 1;
+    let mut repeat_end = capture_end;
+
+    while repeat_count < pattern.max_repeat
         && literal_matches_at_str(
-            suffix_chars.as_slice(),
+            capture_chars.as_slice(),
             flags,
             string,
-            second_capture_end,
+            repeat_end,
             endpos,
         )
     {
-        return Some((2, second_capture_end + suffix_chars.len()));
+        repeat_end += capture_chars.len();
+        repeat_count += 1;
     }
 
-    literal_matches_at_str(suffix_chars.as_slice(), flags, string, capture_end, endpos)
-        .then_some((1, capture_end + suffix_chars.len()))
+    for candidate_count in (1..=repeat_count).rev() {
+        let candidate_end = capture_start + capture_chars.len() * candidate_count;
+        if literal_matches_at_str(
+            suffix_chars.as_slice(),
+            flags,
+            string,
+            candidate_end,
+            endpos,
+        )
+        {
+            return Some((candidate_count, candidate_end + suffix_chars.len()));
+        }
+    }
+
+    None
 }
 
 fn find_ranged_repeat_group_match_span_str(
@@ -4223,6 +4248,26 @@ mod tests {
                 index: 1,
             }]
         );
+
+        let wider_outcome = compile(PatternRef::Str("a(bc){1,3}d"), 0).unwrap();
+        assert_eq!(wider_outcome.status, CompileStatus::Compiled);
+        assert_eq!(wider_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!wider_outcome.supports_literal);
+        assert_eq!(wider_outcome.group_count, 1);
+        assert!(wider_outcome.named_groups.is_empty());
+
+        let wider_named_outcome = compile(PatternRef::Str("a(?P<word>bc){1,3}d"), 0).unwrap();
+        assert_eq!(wider_named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(wider_named_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!wider_named_outcome.supports_literal);
+        assert_eq!(wider_named_outcome.group_count, 1);
+        assert_eq!(
+            wider_named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "word".to_string(),
+                index: 1,
+            }]
+        );
     }
 
     #[test]
@@ -4822,6 +4867,42 @@ mod tests {
         assert_eq!(outcome.status, MatchStatus::Matched);
         assert_eq!(outcome.span, Some((0, 6)));
         assert_eq!(outcome.group_spans, vec![Some((3, 5))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn wider_ranged_repeat_group_fullmatch_reports_third_repetition_capture_span() {
+        let outcome = literal_match(
+            PatternRef::Str("a(bc){1,3}d"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abcbcbcd"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 8)));
+        assert_eq!(outcome.group_spans, vec![Some((5, 7))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn wider_named_ranged_repeat_group_search_reports_third_repetition_capture_span() {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<word>bc){1,3}d"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabcbcbcdzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 10)));
+        assert_eq!(outcome.group_spans, vec![Some((7, 9))]);
         assert_eq!(outcome.lastindex, Some(1));
     }
 

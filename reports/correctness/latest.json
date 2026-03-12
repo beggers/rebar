@@ -13162,10 +13162,8 @@
         "str",
         "gap"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "wider_ranged_repeat_numbered_group_compile_metadata",
       "id": "wider-ranged-repeat-numbered-group-compile-metadata-str",
       "layer": "match_behavior",
@@ -13190,13 +13188,16 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "compile",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 1,
+            "pattern": "a(bc){1,3}d",
+            "pattern_type": "str"
+          },
           "warnings": []
         }
       },
@@ -13221,10 +13222,8 @@
         "str",
         "gap"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "wider_ranged_repeat_numbered_group_module_search_lower_bound_workflow",
       "helper": "search",
       "id": "wider-ranged-repeat-numbered-group-module-search-lower-bound-str",
@@ -13271,13 +13270,37 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "module_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": {
+            "endpos": 8,
+            "group0": "abcd",
+            "group1": "bc",
+            "group_spans": [
+              [
+                3,
+                5
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "bc"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              6
+            ],
+            "span1": [
+              3,
+              5
+            ],
+            "string_type": "str"
+          },
           "warnings": []
         }
       },
@@ -13300,10 +13323,8 @@
         "str",
         "gap"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "wider_ranged_repeat_numbered_group_pattern_fullmatch_upper_bound_workflow",
       "helper": "fullmatch",
       "id": "wider-ranged-repeat-numbered-group-pattern-fullmatch-upper-bound-str",
@@ -13350,13 +13371,37 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "pattern_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": {
+            "endpos": 8,
+            "group0": "abcbcbcd",
+            "group1": "bc",
+            "group_spans": [
+              [
+                5,
+                7
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "bc"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              8
+            ],
+            "span1": [
+              5,
+              7
+            ],
+            "string_type": "str"
+          },
           "warnings": []
         }
       },
@@ -13377,10 +13422,8 @@
         "str",
         "gap"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "wider_ranged_repeat_named_group_compile_metadata",
       "id": "wider-ranged-repeat-named-group-compile-metadata-str",
       "layer": "match_behavior",
@@ -13407,13 +13450,18 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "compile",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {
+              "word": 1
+            },
+            "groups": 1,
+            "pattern": "a(?P<word>bc){1,3}d",
+            "pattern_type": "str"
+          },
           "warnings": []
         }
       },
@@ -13439,10 +13487,8 @@
         "str",
         "gap"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "wider_ranged_repeat_named_group_module_search_upper_bound_workflow",
       "helper": "search",
       "id": "wider-ranged-repeat-named-group-module-search-upper-bound-str",
@@ -13500,13 +13546,48 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "module_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": {
+            "endpos": 12,
+            "group0": "abcbcbcd",
+            "group1": "bc",
+            "group_spans": [
+              [
+                7,
+                9
+              ]
+            ],
+            "groupdict": {
+              "word": "bc"
+            },
+            "groups": [
+              "bc"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                7,
+                9
+              ]
+            },
+            "named_groups": {
+              "word": "bc"
+            },
+            "pos": 0,
+            "span": [
+              2,
+              10
+            ],
+            "span1": [
+              7,
+              9
+            ],
+            "string_type": "str"
+          },
           "warnings": []
         }
       },
@@ -13530,10 +13611,8 @@
         "str",
         "gap"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "wider_ranged_repeat_named_group_pattern_fullmatch_lower_bound_workflow",
       "helper": "fullmatch",
       "id": "wider-ranged-repeat-named-group-pattern-fullmatch-lower-bound-str",
@@ -13591,13 +13670,48 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "pattern_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": {
+            "endpos": 4,
+            "group0": "abcd",
+            "group1": "bc",
+            "group_spans": [
+              [
+                1,
+                3
+              ]
+            ],
+            "groupdict": {
+              "word": "bc"
+            },
+            "groups": [
+              "bc"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                1,
+                3
+              ]
+            },
+            "named_groups": {
+              "word": "bc"
+            },
+            "pos": 0,
+            "span": [
+              0,
+              4
+            ],
+            "span1": [
+              1,
+              3
+            ],
+            "string_type": "str"
+          },
           "warnings": []
         }
       },
@@ -17183,16 +17297,14 @@
         }
       },
       "rebar": {
-        "exception_case_count": 16,
+        "exception_case_count": 10,
         "exception_types": {
-          "NotImplementedError": 6,
           "TypeError": 2,
           "error": 8
         },
         "outcomes": {
           "exception": 10,
-          "success": 210,
-          "unimplemented": 6
+          "success": 216
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -20314,10 +20426,10 @@
       "summary": {
         "executed_cases": 1,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 1,
         "skipped_cases": 0,
         "total_cases": 1,
-        "unimplemented_cases": 1
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -20335,10 +20447,10 @@
       "summary": {
         "executed_cases": 1,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 1,
         "skipped_cases": 0,
         "total_cases": 1,
-        "unimplemented_cases": 1
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -20356,10 +20468,10 @@
       "summary": {
         "executed_cases": 1,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 1,
         "skipped_cases": 0,
         "total_cases": 1,
-        "unimplemented_cases": 1
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -20377,10 +20489,10 @@
       "summary": {
         "executed_cases": 1,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 1,
         "skipped_cases": 0,
         "total_cases": 1,
-        "unimplemented_cases": 1
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -20398,10 +20510,10 @@
       "summary": {
         "executed_cases": 1,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 1,
         "skipped_cases": 0,
         "total_cases": 1,
-        "unimplemented_cases": 1
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -20419,10 +20531,10 @@
       "summary": {
         "executed_cases": 1,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 1,
         "skipped_cases": 0,
         "total_cases": 1,
-        "unimplemented_cases": 1
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -20505,7 +20617,7 @@
       "tests/conformance/fixtures/conditional_group_exists_assertion_diagnostics.json"
     ]
   },
-  "generated_at": "2026-03-12T22:59:34Z",
+  "generated_at": "2026-03-12T23:10:27Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -20522,13 +20634,10 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 6,
-            "exception_types": {
-              "NotImplementedError": 6
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "success": 108,
-              "unimplemented": 6
+              "success": 114
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -20699,10 +20808,10 @@
       "summary": {
         "executed_cases": 114,
         "failed_cases": 0,
-        "passed_cases": 108,
+        "passed_cases": 114,
         "skipped_cases": 0,
         "total_cases": 114,
-        "unimplemented_cases": 6
+        "unimplemented_cases": 0
       },
       "text_models": [
         "bytes",
@@ -27082,12 +27191,10 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 6,
-            "exception_types": {
-              "NotImplementedError": 6
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "unimplemented": 6
+              "success": 6
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -27115,10 +27222,10 @@
       "summary": {
         "executed_cases": 6,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 6,
         "skipped_cases": 0,
         "total_cases": 6,
-        "unimplemented_cases": 6
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -27138,12 +27245,10 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 6,
-            "exception_types": {
-              "NotImplementedError": 6
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "unimplemented": 6
+              "success": 6
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -27171,10 +27276,10 @@
       "summary": {
         "executed_cases": 6,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 6,
         "skipped_cases": 0,
         "total_cases": 6,
-        "unimplemented_cases": 6
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -27194,12 +27299,10 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 2,
-            "exception_types": {
-              "NotImplementedError": 2
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "unimplemented": 2
+              "success": 2
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -27221,10 +27324,10 @@
       "summary": {
         "executed_cases": 2,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 2,
         "skipped_cases": 0,
         "total_cases": 2,
-        "unimplemented_cases": 2
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -27244,12 +27347,10 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 2,
-            "exception_types": {
-              "NotImplementedError": 2
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "unimplemented": 2
+              "success": 2
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -27271,10 +27372,10 @@
       "summary": {
         "executed_cases": 2,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 2,
         "skipped_cases": 0,
         "total_cases": 2,
-        "unimplemented_cases": 2
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -27294,12 +27395,10 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 2,
-            "exception_types": {
-              "NotImplementedError": 2
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "unimplemented": 2
+              "success": 2
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -27321,10 +27420,10 @@
       "summary": {
         "executed_cases": 2,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 2,
         "skipped_cases": 0,
         "total_cases": 2,
-        "unimplemented_cases": 2
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -28948,9 +29047,9 @@
   "summary": {
     "executed_cases": 226,
     "failed_cases": 0,
-    "passed_cases": 220,
+    "passed_cases": 226,
     "skipped_cases": 0,
     "total_cases": 226,
-    "unimplemented_cases": 6
+    "unimplemented_cases": 0
   }
 }

@@ -1,6 +1,6 @@
 # RBR-0122: Add bounded wider ranged-repeat quantified-group parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,5 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0121`.
 - This task exists so the queue turns the next bounded counted-range slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
+- Completed 2026-03-12: widened the Rust-backed ranged-repeat parser/executor from the prior `{1,2}` slice to accept the bounded `{1,3}` numbered and named-group workflows, added dedicated Python/native parity coverage for the six published cases, updated the wider-ranged correctness regression test to expect passes, and republished `reports/correctness/latest.json` at `226/226` passes with `0` unimplemented cases.
+- No Python or CPython-boundary code changes were required beyond existing surface wiring; the new behavior stayed inside `rebar-core` and flowed through the already-landed native entrypoints.

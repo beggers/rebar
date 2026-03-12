@@ -191,10 +191,10 @@ class CorrectnessHarnessWiderRangedRepeatQuantifiedGroupWorkflowTest(unittest.Te
                 {
                     "executed_cases": 188,
                     "failed_cases": 0,
-                    "passed_cases": 182,
+                    "passed_cases": 188,
                     "skipped_cases": 0,
                     "total_cases": 188,
-                    "unimplemented_cases": 6,
+                    "unimplemented_cases": 0,
                 },
             )
             scorecard = json.loads(report_path.read_text(encoding="utf-8"))
@@ -258,10 +258,10 @@ class CorrectnessHarnessWiderRangedRepeatQuantifiedGroupWorkflowTest(unittest.Te
             {
                 "executed_cases": 78,
                 "failed_cases": 0,
-                "passed_cases": 72,
+                "passed_cases": 78,
                 "skipped_cases": 0,
                 "total_cases": 78,
-                "unimplemented_cases": 6,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(match_layer["manifest_ids"][-1], "wider-ranged-repeat-quantified-group-workflows")
@@ -281,9 +281,9 @@ class CorrectnessHarnessWiderRangedRepeatQuantifiedGroupWorkflowTest(unittest.Te
             if suite["id"] == "match.wider_ranged_repeat_quantified_group"
         )
         self.assertEqual(wider_suite["summary"]["total_cases"], 6)
-        self.assertEqual(wider_suite["summary"]["passed_cases"], 0)
+        self.assertEqual(wider_suite["summary"]["passed_cases"], 6)
         self.assertEqual(wider_suite["summary"]["failed_cases"], 0)
-        self.assertEqual(wider_suite["summary"]["unimplemented_cases"], 6)
+        self.assertEqual(wider_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             wider_suite["families"],
             [
@@ -301,26 +301,21 @@ class CorrectnessHarnessWiderRangedRepeatQuantifiedGroupWorkflowTest(unittest.Te
             for case in scorecard["cases"]
             if case["id"] == "wider-ranged-repeat-numbered-group-compile-metadata-str"
         )
-        self.assertEqual(compile_case["comparison"], "unimplemented")
-        self.assertEqual(
-            compile_case["comparison_notes"],
-            ["rebar adapter reports support as unimplemented"],
-        )
+        self.assertEqual(compile_case["comparison"], "pass")
+        self.assertEqual(compile_case["comparison_notes"], [])
         self.assertEqual(compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groupindex"], {})
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groups"], 1)
-        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "unimplemented")
-        self.assertEqual(
-            compile_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
-        )
+        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(compile_case["observations"]["rebar"]["result"]["groupindex"], {})
+        self.assertEqual(compile_case["observations"]["rebar"]["result"]["groups"], 1)
 
         numbered_upper_bound_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "wider-ranged-repeat-numbered-group-pattern-fullmatch-upper-bound-str"
         )
-        self.assertEqual(numbered_upper_bound_case["comparison"], "unimplemented")
+        self.assertEqual(numbered_upper_bound_case["comparison"], "pass")
         self.assertEqual(numbered_upper_bound_case["helper"], "fullmatch")
         self.assertEqual(numbered_upper_bound_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(
@@ -335,14 +330,22 @@ class CorrectnessHarnessWiderRangedRepeatQuantifiedGroupWorkflowTest(unittest.Te
             numbered_upper_bound_case["observations"]["cpython"]["result"]["span1"],
             [5, 7],
         )
-        self.assertEqual(numbered_upper_bound_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(numbered_upper_bound_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            numbered_upper_bound_case["observations"]["rebar"]["result"]["group0"],
+            "abcbcbcd",
+        )
+        self.assertEqual(
+            numbered_upper_bound_case["observations"]["rebar"]["result"]["span1"],
+            [5, 7],
+        )
 
         named_upper_bound_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "wider-ranged-repeat-named-group-module-search-upper-bound-str"
         )
-        self.assertEqual(named_upper_bound_case["comparison"], "unimplemented")
+        self.assertEqual(named_upper_bound_case["comparison"], "pass")
         self.assertEqual(named_upper_bound_case["helper"], "search")
         self.assertEqual(named_upper_bound_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(
@@ -361,14 +364,26 @@ class CorrectnessHarnessWiderRangedRepeatQuantifiedGroupWorkflowTest(unittest.Te
             named_upper_bound_case["observations"]["cpython"]["result"]["span1"],
             [7, 9],
         )
-        self.assertEqual(named_upper_bound_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_upper_bound_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            named_upper_bound_case["observations"]["rebar"]["result"]["groupdict"],
+            {"word": "bc"},
+        )
+        self.assertEqual(
+            named_upper_bound_case["observations"]["rebar"]["result"]["lastgroup"],
+            "word",
+        )
+        self.assertEqual(
+            named_upper_bound_case["observations"]["rebar"]["result"]["span1"],
+            [7, 9],
+        )
 
         named_lower_bound_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "wider-ranged-repeat-named-group-pattern-fullmatch-lower-bound-str"
         )
-        self.assertEqual(named_lower_bound_case["comparison"], "unimplemented")
+        self.assertEqual(named_lower_bound_case["comparison"], "pass")
         self.assertEqual(named_lower_bound_case["helper"], "fullmatch")
         self.assertEqual(named_lower_bound_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(named_lower_bound_case["observations"]["cpython"]["result"]["group0"], "abcd")
@@ -380,7 +395,15 @@ class CorrectnessHarnessWiderRangedRepeatQuantifiedGroupWorkflowTest(unittest.Te
             named_lower_bound_case["observations"]["cpython"]["result"]["groupdict"],
             {"word": "bc"},
         )
-        self.assertEqual(named_lower_bound_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_lower_bound_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            named_lower_bound_case["observations"]["rebar"]["result"]["group0"],
+            "abcd",
+        )
+        self.assertEqual(
+            named_lower_bound_case["observations"]["rebar"]["result"]["groupdict"],
+            {"word": "bc"},
+        )
 
 
 if __name__ == "__main__":
