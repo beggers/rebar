@@ -1,6 +1,6 @@
 # RBR-0105: Add bounded conditional group-exists parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,4 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0104`.
 - This task exists so the queue turns the first conditional group-exists workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+- Completed 2026-03-12: added narrow Rust-backed numbered/named group-exists conditional compile and match parity for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`, added parity coverage, and republished `reports/correctness/latest.json` at 194/194 passing with 0 `unimplemented` cases.

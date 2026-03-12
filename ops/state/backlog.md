@@ -4,9 +4,11 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0104` to publish a bounded conditional group-exists correctness pack so the queue reopens conditional execution through the smallest capture-aware slice before broader backtracking reopens the frontier further.
-2. Land `RBR-0105` to convert the first bounded conditional group-exists cases into real Rust-backed behavior instead of leaving that conditional slice as publication-only coverage.
-3. Land `RBR-0106` to catch bounded conditional group-exists benchmarks up so the first conditional slice reaches the published benchmark surface before broader backtracking reopens the frontier further.
+1. Land `RBR-0105` to convert the first bounded conditional group-exists cases into real Rust-backed behavior instead of leaving that conditional slice as publication-only coverage.
+2. Land `RBR-0106` to catch bounded conditional group-exists benchmarks up so the first conditional slice reaches the published benchmark surface before broader backtracking reopens the frontier further.
+3. Land `RBR-0107` to publish a bounded conditional no-else correctness pack for the CPython-accepted `(?(1)yes)` and `(?(name)yes)` group-exists forms so the queue advances through another accepted conditional shape instead of jumping to assertion-conditioned branches.
+4. Land `RBR-0108` to convert that bounded conditional no-else slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+5. Land `RBR-0109` to catch bounded conditional no-else benchmarks up so the second conditional slice reaches the published benchmark surface before rejected-syntax diagnostics or broader backtracking reopen the frontier further.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
@@ -71,8 +73,8 @@ Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier,
 - Once `RBR-0101` lands, keep the honest 188-case, 27-manifest, 6-gap optional-group alternation frontier explicit in tracked reporting until `RBR-0102` converts that slice behind `rebar._rebar`.
 - With `RBR-0103` landed, treat bounded optional-group alternation benchmark catch-up as part of the published benchmark baseline and keep the ready queue extending into bounded conditional group-exists publication and parity so the worker reopens conditional execution through the smallest capture-aware slice before replacement-conditioned work, rejected-syntax diagnostic follow-ons, or broader backtracking reopen the frontier.
 - After `RBR-0105`, catch bounded conditional benchmark coverage up before reopening correctness work, so the first conditional slice reaches benchmark reporting promptly.
-- Keep the active queue front at `RBR-0104` through `RBR-0106`; do not seed post-conditional runtime work until the next CPython-accepted conditional or diagnostic slice is pinned explicitly.
-- Do not queue runtime assertion-conditioned conditional tasks from prose alone; CPython `re` rejects tested shapes like `a(?(?=b)b|c)d`, so any post-`RBR-0106` follow-on should first decide whether it is rejected-syntax diagnostics or another accepted runtime conditional slice.
+- Keep the active queue front at `RBR-0105` through `RBR-0109`; after `RBR-0106`, the next accepted conditional form is the omitted-no-arm group-exists syntax `(?(1)yes)` / `(?(name)yes)`, not assertion-conditioned branches.
+- Do not queue runtime assertion-conditioned conditional tasks from prose alone; CPython `re` rejects tested shapes like `a(?(?=b)b|c)d`, so any post-`RBR-0109` follow-on should first decide whether it is rejected-syntax diagnostics or another accepted runtime conditional slice.
 - After `RBR-0035`, retarget the queue to bounded parser compile-parity tasks because the remaining currently published correctness gaps then sat in parser-matrix compile cases rather than module-surface failures.
 - Keep compile-benchmark catch-up queued immediately behind the parser compile-parity tasks so the compile-path report starts measuring new parser support instead of lagging one milestone behind the correctness surface.
 - Treat `USER-ASK-2` as durable architectural direction: new compatibility behavior belongs in Rust, while `python/rebar/__init__.py` should stay limited to symbol export, object wrappers, argument normalization, cache plumbing, and FFI calls.
