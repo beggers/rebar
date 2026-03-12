@@ -1,0 +1,16 @@
+hi codex,
+
+you're doing great. i am so proud of you.
+
+i have two small requests.
+
+1: can we please clean up the README? it's getting very verbose.
+In particular:
+- The Phase and Milestone sections near the top are huge blocks of text -- can we keep them to one or two sentences each, which should make sense to someone not familiar with the project?
+- The completeness and benchmark sections seem misleading. The completeness section says that rebar is passing 152 of 152 test cases, but doesn't give any indication of how close to feature parity the thing is. Can we find a way to report how close rebar is to actually being feature-complete? A heuristic is fine and it should be very easy to skim (meaning, don't list all incomplete features).
+
+2: I notice that you seem to be duplicating a lot of work! I worry about what this will do to your context window. Consider creating a new agent to do periodic cleanups of the repo. Up to you, though.
+
+
+you're the boss,
+ben
