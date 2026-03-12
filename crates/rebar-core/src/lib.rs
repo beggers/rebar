@@ -234,6 +234,28 @@ pub struct FindSpansOutcome {
     pub spans: Vec<(usize, usize)>,
 }
 
+/// Successful result metadata for repeated grouped-alternation span discovery.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct GroupedAlternationFindSpansOutcome {
+    /// Match status.
+    pub status: MatchStatus,
+    /// Normalized `pos` bound used for matching.
+    pub pos: usize,
+    /// Normalized `endpos` bound used for matching.
+    pub endpos: usize,
+    /// Matched spans plus the corresponding first-capture span.
+    pub matches: Vec<GroupedAlternationMatchSpan>,
+}
+
+/// One grouped-alternation match span and its first-capture span.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct GroupedAlternationMatchSpan {
+    /// Whole-match span.
+    pub span: (usize, usize),
+    /// First capture-group span.
+    pub group_1_span: (usize, usize),
+}
+
 /// Error raised while attempting a literal match.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MatchError {
@@ -1359,6 +1381,65 @@ pub fn grouped_literal_find_spans_str(
     }
 }
 
+/// Discover repeated spans for the bounded grouped-alternation replacement
+/// slice while preserving first-capture spans for template expansion.
+#[must_use]
+pub fn grouped_alternation_find_spans_str(
+    pattern: &str,
+    flags: i32,
+    string: &str,
+    pos: isize,
+    endpos: Option<isize>,
+) -> GroupedAlternationFindSpansOutcome {
+    let string_chars: Vec<char> = string.chars().collect();
+    let (normalized_pos, normalized_endpos) = normalize_bounds(string_chars.len(), pos, endpos);
+    let Some(grouped_pattern) = parse_grouped_alternation_pattern_str(pattern) else {
+        return GroupedAlternationFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    };
+    if flags != FLAG_UNICODE {
+        return GroupedAlternationFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    }
+
+    let mut matches = Vec::new();
+    let mut next_start = normalized_pos;
+    while let Some((span, group_spans)) = find_grouped_alternation_match_span_str(
+        &grouped_pattern,
+        flags,
+        MatchMode::Search,
+        &string_chars,
+        next_start,
+        normalized_endpos,
+    ) {
+        let group_1_span = group_spans
+            .first()
+            .and_then(|span| *span)
+            .expect("grouped alternation support always reports capture 1");
+        matches.push(GroupedAlternationMatchSpan { span, group_1_span });
+        next_start = span.1;
+    }
+
+    GroupedAlternationFindSpansOutcome {
+        status: if matches.is_empty() {
+            MatchStatus::NoMatch
+        } else {
+            MatchStatus::Matched
+        },
+        pos: normalized_pos,
+        endpos: normalized_endpos,
+        matches,
+    }
+}
+
 fn literal_find_spans_bytes(
     pattern: &[u8],
     flags: i32,
@@ -1862,9 +1943,9 @@ fn push_escaped_byte(output: &mut Vec<u8>, byte: u8) {
 mod tests {
     use super::{
         compile, escape_bytes, escape_str, expand_literal_replacement_template_str,
-        grouped_literal_find_spans_str, literal_find_spans, literal_match, CompileStatus,
-        MatchMode, MatchStatus, NamedGroup, PatternRef, FLAG_ASCII, FLAG_IGNORECASE, FLAG_LOCALE,
-        FLAG_UNICODE,
+        grouped_alternation_find_spans_str, grouped_literal_find_spans_str, literal_find_spans,
+        literal_match, CompileStatus, GroupedAlternationMatchSpan, MatchMode, MatchStatus,
+        NamedGroup, PatternRef, FLAG_ASCII, FLAG_IGNORECASE, FLAG_LOCALE, FLAG_UNICODE,
     };
 
     #[test]
@@ -2452,6 +2533,28 @@ mod tests {
         assert_eq!(outcome.pos, 1);
         assert_eq!(outcome.endpos, 7);
         assert_eq!(outcome.spans, vec![(1, 4), (4, 7)]);
+    }
+
+    #[test]
+    fn grouped_alternation_find_spans_reports_repeated_matches_and_capture_spans() {
+        let outcome =
+            grouped_alternation_find_spans_str("a(b|c)d", FLAG_UNICODE, "zabdacdx", 1, Some(7));
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.pos, 1);
+        assert_eq!(outcome.endpos, 7);
+        assert_eq!(
+            outcome.matches,
+            vec![
+                GroupedAlternationMatchSpan {
+                    span: (1, 4),
+                    group_1_span: (2, 3),
+                },
+                GroupedAlternationMatchSpan {
+                    span: (4, 7),
+                    group_1_span: (5, 6),
+                },
+            ]
+        );
     }
 
     #[test]

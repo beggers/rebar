@@ -1,8 +1,9 @@
 # RBR-0072: Add bounded grouped-alternation replacement-template parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Convert the first grouped-alternation replacement-template cases from the published correctness pack into real CPython-shaped behavior without claiming broad alternation, nested-group, or general replacement-template support.
@@ -28,3 +29,6 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0069`, `RBR-0070`, and `RBR-0071`.
 - This task exists so the queue extends from grouped alternation into the first combined alternation-and-replacement workflow instead of stopping at a reporting-only frontier.
+- Landed a narrow Rust-side grouped-alternation span collector and threaded it through the native replacement-template boundary so `a(b|c)d` and `a(?P<word>b|c)d` now expand `\\1` and `\\g<word>` against the captured branch text rather than the whole match.
+- Added native parity coverage for module and compiled-`Pattern` `sub()`/`subn()` flows and refreshed the grouped-alternation replacement correctness test expectations.
+- Republished `reports/correctness/latest.json`; the combined scorecard now covers 122 cases across 17 manifests with 122 passes, 0 explicit failures, and 0 `unimplemented` cases.

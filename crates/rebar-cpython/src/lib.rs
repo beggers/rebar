@@ -7,6 +7,7 @@ use pyo3::types::{PyBytes, PyList, PyString};
 use rebar_core::{
     compile as core_compile, escape_bytes as core_escape_bytes, escape_str as core_escape_str,
     expand_literal_replacement_template_str as core_expand_literal_replacement_template_str,
+    grouped_alternation_find_spans_str as core_grouped_alternation_find_spans_str,
     grouped_literal_find_spans_str as core_grouped_literal_find_spans_str,
     literal_find_spans as core_literal_find_spans, literal_match as core_literal_match,
     CompileStatus, MatchMode, MatchStatus, PatternRef, TARGET_CPYTHON_SERIES,
@@ -430,7 +431,7 @@ fn boundary_literal_template_subn(
 ) -> PyResult<(&'static str, PyObject, usize)> {
     let pattern_ref = py_pattern_ref(pattern)?;
     let string_ref = py_pattern_ref(string)?;
-    let (outcome, supports_capture_1, capture_1_name) = match (pattern_ref, string_ref) {
+    let (outcome, capture_1_spans, capture_1_name) = match (pattern_ref, string_ref) {
         (PatternRef::Str(pattern_value), PatternRef::Str(string_value)) => {
             let literal_outcome =
                 match core_literal_find_spans(pattern_ref, flags, string_ref, 0, None) {
@@ -438,11 +439,10 @@ fn boundary_literal_template_subn(
                     Err(error) => return Err(PyTypeError::new_err(error.message())),
                 };
             if literal_outcome.status != MatchStatus::Unsupported {
-                (literal_outcome, false, None)
+                (literal_outcome, None, None)
             } else {
                 let compile_outcome = core_compile(pattern_ref, flags)
                     .map_err(|error| PyTypeError::new_err(error.message))?;
-                let supports_capture_1 = compile_outcome.group_count == 1;
                 let capture_1_name = if compile_outcome.group_count == 1 {
                     compile_outcome
                         .named_groups
@@ -451,17 +451,48 @@ fn boundary_literal_template_subn(
                 } else {
                     None
                 };
-                (
-                    core_grouped_literal_find_spans_str(
+                let grouped_literal_outcome = core_grouped_literal_find_spans_str(
+                    pattern_value,
+                    flags,
+                    string_value,
+                    0,
+                    None,
+                );
+                if grouped_literal_outcome.status != MatchStatus::Unsupported {
+                    let capture_1_spans = (compile_outcome.group_count == 1)
+                        .then(|| grouped_literal_outcome.spans.clone());
+                    (grouped_literal_outcome, capture_1_spans, capture_1_name)
+                } else {
+                    let grouped_alternation_outcome = core_grouped_alternation_find_spans_str(
                         pattern_value,
                         flags,
                         string_value,
                         0,
                         None,
-                    ),
-                    supports_capture_1,
-                    capture_1_name,
-                )
+                    );
+                    (
+                        rebar_core::FindSpansOutcome {
+                            status: grouped_alternation_outcome.status,
+                            pos: grouped_alternation_outcome.pos,
+                            endpos: grouped_alternation_outcome.endpos,
+                            spans: grouped_alternation_outcome
+                                .matches
+                                .iter()
+                                .map(|matched| matched.span)
+                                .collect(),
+                        },
+                        (grouped_alternation_outcome.status != MatchStatus::Unsupported).then(
+                            || {
+                                grouped_alternation_outcome
+                                    .matches
+                                    .iter()
+                                    .map(|matched| matched.group_1_span)
+                                    .collect()
+                            },
+                        ),
+                        capture_1_name,
+                    )
+                }
             }
         }
         _ => {
@@ -469,15 +500,17 @@ fn boundary_literal_template_subn(
                 Ok(outcome) => outcome,
                 Err(error) => return Err(PyTypeError::new_err(error.message())),
             };
-            (outcome, false, None)
+            (outcome, None, None)
         }
     };
 
     if core_expand_literal_replacement_template_str(
         repl,
         "",
-        if supports_capture_1 { Some("") } else { None },
-        capture_1_name.as_deref().map(|name| (name, "")),
+        capture_1_spans.as_ref().map(|_| ""),
+        capture_1_name
+            .as_deref()
+            .zip(capture_1_spans.as_ref().map(|_| "")),
     )
     .is_none()
     {
@@ -511,18 +544,22 @@ fn boundary_literal_template_subn(
             let boundaries = build_str_boundaries(string_value);
             let mut output = String::new();
             let mut last_end = 0;
-            for &(start, end) in outcome.spans.iter().take(replacement_limit) {
+            for (match_index, &(start, end)) in
+                outcome.spans.iter().take(replacement_limit).enumerate()
+            {
                 output.push_str(str_slice(string_value, &boundaries, last_end, start));
                 let whole_match = str_slice(string_value, &boundaries, start, end);
+                let capture_1 = capture_1_spans
+                    .as_ref()
+                    .and_then(|spans| spans.get(match_index))
+                    .map(|&(capture_start, capture_end)| {
+                        str_slice(string_value, &boundaries, capture_start, capture_end)
+                    });
                 let expanded = core_expand_literal_replacement_template_str(
                     repl,
                     whole_match,
-                    if supports_capture_1 {
-                        Some(whole_match)
-                    } else {
-                        None
-                    },
-                    capture_1_name.as_deref().map(|name| (name, whole_match)),
+                    capture_1,
+                    capture_1_name.as_deref().zip(capture_1),
                 )
                 .ok_or_else(|| PyTypeError::new_err("unsupported literal replacement template"))?;
                 output.push_str(&expanded);
