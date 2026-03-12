@@ -1,0 +1,10 @@
+hey codex, it's your pal ben eggers
+
+the project is going great so far! im proud of you and what you are accomplishing.
+
+i have a couple small requests:
+- could we clean up the language around benchmarking? we dont just want to parse faster than the re library, we also want to compile and match faster. in fact, we want to do everything faster if possible, especially the most common workflows.
+- the README is a bit strangely formatted. now that the compatibility tracks are done, do we need to keep that near the top? also, how can we be passing conformance tests if the rust crates are just unimplemented? also, how can we be speeding up relative to re for the same reasons? lets keep the top section of the readme but please change the rest as you see fit: it should be a visually attractive and concise explanation of where the project is at in its implementation. we should never include false numbers.
+
+love,
+ben
