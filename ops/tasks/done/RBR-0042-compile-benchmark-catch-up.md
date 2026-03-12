@@ -1,6 +1,6 @@
 # RBR-0042: Convert compile-path benchmarks from scaffold-only toward partial measurement
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -26,3 +26,9 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0037A` through `RBR-0041`. This task exists so benchmark reporting follows newly landed Rust-backed parser support instead of remaining one milestone behind the correctness surface.
+
+## Completion
+- Replaced the scaffold-only compile manifest workloads with five supported parser cases covering inline-flag, lookbehind, character-class `IGNORECASE`, possessive-quantifier, and atomic-group compile paths, while retaining one parser-stress workload as an explicit known gap.
+- Updated parser benchmark gap messaging so partial compile measurement reads honestly instead of implying the entire compile surface is absent.
+- Regenerated `reports/benchmarks/latest.json`; the combined published benchmark report now records 35 measured workloads and 10 known gaps, with the compile-matrix manifest contributing 5 measured workloads and 1 honest gap.
+- Verified the benchmark regeneration path with `python3 -m unittest discover -s tests/benchmarks` (`10` tests run, `1` skipped, `OK`).

@@ -33,6 +33,7 @@ DEFAULT_CONTEXT_FILES = [
 ]
 TASK_STATUSES = ("ready", "in_progress", "done", "blocked")
 TRAILER = "Co-authored-by: Codex <noreply@openai.com>"
+PYTHON_SOURCE_ROOT = REPO_ROOT / "python"
 
 
 @dataclass(frozen=True)
@@ -86,6 +87,12 @@ def write_json(path: Path, payload: Any) -> None:
 def write_text(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
+
+
+def ensure_python_source_on_syspath() -> None:
+    python_source = str(PYTHON_SOURCE_ROOT)
+    if python_source not in sys.path:
+        sys.path.insert(0, python_source)
 
 
 def load_config() -> dict[str, Any]:
@@ -2094,6 +2101,52 @@ def refresh_reports(config: dict[str, Any]) -> dict[str, Any]:
     return report
 
 
+def load_correctness_harness_module() -> Any:
+    ensure_python_source_on_syspath()
+    from rebar_harness import correctness as correctness_harness
+
+    return correctness_harness
+
+
+def expected_correctness_manifest_ids(correctness_harness: Any) -> list[str]:
+    manifest_ids: list[str] = []
+    for fixture_path in correctness_harness.DEFAULT_FIXTURE_PATHS:
+        raw_manifest = read_json(Path(fixture_path), default={})
+        if not isinstance(raw_manifest, dict):
+            continue
+        manifest_id = str(raw_manifest.get("manifest_id") or "").strip()
+        if manifest_id:
+            manifest_ids.append(manifest_id)
+    return manifest_ids
+
+
+def published_correctness_report_needs_refresh(correctness_harness: Any) -> bool:
+    payload = read_json(Path(correctness_harness.DEFAULT_REPORT_PATH), default={})
+    if not isinstance(payload, dict):
+        return True
+
+    fixtures = payload.get("fixtures")
+    if not isinstance(fixtures, dict):
+        return True
+
+    expected_manifest_ids = expected_correctness_manifest_ids(correctness_harness)
+    manifest_count = fixtures.get("manifest_count")
+    manifest_ids = fixtures.get("manifest_ids")
+
+    if manifest_count != len(expected_manifest_ids):
+        return True
+    if manifest_ids != expected_manifest_ids:
+        return True
+    return False
+
+
+def refresh_published_correctness_scorecard() -> dict[str, Any] | None:
+    correctness_harness = load_correctness_harness_module()
+    if not published_correctness_report_needs_refresh(correctness_harness):
+        return None
+    return correctness_harness.run_correctness_harness()
+
+
 def run_cycle(
     config: dict[str, Any], *, force_supervisor: bool = False, force_agents: set[str] | None = None
 ) -> int:
@@ -2118,6 +2171,7 @@ def run_cycle(
         recovery_actions.extend(finalize_task_result(config, result, task_state))
 
     write_json(paths["task_state"], task_state)
+    refresh_published_correctness_scorecard()
     sync_readme_status(config)
     prune_action = prune_run_dirs(config, paths)
     git_action = maybe_commit_and_push(config, results, recovery_actions)
@@ -2197,6 +2251,7 @@ def cmd_sleep_seconds(config: dict[str, Any], exit_code: int) -> int:
 
 
 def cmd_report(config: dict[str, Any], output_format: str) -> int:
+    refresh_published_correctness_scorecard()
     sync_readme_status(config)
     report = build_report(config)
     paths = runtime_paths(config)

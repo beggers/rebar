@@ -46,8 +46,8 @@ class RegressionBenchmarkPackTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 13,
-                    "measured_workloads": 6,
+                    "known_gap_count": 8,
+                    "measured_workloads": 11,
                     "module_workloads": 11,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
@@ -73,12 +73,14 @@ class RegressionBenchmarkPackTest(unittest.TestCase):
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
         self.assertEqual(scorecard["summary"]["module_workloads"], 11)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 6)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 13)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 11)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 8)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 10)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 5)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 4)
         self.assertEqual(scorecard["families"]["parser"]["workload_count"], 8)
+        self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 3)
+        self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
         self.assertEqual(scorecard["families"]["module"]["workload_count"], 11)
         self.assertEqual(scorecard["artifacts"]["manifest_id"], "combined-benchmark-suite")
         self.assertEqual(scorecard["artifacts"]["selection_mode"], "full")
@@ -149,6 +151,11 @@ class RegressionBenchmarkPackTest(unittest.TestCase):
         self.assertEqual(bytes_module_workload["status"], "measured")
         self.assertEqual(bytes_module_workload["implementation_timing"]["status"], "measured")
         self.assertGreater(bytes_module_workload["implementation_ns"], 0)
+
+        compile_manifest = scorecard["manifests"]["compile-matrix"]
+        self.assertEqual(compile_manifest["measured_workloads"], 5)
+        self.assertEqual(compile_manifest["known_gap_count"], 1)
+        self.assertEqual(compile_manifest["readiness"], "partial")
 
     def test_runner_can_execute_smoke_subset_for_regression_pack(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

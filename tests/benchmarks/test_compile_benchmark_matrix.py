@@ -40,8 +40,8 @@ class CompileBenchmarkMatrixTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 6,
-                    "measured_workloads": 0,
+                    "known_gap_count": 1,
+                    "measured_workloads": 5,
                     "module_workloads": 0,
                     "parser_workloads": 6,
                     "regression_workloads": 0,
@@ -74,48 +74,63 @@ class CompileBenchmarkMatrixTest(unittest.TestCase):
         self.assertEqual(scorecard["artifacts"]["manifest_schema_version"], 1)
         self.assertEqual(scorecard["summary"]["total_workloads"], 6)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 6)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 5)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 1)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 3)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 2)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 1)
         self.assertIsInstance(scorecard["summary"]["baseline_median_ns"], int)
         self.assertGreater(scorecard["summary"]["baseline_median_ns"], 0)
         self.assertGreater(scorecard["summary"]["baseline_median_ops_per_second"], 0)
-        self.assertIsNone(scorecard["summary"]["implementation_median_ns"])
+        self.assertIsInstance(scorecard["summary"]["implementation_median_ns"], int)
+        self.assertGreater(scorecard["summary"]["implementation_median_ns"], 0)
         self.assertEqual(scorecard["families"]["parser"]["workload_count"], 6)
-        self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 6)
+        self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 1)
+        self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
         self.assertEqual(scorecard["families"]["parser"]["cache_modes"]["cold"]["workload_count"], 3)
         self.assertEqual(scorecard["families"]["parser"]["cache_modes"]["warm"]["workload_count"], 2)
         self.assertEqual(scorecard["cache_modes"]["purged"]["workload_count"], 1)
+        self.assertEqual(scorecard["manifests"]["compile-matrix"]["measured_workloads"], 5)
+        self.assertEqual(scorecard["manifests"]["compile-matrix"]["known_gap_count"], 1)
+        self.assertEqual(scorecard["manifests"]["compile-matrix"]["readiness"], "partial")
         self.assertEqual(scorecard["deferred"][0]["area"], "module-boundary")
         self.assertEqual(scorecard["deferred"][0]["follow_up"], "RBR-0015")
         self.assertEqual(len(scorecard["workloads"]), 6)
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 
         first_workload = scorecard["workloads"][0]
-        self.assertEqual(first_workload["bucket"], "tiny-literal")
+        self.assertEqual(first_workload["id"], "compile-inline-locale-bytes-warm")
+        self.assertEqual(first_workload["bucket"], "bytes-inline-flags")
         self.assertEqual(first_workload["family"], "parser")
-        self.assertEqual(first_workload["cache_mode"], "cold")
+        self.assertEqual(first_workload["cache_mode"], "warm")
         self.assertEqual(first_workload["timing_scope"], "compile-path-proxy")
-        self.assertEqual(first_workload["text_model"], "str")
+        self.assertEqual(first_workload["text_model"], "bytes")
         self.assertEqual(
             first_workload["syntax_features"],
-            ["literal-text", "assertions-and-anchors"],
+            ["pattern-text-model", "flag-syntax", "grouping-forms"],
         )
         self.assertEqual(first_workload["baseline_timing"]["status"], "measured")
         self.assertGreater(first_workload["baseline_ns"], 0)
         self.assertGreater(first_workload["baseline_ops_per_second"], 0)
-        self.assertEqual(first_workload["implementation_timing"]["status"], "unimplemented")
-        self.assertIsNone(first_workload["implementation_ns"])
-        self.assertIsNone(first_workload["implementation_ops_per_second"])
-        self.assertIsNone(first_workload["speedup_vs_cpython"])
+        self.assertEqual(first_workload["implementation_timing"]["status"], "measured")
+        self.assertGreater(first_workload["implementation_ns"], 0)
+        self.assertGreater(first_workload["implementation_ops_per_second"], 0)
+        self.assertIsInstance(first_workload["speedup_vs_cpython"], float)
 
         bytes_workloads = [
             workload for workload in scorecard["workloads"] if workload["text_model"] == "bytes"
         ]
-        self.assertEqual(len(bytes_workloads), 2)
+        self.assertEqual(len(bytes_workloads), 1)
         self.assertTrue(
             any("pattern-text-model" in workload["syntax_features"] for workload in bytes_workloads)
         )
+
+        gap_workload = scorecard["workloads"][-1]
+        self.assertEqual(gap_workload["id"], "compile-parser-stress-cold")
+        self.assertEqual(gap_workload["implementation_timing"]["status"], "unimplemented")
+        self.assertIsNone(gap_workload["implementation_ns"])
+        self.assertIsNone(gap_workload["speedup_vs_cpython"])
+        self.assertIn("outside the current rebar compile surface", gap_workload["notes"][-1])
 
 
 if __name__ == "__main__":

@@ -57,8 +57,8 @@ class LiteralFlagBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 15,
-                    "measured_workloads": 30,
+                    "known_gap_count": 10,
+                    "measured_workloads": 35,
                     "module_workloads": 37,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
@@ -85,12 +85,14 @@ class LiteralFlagBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
         self.assertEqual(scorecard["summary"]["module_workloads"], 37)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 30)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 15)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 35)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 10)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 11)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 18)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 16)
         self.assertEqual(scorecard["families"]["parser"]["workload_count"], 8)
+        self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 3)
+        self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
         self.assertEqual(scorecard["families"]["module"]["workload_count"], 37)
         self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 7)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")

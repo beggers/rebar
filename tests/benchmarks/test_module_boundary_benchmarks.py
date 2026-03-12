@@ -43,8 +43,8 @@ class ModuleBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 10,
-                    "measured_workloads": 4,
+                    "known_gap_count": 5,
+                    "measured_workloads": 9,
                     "module_workloads": 8,
                     "parser_workloads": 6,
                     "regression_workloads": 0,
@@ -70,12 +70,14 @@ class ModuleBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(scorecard["summary"]["total_workloads"], 14)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 6)
         self.assertEqual(scorecard["summary"]["module_workloads"], 8)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 4)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 10)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 9)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 5)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 7)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 5)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 2)
         self.assertEqual(scorecard["families"]["parser"]["workload_count"], 6)
+        self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 1)
+        self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
         self.assertEqual(scorecard["families"]["module"]["workload_count"], 8)
         self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 4)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
@@ -123,6 +125,11 @@ class ModuleBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(helper_workload["implementation_timing"]["status"], "unimplemented")
         self.assertIsNone(helper_workload["implementation_ns"])
         self.assertIsNone(helper_workload["speedup_vs_cpython"])
+
+        compile_manifest = scorecard["manifests"]["compile-matrix"]
+        self.assertEqual(compile_manifest["measured_workloads"], 5)
+        self.assertEqual(compile_manifest["known_gap_count"], 1)
+        self.assertEqual(compile_manifest["readiness"], "partial")
 
         warm_helper = next(
             workload

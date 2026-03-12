@@ -645,7 +645,10 @@ def ns_to_ops_per_second(value: int | None) -> float | None:
 
 def gap_note_for_workload(workload: Workload) -> str:
     if workload.family == "parser":
-        return "Implementation timing is unavailable until the rebar compile surface exists."
+        return (
+            "Implementation timing is unavailable for parser cases outside the current "
+            "rebar compile surface."
+        )
     if workload.operation == "import":
         return "Implementation import timing is unavailable until the rebar package can be imported in the benchmark environment."
     if workload.operation.startswith("pattern."):

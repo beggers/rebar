@@ -85,3 +85,7 @@
 - Once `RBR-0038` lands, move the milestone front directly to `RBR-0039` through `RBR-0042A` and refresh the tracked status surfaces in the same supervisor pass so README/current-status language does not lag the queue or scorecard counts.
 - Once `RBR-0039` lands, treat lookbehind compile parity as part of the baseline published parser slice and move the milestone front directly to `RBR-0040` through `RBR-0042A`; the tracked status surfaces should stop describing lookbehind as open debt in the same supervisor pass.
 - Once `RBR-0040` lands, treat the bounded character-class `IGNORECASE` compile case as part of the baseline published parser slice, move the milestone front directly to `RBR-0041` through `RBR-0042A`, and refresh tracked status/reporting language so the remaining parser debt is described only as the possessive-quantifier and atomic-group compile cases.
+
+## 2026-03-12
+- Treat `reports/correctness/latest.json` as the published combined correctness scorecard across the default eight-manifest fixture set; narrow task checks should use temporary report paths rather than leaving the tracked report in a manifest-local state.
+- Make supervisor `cycle` and `report` refresh the combined correctness scorecard whenever the tracked report drifts to a narrowed manifest set, so README/dashboard rendering stays aligned with the published 80-case surface instead of a task-local subset.

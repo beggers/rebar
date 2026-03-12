@@ -49,8 +49,8 @@ class PatternBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 13,
-                    "measured_workloads": 12,
+                    "known_gap_count": 8,
+                    "measured_workloads": 17,
                     "module_workloads": 17,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
@@ -77,12 +77,14 @@ class PatternBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
         self.assertEqual(scorecard["summary"]["module_workloads"], 17)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 12)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 13)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 17)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 8)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 10)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 8)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 7)
         self.assertEqual(scorecard["families"]["parser"]["workload_count"], 8)
+        self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 3)
+        self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
         self.assertEqual(scorecard["families"]["module"]["workload_count"], 17)
         self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 5)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
