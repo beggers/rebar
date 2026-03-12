@@ -416,7 +416,7 @@ def _compile_known_parser_case(pattern: str | bytes, flags: int) -> Pattern | No
     if (
         pattern == "[A-Z_][a-z0-9_]+"
         and flags == int(IGNORECASE | UNICODE)
-    ) or pattern == "(?u:a)" or pattern == "(?<=ab)c" or pattern == b"(?L:a)":
+    ) or pattern in {"(?u:a)", "(?<=ab)c", "a*+", "(?>ab|a)b"} or pattern == b"(?L:a)":
         return _build_compiled_pattern(pattern, flags, supports_literal=False)
 
     return None

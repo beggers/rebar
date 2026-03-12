@@ -1,6 +1,6 @@
 # RBR-0041: Implement compile-only support for published possessive and atomic parser cases
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,4 @@ Created: 2026-03-12
 
 ## Notes
 - Build on the parser-matrix correctness pack and `RBR-0037A`. This task exists to finish the current published construct-acceptance debt as bounded Rust-backed compile parity rather than leaving those cases indefinitely `unimplemented`.
+- Completed 2026-03-12: added Rust-backed compile acceptance for `a*+` and `(?>ab|a)b`, mirrored the bounded fallback behavior for non-native runs, added dedicated parser-construct parity tests, and regenerated `reports/correctness/latest.json` so both parser-matrix cases now report `pass`.

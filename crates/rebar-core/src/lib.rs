@@ -275,6 +275,8 @@ fn compile_known_supported_case(
             })
         }
         PatternRef::Str("(?u:a)")
+        | PatternRef::Str("a*+")
+        | PatternRef::Str("(?>ab|a)b")
         | PatternRef::Str("(?<=ab)c")
         | PatternRef::Bytes(b"(?L:a)") => Some(CompileOutcome {
             status: CompileStatus::Compiled,
@@ -653,6 +655,16 @@ mod tests {
         assert_eq!(outcome.status, CompileStatus::Compiled);
         assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
         assert!(!outcome.supports_literal);
+    }
+
+    #[test]
+    fn compile_accepts_bounded_possessive_quantifier_and_atomic_group_success_cases() {
+        for pattern in [PatternRef::Str("a*+"), PatternRef::Str("(?>ab|a)b")] {
+            let outcome = compile(pattern, 0).unwrap();
+            assert_eq!(outcome.status, CompileStatus::Compiled);
+            assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+            assert!(!outcome.supports_literal);
+        }
     }
 
     #[test]

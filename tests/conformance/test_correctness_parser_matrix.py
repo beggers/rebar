@@ -42,10 +42,10 @@ class CorrectnessHarnessParserMatrixTest(unittest.TestCase):
                 {
                     "executed_cases": 15,
                     "failed_cases": 0,
-                    "passed_cases": 13,
+                    "passed_cases": 15,
                     "skipped_cases": 0,
                     "total_cases": 15,
-                    "unimplemented_cases": 2,
+                    "unimplemented_cases": 0,
                 },
             )
 
@@ -98,15 +98,15 @@ class CorrectnessHarnessParserMatrixTest(unittest.TestCase):
         self.assertEqual(cpython_diagnostics["exception_types"], {"error": 6})
 
         rebar_diagnostics = scorecard["diagnostics"]["by_adapter"]["rebar"]
-        self.assertEqual(rebar_diagnostics["outcomes"], {"exception": 6, "success": 7, "unimplemented": 2})
+        self.assertEqual(rebar_diagnostics["outcomes"], {"exception": 6, "success": 9})
         self.assertEqual(rebar_diagnostics["warning_case_count"], 1)
         self.assertEqual(rebar_diagnostics["warning_categories"], {"FutureWarning": 1})
-        self.assertEqual(rebar_diagnostics["exception_case_count"], 8)
-        self.assertEqual(rebar_diagnostics["exception_types"], {"NotImplementedError": 2, "error": 6})
+        self.assertEqual(rebar_diagnostics["exception_case_count"], 6)
+        self.assertEqual(rebar_diagnostics["exception_types"], {"error": 6})
 
         str_suite = next(suite for suite in scorecard["suites"] if suite["id"] == "parser.compile.str")
         self.assertEqual(str_suite["summary"]["total_cases"], 11)
-        self.assertEqual(str_suite["summary"]["passed_cases"], 9)
+        self.assertEqual(str_suite["summary"]["passed_cases"], 11)
 
         bytes_suite = next(
             suite for suite in scorecard["suites"] if suite["id"] == "parser.compile.bytes"
@@ -129,6 +129,18 @@ class CorrectnessHarnessParserMatrixTest(unittest.TestCase):
         )
         self.assertEqual(str_character_class_case["comparison"], "pass")
         self.assertEqual(str_character_class_case["observations"]["rebar"]["outcome"], "success")
+
+        str_possessive_case = next(
+            case for case in scorecard["cases"] if case["id"] == "str-possessive-quantifier-success"
+        )
+        self.assertEqual(str_possessive_case["comparison"], "pass")
+        self.assertEqual(str_possessive_case["observations"]["rebar"]["outcome"], "success")
+
+        str_atomic_case = next(
+            case for case in scorecard["cases"] if case["id"] == "str-atomic-group-success"
+        )
+        self.assertEqual(str_atomic_case["comparison"], "pass")
+        self.assertEqual(str_atomic_case["observations"]["rebar"]["outcome"], "success")
 
         str_lookbehind_success_case = next(
             case for case in scorecard["cases"] if case["id"] == "str-fixed-width-lookbehind-success"
