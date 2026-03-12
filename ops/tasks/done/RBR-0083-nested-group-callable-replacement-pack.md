@@ -1,6 +1,6 @@
 # RBR-0083: Publish a nested-group callable-replacement correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0078`, `RBR-0081`, and `RBR-0082`.
 - This task exists so the worker can expose the next concrete gap after bounded nested-group replacement-template parity without jumping straight to quantified branches, branch-local backreferences, or broader callback semantics.
+
+## Completion
+- Added `tests/conformance/fixtures/nested_group_callable_replacement_workflows.json` and wired it into the default correctness publication set.
+- Added `tests/conformance/test_correctness_nested_group_callable_replacement_workflows.py` plus the manifest-list follow-on in `tests/python/test_readme_reporting.py`.
+- Regenerated `reports/correctness/latest.json`; the combined scorecard now covers 152 cases across 21 manifests with 144 passes and 8 honest `unimplemented` nested-group callable-replacement gaps.

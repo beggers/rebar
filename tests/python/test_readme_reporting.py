@@ -29,6 +29,13 @@ EXPECTED_MANIFEST_IDS = [
     "named-backreference-workflows",
     "numbered-backreference-workflows",
     "grouped-segment-workflows",
+    "nested-group-workflows",
+    "nested-group-replacement-workflows",
+    "nested-group-callable-replacement-workflows",
+    "literal-alternation-workflows",
+    "grouped-alternation-workflows",
+    "grouped-alternation-replacement-workflows",
+    "grouped-alternation-callable-replacement-workflows",
 ]
 
 

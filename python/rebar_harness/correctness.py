@@ -47,6 +47,11 @@ DEFAULT_FIXTURE_PATHS = (
     / "conformance"
     / "fixtures"
     / "nested_group_replacement_workflows.json",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
+    / "nested_group_callable_replacement_workflows.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "literal_alternation_workflows.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_alternation_workflows.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_alternation_replacement_workflows.json",
