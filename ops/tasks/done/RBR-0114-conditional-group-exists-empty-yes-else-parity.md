@@ -1,6 +1,6 @@
 # RBR-0114: Add bounded conditional empty-yes-arm parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -29,3 +29,5 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0113`.
 - This task exists so the queue turns the next accepted conditional runtime form into real Rust-backed behavior instead of leaving it as publication-only coverage.
+- Completed 2026-03-12: widened the bounded Rust conditional parser to accept explicit empty-yes-arm plus literal-else forms while preserving the already-landed empty-else slice and still rejecting the fully empty `(?(1)|)` / `(?(name)|)` forms.
+- Added Rust and Python parity coverage for numbered and named `a(b)?c(?(1)|e)` / `a(?P<word>b)?c(?(word)|e)` compile, module `search()`, and compiled-pattern `fullmatch()` flows, and republished `reports/correctness/latest.json` at 212/212 passing cases with zero honest gaps in the published slice.

@@ -4,17 +4,16 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0113` to publish a bounded empty-yes-arm conditional correctness pack for the CPython-accepted `(?(1)|else)` and `(?(name)|else)` group-exists forms so the queue keeps broadening accepted runtime conditionals before it turns to rejected-syntax diagnostics.
-2. Land `RBR-0114` to convert that bounded empty-yes-arm conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-3. Land `RBR-0115` to catch bounded empty-yes-arm conditional benchmarks up so the next accepted conditional syntax slice reaches the published benchmark surface before the fully empty conditional forms or rejected-syntax diagnostics reopen the frontier further.
-4. Land `RBR-0116` to publish a bounded fully-empty conditional correctness pack for the CPython-accepted `(?(1)|)` and `(?(name)|)` group-exists forms so the queue keeps broadening accepted conditional runtime syntax instead of jumping straight to rejected-syntax diagnostics.
-5. Land `RBR-0117` to convert that bounded fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-6. Land `RBR-0118` to catch bounded fully-empty conditional benchmarks up so the fully empty group-exists slice reaches the published benchmark surface before rejected-syntax diagnostics or broader backtracking reopen the frontier further.
-7. Land `RBR-0119` to publish a bounded rejected-syntax diagnostic pack for assertion-conditioned conditional forms so the queue keeps moving once the accepted empty-arm surfaces are exhausted.
-8. Land `RBR-0120` to convert that bounded assertion-conditioned diagnostic slice into real Rust-backed compile diagnostics instead of leaving it as publication-only coverage.
-9. Land `RBR-0121` to publish one bounded wider ranged-repeat quantified-group correctness pack for `{1,3}` workflows so counted execution broadens before quantified alternation or broader backtracking reopen the frontier.
-10. Land `RBR-0122` to convert that wider ranged-repeat slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-11. Land `RBR-0123` to catch wider ranged-repeat quantified-group benchmarks up so the widened counted-range slice reaches the published benchmark surface before quantified alternation or broader backtracking reopen the frontier further.
+1. Land `RBR-0114` to convert the newly published bounded empty-yes-arm conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+2. Land `RBR-0115` to catch bounded empty-yes-arm conditional benchmarks up so the next accepted conditional syntax slice reaches the published benchmark surface before the fully empty conditional forms or rejected-syntax diagnostics reopen the frontier further.
+3. Land `RBR-0116` to publish a bounded fully-empty conditional correctness pack for the CPython-accepted `(?(1)|)` and `(?(name)|)` group-exists forms so the queue keeps broadening accepted conditional runtime syntax instead of jumping straight to rejected-syntax diagnostics.
+4. Land `RBR-0117` to convert that bounded fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+5. Land `RBR-0118` to catch bounded fully-empty conditional benchmarks up so the fully empty group-exists slice reaches the published benchmark surface before rejected-syntax diagnostics or broader backtracking reopen the frontier further.
+6. Land `RBR-0119` to publish a bounded rejected-syntax diagnostic pack for assertion-conditioned conditional forms so the queue keeps moving once the accepted empty-arm surfaces are exhausted.
+7. Land `RBR-0120` to convert that bounded assertion-conditioned diagnostic slice into real Rust-backed compile diagnostics instead of leaving it as publication-only coverage.
+8. Land `RBR-0121` to publish one bounded wider ranged-repeat quantified-group correctness pack for `{1,3}` workflows so counted execution broadens before quantified alternation or broader backtracking reopen the frontier.
+9. Land `RBR-0122` to convert that wider ranged-repeat slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+10. Land `RBR-0123` to catch wider ranged-repeat quantified-group benchmarks up so the widened counted-range slice reaches the published benchmark surface before quantified alternation or broader backtracking reopen the frontier further.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
@@ -79,6 +78,7 @@ Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier,
 - Once `RBR-0101` lands, keep the honest 188-case, 27-manifest, 6-gap optional-group alternation frontier explicit in tracked reporting until `RBR-0102` converts that slice behind `rebar._rebar`.
 - With `RBR-0103` landed, treat bounded optional-group alternation benchmark catch-up as part of the published benchmark baseline and keep the ready queue extending into bounded conditional group-exists publication and parity so the worker reopens conditional execution through the smallest capture-aware slice before replacement-conditioned work, rejected-syntax diagnostic follow-ons, or broader backtracking reopen the frontier.
 - Once `RBR-0111` lands, treat bounded explicit-empty-else conditional parity as part of the tracked Rust-backed baseline, refresh README/current-status/backlog surfaces in the same supervisor pass, keep the zero-gap 206-case, 30-manifest correctness frontier explicit, and keep the active queue front at `RBR-0112` through `RBR-0123`.
+- Once `RBR-0113` lands, keep the honest 212-case, 31-manifest, 6-gap empty-yes-arm frontier explicit in tracked reporting until `RBR-0114` converts that slice behind `rebar._rebar`, refresh README/current-status/backlog surfaces in the same supervisor pass, and keep the active queue front at `RBR-0114` through `RBR-0123` so parity and benchmark catch-up stay ahead of later conditional syntax or diagnostics.
 - After `RBR-0112`, the next accepted conditional syntax to publish is the empty-yes-arm group-exists form `(?(1)|else)` / `(?(name)|else)`, not assertion-conditioned branches or a vague rejected-syntax bucket.
 - After `RBR-0115`, the next accepted conditional syntax to publish is the fully empty group-exists form `(?(1)|)` / `(?(name)|)`, not assertion-conditioned branches or a vague rejected-syntax bucket.
 - Treat the omitted-no-arm, explicit-empty-else, empty-yes-arm, and fully-empty group-exists forms as separate publication/parity/benchmark slices even when some bounded runtime branches are equivalent or degenerate; accepted syntax coverage still has to be reported explicitly.
