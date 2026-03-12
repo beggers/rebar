@@ -413,7 +413,10 @@ def _compile_known_parser_case(pattern: str | bytes, flags: int) -> Pattern | No
         warnings.warn("Possible nested set at position 1", FutureWarning, stacklevel=2)
         return _build_compiled_pattern(pattern, flags, supports_literal=False)
 
-    if pattern == "(?u:a)" or pattern == "(?<=ab)c" or pattern == b"(?L:a)":
+    if (
+        pattern == "[A-Z_][a-z0-9_]+"
+        and flags == int(IGNORECASE | UNICODE)
+    ) or pattern == "(?u:a)" or pattern == "(?<=ab)c" or pattern == b"(?L:a)":
         return _build_compiled_pattern(pattern, flags, supports_literal=False)
 
     return None

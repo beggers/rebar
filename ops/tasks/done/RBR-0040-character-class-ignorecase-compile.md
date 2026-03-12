@@ -1,6 +1,6 @@
 # RBR-0040: Implement the published character-class `IGNORECASE` compile case
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,10 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0032`, `RBR-0037`, and `RBR-0037A`. This task exists so one high-value published character-class compile case becomes real Rust-backed behavior before the roadmap broadens again.
+
+## Completion
+- Added a bounded Rust-core compile allowlist for the exact published `str` parser-matrix case `[A-Z_][a-z0-9_]+` under API-level `IGNORECASE`, preserving compile-only behavior by keeping literal execution unsupported.
+- Kept the source-tree Python fallback aligned for the same normalized-flag combination so the default harness observes the landed compile metadata and cache behavior without delegating to stdlib `re.compile()`.
+- Added direct unit coverage in `tests/python/test_parser_character_class_parity.py` for CPython compile metadata parity, cache/purge behavior, and the no-stdlib-delegation contract for this bounded case.
+- Updated the parser-matrix harness assertions and regenerated `reports/correctness/latest.json`; the published scorecard now reports `71` passes and `9` `unimplemented` outcomes, with `str-character-class-ignorecase-success` flipped from `unimplemented` to `pass`.
+- Verified with `cargo test -p rebar-core compile_accepts_bounded_character_class_ignorecase_success_case`, `python3 -m unittest tests.python.test_parser_character_class_parity tests.python.test_parser_inline_flag_parity tests.python.test_parser_lookbehind_parity`, and `python3 -m unittest tests.conformance.test_correctness_parser_matrix`.

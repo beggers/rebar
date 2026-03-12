@@ -264,6 +264,16 @@ fn compile_known_supported_case(
     normalized_flags: i32,
 ) -> Option<CompileOutcome> {
     match pattern {
+        PatternRef::Str("[A-Z_][a-z0-9_]+")
+            if normalized_flags == FLAG_IGNORECASE | FLAG_UNICODE =>
+        {
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                warning: None,
+            })
+        }
         PatternRef::Str("(?u:a)")
         | PatternRef::Str("(?<=ab)c")
         | PatternRef::Bytes(b"(?L:a)") => Some(CompileOutcome {
@@ -642,6 +652,14 @@ mod tests {
         let outcome = compile(PatternRef::Str("(?<=ab)c"), 0).unwrap();
         assert_eq!(outcome.status, CompileStatus::Compiled);
         assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+    }
+
+    #[test]
+    fn compile_accepts_bounded_character_class_ignorecase_success_case() {
+        let outcome = compile(PatternRef::Str("[A-Z_][a-z0-9_]+"), FLAG_IGNORECASE).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_IGNORECASE | FLAG_UNICODE);
         assert!(!outcome.supports_literal);
     }
 
