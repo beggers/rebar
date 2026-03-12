@@ -1,6 +1,6 @@
 # RBR-0042A: Move the supported collection and replacement slice behind the Rust boundary
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,8 @@ Created: 2026-03-12
 - Triggered by `USER-ASK-2`.
 - Build on `RBR-0028`, `RBR-0029`, `RBR-0030`, and `RBR-0031`.
 - This task exists so the queued workflow follow-ons extend a Rust-owned path instead of adding more permanent logic to the Python shim.
+
+## Completion
+- 2026-03-12: Moved the supported literal-only collection/replacement execution path into Rust by adding repeated-span discovery in `rebar-core`, exposing split/findall/finditer/subn entrypoints from `rebar._rebar`, and keeping `python/rebar/__init__.py` limited to wrapper construction, placeholder translation, and replacement payload marshalling.
+- 2026-03-12: Added `tests/python/test_rust_collection_replacement_boundary.py` to prove module and `Pattern` collection/replacement helpers consume native-only outputs and spans when `_native` is present, updated the collection/replacement correctness harness expectation to the current `69`-case `65 pass / 4 unimplemented` summary, and republished the combined tracked correctness report (`80` cases, `73` pass, `7` unimplemented).
+- 2026-03-12: Verification: `python3 -m unittest tests.python.test_rust_collection_replacement_boundary tests.python.test_rust_compile_match_boundary tests.python.test_literal_collection_helpers tests.python.test_literal_replacement_helpers tests.conformance.test_correctness_collection_replacement_workflows`; `cargo test -p rebar-core --lib`; `cargo test -p rebar-cpython --lib`; republished `reports/correctness/latest.json` via `python3 -m rebar_harness.correctness ...`.

@@ -151,30 +151,50 @@ class Pattern:
         return _dispatch_pattern_match(self, "fullmatch", *_args, **_kwargs)
 
     def split(self, string: object, maxsplit: int = 0) -> object:
+        if _native is not None:
+            return _run_native_literal_split(self, string, maxsplit=maxsplit)
         if not _supports_literal_collection_execution(self):
             return self._raise_placeholder("split")
         return _run_literal_split(self, string, maxsplit=maxsplit)
 
     def findall(self, string: object, pos: int = 0, endpos: int | None = None) -> object:
+        if _native is not None:
+            return _run_native_literal_findall(self, string, pos=pos, endpos=endpos)
         if not _supports_literal_collection_execution(self):
             return self._raise_placeholder("findall")
         return _run_literal_findall(self, string, pos=pos, endpos=endpos)
 
     def finditer(self, string: object, pos: int = 0, endpos: int | None = None) -> object:
+        if _native is not None:
+            return _run_native_literal_finditer(self, string, pos=pos, endpos=endpos)
         if not _supports_literal_collection_execution(self):
             return self._raise_placeholder("finditer")
         return _run_literal_finditer(self, string, pos=pos, endpos=endpos)
 
     def sub(self, repl: object, string: object, count: int = 0) -> object:
+        compatible_replacement = _ensure_literal_replacement_payload(
+            self.pattern,
+            repl,
+            unsupported=self._raise_placeholder,
+            helper_name="sub",
+        )
+        if _native is not None:
+            return _run_native_literal_sub(self, compatible_replacement, string, count=count)
         if not _supports_literal_replacement_execution(self):
             return self._raise_placeholder("sub")
-        _ensure_literal_replacement_payload(self.pattern, repl, unsupported=self._raise_placeholder, helper_name="sub")
         return _run_literal_sub(self, repl, string, count=count)
 
     def subn(self, repl: object, string: object, count: int = 0) -> object:
+        compatible_replacement = _ensure_literal_replacement_payload(
+            self.pattern,
+            repl,
+            unsupported=self._raise_placeholder,
+            helper_name="subn",
+        )
+        if _native is not None:
+            return _run_native_literal_subn(self, compatible_replacement, string, count=count)
         if not _supports_literal_replacement_execution(self):
             return self._raise_placeholder("subn")
-        _ensure_literal_replacement_payload(self.pattern, repl, unsupported=self._raise_placeholder, helper_name="subn")
         return _run_literal_subn(self, repl, string, count=count)
 
 
@@ -388,6 +408,101 @@ def _dispatch_pattern_match(
     if not _supports_literal_execution(compiled_pattern):
         return compiled_pattern._raise_placeholder(mode)
     return _run_literal_match(compiled_pattern, mode, string, pos=pos, endpos=endpos)
+
+
+def _run_native_literal_split(
+    compiled_pattern: Pattern,
+    string: object,
+    maxsplit: int = 0,
+) -> list[str] | list[bytes]:
+    status, items = _native.boundary_literal_split(
+        compiled_pattern.pattern,
+        compiled_pattern.flags,
+        string,
+        maxsplit,
+    )
+    if status == "unsupported":
+        return compiled_pattern._raise_placeholder("split")
+    return items
+
+
+def _run_native_literal_findall(
+    compiled_pattern: Pattern,
+    string: object,
+    pos: int = 0,
+    endpos: int | None = None,
+) -> list[str] | list[bytes]:
+    status, items = _native.boundary_literal_findall(
+        compiled_pattern.pattern,
+        compiled_pattern.flags,
+        string,
+        pos,
+        endpos,
+    )
+    if status == "unsupported":
+        return compiled_pattern._raise_placeholder("findall")
+    return items
+
+
+def _run_native_literal_finditer(
+    compiled_pattern: Pattern,
+    string: object,
+    pos: int = 0,
+    endpos: int | None = None,
+):
+    status, normalized_pos, normalized_endpos, spans = _native.boundary_literal_finditer(
+        compiled_pattern.pattern,
+        compiled_pattern.flags,
+        string,
+        pos,
+        endpos,
+    )
+    if status == "unsupported":
+        return compiled_pattern._raise_placeholder("finditer")
+
+    compatible_string = _ensure_compatible_string(compiled_pattern.pattern, string)
+    return iter(
+        [
+            _build_match(compiled_pattern, compatible_string, normalized_pos, normalized_endpos, span)
+            for span in spans
+        ]
+    )
+
+
+def _run_native_literal_sub(
+    compiled_pattern: Pattern,
+    repl: str | bytes,
+    string: object,
+    count: int = 0,
+) -> str | bytes:
+    substituted, _replacement_count = _run_native_literal_subn(
+        compiled_pattern,
+        repl,
+        string,
+        count=count,
+        helper_name="sub",
+    )
+    return substituted
+
+
+def _run_native_literal_subn(
+    compiled_pattern: Pattern,
+    repl: str | bytes,
+    string: object,
+    count: int = 0,
+    *,
+    helper_name: str = "subn",
+) -> tuple[str | bytes, int]:
+    status, substituted, replacement_count = _native.boundary_literal_subn(
+        compiled_pattern.pattern,
+        compiled_pattern.flags,
+        repl,
+        string,
+        count,
+    )
+    if status == "unsupported":
+        return compiled_pattern._raise_placeholder(helper_name)
+    return substituted, replacement_count
 
 
 def _compile_known_parser_case(pattern: str | bytes, flags: int) -> Pattern | None:
@@ -725,6 +840,15 @@ def search(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> Ma
         raise
 
 
+def _translate_pattern_placeholder(method_name: str, call) -> object:
+    try:
+        return call()
+    except NotImplementedError as exc:
+        if str(exc) == _pattern_placeholder_message(method_name):
+            return _raise_placeholder(method_name)
+        raise
+
+
 def match(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> Match | None:
     """Literal-only drop-in slice for `re.match`."""
 
@@ -758,27 +882,24 @@ def split(
     """Literal-only drop-in slice for `re.split`."""
 
     compiled = compile(pattern, flags)
-    if not _supports_literal_collection_execution(compiled):
-        return _raise_placeholder("split")
-    return compiled.split(string, maxsplit=maxsplit)
+    return _translate_pattern_placeholder(
+        "split",
+        lambda: compiled.split(string, maxsplit=maxsplit),
+    )
 
 
 def findall(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> object:
     """Literal-only drop-in slice for `re.findall`."""
 
     compiled = compile(pattern, flags)
-    if not _supports_literal_collection_execution(compiled):
-        return _raise_placeholder("findall")
-    return compiled.findall(string)
+    return _translate_pattern_placeholder("findall", lambda: compiled.findall(string))
 
 
 def finditer(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> object:
     """Literal-only drop-in slice for `re.finditer`."""
 
     compiled = compile(pattern, flags)
-    if not _supports_literal_collection_execution(compiled):
-        return _raise_placeholder("finditer")
-    return compiled.finditer(string)
+    return _translate_pattern_placeholder("finditer", lambda: compiled.finditer(string))
 
 
 def sub(
@@ -801,9 +922,7 @@ def sub(
             return _raise_placeholder("sub")
 
     compiled = compile(pattern, flags)
-    if not _supports_literal_replacement_execution(compiled):
-        return _raise_placeholder("sub")
-    return compiled.sub(repl, string, count=count)
+    return _translate_pattern_placeholder("sub", lambda: compiled.sub(repl, string, count=count))
 
 
 def subn(
@@ -826,9 +945,7 @@ def subn(
             return _raise_placeholder("subn")
 
     compiled = compile(pattern, flags)
-    if not _supports_literal_replacement_execution(compiled):
-        return _raise_placeholder("subn")
-    return compiled.subn(repl, string, count=count)
+    return _translate_pattern_placeholder("subn", lambda: compiled.subn(repl, string, count=count))
 
 
 def template(*_args: object, **_kwargs: object) -> object:

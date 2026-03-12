@@ -2,7 +2,8 @@
 //!
 //! This crate intentionally implements only the already-published behavior:
 //! bounded compile classification, a handful of parser diagnostics, literal
-//! search/match/fullmatch, and `escape()` parity for `str` and `bytes`.
+//! search/match plus collection/replacement span discovery, and `escape()`
+//! parity for `str` and `bytes`.
 
 /// The pinned CPython compatibility line for the initial parser target.
 pub const TARGET_CPYTHON_SERIES: &str = "3.12.x";
@@ -48,6 +49,19 @@ impl<'a> PatternRef<'a> {
 
         let base_flags = self.literal_match_base_flags();
         flags == base_flags || flags == base_flags | FLAG_IGNORECASE
+    }
+
+    fn supports_literal_collection_execution(self, flags: i32) -> bool {
+        self.supports_pattern_scaffold()
+            && !self.is_empty()
+            && flags == self.literal_match_base_flags()
+    }
+
+    fn is_empty(self) -> bool {
+        match self {
+            Self::Str(value) => value.is_empty(),
+            Self::Bytes(value) => value.is_empty(),
+        }
     }
 }
 
@@ -164,6 +178,19 @@ pub struct MatchOutcome {
     pub span: Option<(usize, usize)>,
 }
 
+/// Successful result metadata for repeated literal span discovery.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct FindSpansOutcome {
+    /// Match status.
+    pub status: MatchStatus,
+    /// Normalized `pos` bound used for matching.
+    pub pos: usize,
+    /// Normalized `endpos` bound used for matching.
+    pub endpos: usize,
+    /// Matched spans in left-to-right execution order.
+    pub spans: Vec<(usize, usize)>,
+}
+
 /// Error raised while attempting a literal match.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MatchError {
@@ -197,9 +224,34 @@ pub fn literal_match(
         (PatternRef::Str(pattern), PatternRef::Str(string)) => {
             Ok(literal_match_str(pattern, flags, mode, string, pos, endpos))
         }
-        (PatternRef::Bytes(pattern), PatternRef::Bytes(string)) => {
-            Ok(literal_match_bytes(pattern, flags, mode, string, pos, endpos))
+        (PatternRef::Bytes(pattern), PatternRef::Bytes(string)) => Ok(literal_match_bytes(
+            pattern, flags, mode, string, pos, endpos,
+        )),
+        (PatternRef::Str(_), PatternRef::Bytes(_)) => Err(MatchError::TypeMismatch {
+            message: "cannot use a string pattern on a bytes-like object",
+        }),
+        (PatternRef::Bytes(_), PatternRef::Str(_)) => Err(MatchError::TypeMismatch {
+            message: "cannot use a bytes pattern on a string-like object",
+        }),
+    }
+}
+
+/// Discover repeated spans for the currently supported literal-only collection
+/// and replacement slice.
+pub fn literal_find_spans(
+    pattern: PatternRef<'_>,
+    flags: i32,
+    string: PatternRef<'_>,
+    pos: isize,
+    endpos: Option<isize>,
+) -> Result<FindSpansOutcome, MatchError> {
+    match (pattern, string) {
+        (PatternRef::Str(pattern), PatternRef::Str(string)) => {
+            Ok(literal_find_spans_str(pattern, flags, string, pos, endpos))
         }
+        (PatternRef::Bytes(pattern), PatternRef::Bytes(string)) => Ok(literal_find_spans_bytes(
+            pattern, flags, string, pos, endpos,
+        )),
         (PatternRef::Str(_), PatternRef::Bytes(_)) => Err(MatchError::TypeMismatch {
             message: "cannot use a string pattern on a bytes-like object",
         }),
@@ -302,7 +354,19 @@ fn is_meta_character(character: char) -> bool {
 fn is_meta_byte(byte: u8) -> bool {
     matches!(
         byte,
-        b'.' | b'^' | b'$' | b'*' | b'+' | b'?' | b'{' | b'}' | b'[' | b']' | b'\\' | b'|' | b'(' | b')'
+        b'.' | b'^'
+            | b'$'
+            | b'*'
+            | b'+'
+            | b'?'
+            | b'{'
+            | b'}'
+            | b'['
+            | b']'
+            | b'\\'
+            | b'|'
+            | b'('
+            | b')'
     )
 }
 
@@ -330,7 +394,14 @@ fn literal_match_str(
         PatternRef::Bytes(_) => unreachable!(),
     };
     let string_chars: Vec<char> = string.chars().collect();
-    let span = find_match_span_str(&pattern_chars, flags, mode, &string_chars, normalized_pos, normalized_endpos);
+    let span = find_match_span_str(
+        &pattern_chars,
+        flags,
+        mode,
+        &string_chars,
+        normalized_pos,
+        normalized_endpos,
+    );
     MatchOutcome {
         status: if span.is_some() {
             MatchStatus::Matched
@@ -340,6 +411,45 @@ fn literal_match_str(
         pos: normalized_pos,
         endpos: normalized_endpos,
         span,
+    }
+}
+
+fn literal_find_spans_str(
+    pattern: &str,
+    flags: i32,
+    string: &str,
+    pos: isize,
+    endpos: Option<isize>,
+) -> FindSpansOutcome {
+    let pattern_ref = PatternRef::Str(pattern);
+    let string_chars: Vec<char> = string.chars().collect();
+    let pattern_chars: Vec<char> = pattern.chars().collect();
+    let (normalized_pos, normalized_endpos) = normalize_bounds(string_chars.len(), pos, endpos);
+    if !pattern_ref.supports_literal_collection_execution(flags) {
+        return FindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            spans: Vec::new(),
+        };
+    }
+
+    let spans = collect_literal_spans_str(
+        &pattern_chars,
+        flags,
+        &string_chars,
+        normalized_pos,
+        normalized_endpos,
+    );
+    FindSpansOutcome {
+        status: if spans.is_empty() {
+            MatchStatus::NoMatch
+        } else {
+            MatchStatus::Matched
+        },
+        pos: normalized_pos,
+        endpos: normalized_endpos,
+        spans,
     }
 }
 
@@ -362,7 +472,14 @@ fn literal_match_bytes(
         };
     }
 
-    let span = find_match_span_bytes(pattern_bytes(pattern), flags, mode, string, normalized_pos, normalized_endpos);
+    let span = find_match_span_bytes(
+        pattern_bytes(pattern),
+        flags,
+        mode,
+        string,
+        normalized_pos,
+        normalized_endpos,
+    );
     MatchOutcome {
         status: if span.is_some() {
             MatchStatus::Matched
@@ -372,6 +489,38 @@ fn literal_match_bytes(
         pos: normalized_pos,
         endpos: normalized_endpos,
         span,
+    }
+}
+
+fn literal_find_spans_bytes(
+    pattern: &[u8],
+    flags: i32,
+    string: &[u8],
+    pos: isize,
+    endpos: Option<isize>,
+) -> FindSpansOutcome {
+    let pattern_ref = PatternRef::Bytes(pattern);
+    let (normalized_pos, normalized_endpos) = normalize_bounds(string.len(), pos, endpos);
+    if !pattern_ref.supports_literal_collection_execution(flags) {
+        return FindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            spans: Vec::new(),
+        };
+    }
+
+    let spans =
+        collect_literal_spans_bytes(pattern, flags, string, normalized_pos, normalized_endpos);
+    FindSpansOutcome {
+        status: if spans.is_empty() {
+            MatchStatus::NoMatch
+        } else {
+            MatchStatus::Matched
+        },
+        pos: normalized_pos,
+        endpos: normalized_endpos,
+        spans,
     }
 }
 
@@ -448,7 +597,13 @@ fn find_match_span_bytes(
     }
 }
 
-fn literal_matches_at_str(pattern: &[char], flags: i32, string: &[char], start: usize, endpos: usize) -> bool {
+fn literal_matches_at_str(
+    pattern: &[char],
+    flags: i32,
+    string: &[char],
+    start: usize,
+    endpos: usize,
+) -> bool {
     let stop = start + pattern.len();
     if stop > endpos {
         return false;
@@ -457,12 +612,19 @@ fn literal_matches_at_str(pattern: &[char], flags: i32, string: &[char], start: 
         return string.get(start..stop) == Some(pattern);
     }
 
-    pattern.iter().enumerate().all(|(offset, pattern_char)| {
-        folded_chars_equal(*pattern_char, string[start + offset])
-    })
+    pattern
+        .iter()
+        .enumerate()
+        .all(|(offset, pattern_char)| folded_chars_equal(*pattern_char, string[start + offset]))
 }
 
-fn literal_matches_at_bytes(pattern: &[u8], flags: i32, string: &[u8], start: usize, endpos: usize) -> bool {
+fn literal_matches_at_bytes(
+    pattern: &[u8],
+    flags: i32,
+    string: &[u8],
+    start: usize,
+    endpos: usize,
+) -> bool {
     let stop = start + pattern.len();
     if stop > endpos {
         return false;
@@ -502,11 +664,54 @@ fn find_literal_start_bytes(
         return Some(pos);
     }
     if flags & FLAG_IGNORECASE == 0 {
-        return string.get(pos..endpos)?.windows(pattern.len()).position(|window| window == pattern).map(|offset| pos + offset);
+        return string
+            .get(pos..endpos)?
+            .windows(pattern.len())
+            .position(|window| window == pattern)
+            .map(|offset| pos + offset);
     }
 
     let last_start = endpos.checked_sub(pattern.len())?;
-    (pos..=last_start).find(|start| literal_matches_at_bytes(pattern, flags, string, *start, endpos))
+    (pos..=last_start)
+        .find(|start| literal_matches_at_bytes(pattern, flags, string, *start, endpos))
+}
+
+fn collect_literal_spans_str(
+    pattern: &[char],
+    flags: i32,
+    string: &[char],
+    pos: usize,
+    endpos: usize,
+) -> Vec<(usize, usize)> {
+    let mut spans = Vec::new();
+    let mut next_start = pos;
+
+    while let Some(start) = find_literal_start_str(pattern, flags, string, next_start, endpos) {
+        let span = (start, start + pattern.len());
+        spans.push(span);
+        next_start = span.1;
+    }
+
+    spans
+}
+
+fn collect_literal_spans_bytes(
+    pattern: &[u8],
+    flags: i32,
+    string: &[u8],
+    pos: usize,
+    endpos: usize,
+) -> Vec<(usize, usize)> {
+    let mut spans = Vec::new();
+    let mut next_start = pos;
+
+    while let Some(start) = find_literal_start_bytes(pattern, flags, string, next_start, endpos) {
+        let span = (start, start + pattern.len());
+        spans.push(span);
+        next_start = span.1;
+    }
+
+    spans
 }
 
 fn normalize_bounds(length: usize, pos: isize, endpos: Option<isize>) -> (usize, usize) {
@@ -601,8 +806,8 @@ fn push_escaped_byte(output: &mut Vec<u8>, byte: u8) {
 #[cfg(test)]
 mod tests {
     use super::{
-        compile, escape_bytes, escape_str, literal_match, CompileStatus, MatchMode, MatchStatus,
-        PatternRef, FLAG_ASCII, FLAG_IGNORECASE, FLAG_UNICODE,
+        compile, escape_bytes, escape_str, literal_find_spans, literal_match, CompileStatus,
+        MatchMode, MatchStatus, PatternRef, FLAG_ASCII, FLAG_IGNORECASE, FLAG_UNICODE,
     };
 
     #[test]
@@ -625,7 +830,10 @@ mod tests {
         assert_eq!(outcome.status, CompileStatus::Compiled);
         assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
         assert!(!outcome.supports_literal);
-        assert_eq!(outcome.warning.unwrap().message, "Possible nested set at position 1");
+        assert_eq!(
+            outcome.warning.unwrap().message,
+            "Possible nested set at position 1"
+        );
     }
 
     #[test]
@@ -705,6 +913,38 @@ mod tests {
 
         assert_eq!(outcome.status, MatchStatus::Unsupported);
         assert_eq!(outcome.span, None);
+    }
+
+    #[test]
+    fn literal_find_spans_reports_repeated_matches() {
+        let outcome = literal_find_spans(
+            PatternRef::Str("abc"),
+            FLAG_UNICODE,
+            PatternRef::Str("zabcabcx"),
+            1,
+            Some(7),
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.pos, 1);
+        assert_eq!(outcome.endpos, 7);
+        assert_eq!(outcome.spans, vec![(1, 4), (4, 7)]);
+    }
+
+    #[test]
+    fn literal_find_spans_rejects_flagged_collection_slice() {
+        let outcome = literal_find_spans(
+            PatternRef::Bytes(b"abc"),
+            FLAG_IGNORECASE,
+            PatternRef::Bytes(b"abc"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Unsupported);
+        assert!(outcome.spans.is_empty());
     }
 
     #[test]

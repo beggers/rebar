@@ -1,5 +1,6 @@
 use rebar_core::{
-    compile, literal_match, CompileStatus, MatchMode, MatchStatus, PatternRef, TARGET_CPYTHON_SERIES,
+    compile, literal_match, CompileStatus, MatchMode, MatchStatus, PatternRef,
+    TARGET_CPYTHON_SERIES,
 };
 
 #[test]

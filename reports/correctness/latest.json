@@ -3926,7 +3926,7 @@
       "args": [
         "abc",
         {
-          "module": "rebar_harness.correctness",
+          "module": "__main__",
           "qualname": "callable_constant",
           "type": "callable"
         },
@@ -5730,7 +5730,7 @@
       "tests/conformance/fixtures/literal_flag_workflows.json"
     ]
   },
-  "generated_at": "2026-03-12T05:15:58Z",
+  "generated_at": "2026-03-12T05:41:07Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
