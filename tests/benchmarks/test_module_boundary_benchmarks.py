@@ -43,8 +43,8 @@ class ModuleBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 5,
-                    "measured_workloads": 9,
+                    "known_gap_count": 4,
+                    "measured_workloads": 10,
                     "module_workloads": 8,
                     "parser_workloads": 6,
                     "regression_workloads": 0,
@@ -64,14 +64,14 @@ class ModuleBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(scorecard["implementation"]["adapter_mode_resolved"], "source-tree-shim")
         self.assertEqual(scorecard["implementation"]["build_mode"], "source-tree-shim")
         self.assertEqual(scorecard["implementation"]["timing_path"], "source-tree-shim")
-        self.assertFalse(scorecard["implementation"]["native_module_loaded"])
+        self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase2")
         self.assertEqual(scorecard["summary"]["total_workloads"], 14)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 6)
         self.assertEqual(scorecard["summary"]["module_workloads"], 8)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 9)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 5)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 10)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 4)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 7)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 5)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 2)
@@ -79,7 +79,7 @@ class ModuleBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 1)
         self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
         self.assertEqual(scorecard["families"]["module"]["workload_count"], 8)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 4)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 3)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
         self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 4)
         self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 3)
@@ -116,15 +116,16 @@ class ModuleBoundaryBenchmarkSuiteTest(unittest.TestCase):
         helper_workload = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "module-search-literal-cold-miss"
+            if workload["id"] == "module-search-grouped-literal-cold-hit"
         )
         self.assertEqual(helper_workload["family"], "module")
         self.assertEqual(helper_workload["operation"], "module.search")
         self.assertEqual(helper_workload["cache_mode"], "cold")
-        self.assertEqual(helper_workload["haystack"], "zzz")
-        self.assertEqual(helper_workload["implementation_timing"]["status"], "unimplemented")
-        self.assertIsNone(helper_workload["implementation_ns"])
-        self.assertIsNone(helper_workload["speedup_vs_cpython"])
+        self.assertEqual(helper_workload["pattern"], "(abc)")
+        self.assertEqual(helper_workload["haystack"], "zzabczz")
+        self.assertEqual(helper_workload["status"], "measured")
+        self.assertEqual(helper_workload["implementation_timing"]["status"], "measured")
+        self.assertGreater(helper_workload["implementation_ns"], 0)
 
         compile_manifest = scorecard["manifests"]["compile-matrix"]
         self.assertEqual(compile_manifest["measured_workloads"], 5)

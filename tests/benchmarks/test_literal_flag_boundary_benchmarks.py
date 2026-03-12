@@ -57,8 +57,8 @@ class LiteralFlagBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 10,
-                    "measured_workloads": 35,
+                    "known_gap_count": 9,
+                    "measured_workloads": 36,
                     "module_workloads": 37,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
@@ -78,15 +78,15 @@ class LiteralFlagBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(scorecard["implementation"]["adapter_mode_resolved"], "source-tree-shim")
         self.assertEqual(scorecard["implementation"]["build_mode"], "source-tree-shim")
         self.assertEqual(scorecard["implementation"]["timing_path"], "source-tree-shim")
-        self.assertFalse(scorecard["implementation"]["native_module_loaded"])
+        self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase3")
         self.assertEqual(scorecard["summary"]["total_workloads"], 45)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
         self.assertEqual(scorecard["summary"]["module_workloads"], 37)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 35)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 10)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 36)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 9)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 11)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 18)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 16)
@@ -94,7 +94,7 @@ class LiteralFlagBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 3)
         self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
         self.assertEqual(scorecard["families"]["module"]["workload_count"], 37)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 7)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 6)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
         self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 7)
         self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 16)
@@ -116,7 +116,7 @@ class LiteralFlagBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(manifest_summary["available_smoke_workload_count"], 2)
         self.assertEqual(
             manifest_summary["smoke_workload_ids"],
-            ["module-search-ignorecase-warm-str-hit", "pattern-fullmatch-ignorecase-purged-bytes-hit"],
+            ["module-search-inline-flag-warm-str-hit", "pattern-fullmatch-ignorecase-purged-bytes-hit"],
         )
         self.assertEqual(
             manifest_summary["operations"],
@@ -134,7 +134,7 @@ class LiteralFlagBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "docs/spec/drop-in-re-compatibility.md",
             ],
         )
-        self.assertIn("API-level IGNORECASE helper-call overhead", manifest_summary["notes"][0])
+        self.assertIn("flag-sensitive helper-call overhead", manifest_summary["notes"][0])
 
         manifest_record = next(
             manifest
@@ -147,18 +147,19 @@ class LiteralFlagBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(
             manifest_record["smoke_workload_ids"],
-            ["module-search-ignorecase-warm-str-hit", "pattern-fullmatch-ignorecase-purged-bytes-hit"],
+            ["module-search-inline-flag-warm-str-hit", "pattern-fullmatch-ignorecase-purged-bytes-hit"],
         )
 
         module_search = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "module-search-ignorecase-warm-str-hit"
+            if workload["id"] == "module-search-inline-flag-warm-str-hit"
         )
         self.assertEqual(module_search["manifest_id"], "literal-flag-boundary")
         self.assertEqual(module_search["family"], "module")
         self.assertEqual(module_search["operation"], "module.search")
-        self.assertEqual(module_search["flags"], 2)
+        self.assertEqual(module_search["pattern"], "(?i)abc")
+        self.assertEqual(module_search["flags"], 0)
         self.assertEqual(module_search["cache_mode"], "warm")
         self.assertEqual(module_search["status"], "measured")
         self.assertEqual(module_search["implementation_timing"]["status"], "measured")
@@ -169,11 +170,13 @@ class LiteralFlagBoundaryBenchmarkSuiteTest(unittest.TestCase):
         bytes_pattern = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "pattern-fullmatch-ignorecase-purged-bytes-hit"
+            if workload["id"] == "pattern-search-locale-purged-bytes-hit"
         )
         self.assertEqual(bytes_pattern["text_model"], "bytes")
+        self.assertEqual(bytes_pattern["operation"], "pattern.search")
+        self.assertEqual(bytes_pattern["flags"], 4)
         self.assertEqual(bytes_pattern["cache_mode"], "purged")
-        self.assertIn("api-level-ignorecase", bytes_pattern["syntax_features"])
+        self.assertIn("bytes-locale", bytes_pattern["syntax_features"])
         self.assertEqual(bytes_pattern["status"], "measured")
         self.assertEqual(bytes_pattern["implementation_timing"]["status"], "measured")
 

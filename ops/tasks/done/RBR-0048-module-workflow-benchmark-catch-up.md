@@ -1,6 +1,6 @@
 # RBR-0048: Catch module-workflow benchmarks up with the post-parser behavior slices
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,8 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0042A` through `RBR-0047`. This task exists so the benchmark report follows the next Rust-backed correctness wins instead of staying one milestone behind the published module-workflow surface.
+
+## Completion
+- Refreshed the module, collection/replacement, and literal-flag benchmark manifests to publish measured grouped-literal search, bounded single-dot `findall`, replacement-template, inline-flag, and bytes-`LOCALE` workflows while keeping unsupported `IGNORECASE|ASCII` rows explicit.
+- Added benchmark regression coverage for the new post-parser workloads and normalized benchmark provenance assertions so source-tree-shim runs remain valid whether they discover a locally built `rebar._rebar` or not.
+- Republished `reports/benchmarks/latest.json`; the tracked report now records 36 measured workloads and 9 explicit benchmark gaps in the 45-workload combined suite.

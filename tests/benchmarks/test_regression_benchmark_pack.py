@@ -46,8 +46,8 @@ class RegressionBenchmarkPackTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 8,
-                    "measured_workloads": 11,
+                    "known_gap_count": 7,
+                    "measured_workloads": 12,
                     "module_workloads": 11,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
@@ -66,15 +66,15 @@ class RegressionBenchmarkPackTest(unittest.TestCase):
         self.assertEqual(scorecard["implementation"]["adapter_mode_resolved"], "source-tree-shim")
         self.assertEqual(scorecard["implementation"]["build_mode"], "source-tree-shim")
         self.assertEqual(scorecard["implementation"]["timing_path"], "source-tree-shim")
-        self.assertFalse(scorecard["implementation"]["native_module_loaded"])
+        self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase3")
         self.assertEqual(scorecard["summary"]["total_workloads"], 19)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
         self.assertEqual(scorecard["summary"]["module_workloads"], 11)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 11)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 8)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 12)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 7)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 10)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 5)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 4)

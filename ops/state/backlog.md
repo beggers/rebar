@@ -1,18 +1,19 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2: build on the landed exported-symbol and compiled-pattern scaffolds, the first literal-only `compile`/`search`/`match`/`fullmatch` behavior slice, observable compile-cache/purge behavior, local `escape()` parity, the module-workflow correctness pack, the precompiled pattern-boundary benchmark pack, the first literal-only collection and replacement helpers, their published correctness and benchmark packs, the landed literal-only API-level `IGNORECASE` slice plus its published correctness and benchmark follow-ons, the landed bounded inline-flag, lookbehind, character-class `IGNORECASE`, possessive-quantifier, and atomic-group compile parity slices, the landed compile-benchmark catch-up that now measures the supported parser cases honestly, the landed Rust-backed collection/replacement boundary, the landed single-dot wildcard workflow slice plus inline-flag and bytes-`LOCALE` workflow parity, the queued grouped-template workflow gap, and then a built-native benchmark smoke follow-on plus grouped-match/capture, named-group, and named-template expansion so the queue stays ahead of the current publication frontier.
+Milestone 2: build on the landed exported-symbol and compiled-pattern scaffolds, the first literal-only `compile`/`search`/`match`/`fullmatch` behavior slice, observable compile-cache/purge behavior, local `escape()` parity, the module-workflow correctness pack, the precompiled pattern-boundary benchmark pack, the first literal-only collection and replacement helpers, their published correctness and benchmark packs, the landed literal-only API-level `IGNORECASE` slice plus its published correctness and benchmark follow-ons, the landed bounded inline-flag, lookbehind, character-class `IGNORECASE`, possessive-quantifier, and atomic-group compile parity slices, the landed compile-benchmark catch-up that now measures the supported parser cases honestly, the landed Rust-backed collection/replacement boundary, the landed single-dot wildcard workflow slice plus inline-flag, bytes-`LOCALE`, and grouped-literal replacement-template workflow parity, and then a built-native benchmark smoke follow-on plus grouped-match/capture, named-group, named-template, and named-backreference expansion so the queue stays ahead of the current publication frontier.
 
 ## Ordered Work
-1. Land `RBR-0047` to add the narrow grouped-literal replacement-template slice needed for the last published `module.sub()` grouping-dependent gap.
-2. Land `RBR-0048` to catch benchmark coverage up with those post-parser workflow wins instead of leaving the benchmark report one milestone behind the published correctness surface.
-3. Land `RBR-0049` to publish a built-native benchmark smoke report so benchmark reporting stays anchored to the verified native import path instead of the source-tree shim alone.
-4. Land `RBR-0050` to publish a grouped-match/capture correctness pack so the next compatibility frontier is explicit in the scorecard before the queue broadens into more syntax.
-5. Land `RBR-0051` to convert the first grouped-literal numbered-capture match cases from published gaps into real Rust-backed behavior.
-6. Land `RBR-0052` to publish a named-group correctness pack so the ready queue keeps the next grouping frontier explicit after the first numbered-capture slice lands.
-7. Land `RBR-0053` to convert the first named-group literal metadata cases from published gaps into real Rust-backed behavior instead of stopping at publication-only coverage.
-8. Land `RBR-0054` to publish a named-group replacement-template correctness pack so the queue extends past named-group metadata into the next bounded workflow frontier.
-9. Land `RBR-0055` to convert the first named-group replacement-template cases from published gaps into real Rust-backed behavior instead of stopping at metadata-only named-group support.
+1. Land `RBR-0048` to catch benchmark coverage up with the now fully passing published workflow surface instead of leaving the benchmark report one milestone behind it.
+2. Land `RBR-0049` to publish a built-native benchmark smoke report so benchmark reporting stays anchored to the verified native import path instead of the source-tree shim alone.
+3. Land `RBR-0050` to publish a grouped-match/capture correctness pack so the next compatibility frontier is explicit in the scorecard before the queue broadens into more syntax.
+4. Land `RBR-0051` to convert the first grouped-literal numbered-capture match cases from published gaps into real Rust-backed behavior.
+5. Land `RBR-0052` to publish a named-group correctness pack so the ready queue keeps the next grouping frontier explicit after the first numbered-capture slice lands.
+6. Land `RBR-0053` to convert the first named-group literal metadata cases from published gaps into real Rust-backed behavior instead of stopping at publication-only coverage.
+7. Land `RBR-0054` to publish a named-group replacement-template correctness pack so the queue extends past named-group metadata into the next bounded workflow frontier.
+8. Land `RBR-0055` to convert the first named-group replacement-template cases from published gaps into real Rust-backed behavior instead of stopping at metadata-only named-group support.
+9. Land `RBR-0056` to publish a named-backreference correctness pack so the queue extends beyond named-group replacement into the next bounded grouped-reference frontier.
+10. Land `RBR-0057` to convert the first named-backreference literal cases from published gaps into real Rust-backed behavior instead of stopping at publication-only coverage.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
@@ -27,7 +28,7 @@ Milestone 2: build on the landed exported-symbol and compiled-pattern scaffolds,
 - Treat README/reporting accuracy as part of the milestone; scaffold and scorecard tracks should only flip complete when their concrete artifacts exist.
 - With `RBR-0011` and `RBR-0012` landed, keep Milestone 2 centered on module-surface, public-API, and module-boundary catch-up rather than reopening parser-fixture or parser-benchmark breadth immediately.
 - Queue the first Phase 3 correctness and benchmark tasks before Milestone 2 closes so the worker can roll straight into match-behavior and regression/stability infrastructure once the current ready stack clears.
-- With `RBR-0046` landed on top of `RBR-0045`, `RBR-0044`, `RBR-0043`, and `RBR-0042A`, keep the front of Milestone 2 on `RBR-0047` so the final published module-workflow gap lands before the corpus broadens again, then use `RBR-0048` and `RBR-0049` to catch the benchmark surfaces up with that Rust-backed workflow path.
+- With `RBR-0047` landed on top of `RBR-0046`, `RBR-0045`, `RBR-0044`, `RBR-0043`, and `RBR-0042A`, treat the published correctness surface as fully passing for the current eight-manifest pack; keep the front of Milestone 2 on `RBR-0048` and `RBR-0049` so benchmark reporting catches up before the corpus broadens again.
 - Treat exported-symbol and compiled-pattern scaffold coverage as complete unless later behavior work exposes a real compatibility gap; do not reopen more import-shape or placeholder-only `Pattern` scaffolding ahead of the honest-behavior tasks.
 - Once `RBR-0014` lands the Phase 2 public-API scorecard, keep Milestone 2 focused on module-boundary benchmarking and concrete post-scaffold correctness instead of continuing to treat public-API harness setup as the primary open item.
 - Use the landed benchmark-provenance adapter modes in future workload expansions; do not let new benchmark packs regress to unlabeled source-versus-native execution paths.
@@ -43,6 +44,7 @@ Milestone 2: build on the landed exported-symbol and compiled-pattern scaffolds,
 - After `RBR-0051`, keep the ready queue extending into named-group correctness publication before reopening broader syntax or benchmark expansion, so the worker does not stop at grouped numbered captures.
 - After `RBR-0052`, keep the ready queue extending into bounded named-group parity so the worker does not stop at publication-only named-group coverage.
 - After `RBR-0053`, keep the ready queue extending into named-group replacement-template publication and bounded parity so the worker does not stop at metadata-only named-group workflows.
+- After `RBR-0055`, keep the ready queue extending into named-backreference correctness publication and bounded parity so the worker does not stop at named-group replacement-template support.
 - After `RBR-0035`, retarget the queue to bounded parser compile-parity tasks because the remaining currently published correctness gaps then sat in parser-matrix compile cases rather than module-surface failures.
 - Keep compile-benchmark catch-up queued immediately behind the parser compile-parity tasks so the compile-path report starts measuring new parser support instead of lagging one milestone behind the correctness surface.
 - Treat `USER-ASK-2` as durable architectural direction: new compatibility behavior belongs in Rust, while `python/rebar/__init__.py` should stay limited to symbol export, object wrappers, argument normalization, cache plumbing, and FFI calls.

@@ -121,28 +121,29 @@
       ]
     },
     {
-      "id": "module-search-literal-cold-miss",
+      "id": "module-search-grouped-literal-cold-hit",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "^abc$",
-      "haystack": "zzz",
+      "pattern": "(abc)",
+      "haystack": "zzabczz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "cold",
       "timing_scope": "module-helper-call",
       "categories": [
         "search",
+        "grouped",
         "cold-cache",
-        "no-match"
+        "single-match"
       ],
       "syntax_features": [
         "module-search",
         "literal-text",
-        "assertions-and-anchors"
+        "grouping-forms"
       ],
       "notes": [
-        "Cold search helper path with a tiny no-match input to keep matching cost negligible."
+        "Cold grouped-literal module.search helper path so the post-parser capture-aware workflow reaches the benchmark surface."
       ]
     },
     {

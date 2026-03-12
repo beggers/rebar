@@ -49,8 +49,8 @@ class PatternBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 8,
-                    "measured_workloads": 17,
+                    "known_gap_count": 7,
+                    "measured_workloads": 18,
                     "module_workloads": 17,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
@@ -70,15 +70,15 @@ class PatternBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(scorecard["implementation"]["adapter_mode_resolved"], "source-tree-shim")
         self.assertEqual(scorecard["implementation"]["build_mode"], "source-tree-shim")
         self.assertEqual(scorecard["implementation"]["timing_path"], "source-tree-shim")
-        self.assertFalse(scorecard["implementation"]["native_module_loaded"])
+        self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase3")
         self.assertEqual(scorecard["summary"]["total_workloads"], 25)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
         self.assertEqual(scorecard["summary"]["module_workloads"], 17)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 17)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 8)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 18)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 7)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 10)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 8)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 7)
@@ -86,7 +86,7 @@ class PatternBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 3)
         self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
         self.assertEqual(scorecard["families"]["module"]["workload_count"], 17)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 5)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 4)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
         self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 6)
         self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 6)

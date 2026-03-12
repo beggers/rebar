@@ -6,8 +6,8 @@
     "docs/spec/drop-in-re-compatibility.md"
   ],
   "notes": [
-    "Collection/replacement boundary workloads keep literals and haystacks intentionally tiny so the timings stay about helper-call overhead instead of regex throughput.",
-    "Cache labels describe module compile-cache state or precompiled Pattern provenance rather than replacement-template complexity or large-haystack scanning cost."
+    "Collection/replacement boundary workloads keep patterns and haystacks intentionally tiny so the timings stay about helper-call overhead instead of regex throughput, even when they exercise bounded wildcard or replacement-template behavior.",
+    "Cache labels describe module compile-cache state or precompiled Pattern provenance rather than replacement-template complexity, capture-group breadth, or large-haystack scanning cost."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -71,12 +71,12 @@
       ]
     },
     {
-      "id": "module-findall-literal-warm-str",
+      "id": "module-findall-single-dot-warm-str",
       "bucket": "module-findall",
       "family": "module",
       "operation": "module.findall",
-      "pattern": "ab",
-      "haystack": "zzabyyab",
+      "pattern": "a.c",
+      "haystack": "zzabcyyaxc",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
@@ -84,15 +84,15 @@
       "categories": [
         "collection",
         "findall",
-        "literal",
+        "single-dot",
         "warm-cache"
       ],
       "syntax_features": [
         "module-findall",
-        "literal-text"
+        "wildcard-single-dot"
       ],
       "notes": [
-        "Warm module.findall helper path over a tiny repeated-match haystack."
+        "Warm module.findall helper path over the bounded single-dot workflow so wildcard support is timed alongside the earlier literal-only collection rows."
       ]
     },
     {
@@ -122,13 +122,13 @@
       ]
     },
     {
-      "id": "module-sub-literal-warm-str",
+      "id": "module-sub-template-warm-str",
       "bucket": "module-sub",
       "family": "module",
       "operation": "module.sub",
-      "pattern": "ab",
-      "replacement": "XY",
-      "haystack": "zzabyyab",
+      "pattern": "abc",
+      "replacement": "\\g<0>x",
+      "haystack": "zzabcyyabc",
       "flags": 0,
       "count": 0,
       "text_model": "str",
@@ -137,15 +137,16 @@
       "categories": [
         "replacement",
         "sub",
-        "literal",
+        "template",
         "warm-cache"
       ],
       "syntax_features": [
         "module-sub",
-        "literal-text"
+        "literal-text",
+        "replacement-template"
       ],
       "notes": [
-        "Warm module.sub helper path with a tiny literal replacement and default replace-all count."
+        "Warm module.sub helper path with a whole-match replacement template so the Rust-backed template workflow reaches the benchmark scorecard."
       ]
     },
     {
@@ -230,13 +231,13 @@
       ]
     },
     {
-      "id": "pattern-subn-literal-warm-str",
+      "id": "pattern-subn-grouped-template-warm-str",
       "bucket": "pattern-subn",
       "family": "module",
       "operation": "pattern.subn",
-      "pattern": "ab",
-      "replacement": "XY",
-      "haystack": "zzabyyab",
+      "pattern": "(abc)",
+      "replacement": "\\1x",
+      "haystack": "zzabcyyabc",
       "flags": 0,
       "count": 0,
       "text_model": "str",
@@ -246,15 +247,17 @@
         "pattern",
         "replacement",
         "subn",
-        "literal",
+        "grouped",
+        "template",
         "warm-cache"
       ],
       "syntax_features": [
         "pattern-subn",
-        "literal-text"
+        "grouping-forms",
+        "replacement-template"
       ],
       "notes": [
-        "Warm precompiled Pattern.subn helper path with default replace-all behavior on a tiny haystack."
+        "Warm precompiled Pattern.subn helper path with a grouped-literal replacement template so capture-aware replacement timing is published explicitly."
       ]
     },
     {

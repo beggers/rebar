@@ -61,10 +61,14 @@ class CompileBenchmarkMatrixTest(unittest.TestCase):
         self.assertEqual(scorecard["implementation"]["adapter_mode_resolved"], "source-tree-shim")
         self.assertEqual(scorecard["implementation"]["build_mode"], "source-tree-shim")
         self.assertEqual(scorecard["implementation"]["timing_path"], "source-tree-shim")
-        self.assertFalse(scorecard["implementation"]["native_module_loaded"])
+        self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertEqual(scorecard["implementation"]["native_module_name"], "rebar._rebar")
-        self.assertIsNone(scorecard["implementation"]["native_scaffold_status"])
-        self.assertIsNone(scorecard["implementation"]["native_target_cpython_series"])
+        if scorecard["implementation"]["native_module_loaded"]:
+            self.assertEqual(scorecard["implementation"]["native_scaffold_status"], "scaffold-only")
+            self.assertEqual(scorecard["implementation"]["native_target_cpython_series"], "3.12.x")
+        else:
+            self.assertIsNone(scorecard["implementation"]["native_scaffold_status"])
+            self.assertIsNone(scorecard["implementation"]["native_target_cpython_series"])
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase1")
         self.assertEqual(

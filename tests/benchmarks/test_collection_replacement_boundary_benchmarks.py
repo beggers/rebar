@@ -54,8 +54,8 @@ class CollectionReplacementBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 8,
-                    "measured_workloads": 27,
+                    "known_gap_count": 7,
+                    "measured_workloads": 28,
                     "module_workloads": 27,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
@@ -75,15 +75,15 @@ class CollectionReplacementBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(scorecard["implementation"]["adapter_mode_resolved"], "source-tree-shim")
         self.assertEqual(scorecard["implementation"]["build_mode"], "source-tree-shim")
         self.assertEqual(scorecard["implementation"]["timing_path"], "source-tree-shim")
-        self.assertFalse(scorecard["implementation"]["native_module_loaded"])
+        self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase3")
         self.assertEqual(scorecard["summary"]["total_workloads"], 35)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
         self.assertEqual(scorecard["summary"]["module_workloads"], 27)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 27)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 8)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 28)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 7)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 10)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 13)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 12)
@@ -91,7 +91,7 @@ class CollectionReplacementBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 3)
         self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
         self.assertEqual(scorecard["families"]["module"]["workload_count"], 27)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 5)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 4)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
         self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 6)
         self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 11)
@@ -133,6 +133,7 @@ class CollectionReplacementBoundaryBenchmarkSuiteTest(unittest.TestCase):
             ],
         )
         self.assertIn("helper-call overhead", manifest_summary["notes"][0])
+        self.assertIn("replacement-template", manifest_summary["notes"][1])
 
         manifest_record = next(
             manifest
@@ -163,15 +164,24 @@ class CollectionReplacementBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertGreater(module_split["implementation_ns"], 0)
         self.assertIsInstance(module_split["speedup_vs_cpython"], float)
 
-        module_sub_bytes = next(
+        wildcard_findall = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "module-sub-literal-purged-bytes"
+            if workload["id"] == "module-findall-single-dot-warm-str"
         )
-        self.assertEqual(module_sub_bytes["text_model"], "bytes")
-        self.assertEqual(module_sub_bytes["count"], 1)
-        self.assertEqual(module_sub_bytes["replacement"], "XY")
-        self.assertEqual(module_sub_bytes["status"], "measured")
+        self.assertEqual(wildcard_findall["pattern"], "a.c")
+        self.assertIn("wildcard-single-dot", wildcard_findall["syntax_features"])
+        self.assertEqual(wildcard_findall["status"], "measured")
+
+        template_sub = next(
+            workload
+            for workload in scorecard["workloads"]
+            if workload["id"] == "module-sub-template-warm-str"
+        )
+        self.assertEqual(template_sub["replacement"], "\\g<0>x")
+        self.assertEqual(template_sub["operation"], "module.sub")
+        self.assertIn("replacement-template", template_sub["syntax_features"])
+        self.assertEqual(template_sub["status"], "measured")
 
         pattern_finditer = next(
             workload
@@ -185,15 +195,15 @@ class CollectionReplacementBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertGreater(pattern_finditer["baseline_ns"], 0)
         self.assertGreater(pattern_finditer["implementation_ns"], 0)
 
-        pattern_subn_bytes = next(
+        pattern_subn_template = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "pattern-subn-literal-purged-bytes"
+            if workload["id"] == "pattern-subn-grouped-template-warm-str"
         )
-        self.assertEqual(pattern_subn_bytes["text_model"], "bytes")
-        self.assertEqual(pattern_subn_bytes["cache_mode"], "purged")
-        self.assertEqual(pattern_subn_bytes["count"], 1)
-        self.assertEqual(pattern_subn_bytes["implementation_timing"]["status"], "measured")
+        self.assertEqual(pattern_subn_template["pattern"], "(abc)")
+        self.assertEqual(pattern_subn_template["replacement"], "\\1x")
+        self.assertIn("grouping-forms", pattern_subn_template["syntax_features"])
+        self.assertEqual(pattern_subn_template["implementation_timing"]["status"], "measured")
 
 
 if __name__ == "__main__":

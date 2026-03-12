@@ -6,8 +6,8 @@
     "docs/spec/drop-in-re-compatibility.md"
   ],
   "notes": [
-    "Literal-flag boundary workloads keep patterns and haystacks intentionally tiny so the timings expose API-level IGNORECASE helper-call overhead instead of regex throughput.",
-    "Supported literal-only IGNORECASE helpers are measured directly, while unsupported flag combinations stay in the same pack as explicit known-gap rows rather than disappearing from the scorecard."
+    "Literal-flag boundary workloads keep patterns and haystacks intentionally tiny so the timings expose bounded flag-sensitive helper-call overhead instead of regex throughput.",
+    "Supported API-level IGNORECASE, inline-flag, and bytes-LOCALE helpers are measured directly, while unsupported flag combinations stay in the same pack as explicit known-gap rows rather than disappearing from the scorecard."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -16,20 +16,20 @@
   },
   "workloads": [
     {
-      "id": "module-search-ignorecase-warm-str-hit",
+      "id": "module-search-inline-flag-warm-str-hit",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "AbC",
+      "pattern": "(?i)abc",
       "haystack": "zzaBczz",
-      "flags": 2,
+      "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
       "timing_scope": "module-helper-call",
       "smoke": true,
       "categories": [
         "flag",
-        "ignorecase",
+        "inline-flag",
         "search",
         "literal",
         "warm-cache",
@@ -38,26 +38,26 @@
       "syntax_features": [
         "module-search",
         "literal-text",
-        "api-level-ignorecase"
+        "inline-flags"
       ],
       "notes": [
-        "Warm module.search IGNORECASE helper path over a tiny str haystack with a single literal hit."
+        "Warm module.search inline-flag helper path over a tiny str haystack with a single bounded literal hit."
       ]
     },
     {
-      "id": "module-search-ignorecase-purged-bytes-hit",
+      "id": "module-search-locale-purged-bytes-hit",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "AbC",
-      "haystack": "zzaBczz",
-      "flags": 2,
+      "pattern": "abc",
+      "haystack": "zzabczz",
+      "flags": 4,
       "text_model": "bytes",
       "cache_mode": "purged",
       "timing_scope": "module-helper-call",
       "categories": [
         "flag",
-        "ignorecase",
+        "locale",
         "search",
         "bytes",
         "purged-cache"
@@ -65,11 +65,11 @@
       "syntax_features": [
         "module-search",
         "pattern-text-model",
-        "api-level-ignorecase",
+        "bytes-locale",
         "cache-purge"
       ],
       "notes": [
-        "Bytes module.search IGNORECASE path that keeps purge provenance visible without broadening into haystack-throughput timing."
+        "Bytes module.search LOCALE path that keeps purge provenance visible without broadening into haystack-throughput timing."
       ]
     },
     {
@@ -128,20 +128,20 @@
       ]
     },
     {
-      "id": "pattern-search-ignorecase-warm-str-hit",
+      "id": "pattern-search-inline-flag-warm-str-hit",
       "bucket": "pattern-search",
       "family": "module",
       "operation": "pattern.search",
-      "pattern": "AbC",
+      "pattern": "(?i)abc",
       "haystack": "zzaBczz",
-      "flags": 2,
+      "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
       "timing_scope": "pattern-helper-call",
       "categories": [
         "pattern",
         "flag",
-        "ignorecase",
+        "inline-flag",
         "search",
         "literal",
         "warm-cache"
@@ -149,27 +149,27 @@
       "syntax_features": [
         "pattern-search",
         "literal-text",
-        "api-level-ignorecase"
+        "inline-flags"
       ],
       "notes": [
-        "Warm precompiled Pattern.search IGNORECASE path on str input so compile cost stays outside the timed loop."
+        "Warm precompiled Pattern.search inline-flag path on str input so compile cost stays outside the timed loop."
       ]
     },
     {
-      "id": "pattern-search-ignorecase-purged-bytes-hit",
+      "id": "pattern-search-locale-purged-bytes-hit",
       "bucket": "pattern-search",
       "family": "module",
       "operation": "pattern.search",
-      "pattern": "AbC",
-      "haystack": "zzaBczz",
-      "flags": 2,
+      "pattern": "abc",
+      "haystack": "zzabczz",
+      "flags": 4,
       "text_model": "bytes",
       "cache_mode": "purged",
       "timing_scope": "pattern-helper-call",
       "categories": [
         "pattern",
         "flag",
-        "ignorecase",
+        "locale",
         "search",
         "bytes",
         "purged-cache"
@@ -177,11 +177,11 @@
       "syntax_features": [
         "pattern-search",
         "pattern-text-model",
-        "api-level-ignorecase",
+        "bytes-locale",
         "cache-purge"
       ],
       "notes": [
-        "Bytes precompiled Pattern.search IGNORECASE path that keeps purge provenance visible while isolating bound-method overhead."
+        "Bytes precompiled Pattern.search LOCALE path that keeps purge provenance visible while isolating bound-method overhead."
       ]
     },
     {

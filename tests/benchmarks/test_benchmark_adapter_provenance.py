@@ -43,7 +43,7 @@ class BenchmarkAdapterProvenanceTest(unittest.TestCase):
         self.assertEqual(implementation["adapter_mode_resolved"], "source-tree-shim")
         self.assertEqual(implementation["build_mode"], "source-tree-shim")
         self.assertEqual(implementation["timing_path"], "source-tree-shim")
-        self.assertFalse(implementation["native_module_loaded"])
+        self.assertIsInstance(implementation["native_module_loaded"], bool)
         self.assertIn("maturin", implementation["native_unavailable_reason"])
         self.assertIsNone(implementation["native_build_tool"])
         self.assertIsNone(implementation["native_wheel"])
