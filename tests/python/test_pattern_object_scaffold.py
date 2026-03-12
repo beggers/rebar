@@ -79,7 +79,7 @@ class RebarPatternObjectScaffoldTest(unittest.TestCase):
         self.assertIsNone(pattern.fullmatch("abcz"))
 
     def test_pattern_literal_methods_stay_placeholder_for_unsupported_flags(self) -> None:
-        pattern = rebar.compile("abc", rebar.IGNORECASE)
+        pattern = rebar.compile("abc", rebar.IGNORECASE | rebar.ASCII)
 
         for method_name in ("search", "match", "fullmatch"):
             with self.subTest(method=method_name):

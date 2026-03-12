@@ -1,6 +1,6 @@
 # RBR-0032: Implement literal-only `IGNORECASE` behavior
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -24,3 +24,9 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0023` and `RBR-0024`. This task exists to turn one high-value flag path into real observable behavior before the roadmap reopens broader parser/engine work.
+
+## Completion
+- Completed 2026-03-12.
+- Landed literal-only API-level `IGNORECASE` behavior for module and compiled-pattern `search()`, `match()`, and `fullmatch()` on representative `str` and `bytes` cases.
+- Preserved bounded honesty by keeping collection/replacement helpers and unsupported flag combinations on the existing `NotImplementedError` path.
+- Added direct source-tree tests for positive `IGNORECASE` behavior, cache-key normalization, and bounded unsupported cases; updated the native smoke expectation accordingly.

@@ -324,16 +324,25 @@ def _supports_pattern_scaffold(pattern: str | bytes) -> bool:
     return not any(character in _LITERAL_METACHARACTERS for character in pattern)
 
 
+def _literal_match_base_flags(pattern: str | bytes) -> int:
+    return _normalize_pattern_flags(pattern, 0)
+
+
 def _supports_literal_execution(compiled_pattern: Pattern) -> bool:
-    return compiled_pattern.flags == _normalize_pattern_flags(compiled_pattern.pattern, 0)
+    base_flags = _literal_match_base_flags(compiled_pattern.pattern)
+    return compiled_pattern.flags in (base_flags, base_flags | int(IGNORECASE))
 
 
 def _supports_literal_collection_execution(compiled_pattern: Pattern) -> bool:
-    return _supports_literal_execution(compiled_pattern) and len(compiled_pattern.pattern) > 0
+    return compiled_pattern.flags == _literal_match_base_flags(compiled_pattern.pattern) and len(compiled_pattern.pattern) > 0
 
 
 def _supports_literal_replacement_execution(compiled_pattern: Pattern) -> bool:
     return _supports_literal_collection_execution(compiled_pattern)
+
+
+def _literal_ignores_case(compiled_pattern: Pattern) -> bool:
+    return bool(compiled_pattern.flags & int(IGNORECASE))
 
 
 def _ensure_compatible_string(pattern: str | bytes, string: object) -> str | bytes:
@@ -368,6 +377,56 @@ def _build_match(
     )
 
 
+def _fold_ascii_byte(value: int) -> int:
+    if 65 <= value <= 90:
+        return value + 32
+    return value
+
+
+def _literal_units_equal(left: str | int, right: str | int) -> bool:
+    if isinstance(left, int):
+        return _fold_ascii_byte(left) == _fold_ascii_byte(right)
+    return left.casefold() == right.casefold()
+
+
+def _literal_matches_at(
+    compiled_pattern: Pattern,
+    string: str | bytes,
+    start: int,
+    endpos: int,
+) -> bool:
+    pattern = compiled_pattern.pattern
+    pattern_length = len(pattern)
+    stop = start + pattern_length
+    if stop > endpos:
+        return False
+    if not _literal_ignores_case(compiled_pattern):
+        return string.startswith(pattern, start, endpos)
+    for offset, pattern_unit in enumerate(pattern):
+        if not _literal_units_equal(pattern_unit, string[start + offset]):
+            return False
+    return True
+
+
+def _find_literal_start(
+    compiled_pattern: Pattern,
+    string: str | bytes,
+    pos: int,
+    endpos: int,
+) -> int:
+    pattern = compiled_pattern.pattern
+    pattern_length = len(pattern)
+    if pattern_length == 0:
+        return pos
+    if not _literal_ignores_case(compiled_pattern):
+        return string.find(pattern, pos, endpos)
+    last_start = endpos - pattern_length
+    for start in range(pos, last_start + 1):
+        if _literal_matches_at(compiled_pattern, string, start, endpos):
+            return start
+    return -1
+
+
 def _iter_literal_match_spans(
     compiled_pattern: Pattern,
     string: object,
@@ -380,7 +439,7 @@ def _iter_literal_match_spans(
     next_start = normalized_pos
 
     while True:
-        start = compatible_string.find(pattern, next_start, normalized_endpos)
+        start = _find_literal_start(compiled_pattern, compatible_string, next_start, normalized_endpos)
         if start < 0:
             return
         span = (start, start + len(pattern))
@@ -400,18 +459,18 @@ def _run_literal_match(
     pattern = compiled_pattern.pattern
 
     if mode == "search":
-        start = compatible_string.find(pattern, normalized_pos, normalized_endpos)
+        start = _find_literal_start(compiled_pattern, compatible_string, normalized_pos, normalized_endpos)
         if start < 0:
             return None
         span = (start, start + len(pattern))
     elif mode == "match":
-        if not compatible_string.startswith(pattern, normalized_pos, normalized_endpos):
+        if not _literal_matches_at(compiled_pattern, compatible_string, normalized_pos, normalized_endpos):
             return None
         span = (normalized_pos, normalized_pos + len(pattern))
     elif mode == "fullmatch":
         if normalized_endpos - normalized_pos != len(pattern):
             return None
-        if not compatible_string.startswith(pattern, normalized_pos, normalized_endpos):
+        if not _literal_matches_at(compiled_pattern, compatible_string, normalized_pos, normalized_endpos):
             return None
         span = (normalized_pos, normalized_endpos)
     else:  # pragma: no cover - internal misuse guard

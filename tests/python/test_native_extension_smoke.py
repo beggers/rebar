@@ -107,6 +107,11 @@ else:
     else:
         result["search_exception_type"] = None
         result["search_exception_message"] = None
+        result["search_result"] = {
+            "type_name": type(compiled.search("abc")).__name__,
+            "group0": compiled.search("abc").group(0),
+            "span": list(compiled.search("abc").span()),
+        }
 
 print(json.dumps(result))
 """
@@ -135,10 +140,15 @@ print(json.dumps(result))
                     "groupindex": {},
                 },
             )
-            self.assertEqual(result["search_exception_type"], "NotImplementedError")
-            self.assertIn(
-                "rebar.Pattern.search() is a scaffold placeholder",
-                result["search_exception_message"],
+            self.assertIsNone(result["search_exception_type"])
+            self.assertIsNone(result["search_exception_message"])
+            self.assertEqual(
+                result["search_result"],
+                {
+                    "type_name": "Match",
+                    "group0": "abc",
+                    "span": [0, 3],
+                },
             )
 
 

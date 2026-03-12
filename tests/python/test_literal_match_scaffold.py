@@ -87,14 +87,14 @@ class RebarLiteralMatchScaffoldTest(unittest.TestCase):
 
     def test_module_and_pattern_helpers_stay_loud_for_unsupported_cases(self) -> None:
         with self.assertRaises(NotImplementedError) as module_flags:
-            rebar.search("abc", "abc", rebar.IGNORECASE)
+            rebar.search("abc", "abc", rebar.IGNORECASE | rebar.ASCII)
         self.assertIn("rebar.search() is a scaffold placeholder", str(module_flags.exception))
 
         with self.assertRaises(NotImplementedError) as module_meta:
             rebar.search("a.c", "abc")
         self.assertIn("rebar.compile() is a scaffold placeholder", str(module_meta.exception))
 
-        pattern = rebar.compile("abc", rebar.IGNORECASE)
+        pattern = rebar.compile("abc", rebar.IGNORECASE | rebar.ASCII)
         with self.assertRaises(NotImplementedError) as bound_flags:
             pattern.search("abc")
         self.assertIn("rebar.Pattern.search() is a scaffold placeholder", str(bound_flags.exception))
