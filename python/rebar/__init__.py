@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import enum
 import importlib.util
+import operator
 import re as _stdlib_re
 from typing import Final
 
@@ -162,14 +163,20 @@ class Pattern(metaclass=_PatternScaffoldType):
             return self._raise_placeholder("fullmatch")
         return _run_literal_match(self, "fullmatch", *_args, **_kwargs)
 
-    def split(self, *_args: object, **_kwargs: object) -> object:
-        return self._raise_placeholder("split")
+    def split(self, string: object, maxsplit: int = 0) -> object:
+        if not _supports_literal_collection_execution(self):
+            return self._raise_placeholder("split")
+        return _run_literal_split(self, string, maxsplit=maxsplit)
 
-    def findall(self, *_args: object, **_kwargs: object) -> object:
-        return self._raise_placeholder("findall")
+    def findall(self, string: object, pos: int = 0, endpos: int | None = None) -> object:
+        if not _supports_literal_collection_execution(self):
+            return self._raise_placeholder("findall")
+        return _run_literal_findall(self, string, pos=pos, endpos=endpos)
 
-    def finditer(self, *_args: object, **_kwargs: object) -> object:
-        return self._raise_placeholder("finditer")
+    def finditer(self, string: object, pos: int = 0, endpos: int | None = None) -> object:
+        if not _supports_literal_collection_execution(self):
+            return self._raise_placeholder("finditer")
+        return _run_literal_finditer(self, string, pos=pos, endpos=endpos)
 
     def sub(self, *_args: object, **_kwargs: object) -> object:
         return self._raise_placeholder("sub")
@@ -315,6 +322,10 @@ def _supports_literal_execution(compiled_pattern: Pattern) -> bool:
     return compiled_pattern.flags == _normalize_pattern_flags(compiled_pattern.pattern, 0)
 
 
+def _supports_literal_collection_execution(compiled_pattern: Pattern) -> bool:
+    return _supports_literal_execution(compiled_pattern) and len(compiled_pattern.pattern) > 0
+
+
 def _ensure_compatible_string(pattern: str | bytes, string: object) -> str | bytes:
     if isinstance(pattern, str):
         if not isinstance(string, str):
@@ -347,6 +358,26 @@ def _build_match(
     )
 
 
+def _iter_literal_match_spans(
+    compiled_pattern: Pattern,
+    string: object,
+    pos: int = 0,
+    endpos: int | None = None,
+):
+    compatible_string = _ensure_compatible_string(compiled_pattern.pattern, string)
+    normalized_pos, normalized_endpos = _normalize_match_bounds(compatible_string, pos, endpos)
+    pattern = compiled_pattern.pattern
+    next_start = normalized_pos
+
+    while True:
+        start = compatible_string.find(pattern, next_start, normalized_endpos)
+        if start < 0:
+            return
+        span = (start, start + len(pattern))
+        yield compatible_string, normalized_pos, normalized_endpos, span
+        next_start = span[1]
+
+
 def _run_literal_match(
     compiled_pattern: Pattern,
     mode: str,
@@ -377,6 +408,52 @@ def _run_literal_match(
         raise ValueError(f"unsupported literal match mode {mode!r}")
 
     return _build_match(compiled_pattern, compatible_string, normalized_pos, normalized_endpos, span)
+
+
+def _run_literal_split(
+    compiled_pattern: Pattern,
+    string: object,
+    maxsplit: int = 0,
+) -> list[str] | list[bytes]:
+    compatible_string = _ensure_compatible_string(compiled_pattern.pattern, string)
+    normalized_maxsplit = operator.index(maxsplit)
+    if normalized_maxsplit < 0:
+        return [compatible_string]
+    if normalized_maxsplit == 0:
+        return compatible_string.split(compiled_pattern.pattern)
+    return compatible_string.split(compiled_pattern.pattern, normalized_maxsplit)
+
+
+def _run_literal_findall(
+    compiled_pattern: Pattern,
+    string: object,
+    pos: int = 0,
+    endpos: int | None = None,
+) -> list[str] | list[bytes]:
+    return [
+        compatible_string[span[0] : span[1]]
+        for compatible_string, _normalized_pos, _normalized_endpos, span in _iter_literal_match_spans(
+            compiled_pattern,
+            string,
+            pos=pos,
+            endpos=endpos,
+        )
+    ]
+
+
+def _run_literal_finditer(
+    compiled_pattern: Pattern,
+    string: object,
+    pos: int = 0,
+    endpos: int | None = None,
+):
+    for compatible_string, normalized_pos, normalized_endpos, span in _iter_literal_match_spans(
+        compiled_pattern,
+        string,
+        pos=pos,
+        endpos=endpos,
+    ):
+        yield _build_match(compiled_pattern, compatible_string, normalized_pos, normalized_endpos, span)
 
 
 def compile(pattern: str | bytes | Pattern, flags: int = 0) -> Pattern:
@@ -435,22 +512,36 @@ def fullmatch(pattern: str | bytes | Pattern, string: object, flags: int = 0) ->
     return compiled.fullmatch(string)
 
 
-def split(*_args: object, **_kwargs: object) -> object:
-    """Placeholder for the future drop-in `re.split` surface."""
+def split(
+    pattern: str | bytes | Pattern,
+    string: object,
+    maxsplit: int = 0,
+    flags: int = 0,
+) -> object:
+    """Literal-only drop-in slice for `re.split`."""
 
-    return _raise_placeholder("split")
+    compiled = compile(pattern, flags)
+    if not _supports_literal_collection_execution(compiled):
+        return _raise_placeholder("split")
+    return compiled.split(string, maxsplit=maxsplit)
 
 
-def findall(*_args: object, **_kwargs: object) -> object:
-    """Placeholder for the future drop-in `re.findall` surface."""
+def findall(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> object:
+    """Literal-only drop-in slice for `re.findall`."""
 
-    return _raise_placeholder("findall")
+    compiled = compile(pattern, flags)
+    if not _supports_literal_collection_execution(compiled):
+        return _raise_placeholder("findall")
+    return compiled.findall(string)
 
 
-def finditer(*_args: object, **_kwargs: object) -> object:
-    """Placeholder for the future drop-in `re.finditer` surface."""
+def finditer(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> object:
+    """Literal-only drop-in slice for `re.finditer`."""
 
-    return _raise_placeholder("finditer")
+    compiled = compile(pattern, flags)
+    if not _supports_literal_collection_execution(compiled):
+        return _raise_placeholder("finditer")
+    return compiled.finditer(string)
 
 
 def sub(*_args: object, **_kwargs: object) -> object:

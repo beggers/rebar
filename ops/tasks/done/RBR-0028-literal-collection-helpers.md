@@ -1,8 +1,9 @@
 # RBR-0028: Implement literal-only collection helpers
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Extend the first honest literal-only execution slice so `split`, `findall`, and `finditer` work for tiny `str` and `bytes` cases without delegating to stdlib `re`.
@@ -24,3 +25,6 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0023`; this task should turn the remaining placeholder collection helpers into honest bounded behavior before the queue moves on to replacement helpers.
+- Implemented bounded non-empty literal `split`/`findall`/`finditer` behavior on both module and `Pattern` surfaces, preserving loud `NotImplementedError` results for unsupported flags, metacharacter patterns, and zero-width collection cases.
+- Added `tests/python/test_literal_collection_helpers.py` and updated scaffold/native-surface tests to reflect the newly supported helper subset.
+- Verified with `python3 -m unittest tests.python.test_literal_collection_helpers tests.python.test_literal_match_scaffold tests.python.test_module_surface_scaffold tests.python.test_pattern_object_scaffold tests.python.test_compile_cache_scaffold`.

@@ -22,9 +22,6 @@ import rebar
 
 
 PLACEHOLDER_CASES = [
-    ("split", ("abc", "abc"), {}),
-    ("findall", ("abc", "abc"), {}),
-    ("finditer", ("abc", "abc"), {}),
     ("sub", ("abc", "x", "abc"), {}),
     ("subn", ("abc", "x", "abc"), {}),
     ("template", ("abc",), {}),
@@ -162,10 +159,7 @@ class RebarModuleSurfaceScaffoldTest(unittest.TestCase):
 import json
 import rebar
 
-cases = {
-    "split": [["abc", "abc"], {}],
-    "findall": [["abc", "abc"], {}],
-    "finditer": [["abc", "abc"], {}],
+placeholder_cases = {
     "sub": [["abc", "x", "abc"], {}],
     "subn": [["abc", "x", "abc"], {}],
     "template": [["abc"], {}],
@@ -176,7 +170,9 @@ result = {
     "native_scaffold_status": rebar.native_scaffold_status(),
     "exported_helpers_present": all(
         hasattr(rebar, name)
-        for name in ["search", "match", "fullmatch"] + sorted(cases) + ["purge"]
+        for name in ["search", "match", "fullmatch", "split", "findall", "finditer"]
+        + sorted(placeholder_cases)
+        + ["purge"]
     ),
     "purge_result": rebar.purge(),
 }
@@ -206,13 +202,24 @@ result["literal_fullmatch"] = {
     "span": list(full_match.span()),
 }
 
+result["literal_split"] = rebar.split("abc", "abcabc", 1)
+result["literal_findall"] = rebar.findall("abc", "zabcabc")
+result["literal_finditer"] = [
+    {
+        "type_name": type(match).__name__,
+        "group0": match.group(0),
+        "span": list(match.span()),
+    }
+    for match in rebar.finditer("abc", "zabcabc")
+]
+
 result["escape_outputs"] = {
     "str": rebar.escape("a-b.c"),
     "bytes": rebar.escape(b"a-b.c").decode("latin-1"),
 }
 
 exceptions = {}
-for name, (args, kwargs) in cases.items():
+for name, (args, kwargs) in placeholder_cases.items():
     helper = getattr(rebar, name)
     try:
         helper(*args, **kwargs)
@@ -257,6 +264,23 @@ print(json.dumps(result))
                     "span": [0, 3],
                 },
             )
+            self.assertEqual(result["literal_split"], ["", "abc"])
+            self.assertEqual(result["literal_findall"], ["abc", "abc"])
+            self.assertEqual(
+                result["literal_finditer"],
+                [
+                    {
+                        "type_name": "Match",
+                        "group0": "abc",
+                        "span": [1, 4],
+                    },
+                    {
+                        "type_name": "Match",
+                        "group0": "abc",
+                        "span": [4, 7],
+                    },
+                ],
+            )
             self.assertEqual(
                 result["escape_outputs"],
                 {
@@ -276,7 +300,7 @@ print(json.dumps(result))
                 },
             )
 
-            for helper_name in EXPECTED_HELPERS - {"purge", "search", "match", "fullmatch"}:
+            for helper_name in {"sub", "subn", "template"}:
                 with self.subTest(helper=helper_name):
                     exception_payload = result["exceptions"][helper_name]
                     self.assertEqual(exception_payload["type"], "NotImplementedError")

@@ -22,9 +22,6 @@ import rebar
 
 
 PATTERN_METHOD_CASES = [
-    ("split", ("abc",), {}),
-    ("findall", ("abc",), {}),
-    ("finditer", ("abc",), {}),
     ("sub", ("x", "abc"), {}),
     ("subn", ("x", "abc"), {}),
 ]

@@ -66,3 +66,4 @@
 - Extend the ready queue past `RBR-0031` with a bounded literal-only `IGNORECASE` slice and its correctness/benchmark follow-ons before reopening broad parser or native-path performance work.
 - Once `RBR-0026` lands, stop describing precompiled-pattern benchmarking as open; move the milestone front to `RBR-0027` through `RBR-0034` so module-workflow correctness, collection/replacement helpers, and the bounded literal-flag slice stay contiguous.
 - After `RBR-0034`, queue targeted exported-helper and compiled-pattern metadata parity tasks before broader parser or engine expansion so the current explicit correctness failures are worked off as concrete compatibility debt.
+- Once `RBR-0027` lands, move the milestone front to `RBR-0028` through `RBR-0036` and seed parser-diagnostic parity immediately after them, because the remaining visible correctness debt after the metadata fixes is concentrated in compile-time parser diagnostics rather than module-surface gaps.
