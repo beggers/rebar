@@ -210,7 +210,9 @@ class Pattern:
             repl,
             unsupported=self._raise_placeholder,
             helper_name="sub",
-            allow_native_template_passthrough=_native is not None and self.groups > 0,
+            allow_native_template_passthrough=_native is not None
+            and isinstance(self.pattern, str)
+            and _grouped_literal_body(self.pattern) is not None,
         )
         if _native is not None:
             return _run_native_literal_sub(self, compatible_replacement, string, count=count)
@@ -224,7 +226,9 @@ class Pattern:
             repl,
             unsupported=self._raise_placeholder,
             helper_name="subn",
-            allow_native_template_passthrough=_native is not None and self.groups > 0,
+            allow_native_template_passthrough=_native is not None
+            and isinstance(self.pattern, str)
+            and _grouped_literal_body(self.pattern) is not None,
         )
         if _native is not None:
             return _run_native_literal_subn(self, compatible_replacement, string, count=count)

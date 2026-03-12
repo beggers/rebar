@@ -81,10 +81,10 @@ class CorrectnessHarnessGroupedMatchWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 86,
                     "failed_cases": 0,
-                    "passed_cases": 84,
+                    "passed_cases": 86,
                     "skipped_cases": 0,
                     "total_cases": 86,
-                    "unimplemented_cases": 2,
+                    "unimplemented_cases": 0,
                 },
             )
 
@@ -127,9 +127,9 @@ class CorrectnessHarnessGroupedMatchWorkflowTest(unittest.TestCase):
 
         match_layer = scorecard["layers"]["match_behavior"]
         self.assertEqual(match_layer["summary"]["total_cases"], 12)
-        self.assertEqual(match_layer["summary"]["passed_cases"], 10)
+        self.assertEqual(match_layer["summary"]["passed_cases"], 12)
         self.assertEqual(match_layer["summary"]["failed_cases"], 0)
-        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 2)
+        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             match_layer["manifest_ids"],
             ["grouped-match-workflows", "match-behavior-smoke"],
@@ -145,8 +145,8 @@ class CorrectnessHarnessGroupedMatchWorkflowTest(unittest.TestCase):
 
         grouped_suite = next(suite for suite in scorecard["suites"] if suite["id"] == "match.grouped")
         self.assertEqual(grouped_suite["summary"]["total_cases"], 6)
-        self.assertEqual(grouped_suite["summary"]["passed_cases"], 4)
-        self.assertEqual(grouped_suite["summary"]["unimplemented_cases"], 2)
+        self.assertEqual(grouped_suite["summary"]["passed_cases"], 6)
+        self.assertEqual(grouped_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             grouped_suite["families"],
             ["numbered_capture_gap_workflow", "single_capture_module_workflow", "single_capture_pattern_workflow"],
@@ -185,20 +185,17 @@ class CorrectnessHarnessGroupedMatchWorkflowTest(unittest.TestCase):
             for case in scorecard["cases"]
             if case["id"] == "grouped-module-fullmatch-two-capture-gap-str"
         )
-        self.assertEqual(gap_case["comparison"], "unimplemented")
+        self.assertEqual(gap_case["comparison"], "pass")
         self.assertEqual(gap_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(gap_case["observations"]["cpython"]["result"]["group1"], "ab")
         self.assertEqual(gap_case["observations"]["cpython"]["result"]["groups"], ["ab", "c"])
         self.assertEqual(gap_case["observations"]["cpython"]["result"]["span1"], [0, 2])
         self.assertEqual(gap_case["observations"]["cpython"]["result"]["group_spans"], [[0, 2], [2, 3]])
         self.assertEqual(gap_case["observations"]["cpython"]["result"]["lastindex"], 2)
-        self.assertEqual(gap_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(gap_case["observations"]["rebar"]["outcome"], "success")
         self.assertEqual(
-            gap_case["observations"]["rebar"]["exception"],
-            {
-                "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-                "type": "NotImplementedError",
-            },
+            gap_case["observations"]["rebar"]["result"],
+            gap_case["observations"]["cpython"]["result"],
         )
 
 

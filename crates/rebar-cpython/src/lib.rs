@@ -435,6 +435,8 @@ fn boundary_literal_template_subn(
             if literal_outcome.status != MatchStatus::Unsupported {
                 (literal_outcome, false)
             } else {
+                let compile_outcome = core_compile(pattern_ref, flags)
+                    .map_err(|error| PyTypeError::new_err(error.message))?;
                 (
                     core_grouped_literal_find_spans_str(
                         pattern_value,
@@ -443,7 +445,7 @@ fn boundary_literal_template_subn(
                         0,
                         None,
                     ),
-                    true,
+                    compile_outcome.group_count == 1,
                 )
             }
         }

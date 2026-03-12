@@ -1,6 +1,6 @@
 # RBR-0051: Add bounded grouped-literal numbered-capture parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,7 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0047`, `RBR-0050`, and the existing Rust-backed compile/match boundary.
 - This task exists so the next correctness-pack expansion can turn into real behavior work immediately instead of becoming another reporting-only dead end.
+
+## Completion
+- Landed a bounded Rust-backed grouped-literal parser for adjacent top-level literal captures, so `(ab)(c)` now compiles with `groups == 2` and returns CPython-shaped numbered capture metadata through both module and compiled-`Pattern` fullmatch flows.
+- Added focused Rust and Python parity coverage and republished `reports/correctness/latest.json` to 86 passing cases with 0 `unimplemented` outcomes across the default nine-manifest correctness publication.
