@@ -1,8 +1,9 @@
 # RBR-0100: Catch ranged-repeat quantified-group benchmarks up with the new bounded slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Extend the published benchmark surface so the bounded ranged-repeat quantified-group workflows supported by `RBR-0099` produce real `rebar` timings before quantified alternation, conditionals, or broader backtracking reopen the correctness frontier.
@@ -27,3 +28,5 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0099`.
 - This task exists so the queue does not reach bounded ranged-repeat quantified-group parity and then leave that newly supported counted-range slice absent from benchmark reporting.
+- Added `ranged_repeat_quantified_group_boundary.json` with six measured bounded `{1,2}` workloads and two explicit known-gap rows, wired it into the default benchmark suite, refreshed `reports/benchmarks/latest.json`, and added regression coverage for the combined report counts and manifest metadata.
+- Refreshed the adjacent exact-repeat benchmark pack so its forward-looking gap row now tracks a broader `{1,3}` counted-range shape instead of the already-supported `{1,2}` slice.
