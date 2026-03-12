@@ -2949,6 +2949,33 @@ mod tests {
     }
 
     #[test]
+    fn nested_capture_find_spans_reports_named_nested_capture_spans() {
+        let outcome = nested_capture_find_spans_str(
+            "a(?P<outer>(?P<inner>b))d",
+            FLAG_UNICODE,
+            "zabdabdx",
+            1,
+            Some(7),
+        );
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.pos, 1);
+        assert_eq!(outcome.endpos, 7);
+        assert_eq!(
+            outcome.matches,
+            vec![
+                CapturedMatchSpan {
+                    span: (1, 4),
+                    group_spans: vec![Some((2, 3)), Some((2, 3))],
+                },
+                CapturedMatchSpan {
+                    span: (4, 7),
+                    group_spans: vec![Some((5, 6)), Some((5, 6))],
+                },
+            ]
+        );
+    }
+
+    #[test]
     fn escape_matches_expected_outputs() {
         assert_eq!(escape_str("a-b.c"), "a\\-b\\.c");
         assert_eq!(escape_bytes(b"a-b.c"), b"a\\-b\\.c");

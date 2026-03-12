@@ -1,8 +1,9 @@
 # RBR-0084: Add bounded nested-group callable-replacement parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Convert the first nested-group callable-replacement cases from the published correctness pack into real CPython-shaped behavior without claiming broad nested-group, alternation-in-nesting, quantified-group, or general callback semantics.
@@ -28,3 +29,4 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0078`, `RBR-0081`, and `RBR-0083`.
 - This task exists so the queue turns the first nested capture plus callable-replacement workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+- Completed with a new native nested-capture finditer boundary wired into the existing Python callable-replacement path, a targeted nested-group callable parity test, refreshed correctness-harness expectations, and a republished `reports/correctness/latest.json` scorecard showing 152 passes and 0 unimplemented cases across the published manifest set.
