@@ -1,6 +1,6 @@
 # RBR-0086: Publish a nested-group alternation correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0078`, `RBR-0070`, and `RBR-0085`.
 - This task exists so the worker can expose the next concrete compatibility gap after bounded nested-group callable replacement without jumping straight to quantified branches, branch-local backreferences, or broader backtracking semantics.
+
+## Completion Notes
+- Added `nested_group_alternation_workflows.json` with six bounded numbered/named compile, module-search, and pattern-fullmatch cases for `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d`.
+- Wired the new manifest into the default correctness pack and added a dedicated regression test that asserts the combined scorecard shape.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports 158 total cases with 152 passes and 6 honest `unimplemented` outcomes, all from the new nested-group alternation frontier.

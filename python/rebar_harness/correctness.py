@@ -46,6 +46,11 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
+    / "nested_group_alternation_workflows.json",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
     / "nested_group_replacement_workflows.json",
     REPO_ROOT
     / "tests"
