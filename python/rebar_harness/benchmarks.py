@@ -42,6 +42,12 @@ DEFAULT_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.json",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
+DEFAULT_NATIVE_SMOKE_MANIFEST_PATHS = (
+    REPO_ROOT / "benchmarks" / "workloads" / "pattern_boundary.json",
+    REPO_ROOT / "benchmarks" / "workloads" / "collection_replacement_boundary.json",
+    REPO_ROOT / "benchmarks" / "workloads" / "literal_flag_boundary.json",
+)
+DEFAULT_NATIVE_SMOKE_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "native_smoke.json"
 SOURCE_TREE_SHIM_MODE = "source-tree-shim"
 BUILT_NATIVE_MODE = "built-native"
 NATIVE_MODULE_NAME = "rebar._rebar"
@@ -153,6 +159,10 @@ class BenchmarkRunContext:
     implementation_metadata: dict[str, Any]
     execution_model: str
     cleanup: Callable[[], None]
+
+
+class NativeBenchmarkProvisionError(RuntimeError):
+    """Raised when a strict built-native benchmark run cannot provision a native wheel."""
 
 
 def workload_to_payload(workload: Workload) -> dict[str, Any]:
@@ -1126,6 +1136,7 @@ def prepare_benchmark_run(
     *,
     workloads: list[Workload],
     adapter_mode: str,
+    allow_fallback: bool = True,
 ) -> BenchmarkRunContext:
     requested_mode = adapter_mode
     if adapter_mode == BUILT_NATIVE_MODE:
@@ -1163,6 +1174,10 @@ def prepare_benchmark_run(
                 },
                 execution_model="single-interpreter subprocess workload probes against a built native wheel",
                 cleanup=temp_dir.cleanup,
+            )
+        if not allow_fallback:
+            raise NativeBenchmarkProvisionError(
+                native_error or "built-native mode unavailable for the requested benchmark run"
             )
         native_unavailable_reason = native_error
     else:
@@ -1338,6 +1353,7 @@ def run_benchmarks(
     *,
     smoke_only: bool = False,
     adapter_mode: str = SOURCE_TREE_SHIM_MODE,
+    allow_fallback: bool = True,
 ) -> dict[str, Any]:
     resolved_manifest_paths = [
         path.resolve() for path in (manifest_paths or list(DEFAULT_MANIFEST_PATHS))
@@ -1348,6 +1364,7 @@ def run_benchmarks(
     run_context = prepare_benchmark_run(
         workloads=selected_manifest_workloads,
         adapter_mode=adapter_mode,
+        allow_fallback=allow_fallback,
     )
     try:
         workloads = [
@@ -1370,6 +1387,18 @@ def run_benchmarks(
         return scorecard
     finally:
         run_context.cleanup()
+
+
+def run_built_native_smoke_benchmarks(
+    report_path: pathlib.Path = DEFAULT_NATIVE_SMOKE_REPORT_PATH,
+) -> dict[str, Any]:
+    return run_benchmarks(
+        manifest_paths=list(DEFAULT_NATIVE_SMOKE_MANIFEST_PATHS),
+        report_path=report_path,
+        smoke_only=True,
+        adapter_mode=BUILT_NATIVE_MODE,
+        allow_fallback=False,
+    )
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -1399,6 +1428,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help=(
             "Benchmark the source-tree shim or provision a built native wheel when possible. "
             "The default keeps the existing source-tree shim path."
+        ),
+    )
+    parser.add_argument(
+        "--native-smoke",
+        action="store_true",
+        help=(
+            "Run the dedicated built-native smoke slice against the tracked smoke manifests. "
+            "This mode requires a real built native wheel and writes to the native smoke report by default."
         ),
     )
     parser.add_argument(
@@ -1442,12 +1479,26 @@ def main(argv: list[str] | None = None) -> int:
             )
         )
         return 0
-    scorecard = run_benchmarks(
-        manifest_paths=args.manifest,
-        report_path=args.report,
-        smoke_only=args.smoke,
-        adapter_mode=args.adapter_mode,
-    )
+    if args.native_smoke:
+        if args.manifest is not None:
+            raise SystemExit("--native-smoke cannot be combined with --manifest")
+        if args.smoke:
+            raise SystemExit("--native-smoke already implies smoke-only selection")
+        if args.adapter_mode != SOURCE_TREE_SHIM_MODE:
+            raise SystemExit("--native-smoke manages adapter selection itself")
+        report_path = (
+            DEFAULT_NATIVE_SMOKE_REPORT_PATH
+            if args.report == DEFAULT_REPORT_PATH
+            else args.report
+        )
+        scorecard = run_built_native_smoke_benchmarks(report_path=report_path)
+    else:
+        scorecard = run_benchmarks(
+            manifest_paths=args.manifest,
+            report_path=args.report,
+            smoke_only=args.smoke,
+            adapter_mode=args.adapter_mode,
+        )
     smoke_summary = {
         "total_workloads": scorecard["summary"]["total_workloads"],
         "parser_workloads": scorecard["summary"]["parser_workloads"],

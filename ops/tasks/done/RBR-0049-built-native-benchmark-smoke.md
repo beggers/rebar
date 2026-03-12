@@ -1,6 +1,6 @@
 # RBR-0049: Publish a built-native benchmark smoke report
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -24,3 +24,8 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0020`, `RBR-0037A`, `RBR-0042`, `RBR-0042A`, and `RBR-0048`. This task exists because the benchmark harness can already distinguish shim versus built-native modes, but the tracked landing surfaces still only publish source-tree-shim timings.
+
+## Completion
+- Added a dedicated `--native-smoke` / `run_built_native_smoke_benchmarks()` path that selects the published smoke workloads from the pattern, collection/replacement, and literal-flag manifests, requires a real built-native wheel, and raises instead of falling back to the source-tree shim.
+- Added `tests/benchmarks/test_built_native_benchmark_smoke.py` to pin both the strict failure path and the real built-native smoke report path when `maturin` is available.
+- Published `reports/benchmarks/native_smoke.json` from a real `/usr/bin/python3` built-native run with `adapter_mode_resolved: built-native`, `native_module_loaded: true`, and `native_build_tool: maturin`.
