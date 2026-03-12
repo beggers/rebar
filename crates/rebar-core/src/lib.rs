@@ -68,6 +68,10 @@ impl<'a> PatternRef<'a> {
         matches!(self, Self::Str("a.c")) && flags == self.literal_match_base_flags()
     }
 
+    fn supports_bounded_inline_flag_search_execution(self, flags: i32) -> bool {
+        matches!(self, Self::Str("(?i)abc")) && flags == FLAG_IGNORECASE | FLAG_UNICODE
+    }
+
     fn is_empty(self) -> bool {
         match self {
             Self::Str(value) => value.is_empty(),
@@ -359,6 +363,17 @@ fn compile_known_supported_case(
     normalized_flags: i32,
 ) -> Option<CompileOutcome> {
     match pattern {
+        PatternRef::Str("(?i)abc")
+            if normalized_flags == FLAG_UNICODE
+                || normalized_flags == FLAG_IGNORECASE | FLAG_UNICODE =>
+        {
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags: FLAG_IGNORECASE | FLAG_UNICODE,
+                supports_literal: false,
+                warning: None,
+            })
+        }
         PatternRef::Str("[A-Z_][a-z0-9_]+")
             if normalized_flags == FLAG_IGNORECASE | FLAG_UNICODE =>
         {
@@ -434,12 +449,12 @@ fn literal_match_str(
 ) -> MatchOutcome {
     let pattern = PatternRef::Str(pattern);
     let (normalized_pos, normalized_endpos) = normalize_bounds(string.chars().count(), pos, endpos);
-    let pattern_chars: Vec<char> = match pattern {
-        PatternRef::Str(value) => value.chars().collect(),
-        PatternRef::Bytes(_) => unreachable!(),
-    };
     let string_chars: Vec<char> = string.chars().collect();
     let span = if pattern.supports_literal_execution(flags) {
+        let pattern_chars: Vec<char> = match pattern {
+            PatternRef::Str(value) => value.chars().collect(),
+            PatternRef::Bytes(_) => unreachable!(),
+        };
         find_match_span_str(
             &pattern_chars,
             flags,
@@ -448,7 +463,22 @@ fn literal_match_str(
             normalized_pos,
             normalized_endpos,
         )
+    } else if pattern.supports_bounded_inline_flag_search_execution(flags)
+        && mode == MatchMode::Search
+    {
+        find_match_span_str(
+            &['a', 'b', 'c'],
+            flags,
+            mode,
+            &string_chars,
+            normalized_pos,
+            normalized_endpos,
+        )
     } else if pattern.supports_bounded_single_dot_execution(flags) {
+        let pattern_chars: Vec<char> = match pattern {
+            PatternRef::Str(value) => value.chars().collect(),
+            PatternRef::Bytes(_) => unreachable!(),
+        };
         find_bounded_single_dot_span_str(
             &pattern_chars,
             flags,
@@ -1039,6 +1069,14 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_bounded_inline_flag_literal_search_case() {
+        let outcome = compile(PatternRef::Str("(?i)abc"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_IGNORECASE | FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+    }
+
+    #[test]
     fn compile_accepts_bounded_fixed_width_lookbehind_success_case() {
         let outcome = compile(PatternRef::Str("(?<=ab)c"), 0).unwrap();
         assert_eq!(outcome.status, CompileStatus::Compiled);
@@ -1094,6 +1132,38 @@ mod tests {
 
         assert_eq!(outcome.status, MatchStatus::Matched);
         assert_eq!(outcome.span, Some((0, 3)));
+    }
+
+    #[test]
+    fn bounded_inline_flag_literal_search_supports_ignorecase_search() {
+        let outcome = literal_match(
+            PatternRef::Str("(?i)abc"),
+            FLAG_IGNORECASE | FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("ABC"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 3)));
+    }
+
+    #[test]
+    fn bounded_inline_flag_literal_workflow_stays_search_only() {
+        let outcome = literal_match(
+            PatternRef::Str("(?i)abc"),
+            FLAG_IGNORECASE | FLAG_UNICODE,
+            MatchMode::Match,
+            PatternRef::Str("ABC"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Unsupported);
+        assert_eq!(outcome.span, None);
     }
 
     #[test]

@@ -40,6 +40,13 @@ class CorrectnessHarnessLiteralFlagWorkflowTest(unittest.TestCase):
     def test_runner_regenerates_combined_literal_flag_scorecard(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             report_path = pathlib.Path(temp_dir) / "correctness.json"
+            subprocess.run(
+                ["cargo", "build", "-p", "rebar-cpython"],
+                check=True,
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+            )
             result = subprocess.run(
                 [
                     sys.executable,
@@ -70,10 +77,10 @@ class CorrectnessHarnessLiteralFlagWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 80,
                     "failed_cases": 0,
-                    "passed_cases": 77,
+                    "passed_cases": 78,
                     "skipped_cases": 0,
                     "total_cases": 80,
-                    "unimplemented_cases": 3,
+                    "unimplemented_cases": 2,
                 },
             )
 
@@ -115,9 +122,9 @@ class CorrectnessHarnessLiteralFlagWorkflowTest(unittest.TestCase):
 
         workflow_layer = scorecard["layers"]["module_workflow"]
         self.assertEqual(workflow_layer["summary"]["total_cases"], 36)
-        self.assertEqual(workflow_layer["summary"]["passed_cases"], 33)
+        self.assertEqual(workflow_layer["summary"]["passed_cases"], 34)
         self.assertEqual(workflow_layer["summary"]["failed_cases"], 0)
-        self.assertEqual(workflow_layer["summary"]["unimplemented_cases"], 3)
+        self.assertEqual(workflow_layer["summary"]["unimplemented_cases"], 2)
         self.assertEqual(
             workflow_layer["operations"],
             [
@@ -149,8 +156,8 @@ class CorrectnessHarnessLiteralFlagWorkflowTest(unittest.TestCase):
 
         flag_suite = next(suite for suite in scorecard["suites"] if suite["id"] == "literal.flag.workflow")
         self.assertEqual(flag_suite["summary"]["total_cases"], 11)
-        self.assertEqual(flag_suite["summary"]["passed_cases"], 9)
-        self.assertEqual(flag_suite["summary"]["unimplemented_cases"], 2)
+        self.assertEqual(flag_suite["summary"]["passed_cases"], 10)
+        self.assertEqual(flag_suite["summary"]["unimplemented_cases"], 1)
         self.assertEqual(
             flag_suite["families"],
             [
@@ -202,9 +209,13 @@ class CorrectnessHarnessLiteralFlagWorkflowTest(unittest.TestCase):
         inline_case = next(
             case for case in scorecard["cases"] if case["id"] == "flag-unsupported-inline-flag-search"
         )
-        self.assertEqual(inline_case["comparison"], "unimplemented")
+        self.assertEqual(inline_case["comparison"], "pass")
         self.assertEqual(inline_case["observations"]["cpython"]["outcome"], "success")
-        self.assertEqual(inline_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(inline_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            inline_case["observations"]["rebar"]["result"],
+            inline_case["observations"]["cpython"]["result"],
+        )
 
         locale_case = next(
             case for case in scorecard["cases"] if case["id"] == "flag-unsupported-locale-bytes-search"

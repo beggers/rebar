@@ -7,20 +7,43 @@ boundary is `rebar._rebar`, built through PyO3 and maturin.
 from __future__ import annotations
 
 import enum
+import importlib.machinery
 import importlib.util
 import operator
+import pathlib
 import re as _stdlib_re
+import sys
 import warnings
 from typing import Final
 
 TARGET_CPYTHON_SERIES: Final[str] = "3.12.x"
 SCAFFOLD_STATUS: Final[str] = "scaffold-only"
 NATIVE_MODULE_NAME: Final[str] = "rebar._rebar"
+_REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
+
+
+def _load_built_native_module() -> object | None:
+    for build_dir in (_REPO_ROOT / "target" / "debug", _REPO_ROOT / "target" / "release"):
+        for suffix in importlib.machinery.EXTENSION_SUFFIXES:
+            for candidate in (
+                build_dir / f"librebar_cpython{suffix}",
+                build_dir / f"rebar_cpython{suffix}",
+            ):
+                if not candidate.is_file():
+                    continue
+                spec = importlib.util.spec_from_file_location(NATIVE_MODULE_NAME, candidate)
+                if spec is None or spec.loader is None:
+                    continue
+                module = importlib.util.module_from_spec(spec)
+                sys.modules[NATIVE_MODULE_NAME] = module
+                spec.loader.exec_module(module)
+                return module
+    return None
 
 # Only treat a truly missing extension as optional. If a discovered extension
 # fails to initialize, surface that error instead of silently masking it.
 if importlib.util.find_spec(NATIVE_MODULE_NAME) is None:
-    _native = None
+    _native = _load_built_native_module()
 else:
     from . import _rebar as _native
 

@@ -1,6 +1,6 @@
 # RBR-0045: Carry inline `(?i)` literal support through the module workflow surface
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,4 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0038` and `RBR-0042A`. This task exists so the published workflow surface catches up with the bounded inline-flag compile work without leaving new behavior in Python.
+- Completed 2026-03-12: the Rust core now compiles the bounded `(?i)abc` case with CPython-shaped normalized flags and executes the published `search()` workflow through `rebar._rebar`, the source package can load a locally built native artifact from `target/` for scorecard runs, focused Python/Rust tests cover the new path, and the combined correctness report now publishes `flag-unsupported-inline-flag-search` as `pass` with an 80-case summary of 78 pass / 2 unimplemented.

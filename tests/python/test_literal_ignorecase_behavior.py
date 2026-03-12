@@ -93,9 +93,13 @@ class RebarLiteralIgnorecaseBehaviorTest(unittest.TestCase):
             rebar.search("abc", "ABC", rebar.IGNORECASE | rebar.ASCII)
         self.assertIn("rebar.search() is a scaffold placeholder", str(unsupported_combo.exception))
 
-        with self.assertRaises(NotImplementedError) as unsupported_inline:
-            rebar.search("(?i)abc", "ABC")
-        self.assertIn("rebar.compile() is a scaffold placeholder", str(unsupported_inline.exception))
+        if rebar.native_module_loaded():
+            inline_match = rebar.search("(?i)abc", "ABC")
+            self.assertEqual(inline_match.span(), (0, 3))
+        else:
+            with self.assertRaises(NotImplementedError) as unsupported_inline:
+                rebar.search("(?i)abc", "ABC")
+            self.assertIn("rebar.compile() is a scaffold placeholder", str(unsupported_inline.exception))
 
         with self.assertRaises(NotImplementedError) as unsupported_collection:
             rebar.findall("abc", "ABC", rebar.IGNORECASE)

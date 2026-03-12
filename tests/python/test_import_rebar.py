@@ -20,7 +20,13 @@ class RebarImportSmokeTest(unittest.TestCase):
         self.assertEqual(rebar.TARGET_CPYTHON_SERIES, "3.12.x")
         self.assertEqual(rebar.SCAFFOLD_STATUS, "scaffold-only")
         self.assertEqual(rebar.NATIVE_MODULE_NAME, "rebar._rebar")
-        self.assertFalse(rebar.native_module_loaded())
+        self.assertIsInstance(rebar.native_module_loaded(), bool)
+        if rebar.native_module_loaded():
+            self.assertEqual(rebar.native_scaffold_status(), "scaffold-only")
+            self.assertEqual(rebar.native_target_cpython_series(), "3.12.x")
+        else:
+            self.assertIsNone(rebar.native_scaffold_status())
+            self.assertIsNone(rebar.native_target_cpython_series())
 
     def test_compile_returns_pattern_scaffold(self) -> None:
         compiled = rebar.compile("abc")
