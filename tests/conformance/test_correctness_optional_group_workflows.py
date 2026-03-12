@@ -165,10 +165,10 @@ class CorrectnessHarnessOptionalGroupWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 170,
                     "failed_cases": 0,
-                    "passed_cases": 164,
+                    "passed_cases": 170,
                     "skipped_cases": 0,
                     "total_cases": 170,
-                    "unimplemented_cases": 6,
+                    "unimplemented_cases": 0,
                 },
             )
 
@@ -226,9 +226,9 @@ class CorrectnessHarnessOptionalGroupWorkflowTest(unittest.TestCase):
 
         match_layer = scorecard["layers"]["match_behavior"]
         self.assertEqual(match_layer["summary"]["total_cases"], 60)
-        self.assertEqual(match_layer["summary"]["passed_cases"], 54)
+        self.assertEqual(match_layer["summary"]["passed_cases"], 60)
         self.assertEqual(match_layer["summary"]["failed_cases"], 0)
-        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 6)
+        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             match_layer["manifest_ids"],
             [
@@ -260,9 +260,9 @@ class CorrectnessHarnessOptionalGroupWorkflowTest(unittest.TestCase):
             suite for suite in scorecard["suites"] if suite["id"] == "match.optional_group"
         )
         self.assertEqual(optional_group_suite["summary"]["total_cases"], 6)
-        self.assertEqual(optional_group_suite["summary"]["passed_cases"], 0)
+        self.assertEqual(optional_group_suite["summary"]["passed_cases"], 6)
         self.assertEqual(optional_group_suite["summary"]["failed_cases"], 0)
-        self.assertEqual(optional_group_suite["summary"]["unimplemented_cases"], 6)
+        self.assertEqual(optional_group_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             optional_group_suite["families"],
             [
@@ -280,60 +280,73 @@ class CorrectnessHarnessOptionalGroupWorkflowTest(unittest.TestCase):
             for case in scorecard["cases"]
             if case["id"] == "optional-group-compile-metadata-str"
         )
-        self.assertEqual(compile_case["comparison"], "unimplemented")
+        self.assertEqual(compile_case["comparison"], "pass")
         self.assertEqual(compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groupindex"], {})
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groups"], 1)
-        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(compile_case["observations"]["rebar"]["result"], compile_case["observations"]["cpython"]["result"])
 
         module_present_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "optional-group-module-search-present-str"
         )
-        self.assertEqual(module_present_case["comparison"], "unimplemented")
+        self.assertEqual(module_present_case["comparison"], "pass")
         self.assertEqual(module_present_case["helper"], "search")
         self.assertEqual(module_present_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(module_present_case["observations"]["cpython"]["result"]["group0"], "abd")
         self.assertEqual(module_present_case["observations"]["cpython"]["result"]["groups"], ["b"])
         self.assertEqual(module_present_case["observations"]["cpython"]["result"]["lastindex"], 1)
         self.assertEqual(module_present_case["observations"]["cpython"]["result"]["span1"], [3, 4])
-        self.assertEqual(module_present_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(module_present_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            module_present_case["observations"]["rebar"]["result"],
+            module_present_case["observations"]["cpython"]["result"],
+        )
 
         pattern_absent_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "optional-group-pattern-fullmatch-absent-str"
         )
-        self.assertEqual(pattern_absent_case["comparison"], "unimplemented")
+        self.assertEqual(pattern_absent_case["comparison"], "pass")
         self.assertEqual(pattern_absent_case["helper"], "fullmatch")
         self.assertEqual(pattern_absent_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(pattern_absent_case["observations"]["cpython"]["result"]["group0"], "ad")
         self.assertEqual(pattern_absent_case["observations"]["cpython"]["result"]["groups"], [None])
         self.assertEqual(pattern_absent_case["observations"]["cpython"]["result"]["lastindex"], None)
         self.assertEqual(pattern_absent_case["observations"]["cpython"]["result"]["span1"], [-1, -1])
-        self.assertEqual(pattern_absent_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(pattern_absent_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            pattern_absent_case["observations"]["rebar"]["result"],
+            pattern_absent_case["observations"]["cpython"]["result"],
+        )
 
         named_compile_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "named-optional-group-compile-metadata-str"
         )
-        self.assertEqual(named_compile_case["comparison"], "unimplemented")
+        self.assertEqual(named_compile_case["comparison"], "pass")
         self.assertEqual(named_compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(
             named_compile_case["observations"]["cpython"]["result"]["groupindex"],
             {"word": 1},
         )
         self.assertEqual(named_compile_case["observations"]["cpython"]["result"]["groups"], 1)
-        self.assertEqual(named_compile_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_compile_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            named_compile_case["observations"]["rebar"]["result"],
+            named_compile_case["observations"]["cpython"]["result"],
+        )
 
         named_module_absent_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "named-optional-group-module-search-absent-str"
         )
-        self.assertEqual(named_module_absent_case["comparison"], "unimplemented")
+        self.assertEqual(named_module_absent_case["comparison"], "pass")
         self.assertEqual(named_module_absent_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(named_module_absent_case["observations"]["cpython"]["result"]["group0"], "ad")
         self.assertEqual(named_module_absent_case["observations"]["cpython"]["result"]["groups"], [None])
@@ -342,14 +355,18 @@ class CorrectnessHarnessOptionalGroupWorkflowTest(unittest.TestCase):
             {"word": None},
         )
         self.assertEqual(named_module_absent_case["observations"]["cpython"]["result"]["lastgroup"], None)
-        self.assertEqual(named_module_absent_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_module_absent_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            named_module_absent_case["observations"]["rebar"]["result"],
+            named_module_absent_case["observations"]["cpython"]["result"],
+        )
 
         named_pattern_present_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "named-optional-group-pattern-fullmatch-present-str"
         )
-        self.assertEqual(named_pattern_present_case["comparison"], "unimplemented")
+        self.assertEqual(named_pattern_present_case["comparison"], "pass")
         self.assertEqual(named_pattern_present_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(named_pattern_present_case["observations"]["cpython"]["result"]["group0"], "abd")
         self.assertEqual(named_pattern_present_case["observations"]["cpython"]["result"]["groups"], ["b"])
@@ -359,7 +376,11 @@ class CorrectnessHarnessOptionalGroupWorkflowTest(unittest.TestCase):
         )
         self.assertEqual(named_pattern_present_case["observations"]["cpython"]["result"]["lastgroup"], "word")
         self.assertEqual(named_pattern_present_case["observations"]["cpython"]["result"]["span1"], [1, 2])
-        self.assertEqual(named_pattern_present_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_pattern_present_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            named_pattern_present_case["observations"]["rebar"]["result"],
+            named_pattern_present_case["observations"]["cpython"]["result"],
+        )
 
 
 if __name__ == "__main__":

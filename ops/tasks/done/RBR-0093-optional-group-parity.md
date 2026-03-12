@@ -1,8 +1,9 @@
 # RBR-0093: Add bounded optional-group parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Convert the first bounded optional-group cases from the published correctness pack into real CPython-shaped behavior without claiming counted-repeat, quantified-alternation, conditional, or broad backtracking support.
@@ -28,3 +29,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0050`, `RBR-0078`, and `RBR-0092`.
 - This task exists so the queue turns the first quantified execution cases into real Rust-backed behavior instead of leaving that frontier as publication-only coverage.
+
+## Completion Notes
+- Added a bounded Rust-core optional-group parser/matcher for `a(b)?d` and `a(?P<word>b)?d`, including compile metadata, present-versus-omitted capture spans, and CPython-shaped `lastindex`/`lastgroup` outcomes through the existing native compile/match boundary.
+- Added targeted Python parity coverage for the six published compile/module/pattern optional-group cases and refreshed the correctness-harness regression expectations for the new all-pass frontier.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports 170 total cases with 170 passes and 0 `unimplemented` outcomes across the published manifest set.
