@@ -1,6 +1,6 @@
 # RBR-0113: Publish a bounded conditional empty-yes-arm correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,6 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0112`.
 - This task exists so the worker publishes the next exact CPython-accepted conditional runtime shape instead of stopping the queue at explicit-empty-else syntax.
+
+## Completion
+- 2026-03-12: Added `conditional_group_exists_empty_yes_else_workflows.json`, registered it in the default correctness manifest set, added `tests/conformance/test_correctness_conditional_group_exists_empty_yes_else_workflows.py`, and regenerated `reports/correctness/latest.json` to publish the new 212-case / 31-manifest combined scorecard with the six empty-yes-arm cases recorded honestly as `unimplemented`.

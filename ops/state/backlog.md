@@ -4,18 +4,17 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0112` to catch bounded explicit-empty-else conditional benchmarks up so the third accepted conditional syntax slice reaches the published benchmark surface before the next accepted empty-yes-arm slice or rejected-syntax diagnostics reopen the frontier further.
-2. Land `RBR-0113` to publish a bounded empty-yes-arm conditional correctness pack for the CPython-accepted `(?(1)|else)` and `(?(name)|else)` group-exists forms so the queue keeps broadening accepted runtime conditionals before it turns to rejected-syntax diagnostics.
-3. Land `RBR-0114` to convert that bounded empty-yes-arm conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-4. Land `RBR-0115` to catch bounded empty-yes-arm conditional benchmarks up so the next accepted conditional syntax slice reaches the published benchmark surface before the fully empty conditional forms or rejected-syntax diagnostics reopen the frontier further.
-5. Land `RBR-0116` to publish a bounded fully-empty conditional correctness pack for the CPython-accepted `(?(1)|)` and `(?(name)|)` group-exists forms so the queue keeps broadening accepted conditional runtime syntax instead of jumping straight to rejected-syntax diagnostics.
-6. Land `RBR-0117` to convert that bounded fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-7. Land `RBR-0118` to catch bounded fully-empty conditional benchmarks up so the fully empty group-exists slice reaches the published benchmark surface before rejected-syntax diagnostics or broader backtracking reopen the frontier further.
-8. Land `RBR-0119` to publish a bounded rejected-syntax diagnostic pack for assertion-conditioned conditional forms so the queue keeps moving once the accepted empty-arm surfaces are exhausted.
-9. Land `RBR-0120` to convert that bounded assertion-conditioned diagnostic slice into real Rust-backed compile diagnostics instead of leaving it as publication-only coverage.
-10. Land `RBR-0121` to publish one bounded wider ranged-repeat quantified-group correctness pack for `{1,3}` workflows so counted execution broadens before quantified alternation or broader backtracking reopen the frontier.
-11. Land `RBR-0122` to convert that wider ranged-repeat slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-12. Land `RBR-0123` to catch wider ranged-repeat quantified-group benchmarks up so the widened counted-range slice reaches the published benchmark surface before quantified alternation or broader backtracking reopen the frontier further.
+1. Land `RBR-0113` to publish a bounded empty-yes-arm conditional correctness pack for the CPython-accepted `(?(1)|else)` and `(?(name)|else)` group-exists forms so the queue keeps broadening accepted runtime conditionals before it turns to rejected-syntax diagnostics.
+2. Land `RBR-0114` to convert that bounded empty-yes-arm conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+3. Land `RBR-0115` to catch bounded empty-yes-arm conditional benchmarks up so the next accepted conditional syntax slice reaches the published benchmark surface before the fully empty conditional forms or rejected-syntax diagnostics reopen the frontier further.
+4. Land `RBR-0116` to publish a bounded fully-empty conditional correctness pack for the CPython-accepted `(?(1)|)` and `(?(name)|)` group-exists forms so the queue keeps broadening accepted conditional runtime syntax instead of jumping straight to rejected-syntax diagnostics.
+5. Land `RBR-0117` to convert that bounded fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+6. Land `RBR-0118` to catch bounded fully-empty conditional benchmarks up so the fully empty group-exists slice reaches the published benchmark surface before rejected-syntax diagnostics or broader backtracking reopen the frontier further.
+7. Land `RBR-0119` to publish a bounded rejected-syntax diagnostic pack for assertion-conditioned conditional forms so the queue keeps moving once the accepted empty-arm surfaces are exhausted.
+8. Land `RBR-0120` to convert that bounded assertion-conditioned diagnostic slice into real Rust-backed compile diagnostics instead of leaving it as publication-only coverage.
+9. Land `RBR-0121` to publish one bounded wider ranged-repeat quantified-group correctness pack for `{1,3}` workflows so counted execution broadens before quantified alternation or broader backtracking reopen the frontier.
+10. Land `RBR-0122` to convert that wider ranged-repeat slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+11. Land `RBR-0123` to catch wider ranged-repeat quantified-group benchmarks up so the widened counted-range slice reaches the published benchmark surface before quantified alternation or broader backtracking reopen the frontier further.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
