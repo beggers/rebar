@@ -1,6 +1,6 @@
 # RBR-0082: Catch nested-group replacement benchmarks up with the new bounded slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,7 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0081`.
 - This task exists so the queue does not reach bounded nested-group replacement parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Added `benchmarks/workloads/nested_group_replacement_boundary.json` and wired it into the default combined benchmark manifest set so bounded numbered and named nested-group `sub()`/`subn()` workflows now publish real `rebar` timings alongside explicit callable and quantified nested replacement gap rows.
+- Added `tests/benchmarks/test_nested_group_replacement_boundary_benchmarks.py`, updated the combined nested-group benchmark expectations, and regenerated `reports/benchmarks/latest.json`; the published combined benchmark report now covers 122 workloads with 95 measured `rebar` timings and 27 explicit known gaps.

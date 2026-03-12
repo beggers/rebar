@@ -47,8 +47,8 @@ REGRESSION_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "regression_
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
 
 
-class NestedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
-    def test_runner_regenerates_combined_nested_group_scorecard(self) -> None:
+class NestedGroupReplacementBoundaryBenchmarkSuiteTest(unittest.TestCase):
+    def test_runner_regenerates_combined_nested_group_replacement_scorecard(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             report_path = pathlib.Path(temp_dir) / "benchmarks.json"
             result = subprocess.run(
@@ -149,10 +149,10 @@ class NestedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(len(scorecard["artifacts"]["manifests"]), 15)
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 
-        manifest_summary = scorecard["manifests"]["nested-group-boundary"]
-        self.assertEqual(manifest_summary["workload_count"], 8)
-        self.assertEqual(manifest_summary["selected_workload_count"], 8)
-        self.assertEqual(manifest_summary["measured_workloads"], 6)
+        manifest_summary = scorecard["manifests"]["nested-group-replacement-boundary"]
+        self.assertEqual(manifest_summary["workload_count"], 10)
+        self.assertEqual(manifest_summary["selected_workload_count"], 10)
+        self.assertEqual(manifest_summary["measured_workloads"], 8)
         self.assertEqual(manifest_summary["known_gap_count"], 2)
         self.assertEqual(manifest_summary["readiness"], "partial")
         self.assertEqual(manifest_summary["selection_mode"], "full")
@@ -160,16 +160,17 @@ class NestedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(
             manifest_summary["smoke_workload_ids"],
             [
-                "module-search-nested-group-warm-str",
-                "pattern-fullmatch-named-nested-group-purged-str",
+                "module-sub-template-nested-group-numbered-warm-str",
+                "pattern-subn-template-nested-group-named-purged-str",
             ],
         )
         self.assertEqual(
             manifest_summary["operations"],
             [
-                "module.compile",
-                "module.search",
-                "pattern.fullmatch",
+                "module.sub",
+                "module.subn",
+                "pattern.sub",
+                "pattern.subn",
             ],
         )
         self.assertEqual(
@@ -185,70 +186,83 @@ class NestedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
         manifest_record = next(
             manifest
             for manifest in scorecard["artifacts"]["manifests"]
-            if manifest["manifest_id"] == "nested-group-boundary"
+            if manifest["manifest_id"] == "nested-group-replacement-boundary"
         )
         self.assertEqual(
             manifest_record["manifest"],
-            "benchmarks/workloads/nested_group_boundary.json",
+            "benchmarks/workloads/nested_group_replacement_boundary.json",
         )
         self.assertEqual(
             manifest_record["smoke_workload_ids"],
             [
-                "module-search-nested-group-warm-str",
-                "pattern-fullmatch-named-nested-group-purged-str",
+                "module-sub-template-nested-group-numbered-warm-str",
+                "pattern-subn-template-nested-group-named-purged-str",
             ],
         )
 
-        compile_workload = next(
+        module_sub = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "module-compile-nested-group-cold-str"
+            if workload["id"] == "module-sub-template-nested-group-numbered-warm-str"
         )
-        self.assertEqual(compile_workload["manifest_id"], "nested-group-boundary")
-        self.assertEqual(compile_workload["operation"], "module.compile")
-        self.assertEqual(compile_workload["cache_mode"], "cold")
-        self.assertIn("nested-groups", compile_workload["syntax_features"])
-        self.assertEqual(compile_workload["status"], "measured")
-        self.assertEqual(compile_workload["implementation_timing"]["status"], "measured")
-        self.assertGreater(compile_workload["implementation_ns"], 0)
+        self.assertEqual(module_sub["manifest_id"], "nested-group-replacement-boundary")
+        self.assertEqual(module_sub["operation"], "module.sub")
+        self.assertEqual(module_sub["cache_mode"], "warm")
+        self.assertEqual(module_sub["replacement"], "\\1x")
+        self.assertEqual(module_sub["status"], "measured")
+        self.assertEqual(module_sub["implementation_timing"]["status"], "measured")
+        self.assertGreater(module_sub["implementation_ns"], 0)
 
-        module_search = next(
+        module_subn = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "module-search-nested-group-warm-str"
+            if workload["id"] == "module-subn-template-nested-group-named-warm-str"
         )
-        self.assertEqual(module_search["operation"], "module.search")
-        self.assertEqual(module_search["pattern"], "a((b))d")
-        self.assertEqual(module_search["status"], "measured")
-        self.assertEqual(module_search["implementation_timing"]["status"], "measured")
-        self.assertGreater(module_search["baseline_ns"], 0)
-        self.assertGreater(module_search["implementation_ns"], 0)
+        self.assertEqual(module_subn["operation"], "module.subn")
+        self.assertEqual(module_subn["count"], 1)
+        self.assertEqual(module_subn["replacement"], "\\g<inner>x")
+        self.assertIn("named-groups", module_subn["syntax_features"])
+        self.assertEqual(module_subn["status"], "measured")
+        self.assertEqual(module_subn["implementation_timing"]["status"], "measured")
+        self.assertGreater(module_subn["baseline_ns"], 0)
+        self.assertGreater(module_subn["implementation_ns"], 0)
 
-        named_pattern = next(
+        pattern_sub = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "pattern-fullmatch-named-nested-group-purged-str"
+            if workload["id"] == "pattern-sub-template-nested-group-numbered-purged-str"
         )
-        self.assertEqual(named_pattern["operation"], "pattern.fullmatch")
-        self.assertEqual(named_pattern["cache_mode"], "purged")
-        self.assertIn("named-groups", named_pattern["syntax_features"])
-        self.assertEqual(named_pattern["status"], "measured")
-        self.assertEqual(named_pattern["implementation_timing"]["status"], "measured")
+        self.assertEqual(pattern_sub["operation"], "pattern.sub")
+        self.assertEqual(pattern_sub["cache_mode"], "purged")
+        self.assertIn("cache-purge", pattern_sub["syntax_features"])
+        self.assertEqual(pattern_sub["status"], "measured")
+        self.assertEqual(pattern_sub["implementation_timing"]["status"], "measured")
 
-        alternation_gap = next(
+        pattern_subn = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "module-search-nested-group-alternation-cold-gap"
+            if workload["id"] == "pattern-subn-template-nested-group-named-purged-str"
         )
-        self.assertEqual(alternation_gap["status"], "unimplemented")
-        self.assertEqual(alternation_gap["implementation_timing"]["status"], "unimplemented")
-        self.assertIsNone(alternation_gap["implementation_ns"])
-        self.assertIsNone(alternation_gap["speedup_vs_cpython"])
+        self.assertEqual(pattern_subn["operation"], "pattern.subn")
+        self.assertEqual(pattern_subn["replacement"], "\\g<inner>x")
+        self.assertEqual(pattern_subn["status"], "measured")
+        self.assertEqual(pattern_subn["implementation_timing"]["status"], "measured")
+
+        callable_gap = next(
+            workload
+            for workload in scorecard["workloads"]
+            if workload["id"] == "module-sub-callable-nested-group-cold-gap"
+        )
+        self.assertEqual(callable_gap["status"], "unimplemented")
+        self.assertEqual(callable_gap["implementation_timing"]["status"], "unimplemented")
+        self.assertIsNone(callable_gap["implementation_ns"])
+        self.assertIsNone(callable_gap["speedup_vs_cpython"])
 
         quantified_gap = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "pattern-fullmatch-named-quantified-nested-group-purged-gap"
+            if workload["id"]
+            == "pattern-subn-template-named-quantified-nested-group-replacement-purged-gap"
         )
         self.assertEqual(quantified_gap["status"], "unimplemented")
         self.assertEqual(quantified_gap["implementation_timing"]["status"], "unimplemented")
