@@ -1,6 +1,6 @@
 # RBR-0121: Publish a bounded wider ranged-repeat quantified-group correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0120`.
 - This task exists so the queue reopens counted execution with one slightly wider exact CPython-supported range before it jumps to quantified alternation or broader backtracking.
+
+## Completion
+- Registered a new `wider-ranged-repeat-quantified-group-workflows` manifest in the correctness harness and added a dedicated `{1,3}` fixture/test pack covering numbered and named compile, module `search()`, and compiled `Pattern.fullmatch()` observations.
+- Kept the slice publication-only: the six new `{1,3}` cases are reported honestly as `unimplemented` against `rebar` while preserving the existing `{1,2}` ranged-repeat pass surface.
+- Republished the combined tracked correctness scorecard; `reports/correctness/latest.json` now reports `226` total cases with `220` passes, `0` failures, and `6` unimplemented cases from the new wider ranged-repeat pack.
