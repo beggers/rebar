@@ -46,10 +46,10 @@ class CorrectnessHarnessPublicApiSurfaceTest(unittest.TestCase):
                 {
                     "executed_cases": 22,
                     "failed_cases": 0,
-                    "passed_cases": 8,
+                    "passed_cases": 9,
                     "skipped_cases": 0,
                     "total_cases": 22,
-                    "unimplemented_cases": 14,
+                    "unimplemented_cases": 13,
                 },
             )
 
@@ -87,8 +87,8 @@ class CorrectnessHarnessPublicApiSurfaceTest(unittest.TestCase):
 
         public_api_layer = scorecard["layers"]["module_api_surface"]
         self.assertEqual(public_api_layer["summary"]["total_cases"], 7)
-        self.assertEqual(public_api_layer["summary"]["passed_cases"], 6)
-        self.assertEqual(public_api_layer["summary"]["unimplemented_cases"], 1)
+        self.assertEqual(public_api_layer["summary"]["passed_cases"], 7)
+        self.assertEqual(public_api_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             public_api_layer["operations"],
             ["module_call", "module_has_attr"],
@@ -108,8 +108,8 @@ class CorrectnessHarnessPublicApiSurfaceTest(unittest.TestCase):
         )
 
         public_api_suite = next(suite for suite in scorecard["suites"] if suite["id"] == "module.surface")
-        self.assertEqual(public_api_suite["summary"]["passed_cases"], 6)
-        self.assertEqual(public_api_suite["summary"]["unimplemented_cases"], 1)
+        self.assertEqual(public_api_suite["summary"]["passed_cases"], 7)
+        self.assertEqual(public_api_suite["summary"]["unimplemented_cases"], 0)
 
         compile_case = next(case for case in scorecard["cases"] if case["id"] == "compile-pattern-scaffold-success")
         self.assertEqual(compile_case["layer"], "module_api_surface")
@@ -133,6 +133,19 @@ class CorrectnessHarnessPublicApiSurfaceTest(unittest.TestCase):
         self.assertEqual(
             search_case["observations"]["rebar"]["result"],
             search_case["observations"]["cpython"]["result"],
+        )
+
+        escape_case = next(case for case in scorecard["cases"] if case["id"] == "escape-success")
+        self.assertEqual(escape_case["comparison"], "pass")
+        self.assertEqual(escape_case["observations"]["cpython"]["outcome"], "success")
+        self.assertEqual(escape_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            escape_case["observations"]["rebar"]["result"],
+            "a\\-b\\.c",
+        )
+        self.assertEqual(
+            escape_case["observations"]["rebar"]["result"],
+            escape_case["observations"]["cpython"]["result"],
         )
 
         parser_literal_case = next(case for case in scorecard["cases"] if case["id"] == "str-literal-success")

@@ -67,14 +67,14 @@
       ]
     },
     {
-      "id": "escape-placeholder-notimplemented",
+      "id": "escape-success",
       "operation": "module_call",
-      "family": "placeholder_behavior",
+      "family": "helper_behavior",
       "helper": "escape",
-      "args": ["abc"],
-      "categories": ["placeholder", "escape"],
+      "args": ["a-b.c"],
+      "categories": ["helper", "escape"],
       "notes": [
-        "Escape is exported but intentionally unimplemented in the scaffold."
+        "Escape now provides a real CPython-compatible helper for representative string inputs."
       ]
     }
   ]

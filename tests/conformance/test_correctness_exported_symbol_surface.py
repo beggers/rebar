@@ -54,10 +54,10 @@ class CorrectnessHarnessExportedSymbolSurfaceTest(unittest.TestCase):
                 {
                     "executed_cases": 38,
                     "failed_cases": 5,
-                    "passed_cases": 19,
+                    "passed_cases": 20,
                     "skipped_cases": 0,
                     "total_cases": 38,
-                    "unimplemented_cases": 14,
+                    "unimplemented_cases": 13,
                 },
             )
 
@@ -95,9 +95,9 @@ class CorrectnessHarnessExportedSymbolSurfaceTest(unittest.TestCase):
 
         public_api_layer = scorecard["layers"]["module_api_surface"]
         self.assertEqual(public_api_layer["summary"]["total_cases"], 17)
-        self.assertEqual(public_api_layer["summary"]["passed_cases"], 11)
+        self.assertEqual(public_api_layer["summary"]["passed_cases"], 12)
         self.assertEqual(public_api_layer["summary"]["failed_cases"], 5)
-        self.assertEqual(public_api_layer["summary"]["unimplemented_cases"], 1)
+        self.assertEqual(public_api_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             public_api_layer["operations"],
             ["module_attr_metadata", "module_attr_value", "module_call", "module_has_attr"],

@@ -28,7 +28,6 @@ PLACEHOLDER_CASES = [
     ("sub", ("abc", "x", "abc"), {}),
     ("subn", ("abc", "x", "abc"), {}),
     ("template", ("abc",), {}),
-    ("escape", ("abc",), {}),
 ]
 
 EXPECTED_HELPERS = {
@@ -103,6 +102,10 @@ class RebarModuleSurfaceScaffoldTest(unittest.TestCase):
         self.assertIsNone(rebar.match("abc", "zabc"))
         self.assertIsNone(rebar.fullmatch("abc", "abcz"))
 
+    def test_source_package_escape_returns_escaped_payload(self) -> None:
+        self.assertEqual(rebar.escape("a-b.c"), "a\\-b\\.c")
+        self.assertEqual(rebar.escape(b"a-b.c"), b"a\\-b\\.c")
+
     def test_source_package_purge_is_safe_noop(self) -> None:
         self.assertIsNone(rebar.purge())
         self.assertIsNone(rebar.purge())
@@ -166,7 +169,6 @@ cases = {
     "sub": [["abc", "x", "abc"], {}],
     "subn": [["abc", "x", "abc"], {}],
     "template": [["abc"], {}],
-    "escape": [["abc"], {}],
 }
 
 result = {
@@ -202,6 +204,11 @@ result["literal_fullmatch"] = {
     "type_name": type(full_match).__name__,
     "group0": full_match.group(0),
     "span": list(full_match.span()),
+}
+
+result["escape_outputs"] = {
+    "str": rebar.escape("a-b.c"),
+    "bytes": rebar.escape(b"a-b.c").decode("latin-1"),
 }
 
 exceptions = {}
@@ -248,6 +255,13 @@ print(json.dumps(result))
                     "type_name": "Match",
                     "group0": "abc",
                     "span": [0, 3],
+                },
+            )
+            self.assertEqual(
+                result["escape_outputs"],
+                {
+                    "str": "a\\-b\\.c",
+                    "bytes": "a\\-b\\.c",
                 },
             )
             self.assertEqual(

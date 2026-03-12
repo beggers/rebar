@@ -1,6 +1,6 @@
 # RBR-0025: Implement `escape()` parity for `str` and `bytes`
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -24,3 +24,8 @@ Created: 2026-03-12
 
 ## Notes
 - Use `docs/spec/drop-in-re-compatibility.md` for the public helper contract. This task should give the module surface one honest implemented helper while the general engine is still scaffolded.
+
+## Completion
+- Implemented a local CPython-3.12-compatible `escape()` helper in `python/rebar/__init__.py` using an explicit special-character translation table instead of delegating to stdlib `re.escape()` at call time.
+- Added focused `str`/`bytes` parity coverage in `tests/python/test_escape_surface.py`, updated adjacent scaffold tests that previously expected a placeholder error, and refreshed the public-API correctness fixture/report so `escape()` now counts as a real passing helper.
+- Verification: `python3 -m unittest tests.python.test_escape_surface tests.python.test_module_surface_scaffold tests.conformance.test_correctness_public_api_surface tests.conformance.test_correctness_match_behavior tests.conformance.test_correctness_exported_symbol_surface tests.conformance.test_correctness_pattern_object_surface` and `python3 -m unittest tests.python.test_native_extension_smoke` (native-build checks skipped when `maturin` is unavailable).

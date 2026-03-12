@@ -37,6 +37,32 @@ def _pattern_placeholder_message(method_name: str) -> str:
 
 
 _LITERAL_METACHARACTERS = frozenset(".^$*+?{}[]\\|()")
+_ESCAPE_SPECIAL_CHARACTERS: Final[dict[int, str]] = {
+    9: "\\\t",
+    10: "\\\n",
+    11: "\\\x0b",
+    12: "\\\x0c",
+    13: "\\\r",
+    32: "\\ ",
+    35: "\\#",
+    36: "\\$",
+    38: "\\&",
+    40: "\\(",
+    41: "\\)",
+    42: "\\*",
+    43: "\\+",
+    45: "\\-",
+    46: "\\.",
+    63: "\\?",
+    91: "\\[",
+    92: "\\\\",
+    93: "\\]",
+    94: "\\^",
+    123: "\\{",
+    124: "\\|",
+    125: "\\}",
+    126: "\\~",
+}
 _COMPILE_CACHE: dict[tuple[type[str] | type[bytes], str | bytes, int], "Pattern"] = {}
 
 
@@ -445,10 +471,14 @@ def template(*_args: object, **_kwargs: object) -> object:
     return _raise_placeholder("template")
 
 
-def escape(*_args: object, **_kwargs: object) -> object:
-    """Placeholder for the future drop-in `re.escape` surface."""
+def escape(pattern: object) -> str | bytes:
+    """Return a CPython-compatible escaped pattern for `str` and bytes-like inputs."""
 
-    return _raise_placeholder("escape")
+    if isinstance(pattern, str):
+        return pattern.translate(_ESCAPE_SPECIAL_CHARACTERS)
+
+    decoded_pattern = str(pattern, "latin-1")
+    return decoded_pattern.translate(_ESCAPE_SPECIAL_CHARACTERS).encode("latin-1")
 
 
 def purge() -> None:

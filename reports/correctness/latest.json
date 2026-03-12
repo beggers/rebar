@@ -1055,23 +1055,21 @@
     },
     {
       "args": [
-        "abc"
+        "a-b.c"
       ],
       "categories": [
-        "placeholder",
+        "helper",
         "escape"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
-      "family": "placeholder_behavior",
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "helper_behavior",
       "helper": "escape",
-      "id": "escape-placeholder-notimplemented",
+      "id": "escape-success",
       "layer": "module_api_surface",
       "manifest_id": "public-api-surface",
       "notes": [
-        "Escape is exported but intentionally unimplemented in the scaffold."
+        "Escape now provides a real CPython-compatible helper for representative string inputs."
       ],
       "observations": {
         "cpython": {
@@ -1079,18 +1077,15 @@
           "exception": null,
           "operation": "module_call",
           "outcome": "success",
-          "result": "abc",
+          "result": "a\\-b\\.c",
           "warnings": []
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.escape() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "module_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": "a\\-b\\.c",
           "warnings": []
         }
       },
@@ -2482,15 +2477,15 @@
         }
       },
       "rebar": {
-        "exception_case_count": 16,
+        "exception_case_count": 15,
         "exception_types": {
-          "NotImplementedError": 14,
+          "NotImplementedError": 13,
           "TypeError": 2
         },
         "outcomes": {
           "exception": 2,
-          "success": 28,
-          "unimplemented": 14
+          "success": 29,
+          "unimplemented": 13
         },
         "warning_case_count": 0,
         "warning_categories": {}
@@ -2707,6 +2702,25 @@
       ]
     },
     {
+      "case_count": 1,
+      "id": "helper_behavior",
+      "layers": [
+        "module_api_surface"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": []
+    },
+    {
       "case_count": 2,
       "id": "helper_presence",
       "layers": [
@@ -2866,25 +2880,6 @@
       ]
     },
     {
-      "case_count": 1,
-      "id": "placeholder_behavior",
-      "layers": [
-        "module_api_surface"
-      ],
-      "operations": [
-        "module_call"
-      ],
-      "summary": {
-        "executed_cases": 1,
-        "failed_cases": 0,
-        "passed_cases": 0,
-        "skipped_cases": 0,
-        "total_cases": 1,
-        "unimplemented_cases": 1
-      },
-      "text_models": []
-    },
-    {
       "case_count": 2,
       "id": "quantifiers",
       "layers": [
@@ -2945,7 +2940,7 @@
       "tests/conformance/fixtures/pattern_object_surface.json"
     ]
   },
-  "generated_at": "2026-03-12T01:35:37Z",
+  "generated_at": "2026-03-12T01:58:44Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -3016,15 +3011,13 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 3,
+            "exception_case_count": 2,
             "exception_types": {
-              "NotImplementedError": 1,
               "TypeError": 2
             },
             "outcomes": {
               "exception": 2,
-              "success": 14,
-              "unimplemented": 1
+              "success": 15
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -3035,12 +3028,12 @@
         "cache_surface",
         "exception_type_metadata",
         "flag_constant_values",
+        "helper_behavior",
         "helper_presence",
         "helper_type_instantiation_guard",
         "helper_type_metadata",
         "literal_behavior",
-        "pattern_scaffold",
-        "placeholder_behavior"
+        "pattern_scaffold"
       ],
       "manifest_ids": [
         "exported-symbol-surface",
@@ -3059,10 +3052,10 @@
       "summary": {
         "executed_cases": 17,
         "failed_cases": 5,
-        "passed_cases": 11,
+        "passed_cases": 12,
         "skipped_cases": 0,
         "total_cases": 17,
-        "unimplemented_cases": 1
+        "unimplemented_cases": 0
       },
       "text_models": []
     },
@@ -3376,13 +3369,10 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 1,
-            "exception_types": {
-              "NotImplementedError": 1
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "success": 6,
-              "unimplemented": 1
+              "success": 7
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -3391,10 +3381,10 @@
       },
       "families": [
         "cache_surface",
+        "helper_behavior",
         "helper_presence",
         "literal_behavior",
-        "pattern_scaffold",
-        "placeholder_behavior"
+        "pattern_scaffold"
       ],
       "id": "module.surface",
       "layer": "module_api_surface",
@@ -3408,10 +3398,10 @@
       "summary": {
         "executed_cases": 7,
         "failed_cases": 0,
-        "passed_cases": 6,
+        "passed_cases": 7,
         "skipped_cases": 0,
         "total_cases": 7,
-        "unimplemented_cases": 1
+        "unimplemented_cases": 0
       },
       "text_models": []
     },
@@ -3429,13 +3419,10 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 1,
-            "exception_types": {
-              "NotImplementedError": 1
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "success": 3,
-              "unimplemented": 1
+              "success": 4
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -3444,9 +3431,9 @@
       },
       "families": [
         "cache_surface",
+        "helper_behavior",
         "literal_behavior",
-        "pattern_scaffold",
-        "placeholder_behavior"
+        "pattern_scaffold"
       ],
       "id": "module.surface.module_call",
       "layer": "module_api_surface",
@@ -3459,10 +3446,10 @@
       "summary": {
         "executed_cases": 4,
         "failed_cases": 0,
-        "passed_cases": 3,
+        "passed_cases": 4,
         "skipped_cases": 0,
         "total_cases": 4,
-        "unimplemented_cases": 1
+        "unimplemented_cases": 0
       },
       "text_models": []
     },
@@ -4099,9 +4086,9 @@
   "summary": {
     "executed_cases": 44,
     "failed_cases": 8,
-    "passed_cases": 22,
+    "passed_cases": 23,
     "skipped_cases": 0,
     "total_cases": 44,
-    "unimplemented_cases": 14
+    "unimplemented_cases": 13
   }
 }

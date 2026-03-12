@@ -58,10 +58,10 @@ class CorrectnessHarnessPatternObjectSurfaceTest(unittest.TestCase):
                 {
                     "executed_cases": 44,
                     "failed_cases": 8,
-                    "passed_cases": 22,
+                    "passed_cases": 23,
                     "skipped_cases": 0,
                     "total_cases": 44,
-                    "unimplemented_cases": 14,
+                    "unimplemented_cases": 13,
                 },
             )
 
