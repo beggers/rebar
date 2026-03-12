@@ -1,8 +1,9 @@
 # RBR-0103: Catch optional-group alternation benchmarks up with the new bounded slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Extend the published benchmark surface so the bounded optional-group alternation workflows supported by `RBR-0102` produce real `rebar` timings before conditionals or broader backtracking reopen the correctness frontier.
@@ -27,3 +28,4 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0102`.
 - This task exists so the queue does not reach bounded optional-group alternation parity and then leave that newly supported quantified-alternation slice absent from benchmark reporting.
+- Completed with a dedicated `optional-group-alternation-boundary` benchmark manifest, updated optional-group benchmark expectations after moving the old quantified-alternation placeholder out of the plain optional-group pack, a new combined benchmark regression test for the current frontier, and a republished `reports/benchmarks/latest.json` at 178 workloads with 143 measured timings and 35 explicit gaps.

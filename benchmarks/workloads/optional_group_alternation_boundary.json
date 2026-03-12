@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "manifest_id": "optional-group-boundary",
+  "manifest_id": "optional-group-alternation-boundary",
   "spec_refs": [
     "docs/benchmarks/plan.md",
     "docs/spec/drop-in-re-compatibility.md"
   ],
   "notes": [
-    "Optional-group boundary workloads keep captures, quantifiers, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded optional-group slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b)?d` and `a(?P<word>b)?d` compile/search/fullmatch paths directly, while conditional combinations stay as explicit known-gap rows until the queued bounded conditional follow-on lands."
+    "Optional-group alternation boundary workloads keep captures, one literal alternation site, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded quantified-alternation slice rather than regex throughput.",
+    "Measured rows cover the bounded `a(b|c)?d` and `a(?P<word>b|c)?d` compile/search/fullmatch paths directly, while exact-repeat or broader quantified alternation plus quantified alternation with inner branch-local backreferences stay as explicit known-gap rows until later counted-repeat and broader backtracking follow-ons land."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -16,11 +16,11 @@
   },
   "workloads": [
     {
-      "id": "module-compile-optional-group-cold-str",
+      "id": "module-compile-numbered-optional-group-alternation-cold-str",
       "bucket": "module-compile",
       "family": "module",
       "operation": "module.compile",
-      "pattern": "a(b)?d",
+      "pattern": "a(b|c)?d",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "cold",
@@ -30,25 +30,27 @@
         "grouped",
         "optional-group",
         "quantifier",
+        "alternation",
         "cold-cache"
       ],
       "syntax_features": [
         "module-compile",
         "grouping-forms",
         "optional-groups",
-        "quantifiers"
+        "quantifiers",
+        "alternation"
       ],
       "notes": [
-        "Cold module.compile benchmark for the bounded optional-group slice so compile metadata timing reaches the published benchmark report."
+        "Cold module.compile benchmark for the bounded numbered optional-group alternation slice so compile metadata timing reaches the published benchmark report."
       ]
     },
     {
-      "id": "module-search-optional-group-present-warm-str",
+      "id": "module-search-numbered-optional-group-alternation-c-branch-warm-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(b)?d",
-      "haystack": "zzabdzz",
+      "pattern": "a(b|c)?d",
+      "haystack": "zzacdzz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
@@ -58,6 +60,7 @@
         "grouped",
         "optional-group",
         "quantifier",
+        "alternation",
         "search",
         "module",
         "present",
@@ -68,18 +71,19 @@
         "module-search",
         "grouping-forms",
         "optional-groups",
-        "quantifiers"
+        "quantifiers",
+        "alternation"
       ],
       "notes": [
-        "Warm module.search helper path for the bounded numbered optional-group workflow when the capture is present on a tiny haystack."
+        "Warm module.search helper path for the bounded numbered optional-group alternation workflow when the optional capture is present and the alternation selects the c branch."
       ]
     },
     {
-      "id": "pattern-fullmatch-optional-group-absent-purged-str",
+      "id": "pattern-fullmatch-numbered-optional-group-alternation-absent-purged-str",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(b)?d",
+      "pattern": "a(b|c)?d",
       "haystack": "ad",
       "flags": 0,
       "text_model": "str",
@@ -90,6 +94,7 @@
         "grouped",
         "optional-group",
         "quantifier",
+        "alternation",
         "fullmatch",
         "absent",
         "purged-cache"
@@ -99,18 +104,19 @@
         "grouping-forms",
         "optional-groups",
         "quantifiers",
+        "alternation",
         "cache-purge"
       ],
       "notes": [
-        "Purged-cache Pattern.fullmatch probe for the same bounded numbered optional-group workflow when the capture is omitted."
+        "Purged-cache Pattern.fullmatch probe for the same bounded numbered optional-group alternation workflow when the capture is omitted."
       ]
     },
     {
-      "id": "module-compile-named-optional-group-warm-str",
+      "id": "module-compile-named-optional-group-alternation-warm-str",
       "bucket": "module-compile",
       "family": "module",
       "operation": "module.compile",
-      "pattern": "a(?P<word>b)?d",
+      "pattern": "a(?P<word>b|c)?d",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
@@ -120,6 +126,7 @@
         "grouped",
         "optional-group",
         "quantifier",
+        "alternation",
         "named-group",
         "warm-cache"
       ],
@@ -128,19 +135,20 @@
         "grouping-forms",
         "optional-groups",
         "quantifiers",
+        "alternation",
         "named-groups"
       ],
       "notes": [
-        "Warm module.compile path for the bounded named optional-group slice so named metadata timing reaches the benchmark report."
+        "Warm module.compile path for the bounded named optional-group alternation slice so named metadata timing reaches the benchmark report."
       ]
     },
     {
-      "id": "module-search-named-optional-group-absent-warm-str",
+      "id": "module-search-named-optional-group-alternation-b-branch-warm-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(?P<word>b)?d",
-      "haystack": "zzadzz",
+      "pattern": "a(?P<word>b|c)?d",
+      "haystack": "zzabdzz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
@@ -149,10 +157,11 @@
         "grouped",
         "optional-group",
         "quantifier",
+        "alternation",
         "named-group",
         "search",
         "module",
-        "absent",
+        "present",
         "warm-cache"
       ],
       "syntax_features": [
@@ -160,19 +169,20 @@
         "grouping-forms",
         "optional-groups",
         "quantifiers",
+        "alternation",
         "named-groups"
       ],
       "notes": [
-        "Warm module.search helper path for a tiny named optional-group capture when the group is omitted so named runtime workflows produce real timings."
+        "Warm module.search helper path for the bounded named optional-group alternation workflow when the optional capture is present and the alternation selects the b branch."
       ]
     },
     {
-      "id": "pattern-fullmatch-named-optional-group-present-purged-str",
+      "id": "pattern-fullmatch-named-optional-group-alternation-absent-purged-str",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(?P<word>b)?d",
-      "haystack": "abd",
+      "pattern": "a(?P<word>b|c)?d",
+      "haystack": "ad",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "purged",
@@ -183,9 +193,10 @@
         "grouped",
         "optional-group",
         "quantifier",
+        "alternation",
         "named-group",
         "fullmatch",
-        "present",
+        "absent",
         "purged-cache",
         "smoke"
       ],
@@ -194,29 +205,32 @@
         "grouping-forms",
         "optional-groups",
         "quantifiers",
+        "alternation",
         "named-groups",
         "cache-purge"
       ],
       "notes": [
-        "Smoke-sized Pattern.fullmatch probe for the bounded named optional-group workflow when the capture is present with compile cost kept outside the timed loop."
+        "Smoke-sized Pattern.fullmatch probe for the bounded named optional-group alternation workflow when the capture is omitted so named-group None payload timing reaches the benchmark report."
       ]
     },
     {
-      "id": "module-search-numbered-optional-group-conditional-cold-gap",
+      "id": "module-search-numbered-exact-repeat-alternation-cold-gap",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(b)?(?(1)c|d)e",
-      "haystack": "zzabcezz",
+      "pattern": "a(b|c){2}d",
+      "haystack": "zzabbdzz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "cold",
       "timing_scope": "module-helper-call",
       "categories": [
         "grouped",
-        "quantifier",
         "optional-group",
-        "conditional",
+        "quantifier",
+        "alternation",
+        "exact-repeat",
+        "counted-repeat",
         "search",
         "module",
         "unsupported",
@@ -225,12 +239,47 @@
       "syntax_features": [
         "module-search",
         "grouping-forms",
-        "optional-groups",
         "quantifiers",
-        "conditionals"
+        "alternation",
+        "counted-repeats"
       ],
       "notes": [
-        "Explicit conditional gap row so optional-group group-exists workflows stay visible instead of disappearing before the queued bounded conditional follow-on lands."
+        "Explicit exact-repeat quantified-alternation gap row so broader counted alternation stays visible now that the bounded optional-group alternation slice has real timings."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-optional-group-alternation-branch-backref-purged-gap",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a((b|c)\\2)?d",
+      "haystack": "abbd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "quantifier",
+        "alternation",
+        "branch-local-backreference",
+        "fullmatch",
+        "unsupported",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "quantifiers",
+        "alternation",
+        "backreferences",
+        "cache-purge"
+      ],
+      "notes": [
+        "Explicit branch-local-backreference-within-quantified-alternation gap row so broader backtracking-heavy combinations stay on the benchmark surface instead of disappearing."
       ]
     }
   ]
