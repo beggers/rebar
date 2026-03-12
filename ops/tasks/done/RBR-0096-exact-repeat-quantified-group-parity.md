@@ -1,6 +1,6 @@
 # RBR-0096: Add bounded exact-repeat quantified-group parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,7 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0050`, `RBR-0078`, and `RBR-0095`.
 - This task exists so the queue turns the first deterministic counted-repeat cases into real Rust-backed behavior instead of leaving that frontier as publication-only coverage.
+
+## Completion
+- Landed bounded exact `{2}` numbered and named quantified-group compile and search/match/fullmatch parity behind `rebar._rebar`, preserving the intentionally narrow prefix/capture/suffix literal slice.
+- Added direct Rust and Python parity coverage for final-capture-span behavior, then republished `reports/correctness/latest.json` to `176` passes, `0` failures, and `0` unimplemented cases across the combined default fixture set.
