@@ -93,10 +93,10 @@ class CorrectnessHarnessNamedBackreferenceWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 96,
                     "failed_cases": 0,
-                    "passed_cases": 93,
+                    "passed_cases": 96,
                     "skipped_cases": 0,
                     "total_cases": 96,
-                    "unimplemented_cases": 3,
+                    "unimplemented_cases": 0,
                 },
             )
 
@@ -142,9 +142,9 @@ class CorrectnessHarnessNamedBackreferenceWorkflowTest(unittest.TestCase):
 
         match_layer = scorecard["layers"]["match_behavior"]
         self.assertEqual(match_layer["summary"]["total_cases"], 18)
-        self.assertEqual(match_layer["summary"]["passed_cases"], 15)
+        self.assertEqual(match_layer["summary"]["passed_cases"], 18)
         self.assertEqual(match_layer["summary"]["failed_cases"], 0)
-        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 3)
+        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             match_layer["manifest_ids"],
             [
@@ -168,9 +168,9 @@ class CorrectnessHarnessNamedBackreferenceWorkflowTest(unittest.TestCase):
             suite for suite in scorecard["suites"] if suite["id"] == "match.named_backreference"
         )
         self.assertEqual(named_backreference_suite["summary"]["total_cases"], 3)
-        self.assertEqual(named_backreference_suite["summary"]["passed_cases"], 0)
+        self.assertEqual(named_backreference_suite["summary"]["passed_cases"], 3)
         self.assertEqual(named_backreference_suite["summary"]["failed_cases"], 0)
-        self.assertEqual(named_backreference_suite["summary"]["unimplemented_cases"], 3)
+        self.assertEqual(named_backreference_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             named_backreference_suite["families"],
             [
@@ -185,23 +185,24 @@ class CorrectnessHarnessNamedBackreferenceWorkflowTest(unittest.TestCase):
             for case in scorecard["cases"]
             if case["id"] == "named-backreference-compile-metadata-str"
         )
-        self.assertEqual(compile_case["comparison"], "unimplemented")
+        self.assertEqual(compile_case["comparison"], "pass")
         self.assertEqual(compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(
             compile_case["observations"]["cpython"]["result"]["groupindex"],
             {"word": 1},
         )
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groups"], 1)
-        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "success")
         self.assertEqual(
-            compile_case["observations"]["rebar"]["exception"]["message"],
-            "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            compile_case["observations"]["rebar"]["result"]["groupindex"],
+            {"word": 1},
         )
+        self.assertEqual(compile_case["observations"]["rebar"]["result"]["groups"], 1)
 
         module_case = next(
             case for case in scorecard["cases"] if case["id"] == "named-backreference-module-search-str"
         )
-        self.assertEqual(module_case["comparison"], "unimplemented")
+        self.assertEqual(module_case["comparison"], "pass")
         self.assertEqual(module_case["helper"], "search")
         self.assertEqual(module_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(module_case["observations"]["cpython"]["result"]["group0"], "abab")
@@ -211,16 +212,16 @@ class CorrectnessHarnessNamedBackreferenceWorkflowTest(unittest.TestCase):
             {"word": "ab"},
         )
         self.assertEqual(module_case["observations"]["cpython"]["result"]["lastgroup"], "word")
-        self.assertEqual(module_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(module_case["observations"]["rebar"]["outcome"], "success")
         self.assertEqual(
-            module_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
+            module_case["observations"]["rebar"]["result"]["named_group_spans"],
+            {"word": [2, 4]},
         )
 
         pattern_case = next(
             case for case in scorecard["cases"] if case["id"] == "named-backreference-pattern-search-str"
         )
-        self.assertEqual(pattern_case["comparison"], "unimplemented")
+        self.assertEqual(pattern_case["comparison"], "pass")
         self.assertEqual(pattern_case["helper"], "search")
         self.assertEqual(
             pattern_case["observations"]["cpython"]["result"]["named_groups"],
@@ -231,10 +232,10 @@ class CorrectnessHarnessNamedBackreferenceWorkflowTest(unittest.TestCase):
             {"word": [2, 4]},
         )
         self.assertEqual(pattern_case["observations"]["cpython"]["result"]["lastgroup"], "word")
-        self.assertEqual(pattern_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(pattern_case["observations"]["rebar"]["outcome"], "success")
         self.assertEqual(
-            pattern_case["comparison_notes"],
-            ["rebar adapter reports support as unimplemented"],
+            pattern_case["observations"]["rebar"]["result"]["named_groups"],
+            {"word": "ab"},
         )
 
 

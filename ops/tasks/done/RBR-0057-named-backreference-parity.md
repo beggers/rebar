@@ -1,8 +1,9 @@
 # RBR-0057: Add bounded named-backreference parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Convert the first named-backreference literal cases from the published correctness pack into real CPython-shaped behavior without claiming broad backreference or grouped-regex support.
@@ -28,3 +29,5 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0055`, `RBR-0056`, and the existing Rust-backed compile/match boundary.
 - This task exists so the next grouped-reference scorecard expansion can turn into concrete behavior work immediately instead of becoming another reporting-only dead end.
+- Completed with a bounded Rust-core parser/matcher path for `(?P<word>ab)(?P=word)`, plus Python parity coverage and a republished combined correctness report showing `96/96` passing cases and `0` unimplemented cases.
+- No additional Python fallback execution path was added; the new behavior stays behind the existing native compile/match boundary as required.
