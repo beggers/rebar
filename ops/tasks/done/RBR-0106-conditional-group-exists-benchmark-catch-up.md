@@ -1,6 +1,6 @@
 # RBR-0106: Catch bounded conditional group-exists benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,4 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0105`.
 - This task exists so the queue does not reach bounded conditional parity and then leave that newly supported slice absent from benchmark reporting.
+- Completed 2026-03-12: added the dedicated `conditional-group-exists-boundary` benchmark manifest, wired it into the default benchmark suite, added regression coverage for the combined scorecard, and republished `reports/benchmarks/latest.json` at 186 workloads with 149 measured timings and 37 explicit gaps.

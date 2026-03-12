@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "manifest_id": "conditional-group-exists-boundary",
+  "spec_refs": [
+    "docs/benchmarks/plan.md",
+    "docs/spec/drop-in-re-compatibility.md"
+  ],
+  "notes": [
+    "Conditional group-exists boundary workloads keep one optional capture, one conditional site, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported bounded two-arm conditional slice rather than regex throughput.",
+    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch paths directly, while nested conditionals and quantified conditional arms stay as explicit known-gap rows until later conditional follow-ons land."
+  ],
+  "defaults": {
+    "warmup_iterations": 2,
+    "sample_iterations": 5,
+    "timed_samples": 7
+  },
+  "workloads": [
+    {
+      "id": "module-compile-numbered-conditional-group-exists-cold-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals"
+      ],
+      "notes": [
+        "Cold module.compile benchmark for the bounded numbered conditional group-exists slice so compile metadata timing reaches the published benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-numbered-conditional-group-exists-present-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzabcdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "smoke": true,
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "search",
+        "module",
+        "present",
+        "warm-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded numbered conditional workflow when the optional capture is present and the yes-arm literal suffix is selected."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-conditional-group-exists-absent-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "ace",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fullmatch",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the same bounded numbered conditional workflow when the optional capture is omitted and the no-arm literal suffix is selected."
+      ]
+    },
+    {
+      "id": "module-compile-named-conditional-group-exists-warm-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "named-group",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.compile path for the bounded named conditional group-exists slice so named metadata timing reaches the benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-named-conditional-group-exists-present-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzabcdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "named-group",
+        "search",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded named conditional workflow when the optional named capture is present and the yes-arm literal suffix is selected."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-conditional-group-exists-absent-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "ace",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "smoke": true,
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "named-group",
+        "fullmatch",
+        "absent",
+        "purged-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Smoke-sized Pattern.fullmatch probe for the bounded named conditional workflow when the optional capture is omitted so named-group None payload timing reaches the benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-numbered-nested-conditional-group-exists-cold-gap",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzabcdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "search",
+        "module",
+        "unsupported",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals"
+      ],
+      "notes": [
+        "Explicit nested-conditional gap row so broader conditional composition stays visible now that the first bounded two-arm group-exists slice has real timings."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-quantified-conditional-group-exists-purged-gap",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(b)?c(?(1)d|e){2}",
+      "haystack": "abcdd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "fullmatch",
+        "unsupported",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "quantifiers",
+        "cache-purge"
+      ],
+      "notes": [
+        "Explicit quantified-conditional gap row so repeated conditional-arm behavior stays on the benchmark surface instead of disappearing."
+      ]
+    }
+  ]
+}
