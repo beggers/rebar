@@ -1,6 +1,6 @@
 # RBR-0095: Publish a bounded exact-repeat quantified-group correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0050`, `RBR-0078`, and `RBR-0093`.
 - This task exists so the worker can continue quantified execution with one deterministic counted slice instead of jumping directly to ranged repeats, quantified alternation, or conditionals.
+
+## Completion
+- Completed 2026-03-12.
+- Added `exact-repeat-quantified-group-workflows` to the combined correctness fixture set with six bounded `{2}` numbered/named group cases across compile, module `search()`, and bound `Pattern.fullmatch()` paths.
+- Regenerated `reports/correctness/latest.json`; the published scorecard now reports `176` total cases with `170` passes and `6` honest `unimplemented` outcomes for the new exact-repeat slice.

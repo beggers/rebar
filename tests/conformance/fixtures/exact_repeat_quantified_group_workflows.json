@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "manifest_id": "exact-repeat-quantified-group-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.exact_repeat_quantified_group",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "exact-repeat-numbered-group-compile-metadata-str",
+      "operation": "compile",
+      "family": "exact_repeat_numbered_group_compile_metadata",
+      "pattern": "a(bc){2}d",
+      "categories": ["grouped", "quantifier", "exact-repeat", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the bounded numbered exact-repeat compile frontier for one literal capturing group repeated exactly twice inside literal prefix and suffix text."
+      ]
+    },
+    {
+      "id": "exact-repeat-numbered-group-module-search-str",
+      "operation": "module_call",
+      "family": "exact_repeat_numbered_group_module_search_workflow",
+      "helper": "search",
+      "args": ["a(bc){2}d", "zzabcbcdzz"],
+      "categories": ["grouped", "quantifier", "exact-repeat", "search", "module", "str", "gap"],
+      "notes": [
+        "Documents the module-level numbered exact-repeat search path for the same tiny literal workflow so the published scorecard exposes the final visible capture value after the second repetition completes."
+      ]
+    },
+    {
+      "id": "exact-repeat-numbered-group-pattern-fullmatch-str",
+      "operation": "pattern_call",
+      "family": "exact_repeat_numbered_group_pattern_fullmatch_workflow",
+      "pattern": "a(bc){2}d",
+      "helper": "fullmatch",
+      "args": ["abcbcd"],
+      "categories": ["grouped", "quantifier", "exact-repeat", "fullmatch", "pattern", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch numbered exact-repeat path without broadening into ranged repeats, quantified alternation, replacement semantics, or capture-history reporting beyond the exposed final group value."
+      ]
+    },
+    {
+      "id": "exact-repeat-named-group-compile-metadata-str",
+      "operation": "compile",
+      "family": "exact_repeat_named_group_compile_metadata",
+      "pattern": "a(?P<word>bc){2}d",
+      "categories": ["grouped", "quantifier", "exact-repeat", "named-group", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the matching named exact-repeat compile frontier for one named literal capturing group repeated exactly twice with the same bounded counted shape."
+      ]
+    },
+    {
+      "id": "exact-repeat-named-group-module-search-str",
+      "operation": "module_call",
+      "family": "exact_repeat_named_group_module_search_workflow",
+      "helper": "search",
+      "args": ["a(?P<word>bc){2}d", "zzabcbcdzz"],
+      "categories": ["grouped", "quantifier", "exact-repeat", "named-group", "search", "module", "str", "gap"],
+      "notes": [
+        "Documents the module-level named exact-repeat search path for the same tiny literal workflow so the published gap records the final named-group payload exposed through CPython's observable match-object API."
+      ]
+    },
+    {
+      "id": "exact-repeat-named-group-pattern-fullmatch-str",
+      "operation": "pattern_call",
+      "family": "exact_repeat_named_group_pattern_fullmatch_workflow",
+      "pattern": "a(?P<word>bc){2}d",
+      "helper": "fullmatch",
+      "args": ["abcbcd"],
+      "categories": ["grouped", "quantifier", "exact-repeat", "named-group", "fullmatch", "pattern", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch named exact-repeat path without broadening into ranged repeats, quantified alternation, replacement workflows, or broader backtracking."
+      ]
+    }
+  ]
+}

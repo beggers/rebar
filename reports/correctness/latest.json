@@ -12028,6 +12028,451 @@
       "pattern": "a(?P<word>b)?d",
       "suite_id": "match.optional_group",
       "text_model": "str"
+    },
+    {
+      "categories": [
+        "grouped",
+        "quantifier",
+        "exact-repeat",
+        "compile",
+        "metadata",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "exact_repeat_numbered_group_compile_metadata",
+      "id": "exact-repeat-numbered-group-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "exact-repeat-quantified-group-workflows",
+      "notes": [
+        "Publishes the bounded numbered exact-repeat compile frontier for one literal capturing group repeated exactly twice inside literal prefix and suffix text."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 1,
+            "pattern": "a(bc){2}d",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "compile",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a(bc){2}d",
+      "suite_id": "match.exact_repeat_quantified_group",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(bc){2}d",
+        "zzabcbcdzz"
+      ],
+      "categories": [
+        "grouped",
+        "quantifier",
+        "exact-repeat",
+        "search",
+        "module",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "exact_repeat_numbered_group_module_search_workflow",
+      "helper": "search",
+      "id": "exact-repeat-numbered-group-module-search-str",
+      "layer": "match_behavior",
+      "manifest_id": "exact-repeat-quantified-group-workflows",
+      "notes": [
+        "Documents the module-level numbered exact-repeat search path for the same tiny literal workflow so the published scorecard exposes the final visible capture value after the second repetition completes."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 10,
+            "group0": "abcbcd",
+            "group1": "bc",
+            "group_spans": [
+              [
+                5,
+                7
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "bc"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              8
+            ],
+            "span1": [
+              5,
+              7
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.exact_repeat_quantified_group",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abcbcd"
+      ],
+      "categories": [
+        "grouped",
+        "quantifier",
+        "exact-repeat",
+        "fullmatch",
+        "pattern",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "exact_repeat_numbered_group_pattern_fullmatch_workflow",
+      "helper": "fullmatch",
+      "id": "exact-repeat-numbered-group-pattern-fullmatch-str",
+      "layer": "match_behavior",
+      "manifest_id": "exact-repeat-quantified-group-workflows",
+      "notes": [
+        "Documents the bound Pattern.fullmatch numbered exact-repeat path without broadening into ranged repeats, quantified alternation, replacement semantics, or capture-history reporting beyond the exposed final group value."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 6,
+            "group0": "abcbcd",
+            "group1": "bc",
+            "group_spans": [
+              [
+                3,
+                5
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "bc"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              6
+            ],
+            "span1": [
+              3,
+              5
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(bc){2}d",
+      "suite_id": "match.exact_repeat_quantified_group",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "grouped",
+        "quantifier",
+        "exact-repeat",
+        "named-group",
+        "compile",
+        "metadata",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "exact_repeat_named_group_compile_metadata",
+      "id": "exact-repeat-named-group-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "exact-repeat-quantified-group-workflows",
+      "notes": [
+        "Publishes the matching named exact-repeat compile frontier for one named literal capturing group repeated exactly twice with the same bounded counted shape."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {
+              "word": 1
+            },
+            "groups": 1,
+            "pattern": "a(?P<word>bc){2}d",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "compile",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a(?P<word>bc){2}d",
+      "suite_id": "match.exact_repeat_quantified_group",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<word>bc){2}d",
+        "zzabcbcdzz"
+      ],
+      "categories": [
+        "grouped",
+        "quantifier",
+        "exact-repeat",
+        "named-group",
+        "search",
+        "module",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "exact_repeat_named_group_module_search_workflow",
+      "helper": "search",
+      "id": "exact-repeat-named-group-module-search-str",
+      "layer": "match_behavior",
+      "manifest_id": "exact-repeat-quantified-group-workflows",
+      "notes": [
+        "Documents the module-level named exact-repeat search path for the same tiny literal workflow so the published gap records the final named-group payload exposed through CPython's observable match-object API."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 10,
+            "group0": "abcbcd",
+            "group1": "bc",
+            "group_spans": [
+              [
+                5,
+                7
+              ]
+            ],
+            "groupdict": {
+              "word": "bc"
+            },
+            "groups": [
+              "bc"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                5,
+                7
+              ]
+            },
+            "named_groups": {
+              "word": "bc"
+            },
+            "pos": 0,
+            "span": [
+              2,
+              8
+            ],
+            "span1": [
+              5,
+              7
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.exact_repeat_quantified_group",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abcbcd"
+      ],
+      "categories": [
+        "grouped",
+        "quantifier",
+        "exact-repeat",
+        "named-group",
+        "fullmatch",
+        "pattern",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "exact_repeat_named_group_pattern_fullmatch_workflow",
+      "helper": "fullmatch",
+      "id": "exact-repeat-named-group-pattern-fullmatch-str",
+      "layer": "match_behavior",
+      "manifest_id": "exact-repeat-quantified-group-workflows",
+      "notes": [
+        "Documents the bound Pattern.fullmatch named exact-repeat path without broadening into ranged repeats, quantified alternation, replacement workflows, or broader backtracking."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 6,
+            "group0": "abcbcd",
+            "group1": "bc",
+            "group_spans": [
+              [
+                3,
+                5
+              ]
+            ],
+            "groupdict": {
+              "word": "bc"
+            },
+            "groups": [
+              "bc"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                3,
+                5
+              ]
+            },
+            "named_groups": {
+              "word": "bc"
+            },
+            "pos": 0,
+            "span": [
+              0,
+              6
+            ],
+            "span1": [
+              3,
+              5
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<word>bc){2}d",
+      "suite_id": "match.exact_repeat_quantified_group",
+      "text_model": "str"
     }
   ],
   "diagnostics": {
@@ -12040,7 +12485,7 @@
         },
         "outcomes": {
           "exception": 8,
-          "success": 162
+          "success": 168
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -12048,14 +12493,16 @@
         }
       },
       "rebar": {
-        "exception_case_count": 8,
+        "exception_case_count": 14,
         "exception_types": {
+          "NotImplementedError": 6,
           "TypeError": 2,
           "error": 6
         },
         "outcomes": {
           "exception": 8,
-          "success": 162
+          "success": 162,
+          "unimplemented": 6
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -12464,6 +12911,132 @@
       },
       "text_models": [
         "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "exact_repeat_named_group_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "exact_repeat_named_group_module_search_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "exact_repeat_named_group_pattern_fullmatch_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "exact_repeat_numbered_group_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "exact_repeat_numbered_group_module_search_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "exact_repeat_numbered_group_pattern_fullmatch_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
         "str"
       ]
     },
@@ -14138,8 +14711,8 @@
     }
   ],
   "fixtures": {
-    "case_count": 170,
-    "manifest_count": 24,
+    "case_count": 176,
+    "manifest_count": 25,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
@@ -14164,7 +14737,8 @@
       "grouped-alternation-replacement-workflows",
       "grouped-alternation-callable-replacement-workflows",
       "branch-local-backreference-workflows",
-      "optional-group-workflows"
+      "optional-group-workflows",
+      "exact-repeat-quantified-group-workflows"
     ],
     "paths": [
       "tests/conformance/fixtures/parser_matrix.json",
@@ -14190,30 +14764,34 @@
       "tests/conformance/fixtures/grouped_alternation_replacement_workflows.json",
       "tests/conformance/fixtures/grouped_alternation_callable_replacement_workflows.json",
       "tests/conformance/fixtures/branch_local_backreference_workflows.json",
-      "tests/conformance/fixtures/optional_group_workflows.json"
+      "tests/conformance/fixtures/optional_group_workflows.json",
+      "tests/conformance/fixtures/exact_repeat_quantified_group_workflows.json"
     ]
   },
-  "generated_at": "2026-03-12T17:02:35Z",
+  "generated_at": "2026-03-12T17:26:29Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
-      "case_count": 60,
+      "case_count": 66,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
             "exception_case_count": 0,
             "exception_types": {},
             "outcomes": {
-              "success": 60
+              "success": 66
             },
             "warning_case_count": 0,
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 0,
-            "exception_types": {},
+            "exception_case_count": 6,
+            "exception_types": {
+              "NotImplementedError": 6
+            },
             "outcomes": {
-              "success": 60
+              "success": 60,
+              "unimplemented": 6
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -14227,6 +14805,12 @@
         "branch_local_numbered_backreference_compile_metadata",
         "branch_local_numbered_backreference_module_workflow",
         "branch_local_numbered_backreference_pattern_workflow",
+        "exact_repeat_named_group_compile_metadata",
+        "exact_repeat_named_group_module_search_workflow",
+        "exact_repeat_named_group_pattern_fullmatch_workflow",
+        "exact_repeat_numbered_group_compile_metadata",
+        "exact_repeat_numbered_group_module_search_workflow",
+        "exact_repeat_numbered_group_pattern_fullmatch_workflow",
         "fullmatch_result_shape",
         "grouped_alternation_compile_metadata",
         "grouped_alternation_module_workflow",
@@ -14278,6 +14862,7 @@
       ],
       "manifest_ids": [
         "branch-local-backreference-workflows",
+        "exact-repeat-quantified-group-workflows",
         "grouped-alternation-workflows",
         "grouped-match-workflows",
         "grouped-segment-workflows",
@@ -14298,6 +14883,7 @@
       "suite_ids": [
         "match.behavior",
         "match.branch_local_backreference",
+        "match.exact_repeat_quantified_group",
         "match.grouped",
         "match.grouped_alternation",
         "match.grouped_segment",
@@ -14310,12 +14896,12 @@
         "match.optional_group"
       ],
       "summary": {
-        "executed_cases": 60,
+        "executed_cases": 66,
         "failed_cases": 0,
         "passed_cases": 60,
         "skipped_cases": 0,
-        "total_cases": 60,
-        "unimplemented_cases": 0
+        "total_cases": 66,
+        "unimplemented_cases": 6
       },
       "text_models": [
         "bytes",
@@ -20173,14 +20759,276 @@
       "text_models": [
         "str"
       ]
+    },
+    {
+      "case_count": 6,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 6,
+            "exception_types": {
+              "NotImplementedError": 6
+            },
+            "outcomes": {
+              "unimplemented": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "exact_repeat_named_group_compile_metadata",
+        "exact_repeat_named_group_module_search_workflow",
+        "exact_repeat_named_group_pattern_fullmatch_workflow",
+        "exact_repeat_numbered_group_compile_metadata",
+        "exact_repeat_numbered_group_module_search_workflow",
+        "exact_repeat_numbered_group_pattern_fullmatch_workflow"
+      ],
+      "id": "match.exact_repeat_quantified_group",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "exact-repeat-quantified-group-workflows"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 6
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 6,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 6,
+            "exception_types": {
+              "NotImplementedError": 6
+            },
+            "outcomes": {
+              "unimplemented": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "exact_repeat_named_group_compile_metadata",
+        "exact_repeat_named_group_module_search_workflow",
+        "exact_repeat_named_group_pattern_fullmatch_workflow",
+        "exact_repeat_numbered_group_compile_metadata",
+        "exact_repeat_numbered_group_module_search_workflow",
+        "exact_repeat_numbered_group_pattern_fullmatch_workflow"
+      ],
+      "id": "match.exact_repeat_quantified_group.str",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "exact-repeat-quantified-group-workflows"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 6
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "exact_repeat_named_group_compile_metadata",
+        "exact_repeat_numbered_group_compile_metadata"
+      ],
+      "id": "match.exact_repeat_quantified_group.compile",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "exact-repeat-quantified-group-workflows"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "exact_repeat_named_group_module_search_workflow",
+        "exact_repeat_numbered_group_module_search_workflow"
+      ],
+      "id": "match.exact_repeat_quantified_group.module_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "exact-repeat-quantified-group-workflows"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "exact_repeat_named_group_pattern_fullmatch_workflow",
+        "exact_repeat_numbered_group_pattern_fullmatch_workflow"
+      ],
+      "id": "match.exact_repeat_quantified_group.pattern_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "exact-repeat-quantified-group-workflows"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
     }
   ],
   "summary": {
-    "executed_cases": 170,
+    "executed_cases": 176,
     "failed_cases": 0,
     "passed_cases": 170,
     "skipped_cases": 0,
-    "total_cases": 170,
-    "unimplemented_cases": 0
+    "total_cases": 176,
+    "unimplemented_cases": 6
   }
 }
