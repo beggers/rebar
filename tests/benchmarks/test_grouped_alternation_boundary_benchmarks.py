@@ -27,12 +27,18 @@ NUMBERED_BACKREFERENCE_MANIFEST_PATH = (
 GROUPED_SEGMENT_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "grouped_segment_boundary.json"
 )
+LITERAL_ALTERNATION_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "literal_alternation_boundary.json"
+)
+GROUPED_ALTERNATION_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.json"
+)
 REGRESSION_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.json"
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
 
 
-class GroupedSegmentBoundaryBenchmarkSuiteTest(unittest.TestCase):
-    def test_runner_regenerates_combined_grouped_segment_scorecard(self) -> None:
+class GroupedAlternationBoundaryBenchmarkSuiteTest(unittest.TestCase):
+    def test_runner_regenerates_combined_grouped_alternation_scorecard(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             report_path = pathlib.Path(temp_dir) / "benchmarks.json"
             result = subprocess.run(
@@ -57,6 +63,10 @@ class GroupedSegmentBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     "--manifest",
                     str(GROUPED_SEGMENT_MANIFEST_PATH),
                     "--manifest",
+                    str(LITERAL_ALTERNATION_MANIFEST_PATH),
+                    "--manifest",
+                    str(GROUPED_ALTERNATION_MANIFEST_PATH),
+                    "--manifest",
                     str(REGRESSION_MANIFEST_PATH),
                     "--report",
                     str(report_path),
@@ -72,12 +82,12 @@ class GroupedSegmentBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 15,
-                    "measured_workloads": 56,
-                    "module_workloads": 63,
+                    "known_gap_count": 19,
+                    "measured_workloads": 65,
+                    "module_workloads": 76,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
-                    "total_workloads": 71,
+                    "total_workloads": 84,
                 },
             )
 
@@ -96,32 +106,32 @@ class GroupedSegmentBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase3")
-        self.assertEqual(scorecard["summary"]["total_workloads"], 71)
+        self.assertEqual(scorecard["summary"]["total_workloads"], 84)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
-        self.assertEqual(scorecard["summary"]["module_workloads"], 63)
+        self.assertEqual(scorecard["summary"]["module_workloads"], 76)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 56)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 15)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 17)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 28)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 26)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 65)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 19)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 20)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 33)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 31)
         self.assertEqual(scorecard["families"]["parser"]["workload_count"], 8)
         self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 3)
         self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["workload_count"], 63)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 12)
+        self.assertEqual(scorecard["families"]["module"]["workload_count"], 76)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 16)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 13)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 26)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 24)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 16)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 31)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 29)
         self.assertEqual(scorecard["artifacts"]["manifest"], None)
         self.assertEqual(scorecard["artifacts"]["manifest_id"], "combined-benchmark-suite")
         self.assertEqual(scorecard["artifacts"]["manifest_schema_version"], 1)
         self.assertEqual(scorecard["artifacts"]["selection_mode"], "full")
-        self.assertEqual(len(scorecard["artifacts"]["manifests"]), 9)
+        self.assertEqual(len(scorecard["artifacts"]["manifests"]), 11)
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 
-        manifest_summary = scorecard["manifests"]["grouped-segment-boundary"]
+        manifest_summary = scorecard["manifests"]["grouped-alternation-boundary"]
         self.assertEqual(manifest_summary["workload_count"], 8)
         self.assertEqual(manifest_summary["selected_workload_count"], 8)
         self.assertEqual(manifest_summary["measured_workloads"], 6)
@@ -132,8 +142,8 @@ class GroupedSegmentBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(
             manifest_summary["smoke_workload_ids"],
             [
-                "module-search-grouped-segment-warm-str",
-                "pattern-fullmatch-named-grouped-segment-purged-str",
+                "module-search-grouped-alternation-warm-str",
+                "pattern-fullmatch-named-grouped-alternation-purged-str",
             ],
         )
         self.assertEqual(
@@ -141,7 +151,9 @@ class GroupedSegmentBoundaryBenchmarkSuiteTest(unittest.TestCase):
             [
                 "module.compile",
                 "module.search",
+                "module.sub",
                 "pattern.fullmatch",
+                "pattern.subn",
             ],
         )
         self.assertEqual(
@@ -152,34 +164,34 @@ class GroupedSegmentBoundaryBenchmarkSuiteTest(unittest.TestCase):
             ],
         )
         self.assertIn("helper-call overhead", manifest_summary["notes"][0])
-        self.assertIn("nested-group follow-on", manifest_summary["notes"][1])
+        self.assertIn("replacement follow-ons", manifest_summary["notes"][1])
 
         manifest_record = next(
             manifest
             for manifest in scorecard["artifacts"]["manifests"]
-            if manifest["manifest_id"] == "grouped-segment-boundary"
+            if manifest["manifest_id"] == "grouped-alternation-boundary"
         )
         self.assertEqual(
             manifest_record["manifest"],
-            "benchmarks/workloads/grouped_segment_boundary.json",
+            "benchmarks/workloads/grouped_alternation_boundary.json",
         )
         self.assertEqual(
             manifest_record["smoke_workload_ids"],
             [
-                "module-search-grouped-segment-warm-str",
-                "pattern-fullmatch-named-grouped-segment-purged-str",
+                "module-search-grouped-alternation-warm-str",
+                "pattern-fullmatch-named-grouped-alternation-purged-str",
             ],
         )
 
         compile_workload = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "module-compile-grouped-segment-cold-str"
+            if workload["id"] == "module-compile-grouped-alternation-cold-str"
         )
-        self.assertEqual(compile_workload["manifest_id"], "grouped-segment-boundary")
+        self.assertEqual(compile_workload["manifest_id"], "grouped-alternation-boundary")
         self.assertEqual(compile_workload["operation"], "module.compile")
         self.assertEqual(compile_workload["cache_mode"], "cold")
-        self.assertIn("grouped-segments", compile_workload["syntax_features"])
+        self.assertIn("alternation", compile_workload["syntax_features"])
         self.assertEqual(compile_workload["status"], "measured")
         self.assertEqual(compile_workload["implementation_timing"]["status"], "measured")
         self.assertGreater(compile_workload["implementation_ns"], 0)
@@ -187,10 +199,10 @@ class GroupedSegmentBoundaryBenchmarkSuiteTest(unittest.TestCase):
         module_search = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "module-search-grouped-segment-warm-str"
+            if workload["id"] == "module-search-grouped-alternation-warm-str"
         )
         self.assertEqual(module_search["operation"], "module.search")
-        self.assertEqual(module_search["pattern"], "a(b)c")
+        self.assertEqual(module_search["pattern"], "a(b|c)d")
         self.assertEqual(module_search["status"], "measured")
         self.assertEqual(module_search["implementation_timing"]["status"], "measured")
         self.assertGreater(module_search["baseline_ns"], 0)
@@ -199,7 +211,7 @@ class GroupedSegmentBoundaryBenchmarkSuiteTest(unittest.TestCase):
         named_pattern = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "pattern-fullmatch-named-grouped-segment-purged-str"
+            if workload["id"] == "pattern-fullmatch-named-grouped-alternation-purged-str"
         )
         self.assertEqual(named_pattern["operation"], "pattern.fullmatch")
         self.assertEqual(named_pattern["cache_mode"], "purged")
@@ -210,7 +222,7 @@ class GroupedSegmentBoundaryBenchmarkSuiteTest(unittest.TestCase):
         module_gap = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "module-search-nested-grouped-branch-cold-gap"
+            if workload["id"] == "module-sub-template-grouped-alternation-warm-gap"
         )
         self.assertEqual(module_gap["status"], "unimplemented")
         self.assertEqual(module_gap["implementation_timing"]["status"], "unimplemented")
@@ -220,7 +232,7 @@ class GroupedSegmentBoundaryBenchmarkSuiteTest(unittest.TestCase):
         pattern_gap = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "pattern-fullmatch-named-nested-grouped-branch-purged-gap"
+            if workload["id"] == "pattern-subn-template-named-grouped-alternation-purged-gap"
         )
         self.assertEqual(pattern_gap["status"], "unimplemented")
         self.assertEqual(pattern_gap["implementation_timing"]["status"], "unimplemented")

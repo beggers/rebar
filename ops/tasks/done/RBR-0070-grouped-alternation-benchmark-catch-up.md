@@ -1,8 +1,9 @@
 # RBR-0070: Catch grouped-alternation benchmarks up with the new combined slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Extend the published benchmark surface so the bounded grouped-alternation workflows supported by `RBR-0069` produce real `rebar` timings before the queue reopens a broader correctness frontier.
@@ -27,3 +28,4 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0067` and `RBR-0069`.
 - This task exists so the queue does not reach grouped-alternation parity and then leave that newly supported combined slice absent from benchmark reporting.
+- Completed with a new `grouped-alternation-boundary` manifest, default-suite wiring, honest nested-group gap cleanup in older manifests, a combined benchmark regression test, and a republished `reports/benchmarks/latest.json` at 84 workloads with 65 measured timings and 19 explicit gaps.

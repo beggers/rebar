@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "manifest_id": "grouped-segment-boundary",
+  "manifest_id": "grouped-alternation-boundary",
   "spec_refs": [
     "docs/benchmarks/plan.md",
     "docs/spec/drop-in-re-compatibility.md"
   ],
   "notes": [
-    "Grouped-segment boundary workloads keep prefixes, suffixes, captures, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported literal-segment slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b)c` and `a(?P<word>b)c` compile/search/fullmatch paths directly, while nested grouped-branch shapes stay as explicit known-gap rows until the nested-group follow-on lands."
+    "Grouped-alternation boundary workloads keep captures, branches, replacements, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported grouped-branch slice rather than regex throughput.",
+    "Measured rows cover the bounded `a(b|c)d` and `a(?P<word>b|c)d` compile/search/fullmatch paths directly, while grouped-alternation replacement-template workflows stay as explicit known-gap rows until the replacement follow-ons land."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -16,11 +16,11 @@
   },
   "workloads": [
     {
-      "id": "module-compile-grouped-segment-cold-str",
+      "id": "module-compile-grouped-alternation-cold-str",
       "bucket": "module-compile",
       "family": "module",
       "operation": "module.compile",
-      "pattern": "a(b)c",
+      "pattern": "a(b|c)d",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "cold",
@@ -28,25 +28,25 @@
       "categories": [
         "compile",
         "grouped",
-        "segment",
+        "alternation",
         "cold-cache"
       ],
       "syntax_features": [
         "module-compile",
         "grouping-forms",
-        "grouped-segments"
+        "alternation"
       ],
       "notes": [
-        "Cold module.compile benchmark for the bounded grouped-segment literal slice so compile metadata timing reaches the published benchmark report."
+        "Cold module.compile benchmark for the bounded grouped-alternation slice so compile metadata timing reaches the published benchmark report."
       ]
     },
     {
-      "id": "module-search-grouped-segment-warm-str",
+      "id": "module-search-grouped-alternation-warm-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(b)c",
-      "haystack": "zabcz",
+      "pattern": "a(b|c)d",
+      "haystack": "zzacdzz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
@@ -54,7 +54,7 @@
       "smoke": true,
       "categories": [
         "grouped",
-        "segment",
+        "alternation",
         "search",
         "module",
         "warm-cache",
@@ -63,165 +63,18 @@
       "syntax_features": [
         "module-search",
         "grouping-forms",
-        "grouped-segments"
+        "alternation"
       ],
       "notes": [
-        "Warm module.search helper path for the bounded grouped-segment workflow on a tiny haystack."
+        "Warm module.search helper path for the bounded grouped-alternation workflow on a tiny haystack."
       ]
     },
     {
-      "id": "pattern-fullmatch-grouped-segment-purged-str",
+      "id": "pattern-fullmatch-grouped-alternation-purged-str",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(b)c",
-      "haystack": "abc",
-      "flags": 0,
-      "text_model": "str",
-      "cache_mode": "purged",
-      "timing_scope": "pattern-helper-call",
-      "categories": [
-        "pattern",
-        "grouped",
-        "segment",
-        "fullmatch",
-        "purged-cache"
-      ],
-      "syntax_features": [
-        "pattern-fullmatch",
-        "grouping-forms",
-        "grouped-segments",
-        "cache-purge"
-      ],
-      "notes": [
-        "Purged-cache Pattern.fullmatch probe for the same bounded grouped-segment literal path."
-      ]
-    },
-    {
-      "id": "module-compile-named-grouped-segment-warm-str",
-      "bucket": "module-compile",
-      "family": "module",
-      "operation": "module.compile",
-      "pattern": "a(?P<word>b)c",
-      "flags": 0,
-      "text_model": "str",
-      "cache_mode": "warm",
-      "timing_scope": "module-helper-call",
-      "categories": [
-        "compile",
-        "grouped",
-        "segment",
-        "named-group",
-        "warm-cache"
-      ],
-      "syntax_features": [
-        "module-compile",
-        "grouping-forms",
-        "grouped-segments",
-        "named-groups"
-      ],
-      "notes": [
-        "Warm module.compile path for the bounded named grouped-segment literal slice so named metadata timing reaches the benchmark report."
-      ]
-    },
-    {
-      "id": "module-search-named-grouped-segment-warm-str",
-      "bucket": "module-search",
-      "family": "module",
-      "operation": "module.search",
-      "pattern": "a(?P<word>b)c",
-      "haystack": "zabcz",
-      "flags": 0,
-      "text_model": "str",
-      "cache_mode": "warm",
-      "timing_scope": "module-helper-call",
-      "categories": [
-        "grouped",
-        "segment",
-        "named-group",
-        "search",
-        "module",
-        "warm-cache"
-      ],
-      "syntax_features": [
-        "module-search",
-        "grouping-forms",
-        "grouped-segments",
-        "named-groups"
-      ],
-      "notes": [
-        "Warm module.search helper path for a tiny named grouped-segment capture so named runtime workflows produce real timings."
-      ]
-    },
-    {
-      "id": "pattern-fullmatch-named-grouped-segment-purged-str",
-      "bucket": "pattern-fullmatch",
-      "family": "module",
-      "operation": "pattern.fullmatch",
-      "pattern": "a(?P<word>b)c",
-      "haystack": "abc",
-      "flags": 0,
-      "text_model": "str",
-      "cache_mode": "purged",
-      "timing_scope": "pattern-helper-call",
-      "smoke": true,
-      "categories": [
-        "pattern",
-        "grouped",
-        "segment",
-        "named-group",
-        "fullmatch",
-        "purged-cache",
-        "smoke"
-      ],
-      "syntax_features": [
-        "pattern-fullmatch",
-        "grouping-forms",
-        "grouped-segments",
-        "named-groups",
-        "cache-purge"
-      ],
-      "notes": [
-        "Smoke-sized Pattern.fullmatch probe for the bounded named grouped-segment workflow with compile cost kept outside the timed loop."
-      ]
-    },
-    {
-      "id": "module-search-nested-grouped-branch-cold-gap",
-      "bucket": "module-search",
-      "family": "module",
-      "operation": "module.search",
-      "pattern": "a((b|c))d",
-      "haystack": "zabdz",
-      "flags": 0,
-      "text_model": "str",
-      "cache_mode": "cold",
-      "timing_scope": "module-helper-call",
-      "categories": [
-        "grouped",
-        "segment",
-        "alternation",
-        "search",
-        "module",
-        "cold-cache",
-        "gap"
-      ],
-      "syntax_features": [
-        "module-search",
-        "grouping-forms",
-        "grouped-segments",
-        "alternation",
-        "nested-groups"
-      ],
-      "notes": [
-        "Explicit nested-group gap row so one extra layer of grouping around the tiny alternation stays visible while nested-group work is still queued."
-      ]
-    },
-    {
-      "id": "pattern-fullmatch-named-nested-grouped-branch-purged-gap",
-      "bucket": "pattern-fullmatch",
-      "family": "module",
-      "operation": "pattern.fullmatch",
-      "pattern": "a(?P<outer>(b|c))d",
+      "pattern": "a(b|c)d",
       "haystack": "abd",
       "flags": 0,
       "text_model": "str",
@@ -230,24 +83,174 @@
       "categories": [
         "pattern",
         "grouped",
-        "segment",
         "alternation",
-        "named-group",
         "fullmatch",
-        "purged-cache",
-        "gap"
+        "purged-cache"
       ],
       "syntax_features": [
         "pattern-fullmatch",
         "grouping-forms",
-        "grouped-segments",
-        "named-groups",
         "alternation",
-        "nested-groups",
         "cache-purge"
       ],
       "notes": [
-        "Matching named nested-group gap row that keeps the next grouped branch-selection frontier on the benchmark surface."
+        "Purged-cache Pattern.fullmatch probe for the same bounded grouped-alternation workflow."
+      ]
+    },
+    {
+      "id": "module-compile-named-grouped-alternation-warm-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<word>b|c)d",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "named-group",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "alternation",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.compile path for the bounded named grouped-alternation slice so named metadata timing reaches the benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-named-grouped-alternation-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>b|c)d",
+      "haystack": "zzabdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "named-group",
+        "search",
+        "module",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "alternation",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.search helper path for a tiny named grouped-alternation capture so named runtime workflows produce real timings."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-grouped-alternation-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>b|c)d",
+      "haystack": "acd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "smoke": true,
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "named-group",
+        "fullmatch",
+        "purged-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "alternation",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Smoke-sized Pattern.fullmatch probe for the bounded named grouped-alternation workflow with compile cost kept outside the timed loop."
+      ]
+    },
+    {
+      "id": "module-sub-template-grouped-alternation-warm-gap",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b|c)d",
+      "replacement": "<\\1>",
+      "haystack": "abdacd",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "replacement",
+        "template",
+        "sub",
+        "warm-cache",
+        "gap"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "alternation",
+        "replacement-template"
+      ],
+      "notes": [
+        "Explicit grouped-alternation replacement-template gap row so the next combined alternation-and-replacement frontier stays visible while replacement work is still queued."
+      ]
+    },
+    {
+      "id": "pattern-subn-template-named-grouped-alternation-purged-gap",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b|c)d",
+      "replacement": "<\\g<word>>",
+      "haystack": "abdacd",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "replacement",
+        "template",
+        "named-group",
+        "subn",
+        "purged-cache",
+        "gap"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "alternation",
+        "named-groups",
+        "replacement-template",
+        "cache-purge"
+      ],
+      "notes": [
+        "Explicit named grouped-alternation replacement-template gap row so the next combined alternation-and-replacement frontier stays visible instead of disappearing until the replacement follow-ons land."
       ]
     }
   ]

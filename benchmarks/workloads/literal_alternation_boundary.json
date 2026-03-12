@@ -7,7 +7,7 @@
   ],
   "notes": [
     "Literal-alternation boundary workloads keep patterns and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported top-level `ab|ac` branch-selection slice rather than regex throughput.",
-    "The bounded compile plus module and Pattern match paths are measured directly here, while grouped alternation shapes stay as explicit known-gap rows until the grouped-alternation follow-on lands."
+    "The bounded compile plus module and Pattern match paths are measured directly here, while nested grouped-branch shapes stay as explicit known-gap rows until the nested-group follow-on lands."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -100,11 +100,11 @@
       ]
     },
     {
-      "id": "module-search-grouped-alternation-from-literal-frontier-cold-gap",
+      "id": "module-search-nested-grouped-branch-from-literal-frontier-cold-gap",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(b|c)d",
+      "pattern": "a((b|c))d",
       "haystack": "zzabdz",
       "flags": 0,
       "text_model": "str",
@@ -121,18 +121,19 @@
       "syntax_features": [
         "module-search",
         "alternation",
-        "grouping-forms"
+        "grouping-forms",
+        "nested-groups"
       ],
       "notes": [
-        "Explicit grouped-alternation gap row so branch selection inside a capture stays visible on the benchmark surface while grouped alternation is still queued."
+        "Explicit nested-group gap row so branch selection inside an extra grouped layer stays visible on the benchmark surface while nested-group work is still queued."
       ]
     },
     {
-      "id": "pattern-fullmatch-named-grouped-alternation-from-literal-frontier-purged-gap",
+      "id": "pattern-fullmatch-named-nested-grouped-branch-from-literal-frontier-purged-gap",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(?P<word>b|c)d",
+      "pattern": "a(?P<outer>(b|c))d",
       "haystack": "abd",
       "flags": 0,
       "text_model": "str",
@@ -152,10 +153,11 @@
         "alternation",
         "grouping-forms",
         "named-groups",
+        "nested-groups",
         "cache-purge"
       ],
       "notes": [
-        "Explicit named grouped-alternation gap row so branch selection inside a named group stays visible instead of disappearing until the grouped-alternation follow-on lands."
+        "Explicit named nested-group gap row so branch selection inside a named outer group stays visible instead of disappearing until the nested-group follow-on lands."
       ]
     }
   ]

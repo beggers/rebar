@@ -157,7 +157,7 @@ class LiteralAlternationBoundaryBenchmarkSuiteTest(unittest.TestCase):
             ],
         )
         self.assertIn("helper-call overhead", manifest_summary["notes"][0])
-        self.assertIn("grouped-alternation follow-on", manifest_summary["notes"][1])
+        self.assertIn("nested-group follow-on", manifest_summary["notes"][1])
 
         manifest_record = next(
             manifest
@@ -215,7 +215,7 @@ class LiteralAlternationBoundaryBenchmarkSuiteTest(unittest.TestCase):
         module_gap = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "module-search-grouped-alternation-from-literal-frontier-cold-gap"
+            if workload["id"] == "module-search-nested-grouped-branch-from-literal-frontier-cold-gap"
         )
         self.assertEqual(module_gap["status"], "unimplemented")
         self.assertEqual(module_gap["implementation_timing"]["status"], "unimplemented")
@@ -226,7 +226,7 @@ class LiteralAlternationBoundaryBenchmarkSuiteTest(unittest.TestCase):
             workload
             for workload in scorecard["workloads"]
             if workload["id"]
-            == "pattern-fullmatch-named-grouped-alternation-from-literal-frontier-purged-gap"
+            == "pattern-fullmatch-named-nested-grouped-branch-from-literal-frontier-purged-gap"
         )
         self.assertEqual(pattern_gap["status"], "unimplemented")
         self.assertEqual(pattern_gap["implementation_timing"]["status"], "unimplemented")
