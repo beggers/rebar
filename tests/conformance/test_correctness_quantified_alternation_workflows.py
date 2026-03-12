@@ -245,10 +245,10 @@ class CorrectnessHarnessQuantifiedAlternationWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 232,
                     "failed_cases": 0,
-                    "passed_cases": 226,
+                    "passed_cases": 232,
                     "skipped_cases": 0,
                     "total_cases": 232,
-                    "unimplemented_cases": 6,
+                    "unimplemented_cases": 0,
                 },
             )
             scorecard = json.loads(report_path.read_text(encoding="utf-8"))
@@ -281,10 +281,10 @@ class CorrectnessHarnessQuantifiedAlternationWorkflowTest(unittest.TestCase):
             {
                 "executed_cases": 120,
                 "failed_cases": 0,
-                "passed_cases": 114,
+                "passed_cases": 120,
                 "skipped_cases": 0,
                 "total_cases": 120,
-                "unimplemented_cases": 6,
+                "unimplemented_cases": 0,
             },
         )
         self.assertIn("quantified-alternation-workflows", match_layer["manifest_ids"])
@@ -306,10 +306,10 @@ class CorrectnessHarnessQuantifiedAlternationWorkflowTest(unittest.TestCase):
             {
                 "executed_cases": 6,
                 "failed_cases": 0,
-                "passed_cases": 0,
+                "passed_cases": 6,
                 "skipped_cases": 0,
                 "total_cases": 6,
-                "unimplemented_cases": 6,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(
@@ -329,17 +329,49 @@ class CorrectnessHarnessQuantifiedAlternationWorkflowTest(unittest.TestCase):
         numbered_lower_bound_case = cases_by_id[
             "quantified-alternation-numbered-module-search-lower-bound-str"
         ]
-        self.assertEqual(numbered_lower_bound_case["comparison"], "unimplemented")
+        self.assertEqual(numbered_lower_bound_case["comparison"], "pass")
         self.assertEqual(numbered_lower_bound_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(numbered_lower_bound_case["observations"]["cpython"]["result"]["group0"], "acd")
         self.assertEqual(numbered_lower_bound_case["observations"]["cpython"]["result"]["group1"], "c")
         self.assertEqual(numbered_lower_bound_case["observations"]["cpython"]["result"]["span1"], [3, 4])
-        self.assertEqual(numbered_lower_bound_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(numbered_lower_bound_case["observations"]["rebar"]["outcome"], "success")
+
+        numbered_second_repetition_case = cases_by_id[
+            "quantified-alternation-numbered-pattern-fullmatch-second-repetition-str"
+        ]
+        self.assertEqual(numbered_second_repetition_case["comparison"], "pass")
+        self.assertEqual(numbered_second_repetition_case["observations"]["cpython"]["outcome"], "success")
+        self.assertEqual(
+            numbered_second_repetition_case["observations"]["cpython"]["result"]["group0"],
+            "abcd",
+        )
+        self.assertEqual(
+            numbered_second_repetition_case["observations"]["cpython"]["result"]["groups"],
+            ["c"],
+        )
+        self.assertEqual(
+            numbered_second_repetition_case["observations"]["cpython"]["result"]["span1"],
+            [2, 3],
+        )
+        self.assertEqual(
+            numbered_second_repetition_case["observations"]["rebar"]["outcome"],
+            "success",
+        )
+
+        named_compile_case = cases_by_id["quantified-alternation-named-compile-metadata-str"]
+        self.assertEqual(named_compile_case["comparison"], "pass")
+        self.assertEqual(named_compile_case["observations"]["cpython"]["outcome"], "success")
+        self.assertEqual(
+            named_compile_case["observations"]["cpython"]["result"]["groupindex"],
+            {"word": 1},
+        )
+        self.assertEqual(named_compile_case["observations"]["cpython"]["result"]["groups"], 1)
+        self.assertEqual(named_compile_case["observations"]["rebar"]["outcome"], "success")
 
         named_second_repetition_case = cases_by_id[
             "quantified-alternation-named-module-search-second-repetition-str"
         ]
-        self.assertEqual(named_second_repetition_case["comparison"], "unimplemented")
+        self.assertEqual(named_second_repetition_case["comparison"], "pass")
         self.assertEqual(named_second_repetition_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(named_second_repetition_case["observations"]["cpython"]["result"]["group0"], "acbd")
         self.assertEqual(named_second_repetition_case["observations"]["cpython"]["result"]["group1"], "b")
@@ -351,4 +383,22 @@ class CorrectnessHarnessQuantifiedAlternationWorkflowTest(unittest.TestCase):
             named_second_repetition_case["observations"]["cpython"]["result"]["named_group_spans"],
             {"word": [4, 5]},
         )
-        self.assertEqual(named_second_repetition_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_second_repetition_case["observations"]["rebar"]["outcome"], "success")
+
+        named_lower_bound_case = cases_by_id[
+            "quantified-alternation-named-pattern-fullmatch-lower-bound-str"
+        ]
+        self.assertEqual(named_lower_bound_case["comparison"], "pass")
+        self.assertEqual(named_lower_bound_case["helper"], "fullmatch")
+        self.assertEqual(named_lower_bound_case["observations"]["cpython"]["outcome"], "success")
+        self.assertEqual(named_lower_bound_case["observations"]["cpython"]["result"]["group0"], "abd")
+        self.assertEqual(named_lower_bound_case["observations"]["cpython"]["result"]["groups"], ["b"])
+        self.assertEqual(
+            named_lower_bound_case["observations"]["cpython"]["result"]["groupdict"],
+            {"word": "b"},
+        )
+        self.assertEqual(
+            named_lower_bound_case["observations"]["cpython"]["result"]["named_group_spans"],
+            {"word": [1, 2]},
+        )
+        self.assertEqual(named_lower_bound_case["observations"]["rebar"]["outcome"], "success")

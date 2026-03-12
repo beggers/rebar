@@ -1,6 +1,6 @@
 # RBR-0125: Add bounded quantified-alternation parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,7 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0124`.
 - This task exists so the queue turns the first combined alternation-plus-bounded-repetition workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+- Completed 2026-03-12: added a narrow Rust-backed quantified-alternation parser/executor for the published `a(b|c){1,2}d` / `a(?P<word>b|c){1,2}d` slice, including final-capture reporting from the last repetition.
+- Added `tests/python/test_quantified_alternation_parity.py` plus updated `tests/conformance/test_correctness_quantified_alternation_workflows.py` so the six published quantified-alternation cases now assert `pass` instead of `unimplemented`.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports `232/232` passing cases with `0` unimplemented outcomes.
+- No Python shim or CPython-boundary code changes were required beyond the already-landed generic native compile/match wiring; the new behavior stayed inside `rebar-core`.
