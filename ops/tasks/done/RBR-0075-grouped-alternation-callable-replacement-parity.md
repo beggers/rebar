@@ -1,6 +1,6 @@
 # RBR-0075: Add bounded grouped-alternation callable-replacement parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,4 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0072`, `RBR-0073`, and `RBR-0074`.
 - This task exists so the queue extends from grouped-alternation replacement templates into the first combined alternation-and-callback workflow instead of stopping at a reporting-only frontier.
+- Completed 2026-03-12: added a bounded Rust-backed grouped-alternation callable span boundary, routed native callable `sub()`/`subn()` through it for numbered and named capture-1 callbacks, added direct parity tests, and republished `reports/correctness/latest.json` at 130 passes / 0 unimplemented.

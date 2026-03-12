@@ -671,12 +671,9 @@ def _run_native_literal_callable_subn(
     if normalized_count < 0:
         return compatible_string, 0
 
-    status, normalized_pos, normalized_endpos, spans = _native.boundary_literal_finditer(
-        compiled_pattern.pattern,
-        compiled_pattern.flags,
+    status, normalized_pos, normalized_endpos, spans, group_spans = _native_callable_match_spans(
+        compiled_pattern,
         compatible_string,
-        0,
-        None,
     )
     if status == "unsupported":
         return compiled_pattern._raise_placeholder(helper_name)
@@ -688,9 +685,16 @@ def _run_native_literal_callable_subn(
     parts: list[str] | list[bytes] = []
     last_end = 0
 
-    for span in spans[:replacement_limit]:
+    for index, span in enumerate(spans[:replacement_limit]):
         parts.append(compatible_string[last_end : span[0]])
-        match = _build_match(compiled_pattern, compatible_string, normalized_pos, normalized_endpos, span)
+        match = _build_match(
+            compiled_pattern,
+            compatible_string,
+            normalized_pos,
+            normalized_endpos,
+            span,
+            group_spans[index],
+        )
         replacement = repl(match)
         parts.append(
             _coerce_callable_replacement_piece(
@@ -703,6 +707,48 @@ def _run_native_literal_callable_subn(
 
     parts.append(compatible_string[last_end:])
     return compatible_string[:0].join(parts), replacement_limit
+
+
+def _native_callable_match_spans(
+    compiled_pattern: Pattern,
+    compatible_string: str | bytes,
+) -> tuple[str, int, int, list[tuple[int, int]], list[tuple[tuple[int, int] | None, ...]]]:
+    status, normalized_pos, normalized_endpos, spans = _native.boundary_literal_finditer(
+        compiled_pattern.pattern,
+        compiled_pattern.flags,
+        compatible_string,
+        0,
+        None,
+    )
+    if status != "unsupported":
+        return (
+            status,
+            normalized_pos,
+            normalized_endpos,
+            spans,
+            [tuple() for _ in spans],
+        )
+
+    if isinstance(compiled_pattern.pattern, str):
+        status, normalized_pos, normalized_endpos, spans, capture_1_spans = (
+            _native.boundary_grouped_alternation_finditer(
+                compiled_pattern.pattern,
+                compiled_pattern.flags,
+                compatible_string,
+                0,
+                None,
+            )
+        )
+        if status != "unsupported":
+            return (
+                status,
+                normalized_pos,
+                normalized_endpos,
+                spans,
+                [(capture_1_span,) for capture_1_span in capture_1_spans],
+            )
+
+    return status, normalized_pos, normalized_endpos, spans, []
 
 
 def _compile_known_parser_case(pattern: str | bytes, flags: int) -> Pattern | None:

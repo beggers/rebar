@@ -127,10 +127,10 @@ class CorrectnessHarnessGroupedAlternationCallableReplacementWorkflowTest(unitte
                 {
                     "executed_cases": 130,
                     "failed_cases": 0,
-                    "passed_cases": 122,
+                    "passed_cases": 130,
                     "skipped_cases": 0,
                     "total_cases": 130,
-                    "unimplemented_cases": 8,
+                    "unimplemented_cases": 0,
                 },
             )
 
@@ -182,9 +182,9 @@ class CorrectnessHarnessGroupedAlternationCallableReplacementWorkflowTest(unitte
 
         workflow_layer = scorecard["layers"]["module_workflow"]
         self.assertEqual(workflow_layer["summary"]["total_cases"], 56)
-        self.assertEqual(workflow_layer["summary"]["passed_cases"], 48)
+        self.assertEqual(workflow_layer["summary"]["passed_cases"], 56)
         self.assertEqual(workflow_layer["summary"]["failed_cases"], 0)
-        self.assertEqual(workflow_layer["summary"]["unimplemented_cases"], 8)
+        self.assertEqual(workflow_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             workflow_layer["manifest_ids"],
             [
@@ -221,9 +221,9 @@ class CorrectnessHarnessGroupedAlternationCallableReplacementWorkflowTest(unitte
             if suite["id"] == "collection.replacement.grouped_alternation.callable"
         )
         self.assertEqual(callable_suite["summary"]["total_cases"], 8)
-        self.assertEqual(callable_suite["summary"]["passed_cases"], 0)
+        self.assertEqual(callable_suite["summary"]["passed_cases"], 8)
         self.assertEqual(callable_suite["summary"]["failed_cases"], 0)
-        self.assertEqual(callable_suite["summary"]["unimplemented_cases"], 8)
+        self.assertEqual(callable_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             callable_suite["families"],
             [
@@ -237,31 +237,34 @@ class CorrectnessHarnessGroupedAlternationCallableReplacementWorkflowTest(unitte
             for case in scorecard["cases"]
             if case["id"] == "module-sub-callable-grouped-alternation-str"
         )
-        self.assertEqual(module_case["comparison"], "unimplemented")
+        self.assertEqual(module_case["comparison"], "pass")
         self.assertEqual(module_case["helper"], "sub")
         self.assertEqual(module_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(module_case["observations"]["cpython"]["result"], "bxcx")
-        self.assertEqual(module_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(module_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(module_case["observations"]["rebar"]["result"], "bxcx")
 
         module_subn_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "module-subn-callable-grouped-alternation-str"
         )
-        self.assertEqual(module_subn_case["comparison"], "unimplemented")
+        self.assertEqual(module_subn_case["comparison"], "pass")
         self.assertEqual(module_subn_case["helper"], "subn")
         self.assertEqual(module_subn_case["observations"]["cpython"]["result"], ["bxacd", 1])
-        self.assertEqual(module_subn_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(module_subn_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(module_subn_case["observations"]["rebar"]["result"], ["bxacd", 1])
 
         named_pattern_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "pattern-sub-callable-named-grouped-alternation-str"
         )
-        self.assertEqual(named_pattern_case["comparison"], "unimplemented")
+        self.assertEqual(named_pattern_case["comparison"], "pass")
         self.assertEqual(named_pattern_case["helper"], "sub")
         self.assertEqual(named_pattern_case["observations"]["cpython"]["result"], "cxbx")
-        self.assertEqual(named_pattern_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_pattern_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(named_pattern_case["observations"]["rebar"]["result"], "cxbx")
         self.assertEqual(named_pattern_case["args"][0]["type"], "callable")
         self.assertEqual(named_pattern_case["args"][0]["qualname"], "callable_match_group")
 
