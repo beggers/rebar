@@ -1,6 +1,6 @@
 # RBR-0118: Catch bounded conditional fully-empty benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0117`.
 - This task exists so the queue does not reach bounded fully-empty conditional parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Added `benchmarks/workloads/conditional_group_exists_fully_empty_boundary.json` and wired it into the default benchmark publication list.
+- Published real `rebar` timings for the bounded fully-empty numbered and named compile/search/fullmatch workflows, kept broader nested/quantified/replacement/alternation-heavy shapes as explicit known gaps, and refreshed the tracked combined benchmark scorecard at `reports/benchmarks/latest.json`.
+- Updated benchmark regressions for the new fully-empty manifest and for the now-measured carry-forward fully-empty row in the empty-yes-arm manifest.

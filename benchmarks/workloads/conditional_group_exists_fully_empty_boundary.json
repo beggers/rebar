@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "manifest_id": "conditional-group-exists-empty-yes-else-boundary",
+  "manifest_id": "conditional-group-exists-fully-empty-boundary",
   "spec_refs": [
     "docs/benchmarks/plan.md",
     "docs/spec/drop-in-re-compatibility.md"
   ],
   "notes": [
-    "Conditional group-exists empty-yes-arm boundary workloads keep one optional capture, one conditional site, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported bounded empty-yes-arm conditional slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b)?c(?(1)|e)` and `a(?P<word>b)?c(?(word)|e)` compile/search/fullmatch paths directly, and the carry-forward fully-empty search row now also measures real timings, while nested conditionals, quantified conditionals, conditional replacement helpers, and broader alternation-heavy conditional arms stay as explicit known-gap rows until later follow-ons land.",
+    "Conditional group-exists fully-empty boundary workloads keep one optional capture, one conditional site, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported bounded fully-empty conditional slice rather than regex throughput.",
+    "Measured rows cover the bounded `a(b)?c(?(1)|)` and `a(?P<word>b)?c(?(word)|)` compile/search/fullmatch paths directly, while nested conditionals, quantified conditionals, conditional replacement helpers, and broader alternation-heavy conditional arms stay as explicit known-gap rows until later follow-ons land.",
     "Assertion-conditioned branches remain outside this benchmark manifest because CPython rejects them and the current benchmark harness only publishes timing rows for accepted syntax."
   ],
   "defaults": {
@@ -17,11 +17,11 @@
   },
   "workloads": [
     {
-      "id": "module-compile-numbered-conditional-group-exists-empty-yes-else-cold-str",
+      "id": "module-compile-numbered-conditional-group-exists-fully-empty-cold-str",
       "bucket": "module-compile",
       "family": "module",
       "operation": "module.compile",
-      "pattern": "a(b)?c(?(1)|e)",
+      "pattern": "a(b)?c(?(1)|)",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "cold",
@@ -32,7 +32,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "empty-yes-arm",
+        "fully-empty",
         "cold-cache"
       ],
       "syntax_features": [
@@ -42,15 +42,15 @@
         "conditionals"
       ],
       "notes": [
-        "Cold module.compile benchmark for the bounded numbered empty-yes-arm conditional slice so compile metadata timing reaches the published benchmark report."
+        "Cold module.compile benchmark for the bounded numbered fully-empty conditional slice so compile metadata timing reaches the published benchmark report."
       ]
     },
     {
-      "id": "module-search-numbered-conditional-group-exists-empty-yes-else-present-warm-str",
+      "id": "module-search-numbered-conditional-group-exists-fully-empty-present-warm-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(b)?c(?(1)|e)",
+      "pattern": "a(b)?c(?(1)|)",
       "haystack": "zzabczz",
       "flags": 0,
       "text_model": "str",
@@ -62,7 +62,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "empty-yes-arm",
+        "fully-empty",
         "search",
         "module",
         "present",
@@ -76,16 +76,16 @@
         "conditionals"
       ],
       "notes": [
-        "Warm module.search helper path for the bounded numbered empty-yes-arm workflow when the optional capture is present and the yes arm succeeds at zero width."
+        "Warm module.search helper path for the bounded numbered fully-empty workflow when the optional capture is present and both conditional arms resolve to an empty suffix."
       ]
     },
     {
-      "id": "pattern-fullmatch-numbered-conditional-group-exists-empty-yes-else-absent-purged-str",
+      "id": "pattern-fullmatch-numbered-conditional-group-exists-fully-empty-absent-purged-str",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(b)?c(?(1)|e)",
-      "haystack": "ace",
+      "pattern": "a(b)?c(?(1)|)",
+      "haystack": "ac",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "purged",
@@ -96,7 +96,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "empty-yes-arm",
+        "fully-empty",
         "fullmatch",
         "absent",
         "purged-cache"
@@ -109,15 +109,15 @@
         "cache-purge"
       ],
       "notes": [
-        "Purged-cache Pattern.fullmatch probe for the bounded numbered empty-yes-arm conditional workflow when the optional capture is omitted and the else arm literal suffix is required."
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered fully-empty conditional workflow when the optional capture is omitted and the conditional contributes no suffix in either branch."
       ]
     },
     {
-      "id": "module-compile-named-conditional-group-exists-empty-yes-else-warm-str",
+      "id": "module-compile-named-conditional-group-exists-fully-empty-warm-str",
       "bucket": "module-compile",
       "family": "module",
       "operation": "module.compile",
-      "pattern": "a(?P<word>b)?c(?(word)|e)",
+      "pattern": "a(?P<word>b)?c(?(word)|)",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
@@ -128,7 +128,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "empty-yes-arm",
+        "fully-empty",
         "named-group",
         "warm-cache"
       ],
@@ -140,15 +140,15 @@
         "named-groups"
       ],
       "notes": [
-        "Warm module.compile path for the bounded named empty-yes-arm conditional slice so named metadata timing reaches the benchmark report."
+        "Warm module.compile path for the bounded named fully-empty conditional slice so named metadata timing reaches the benchmark report."
       ]
     },
     {
-      "id": "module-search-named-conditional-group-exists-empty-yes-else-present-warm-str",
+      "id": "module-search-named-conditional-group-exists-fully-empty-present-warm-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(?P<word>b)?c(?(word)|e)",
+      "pattern": "a(?P<word>b)?c(?(word)|)",
       "haystack": "zzabczz",
       "flags": 0,
       "text_model": "str",
@@ -159,7 +159,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "empty-yes-arm",
+        "fully-empty",
         "named-group",
         "search",
         "module",
@@ -174,16 +174,16 @@
         "named-groups"
       ],
       "notes": [
-        "Warm module.search helper path for the bounded named empty-yes-arm workflow when the optional named capture is present and the yes arm succeeds at zero width."
+        "Warm module.search helper path for the bounded named fully-empty workflow when the optional named capture is present and both conditional arms resolve to an empty suffix."
       ]
     },
     {
-      "id": "pattern-fullmatch-named-conditional-group-exists-empty-yes-else-absent-purged-str",
+      "id": "pattern-fullmatch-named-conditional-group-exists-fully-empty-absent-purged-str",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(?P<word>b)?c(?(word)|e)",
-      "haystack": "ace",
+      "pattern": "a(?P<word>b)?c(?(word)|)",
+      "haystack": "ac",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "purged",
@@ -195,7 +195,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "empty-yes-arm",
+        "fully-empty",
         "named-group",
         "fullmatch",
         "absent",
@@ -211,43 +211,11 @@
         "cache-purge"
       ],
       "notes": [
-        "Smoke-sized Pattern.fullmatch probe for the bounded named empty-yes-arm workflow when the optional capture is omitted so the else arm literal stays on the published benchmark surface."
+        "Smoke-sized Pattern.fullmatch probe for the bounded named fully-empty workflow when the optional capture is omitted so the empty-arm conditional stays on the published benchmark surface."
       ]
     },
     {
-      "id": "module-search-numbered-conditional-group-exists-fully-empty-cold-gap",
-      "bucket": "module-search",
-      "family": "module",
-      "operation": "module.search",
-      "pattern": "a(b)?c(?(1)|)",
-      "haystack": "zzaczz",
-      "flags": 0,
-      "text_model": "str",
-      "cache_mode": "cold",
-      "timing_scope": "module-helper-call",
-      "categories": [
-        "grouped",
-        "optional-group",
-        "conditional",
-        "group-exists",
-        "fully-empty",
-        "search",
-        "module",
-        "unsupported",
-        "cold-cache"
-      ],
-      "syntax_features": [
-        "module-search",
-        "grouping-forms",
-        "optional-groups",
-        "conditionals"
-      ],
-      "notes": [
-        "Carry-forward fully-empty row so `(?(1)|)` and `(?(name)|)` stay visible alongside the empty-yes-arm slice after the accepted syntax reaches real benchmark timings."
-      ]
-    },
-    {
-      "id": "module-search-numbered-nested-conditional-group-exists-empty-yes-else-cold-gap",
+      "id": "module-search-numbered-nested-conditional-group-exists-fully-empty-cold-gap",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
@@ -262,7 +230,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "empty-yes-arm",
+        "fully-empty",
         "nested-conditional",
         "search",
         "module",
@@ -276,16 +244,16 @@
         "conditionals"
       ],
       "notes": [
-        "Explicit nested-conditional gap row so broader empty-yes-arm conditional composition stays visible now that the bounded accepted slice has real timings."
+        "Explicit nested-conditional gap row so broader fully-empty conditional composition stays visible now that the bounded accepted slice has real timings."
       ]
     },
     {
-      "id": "pattern-fullmatch-numbered-quantified-conditional-group-exists-empty-yes-else-purged-gap",
+      "id": "pattern-fullmatch-numbered-quantified-conditional-group-exists-fully-empty-purged-gap",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "(a(b)?c(?(1)|e)){2}",
-      "haystack": "aceace",
+      "pattern": "(a(b)?c(?(1)|)){2}",
+      "haystack": "acac",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "purged",
@@ -296,7 +264,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "empty-yes-arm",
+        "fully-empty",
         "quantified-conditional",
         "fullmatch",
         "unsupported",
@@ -310,16 +278,16 @@
         "cache-purge"
       ],
       "notes": [
-        "Explicit quantified-conditional gap row so repeated empty-yes-arm conditional behavior stays on the benchmark surface instead of disappearing."
+        "Explicit quantified-conditional gap row so repeated fully-empty conditional behavior stays on the benchmark surface instead of disappearing."
       ]
     },
     {
-      "id": "module-sub-numbered-conditional-group-exists-empty-yes-else-replacement-warm-gap",
+      "id": "module-sub-numbered-conditional-group-exists-fully-empty-replacement-warm-gap",
       "bucket": "module-sub",
       "family": "module",
       "operation": "module.sub",
-      "pattern": "a(b)?c(?(1)|e)",
-      "haystack": "ace abc",
+      "pattern": "a(b)?c(?(1)|)",
+      "haystack": "ac abc",
       "replacement": "X",
       "flags": 0,
       "text_model": "str",
@@ -330,7 +298,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "empty-yes-arm",
+        "fully-empty",
         "replacement",
         "module",
         "unsupported",
@@ -343,11 +311,11 @@
         "conditionals"
       ],
       "notes": [
-        "Explicit conditional replacement gap row so empty-yes-arm `sub()` helper behavior stays visible instead of being mistaken for the already-supported search/fullmatch slice."
+        "Explicit conditional replacement gap row so fully-empty `sub()` helper behavior stays visible instead of being mistaken for the already-supported search/fullmatch slice."
       ]
     },
     {
-      "id": "module-search-numbered-conditional-group-exists-empty-yes-else-alternation-heavy-warm-gap",
+      "id": "module-search-numbered-conditional-group-exists-fully-empty-alternation-heavy-warm-gap",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
@@ -362,7 +330,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "empty-yes-arm",
+        "fully-empty",
         "alternation-heavy",
         "search",
         "module",
@@ -377,7 +345,7 @@
         "alternation"
       ],
       "notes": [
-        "Explicit broader backtracking-heavy gap row so alternation inside an empty-yes-arm conditional arm stays on the benchmark surface until the engine supports that wider execution shape."
+        "Explicit broader backtracking-heavy gap row so alternation inside a fully-empty conditional arm stays on the benchmark surface until the engine supports that wider execution shape."
       ]
     }
   ]
