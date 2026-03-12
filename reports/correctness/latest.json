@@ -16594,18 +16594,130 @@
       "pattern": "a(?P<word>b)?c(?(word)|)",
       "suite_id": "match.conditional_group_exists_fully_empty",
       "text_model": "str"
+    },
+    {
+      "categories": [
+        "grouped",
+        "conditional",
+        "group-exists",
+        "assertion-conditioned",
+        "positive-lookahead",
+        "compile",
+        "diagnostic",
+        "rejected-syntax",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "conditional_group_exists_assertion_compile_diagnostic",
+      "id": "conditional-group-exists-assertion-positive-lookahead-error-str",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_id": "conditional-group-exists-assertion-diagnostics",
+      "notes": [
+        "Publishes the bounded CPython-rejected assertion-conditioned conditional form where a positive lookahead appears in the condition slot and stdlib re reports it as an invalid group name."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": {
+            "colno": 5,
+            "lineno": 1,
+            "message": "bad character in group name '?=b' at position 4",
+            "pos": 4,
+            "type": "error"
+          },
+          "operation": "compile",
+          "outcome": "exception",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "compile",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a(?(?=b)b|c)d",
+      "suite_id": "parser.conditional_group_exists_assertion_diagnostics",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "grouped",
+        "conditional",
+        "group-exists",
+        "assertion-conditioned",
+        "negative-lookahead",
+        "compile",
+        "diagnostic",
+        "rejected-syntax",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "conditional_group_exists_assertion_compile_diagnostic",
+      "id": "conditional-group-exists-assertion-negative-lookahead-error-str",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_id": "conditional-group-exists-assertion-diagnostics",
+      "notes": [
+        "Keeps the diagnostic slice narrow but explicit by recording the matching negative-lookahead form, which CPython also rejects at compile time before any runtime conditional execution is attempted."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": {
+            "colno": 5,
+            "lineno": 1,
+            "message": "bad character in group name '?!b' at position 4",
+            "pos": 4,
+            "type": "error"
+          },
+          "operation": "compile",
+          "outcome": "exception",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "compile",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a(?(?!b)b|c)d",
+      "suite_id": "parser.conditional_group_exists_assertion_diagnostics",
+      "text_model": "str"
     }
   ],
   "diagnostics": {
     "by_adapter": {
       "cpython": {
-        "exception_case_count": 8,
+        "exception_case_count": 10,
         "exception_types": {
           "TypeError": 2,
-          "error": 6
+          "error": 8
         },
         "outcomes": {
-          "exception": 8,
+          "exception": 10,
           "success": 210
         },
         "warning_case_count": 1,
@@ -16614,14 +16726,16 @@
         }
       },
       "rebar": {
-        "exception_case_count": 8,
+        "exception_case_count": 10,
         "exception_types": {
+          "NotImplementedError": 2,
           "TypeError": 2,
           "error": 6
         },
         "outcomes": {
           "exception": 8,
-          "success": 210
+          "success": 210,
+          "unimplemented": 2
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -17008,6 +17122,27 @@
       },
       "text_models": [
         "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "id": "conditional_group_exists_assertion_compile_diagnostic",
+      "layers": [
+        "parser_acceptance_and_diagnostics"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
         "str"
       ]
     },
@@ -19712,8 +19847,8 @@
     }
   ],
   "fixtures": {
-    "case_count": 218,
-    "manifest_count": 32,
+    "case_count": 220,
+    "manifest_count": 33,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
@@ -19746,7 +19881,8 @@
       "conditional-group-exists-no-else-workflows",
       "conditional-group-exists-empty-else-workflows",
       "conditional-group-exists-empty-yes-else-workflows",
-      "conditional-group-exists-fully-empty-workflows"
+      "conditional-group-exists-fully-empty-workflows",
+      "conditional-group-exists-assertion-diagnostics"
     ],
     "paths": [
       "tests/conformance/fixtures/parser_matrix.json",
@@ -19780,10 +19916,11 @@
       "tests/conformance/fixtures/conditional_group_exists_no_else_workflows.json",
       "tests/conformance/fixtures/conditional_group_exists_empty_else_workflows.json",
       "tests/conformance/fixtures/conditional_group_exists_empty_yes_else_workflows.json",
-      "tests/conformance/fixtures/conditional_group_exists_fully_empty_workflows.json"
+      "tests/conformance/fixtures/conditional_group_exists_fully_empty_workflows.json",
+      "tests/conformance/fixtures/conditional_group_exists_assertion_diagnostics.json"
     ]
   },
-  "generated_at": "2026-03-12T22:08:59Z",
+  "generated_at": "2026-03-12T22:36:20Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -20135,16 +20272,16 @@
       ]
     },
     "parser_acceptance_and_diagnostics": {
-      "case_count": 15,
+      "case_count": 17,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
-            "exception_case_count": 6,
+            "exception_case_count": 8,
             "exception_types": {
-              "error": 6
+              "error": 8
             },
             "outcomes": {
-              "exception": 6,
+              "exception": 8,
               "success": 9
             },
             "warning_case_count": 1,
@@ -20153,13 +20290,15 @@
             }
           },
           "rebar": {
-            "exception_case_count": 6,
+            "exception_case_count": 8,
             "exception_types": {
+              "NotImplementedError": 2,
               "error": 6
             },
             "outcomes": {
               "exception": 6,
-              "success": 9
+              "success": 9,
+              "unimplemented": 2
             },
             "warning_case_count": 1,
             "warning_categories": {
@@ -20171,6 +20310,7 @@
       "families": [
         "assertions",
         "character_classes",
+        "conditional_group_exists_assertion_compile_diagnostic",
         "flags",
         "grouping",
         "literals_and_escapes",
@@ -20178,21 +20318,23 @@
         "quantifiers"
       ],
       "manifest_ids": [
+        "conditional-group-exists-assertion-diagnostics",
         "parser-matrix"
       ],
       "operations": [
         "compile"
       ],
       "suite_ids": [
-        "parser.compile"
+        "parser.compile",
+        "parser.conditional_group_exists_assertion_diagnostics"
       ],
       "summary": {
-        "executed_cases": 15,
+        "executed_cases": 17,
         "failed_cases": 0,
         "passed_cases": 15,
         "skipped_cases": 0,
-        "total_cases": 15,
-        "unimplemented_cases": 0
+        "total_cases": 17,
+        "unimplemented_cases": 2
       },
       "text_models": [
         "bytes",
@@ -27843,14 +27985,116 @@
       "text_models": [
         "str"
       ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "error": 2
+            },
+            "outcomes": {
+              "exception": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "conditional_group_exists_assertion_compile_diagnostic"
+      ],
+      "id": "parser.conditional_group_exists_assertion_diagnostics",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_ids": [
+        "conditional-group-exists-assertion-diagnostics"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "error": 2
+            },
+            "outcomes": {
+              "exception": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "conditional_group_exists_assertion_compile_diagnostic"
+      ],
+      "id": "parser.conditional_group_exists_assertion_diagnostics.str",
+      "layer": "parser_acceptance_and_diagnostics",
+      "manifest_ids": [
+        "conditional-group-exists-assertion-diagnostics"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
     }
   ],
   "summary": {
-    "executed_cases": 218,
+    "executed_cases": 220,
     "failed_cases": 0,
     "passed_cases": 218,
     "skipped_cases": 0,
-    "total_cases": 218,
-    "unimplemented_cases": 0
+    "total_cases": 220,
+    "unimplemented_cases": 2
   }
 }

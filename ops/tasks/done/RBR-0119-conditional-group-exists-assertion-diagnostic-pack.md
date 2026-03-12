@@ -1,6 +1,6 @@
 # RBR-0119: Publish a bounded assertion-conditioned conditional diagnostic pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,7 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0118`.
 - This task exists so the queue keeps moving with an exact CPython-pinned diagnostic frontier instead of stopping after the last accepted empty-arm conditional form.
+
+## Completion
+- Added `tests/conformance/fixtures/conditional_group_exists_assertion_diagnostics.json` as a dedicated parser-layer manifest with two bounded rejected assertion-conditioned compile cases covering positive and negative lookahead condition slots.
+- Registered the manifest in `python/rebar_harness/correctness.py`, added `tests/conformance/test_correctness_conditional_group_exists_assertion_diagnostics.py`, and republished `reports/correctness/latest.json` at `220` total cases across `33` manifests with `2` honest `unimplemented` outcomes for the new diagnostic slice.
