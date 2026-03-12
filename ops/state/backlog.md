@@ -1,20 +1,19 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2: build on the landed exported-symbol and compiled-pattern scaffolds, the first literal-only `compile`/`search`/`match`/`fullmatch` behavior slice, observable compile-cache/purge behavior, local `escape()` parity, the module-workflow correctness pack, the precompiled pattern-boundary benchmark pack, the first literal-only collection and replacement helpers, their published correctness pack, and the matching collection/replacement benchmark pack with the next bounded literal-flag slice, targeted metadata-parity cleanup for the remaining exported-helper and compiled-pattern correctness failures, and finally the bounded parser diagnostic/acceptance tasks needed to finish the currently published parser-matrix debt plus compile-benchmark catch-up.
+Milestone 2: build on the landed exported-symbol and compiled-pattern scaffolds, the first literal-only `compile`/`search`/`match`/`fullmatch` behavior slice, observable compile-cache/purge behavior, local `escape()` parity, the module-workflow correctness pack, the precompiled pattern-boundary benchmark pack, the first literal-only collection and replacement helpers, their published correctness pack, the matching collection/replacement benchmark pack, and the landed literal-only API-level `IGNORECASE` slice with its queued correctness/benchmark follow-ons, targeted metadata-parity cleanup for the remaining exported-helper and compiled-pattern correctness failures, and finally the bounded parser diagnostic/acceptance tasks needed to finish the currently published parser-matrix debt plus compile-benchmark catch-up.
 
 ## Ordered Work
-1. Land `RBR-0032` to implement bounded literal-only `IGNORECASE` behavior for module and `Pattern` match helpers without broadening into non-literal regex parsing.
-2. Land `RBR-0033` to publish correctness coverage for that literal-only `IGNORECASE` slice so flag-sensitive behavior reaches the scorecard immediately.
-3. Land `RBR-0034` to benchmark the bounded literal-only flag-sensitive helper paths so the benchmark suite tracks their call-boundary cost separately from later engine work.
-4. Land `RBR-0035` to fix the remaining exported-helper metadata and constructor-guard correctness failures for `RegexFlag`, `Pattern`, and `Match`.
-5. Land `RBR-0036` to fix the remaining compiled-pattern metadata correctness failures for the currently supported literal-only `Pattern` slice.
-6. Land `RBR-0037` to turn the already-published compile-time parser error/warning cases into real CPython-shaped diagnostics so the next visible correctness debt comes off the parser pack instead of adding new surface area first.
-7. Land `RBR-0038` to implement bounded inline-flag compile parity for the remaining published parser-matrix success cases and keep the new diagnostic cases aligned.
-8. Land `RBR-0039` to implement bounded lookbehind compile parity for the remaining published fixed-width success and variable-width error cases.
-9. Land `RBR-0040` to implement the published character-class plus API-level `IGNORECASE` compile case without broadening into general regex execution.
-10. Land `RBR-0041` to implement compile-only acceptance for the remaining published possessive-quantifier and atomic-group parser cases.
-11. Land `RBR-0042` to convert the compile-path benchmark pack from scaffold-only toward partial measurement as those published parser cases become real `rebar` compile successes.
+1. Land `RBR-0033` to publish correctness coverage for the landed literal-only `IGNORECASE` slice so flag-sensitive behavior reaches the scorecard immediately.
+2. Land `RBR-0034` to benchmark the bounded literal-only flag-sensitive helper paths so the benchmark suite tracks their call-boundary cost separately from later engine work.
+3. Land `RBR-0035` to fix the remaining exported-helper metadata and constructor-guard correctness failures for `RegexFlag`, `Pattern`, and `Match`.
+4. Land `RBR-0036` to fix the remaining compiled-pattern metadata correctness failures for the currently supported literal-only `Pattern` slice.
+5. Land `RBR-0037` to turn the already-published compile-time parser error/warning cases into real CPython-shaped diagnostics so the next visible correctness debt comes off the parser pack instead of adding new surface area first.
+6. Land `RBR-0038` to implement bounded inline-flag compile parity for the remaining published parser-matrix success cases and keep the new diagnostic cases aligned.
+7. Land `RBR-0039` to implement bounded lookbehind compile parity for the remaining published fixed-width success and variable-width error cases.
+8. Land `RBR-0040` to implement the published character-class plus API-level `IGNORECASE` compile case without broadening into general regex execution.
+9. Land `RBR-0041` to implement compile-only acceptance for the remaining published possessive-quantifier and atomic-group parser cases.
+10. Land `RBR-0042` to convert the compile-path benchmark pack from scaffold-only toward partial measurement as those published parser cases become real `rebar` compile successes.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
@@ -29,7 +28,7 @@ Milestone 2: build on the landed exported-symbol and compiled-pattern scaffolds,
 - Treat README/reporting accuracy as part of the milestone; scaffold and scorecard tracks should only flip complete when their concrete artifacts exist.
 - With `RBR-0011` and `RBR-0012` landed, keep Milestone 2 centered on module-surface, public-API, and module-boundary catch-up rather than reopening parser-fixture or parser-benchmark breadth immediately.
 - Queue the first Phase 3 correctness and benchmark tasks before Milestone 2 closes so the worker can roll straight into match-behavior and regression/stability infrastructure once the current ready stack clears.
-- With `RBR-0031` landed, keep the front of Milestone 2 on `RBR-0032` through `RBR-0036` so the bounded literal-flag slice and the metadata-parity cleanup stay contiguous instead of forcing another supervisor-only queue rewrite.
+- With `RBR-0032` landed, keep the front of Milestone 2 on `RBR-0033` through `RBR-0036` so the bounded literal-flag scorecards and metadata-parity cleanup stay contiguous instead of forcing another supervisor-only queue rewrite.
 - Treat exported-symbol and compiled-pattern scaffold coverage as complete unless later behavior work exposes a real compatibility gap; do not reopen more import-shape or placeholder-only `Pattern` scaffolding ahead of the honest-behavior tasks.
 - Once `RBR-0014` lands the Phase 2 public-API scorecard, keep Milestone 2 focused on module-boundary benchmarking and concrete post-scaffold correctness instead of continuing to treat public-API harness setup as the primary open item.
 - Use the landed benchmark-provenance adapter modes in future workload expansions; do not let new benchmark packs regress to unlabeled source-versus-native execution paths.

@@ -1,0 +1,182 @@
+{
+  "schema_version": 1,
+  "manifest_id": "literal-flag-workflows",
+  "layer": "module_workflow",
+  "suite_id": "literal.flag.workflow",
+  "defaults": {
+    "flags": 0,
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "flag-module-search-ignorecase-str-hit",
+      "operation": "module_call",
+      "family": "literal_ignorecase_workflow",
+      "helper": "search",
+      "args": ["AbC", "zzaBczz", 2],
+      "flags": 2,
+      "categories": ["workflow", "flag", "ignorecase", "literal", "module", "search", "str", "hit"],
+      "notes": [
+        "Pins module-level literal IGNORECASE search behavior for str payloads."
+      ]
+    },
+    {
+      "id": "flag-module-search-ignorecase-str-miss",
+      "operation": "module_call",
+      "family": "literal_ignorecase_workflow",
+      "helper": "search",
+      "args": ["AbC", "zzz", 2],
+      "flags": 2,
+      "categories": ["workflow", "flag", "ignorecase", "literal", "module", "search", "str", "no-match"],
+      "notes": [
+        "Keeps the bounded IGNORECASE search no-match path visible in the scorecard."
+      ]
+    },
+    {
+      "id": "flag-module-fullmatch-ignorecase-bytes-hit",
+      "operation": "module_call",
+      "family": "literal_ignorecase_workflow",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "AbC"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "aBc"
+        },
+        2
+      ],
+      "flags": 2,
+      "categories": ["workflow", "flag", "ignorecase", "literal", "module", "fullmatch", "bytes", "hit"],
+      "notes": [
+        "Mirrors the bounded bytes-valued module fullmatch IGNORECASE path."
+      ]
+    },
+    {
+      "id": "flag-pattern-search-ignorecase-str-hit",
+      "operation": "pattern_call",
+      "family": "literal_ignorecase_workflow",
+      "pattern": "AbC",
+      "helper": "search",
+      "args": ["zzaBczz"],
+      "flags": 2,
+      "categories": ["workflow", "flag", "ignorecase", "literal", "pattern", "search", "str", "hit"],
+      "notes": [
+        "Compiles with IGNORECASE and exercises the bound Pattern.search path on str input."
+      ]
+    },
+    {
+      "id": "flag-pattern-match-ignorecase-bytes-hit",
+      "operation": "pattern_call",
+      "family": "literal_ignorecase_workflow",
+      "pattern": "AbC",
+      "text_model": "bytes",
+      "helper": "match",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "aBcdef"
+        }
+      ],
+      "flags": 2,
+      "categories": ["workflow", "flag", "ignorecase", "literal", "pattern", "match", "bytes", "hit"],
+      "notes": [
+        "Pins the compiled-pattern bytes match helper for the supported literal IGNORECASE slice."
+      ]
+    },
+    {
+      "id": "flag-pattern-fullmatch-ignorecase-str-miss",
+      "operation": "pattern_call",
+      "family": "literal_ignorecase_workflow",
+      "pattern": "AbC",
+      "helper": "fullmatch",
+      "args": ["aBcd"],
+      "flags": 2,
+      "categories": ["workflow", "flag", "ignorecase", "literal", "pattern", "fullmatch", "str", "no-match"],
+      "notes": [
+        "Makes the no-match side of the bound IGNORECASE fullmatch path explicit."
+      ]
+    },
+    {
+      "id": "flag-cache-hit-bytes-ignorecase",
+      "operation": "cache_workflow",
+      "family": "literal_flag_cache_workflow",
+      "pattern": "AbC",
+      "text_model": "bytes",
+      "flags": 2,
+      "categories": ["workflow", "flag", "ignorecase", "cache", "bytes"],
+      "notes": [
+        "Observes that repeated bytes compile() calls under IGNORECASE still reuse the bounded cache entry."
+      ]
+    },
+    {
+      "id": "flag-cache-distinct-str-normalized",
+      "operation": "cache_distinct_workflow",
+      "family": "literal_flag_cache_workflow",
+      "pattern": "abc",
+      "flags": 2,
+      "kwargs": {
+        "alias_flags": 2,
+        "distinct_flags": 0
+      },
+      "categories": ["workflow", "flag", "ignorecase", "cache", "distinct-entry", "str"],
+      "notes": [
+        "Pins that a str-valued IGNORECASE compile() uses a distinct cache entry from the default-flag literal while preserving repeated flagged-cache reuse."
+      ]
+    },
+    {
+      "id": "flag-unsupported-inline-flag-search",
+      "operation": "module_call",
+      "family": "unsupported_flag_workflow",
+      "helper": "search",
+      "args": ["(?i)abc", "ABC"],
+      "categories": ["workflow", "flag", "unsupported", "inline-flag", "str"],
+      "notes": [
+        "Keeps inline-flag support explicit instead of counting it as part of the bounded API-level IGNORECASE pass set."
+      ]
+    },
+    {
+      "id": "flag-unsupported-locale-bytes-search",
+      "operation": "module_call",
+      "family": "unsupported_flag_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        4
+      ],
+      "flags": 4,
+      "categories": ["workflow", "flag", "unsupported", "locale", "bytes"],
+      "notes": [
+        "Makes bytes-only LOCALE flag behavior visible as honest compatibility debt."
+      ]
+    },
+    {
+      "id": "flag-unsupported-nonliteral-ignorecase-search",
+      "operation": "module_call",
+      "family": "unsupported_flag_workflow",
+      "helper": "search",
+      "args": ["a.c", "ABC", 2],
+      "flags": 2,
+      "categories": ["workflow", "flag", "unsupported", "ignorecase", "non-literal", "str"],
+      "notes": [
+        "Keeps non-literal IGNORECASE behavior explicit rather than silently broadening the supported literal slice."
+      ]
+    }
+  ]
+}

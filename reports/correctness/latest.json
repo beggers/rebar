@@ -4069,6 +4069,813 @@
       "operation": "module_call",
       "suite_id": "collection.replacement.workflow",
       "text_model": "str"
+    },
+    {
+      "args": [
+        "AbC",
+        "zzaBczz",
+        2
+      ],
+      "categories": [
+        "workflow",
+        "flag",
+        "ignorecase",
+        "literal",
+        "module",
+        "search",
+        "str",
+        "hit"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "literal_ignorecase_workflow",
+      "flags": 2,
+      "helper": "search",
+      "id": "flag-module-search-ignorecase-str-hit",
+      "layer": "module_workflow",
+      "manifest_id": "literal-flag-workflows",
+      "notes": [
+        "Pins module-level literal IGNORECASE search behavior for str payloads."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "aBc",
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "aBc",
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "literal.flag.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "AbC",
+        "zzz",
+        2
+      ],
+      "categories": [
+        "workflow",
+        "flag",
+        "ignorecase",
+        "literal",
+        "module",
+        "search",
+        "str",
+        "no-match"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "literal_ignorecase_workflow",
+      "flags": 2,
+      "helper": "search",
+      "id": "flag-module-search-ignorecase-str-miss",
+      "layer": "module_workflow",
+      "manifest_id": "literal-flag-workflows",
+      "notes": [
+        "Keeps the bounded IGNORECASE search no-match path visible in the scorecard."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "literal.flag.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        {
+          "encoding": "latin-1",
+          "value": "AbC"
+        },
+        {
+          "encoding": "latin-1",
+          "value": "aBc"
+        },
+        2
+      ],
+      "categories": [
+        "workflow",
+        "flag",
+        "ignorecase",
+        "literal",
+        "module",
+        "fullmatch",
+        "bytes",
+        "hit"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "literal_ignorecase_workflow",
+      "flags": 2,
+      "helper": "fullmatch",
+      "id": "flag-module-fullmatch-ignorecase-bytes-hit",
+      "layer": "module_workflow",
+      "manifest_id": "literal-flag-workflows",
+      "notes": [
+        "Mirrors the bounded bytes-valued module fullmatch IGNORECASE path."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": {
+              "encoding": "latin-1",
+              "value": "aBc"
+            },
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "string_type": "bytes"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": {
+              "encoding": "latin-1",
+              "value": "aBc"
+            },
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "string_type": "bytes"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "literal.flag.workflow",
+      "text_model": "bytes"
+    },
+    {
+      "args": [
+        "zzaBczz"
+      ],
+      "categories": [
+        "workflow",
+        "flag",
+        "ignorecase",
+        "literal",
+        "pattern",
+        "search",
+        "str",
+        "hit"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "literal_ignorecase_workflow",
+      "flags": 2,
+      "helper": "search",
+      "id": "flag-pattern-search-ignorecase-str-hit",
+      "layer": "module_workflow",
+      "manifest_id": "literal-flag-workflows",
+      "notes": [
+        "Compiles with IGNORECASE and exercises the bound Pattern.search path on str input."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "aBc",
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "aBc",
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "AbC",
+      "suite_id": "literal.flag.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        {
+          "encoding": "latin-1",
+          "value": "aBcdef"
+        }
+      ],
+      "categories": [
+        "workflow",
+        "flag",
+        "ignorecase",
+        "literal",
+        "pattern",
+        "match",
+        "bytes",
+        "hit"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "literal_ignorecase_workflow",
+      "flags": 2,
+      "helper": "match",
+      "id": "flag-pattern-match-ignorecase-bytes-hit",
+      "layer": "module_workflow",
+      "manifest_id": "literal-flag-workflows",
+      "notes": [
+        "Pins the compiled-pattern bytes match helper for the supported literal IGNORECASE slice."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 6,
+            "group0": {
+              "encoding": "latin-1",
+              "value": "aBc"
+            },
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "string_type": "bytes"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 6,
+            "group0": {
+              "encoding": "latin-1",
+              "value": "aBc"
+            },
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "string_type": "bytes"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "AbC",
+      "suite_id": "literal.flag.workflow",
+      "text_model": "bytes"
+    },
+    {
+      "args": [
+        "aBcd"
+      ],
+      "categories": [
+        "workflow",
+        "flag",
+        "ignorecase",
+        "literal",
+        "pattern",
+        "fullmatch",
+        "str",
+        "no-match"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "literal_ignorecase_workflow",
+      "flags": 2,
+      "helper": "fullmatch",
+      "id": "flag-pattern-fullmatch-ignorecase-str-miss",
+      "layer": "module_workflow",
+      "manifest_id": "literal-flag-workflows",
+      "notes": [
+        "Makes the no-match side of the bound IGNORECASE fullmatch path explicit."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "AbC",
+      "suite_id": "literal.flag.workflow",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "workflow",
+        "flag",
+        "ignorecase",
+        "cache",
+        "bytes"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "literal_flag_cache_workflow",
+      "flags": 2,
+      "id": "flag-cache-hit-bytes-ignorecase",
+      "layer": "module_workflow",
+      "manifest_id": "literal-flag-workflows",
+      "notes": [
+        "Observes that repeated bytes compile() calls under IGNORECASE still reuse the bounded cache entry."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "cache_workflow",
+          "outcome": "success",
+          "result": {
+            "first": {
+              "flags": 2,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": {
+                "encoding": "latin-1",
+                "value": "AbC"
+              },
+              "pattern_type": "bytes"
+            },
+            "same_object": true,
+            "second": {
+              "flags": 2,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": {
+                "encoding": "latin-1",
+                "value": "AbC"
+              },
+              "pattern_type": "bytes"
+            }
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "cache_workflow",
+          "outcome": "success",
+          "result": {
+            "first": {
+              "flags": 2,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": {
+                "encoding": "latin-1",
+                "value": "AbC"
+              },
+              "pattern_type": "bytes"
+            },
+            "same_object": true,
+            "second": {
+              "flags": 2,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": {
+                "encoding": "latin-1",
+                "value": "AbC"
+              },
+              "pattern_type": "bytes"
+            }
+          },
+          "warnings": []
+        }
+      },
+      "operation": "cache_workflow",
+      "pattern": "AbC",
+      "suite_id": "literal.flag.workflow",
+      "text_model": "bytes"
+    },
+    {
+      "categories": [
+        "workflow",
+        "flag",
+        "ignorecase",
+        "cache",
+        "distinct-entry",
+        "str"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "literal_flag_cache_workflow",
+      "flags": 2,
+      "id": "flag-cache-distinct-str-normalized",
+      "kwargs": {
+        "alias_flags": 2,
+        "distinct_flags": 0
+      },
+      "layer": "module_workflow",
+      "manifest_id": "literal-flag-workflows",
+      "notes": [
+        "Pins that a str-valued IGNORECASE compile() uses a distinct cache entry from the default-flag literal while preserving repeated flagged-cache reuse."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "cache_distinct_workflow",
+          "outcome": "success",
+          "result": {
+            "alias": {
+              "flags": 34,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "abc",
+              "pattern_type": "str"
+            },
+            "distinct": {
+              "flags": 32,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "abc",
+              "pattern_type": "str"
+            },
+            "first": {
+              "flags": 34,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "abc",
+              "pattern_type": "str"
+            },
+            "same_object_as_alias": true,
+            "same_object_as_distinct": false
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "cache_distinct_workflow",
+          "outcome": "success",
+          "result": {
+            "alias": {
+              "flags": 34,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "abc",
+              "pattern_type": "str"
+            },
+            "distinct": {
+              "flags": 32,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "abc",
+              "pattern_type": "str"
+            },
+            "first": {
+              "flags": 34,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "abc",
+              "pattern_type": "str"
+            },
+            "same_object_as_alias": true,
+            "same_object_as_distinct": false
+          },
+          "warnings": []
+        }
+      },
+      "operation": "cache_distinct_workflow",
+      "pattern": "abc",
+      "suite_id": "literal.flag.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "(?i)abc",
+        "ABC"
+      ],
+      "categories": [
+        "workflow",
+        "flag",
+        "unsupported",
+        "inline-flag",
+        "str"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "unsupported_flag_workflow",
+      "flags": 0,
+      "helper": "search",
+      "id": "flag-unsupported-inline-flag-search",
+      "layer": "module_workflow",
+      "manifest_id": "literal-flag-workflows",
+      "notes": [
+        "Keeps inline-flag support explicit instead of counting it as part of the bounded API-level IGNORECASE pass set."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "ABC",
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "literal.flag.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        {
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        {
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        4
+      ],
+      "categories": [
+        "workflow",
+        "flag",
+        "unsupported",
+        "locale",
+        "bytes"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "unsupported_flag_workflow",
+      "flags": 4,
+      "helper": "search",
+      "id": "flag-unsupported-locale-bytes-search",
+      "layer": "module_workflow",
+      "manifest_id": "literal-flag-workflows",
+      "notes": [
+        "Makes bytes-only LOCALE flag behavior visible as honest compatibility debt."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": {
+              "encoding": "latin-1",
+              "value": "abc"
+            },
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "string_type": "bytes"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.search() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "literal.flag.workflow",
+      "text_model": "bytes"
+    },
+    {
+      "args": [
+        "a.c",
+        "ABC",
+        2
+      ],
+      "categories": [
+        "workflow",
+        "flag",
+        "unsupported",
+        "ignorecase",
+        "non-literal",
+        "str"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "unsupported_flag_workflow",
+      "flags": 2,
+      "helper": "search",
+      "id": "flag-unsupported-nonliteral-ignorecase-search",
+      "layer": "module_workflow",
+      "manifest_id": "literal-flag-workflows",
+      "notes": [
+        "Keeps non-literal IGNORECASE behavior explicit rather than silently broadening the supported literal slice."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "ABC",
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "literal.flag.workflow",
+      "text_model": "str"
     }
   ],
   "diagnostics": {
@@ -4081,7 +4888,7 @@
         },
         "outcomes": {
           "exception": 8,
-          "success": 61
+          "success": 72
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -4089,15 +4896,15 @@
         }
       },
       "rebar": {
-        "exception_case_count": 19,
+        "exception_case_count": 22,
         "exception_types": {
-          "NotImplementedError": 17,
+          "NotImplementedError": 20,
           "TypeError": 2
         },
         "outcomes": {
           "exception": 2,
-          "success": 50,
-          "unimplemented": 17
+          "success": 58,
+          "unimplemented": 20
         },
         "warning_case_count": 0,
         "warning_categories": {}
@@ -4584,6 +5391,52 @@
       "text_models": []
     },
     {
+      "case_count": 2,
+      "id": "literal_flag_cache_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "cache_distinct_workflow",
+        "cache_workflow"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 2,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 6,
+      "id": "literal_ignorecase_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 0,
+        "passed_cases": 6,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
       "case_count": 1,
       "id": "literals_and_escapes",
       "layers": [
@@ -4798,6 +5651,28 @@
     },
     {
       "case_count": 3,
+      "id": "unsupported_flag_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 3,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 3,
+        "unimplemented_cases": 3
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 3,
       "id": "unsupported_replacement_workflow",
       "layers": [
         "module_workflow"
@@ -4819,8 +5694,8 @@
     }
   ],
   "fixtures": {
-    "case_count": 69,
-    "manifest_count": 7,
+    "case_count": 80,
+    "manifest_count": 8,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
@@ -4828,7 +5703,8 @@
       "exported-symbol-surface",
       "pattern-object-surface",
       "module-workflow-surface",
-      "collection-replacement-workflows"
+      "collection-replacement-workflows",
+      "literal-flag-workflows"
     ],
     "paths": [
       "tests/conformance/fixtures/parser_matrix.json",
@@ -4837,10 +5713,11 @@
       "tests/conformance/fixtures/exported_symbol_surface.json",
       "tests/conformance/fixtures/pattern_object_surface.json",
       "tests/conformance/fixtures/module_workflow_surface.json",
-      "tests/conformance/fixtures/collection_replacement_workflows.json"
+      "tests/conformance/fixtures/collection_replacement_workflows.json",
+      "tests/conformance/fixtures/literal_flag_workflows.json"
     ]
   },
-  "generated_at": "2026-03-12T02:59:25Z",
+  "generated_at": "2026-03-12T03:34:01Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -4960,26 +5837,26 @@
       "text_models": []
     },
     "module_workflow": {
-      "case_count": 25,
+      "case_count": 36,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
             "exception_case_count": 0,
             "exception_types": {},
             "outcomes": {
-              "success": 25
+              "success": 36
             },
             "warning_case_count": 0,
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 4,
+            "exception_case_count": 7,
             "exception_types": {
-              "NotImplementedError": 4
+              "NotImplementedError": 7
             },
             "outcomes": {
-              "success": 21,
-              "unimplemented": 4
+              "success": 29,
+              "unimplemented": 7
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -4995,17 +5872,22 @@
         "escape_workflow",
         "findall_workflow",
         "finditer_workflow",
+        "literal_flag_cache_workflow",
+        "literal_ignorecase_workflow",
         "purge_workflow",
         "replacement_workflow",
         "split_workflow",
         "unsupported_collection_workflow",
+        "unsupported_flag_workflow",
         "unsupported_replacement_workflow"
       ],
       "manifest_ids": [
         "collection-replacement-workflows",
+        "literal-flag-workflows",
         "module-workflow-surface"
       ],
       "operations": [
+        "cache_distinct_workflow",
         "cache_workflow",
         "compile",
         "module_call",
@@ -5014,15 +5896,16 @@
       ],
       "suite_ids": [
         "collection.replacement.workflow",
+        "literal.flag.workflow",
         "module.workflow"
       ],
       "summary": {
-        "executed_cases": 25,
+        "executed_cases": 36,
         "failed_cases": 0,
-        "passed_cases": 21,
+        "passed_cases": 29,
         "skipped_cases": 0,
-        "total_cases": 25,
-        "unimplemented_cases": 4
+        "total_cases": 36,
+        "unimplemented_cases": 7
       },
       "text_models": [
         "bytes",
@@ -6730,14 +7613,372 @@
         "bytes",
         "str"
       ]
+    },
+    {
+      "case_count": 11,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 11
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 3,
+            "exception_types": {
+              "NotImplementedError": 3
+            },
+            "outcomes": {
+              "success": 8,
+              "unimplemented": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "literal_flag_cache_workflow",
+        "literal_ignorecase_workflow",
+        "unsupported_flag_workflow"
+      ],
+      "id": "literal.flag.workflow",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "literal-flag-workflows"
+      ],
+      "operations": [
+        "cache_distinct_workflow",
+        "cache_workflow",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 11,
+        "failed_cases": 0,
+        "passed_cases": 8,
+        "skipped_cases": 0,
+        "total_cases": 11,
+        "unimplemented_cases": 3
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 4,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 1,
+            "exception_types": {
+              "NotImplementedError": 1
+            },
+            "outcomes": {
+              "success": 3,
+              "unimplemented": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "literal_flag_cache_workflow",
+        "literal_ignorecase_workflow",
+        "unsupported_flag_workflow"
+      ],
+      "id": "literal.flag.workflow.bytes",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "literal-flag-workflows"
+      ],
+      "operations": [
+        "cache_workflow",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 3,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "bytes"
+      ]
+    },
+    {
+      "case_count": 7,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 7
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "success": 5,
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "literal_flag_cache_workflow",
+        "literal_ignorecase_workflow",
+        "unsupported_flag_workflow"
+      ],
+      "id": "literal.flag.workflow.str",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "literal-flag-workflows"
+      ],
+      "operations": [
+        "cache_distinct_workflow",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 7,
+        "failed_cases": 0,
+        "passed_cases": 5,
+        "skipped_cases": 0,
+        "total_cases": 7,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "literal_flag_cache_workflow"
+      ],
+      "id": "literal.flag.workflow.cache_distinct_workflow",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "literal-flag-workflows"
+      ],
+      "operations": [
+        "cache_distinct_workflow"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "literal_flag_cache_workflow"
+      ],
+      "id": "literal.flag.workflow.cache_workflow",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "literal-flag-workflows"
+      ],
+      "operations": [
+        "cache_workflow"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes"
+      ]
+    },
+    {
+      "case_count": 6,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 3,
+            "exception_types": {
+              "NotImplementedError": 3
+            },
+            "outcomes": {
+              "success": 3,
+              "unimplemented": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "literal_ignorecase_workflow",
+        "unsupported_flag_workflow"
+      ],
+      "id": "literal.flag.workflow.module_call",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "literal-flag-workflows"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 0,
+        "passed_cases": 3,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 3
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 3,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "literal_ignorecase_workflow"
+      ],
+      "id": "literal.flag.workflow.pattern_call",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "literal-flag-workflows"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 3,
+        "failed_cases": 0,
+        "passed_cases": 3,
+        "skipped_cases": 0,
+        "total_cases": 3,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
     }
   ],
   "summary": {
-    "executed_cases": 69,
+    "executed_cases": 80,
     "failed_cases": 8,
-    "passed_cases": 44,
+    "passed_cases": 52,
     "skipped_cases": 0,
-    "total_cases": 69,
-    "unimplemented_cases": 17
+    "total_cases": 80,
+    "unimplemented_cases": 20
   }
 }

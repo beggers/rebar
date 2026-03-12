@@ -1,6 +1,6 @@
 # RBR-0033: Publish correctness coverage for literal-only flag behavior
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -26,3 +26,9 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0032`. This task exists so the first supported flag behavior becomes visible in the published correctness report immediately instead of living only in unit tests.
+
+## Completion
+- Completed 2026-03-12.
+- Added `literal_flag_workflows.json` and extended the correctness harness default manifest set so the published scorecard now covers bounded literal-only `IGNORECASE` workflows for module helpers and compiled `Pattern` methods.
+- Added a narrow `cache_distinct_workflow` observation so the flag pack can publish flagged-versus-default compile-cache behavior without broadening beyond tiny literal workflows.
+- Regenerated `reports/correctness/latest.json` and added an end-to-end conformance test that validates the expanded eight-manifest combined scorecard.
