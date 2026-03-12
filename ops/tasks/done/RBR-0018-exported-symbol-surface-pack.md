@@ -1,8 +1,9 @@
 # RBR-0018: Expand the exported symbol surface
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
+Completed: 2026-03-12
 
 ## Goal
 - Expose more of the CPython-shaped import surface through `python/rebar` so user code can import core flags, exceptions, and public helper types without falling through to stdlib `re`.
@@ -25,3 +26,7 @@ Created: 2026-03-11
 ## Notes
 - Use `docs/spec/drop-in-re-compatibility.md` as the compatibility contract for flags, exported helper types, and public constants.
 - Build on `RBR-0013`; this task is about import-shape parity, not about claiming broader execution compatibility.
+
+## Completion Note
+- Landed a CPython-shaped exported symbol scaffold in `python/rebar/__init__.py` with explicit `RegexFlag` values, `error`, non-instantiable `Pattern`/`Match` placeholders, and a `template()` placeholder while keeping compile/match behavior loudly unimplemented.
+- Added `tests/python/test_exported_symbol_surface.py` and extended the helper-surface smoke test so exported names, flag values, alias pairs, and placeholder contracts are pinned against stdlib `re`.

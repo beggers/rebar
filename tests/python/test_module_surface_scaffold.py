@@ -31,6 +31,7 @@ PLACEHOLDER_CASES = [
     ("finditer", ("abc", "abc"), {}),
     ("sub", ("abc", "x", "abc"), {}),
     ("subn", ("abc", "x", "abc"), {}),
+    ("template", ("abc",), {}),
     ("escape", ("abc",), {}),
 ]
 
@@ -44,6 +45,7 @@ EXPECTED_HELPERS = {
     "finditer",
     "sub",
     "subn",
+    "template",
     "escape",
     "purge",
 }
@@ -142,6 +144,7 @@ cases = {
     "finditer": [["abc", "abc"], {}],
     "sub": [["abc", "x", "abc"], {}],
     "subn": [["abc", "x", "abc"], {}],
+    "template": [["abc"], {}],
     "escape": [["abc"], {}],
 }
 
