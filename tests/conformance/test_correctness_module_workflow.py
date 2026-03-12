@@ -62,10 +62,10 @@ class CorrectnessHarnessModuleWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 54,
                     "failed_cases": 0,
-                    "passed_cases": 41,
+                    "passed_cases": 49,
                     "skipped_cases": 0,
                     "total_cases": 54,
-                    "unimplemented_cases": 13,
+                    "unimplemented_cases": 5,
                 },
             )
 

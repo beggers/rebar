@@ -54,10 +54,10 @@ class CorrectnessHarnessExportedSymbolSurfaceTest(unittest.TestCase):
                 {
                     "executed_cases": 38,
                     "failed_cases": 0,
-                    "passed_cases": 25,
+                    "passed_cases": 33,
                     "skipped_cases": 0,
                     "total_cases": 38,
-                    "unimplemented_cases": 13,
+                    "unimplemented_cases": 5,
                 },
             )
 

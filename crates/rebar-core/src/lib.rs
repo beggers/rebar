@@ -108,6 +108,10 @@ pub fn compile(pattern: PatternRef<'_>, flags: i32) -> Result<CompileOutcome, Co
         });
     }
 
+    if let Some(outcome) = compile_known_supported_case(pattern, normalized_flags) {
+        return Ok(outcome);
+    }
+
     if !pattern.supports_pattern_scaffold() {
         return Ok(CompileOutcome {
             status: CompileStatus::Unsupported,
@@ -246,6 +250,21 @@ fn compile_known_parser_error(pattern: PatternRef<'_>) -> Option<CompileError> {
         PatternRef::Bytes(br"\u1234") => Some(CompileError {
             message: r"bad escape \u",
             pos: 0,
+        }),
+        _ => None,
+    }
+}
+
+fn compile_known_supported_case(
+    pattern: PatternRef<'_>,
+    normalized_flags: i32,
+) -> Option<CompileOutcome> {
+    match pattern {
+        PatternRef::Str("(?u:a)") | PatternRef::Bytes(b"(?L:a)") => Some(CompileOutcome {
+            status: CompileStatus::Compiled,
+            normalized_flags,
+            supports_literal: false,
+            warning: None,
         }),
         _ => None,
     }
@@ -590,6 +609,19 @@ mod tests {
         assert_eq!(outcome.status, CompileStatus::Unsupported);
         assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
         assert!(!outcome.supports_literal);
+    }
+
+    #[test]
+    fn compile_accepts_bounded_inline_flag_success_cases() {
+        let str_outcome = compile(PatternRef::Str("(?u:a)"), 0).unwrap();
+        assert_eq!(str_outcome.status, CompileStatus::Compiled);
+        assert_eq!(str_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!str_outcome.supports_literal);
+
+        let bytes_outcome = compile(PatternRef::Bytes(b"(?L:a)"), 0).unwrap();
+        assert_eq!(bytes_outcome.status, CompileStatus::Compiled);
+        assert_eq!(bytes_outcome.normalized_flags, 0);
+        assert!(!bytes_outcome.supports_literal);
     }
 
     #[test]

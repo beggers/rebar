@@ -42,10 +42,10 @@ class CorrectnessHarnessParserMatrixTest(unittest.TestCase):
                 {
                     "executed_cases": 15,
                     "failed_cases": 0,
-                    "passed_cases": 8,
+                    "passed_cases": 10,
                     "skipped_cases": 0,
                     "total_cases": 15,
-                    "unimplemented_cases": 7,
+                    "unimplemented_cases": 5,
                 },
             )
 
@@ -98,25 +98,37 @@ class CorrectnessHarnessParserMatrixTest(unittest.TestCase):
         self.assertEqual(cpython_diagnostics["exception_types"], {"error": 6})
 
         rebar_diagnostics = scorecard["diagnostics"]["by_adapter"]["rebar"]
-        self.assertEqual(rebar_diagnostics["outcomes"], {"exception": 5, "success": 3, "unimplemented": 7})
+        self.assertEqual(rebar_diagnostics["outcomes"], {"exception": 5, "success": 5, "unimplemented": 5})
         self.assertEqual(rebar_diagnostics["warning_case_count"], 1)
         self.assertEqual(rebar_diagnostics["warning_categories"], {"FutureWarning": 1})
-        self.assertEqual(rebar_diagnostics["exception_case_count"], 12)
-        self.assertEqual(rebar_diagnostics["exception_types"], {"NotImplementedError": 7, "error": 5})
+        self.assertEqual(rebar_diagnostics["exception_case_count"], 10)
+        self.assertEqual(rebar_diagnostics["exception_types"], {"NotImplementedError": 5, "error": 5})
 
         str_suite = next(suite for suite in scorecard["suites"] if suite["id"] == "parser.compile.str")
         self.assertEqual(str_suite["summary"]["total_cases"], 11)
-        self.assertEqual(str_suite["summary"]["passed_cases"], 5)
+        self.assertEqual(str_suite["summary"]["passed_cases"], 6)
 
         bytes_suite = next(
             suite for suite in scorecard["suites"] if suite["id"] == "parser.compile.bytes"
         )
         self.assertEqual(bytes_suite["summary"]["total_cases"], 4)
-        self.assertEqual(bytes_suite["summary"]["passed_cases"], 3)
+        self.assertEqual(bytes_suite["summary"]["passed_cases"], 4)
 
         first_str_case = next(case for case in scorecard["cases"] if case["id"] == "str-literal-success")
         self.assertEqual(first_str_case["comparison"], "pass")
         self.assertEqual(first_str_case["observations"]["rebar"]["outcome"], "success")
+
+        str_inline_case = next(
+            case for case in scorecard["cases"] if case["id"] == "str-inline-unicode-flag-success"
+        )
+        self.assertEqual(str_inline_case["comparison"], "pass")
+        self.assertEqual(str_inline_case["observations"]["rebar"]["outcome"], "success")
+
+        bytes_locale_case = next(
+            case for case in scorecard["cases"] if case["id"] == "bytes-inline-locale-flag-success"
+        )
+        self.assertEqual(bytes_locale_case["comparison"], "pass")
+        self.assertEqual(bytes_locale_case["observations"]["rebar"]["outcome"], "success")
 
         first_bytes_case = next(
             case for case in scorecard["cases"] if case["id"] == "bytes-inline-unicode-flag-error"

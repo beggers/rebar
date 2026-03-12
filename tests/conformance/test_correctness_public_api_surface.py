@@ -46,10 +46,10 @@ class CorrectnessHarnessPublicApiSurfaceTest(unittest.TestCase):
                 {
                     "executed_cases": 22,
                     "failed_cases": 0,
-                    "passed_cases": 9,
+                    "passed_cases": 17,
                     "skipped_cases": 0,
                     "total_cases": 22,
-                    "unimplemented_cases": 13,
+                    "unimplemented_cases": 5,
                 },
             )
 
@@ -82,8 +82,8 @@ class CorrectnessHarnessPublicApiSurfaceTest(unittest.TestCase):
 
         parser_layer = scorecard["layers"]["parser_acceptance_and_diagnostics"]
         self.assertEqual(parser_layer["summary"]["total_cases"], 15)
-        self.assertEqual(parser_layer["summary"]["passed_cases"], 2)
-        self.assertEqual(parser_layer["summary"]["unimplemented_cases"], 13)
+        self.assertEqual(parser_layer["summary"]["passed_cases"], 10)
+        self.assertEqual(parser_layer["summary"]["unimplemented_cases"], 5)
 
         public_api_layer = scorecard["layers"]["module_api_surface"]
         self.assertEqual(public_api_layer["summary"]["total_cases"], 7)

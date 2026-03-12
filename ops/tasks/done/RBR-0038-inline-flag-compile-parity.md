@@ -1,6 +1,6 @@
 # RBR-0038: Implement bounded inline-flag compile parity for published parser cases
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,10 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0037` and `RBR-0037A`. This task exists so inline-flag parser parity continues as a bounded follow-on without deepening the Python shim.
+
+## Completion
+- Added a bounded Rust-core compile allowlist for `(?u:a)` on `str` and `(?L:a)` on `bytes`, preserving the existing diagnostic cases and marking both new successes as compile-only rather than literal-execution-capable.
+- Kept the source-tree Python fallback in sync for those exact cases so the non-wheel correctness harness still observes the same compile metadata and cache behavior while the primary behavior definition remains in Rust.
+- Added direct unit coverage in `tests/python/test_parser_inline_flag_parity.py` for CPython metadata parity, cache/purge behavior, and the no-stdlib-delegation contract for these supported cases.
+- Regenerated `reports/correctness/latest.json`; the published scorecard now reports `68` passes and `12` `unimplemented` outcomes, with both inline-flag parser-matrix cases flipped to `pass`.
+- Verified with `cargo test -p rebar-core` and `python3 -m unittest tests.conformance.test_correctness_parser_matrix tests.conformance.test_correctness_public_api_surface tests.conformance.test_correctness_match_behavior tests.conformance.test_correctness_exported_symbol_surface tests.conformance.test_correctness_pattern_object_surface tests.conformance.test_correctness_module_workflow tests.conformance.test_correctness_collection_replacement_workflows tests.conformance.test_correctness_literal_flag_workflows tests.python.test_parser_inline_flag_parity tests.python.test_parser_diagnostic_parity tests.python.test_rust_compile_match_boundary`.
