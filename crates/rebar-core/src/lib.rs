@@ -10,6 +10,7 @@
 pub const TARGET_CPYTHON_SERIES: &str = "3.12.x";
 
 const FLAG_IGNORECASE: i32 = 2;
+const FLAG_LOCALE: i32 = 4;
 const FLAG_UNICODE: i32 = 32;
 const FLAG_ASCII: i32 = 256;
 
@@ -49,7 +50,9 @@ impl<'a> PatternRef<'a> {
         }
 
         let base_flags = self.literal_match_base_flags();
-        flags == base_flags || flags == base_flags | FLAG_IGNORECASE
+        flags == base_flags
+            || flags == base_flags | FLAG_IGNORECASE
+            || self.supports_bounded_locale_literal_execution(flags)
     }
 
     fn supports_literal_collection_execution(self, flags: i32) -> bool {
@@ -70,6 +73,10 @@ impl<'a> PatternRef<'a> {
 
     fn supports_bounded_inline_flag_search_execution(self, flags: i32) -> bool {
         matches!(self, Self::Str("(?i)abc")) && flags == FLAG_IGNORECASE | FLAG_UNICODE
+    }
+
+    fn supports_bounded_locale_literal_execution(self, flags: i32) -> bool {
+        matches!(self, Self::Bytes(_)) && flags == FLAG_LOCALE
     }
 
     fn is_empty(self) -> bool {
@@ -1002,7 +1009,7 @@ mod tests {
     use super::{
         compile, escape_bytes, escape_str, expand_literal_replacement_template_str,
         literal_find_spans, literal_match, CompileStatus, MatchMode, MatchStatus, PatternRef,
-        FLAG_ASCII, FLAG_IGNORECASE, FLAG_UNICODE,
+        FLAG_ASCII, FLAG_IGNORECASE, FLAG_LOCALE, FLAG_UNICODE,
     };
 
     #[test]
@@ -1180,6 +1187,39 @@ mod tests {
 
         assert_eq!(outcome.status, MatchStatus::Unsupported);
         assert_eq!(outcome.span, None);
+    }
+
+    #[test]
+    fn literal_match_supports_bounded_locale_bytes_workflow() {
+        for mode in [MatchMode::Search, MatchMode::Match, MatchMode::Fullmatch] {
+            let outcome = literal_match(
+                PatternRef::Bytes(b"abc"),
+                FLAG_LOCALE,
+                mode,
+                PatternRef::Bytes(b"abc"),
+                0,
+                None,
+            )
+            .unwrap();
+
+            assert_eq!(outcome.status, MatchStatus::Matched);
+            assert_eq!(outcome.span, Some((0, 3)));
+        }
+    }
+
+    #[test]
+    fn literal_find_spans_keeps_locale_bytes_collection_unsupported() {
+        let outcome = literal_find_spans(
+            PatternRef::Bytes(b"abc"),
+            FLAG_LOCALE,
+            PatternRef::Bytes(b"abcabc"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Unsupported);
+        assert!(outcome.spans.is_empty());
     }
 
     #[test]

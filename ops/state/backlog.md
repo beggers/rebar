@@ -1,18 +1,17 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2: build on the landed exported-symbol and compiled-pattern scaffolds, the first literal-only `compile`/`search`/`match`/`fullmatch` behavior slice, observable compile-cache/purge behavior, local `escape()` parity, the module-workflow correctness pack, the precompiled pattern-boundary benchmark pack, the first literal-only collection and replacement helpers, their published correctness and benchmark packs, the landed literal-only API-level `IGNORECASE` slice plus its published correctness and benchmark follow-ons, the landed bounded inline-flag, lookbehind, character-class `IGNORECASE`, possessive-quantifier, and atomic-group compile parity slices, the landed compile-benchmark catch-up that now measures the supported parser cases honestly, the landed Rust-backed collection/replacement boundary, the landed single-dot wildcard workflow slice, the queued inline-flag, bytes-`LOCALE`, and grouped-template workflow gaps, and then a built-native benchmark smoke follow-on plus grouped-match/capture and named-group expansion so the queue stays ahead of the current publication frontier.
+Milestone 2: build on the landed exported-symbol and compiled-pattern scaffolds, the first literal-only `compile`/`search`/`match`/`fullmatch` behavior slice, observable compile-cache/purge behavior, local `escape()` parity, the module-workflow correctness pack, the precompiled pattern-boundary benchmark pack, the first literal-only collection and replacement helpers, their published correctness and benchmark packs, the landed literal-only API-level `IGNORECASE` slice plus its published correctness and benchmark follow-ons, the landed bounded inline-flag, lookbehind, character-class `IGNORECASE`, possessive-quantifier, and atomic-group compile parity slices, the landed compile-benchmark catch-up that now measures the supported parser cases honestly, the landed Rust-backed collection/replacement boundary, the landed single-dot wildcard workflow slice plus inline-flag workflow parity, the queued bytes-`LOCALE` and grouped-template workflow gaps, and then a built-native benchmark smoke follow-on plus grouped-match/capture and named-group expansion so the queue stays ahead of the current publication frontier.
 
 ## Ordered Work
-1. Land `RBR-0045` to carry the published inline `(?i)` literal compile win through the module workflow surface so `search()` stops lagging the parser slice.
-2. Land `RBR-0046` to add the bounded bytes `LOCALE` literal search case so the remaining published bytes-only flag workflow is not left behind the parser and API-level flag work.
-3. Land `RBR-0047` to add the narrow grouped-literal replacement-template slice needed for the last published `module.sub()` grouping-dependent gap.
-4. Land `RBR-0048` to catch benchmark coverage up with those post-parser workflow wins instead of leaving the benchmark report one milestone behind the published correctness surface.
-5. Land `RBR-0049` to publish a built-native benchmark smoke report so benchmark reporting stays anchored to the verified native import path instead of the source-tree shim alone.
-6. Land `RBR-0050` to publish a grouped-match/capture correctness pack so the next compatibility frontier is explicit in the scorecard before the queue broadens into more syntax.
-7. Land `RBR-0051` to convert the first grouped-literal numbered-capture match cases from published gaps into real Rust-backed behavior.
-8. Land `RBR-0052` to publish a named-group correctness pack so the ready queue keeps the next grouping frontier explicit after the first numbered-capture slice lands.
-9. Land `RBR-0053` to convert the first named-group literal metadata cases from published gaps into real Rust-backed behavior instead of stopping at publication-only coverage.
+1. Land `RBR-0046` to add the bounded bytes `LOCALE` literal search case so the remaining published bytes-only flag workflow is not left behind the parser and API-level flag work.
+2. Land `RBR-0047` to add the narrow grouped-literal replacement-template slice needed for the last published `module.sub()` grouping-dependent gap.
+3. Land `RBR-0048` to catch benchmark coverage up with those post-parser workflow wins instead of leaving the benchmark report one milestone behind the published correctness surface.
+4. Land `RBR-0049` to publish a built-native benchmark smoke report so benchmark reporting stays anchored to the verified native import path instead of the source-tree shim alone.
+5. Land `RBR-0050` to publish a grouped-match/capture correctness pack so the next compatibility frontier is explicit in the scorecard before the queue broadens into more syntax.
+6. Land `RBR-0051` to convert the first grouped-literal numbered-capture match cases from published gaps into real Rust-backed behavior.
+7. Land `RBR-0052` to publish a named-group correctness pack so the ready queue keeps the next grouping frontier explicit after the first numbered-capture slice lands.
+8. Land `RBR-0053` to convert the first named-group literal metadata cases from published gaps into real Rust-backed behavior instead of stopping at publication-only coverage.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
@@ -27,7 +26,7 @@ Milestone 2: build on the landed exported-symbol and compiled-pattern scaffolds,
 - Treat README/reporting accuracy as part of the milestone; scaffold and scorecard tracks should only flip complete when their concrete artifacts exist.
 - With `RBR-0011` and `RBR-0012` landed, keep Milestone 2 centered on module-surface, public-API, and module-boundary catch-up rather than reopening parser-fixture or parser-benchmark breadth immediately.
 - Queue the first Phase 3 correctness and benchmark tasks before Milestone 2 closes so the worker can roll straight into match-behavior and regression/stability infrastructure once the current ready stack clears.
-- With `RBR-0044` landed on top of `RBR-0043` and `RBR-0042A`, keep the front of Milestone 2 on `RBR-0045` through `RBR-0047` so the remaining published module-workflow gaps land before the corpus broadens again, then use `RBR-0048` and `RBR-0049` to catch the benchmark surfaces up with that Rust-backed workflow path.
+- With `RBR-0045` landed on top of `RBR-0044`, `RBR-0043`, and `RBR-0042A`, keep the front of Milestone 2 on `RBR-0046` and `RBR-0047` so the remaining published module-workflow gaps land before the corpus broadens again, then use `RBR-0048` and `RBR-0049` to catch the benchmark surfaces up with that Rust-backed workflow path.
 - Treat exported-symbol and compiled-pattern scaffold coverage as complete unless later behavior work exposes a real compatibility gap; do not reopen more import-shape or placeholder-only `Pattern` scaffolding ahead of the honest-behavior tasks.
 - Once `RBR-0014` lands the Phase 2 public-API scorecard, keep Milestone 2 focused on module-boundary benchmarking and concrete post-scaffold correctness instead of continuing to treat public-API harness setup as the primary open item.
 - Use the landed benchmark-provenance adapter modes in future workload expansions; do not let new benchmark packs regress to unlabeled source-versus-native execution paths.

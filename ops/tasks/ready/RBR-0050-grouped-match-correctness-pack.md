@@ -26,4 +26,4 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0047` and the existing `Match` scaffold surface.
-- This task exists so the worker can expose the next bounded compatibility frontier in the scorecard before or immediately after the current seven published workflow gaps close.
+- This task exists so the worker can expose the next bounded compatibility frontier in the scorecard before or immediately after the current published module-workflow gaps close.

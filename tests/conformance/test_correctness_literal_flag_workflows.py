@@ -77,10 +77,10 @@ class CorrectnessHarnessLiteralFlagWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 80,
                     "failed_cases": 0,
-                    "passed_cases": 78,
+                    "passed_cases": 79,
                     "skipped_cases": 0,
                     "total_cases": 80,
-                    "unimplemented_cases": 2,
+                    "unimplemented_cases": 1,
                 },
             )
 
@@ -122,9 +122,9 @@ class CorrectnessHarnessLiteralFlagWorkflowTest(unittest.TestCase):
 
         workflow_layer = scorecard["layers"]["module_workflow"]
         self.assertEqual(workflow_layer["summary"]["total_cases"], 36)
-        self.assertEqual(workflow_layer["summary"]["passed_cases"], 34)
+        self.assertEqual(workflow_layer["summary"]["passed_cases"], 35)
         self.assertEqual(workflow_layer["summary"]["failed_cases"], 0)
-        self.assertEqual(workflow_layer["summary"]["unimplemented_cases"], 2)
+        self.assertEqual(workflow_layer["summary"]["unimplemented_cases"], 1)
         self.assertEqual(
             workflow_layer["operations"],
             [
@@ -156,8 +156,8 @@ class CorrectnessHarnessLiteralFlagWorkflowTest(unittest.TestCase):
 
         flag_suite = next(suite for suite in scorecard["suites"] if suite["id"] == "literal.flag.workflow")
         self.assertEqual(flag_suite["summary"]["total_cases"], 11)
-        self.assertEqual(flag_suite["summary"]["passed_cases"], 10)
-        self.assertEqual(flag_suite["summary"]["unimplemented_cases"], 1)
+        self.assertEqual(flag_suite["summary"]["passed_cases"], 11)
+        self.assertEqual(flag_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             flag_suite["families"],
             [
@@ -220,10 +220,14 @@ class CorrectnessHarnessLiteralFlagWorkflowTest(unittest.TestCase):
         locale_case = next(
             case for case in scorecard["cases"] if case["id"] == "flag-unsupported-locale-bytes-search"
         )
-        self.assertEqual(locale_case["comparison"], "unimplemented")
+        self.assertEqual(locale_case["comparison"], "pass")
         self.assertEqual(locale_case["text_model"], "bytes")
         self.assertEqual(locale_case["observations"]["cpython"]["outcome"], "success")
-        self.assertEqual(locale_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(locale_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            locale_case["observations"]["rebar"]["result"],
+            locale_case["observations"]["cpython"]["result"],
+        )
 
         nonliteral_case = next(
             case

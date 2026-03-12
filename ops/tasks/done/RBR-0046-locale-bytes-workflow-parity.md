@@ -1,6 +1,6 @@
 # RBR-0046: Add the bounded bytes `LOCALE` literal workflow case
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,9 @@ Created: 2026-03-12
 
 ## Notes
 - Build on the existing literal `bytes` behavior slice, the parser diagnostic work around locale-related flags, and `RBR-0042A`. This task exists so the last published bytes-only flag workflow is handled as concrete Rust-backed compatibility debt instead of staying indefinitely `unimplemented`.
+
+## Completion
+- Landed bounded Rust-core support for literal `bytes` matching with exact `rebar.LOCALE` flags, while keeping bytes collection helpers outside the supported slice.
+- Added focused Rust and Python coverage for the bytes-`LOCALE` literal workflow plus a parser-diagnostic non-regression check for unsupported inline locale flags.
+- Republished `reports/correctness/latest.json`; `flag-unsupported-locale-bytes-search` now reports `pass`, and the combined scorecard now reads 79 passed / 1 unimplemented.
+- Follow-up remains `RBR-0047` for the final published grouped-template replacement gap.
