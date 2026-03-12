@@ -1,6 +1,6 @@
 # RBR-0117: Add bounded conditional fully-empty parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -29,3 +29,7 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0116`.
 - This task exists so the queue turns the next accepted conditional syntax form into real Rust-backed behavior instead of leaving it as publication-only coverage.
+
+## Completion
+- Landed Rust-backed compile and match support for the bounded fully-empty conditional forms `a(b)?c(?(1)|)` and `a(?P<word>b)?c(?(word)|)` by widening the existing conditional parser gate without broadening other conditional syntax.
+- Added focused Rust and Python parity tests for numbered and named module/compiled-pattern flows, and republished `reports/correctness/latest.json` with the six fully-empty conditional cases flipped from `unimplemented` to `pass` in the combined 218-case scorecard.
