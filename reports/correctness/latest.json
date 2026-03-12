@@ -3880,22 +3880,19 @@
       "categories": [
         "workflow",
         "sub",
-        "unsupported",
         "replacement-template",
         "str"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
-      "family": "unsupported_replacement_workflow",
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "replacement_workflow",
       "flags": 0,
       "helper": "sub",
       "id": "module-sub-template-str",
       "layer": "module_workflow",
       "manifest_id": "collection-replacement-workflows",
       "notes": [
-        "Keeps template-based replacement explicit: CPython succeeds, while the current literal-only rebar slice leaves backslash templates unimplemented."
+        "Pins the bounded whole-match replacement-template slice for a supported literal str pattern."
       ],
       "observations": {
         "cpython": {
@@ -3908,13 +3905,10 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.sub() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "module_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": "abcx",
           "warnings": []
         }
       },
@@ -3935,22 +3929,19 @@
       "categories": [
         "workflow",
         "sub",
-        "unsupported",
         "callable-replacement",
         "str"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
-      "family": "unsupported_replacement_workflow",
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "replacement_workflow",
       "flags": 0,
       "helper": "sub",
       "id": "module-sub-callable-str",
       "layer": "module_workflow",
       "manifest_id": "collection-replacement-workflows",
       "notes": [
-        "Keeps callable replacements explicit instead of counting them as supported literal behavior."
+        "Pins the bounded callable replacement slice for a supported literal str pattern."
       ],
       "observations": {
         "cpython": {
@@ -3963,13 +3954,10 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.sub() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "module_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": "xx",
           "warnings": []
         }
       },
@@ -4906,16 +4894,16 @@
         }
       },
       "rebar": {
-        "exception_case_count": 15,
+        "exception_case_count": 13,
         "exception_types": {
-          "NotImplementedError": 7,
+          "NotImplementedError": 5,
           "TypeError": 2,
           "error": 6
         },
         "outcomes": {
           "exception": 8,
-          "success": 65,
-          "unimplemented": 7
+          "success": 67,
+          "unimplemented": 5
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -5575,7 +5563,7 @@
       ]
     },
     {
-      "case_count": 4,
+      "case_count": 6,
       "id": "replacement_workflow",
       "layers": [
         "module_workflow"
@@ -5585,11 +5573,11 @@
         "pattern_call"
       ],
       "summary": {
-        "executed_cases": 4,
+        "executed_cases": 6,
         "failed_cases": 0,
-        "passed_cases": 4,
+        "passed_cases": 6,
         "skipped_cases": 0,
-        "total_cases": 4,
+        "total_cases": 6,
         "unimplemented_cases": 0
       },
       "text_models": [
@@ -5685,7 +5673,7 @@
       ]
     },
     {
-      "case_count": 3,
+      "case_count": 1,
       "id": "unsupported_replacement_workflow",
       "layers": [
         "module_workflow"
@@ -5694,12 +5682,12 @@
         "module_call"
       ],
       "summary": {
-        "executed_cases": 3,
+        "executed_cases": 1,
         "failed_cases": 0,
         "passed_cases": 0,
         "skipped_cases": 0,
-        "total_cases": 3,
-        "unimplemented_cases": 3
+        "total_cases": 1,
+        "unimplemented_cases": 1
       },
       "text_models": [
         "str"
@@ -5730,7 +5718,7 @@
       "tests/conformance/fixtures/literal_flag_workflows.json"
     ]
   },
-  "generated_at": "2026-03-12T05:41:07Z",
+  "generated_at": "2026-03-12T05:57:18Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -5863,13 +5851,13 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 7,
+            "exception_case_count": 5,
             "exception_types": {
-              "NotImplementedError": 7
+              "NotImplementedError": 5
             },
             "outcomes": {
-              "success": 29,
-              "unimplemented": 7
+              "success": 31,
+              "unimplemented": 5
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -5915,10 +5903,10 @@
       "summary": {
         "executed_cases": 36,
         "failed_cases": 0,
-        "passed_cases": 29,
+        "passed_cases": 31,
         "skipped_cases": 0,
         "total_cases": 36,
-        "unimplemented_cases": 7
+        "unimplemented_cases": 5
       },
       "text_models": [
         "bytes",
@@ -7376,13 +7364,13 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 4,
+            "exception_case_count": 2,
             "exception_types": {
-              "NotImplementedError": 4
+              "NotImplementedError": 2
             },
             "outcomes": {
-              "success": 11,
-              "unimplemented": 4
+              "success": 13,
+              "unimplemented": 2
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -7409,10 +7397,10 @@
       "summary": {
         "executed_cases": 15,
         "failed_cases": 0,
-        "passed_cases": 11,
+        "passed_cases": 13,
         "skipped_cases": 0,
         "total_cases": 15,
-        "unimplemented_cases": 4
+        "unimplemented_cases": 2
       },
       "text_models": [
         "bytes",
@@ -7484,13 +7472,13 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 4,
+            "exception_case_count": 2,
             "exception_types": {
-              "NotImplementedError": 4
+              "NotImplementedError": 2
             },
             "outcomes": {
-              "success": 7,
-              "unimplemented": 4
+              "success": 9,
+              "unimplemented": 2
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -7517,10 +7505,10 @@
       "summary": {
         "executed_cases": 11,
         "failed_cases": 0,
-        "passed_cases": 7,
+        "passed_cases": 9,
         "skipped_cases": 0,
         "total_cases": 11,
-        "unimplemented_cases": 4
+        "unimplemented_cases": 2
       },
       "text_models": [
         "str"
@@ -7540,13 +7528,13 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 4,
+            "exception_case_count": 2,
             "exception_types": {
-              "NotImplementedError": 4
+              "NotImplementedError": 2
             },
             "outcomes": {
-              "success": 6,
-              "unimplemented": 4
+              "success": 8,
+              "unimplemented": 2
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -7572,10 +7560,10 @@
       "summary": {
         "executed_cases": 10,
         "failed_cases": 0,
-        "passed_cases": 6,
+        "passed_cases": 8,
         "skipped_cases": 0,
         "total_cases": 10,
-        "unimplemented_cases": 4
+        "unimplemented_cases": 2
       },
       "text_models": [
         "bytes",
@@ -7995,9 +7983,9 @@
   "summary": {
     "executed_cases": 80,
     "failed_cases": 0,
-    "passed_cases": 73,
+    "passed_cases": 75,
     "skipped_cases": 0,
     "total_cases": 80,
-    "unimplemented_cases": 7
+    "unimplemented_cases": 5
   }
 }

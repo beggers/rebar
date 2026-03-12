@@ -75,13 +75,8 @@ class RebarLiteralReplacementHelpersTest(unittest.TestCase):
             pattern.sub("x", b"abc")
 
     def test_replacement_helpers_stay_loud_for_unsupported_cases_without_cache_mutation(self) -> None:
-        with self.assertRaises(NotImplementedError) as module_callable:
-            rebar.sub("abc", lambda match: "x", "abc")
-        self.assertIn("rebar.sub() is a scaffold placeholder", str(module_callable.exception))
-        self.assertEqual(rebar._COMPILE_CACHE, {})
-
         with self.assertRaises(NotImplementedError) as module_template:
-            rebar.sub("abc", r"\\1", "abc")
+            rebar.sub("abc", r"\1", "abc")
         self.assertIn("rebar.sub() is a scaffold placeholder", str(module_template.exception))
         self.assertEqual(rebar._COMPILE_CACHE, {})
 
@@ -111,7 +106,7 @@ class RebarLiteralReplacementHelpersTest(unittest.TestCase):
         self.assertIn("rebar.Pattern.subn() is a scaffold placeholder", str(bound_empty.exception))
 
         with self.assertRaises(NotImplementedError) as bound_template:
-            rebar.compile("abc").sub(r"\\1", "abc")
+            rebar.compile("abc").sub(r"\1", "abc")
         self.assertIn("rebar.Pattern.sub() is a scaffold placeholder", str(bound_template.exception))
 
 

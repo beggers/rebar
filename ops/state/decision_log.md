@@ -90,3 +90,4 @@
 ## 2026-03-12
 - Treat `reports/correctness/latest.json` as the published combined correctness scorecard across the default eight-manifest fixture set; narrow task checks should use temporary report paths rather than leaving the tracked report in a manifest-local state.
 - Make supervisor `cycle` and `report` refresh the combined correctness scorecard whenever the tracked report drifts to a narrowed manifest set, so README/dashboard rendering stays aligned with the published 80-case surface instead of a task-local subset.
+- Once `RBR-0042A` lands, treat the supported collection/replacement helper slice as part of the Rust-backed baseline, refresh tracked status surfaces in the same supervisor pass, move the milestone front to `RBR-0043` through `RBR-0049`, and seed grouped-match/capture follow-ons beyond that so the ready queue does not end at the current published gap set.

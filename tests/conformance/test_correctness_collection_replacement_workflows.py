@@ -66,10 +66,10 @@ class CorrectnessHarnessCollectionReplacementWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 69,
                     "failed_cases": 0,
-                    "passed_cases": 65,
+                    "passed_cases": 67,
                     "skipped_cases": 0,
                     "total_cases": 69,
-                    "unimplemented_cases": 4,
+                    "unimplemented_cases": 2,
                 },
             )
 
@@ -110,9 +110,9 @@ class CorrectnessHarnessCollectionReplacementWorkflowTest(unittest.TestCase):
 
         workflow_layer = scorecard["layers"]["module_workflow"]
         self.assertEqual(workflow_layer["summary"]["total_cases"], 25)
-        self.assertEqual(workflow_layer["summary"]["passed_cases"], 21)
+        self.assertEqual(workflow_layer["summary"]["passed_cases"], 23)
         self.assertEqual(workflow_layer["summary"]["failed_cases"], 0)
-        self.assertEqual(workflow_layer["summary"]["unimplemented_cases"], 4)
+        self.assertEqual(workflow_layer["summary"]["unimplemented_cases"], 2)
         self.assertEqual(
             workflow_layer["operations"],
             ["cache_workflow", "compile", "module_call", "pattern_call", "purge_workflow"],
@@ -136,8 +136,8 @@ class CorrectnessHarnessCollectionReplacementWorkflowTest(unittest.TestCase):
             if suite["id"] == "collection.replacement.workflow"
         )
         self.assertEqual(collection_suite["summary"]["total_cases"], 15)
-        self.assertEqual(collection_suite["summary"]["passed_cases"], 11)
-        self.assertEqual(collection_suite["summary"]["unimplemented_cases"], 4)
+        self.assertEqual(collection_suite["summary"]["passed_cases"], 13)
+        self.assertEqual(collection_suite["summary"]["unimplemented_cases"], 2)
         self.assertEqual(
             collection_suite["families"],
             [
@@ -216,14 +216,16 @@ class CorrectnessHarnessCollectionReplacementWorkflowTest(unittest.TestCase):
         )
 
         template_case = next(case for case in scorecard["cases"] if case["id"] == "module-sub-template-str")
-        self.assertEqual(template_case["comparison"], "unimplemented")
+        self.assertEqual(template_case["comparison"], "pass")
         self.assertEqual(template_case["observations"]["cpython"]["outcome"], "success")
-        self.assertEqual(template_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(template_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(template_case["observations"]["rebar"]["result"], "abcx")
 
         callable_case = next(case for case in scorecard["cases"] if case["id"] == "module-sub-callable-str")
-        self.assertEqual(callable_case["comparison"], "unimplemented")
+        self.assertEqual(callable_case["comparison"], "pass")
         self.assertEqual(callable_case["observations"]["cpython"]["outcome"], "success")
-        self.assertEqual(callable_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(callable_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(callable_case["observations"]["rebar"]["result"], "xx")
         self.assertEqual(callable_case["args"][1]["type"], "callable")
         self.assertEqual(callable_case["args"][1]["qualname"], "callable_constant")
 

@@ -184,18 +184,18 @@
     {
       "id": "module-sub-template-str",
       "operation": "module_call",
-      "family": "unsupported_replacement_workflow",
+      "family": "replacement_workflow",
       "helper": "sub",
       "args": ["abc", "\\g<0>x", "abc"],
-      "categories": ["workflow", "sub", "unsupported", "replacement-template", "str"],
+      "categories": ["workflow", "sub", "replacement-template", "str"],
       "notes": [
-        "Keeps template-based replacement explicit: CPython succeeds, while the current literal-only rebar slice leaves backslash templates unimplemented."
+        "Pins the bounded whole-match replacement-template slice for a supported literal str pattern."
       ]
     },
     {
       "id": "module-sub-callable-str",
       "operation": "module_call",
-      "family": "unsupported_replacement_workflow",
+      "family": "replacement_workflow",
       "helper": "sub",
       "args": [
         "abc",
@@ -205,9 +205,9 @@
         },
         "abcabc"
       ],
-      "categories": ["workflow", "sub", "unsupported", "callable-replacement", "str"],
+      "categories": ["workflow", "sub", "callable-replacement", "str"],
       "notes": [
-        "Keeps callable replacements explicit instead of counting them as supported literal behavior."
+        "Pins the bounded callable replacement slice for a supported literal str pattern."
       ]
     },
     {

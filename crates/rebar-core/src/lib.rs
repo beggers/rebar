@@ -261,6 +261,38 @@ pub fn literal_find_spans(
     }
 }
 
+/// Expand the bounded whole-match replacement-template slice for `str`.
+#[must_use]
+pub fn expand_literal_replacement_template_str(
+    template: &str,
+    whole_match: &str,
+) -> Option<String> {
+    let mut expanded = String::new();
+    let mut chars = template.chars();
+
+    while let Some(character) = chars.next() {
+        if character != '\\' {
+            expanded.push(character);
+            continue;
+        }
+
+        match chars.next() {
+            Some('g') => {
+                if chars.next() != Some('<')
+                    || chars.next() != Some('0')
+                    || chars.next() != Some('>')
+                {
+                    return None;
+                }
+                expanded.push_str(whole_match);
+            }
+            _ => return None,
+        }
+    }
+
+    Some(expanded)
+}
+
 /// Escape the current bounded `str` slice.
 #[must_use]
 pub fn escape_str(pattern: &str) -> String {
@@ -806,8 +838,9 @@ fn push_escaped_byte(output: &mut Vec<u8>, byte: u8) {
 #[cfg(test)]
 mod tests {
     use super::{
-        compile, escape_bytes, escape_str, literal_find_spans, literal_match, CompileStatus,
-        MatchMode, MatchStatus, PatternRef, FLAG_ASCII, FLAG_IGNORECASE, FLAG_UNICODE,
+        compile, escape_bytes, escape_str, expand_literal_replacement_template_str,
+        literal_find_spans, literal_match, CompileStatus, MatchMode, MatchStatus, PatternRef,
+        FLAG_ASCII, FLAG_IGNORECASE, FLAG_UNICODE,
     };
 
     #[test]
@@ -945,6 +978,18 @@ mod tests {
 
         assert_eq!(outcome.status, MatchStatus::Unsupported);
         assert!(outcome.spans.is_empty());
+    }
+
+    #[test]
+    fn replacement_template_expands_whole_match_reference() {
+        let expanded = expand_literal_replacement_template_str(r"\g<0>x", "abc").unwrap();
+        assert_eq!(expanded, "abcx");
+    }
+
+    #[test]
+    fn replacement_template_rejects_other_backslash_forms() {
+        assert_eq!(expand_literal_replacement_template_str(r"\1x", "abc"), None);
+        assert_eq!(expand_literal_replacement_template_str("\\", "abc"), None);
     }
 
     #[test]
