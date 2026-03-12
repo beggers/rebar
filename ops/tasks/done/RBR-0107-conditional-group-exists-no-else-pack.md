@@ -1,6 +1,6 @@
 # RBR-0107: Publish a bounded conditional no-else correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,4 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0106`.
 - This task exists so the worker can expose the next exact CPython-accepted conditional gap instead of guessing at assertion-conditioned branches or broader conditional diagnostics.
+- Completed 2026-03-12: added `conditional_group_exists_no_else_workflows.json`, wired it into the default correctness manifest set, added a dedicated regression test, and republished `reports/correctness/latest.json` with 200 total published cases where the six new omitted-no-arm conditional cases are recorded honestly as `unimplemented`.
