@@ -1,8 +1,9 @@
 # RBR-0069: Add bounded grouped-alternation parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Convert the first grouped-alternation cases from the published correctness pack into real CPython-shaped behavior without claiming broad alternation, nested-group, or quantified-branch support.
@@ -28,3 +29,4 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0066`, `RBR-0067`, and `RBR-0068`.
 - This task exists so the queue extends from top-level branch selection into the first combined grouping-and-alternation shape instead of stopping at a reporting-only frontier.
+- Completed with Rust-backed bounded grouped alternation for `a(b|c)d` and `a(?P<word>b|c)d`, including compile metadata plus module/Pattern match parity and a republished combined correctness scorecard at 114/114 passes.

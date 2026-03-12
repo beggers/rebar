@@ -109,10 +109,10 @@ class CorrectnessHarnessGroupedAlternationWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 114,
                     "failed_cases": 0,
-                    "passed_cases": 108,
+                    "passed_cases": 114,
                     "skipped_cases": 0,
                     "total_cases": 114,
-                    "unimplemented_cases": 6,
+                    "unimplemented_cases": 0,
                 },
             )
 
@@ -162,9 +162,9 @@ class CorrectnessHarnessGroupedAlternationWorkflowTest(unittest.TestCase):
 
         match_layer = scorecard["layers"]["match_behavior"]
         self.assertEqual(match_layer["summary"]["total_cases"], 36)
-        self.assertEqual(match_layer["summary"]["passed_cases"], 30)
+        self.assertEqual(match_layer["summary"]["passed_cases"], 36)
         self.assertEqual(match_layer["summary"]["failed_cases"], 0)
-        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 6)
+        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             match_layer["manifest_ids"],
             [
@@ -192,9 +192,9 @@ class CorrectnessHarnessGroupedAlternationWorkflowTest(unittest.TestCase):
             suite for suite in scorecard["suites"] if suite["id"] == "match.grouped_alternation"
         )
         self.assertEqual(grouped_alternation_suite["summary"]["total_cases"], 6)
-        self.assertEqual(grouped_alternation_suite["summary"]["passed_cases"], 0)
+        self.assertEqual(grouped_alternation_suite["summary"]["passed_cases"], 6)
         self.assertEqual(grouped_alternation_suite["summary"]["failed_cases"], 0)
-        self.assertEqual(grouped_alternation_suite["summary"]["unimplemented_cases"], 6)
+        self.assertEqual(grouped_alternation_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             grouped_alternation_suite["families"],
             [
@@ -212,50 +212,64 @@ class CorrectnessHarnessGroupedAlternationWorkflowTest(unittest.TestCase):
             for case in scorecard["cases"]
             if case["id"] == "grouped-alternation-compile-metadata-str"
         )
-        self.assertEqual(compile_case["comparison"], "unimplemented")
+        self.assertEqual(compile_case["comparison"], "pass")
         self.assertEqual(compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groupindex"], {})
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groups"], 1)
-        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(compile_case["observations"]["rebar"]["result"]["groupindex"], {})
+        self.assertEqual(compile_case["observations"]["rebar"]["result"]["groups"], 1)
 
         named_compile_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "named-grouped-alternation-compile-metadata-str"
         )
-        self.assertEqual(named_compile_case["comparison"], "unimplemented")
+        self.assertEqual(named_compile_case["comparison"], "pass")
         self.assertEqual(named_compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(
             named_compile_case["observations"]["cpython"]["result"]["groupindex"],
             {"word": 1},
         )
         self.assertEqual(named_compile_case["observations"]["cpython"]["result"]["groups"], 1)
-        self.assertEqual(named_compile_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_compile_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            named_compile_case["observations"]["rebar"]["result"]["groupindex"],
+            {"word": 1},
+        )
+        self.assertEqual(named_compile_case["observations"]["rebar"]["result"]["groups"], 1)
 
         module_case = next(
             case for case in scorecard["cases"] if case["id"] == "grouped-alternation-module-search-str"
         )
-        self.assertEqual(module_case["comparison"], "unimplemented")
+        self.assertEqual(module_case["comparison"], "pass")
         self.assertEqual(module_case["helper"], "search")
         self.assertEqual(module_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(module_case["observations"]["cpython"]["result"]["group0"], "acd")
         self.assertEqual(module_case["observations"]["cpython"]["result"]["groups"], ["c"])
         self.assertEqual(module_case["observations"]["cpython"]["result"]["lastgroup"], None)
-        self.assertEqual(module_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(module_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(module_case["observations"]["rebar"]["result"]["group0"], "acd")
+        self.assertEqual(module_case["observations"]["rebar"]["result"]["groups"], ["c"])
+        self.assertEqual(module_case["observations"]["rebar"]["result"]["lastgroup"], None)
 
         pattern_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "named-grouped-alternation-pattern-fullmatch-str"
         )
-        self.assertEqual(pattern_case["comparison"], "unimplemented")
+        self.assertEqual(pattern_case["comparison"], "pass")
         self.assertEqual(pattern_case["helper"], "fullmatch")
         self.assertEqual(pattern_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(pattern_case["observations"]["cpython"]["result"]["group0"], "acd")
         self.assertEqual(pattern_case["observations"]["cpython"]["result"]["groups"], ["c"])
         self.assertEqual(pattern_case["observations"]["cpython"]["result"]["groupdict"], {"word": "c"})
         self.assertEqual(pattern_case["observations"]["cpython"]["result"]["lastgroup"], "word")
-        self.assertEqual(pattern_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(pattern_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(pattern_case["observations"]["rebar"]["result"]["group0"], "acd")
+        self.assertEqual(pattern_case["observations"]["rebar"]["result"]["groups"], ["c"])
+        self.assertEqual(pattern_case["observations"]["rebar"]["result"]["groupdict"], {"word": "c"})
+        self.assertEqual(pattern_case["observations"]["rebar"]["result"]["lastgroup"], "word")
 
 
 if __name__ == "__main__":
