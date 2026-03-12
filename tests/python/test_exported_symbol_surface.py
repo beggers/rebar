@@ -81,9 +81,11 @@ class RebarExportedSymbolSurfaceTest(unittest.TestCase):
         with self.assertRaisesRegex(TypeError, "cannot create 'rebar.Match' instances"):
             rebar.Match()
 
-    def test_compile_and_match_surfaces_remain_unimplemented(self) -> None:
-        with self.assertRaisesRegex(NotImplementedError, "scaffold placeholder"):
-            rebar.compile("abc")
+    def test_compile_returns_the_exported_pattern_type(self) -> None:
+        compiled = rebar.compile("abc")
+
+        self.assertIs(type(compiled), rebar.Pattern)
+        self.assertIsInstance(compiled, rebar.Pattern)
         with self.assertRaisesRegex(NotImplementedError, "scaffold placeholder"):
             rebar.search("abc", "abc")
 

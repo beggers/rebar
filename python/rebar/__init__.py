@@ -29,6 +29,16 @@ def _placeholder_message(helper_name: str) -> str:
     )
 
 
+def _pattern_placeholder_message(method_name: str) -> str:
+    return (
+        f"rebar.Pattern.{method_name}() is a scaffold placeholder; "
+        "compiled pattern semantics are not implemented yet"
+    )
+
+
+_LITERAL_METACHARACTERS = frozenset(".^$*+?{}[]\\|()")
+
+
 def _raise_placeholder(helper_name: str) -> object:
     if _native is not None:
         return _native.scaffold_raise(helper_name)
@@ -76,8 +86,54 @@ class _NonInstantiableScaffoldType(type):
         raise TypeError(f"cannot create '{cls.__module__}.{cls.__name__}' instances")
 
 
-class Pattern(metaclass=_NonInstantiableScaffoldType):
-    """Placeholder export for the future compiled-pattern type."""
+_PATTERN_CONSTRUCTION_TOKEN = object()
+
+
+class _PatternScaffoldType(_NonInstantiableScaffoldType):
+    def __call__(cls, *_args: object, **kwargs: object) -> object:
+        token = kwargs.pop("_rebar_internal_token", None)
+        if token is _PATTERN_CONSTRUCTION_TOKEN:
+            return super(_NonInstantiableScaffoldType, cls).__call__(*_args, **kwargs)
+        raise TypeError(f"cannot create '{cls.__module__}.{cls.__name__}' instances")
+
+
+class Pattern(metaclass=_PatternScaffoldType):
+    """Scaffold export for the future compiled-pattern type."""
+
+    __slots__ = ("pattern", "flags", "groups", "groupindex")
+
+    def __init__(self, pattern: str | bytes, flags: int = 0) -> None:
+        self.pattern = pattern
+        self.flags = flags
+        self.groups = 0
+        self.groupindex: dict[str, int] = {}
+
+    def _raise_placeholder(self, method_name: str) -> object:
+        raise NotImplementedError(_pattern_placeholder_message(method_name))
+
+    def search(self, *_args: object, **_kwargs: object) -> object:
+        return self._raise_placeholder("search")
+
+    def match(self, *_args: object, **_kwargs: object) -> object:
+        return self._raise_placeholder("match")
+
+    def fullmatch(self, *_args: object, **_kwargs: object) -> object:
+        return self._raise_placeholder("fullmatch")
+
+    def split(self, *_args: object, **_kwargs: object) -> object:
+        return self._raise_placeholder("split")
+
+    def findall(self, *_args: object, **_kwargs: object) -> object:
+        return self._raise_placeholder("findall")
+
+    def finditer(self, *_args: object, **_kwargs: object) -> object:
+        return self._raise_placeholder("finditer")
+
+    def sub(self, *_args: object, **_kwargs: object) -> object:
+        return self._raise_placeholder("sub")
+
+    def subn(self, *_args: object, **_kwargs: object) -> object:
+        return self._raise_placeholder("subn")
 
 
 class Match(metaclass=_NonInstantiableScaffoldType):
@@ -141,10 +197,38 @@ def native_target_cpython_series() -> str | None:
     return _native.TARGET_CPYTHON_SERIES
 
 
-def compile(*_args: object, **_kwargs: object) -> object:
-    """Placeholder for the future drop-in `re.compile` surface."""
+def _normalize_pattern_flags(pattern: str | bytes, flags: int) -> int:
+    if isinstance(pattern, str) and not flags & int(ASCII):
+        return flags | int(UNICODE)
+    return flags
 
-    return _raise_placeholder("compile")
+
+def _supports_pattern_scaffold(pattern: str | bytes) -> bool:
+    if isinstance(pattern, bytes):
+        return not any(byte in pattern for byte in br".^$*+?{}[]\|()")
+    return not any(character in _LITERAL_METACHARACTERS for character in pattern)
+
+
+def compile(pattern: str | bytes | Pattern, flags: int = 0) -> Pattern:
+    """Return a narrow compiled-pattern scaffold without matching semantics."""
+
+    if isinstance(pattern, Pattern):
+        if int(flags) != 0:
+            raise ValueError("cannot process flags argument with a compiled pattern")
+        return pattern
+
+    if not isinstance(pattern, (str, bytes)):
+        raise TypeError("first argument must be string or compiled pattern")
+
+    if not _supports_pattern_scaffold(pattern):
+        return _raise_placeholder("compile")
+
+    normalized_flags = _normalize_pattern_flags(pattern, int(flags))
+    return Pattern(
+        pattern,
+        normalized_flags,
+        _rebar_internal_token=_PATTERN_CONSTRUCTION_TOKEN,
+    )
 
 
 def search(*_args: object, **_kwargs: object) -> object:

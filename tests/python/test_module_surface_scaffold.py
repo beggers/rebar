@@ -22,7 +22,6 @@ import rebar
 
 
 PLACEHOLDER_CASES = [
-    ("compile", ("abc",), {}),
     ("search", ("abc", "abc"), {}),
     ("match", ("abc", "abc"), {}),
     ("fullmatch", ("abc", "abc"), {}),
@@ -77,6 +76,15 @@ class RebarModuleSurfaceScaffoldTest(unittest.TestCase):
                     f"rebar.{helper_name}() is a scaffold placeholder",
                     str(raised.exception),
                 )
+
+    def test_source_package_compile_returns_pattern_scaffold(self) -> None:
+        compiled = rebar.compile("abc", rebar.IGNORECASE)
+
+        self.assertIs(type(compiled), rebar.Pattern)
+        self.assertEqual(compiled.pattern, "abc")
+        self.assertEqual(compiled.flags, int(rebar.IGNORECASE | rebar.UNICODE))
+        self.assertEqual(compiled.groups, 0)
+        self.assertEqual(compiled.groupindex, {})
 
     def test_source_package_purge_is_safe_noop(self) -> None:
         self.assertIsNone(rebar.purge())
@@ -135,7 +143,6 @@ import json
 import rebar
 
 cases = {
-    "compile": [["abc"], {}],
     "search": [["abc", "abc"], {}],
     "match": [["abc", "abc"], {}],
     "fullmatch": [["abc", "abc"], {}],
@@ -153,6 +160,16 @@ result = {
     "native_scaffold_status": rebar.native_scaffold_status(),
     "exported_helpers_present": all(hasattr(rebar, name) for name in sorted(cases) + ["purge"]),
     "purge_result": rebar.purge(),
+}
+
+compiled = rebar.compile("abc", rebar.IGNORECASE)
+result["compiled_pattern"] = {
+    "type_name": type(compiled).__name__,
+    "type_module": type(compiled).__module__,
+    "pattern": compiled.pattern,
+    "flags": compiled.flags,
+    "groups": compiled.groups,
+    "groupindex": compiled.groupindex,
 }
 
 exceptions = {}
@@ -184,6 +201,17 @@ print(json.dumps(result))
             self.assertEqual(result["native_scaffold_status"], "scaffold-only")
             self.assertTrue(result["exported_helpers_present"])
             self.assertIsNone(result["purge_result"])
+            self.assertEqual(
+                result["compiled_pattern"],
+                {
+                    "type_name": "Pattern",
+                    "type_module": "rebar",
+                    "pattern": "abc",
+                    "flags": int(rebar.IGNORECASE | rebar.UNICODE),
+                    "groups": 0,
+                    "groupindex": {},
+                },
+            )
 
             for helper_name in EXPECTED_HELPERS - {"purge"}:
                 with self.subTest(helper=helper_name):

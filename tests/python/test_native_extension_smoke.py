@@ -85,13 +85,28 @@ result = {
 }
 
 try:
-    rebar.compile("abc")
+    compiled = rebar.compile("abc", rebar.IGNORECASE)
 except Exception as exc:
     result["compile_exception_type"] = type(exc).__name__
     result["compile_exception_message"] = str(exc)
 else:
-    result["compile_exception_type"] = None
-    result["compile_exception_message"] = None
+    result["compiled_pattern"] = {
+        "type_name": type(compiled).__name__,
+        "type_module": type(compiled).__module__,
+        "pattern": compiled.pattern,
+        "flags": compiled.flags,
+        "groups": compiled.groups,
+        "groupindex": compiled.groupindex,
+    }
+
+    try:
+        compiled.search("abc")
+    except Exception as exc:
+        result["search_exception_type"] = type(exc).__name__
+        result["search_exception_message"] = str(exc)
+    else:
+        result["search_exception_type"] = None
+        result["search_exception_message"] = None
 
 print(json.dumps(result))
 """
@@ -109,8 +124,22 @@ print(json.dumps(result))
             self.assertEqual(result["native_target_cpython_series"], "3.12.x")
             self.assertTrue(result["native_private_flag"])
             self.assertEqual(result["native_module_name"], "rebar._rebar")
-            self.assertEqual(result["compile_exception_type"], "NotImplementedError")
-            self.assertIn("not implemented yet", result["compile_exception_message"])
+            self.assertEqual(
+                result["compiled_pattern"],
+                {
+                    "type_name": "Pattern",
+                    "type_module": "rebar",
+                    "pattern": "abc",
+                    "flags": 34,
+                    "groups": 0,
+                    "groupindex": {},
+                },
+            )
+            self.assertEqual(result["search_exception_type"], "NotImplementedError")
+            self.assertIn(
+                "rebar.Pattern.search() is a scaffold placeholder",
+                result["search_exception_message"],
+            )
 
 
 if __name__ == "__main__":

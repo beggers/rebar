@@ -46,10 +46,10 @@ class CorrectnessHarnessPublicApiSurfaceTest(unittest.TestCase):
                 {
                     "executed_cases": 22,
                     "failed_cases": 0,
-                    "passed_cases": 4,
+                    "passed_cases": 7,
                     "skipped_cases": 0,
                     "total_cases": 22,
-                    "unimplemented_cases": 18,
+                    "unimplemented_cases": 15,
                 },
             )
 
@@ -82,12 +82,13 @@ class CorrectnessHarnessPublicApiSurfaceTest(unittest.TestCase):
 
         parser_layer = scorecard["layers"]["parser_acceptance_and_diagnostics"]
         self.assertEqual(parser_layer["summary"]["total_cases"], 15)
-        self.assertEqual(parser_layer["summary"]["unimplemented_cases"], 15)
+        self.assertEqual(parser_layer["summary"]["passed_cases"], 2)
+        self.assertEqual(parser_layer["summary"]["unimplemented_cases"], 13)
 
         public_api_layer = scorecard["layers"]["module_api_surface"]
         self.assertEqual(public_api_layer["summary"]["total_cases"], 7)
-        self.assertEqual(public_api_layer["summary"]["passed_cases"], 4)
-        self.assertEqual(public_api_layer["summary"]["unimplemented_cases"], 3)
+        self.assertEqual(public_api_layer["summary"]["passed_cases"], 5)
+        self.assertEqual(public_api_layer["summary"]["unimplemented_cases"], 2)
         self.assertEqual(
             public_api_layer["operations"],
             ["module_call", "module_has_attr"],
@@ -107,30 +108,28 @@ class CorrectnessHarnessPublicApiSurfaceTest(unittest.TestCase):
         )
 
         public_api_suite = next(suite for suite in scorecard["suites"] if suite["id"] == "module.surface")
-        self.assertEqual(public_api_suite["summary"]["passed_cases"], 4)
-        self.assertEqual(public_api_suite["summary"]["unimplemented_cases"], 3)
+        self.assertEqual(public_api_suite["summary"]["passed_cases"], 5)
+        self.assertEqual(public_api_suite["summary"]["unimplemented_cases"], 2)
 
-        compile_case = next(
-            case for case in scorecard["cases"] if case["id"] == "compile-placeholder-notimplemented"
-        )
+        compile_case = next(case for case in scorecard["cases"] if case["id"] == "compile-pattern-scaffold-success")
         self.assertEqual(compile_case["layer"], "module_api_surface")
         self.assertEqual(compile_case["helper"], "compile")
-        self.assertEqual(compile_case["comparison"], "unimplemented")
+        self.assertEqual(compile_case["comparison"], "pass")
         self.assertEqual(compile_case["observations"]["cpython"]["outcome"], "success")
-        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "success")
         self.assertEqual(
-            compile_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
-        )
-        self.assertIn(
-            "rebar.compile() is a scaffold placeholder",
-            compile_case["observations"]["rebar"]["exception"]["message"],
+            compile_case["observations"]["rebar"]["result"],
+            compile_case["observations"]["cpython"]["result"],
         )
 
         purge_case = next(case for case in scorecard["cases"] if case["id"] == "purge-noop-success")
         self.assertEqual(purge_case["comparison"], "pass")
         self.assertEqual(purge_case["observations"]["cpython"]["result"], None)
         self.assertEqual(purge_case["observations"]["rebar"]["result"], None)
+
+        parser_literal_case = next(case for case in scorecard["cases"] if case["id"] == "str-literal-success")
+        self.assertEqual(parser_literal_case["comparison"], "pass")
+        self.assertEqual(parser_literal_case["observations"]["rebar"]["outcome"], "success")
 
 
 if __name__ == "__main__":

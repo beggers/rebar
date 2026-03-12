@@ -45,14 +45,14 @@
       ]
     },
     {
-      "id": "compile-placeholder-notimplemented",
+      "id": "compile-pattern-scaffold-success",
       "operation": "module_call",
-      "family": "placeholder_behavior",
+      "family": "pattern_scaffold",
       "helper": "compile",
       "args": ["abc"],
-      "categories": ["placeholder", "compile"],
+      "categories": ["pattern", "compile", "scaffold"],
       "notes": [
-        "Rebar should still fail loudly for compile instead of pretending to support pattern objects."
+        "Rebar now returns a narrow Pattern scaffold from compile so later scorecards can observe compiled-pattern metadata."
       ]
     },
     {

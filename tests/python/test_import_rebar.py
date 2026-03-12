@@ -22,9 +22,14 @@ class RebarImportSmokeTest(unittest.TestCase):
         self.assertEqual(rebar.NATIVE_MODULE_NAME, "rebar._rebar")
         self.assertFalse(rebar.native_module_loaded())
 
-    def test_placeholder_compile_fails_loudly(self) -> None:
-        with self.assertRaisesRegex(NotImplementedError, "scaffold placeholder"):
-            rebar.compile("abc")
+    def test_compile_returns_pattern_scaffold(self) -> None:
+        compiled = rebar.compile("abc")
+
+        self.assertIs(type(compiled), rebar.Pattern)
+        self.assertEqual(compiled.pattern, "abc")
+        self.assertEqual(compiled.flags, int(rebar.UNICODE))
+        self.assertEqual(compiled.groups, 0)
+        self.assertEqual(compiled.groupindex, {})
 
 
 if __name__ == "__main__":

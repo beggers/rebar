@@ -50,10 +50,10 @@ class CorrectnessHarnessMatchBehaviorTest(unittest.TestCase):
                 {
                     "executed_cases": 28,
                     "failed_cases": 0,
-                    "passed_cases": 4,
+                    "passed_cases": 7,
                     "skipped_cases": 0,
                     "total_cases": 28,
-                    "unimplemented_cases": 24,
+                    "unimplemented_cases": 21,
                 },
             )
 
@@ -86,12 +86,13 @@ class CorrectnessHarnessMatchBehaviorTest(unittest.TestCase):
 
         parser_layer = scorecard["layers"]["parser_acceptance_and_diagnostics"]
         self.assertEqual(parser_layer["summary"]["total_cases"], 15)
-        self.assertEqual(parser_layer["summary"]["unimplemented_cases"], 15)
+        self.assertEqual(parser_layer["summary"]["passed_cases"], 2)
+        self.assertEqual(parser_layer["summary"]["unimplemented_cases"], 13)
 
         public_api_layer = scorecard["layers"]["module_api_surface"]
         self.assertEqual(public_api_layer["summary"]["total_cases"], 7)
-        self.assertEqual(public_api_layer["summary"]["passed_cases"], 4)
-        self.assertEqual(public_api_layer["summary"]["unimplemented_cases"], 3)
+        self.assertEqual(public_api_layer["summary"]["passed_cases"], 5)
+        self.assertEqual(public_api_layer["summary"]["unimplemented_cases"], 2)
 
         match_layer = scorecard["layers"]["match_behavior"]
         self.assertEqual(match_layer["summary"]["total_cases"], 6)

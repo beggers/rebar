@@ -1,6 +1,6 @@
 # RBR-0019: Scaffold compiled pattern objects
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
 
@@ -25,3 +25,9 @@ Created: 2026-03-11
 ## Notes
 - Use `docs/testing/correctness-plan.md` Layer 2 guidance and `docs/spec/drop-in-re-compatibility.md` for the near-term pattern-object contract.
 - Build on `RBR-0013` and `RBR-0018`; this task should turn the module-level helper scaffold into the first concrete `Pattern` surface, not restate import-shape work in prose.
+
+## Completion Notes
+- Completed 2026-03-12.
+- `rebar.compile()` now returns a concrete `rebar.Pattern` scaffold for narrow literal-shaped `str` and `bytes` patterns, preserves the exported `Pattern` type relationship, and keeps direct `Pattern()` construction blocked.
+- The scaffold pins `.pattern`, `.flags`, `.groups`, and `.groupindex`, and its `search`/`match`/`fullmatch`/`split`/`findall`/`finditer`/`sub`/`subn` methods all raise a consistent `NotImplementedError` placeholder instead of delegating to stdlib `re`.
+- Added dedicated shim/native tests for the compiled-pattern scaffold and refreshed the correctness fixture/report so the new literal-only scaffold passes honestly without claiming broad parser support.

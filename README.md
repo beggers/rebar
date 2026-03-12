@@ -13,9 +13,9 @@ _This measures whether the planned scaffolds, plans, and scorecard artifacts exi
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed, the Phase 1 parser conformance and compile-path benchmark packs published, the Phase 2 module-boundary benchmark pack and public-API surface scorecard in place, the first Phase 3 match-behavior and regression/stability packs published, and the remaining symbol-surface, pattern-object, provenance, and honest-behavior gaps queued. |
-| Current milestone | Milestone 2: finish the remaining import-surface/pattern scaffolds and benchmark-provenance hardening, then roll directly into the first honest-behavior slice for literal-only matching, compile-cache/purge observability, and `escape()` parity on top of the landed Phase 1 parser conformance and compile-path benchmark packs, verified native-extension smoke path, helper-surface scaffold, exact CPython baseline metadata, the Phase 2 public-API correctness scorecard, the first Phase 3 match-behavior smoke pack, and the new regression/stability benchmark pack. |
-| Work queue | `9` ready, `0` in progress, `19` done, `0` blocked |
+| Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed, the Phase 1 parser conformance and compile-path benchmark packs published, the Phase 2 module-boundary benchmark pack and public-API surface scorecard in place, the first Phase 3 match-behavior and regression/stability packs published, the exported-symbol scaffold landed, and the remaining pattern-object, scorecard, provenance, and honest-behavior gaps queued. |
+| Current milestone | Milestone 2: finish the remaining compiled-pattern scaffolds, symbol/pattern scorecards, and benchmark-provenance hardening, then roll directly into the first honest-behavior slice for literal-only matching, compile-cache/purge observability, and `escape()` parity on top of the landed Phase 1 parser conformance and compile-path benchmark packs, verified native-extension smoke path, helper-surface scaffold, exported-symbol scaffold, exact CPython baseline metadata, the Phase 2 public-API correctness scorecard, the first Phase 3 match-behavior smoke pack, and the new regression/stability benchmark pack. |
+| Work queue | `8` ready, `0` in progress, `20` done, `0` blocked |
 | Capability tracks | `10/10` complete |
 
 ### Capability Matrix
@@ -38,8 +38,8 @@ _This measures whether the planned scaffolds, plans, and scorecard artifacts exi
 | Metric | Value |
 | --- | --- |
 | Candidate | rebar |
-| Cases | `4` / `28` |
-| Pass rate | `0.1429` |
+| Cases | `7` / `28` |
+| Pass rate | `0.25` |
 | Parity rate | `1.0` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
@@ -56,20 +56,20 @@ _This measures whether the planned scaffolds, plans, and scorecard artifacts exi
 
 ### Immediate Next Steps
 
-- Land `RBR-0018`, `RBR-0019`, and `RBR-0020` so the new regression/stability benchmark pack is followed by exported-symbol scaffolding, a concrete compiled-pattern surface, and truthful native-versus-shim benchmark provenance.
-- Keep `RBR-0021` and `RBR-0022` queued directly behind that work so the worker can continue into exported-symbol and pattern-object correctness packs without another supervisor-only queue rewrite.
+- Land `RBR-0019` and `RBR-0020` so the new exported-symbol scaffold is followed immediately by a concrete compiled-pattern surface and truthful native-versus-shim benchmark provenance.
+- Keep `RBR-0021` and `RBR-0022` directly behind that work so the landed symbol surface and new `Pattern` scaffold reach the published correctness scorecard without another supervisor-only queue rewrite.
 - Use `RBR-0023` through `RBR-0027` as the next slice after the current scaffold wave so the queue turns newly landed `Pattern` and `Match` surface area into narrow honest behavior, cache/purge observability, `escape()` parity, pattern-boundary benchmark coverage, and module-workflow correctness.
 
 ### Current Risks
 
 - The repo now validates a dedicated built `rebar._rebar` smoke path, but the published benchmark report still reflects the source-tree shim with `native_module_loaded: false`, so routine measurement paths can still drift away from the verified install/import path.
-- The scaffolded Python surface now includes the first helper layer and a published match-behavior smoke pack, but exported flags/constants and compiled-pattern objects are still outside the measured compatibility surface.
+- The scaffolded Python surface now includes the first helper layer, published match-behavior smoke coverage, and CPython-shaped exported flags/constants, but compiled-pattern objects and concrete `Match` behavior are still outside the measured compatibility surface.
 - The correctness harness now covers 28 cases across parser, module-API, and match-behavior layers, but 24 `rebar` comparisons still end in honest `unimplemented` outcomes and there is no compiled-pattern or module-workflow layer yet.
 - The benchmark harness now measures the six parser-family compile-path workloads, the eight-workload module-boundary pack, and the five-workload regression/stability pack, but only import rows produce real `rebar` timings so helper-call comparisons are still mostly placeholder gaps and the suite still exercises the source-tree shim rather than the built native path.
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility at the Python surface.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Concurrent human and loop commits can still produce diverged git history that requires supervisor resolution; the harness now detects that state accurately but does not auto-rebase it.
-- The implementation worker has seventeen completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
+- The implementation worker has eighteen completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
 <!-- REBAR:STATUS_END -->
 
 ## What `rebar` Is Trying To Do
