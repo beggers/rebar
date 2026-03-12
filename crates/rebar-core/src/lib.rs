@@ -86,7 +86,7 @@ pub struct CompileError {
     /// Error message text.
     pub message: &'static str,
     /// Pattern offset associated with the diagnostic.
-    pub pos: usize,
+    pub pos: Option<usize>,
 }
 
 /// Compile the currently supported pattern slice.
@@ -233,23 +233,27 @@ fn compile_known_parser_error(pattern: PatternRef<'_>) -> Option<CompileError> {
     match pattern {
         PatternRef::Str("*abc") => Some(CompileError {
             message: "nothing to repeat",
-            pos: 0,
+            pos: Some(0),
         }),
         PatternRef::Str("a(?i)b") => Some(CompileError {
             message: "global flags not at the start of the expression",
-            pos: 1,
+            pos: Some(1),
         }),
         PatternRef::Str("(?L:a)") => Some(CompileError {
             message: "bad inline flags: cannot use 'L' flag with a str pattern",
-            pos: 3,
+            pos: Some(3),
         }),
         PatternRef::Bytes(b"(?u:a)") => Some(CompileError {
             message: "bad inline flags: cannot use 'u' flag with a bytes pattern",
-            pos: 3,
+            pos: Some(3),
         }),
         PatternRef::Bytes(br"\u1234") => Some(CompileError {
             message: r"bad escape \u",
-            pos: 0,
+            pos: Some(0),
+        }),
+        PatternRef::Str("(?<=a+)b") => Some(CompileError {
+            message: "look-behind requires fixed-width pattern",
+            pos: None,
         }),
         _ => None,
     }
@@ -260,7 +264,9 @@ fn compile_known_supported_case(
     normalized_flags: i32,
 ) -> Option<CompileOutcome> {
     match pattern {
-        PatternRef::Str("(?u:a)") | PatternRef::Bytes(b"(?L:a)") => Some(CompileOutcome {
+        PatternRef::Str("(?u:a)")
+        | PatternRef::Str("(?<=ab)c")
+        | PatternRef::Bytes(b"(?L:a)") => Some(CompileOutcome {
             status: CompileStatus::Compiled,
             normalized_flags,
             supports_literal: false,
@@ -591,7 +597,14 @@ mod tests {
     fn compile_reports_known_error() {
         let error = compile(PatternRef::Str("*abc"), 0).unwrap_err();
         assert_eq!(error.message, "nothing to repeat");
-        assert_eq!(error.pos, 0);
+        assert_eq!(error.pos, Some(0));
+    }
+
+    #[test]
+    fn compile_reports_lookbehind_width_error_without_position_metadata() {
+        let error = compile(PatternRef::Str("(?<=a+)b"), 0).unwrap_err();
+        assert_eq!(error.message, "look-behind requires fixed-width pattern");
+        assert_eq!(error.pos, None);
     }
 
     #[test]
@@ -622,6 +635,14 @@ mod tests {
         assert_eq!(bytes_outcome.status, CompileStatus::Compiled);
         assert_eq!(bytes_outcome.normalized_flags, 0);
         assert!(!bytes_outcome.supports_literal);
+    }
+
+    #[test]
+    fn compile_accepts_bounded_fixed_width_lookbehind_success_case() {
+        let outcome = compile(PatternRef::Str("(?<=ab)c"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
     }
 
     #[test]

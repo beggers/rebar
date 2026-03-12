@@ -4,19 +4,18 @@
 Milestone 2: build on the landed exported-symbol and compiled-pattern scaffolds, the first literal-only `compile`/`search`/`match`/`fullmatch` behavior slice, observable compile-cache/purge behavior, local `escape()` parity, the module-workflow correctness pack, the precompiled pattern-boundary benchmark pack, the first literal-only collection and replacement helpers, their published correctness and benchmark packs, the landed literal-only API-level `IGNORECASE` slice plus its published correctness and benchmark follow-ons, the remaining Rust-boundary migration task needed to stop deepening Python semantics, the bounded parser acceptance tasks needed to finish the currently published parser-matrix debt plus compile-benchmark catch-up, the queued module-workflow cleanup tasks for the remaining published replacement and flag-sensitive gaps, and then a built-native benchmark smoke follow-on so publication paths stay aligned with the verified native import path.
 
 ## Ordered Work
-1. Land `RBR-0038` to implement bounded inline-flag compile parity for the remaining published parser-matrix success cases and keep the new diagnostic cases aligned.
-2. Land `RBR-0039` to implement bounded lookbehind compile parity for the remaining published fixed-width success and variable-width error cases.
-3. Land `RBR-0040` to implement the published character-class plus API-level `IGNORECASE` compile case without broadening into general regex execution.
-4. Land `RBR-0041` to implement compile-only acceptance for the remaining published possessive-quantifier and atomic-group parser cases.
-5. Land `RBR-0042` to convert the compile-path benchmark pack from scaffold-only toward partial measurement as those published parser cases become real `rebar` compile successes.
-6. Land `RBR-0042A` to move the currently supported literal-only collection and replacement helpers behind the Rust extension boundary before more workflow breadth lands.
-7. Land `RBR-0043` to add literal-only replacement-template and callable-replacement parity for the remaining module `sub()` workflow gaps that do not require grouped-pattern support.
-8. Land `RBR-0044` to add a bounded single-dot non-literal workflow slice so the published `findall()` and `IGNORECASE search()` gaps for `a.c` stop reporting as `unimplemented`.
-9. Land `RBR-0045` to carry the published inline `(?i)` literal compile win through the module workflow surface so `search()` stops lagging the parser slice.
-10. Land `RBR-0046` to add the bounded bytes `LOCALE` literal search case so the remaining published bytes-only flag workflow is not left behind the parser and API-level flag work.
-11. Land `RBR-0047` to add the narrow grouped-literal replacement-template slice needed for the last published `module.sub()` grouping-dependent gap.
-12. Land `RBR-0048` to catch benchmark coverage up with those post-parser workflow wins instead of leaving the benchmark report one milestone behind the published correctness surface.
-13. Land `RBR-0049` to publish a built-native benchmark smoke report so benchmark reporting stays anchored to the verified native import path instead of the source-tree shim alone.
+1. Land `RBR-0039` to implement bounded lookbehind compile parity for the remaining published fixed-width success and variable-width error cases.
+2. Land `RBR-0040` to implement the published character-class plus API-level `IGNORECASE` compile case without broadening into general regex execution.
+3. Land `RBR-0041` to implement compile-only acceptance for the remaining published possessive-quantifier and atomic-group parser cases.
+4. Land `RBR-0042` to convert the compile-path benchmark pack from scaffold-only toward partial measurement as those published parser cases become real `rebar` compile successes.
+5. Land `RBR-0042A` to move the currently supported literal-only collection and replacement helpers behind the Rust extension boundary before more workflow breadth lands.
+6. Land `RBR-0043` to add literal-only replacement-template and callable-replacement parity for the remaining module `sub()` workflow gaps that do not require grouped-pattern support.
+7. Land `RBR-0044` to add a bounded single-dot non-literal workflow slice so the published `findall()` and `IGNORECASE search()` gaps for `a.c` stop reporting as `unimplemented`.
+8. Land `RBR-0045` to carry the published inline `(?i)` literal compile win through the module workflow surface so `search()` stops lagging the parser slice.
+9. Land `RBR-0046` to add the bounded bytes `LOCALE` literal search case so the remaining published bytes-only flag workflow is not left behind the parser and API-level flag work.
+10. Land `RBR-0047` to add the narrow grouped-literal replacement-template slice needed for the last published `module.sub()` grouping-dependent gap.
+11. Land `RBR-0048` to catch benchmark coverage up with those post-parser workflow wins instead of leaving the benchmark report one milestone behind the published correctness surface.
+12. Land `RBR-0049` to publish a built-native benchmark smoke report so benchmark reporting stays anchored to the verified native import path instead of the source-tree shim alone.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
@@ -31,7 +30,7 @@ Milestone 2: build on the landed exported-symbol and compiled-pattern scaffolds,
 - Treat README/reporting accuracy as part of the milestone; scaffold and scorecard tracks should only flip complete when their concrete artifacts exist.
 - With `RBR-0011` and `RBR-0012` landed, keep Milestone 2 centered on module-surface, public-API, and module-boundary catch-up rather than reopening parser-fixture or parser-benchmark breadth immediately.
 - Queue the first Phase 3 correctness and benchmark tasks before Milestone 2 closes so the worker can roll straight into match-behavior and regression/stability infrastructure once the current ready stack clears.
-- With `RBR-0037A` landed, keep the front of Milestone 2 on `RBR-0038` through `RBR-0042A` so the parser compile-parity cleanup stays contiguous with the newly Rust-backed compile/match slice and the remaining collection/replacement boundary migration lands before more workflow breadth.
+- With `RBR-0038` landed, keep the front of Milestone 2 on `RBR-0039` through `RBR-0042A` so the parser compile-parity cleanup stays contiguous with the newly Rust-backed compile/match slice and the remaining collection/replacement boundary migration lands before more workflow breadth.
 - Treat exported-symbol and compiled-pattern scaffold coverage as complete unless later behavior work exposes a real compatibility gap; do not reopen more import-shape or placeholder-only `Pattern` scaffolding ahead of the honest-behavior tasks.
 - Once `RBR-0014` lands the Phase 2 public-API scorecard, keep Milestone 2 focused on module-boundary benchmarking and concrete post-scaffold correctness instead of continuing to treat public-API harness setup as the primary open item.
 - Use the landed benchmark-provenance adapter modes in future workload expansions; do not let new benchmark packs regress to unlabeled source-versus-native execution paths.

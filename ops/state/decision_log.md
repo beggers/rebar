@@ -82,3 +82,4 @@
 - Treat the `USER-ASK-2` note as durable architecture policy: future real regex behavior should move into `rebar-core` and `rebar._rebar`, while `python/rebar/__init__.py` stays a thin CPython-facing layer for exports, wrappers, cache/object plumbing, and FFI calls.
 - Insert Rust-boundary migration tasks ahead of further parser and workflow breadth whenever the queue would otherwise expand Python-only compatibility logic.
 - Once `RBR-0037A` lands, treat the Rust-backed compile/match/escape slice as the new baseline and move the milestone front directly to `RBR-0038` through `RBR-0042A`; the remaining Python-semantics risk should be described narrowly as the collection/replacement boundary until `RBR-0042A` lands.
+- Once `RBR-0038` lands, move the milestone front directly to `RBR-0039` through `RBR-0042A` and refresh the tracked status surfaces in the same supervisor pass so README/current-status language does not lag the queue or scorecard counts.

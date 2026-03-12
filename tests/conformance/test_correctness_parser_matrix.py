@@ -42,10 +42,10 @@ class CorrectnessHarnessParserMatrixTest(unittest.TestCase):
                 {
                     "executed_cases": 15,
                     "failed_cases": 0,
-                    "passed_cases": 10,
+                    "passed_cases": 12,
                     "skipped_cases": 0,
                     "total_cases": 15,
-                    "unimplemented_cases": 5,
+                    "unimplemented_cases": 3,
                 },
             )
 
@@ -98,15 +98,15 @@ class CorrectnessHarnessParserMatrixTest(unittest.TestCase):
         self.assertEqual(cpython_diagnostics["exception_types"], {"error": 6})
 
         rebar_diagnostics = scorecard["diagnostics"]["by_adapter"]["rebar"]
-        self.assertEqual(rebar_diagnostics["outcomes"], {"exception": 5, "success": 5, "unimplemented": 5})
+        self.assertEqual(rebar_diagnostics["outcomes"], {"exception": 6, "success": 6, "unimplemented": 3})
         self.assertEqual(rebar_diagnostics["warning_case_count"], 1)
         self.assertEqual(rebar_diagnostics["warning_categories"], {"FutureWarning": 1})
-        self.assertEqual(rebar_diagnostics["exception_case_count"], 10)
-        self.assertEqual(rebar_diagnostics["exception_types"], {"NotImplementedError": 5, "error": 5})
+        self.assertEqual(rebar_diagnostics["exception_case_count"], 9)
+        self.assertEqual(rebar_diagnostics["exception_types"], {"NotImplementedError": 3, "error": 6})
 
         str_suite = next(suite for suite in scorecard["suites"] if suite["id"] == "parser.compile.str")
         self.assertEqual(str_suite["summary"]["total_cases"], 11)
-        self.assertEqual(str_suite["summary"]["passed_cases"], 6)
+        self.assertEqual(str_suite["summary"]["passed_cases"], 8)
 
         bytes_suite = next(
             suite for suite in scorecard["suites"] if suite["id"] == "parser.compile.bytes"
@@ -123,6 +123,22 @@ class CorrectnessHarnessParserMatrixTest(unittest.TestCase):
         )
         self.assertEqual(str_inline_case["comparison"], "pass")
         self.assertEqual(str_inline_case["observations"]["rebar"]["outcome"], "success")
+
+        str_lookbehind_success_case = next(
+            case for case in scorecard["cases"] if case["id"] == "str-fixed-width-lookbehind-success"
+        )
+        self.assertEqual(str_lookbehind_success_case["comparison"], "pass")
+        self.assertEqual(str_lookbehind_success_case["observations"]["rebar"]["outcome"], "success")
+
+        str_lookbehind_error_case = next(
+            case for case in scorecard["cases"] if case["id"] == "str-variable-width-lookbehind-error"
+        )
+        self.assertEqual(str_lookbehind_error_case["comparison"], "pass")
+        self.assertEqual(str_lookbehind_error_case["observations"]["rebar"]["outcome"], "exception")
+        self.assertEqual(
+            str_lookbehind_error_case["observations"]["rebar"]["exception"]["message"],
+            "look-behind requires fixed-width pattern",
+        )
 
         bytes_locale_case = next(
             case for case in scorecard["cases"] if case["id"] == "bytes-inline-locale-flag-success"

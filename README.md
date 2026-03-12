@@ -11,9 +11,9 @@ _Foundation docs, harnesses, and scorecards are in place. The snapshot below foc
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed, the Phase 1 parser conformance and compile-path benchmark packs published, the Phase 2 module-boundary, pattern-boundary, collection/replacement boundary, and literal-flag boundary benchmark packs plus the public-API surface scorecard in place, the first Phase 3 match-behavior and regression/stability packs published, the exported-symbol and compiled-pattern scaffolds landed, the first literal-only `compile`/`search`/`match`/`fullmatch` behavior slice plus observable compile-cache/purge behavior, local `escape()` parity, literal-only collection and replacement helpers, the first literal-only API-level `IGNORECASE` behavior slice implemented, the literal-flag correctness and benchmark packs published, exported-helper metadata parity cleanup landed, bounded parser diagnostic parity landed, the supported compile/match/escape slice moved behind the Rust boundary, benchmark adapter/provenance hardening in place, and the remaining parser-acceptance, collection/replacement boundary migration, and post-parser module-workflow gaps queued. |
+| Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed, the Phase 1 parser conformance and compile-path benchmark packs published, the Phase 2 module-boundary, pattern-boundary, collection/replacement boundary, and literal-flag boundary benchmark packs plus the public-API surface scorecard in place, the first Phase 3 match-behavior and regression/stability packs published, the exported-symbol and compiled-pattern scaffolds landed, the first literal-only `compile`/`search`/`match`/`fullmatch` behavior slice plus observable compile-cache/purge behavior, local `escape()` parity, literal-only collection and replacement helpers, the first literal-only API-level `IGNORECASE` behavior slice implemented, the literal-flag correctness and benchmark packs published, exported-helper metadata parity cleanup landed, bounded parser diagnostic parity landed, the supported compile/match/escape slice moved behind the Rust boundary, bounded inline-flag compile parity landed, benchmark adapter/provenance hardening in place, and the remaining parser-acceptance, collection/replacement boundary migration, and post-parser module-workflow gaps queued. |
 | Current milestone | Milestone 2: build on the landed exported-symbol and compiled-pattern scaffolds, the first literal-only `compile`/`search`/`match`/`fullmatch` behavior slice, observable compile-cache/purge behavior, local `escape()` parity, the module-workflow correctness pack, the precompiled pattern-boundary benchmark pack, the first literal-only collection and replacement helpers, their published correctness and benchmark packs, the landed literal-only API-level `IGNORECASE` slice plus its published correctness and benchmark follow-ons, the remaining Rust-boundary migration task needed to stop deepening Python semantics, the bounded parser acceptance tasks needed to finish the currently published parser-matrix debt plus compile-benchmark catch-up, the queued module-workflow cleanup tasks for the remaining published replacement and flag-sensitive gaps, and then a built-native benchmark smoke follow-on so publication paths stay aligned with the verified native import path. |
-| Work queue | `12` ready, `0` in progress, `42` done, `0` blocked |
+| Work queue | `11` ready, `0` in progress, `43` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -21,9 +21,9 @@ _Foundation docs, harnesses, and scorecards are in place. The snapshot below foc
 | Metric | Value |
 | --- | --- |
 | Published cases | `80` |
-| Passing comparisons | `68` |
+| Passing comparisons | `70` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `12` |
+| Honest gaps (`unimplemented`) | `10` |
 | Covered manifests | `8` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
@@ -42,7 +42,7 @@ _README speedup rollups stay omitted while only `30` of `45` published workloads
 
 ### Immediate Next Steps
 
-- Land `RBR-0038` through `RBR-0041` so the remaining published parser-matrix compile gaps are worked off as bounded Rust-backed parity tasks instead of another broad parser rewrite.
+- Land `RBR-0039` through `RBR-0041` so the remaining published parser-matrix compile gaps are worked off as bounded Rust-backed parity tasks instead of another broad parser rewrite.
 - After `RBR-0041`, land `RBR-0042` so the compile-path benchmark report starts measuring the newly supported parser cases instead of staying effectively scaffold-only.
 - After `RBR-0042`, land `RBR-0042A` so the already-supported collection and replacement helpers also move behind the Rust boundary before more workflow breadth lands.
 - After `RBR-0042A`, land `RBR-0043` through `RBR-0048` so the remaining published module-workflow `unimplemented` cases are worked off as bounded Rust-backed replacement and flag-sensitive follow-ons before broadening the corpus again.
@@ -52,12 +52,12 @@ _README speedup rollups stay omitted while only `30` of `45` published workloads
 
 - The repo now validates a dedicated built `rebar._rebar` smoke path and the benchmark harness can distinguish shim versus built-native execution modes, but the published benchmark report still reflects the default source-tree shim with `native_module_loaded: false`, so routine measurement paths can still drift away from the verified install/import path.
 - The supported compile, parser-diagnostic, literal-match, cache, and `escape()` slice now lives behind `rebar._rebar`, but the currently supported collection and replacement helpers still live in `python/rebar/__init__.py`; until `RBR-0042A` lands, the project can still accrete some real workflow semantics on the Python side even though the long-term contract is a Rust-backed drop-in module.
-- The correctness harness now covers 80 published cases across parser, module-API, match-behavior, exported-symbol, pattern-object, module-workflow, collection/replacement, and literal-flag layers, with 14 honest `unimplemented` outcomes and 0 explicit failures visible; the remaining published debt is now concentrated in parser-matrix compile cases and the already-published module-workflow follow-ons queued behind the remaining collection/replacement boundary migration task.
+- The correctness harness now covers 80 published cases across parser, module-API, match-behavior, exported-symbol, pattern-object, module-workflow, collection/replacement, and literal-flag layers, with 12 honest `unimplemented` outcomes and 0 explicit failures visible; the remaining published debt is now concentrated in the lookbehind, character-class `IGNORECASE`, possessive/atomic parser-matrix compile cases and the already-published module-workflow follow-ons queued behind the remaining collection/replacement boundary migration task.
 - The benchmark harness now measures 45 published workloads across the compile-path, module-boundary, pattern-boundary, collection/replacement-boundary, literal-flag-boundary, and regression/stability packs with explicit adapter-mode provenance, and 30 workloads now have real `rebar` timings, but compile-path coverage remains scaffold-only and the published suite still exercises the source-tree shim rather than the built native path.
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility at the Python surface.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Concurrent human and loop commits can still produce diverged git history that requires supervisor resolution; the harness now detects that state accurately but does not auto-rebase it.
-- The implementation worker has thirty-seven completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
+- The implementation worker has thirty-eight completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
 <!-- REBAR:STATUS_END -->
 
 ## Implementation Snapshot

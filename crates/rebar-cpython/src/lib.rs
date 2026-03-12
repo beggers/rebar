@@ -53,7 +53,12 @@ fn mode_from_name(mode: &str) -> PyResult<MatchMode> {
     }
 }
 
-fn raise_re_error<T>(py: Python<'_>, pattern: &Bound<'_, PyAny>, message: &str, pos: usize) -> PyResult<T> {
+fn raise_re_error<T>(
+    py: Python<'_>,
+    pattern: &Bound<'_, PyAny>,
+    message: &str,
+    pos: Option<usize>,
+) -> PyResult<T> {
     let re_module = py.import("re")?;
     let error_type = re_module.getattr("error")?;
     let instance = error_type.call1((message, pattern, pos))?;

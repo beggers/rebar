@@ -218,10 +218,8 @@
         "valid",
         "str"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "assertions",
       "flags": 0,
       "id": "str-fixed-width-lookbehind-success",
@@ -247,13 +245,16 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "compile",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "(?<=ab)c",
+            "pattern_type": "str"
+          },
           "warnings": []
         }
       },
@@ -429,10 +430,8 @@
         "invalid",
         "str"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "assertions",
       "flags": 0,
       "id": "str-variable-width-lookbehind-error",
@@ -456,11 +455,11 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
+            "message": "look-behind requires fixed-width pattern",
+            "type": "error"
           },
           "operation": "compile",
-          "outcome": "unimplemented",
+          "outcome": "exception",
           "result": null,
           "warnings": []
         }
@@ -4904,16 +4903,16 @@
         }
       },
       "rebar": {
-        "exception_case_count": 19,
+        "exception_case_count": 18,
         "exception_types": {
-          "NotImplementedError": 12,
+          "NotImplementedError": 10,
           "TypeError": 2,
-          "error": 5
+          "error": 6
         },
         "outcomes": {
-          "exception": 7,
-          "success": 61,
-          "unimplemented": 12
+          "exception": 8,
+          "success": 62,
+          "unimplemented": 10
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -4935,10 +4934,10 @@
       "summary": {
         "executed_cases": 2,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 2,
         "skipped_cases": 0,
         "total_cases": 2,
-        "unimplemented_cases": 2
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -5728,7 +5727,7 @@
       "tests/conformance/fixtures/literal_flag_workflows.json"
     ]
   },
-  "generated_at": "2026-03-12T04:34:51Z",
+  "generated_at": "2026-03-12T04:45:59Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -5942,15 +5941,15 @@
             }
           },
           "rebar": {
-            "exception_case_count": 10,
+            "exception_case_count": 9,
             "exception_types": {
-              "NotImplementedError": 5,
-              "error": 5
+              "NotImplementedError": 3,
+              "error": 6
             },
             "outcomes": {
-              "exception": 5,
-              "success": 5,
-              "unimplemented": 5
+              "exception": 6,
+              "success": 6,
+              "unimplemented": 3
             },
             "warning_case_count": 1,
             "warning_categories": {
@@ -5980,10 +5979,10 @@
       "summary": {
         "executed_cases": 15,
         "failed_cases": 0,
-        "passed_cases": 10,
+        "passed_cases": 12,
         "skipped_cases": 0,
         "total_cases": 15,
-        "unimplemented_cases": 5
+        "unimplemented_cases": 3
       },
       "text_models": [
         "bytes",
@@ -6065,15 +6064,15 @@
             }
           },
           "rebar": {
-            "exception_case_count": 10,
+            "exception_case_count": 9,
             "exception_types": {
-              "NotImplementedError": 5,
-              "error": 5
+              "NotImplementedError": 3,
+              "error": 6
             },
             "outcomes": {
-              "exception": 5,
-              "success": 5,
-              "unimplemented": 5
+              "exception": 6,
+              "success": 6,
+              "unimplemented": 3
             },
             "warning_case_count": 1,
             "warning_categories": {
@@ -6102,10 +6101,10 @@
       "summary": {
         "executed_cases": 15,
         "failed_cases": 0,
-        "passed_cases": 10,
+        "passed_cases": 12,
         "skipped_cases": 0,
         "total_cases": 15,
-        "unimplemented_cases": 5
+        "unimplemented_cases": 3
       },
       "text_models": [
         "bytes",
@@ -6186,15 +6185,15 @@
             }
           },
           "rebar": {
-            "exception_case_count": 8,
+            "exception_case_count": 7,
             "exception_types": {
-              "NotImplementedError": 5,
-              "error": 3
+              "NotImplementedError": 3,
+              "error": 4
             },
             "outcomes": {
-              "exception": 3,
-              "success": 3,
-              "unimplemented": 5
+              "exception": 4,
+              "success": 4,
+              "unimplemented": 3
             },
             "warning_case_count": 1,
             "warning_categories": {
@@ -6222,10 +6221,10 @@
       "summary": {
         "executed_cases": 11,
         "failed_cases": 0,
-        "passed_cases": 6,
+        "passed_cases": 8,
         "skipped_cases": 0,
         "total_cases": 11,
-        "unimplemented_cases": 5
+        "unimplemented_cases": 3
       },
       "text_models": [
         "str"
@@ -7999,9 +7998,9 @@
   "summary": {
     "executed_cases": 80,
     "failed_cases": 0,
-    "passed_cases": 68,
+    "passed_cases": 70,
     "skipped_cases": 0,
     "total_cases": 80,
-    "unimplemented_cases": 12
+    "unimplemented_cases": 10
   }
 }

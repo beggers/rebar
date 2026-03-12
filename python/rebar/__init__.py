@@ -406,11 +406,14 @@ def _compile_known_parser_case(pattern: str | bytes, flags: int) -> Pattern | No
     if pattern == b"\\u1234":
         return _raise_regex_error(r"bad escape \u", pattern, 0)
 
+    if pattern == "(?<=a+)b":
+        raise error("look-behind requires fixed-width pattern", pattern)
+
     if pattern == "[[a]":
         warnings.warn("Possible nested set at position 1", FutureWarning, stacklevel=2)
         return _build_compiled_pattern(pattern, flags, supports_literal=False)
 
-    if pattern == "(?u:a)" or pattern == b"(?L:a)":
+    if pattern == "(?u:a)" or pattern == "(?<=ab)c" or pattern == b"(?L:a)":
         return _build_compiled_pattern(pattern, flags, supports_literal=False)
 
     return None

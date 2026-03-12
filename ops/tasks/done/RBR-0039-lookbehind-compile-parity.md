@@ -1,6 +1,6 @@
 # RBR-0039: Implement bounded lookbehind compile parity for published parser cases
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,11 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0037` and `RBR-0037A`. This task exists so the remaining published lookbehind debt becomes explicit Rust-backed compile-parity work instead of waiting for a broad parser rewrite.
+
+## Completion
+- Added bounded Rust-core compile handling for the exact published lookbehind cases: `(?<=ab)c` now compiles as a compile-only success, while `(?<=a+)b` raises CPython-shaped `re.error` text without position metadata.
+- Threaded optional compile-error position data through `rebar._rebar` so diagnostics that do not expose `pos` in CPython can now cross the Rust boundary faithfully.
+- Kept the source-tree Python fallback aligned for the same two patterns so the default correctness harness observes the landed behavior without delegating to stdlib `re.compile()`.
+- Added direct unit coverage in `tests/python/test_parser_lookbehind_parity.py` for metadata parity, cache/purge behavior, and the no-stdlib-delegation contract, and extended the parser-matrix harness test expectations for the new pass counts.
+- Regenerated `reports/correctness/latest.json`; the published scorecard now reports `70` passes and `10` `unimplemented` outcomes, with both lookbehind parser-matrix cases flipped from `unimplemented` to `pass`.
+- Verified with `cargo test -p rebar-core -- --nocapture` and `python3 -m unittest tests.python.test_parser_lookbehind_parity tests.python.test_parser_inline_flag_parity tests.python.test_parser_diagnostic_parity tests.conformance.test_correctness_parser_matrix tests.python.test_rust_compile_match_boundary`.
