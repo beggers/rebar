@@ -1,6 +1,6 @@
 # RBR-0109: Catch bounded conditional no-else benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,4 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0108`.
 - This task exists so the queue does not reach bounded omitted-no-arm conditional parity and then leave that newly supported slice absent from benchmark reporting.
+- Completed 2026-03-12: added `conditional_group_exists_no_else_boundary.json`, wired it into the default benchmark suite, published 11 bounded omitted-no-arm workloads with 6 real timings plus 5 explicit known gaps, regenerated `reports/benchmarks/latest.json` to 197 total workloads / 155 measured / 42 known gaps, and covered the new combined-suite surface in `tests/benchmarks/test_conditional_group_exists_no_else_boundary_benchmarks.py`.
