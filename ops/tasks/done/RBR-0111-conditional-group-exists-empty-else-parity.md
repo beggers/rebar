@@ -1,6 +1,6 @@
 # RBR-0111: Add bounded conditional explicit-empty-else parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -29,3 +29,4 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0110`.
 - This task exists so the queue turns the next accepted conditional syntax form into real Rust-backed behavior instead of leaving it as publication-only coverage.
+- Completed 2026-03-12: Rust conditional parsing now accepts explicit empty else arms `|)` for the bounded numbered and named group-exists slice, targeted native parity tests cover compile/search/fullmatch behavior, and `reports/correctness/latest.json` now publishes all 206 cases as passing with 0 unimplemented gaps.

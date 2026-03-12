@@ -1903,7 +1903,6 @@ fn parse_conditional_group_exists_pattern_str(
         let yes_branch = &branches[..branch_separator];
         let no_branch = &branches[branch_separator + 1..];
         if yes_branch.is_empty()
-            || no_branch.is_empty()
             || yes_branch.chars().any(is_meta_character)
             || no_branch.chars().any(is_meta_character)
         {
@@ -4098,6 +4097,29 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_bounded_conditional_group_exists_empty_else_cases() {
+        let outcome = compile(PatternRef::Str("a(b)?c(?(1)d|)"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.group_count, 1);
+        assert!(outcome.named_groups.is_empty());
+
+        let named_outcome = compile(PatternRef::Str("a(?P<word>b)?c(?(word)d|)"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!named_outcome.supports_literal);
+        assert_eq!(named_outcome.group_count, 1);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "word".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
     fn compile_accepts_bounded_exact_repeat_group_cases() {
         let outcome = compile(PatternRef::Str("a(bc){2}d"), 0).unwrap();
         assert_eq!(outcome.status, CompileStatus::Compiled);
@@ -4549,6 +4571,42 @@ mod tests {
     fn named_conditional_group_exists_no_else_fullmatch_reports_absent_capture_as_none() {
         let outcome = literal_match(
             PatternRef::Str("a(?P<word>b)?c(?(word)d)"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("ac"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 2)));
+        assert_eq!(outcome.group_spans, vec![None]);
+        assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
+    fn conditional_group_exists_empty_else_search_reports_present_capture_span() {
+        let outcome = literal_match(
+            PatternRef::Str("a(b)?c(?(1)d|)"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabcdzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 6)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 4))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn named_conditional_group_exists_empty_else_fullmatch_reports_absent_capture_as_none() {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<word>b)?c(?(word)d|)"),
             FLAG_UNICODE,
             MatchMode::Fullmatch,
             PatternRef::Str("ac"),
