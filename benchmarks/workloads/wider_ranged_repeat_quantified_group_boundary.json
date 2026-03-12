@@ -1,0 +1,396 @@
+{
+  "schema_version": 1,
+  "manifest_id": "wider-ranged-repeat-quantified-group-boundary",
+  "spec_refs": [
+    "docs/benchmarks/plan.md",
+    "docs/spec/drop-in-re-compatibility.md"
+  ],
+  "notes": [
+    "Wider ranged-repeat quantified-group boundary workloads keep captures, counted ranges, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded `{1,3}` slice rather than regex throughput.",
+    "Measured rows cover the bounded `a(bc){1,3}d` and `a(?P<word>bc){1,3}d` compile/search/fullmatch paths directly at representative lower-bound and third-repetition haystacks, while still-wider counted ranges, open-ended repeats, quantified alternation inside repeated groups, conditional combinations, and broader backtracking-heavy shapes stay as explicit known-gap rows until queued follow-on slices land."
+  ],
+  "defaults": {
+    "warmup_iterations": 2,
+    "sample_iterations": 5,
+    "timed_samples": 7
+  },
+  "workloads": [
+    {
+      "id": "module-compile-numbered-wider-ranged-repeat-group-cold-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(bc){1,3}d",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats"
+      ],
+      "notes": [
+        "Cold module.compile benchmark for the bounded numbered wider ranged-repeat quantified-group slice so compile metadata timing reaches the published benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-numbered-wider-ranged-repeat-group-lower-bound-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(bc){1,3}d",
+      "haystack": "zzabcdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "smoke": true,
+      "categories": [
+        "grouped",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "search",
+        "module",
+        "lower-bound",
+        "warm-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded numbered wider ranged-repeat workflow on a tiny lower-bound haystack."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-wider-ranged-repeat-group-upper-bound-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(bc){1,3}d",
+      "haystack": "abcbcbcd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "fullmatch",
+        "upper-bound",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered wider ranged-repeat workflow at the supported third-repetition upper bound."
+      ]
+    },
+    {
+      "id": "module-compile-named-wider-ranged-repeat-group-warm-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<word>bc){1,3}d",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "named-group",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.compile path for the bounded named wider ranged-repeat slice so named metadata timing reaches the benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-named-wider-ranged-repeat-group-upper-bound-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>bc){1,3}d",
+      "haystack": "zzabcbcbcdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "named-group",
+        "search",
+        "module",
+        "upper-bound",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.search helper path for a tiny named wider ranged-repeat capture at the supported third-repetition upper bound so named runtime workflows produce real timings."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-wider-ranged-repeat-group-lower-bound-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>bc){1,3}d",
+      "haystack": "abcd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "smoke": true,
+      "categories": [
+        "pattern",
+        "grouped",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "named-group",
+        "fullmatch",
+        "lower-bound",
+        "purged-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Smoke-sized Pattern.fullmatch probe for the bounded named wider ranged-repeat workflow at the lower bound with compile cost kept outside the timed loop."
+      ]
+    },
+    {
+      "id": "module-search-numbered-wider-ranged-repeat-group-broader-range-cold-gap",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(bc){1,4}d",
+      "haystack": "zzabcbcbcbcdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "search",
+        "module",
+        "unsupported",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats"
+      ],
+      "notes": [
+        "Explicit broader-range known-gap row so counted repeats wider than the bounded `{1,3}` frontier stay visible in the benchmark report."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-gap",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(bc){1,}d",
+      "haystack": "abcbcbcd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "open-ended-repeat",
+        "fullmatch",
+        "unsupported",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "cache-purge"
+      ],
+      "notes": [
+        "Explicit open-ended-repeat known-gap row so unbounded counted repeats stay visible after the bounded `{1,3}` slice reaches real timings."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-wider-ranged-repeat-group-alternation-purged-gap",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>bc|de){1,3}d",
+      "haystack": "abcbcbcd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "alternation",
+        "named-group",
+        "fullmatch",
+        "unsupported",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Explicit quantified-alternation known-gap row so alternation inside wider ranged repeats stays on the benchmark surface instead of disappearing."
+      ]
+    },
+    {
+      "id": "module-search-numbered-wider-ranged-repeat-group-conditional-warm-gap",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a((bc){1,3})?(?(1)d|e)",
+      "haystack": "zzabcbcdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "conditional",
+        "search",
+        "module",
+        "unsupported",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "conditionals"
+      ],
+      "notes": [
+        "Explicit conditional-combination known-gap row so bounded group-exists conditionals composed with wider ranged repeats stay visible before broader backtracking work is queued."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-wider-ranged-repeat-group-backtracking-heavy-purged-gap",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a((b|bc)c){1,3}d",
+      "haystack": "abcbcd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "backtracking-heavy",
+        "fullmatch",
+        "unsupported",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation",
+        "cache-purge"
+      ],
+      "notes": [
+        "Explicit broader backtracking-heavy known-gap row so overlapping branches inside repeated groups stay visible after the small deterministic `{1,3}` slice reaches benchmark publication."
+      ]
+    }
+  ]
+}

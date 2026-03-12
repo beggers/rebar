@@ -1,6 +1,6 @@
 # RBR-0123: Catch bounded wider ranged-repeat quantified-group benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0122`.
 - This task exists so the queue does not leave the next wider counted-range slice measured only in correctness reporting.
+
+## Completion
+- Added `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.json` and wired it into the default benchmark manifest set so the bounded `{1,3}` numbered and named quantified-group compile/search/fullmatch workflows now publish real `rebar` timings.
+- Regenerated `reports/benchmarks/latest.json`; the published combined benchmark scorecard now reports 240 workloads with 182 measured `rebar` timings and 58 explicit known gaps, including new wider-ranged-repeat gap rows for broader counted ranges, open-ended repeats, quantified alternation, conditional composition, and backtracking-heavy shapes.
+- Added `tests/benchmarks/test_wider_ranged_repeat_quantified_group_boundary_benchmarks.py` and refreshed the adjacent exact/ranged benchmark assertions after shifting their carry-forward broader-range gap rows from `{1,3}` to `{1,4}` so the benchmark surface no longer publishes the same `{1,3}` slice as both measured and unsupported.
