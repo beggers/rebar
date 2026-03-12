@@ -1,6 +1,6 @@
 # RBR-0016: Expand the correctness harness into a match-behavior pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
 
@@ -27,3 +27,6 @@ Created: 2026-03-11
 ## Notes
 - Use `docs/testing/correctness-plan.md` as the primary task spec, especially the Phase 3 match behavior pack guidance.
 - Build on `RBR-0013` and `RBR-0014`; this task should observe the scaffolded module surface and broaden the report, not restate public-API scaffolding in prose.
+
+## Completion Note
+- 2026-03-12: Extended `python/rebar_harness/correctness.py` to include the Phase 3 match-behavior manifest in default runs, added `tests/conformance/fixtures/match_behavior_smoke.json` with tiny `search`/`match`/`fullmatch` success and no-match cases plus a mirrored `bytes` fullmatch case, regenerated `reports/correctness/latest.json` with separate match-behavior totals, and verified the combined scorecard with `python3 -m unittest tests.conformance.test_correctness_smoke tests.conformance.test_correctness_parser_matrix tests.conformance.test_correctness_public_api_surface tests.conformance.test_correctness_match_behavior`.

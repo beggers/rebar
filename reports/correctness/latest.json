@@ -1080,6 +1080,382 @@
       },
       "operation": "module_call",
       "suite_id": "module.surface"
+    },
+    {
+      "args": [
+        "(?P<head>ab)(c)",
+        "zzabczz"
+      ],
+      "categories": [
+        "search",
+        "success",
+        "groups",
+        "str"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "search_result_shape",
+      "helper": "search",
+      "id": "search-str-success-groups",
+      "layer": "match_behavior",
+      "manifest_id": "match-behavior-smoke",
+      "notes": [
+        "Captures a successful module-level search result with span and group payloads."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abc",
+            "groupdict": {
+              "head": "ab"
+            },
+            "groups": [
+              "ab",
+              "c"
+            ],
+            "lastgroup": null,
+            "lastindex": 2,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.search() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.behavior",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abc",
+        "zzz"
+      ],
+      "categories": [
+        "search",
+        "no-match",
+        "str"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "search_result_shape",
+      "helper": "search",
+      "id": "search-str-no-match",
+      "layer": "match_behavior",
+      "manifest_id": "match-behavior-smoke",
+      "notes": [
+        "Pins the no-match module-level search path as a None result."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.search() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.behavior",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "(?P<head>a)(b+)",
+        "abbb"
+      ],
+      "categories": [
+        "match",
+        "success",
+        "groups",
+        "str"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "match_result_shape",
+      "helper": "match",
+      "id": "match-str-success-groups",
+      "layer": "match_behavior",
+      "manifest_id": "match-behavior-smoke",
+      "notes": [
+        "Captures a successful anchored match with named and positional groups."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 4,
+            "group0": "abbb",
+            "groupdict": {
+              "head": "a"
+            },
+            "groups": [
+              "a",
+              "bbb"
+            ],
+            "lastgroup": null,
+            "lastindex": 2,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.match() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.behavior",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abc",
+        "zabc"
+      ],
+      "categories": [
+        "match",
+        "no-match",
+        "str"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "match_result_shape",
+      "helper": "match",
+      "id": "match-str-no-match",
+      "layer": "match_behavior",
+      "manifest_id": "match-behavior-smoke",
+      "notes": [
+        "Pins the no-match behavior for module-level match when the string starts later."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.match() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.behavior",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "(?P<num>\\d+)",
+        "123"
+      ],
+      "categories": [
+        "fullmatch",
+        "success",
+        "named-group",
+        "str"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "fullmatch_result_shape",
+      "helper": "fullmatch",
+      "id": "fullmatch-str-success-lastgroup",
+      "layer": "match_behavior",
+      "manifest_id": "match-behavior-smoke",
+      "notes": [
+        "Exercises fullmatch truthiness plus named-group payloads for str results."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "123",
+            "groupdict": {
+              "num": "123"
+            },
+            "groups": [
+              "123"
+            ],
+            "lastgroup": "num",
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.fullmatch() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.behavior",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        {
+          "encoding": "latin-1",
+          "value": "(?P<num>\\d+)"
+        },
+        {
+          "encoding": "latin-1",
+          "value": "123"
+        }
+      ],
+      "categories": [
+        "fullmatch",
+        "success",
+        "named-group",
+        "bytes",
+        "mirror"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "fullmatch_result_shape",
+      "helper": "fullmatch",
+      "id": "fullmatch-bytes-success-mirrored",
+      "layer": "match_behavior",
+      "manifest_id": "match-behavior-smoke",
+      "notes": [
+        "Mirrors the str fullmatch success case with bytes payloads and bytes-typed captures."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": {
+              "encoding": "latin-1",
+              "value": "123"
+            },
+            "groupdict": {
+              "num": {
+                "encoding": "latin-1",
+                "value": "123"
+              }
+            },
+            "groups": [
+              {
+                "encoding": "latin-1",
+                "value": "123"
+              }
+            ],
+            "lastgroup": "num",
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "string_type": "bytes"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.fullmatch() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.behavior",
+      "text_model": "bytes"
     }
   ],
   "diagnostics": {
@@ -1091,7 +1467,7 @@
         },
         "outcomes": {
           "exception": 6,
-          "success": 16
+          "success": 22
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -1099,13 +1475,13 @@
         }
       },
       "rebar": {
-        "exception_case_count": 18,
+        "exception_case_count": 24,
         "exception_types": {
-          "NotImplementedError": 18
+          "NotImplementedError": 24
         },
         "outcomes": {
           "success": 4,
-          "unimplemented": 18
+          "unimplemented": 24
         },
         "warning_case_count": 0,
         "warning_categories": {}
@@ -1198,6 +1574,28 @@
       ]
     },
     {
+      "case_count": 2,
+      "id": "fullmatch_result_shape",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
       "case_count": 1,
       "id": "grouping",
       "layers": [
@@ -1256,6 +1654,27 @@
       },
       "text_models": [
         "bytes"
+      ]
+    },
+    {
+      "case_count": 2,
+      "id": "match_result_shape",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
       ]
     },
     {
@@ -1319,23 +1738,99 @@
       "text_models": [
         "str"
       ]
+    },
+    {
+      "case_count": 2,
+      "id": "search_result_shape",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
     }
   ],
   "fixtures": {
-    "case_count": 22,
-    "manifest_count": 2,
+    "case_count": 28,
+    "manifest_count": 3,
     "manifest_ids": [
       "parser-matrix",
-      "public-api-surface"
+      "public-api-surface",
+      "match-behavior-smoke"
     ],
     "paths": [
       "tests/conformance/fixtures/parser_matrix.json",
-      "tests/conformance/fixtures/public_api_surface.json"
+      "tests/conformance/fixtures/public_api_surface.json",
+      "tests/conformance/fixtures/match_behavior_smoke.json"
     ]
   },
-  "generated_at": "2026-03-11T23:42:04Z",
+  "generated_at": "2026-03-12T00:09:45Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
+    "match_behavior": {
+      "case_count": 6,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 6,
+            "exception_types": {
+              "NotImplementedError": 6
+            },
+            "outcomes": {
+              "unimplemented": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "fullmatch_result_shape",
+        "match_result_shape",
+        "search_result_shape"
+      ],
+      "manifest_ids": [
+        "match-behavior-smoke"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "suite_ids": [
+        "match.behavior"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 6
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
     "module_api_surface": {
       "case_count": 7,
       "diagnostics": {
@@ -1451,7 +1946,7 @@
       ]
     }
   },
-  "phase": "phase2-public-api-surface-pack",
+  "phase": "phase3-match-behavior-pack",
   "schema_version": "1.0",
   "suite": "correctness",
   "suites": [
@@ -1774,14 +2269,166 @@
         "unimplemented_cases": 0
       },
       "text_models": []
+    },
+    {
+      "case_count": 6,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 6,
+            "exception_types": {
+              "NotImplementedError": 6
+            },
+            "outcomes": {
+              "unimplemented": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "fullmatch_result_shape",
+        "match_result_shape",
+        "search_result_shape"
+      ],
+      "id": "match.behavior",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "match-behavior-smoke"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 6
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 1,
+            "exception_types": {
+              "NotImplementedError": 1
+            },
+            "outcomes": {
+              "unimplemented": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "fullmatch_result_shape"
+      ],
+      "id": "match.behavior.bytes",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "match-behavior-smoke"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "bytes"
+      ]
+    },
+    {
+      "case_count": 5,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 5
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 5,
+            "exception_types": {
+              "NotImplementedError": 5
+            },
+            "outcomes": {
+              "unimplemented": 5
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "fullmatch_result_shape",
+        "match_result_shape",
+        "search_result_shape"
+      ],
+      "id": "match.behavior.str",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "match-behavior-smoke"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 5,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 5,
+        "unimplemented_cases": 5
+      },
+      "text_models": [
+        "str"
+      ]
     }
   ],
   "summary": {
-    "executed_cases": 22,
+    "executed_cases": 28,
     "failed_cases": 0,
     "passed_cases": 4,
     "skipped_cases": 0,
-    "total_cases": 22,
-    "unimplemented_cases": 18
+    "total_cases": 28,
+    "unimplemented_cases": 24
   }
 }

@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "manifest_id": "match-behavior-smoke",
+  "layer": "match_behavior",
+  "suite_id": "match.behavior",
+  "defaults": {
+    "operation": "module_call",
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "search-str-success-groups",
+      "family": "search_result_shape",
+      "helper": "search",
+      "args": ["(?P<head>ab)(c)", "zzabczz"],
+      "categories": ["search", "success", "groups", "str"],
+      "notes": [
+        "Captures a successful module-level search result with span and group payloads."
+      ]
+    },
+    {
+      "id": "search-str-no-match",
+      "family": "search_result_shape",
+      "helper": "search",
+      "args": ["abc", "zzz"],
+      "categories": ["search", "no-match", "str"],
+      "notes": [
+        "Pins the no-match module-level search path as a None result."
+      ]
+    },
+    {
+      "id": "match-str-success-groups",
+      "family": "match_result_shape",
+      "helper": "match",
+      "args": ["(?P<head>a)(b+)", "abbb"],
+      "categories": ["match", "success", "groups", "str"],
+      "notes": [
+        "Captures a successful anchored match with named and positional groups."
+      ]
+    },
+    {
+      "id": "match-str-no-match",
+      "family": "match_result_shape",
+      "helper": "match",
+      "args": ["abc", "zabc"],
+      "categories": ["match", "no-match", "str"],
+      "notes": [
+        "Pins the no-match behavior for module-level match when the string starts later."
+      ]
+    },
+    {
+      "id": "fullmatch-str-success-lastgroup",
+      "family": "fullmatch_result_shape",
+      "helper": "fullmatch",
+      "args": ["(?P<num>\\d+)", "123"],
+      "categories": ["fullmatch", "success", "named-group", "str"],
+      "notes": [
+        "Exercises fullmatch truthiness plus named-group payloads for str results."
+      ]
+    },
+    {
+      "id": "fullmatch-bytes-success-mirrored",
+      "family": "fullmatch_result_shape",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "(?P<num>\\d+)"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "123"
+        }
+      ],
+      "categories": ["fullmatch", "success", "named-group", "bytes", "mirror"],
+      "notes": [
+        "Mirrors the str fullmatch success case with bytes payloads and bytes-typed captures."
+      ]
+    }
+  ]
+}

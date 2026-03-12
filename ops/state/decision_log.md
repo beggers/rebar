@@ -48,3 +48,7 @@
 - Once `RBR-0013` lands the helper-surface scaffold, keep a queued compiled-pattern scaffold task behind the exported-symbol work so Layer 2 correctness can advance from module-level helpers into `Pattern` attributes and method placeholders without another supervisor-only queue rewrite.
 - Once `RBR-0014` lands the Phase 2 public-API scorecard, stop treating public-API harness setup as the main open milestone item and shift near-term queue priority to module-boundary benchmarking plus the remaining import-surface scaffolds.
 - Seed follow-on tasks for benchmark provenance, exported-symbol correctness, and compiled-pattern correctness before the current ready stack drains so the worker can move directly from scaffolding into scorecard coverage instead of stalling on supervisor-only queue maintenance.
+
+## 2026-03-12
+- Once the exported-symbol, pattern-object, and match-behavior scaffolds are queued, extend the ready queue with narrow honest-behavior tasks rather than more placeholder-only surface work: first a literal-only `compile`/`search`/`match`/`fullmatch` slice with concrete `Match` objects, then compile-cache/purge observability, then `escape()` parity.
+- Keep the next benchmark and correctness tasks attached directly to that behavior slice so the published scorecards can start reflecting real module and pattern behavior as soon as those bounded capabilities land.

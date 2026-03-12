@@ -1,4 +1,4 @@
-"""Differential correctness harness for parser and public API conformance cases."""
+"""Differential correctness harness for parser, public API, and match-behavior cases."""
 
 from __future__ import annotations
 
@@ -29,6 +29,7 @@ FIXTURE_SCHEMA_VERSION = 1
 DEFAULT_FIXTURE_PATHS = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "public_api_surface.json",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "match_behavior_smoke.json",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 PHASE_BY_LAYER = {
