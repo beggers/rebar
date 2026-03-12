@@ -33,6 +33,7 @@ DEFAULT_FIXTURE_PATHS = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "exported_symbol_surface.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "pattern_object_surface.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "module_workflow_surface.json",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "collection_replacement_workflows.json",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 PHASE_BY_LAYER = {
@@ -135,9 +136,19 @@ def _materialize_fixture_value(value: Any) -> Any:
     if isinstance(value, list):
         return [_materialize_fixture_value(item) for item in value]
     if isinstance(value, dict):
-        if value.get("type") == "bytes":
+        value_type = value.get("type")
+        if value_type == "bytes":
             encoding = str(value.get("encoding", "latin-1"))
             return str(value["value"]).encode(encoding)
+        if value_type == "callable_constant":
+            constant_value = _materialize_fixture_value(value.get("value"))
+
+            def _callable_constant(_match: Any, *, _value: Any = constant_value) -> Any:
+                return _value
+
+            _callable_constant.__name__ = "callable_constant"
+            _callable_constant.__qualname__ = "callable_constant"
+            return _callable_constant
         return {
             str(key): _materialize_fixture_value(item_value)
             for key, item_value in value.items()
@@ -262,6 +273,18 @@ def _normalize_value(value: Any) -> Any:
         return [_normalize_value(item) for item in value]
     if isinstance(value, dict):
         return {str(key): _normalize_value(item) for key, item in sorted(value.items())}
+    if callable(value) and not isinstance(value, type):
+        return {
+            "type": "callable",
+            "module": getattr(value, "__module__", type(value).__module__),
+            "qualname": getattr(value, "__qualname__", getattr(value, "__name__", type(value).__qualname__)),
+        }
+    if hasattr(value, "__iter__") and hasattr(value, "__next__"):
+        items = [_normalize_value(item) for item in value]
+        return {
+            "items": items,
+            "exhausted": next(value, None) is None,
+        }
     if all(hasattr(value, attribute) for attribute in ("pattern", "flags", "groups", "groupindex")):
         return normalize_pattern_metadata(value)
     if all(hasattr(value, attribute) for attribute in ("span", "group", "groups", "groupdict")):

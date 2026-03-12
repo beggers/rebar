@@ -3117,6 +3117,958 @@
       "operation": "module_call",
       "suite_id": "module.workflow",
       "text_model": "bytes"
+    },
+    {
+      "args": [
+        "abc",
+        "abczzabc"
+      ],
+      "categories": [
+        "workflow",
+        "split",
+        "literal",
+        "str",
+        "leading",
+        "trailing",
+        "repeated"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "split_workflow",
+      "flags": 0,
+      "helper": "split",
+      "id": "module-split-str-leading-trailing",
+      "layer": "module_workflow",
+      "manifest_id": "collection-replacement-workflows",
+      "notes": [
+        "Pins module-level literal split behavior with repeated matches and both leading and trailing empty fields."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": [
+            "",
+            "zz",
+            ""
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": [
+            "",
+            "zz",
+            ""
+          ],
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abc",
+        "zzz"
+      ],
+      "categories": [
+        "workflow",
+        "split",
+        "literal",
+        "str",
+        "no-match"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "split_workflow",
+      "flags": 0,
+      "helper": "split",
+      "id": "module-split-str-no-match",
+      "layer": "module_workflow",
+      "manifest_id": "collection-replacement-workflows",
+      "notes": [
+        "Observes that module split returns the original string when no literal match is present."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": [
+            "zzz"
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": [
+            "zzz"
+          ],
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        {
+          "encoding": "latin-1",
+          "value": "abczzabc"
+        },
+        1
+      ],
+      "categories": [
+        "workflow",
+        "split",
+        "literal",
+        "bytes",
+        "maxsplit"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "split_workflow",
+      "flags": 0,
+      "helper": "split",
+      "id": "pattern-split-bytes-maxsplit",
+      "layer": "module_workflow",
+      "manifest_id": "collection-replacement-workflows",
+      "notes": [
+        "Carries bounded maxsplit behavior through the compiled bytes Pattern.split path."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": [
+            {
+              "encoding": "latin-1",
+              "value": ""
+            },
+            {
+              "encoding": "latin-1",
+              "value": "zzabc"
+            }
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": [
+            {
+              "encoding": "latin-1",
+              "value": ""
+            },
+            {
+              "encoding": "latin-1",
+              "value": "zzabc"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "abc",
+      "suite_id": "collection.replacement.workflow",
+      "text_model": "bytes"
+    },
+    {
+      "args": [
+        {
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        {
+          "encoding": "latin-1",
+          "value": "zabcabc"
+        }
+      ],
+      "categories": [
+        "workflow",
+        "findall",
+        "literal",
+        "bytes",
+        "repeated"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "findall_workflow",
+      "flags": 0,
+      "helper": "findall",
+      "id": "module-findall-bytes-repeated",
+      "layer": "module_workflow",
+      "manifest_id": "collection-replacement-workflows",
+      "notes": [
+        "Pins bytes-valued module findall behavior for repeated literal matches."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": [
+            {
+              "encoding": "latin-1",
+              "value": "abc"
+            },
+            {
+              "encoding": "latin-1",
+              "value": "abc"
+            }
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": [
+            {
+              "encoding": "latin-1",
+              "value": "abc"
+            },
+            {
+              "encoding": "latin-1",
+              "value": "abc"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.workflow",
+      "text_model": "bytes"
+    },
+    {
+      "args": [
+        "zzz"
+      ],
+      "categories": [
+        "workflow",
+        "findall",
+        "literal",
+        "str",
+        "no-match"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "findall_workflow",
+      "flags": 0,
+      "helper": "findall",
+      "id": "pattern-findall-str-no-match",
+      "layer": "module_workflow",
+      "manifest_id": "collection-replacement-workflows",
+      "notes": [
+        "Observes that the bound Pattern.findall path returns an empty list when the literal does not occur."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": [],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": [],
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "abc",
+      "suite_id": "collection.replacement.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abc",
+        "zabcabc"
+      ],
+      "categories": [
+        "workflow",
+        "finditer",
+        "literal",
+        "str",
+        "repeated",
+        "iterator-exhaustion"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "finditer_workflow",
+      "flags": 0,
+      "helper": "finditer",
+      "id": "module-finditer-str-repeated",
+      "layer": "module_workflow",
+      "manifest_id": "collection-replacement-workflows",
+      "notes": [
+        "Materializes the module-level finditer result so the scorecard captures ordered matches and iterator exhaustion."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "exhausted": true,
+            "items": [
+              {
+                "endpos": 7,
+                "group0": "abc",
+                "groupdict": {},
+                "groups": [],
+                "lastgroup": null,
+                "lastindex": null,
+                "matched": true,
+                "pos": 0,
+                "span": [
+                  1,
+                  4
+                ],
+                "string_type": "str"
+              },
+              {
+                "endpos": 7,
+                "group0": "abc",
+                "groupdict": {},
+                "groups": [],
+                "lastgroup": null,
+                "lastindex": null,
+                "matched": true,
+                "pos": 0,
+                "span": [
+                  4,
+                  7
+                ],
+                "string_type": "str"
+              }
+            ]
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "exhausted": true,
+            "items": [
+              {
+                "endpos": 7,
+                "group0": "abc",
+                "groupdict": {},
+                "groups": [],
+                "lastgroup": null,
+                "lastindex": null,
+                "matched": true,
+                "pos": 0,
+                "span": [
+                  1,
+                  4
+                ],
+                "string_type": "str"
+              },
+              {
+                "endpos": 7,
+                "group0": "abc",
+                "groupdict": {},
+                "groups": [],
+                "lastgroup": null,
+                "lastindex": null,
+                "matched": true,
+                "pos": 0,
+                "span": [
+                  4,
+                  7
+                ],
+                "string_type": "str"
+              }
+            ]
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        {
+          "encoding": "latin-1",
+          "value": "zabcabcx"
+        },
+        1,
+        7
+      ],
+      "categories": [
+        "workflow",
+        "finditer",
+        "literal",
+        "bytes",
+        "bounded",
+        "iterator-exhaustion"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "finditer_workflow",
+      "flags": 0,
+      "helper": "finditer",
+      "id": "pattern-finditer-bytes-bounded",
+      "layer": "module_workflow",
+      "manifest_id": "collection-replacement-workflows",
+      "notes": [
+        "Pins the bounded compiled-pattern bytes finditer path, including its exhausted terminal state."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "exhausted": true,
+            "items": [
+              {
+                "endpos": 7,
+                "group0": {
+                  "encoding": "latin-1",
+                  "value": "abc"
+                },
+                "groupdict": {},
+                "groups": [],
+                "lastgroup": null,
+                "lastindex": null,
+                "matched": true,
+                "pos": 1,
+                "span": [
+                  1,
+                  4
+                ],
+                "string_type": "bytes"
+              },
+              {
+                "endpos": 7,
+                "group0": {
+                  "encoding": "latin-1",
+                  "value": "abc"
+                },
+                "groupdict": {},
+                "groups": [],
+                "lastgroup": null,
+                "lastindex": null,
+                "matched": true,
+                "pos": 1,
+                "span": [
+                  4,
+                  7
+                ],
+                "string_type": "bytes"
+              }
+            ]
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "exhausted": true,
+            "items": [
+              {
+                "endpos": 7,
+                "group0": {
+                  "encoding": "latin-1",
+                  "value": "abc"
+                },
+                "groupdict": {},
+                "groups": [],
+                "lastgroup": null,
+                "lastindex": null,
+                "matched": true,
+                "pos": 1,
+                "span": [
+                  1,
+                  4
+                ],
+                "string_type": "bytes"
+              },
+              {
+                "endpos": 7,
+                "group0": {
+                  "encoding": "latin-1",
+                  "value": "abc"
+                },
+                "groupdict": {},
+                "groups": [],
+                "lastgroup": null,
+                "lastindex": null,
+                "matched": true,
+                "pos": 1,
+                "span": [
+                  4,
+                  7
+                ],
+                "string_type": "bytes"
+              }
+            ]
+          },
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "abc",
+      "suite_id": "collection.replacement.workflow",
+      "text_model": "bytes"
+    },
+    {
+      "args": [
+        "abc",
+        "x",
+        "abcabc"
+      ],
+      "categories": [
+        "workflow",
+        "sub",
+        "literal",
+        "str",
+        "repeated"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "replacement_workflow",
+      "flags": 0,
+      "helper": "sub",
+      "id": "module-sub-str-repeated",
+      "layer": "module_workflow",
+      "manifest_id": "collection-replacement-workflows",
+      "notes": [
+        "Pins module-level literal replacement behavior for repeated str matches."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": "xx",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": "xx",
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        {
+          "encoding": "latin-1",
+          "value": "abc"
+        },
+        {
+          "encoding": "latin-1",
+          "value": "x"
+        },
+        {
+          "encoding": "latin-1",
+          "value": "abcabc"
+        },
+        1
+      ],
+      "categories": [
+        "workflow",
+        "subn",
+        "literal",
+        "bytes",
+        "count"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "replacement_workflow",
+      "flags": 0,
+      "helper": "subn",
+      "id": "module-subn-bytes-count",
+      "layer": "module_workflow",
+      "manifest_id": "collection-replacement-workflows",
+      "notes": [
+        "Carries bounded replacement-count behavior through the bytes-valued module subn helper."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": [
+            {
+              "encoding": "latin-1",
+              "value": "xabc"
+            },
+            1
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": [
+            {
+              "encoding": "latin-1",
+              "value": "xabc"
+            },
+            1
+          ],
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.workflow",
+      "text_model": "bytes"
+    },
+    {
+      "args": [
+        "x",
+        "zzz"
+      ],
+      "categories": [
+        "workflow",
+        "sub",
+        "literal",
+        "str",
+        "no-match"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "replacement_workflow",
+      "flags": 0,
+      "helper": "sub",
+      "id": "pattern-sub-str-no-match",
+      "layer": "module_workflow",
+      "manifest_id": "collection-replacement-workflows",
+      "notes": [
+        "Observes that the compiled-pattern replacement path leaves the string unchanged when no match exists."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": "zzz",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": "zzz",
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "abc",
+      "suite_id": "collection.replacement.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "x",
+        "abcabc",
+        1
+      ],
+      "categories": [
+        "workflow",
+        "subn",
+        "literal",
+        "str",
+        "count"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "replacement_workflow",
+      "flags": 0,
+      "helper": "subn",
+      "id": "pattern-subn-str-count",
+      "layer": "module_workflow",
+      "manifest_id": "collection-replacement-workflows",
+      "notes": [
+        "Pins the compiled-pattern str subn path for a bounded single replacement."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": [
+            "xabc",
+            1
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": [
+            "xabc",
+            1
+          ],
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "abc",
+      "suite_id": "collection.replacement.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abc",
+        "\\g<0>x",
+        "abc"
+      ],
+      "categories": [
+        "workflow",
+        "sub",
+        "unsupported",
+        "replacement-template",
+        "str"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "unsupported_replacement_workflow",
+      "flags": 0,
+      "helper": "sub",
+      "id": "module-sub-template-str",
+      "layer": "module_workflow",
+      "manifest_id": "collection-replacement-workflows",
+      "notes": [
+        "Keeps template-based replacement explicit: CPython succeeds, while the current literal-only rebar slice leaves backslash templates unimplemented."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": "abcx",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.sub() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abc",
+        {
+          "module": "__main__",
+          "qualname": "callable_constant",
+          "type": "callable"
+        },
+        "abcabc"
+      ],
+      "categories": [
+        "workflow",
+        "sub",
+        "unsupported",
+        "callable-replacement",
+        "str"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "unsupported_replacement_workflow",
+      "flags": 0,
+      "helper": "sub",
+      "id": "module-sub-callable-str",
+      "layer": "module_workflow",
+      "manifest_id": "collection-replacement-workflows",
+      "notes": [
+        "Keeps callable replacements explicit instead of counting them as supported literal behavior."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": "xx",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.sub() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "(abc)",
+        "\\1x",
+        "abc"
+      ],
+      "categories": [
+        "workflow",
+        "sub",
+        "unsupported",
+        "grouping-dependent",
+        "str"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "unsupported_replacement_workflow",
+      "flags": 0,
+      "helper": "sub",
+      "id": "module-sub-grouping-template",
+      "layer": "module_workflow",
+      "manifest_id": "collection-replacement-workflows",
+      "notes": [
+        "Makes grouping-dependent replacement templates visible as honest compatibility debt because the literal-only slice does not compile grouped patterns."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": "abcx",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.sub() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a.c",
+        "abc"
+      ],
+      "categories": [
+        "workflow",
+        "findall",
+        "unsupported",
+        "non-literal",
+        "str"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "unsupported_collection_workflow",
+      "flags": 0,
+      "helper": "findall",
+      "id": "module-findall-nonliteral-str",
+      "layer": "module_workflow",
+      "manifest_id": "collection-replacement-workflows",
+      "notes": [
+        "Keeps non-literal collection behavior explicit rather than letting it disappear behind the supported literal-only pass set."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": [
+            "abc"
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.workflow",
+      "text_model": "str"
     }
   ],
   "diagnostics": {
@@ -3129,7 +4081,7 @@
         },
         "outcomes": {
           "exception": 8,
-          "success": 46
+          "success": 61
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -3137,15 +4089,15 @@
         }
       },
       "rebar": {
-        "exception_case_count": 15,
+        "exception_case_count": 19,
         "exception_types": {
-          "NotImplementedError": 13,
+          "NotImplementedError": 17,
           "TypeError": 2
         },
         "outcomes": {
           "exception": 2,
-          "success": 39,
-          "unimplemented": 13
+          "success": 50,
+          "unimplemented": 17
         },
         "warning_case_count": 0,
         "warning_categories": {}
@@ -3405,6 +4357,52 @@
         "unimplemented_cases": 0
       },
       "text_models": []
+    },
+    {
+      "case_count": 2,
+      "id": "findall_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 2,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "id": "finditer_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 2,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
     },
     {
       "case_count": 4,
@@ -3711,6 +4709,29 @@
       ]
     },
     {
+      "case_count": 4,
+      "id": "replacement_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 4,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
       "case_count": 2,
       "id": "search_result_shape",
       "layers": [
@@ -3730,18 +4751,84 @@
       "text_models": [
         "str"
       ]
+    },
+    {
+      "case_count": 3,
+      "id": "split_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 3,
+        "failed_cases": 0,
+        "passed_cases": 3,
+        "skipped_cases": 0,
+        "total_cases": 3,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "unsupported_collection_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 3,
+      "id": "unsupported_replacement_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 3,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 3,
+        "unimplemented_cases": 3
+      },
+      "text_models": [
+        "str"
+      ]
     }
   ],
   "fixtures": {
-    "case_count": 54,
-    "manifest_count": 6,
+    "case_count": 69,
+    "manifest_count": 7,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
       "match-behavior-smoke",
       "exported-symbol-surface",
       "pattern-object-surface",
-      "module-workflow-surface"
+      "module-workflow-surface",
+      "collection-replacement-workflows"
     ],
     "paths": [
       "tests/conformance/fixtures/parser_matrix.json",
@@ -3749,10 +4836,11 @@
       "tests/conformance/fixtures/match_behavior_smoke.json",
       "tests/conformance/fixtures/exported_symbol_surface.json",
       "tests/conformance/fixtures/pattern_object_surface.json",
-      "tests/conformance/fixtures/module_workflow_surface.json"
+      "tests/conformance/fixtures/module_workflow_surface.json",
+      "tests/conformance/fixtures/collection_replacement_workflows.json"
     ]
   },
-  "generated_at": "2026-03-12T02:22:06Z",
+  "generated_at": "2026-03-12T02:59:25Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -3872,23 +4960,26 @@
       "text_models": []
     },
     "module_workflow": {
-      "case_count": 10,
+      "case_count": 25,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
             "exception_case_count": 0,
             "exception_types": {},
             "outcomes": {
-              "success": 10
+              "success": 25
             },
             "warning_case_count": 0,
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 0,
-            "exception_types": {},
+            "exception_case_count": 4,
+            "exception_types": {
+              "NotImplementedError": 4
+            },
             "outcomes": {
-              "success": 10
+              "success": 21,
+              "unimplemented": 4
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -3902,9 +4993,16 @@
         "cache_workflow",
         "compile_workflow",
         "escape_workflow",
-        "purge_workflow"
+        "findall_workflow",
+        "finditer_workflow",
+        "purge_workflow",
+        "replacement_workflow",
+        "split_workflow",
+        "unsupported_collection_workflow",
+        "unsupported_replacement_workflow"
       ],
       "manifest_ids": [
+        "collection-replacement-workflows",
         "module-workflow-surface"
       ],
       "operations": [
@@ -3915,15 +5013,16 @@
         "purge_workflow"
       ],
       "suite_ids": [
+        "collection.replacement.workflow",
         "module.workflow"
       ],
       "summary": {
-        "executed_cases": 10,
+        "executed_cases": 25,
         "failed_cases": 0,
-        "passed_cases": 10,
+        "passed_cases": 21,
         "skipped_cases": 0,
-        "total_cases": 10,
-        "unimplemented_cases": 0
+        "total_cases": 25,
+        "unimplemented_cases": 4
       },
       "text_models": [
         "bytes",
@@ -5360,14 +6459,285 @@
       "text_models": [
         "str"
       ]
+    },
+    {
+      "case_count": 15,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 15
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 4,
+            "exception_types": {
+              "NotImplementedError": 4
+            },
+            "outcomes": {
+              "success": 11,
+              "unimplemented": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "findall_workflow",
+        "finditer_workflow",
+        "replacement_workflow",
+        "split_workflow",
+        "unsupported_collection_workflow",
+        "unsupported_replacement_workflow"
+      ],
+      "id": "collection.replacement.workflow",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "collection-replacement-workflows"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 15,
+        "failed_cases": 0,
+        "passed_cases": 11,
+        "skipped_cases": 0,
+        "total_cases": 15,
+        "unimplemented_cases": 4
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 4,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "findall_workflow",
+        "finditer_workflow",
+        "replacement_workflow",
+        "split_workflow"
+      ],
+      "id": "collection.replacement.workflow.bytes",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "collection-replacement-workflows"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 4,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes"
+      ]
+    },
+    {
+      "case_count": 11,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 11
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 4,
+            "exception_types": {
+              "NotImplementedError": 4
+            },
+            "outcomes": {
+              "success": 7,
+              "unimplemented": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "findall_workflow",
+        "finditer_workflow",
+        "replacement_workflow",
+        "split_workflow",
+        "unsupported_collection_workflow",
+        "unsupported_replacement_workflow"
+      ],
+      "id": "collection.replacement.workflow.str",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "collection-replacement-workflows"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 11,
+        "failed_cases": 0,
+        "passed_cases": 7,
+        "skipped_cases": 0,
+        "total_cases": 11,
+        "unimplemented_cases": 4
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 10,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 10
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 4,
+            "exception_types": {
+              "NotImplementedError": 4
+            },
+            "outcomes": {
+              "success": 6,
+              "unimplemented": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "findall_workflow",
+        "finditer_workflow",
+        "replacement_workflow",
+        "split_workflow",
+        "unsupported_collection_workflow",
+        "unsupported_replacement_workflow"
+      ],
+      "id": "collection.replacement.workflow.module_call",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "collection-replacement-workflows"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 10,
+        "failed_cases": 0,
+        "passed_cases": 6,
+        "skipped_cases": 0,
+        "total_cases": 10,
+        "unimplemented_cases": 4
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 5,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 5
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 5
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "findall_workflow",
+        "finditer_workflow",
+        "replacement_workflow",
+        "split_workflow"
+      ],
+      "id": "collection.replacement.workflow.pattern_call",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "collection-replacement-workflows"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 5,
+        "failed_cases": 0,
+        "passed_cases": 5,
+        "skipped_cases": 0,
+        "total_cases": 5,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
     }
   ],
   "summary": {
-    "executed_cases": 54,
+    "executed_cases": 69,
     "failed_cases": 8,
-    "passed_cases": 33,
+    "passed_cases": 44,
     "skipped_cases": 0,
-    "total_cases": 54,
-    "unimplemented_cases": 13
+    "total_cases": 69,
+    "unimplemented_cases": 17
   }
 }
