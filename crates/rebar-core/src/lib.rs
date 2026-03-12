@@ -448,6 +448,17 @@ struct NestedCaptureLiteralPattern<'a> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+struct NestedAlternationLiteralPattern<'a> {
+    prefix: &'a str,
+    outer_name: Option<&'a str>,
+    outer_prefix: &'a str,
+    inner_capture_name: Option<&'a str>,
+    inner_branches: Vec<&'a str>,
+    outer_suffix: &'a str,
+    suffix: &'a str,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct LiteralCapture<'a> {
     body: &'a str,
     name: Option<&'a str>,
@@ -634,6 +645,48 @@ impl<'a> NestedCaptureLiteralPattern<'a> {
         let outer_start = match_start + self.prefix.chars().count();
         let inner_start = outer_start + self.outer_prefix.chars().count();
         let inner_end = inner_start + self.inner_capture.body.chars().count();
+        let outer_end = inner_end + self.outer_suffix.chars().count();
+        vec![
+            Some((outer_start, outer_end)),
+            Some((inner_start, inner_end)),
+        ]
+    }
+
+    fn lastindex(&self) -> usize {
+        1
+    }
+}
+
+impl<'a> NestedAlternationLiteralPattern<'a> {
+    fn group_count(&self) -> usize {
+        2
+    }
+
+    fn named_groups(&self) -> Vec<NamedGroup> {
+        let mut groups = Vec::new();
+        if let Some(name) = self.outer_name {
+            groups.push(NamedGroup {
+                name: name.to_string(),
+                index: 1,
+            });
+        }
+        if let Some(name) = self.inner_capture_name {
+            groups.push(NamedGroup {
+                name: name.to_string(),
+                index: 2,
+            });
+        }
+        groups
+    }
+
+    fn group_spans_for_branch_len(
+        &self,
+        match_start: usize,
+        branch_len: usize,
+    ) -> Vec<Option<(usize, usize)>> {
+        let outer_start = match_start + self.prefix.chars().count();
+        let inner_start = outer_start + self.outer_prefix.chars().count();
+        let inner_end = inner_start + branch_len;
         let outer_end = inner_end + self.outer_suffix.chars().count();
         vec![
             Some((outer_start, outer_end)),
@@ -833,6 +886,21 @@ fn compile_known_supported_case(
         {
             let grouped_pattern = parse_nested_capture_literal_pattern_str(pattern)
                 .expect("guarded nested capture literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
+                warning: None,
+            })
+        }
+        PatternRef::Str(pattern)
+            if parse_nested_alternation_literal_pattern_str(pattern).is_some()
+                && normalized_flags == FLAG_UNICODE =>
+        {
+            let grouped_pattern = parse_nested_alternation_literal_pattern_str(pattern)
+                .expect("guarded nested alternation literal");
             Some(CompileOutcome {
                 status: CompileStatus::Compiled,
                 normalized_flags,
@@ -1078,6 +1146,85 @@ fn parse_nested_capture_literal_pattern_str(
             body: inner_body,
             name: inner_name,
         },
+        outer_suffix,
+        suffix,
+    })
+}
+
+fn parse_nested_alternation_literal_pattern_str(
+    pattern: &str,
+) -> Option<NestedAlternationLiteralPattern<'_>> {
+    let open_offset = pattern.find('(')?;
+    let prefix = &pattern[..open_offset];
+    if prefix.is_empty() || prefix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let remainder = &pattern[open_offset + 1..];
+    let (outer_name, outer_body) = if let Some(named_remainder) = remainder.strip_prefix("?P<") {
+        let name_end = named_remainder.find('>')?;
+        let name = &named_remainder[..name_end];
+        if !is_supported_group_name(name) {
+            return None;
+        }
+        (Some(name), &named_remainder[name_end + 1..])
+    } else {
+        (None, remainder)
+    };
+
+    let inner_open_offset = outer_body.find('(')?;
+    let outer_prefix = &outer_body[..inner_open_offset];
+    if outer_prefix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let inner_remainder = &outer_body[inner_open_offset + 1..];
+    let (inner_capture_name, inner_body, inner_close_offset) =
+        if let Some(named_remainder) = inner_remainder.strip_prefix("?P<") {
+            let name_end = named_remainder.find('>')?;
+            let name = &named_remainder[..name_end];
+            if !is_supported_group_name(name) {
+                return None;
+            }
+            let body = &named_remainder[name_end + 1..];
+            let close_offset = body.find(')')?;
+            (
+                Some(name),
+                &body[..close_offset],
+                3 + name_end + 1 + close_offset,
+            )
+        } else {
+            let close_offset = inner_remainder.find(')')?;
+            (None, &inner_remainder[..close_offset], close_offset)
+        };
+
+    let inner_branches: Vec<&str> = inner_body.split('|').collect();
+    if inner_branches.len() < 2
+        || inner_branches
+            .iter()
+            .any(|branch| branch.is_empty() || branch.chars().any(is_meta_character))
+    {
+        return None;
+    }
+
+    let outer_suffix_and_remainder = &outer_body[inner_open_offset + inner_close_offset + 2..];
+    let outer_close_offset = outer_suffix_and_remainder.find(')')?;
+    let outer_suffix = &outer_suffix_and_remainder[..outer_close_offset];
+    if outer_suffix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let suffix = &outer_suffix_and_remainder[outer_close_offset + 1..];
+    if suffix.is_empty() || suffix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    Some(NestedAlternationLiteralPattern {
+        prefix,
+        outer_name,
+        outer_prefix,
+        inner_capture_name,
+        inner_branches,
         outer_suffix,
         suffix,
     })
@@ -1420,6 +1567,31 @@ fn literal_match_str(
                     .map(|(start, _)| grouped_pattern.group_spans(start))
                     .unwrap_or_default();
                 (span, group_spans)
+            } else if let Some(grouped_pattern) =
+                parse_nested_alternation_literal_pattern_str(pattern_value)
+            {
+                if flags != FLAG_UNICODE {
+                    return MatchOutcome {
+                        status: MatchStatus::Unsupported,
+                        pos: normalized_pos,
+                        endpos: normalized_endpos,
+                        span: None,
+                        group_spans: Vec::new(),
+                        lastindex: None,
+                    };
+                }
+
+                find_nested_alternation_match_span_str(
+                    &grouped_pattern,
+                    flags,
+                    mode,
+                    &string_chars,
+                    normalized_pos,
+                    normalized_endpos,
+                )
+                .map_or((None, Vec::new()), |(span, group_spans)| {
+                    (Some(span), group_spans)
+                })
             } else {
                 return MatchOutcome {
                     status: MatchStatus::Unsupported,
@@ -1446,6 +1618,10 @@ fn literal_match_str(
             PatternRef::Str(pattern_value) => {
                 parse_nested_capture_literal_pattern_str(pattern_value)
                     .map(|grouped_pattern| grouped_pattern.lastindex())
+                    .or_else(|| {
+                        parse_nested_alternation_literal_pattern_str(pattern_value)
+                            .map(|grouped_pattern| grouped_pattern.lastindex())
+                    })
                     .or_else(|| lastindex_from_group_spans(&group_spans))
             }
             PatternRef::Bytes(_) => None,
@@ -2011,6 +2187,95 @@ fn find_grouped_alternation_match_span_str(
     }
 }
 
+fn nested_alternation_matches_at_str(
+    pattern: &NestedAlternationLiteralPattern<'_>,
+    flags: i32,
+    string: &[char],
+    start: usize,
+    endpos: usize,
+) -> Option<(usize, usize)> {
+    let prefix_chars: Vec<char> = pattern.prefix.chars().collect();
+    let outer_prefix_chars: Vec<char> = pattern.outer_prefix.chars().collect();
+    let outer_suffix_chars: Vec<char> = pattern.outer_suffix.chars().collect();
+    let suffix_chars: Vec<char> = pattern.suffix.chars().collect();
+    if !literal_matches_at_str(prefix_chars.as_slice(), flags, string, start, endpos) {
+        return None;
+    }
+
+    let outer_start = start + prefix_chars.len();
+    if !literal_matches_at_str(
+        outer_prefix_chars.as_slice(),
+        flags,
+        string,
+        outer_start,
+        endpos,
+    ) {
+        return None;
+    }
+
+    let inner_start = outer_start + outer_prefix_chars.len();
+    pattern.inner_branches.iter().find_map(|branch| {
+        let branch_chars: Vec<char> = branch.chars().collect();
+        let branch_len = branch_chars.len();
+        let outer_suffix_start = inner_start + branch_len;
+        let match_end = outer_suffix_start + outer_suffix_chars.len() + suffix_chars.len();
+        (literal_matches_at_str(branch_chars.as_slice(), flags, string, inner_start, endpos)
+            && literal_matches_at_str(
+                outer_suffix_chars.as_slice(),
+                flags,
+                string,
+                outer_suffix_start,
+                endpos,
+            )
+            && literal_matches_at_str(
+                suffix_chars.as_slice(),
+                flags,
+                string,
+                outer_suffix_start + outer_suffix_chars.len(),
+                endpos,
+            ))
+        .then_some((branch_len, match_end))
+    })
+}
+
+fn find_nested_alternation_match_span_str(
+    pattern: &NestedAlternationLiteralPattern<'_>,
+    flags: i32,
+    mode: MatchMode,
+    string: &[char],
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    match mode {
+        MatchMode::Search => (pos..=endpos).find_map(|start| {
+            nested_alternation_matches_at_str(pattern, flags, string, start, endpos).map(
+                |(branch_len, match_end)| {
+                    (
+                        (start, match_end),
+                        pattern.group_spans_for_branch_len(start, branch_len),
+                    )
+                },
+            )
+        }),
+        MatchMode::Match => nested_alternation_matches_at_str(pattern, flags, string, pos, endpos)
+            .map(|(branch_len, match_end)| {
+                (
+                    (pos, match_end),
+                    pattern.group_spans_for_branch_len(pos, branch_len),
+                )
+            }),
+        MatchMode::Fullmatch => nested_alternation_matches_at_str(
+            pattern, flags, string, pos, endpos,
+        )
+        .and_then(|(branch_len, match_end)| {
+            (match_end == endpos).then_some((
+                (pos, match_end),
+                pattern.group_spans_for_branch_len(pos, branch_len),
+            ))
+        }),
+    }
+}
+
 fn collect_literal_spans_str(
     pattern: &[char],
     flags: i32,
@@ -2457,6 +2722,35 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_bounded_nested_group_alternation_cases() {
+        let outcome = compile(PatternRef::Str("a((b|c))d"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.group_count, 2);
+        assert!(outcome.named_groups.is_empty());
+
+        let named_outcome = compile(PatternRef::Str("a(?P<outer>(?P<inner>b|c))d"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!named_outcome.supports_literal);
+        assert_eq!(named_outcome.group_count, 2);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![
+                NamedGroup {
+                    name: "outer".to_string(),
+                    index: 1,
+                },
+                NamedGroup {
+                    name: "inner".to_string(),
+                    index: 2,
+                },
+            ]
+        );
+    }
+
+    #[test]
     fn compile_accepts_bounded_named_backreference_literal_case() {
         let outcome = compile(PatternRef::Str("(?P<word>ab)(?P=word)"), 0).unwrap();
         assert_eq!(outcome.status, CompileStatus::Compiled);
@@ -2778,6 +3072,42 @@ mod tests {
         assert_eq!(outcome.status, MatchStatus::Matched);
         assert_eq!(outcome.span, Some((0, 3)));
         assert_eq!(outcome.group_spans, vec![Some((1, 2))]);
+    }
+
+    #[test]
+    fn nested_group_alternation_search_matches_second_branch_and_reports_capture_spans() {
+        let outcome = literal_match(
+            PatternRef::Str("a((b|c))d"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzacdzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 5)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 4)), Some((3, 4))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn named_nested_group_alternation_fullmatch_reports_outer_lastindex() {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<outer>(?P<inner>b|c))d"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("acd"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 3)));
+        assert_eq!(outcome.group_spans, vec![Some((1, 2)), Some((1, 2))]);
+        assert_eq!(outcome.lastindex, Some(1));
     }
 
     #[test]

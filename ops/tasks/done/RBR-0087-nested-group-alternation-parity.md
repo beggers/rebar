@@ -1,8 +1,9 @@
 # RBR-0087: Add bounded nested-group alternation parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Convert the first nested-group alternation cases from the published correctness pack into real CPython-shaped behavior without claiming broad nested alternation, quantified-branch, or general backtracking semantics.
@@ -28,3 +29,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0078`, `RBR-0075`, and `RBR-0086`.
 - This task exists so the queue turns the first combined nested-group and alternation workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+
+## Completion Notes
+- Added a bounded Rust-core nested-group alternation parser/matcher for `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d`, including correct compile metadata, capture spans, and CPython-shaped `lastindex`/`lastgroup` behavior through the existing native compile/match boundary.
+- Added targeted Python parity coverage for numbered and named nested-group alternation compile/module/pattern flows and refreshed the correctness-harness regression expectations for the new all-pass frontier.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports 158 total cases with 158 passes and 0 `unimplemented` outcomes across the published manifest set.

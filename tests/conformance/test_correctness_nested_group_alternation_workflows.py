@@ -153,10 +153,10 @@ class CorrectnessHarnessNestedGroupAlternationWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 158,
                     "failed_cases": 0,
-                    "passed_cases": 152,
+                    "passed_cases": 158,
                     "skipped_cases": 0,
                     "total_cases": 158,
-                    "unimplemented_cases": 6,
+                    "unimplemented_cases": 0,
                 },
             )
 
@@ -212,9 +212,9 @@ class CorrectnessHarnessNestedGroupAlternationWorkflowTest(unittest.TestCase):
 
         match_layer = scorecard["layers"]["match_behavior"]
         self.assertEqual(match_layer["summary"]["total_cases"], 48)
-        self.assertEqual(match_layer["summary"]["passed_cases"], 42)
+        self.assertEqual(match_layer["summary"]["passed_cases"], 48)
         self.assertEqual(match_layer["summary"]["failed_cases"], 0)
-        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 6)
+        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             match_layer["manifest_ids"],
             [
@@ -244,9 +244,9 @@ class CorrectnessHarnessNestedGroupAlternationWorkflowTest(unittest.TestCase):
             suite for suite in scorecard["suites"] if suite["id"] == "match.nested_group_alternation"
         )
         self.assertEqual(nested_group_alternation_suite["summary"]["total_cases"], 6)
-        self.assertEqual(nested_group_alternation_suite["summary"]["passed_cases"], 0)
+        self.assertEqual(nested_group_alternation_suite["summary"]["passed_cases"], 6)
         self.assertEqual(nested_group_alternation_suite["summary"]["failed_cases"], 0)
-        self.assertEqual(nested_group_alternation_suite["summary"]["unimplemented_cases"], 6)
+        self.assertEqual(nested_group_alternation_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             nested_group_alternation_suite["families"],
             [
@@ -264,29 +264,32 @@ class CorrectnessHarnessNestedGroupAlternationWorkflowTest(unittest.TestCase):
             for case in scorecard["cases"]
             if case["id"] == "nested-group-alternation-compile-metadata-str"
         )
-        self.assertEqual(compile_case["comparison"], "unimplemented")
+        self.assertEqual(compile_case["comparison"], "pass")
         self.assertEqual(compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groupindex"], {})
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groups"], 2)
-        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "unimplemented")
-        self.assertEqual(
-            compile_case["observations"]["rebar"]["exception"]["message"],
-            "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-        )
+        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(compile_case["observations"]["rebar"]["result"]["groupindex"], {})
+        self.assertEqual(compile_case["observations"]["rebar"]["result"]["groups"], 2)
 
         named_fullmatch_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "named-nested-group-alternation-pattern-fullmatch-str"
         )
-        self.assertEqual(named_fullmatch_case["comparison"], "unimplemented")
+        self.assertEqual(named_fullmatch_case["comparison"], "pass")
         self.assertEqual(named_fullmatch_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(named_fullmatch_case["observations"]["cpython"]["result"]["group0"], "acd")
         self.assertEqual(
             named_fullmatch_case["observations"]["cpython"]["result"]["groupdict"],
             {"inner": "c", "outer": "c"},
         )
-        self.assertEqual(named_fullmatch_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_fullmatch_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(named_fullmatch_case["observations"]["rebar"]["result"]["group0"], "acd")
+        self.assertEqual(
+            named_fullmatch_case["observations"]["rebar"]["result"]["groupdict"],
+            {"inner": "c", "outer": "c"},
+        )
 
 
 if __name__ == "__main__":
