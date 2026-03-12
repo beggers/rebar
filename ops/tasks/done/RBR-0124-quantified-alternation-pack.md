@@ -1,6 +1,6 @@
 # RBR-0124: Publish a bounded quantified-alternation correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0123`.
 - This task exists so the queue reopens alternation-heavy repetition with the smallest exact CPython-supported slice instead of jumping directly to wider repetition or broader backtracking.
+
+## Completion
+- Added `tests/conformance/fixtures/quantified_alternation_workflows.json` and registered it in the combined correctness harness.
+- Added `tests/conformance/test_correctness_quantified_alternation_workflows.py` to lock the combined scorecard at 232 total cases with 6 honest quantified-alternation `unimplemented` outcomes.
+- Republished `reports/correctness/latest.json`; the new manifest records the bounded `a(b|c){1,2}d` / `a(?P<word>b|c){1,2}d` lower-bound and second-repetition observations without broadening runtime support.

@@ -121,6 +121,11 @@ DEFAULT_FIXTURE_PATHS = (
     / "conformance"
     / "fixtures"
     / "conditional_group_exists_assertion_diagnostics.json",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
+    / "quantified_alternation_workflows.json",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 PHASE_BY_LAYER = {
