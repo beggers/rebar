@@ -44,6 +44,7 @@ DEFAULT_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "grouped_segment_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "literal_alternation_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.json",
+    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_replacement_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.json",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
@@ -395,6 +396,14 @@ def module_helper_invoke(module: Any, workload: Workload) -> object:
             workload.count,
             workload.flags,
         )
+    if workload.operation == "module.subn":
+        return module.subn(
+            pattern,
+            workload.replacement_payload(),
+            haystack,
+            workload.count,
+            workload.flags,
+        )
     raise ValueError(f"unsupported module helper operation {workload.operation!r}")
 
 
@@ -445,6 +454,8 @@ def pattern_helper_invoke(compiled: Any, workload: Workload) -> object:
         return compiled.fullmatch(haystack)
     if workload.operation == "pattern.finditer":
         return list(compiled.finditer(haystack))
+    if workload.operation == "pattern.sub":
+        return compiled.sub(workload.replacement_payload(), haystack, count=workload.count)
     if workload.operation == "pattern.subn":
         return compiled.subn(workload.replacement_payload(), haystack, count=workload.count)
     raise ValueError(f"unsupported pattern helper operation {workload.operation!r}")
@@ -499,6 +510,7 @@ def build_callable(module: Any, import_name: str, workload: Workload) -> Any:
         "module.split",
         "module.findall",
         "module.sub",
+        "module.subn",
     }:
         return helper_callable(module, workload)
     if workload.operation in {
@@ -506,6 +518,7 @@ def build_callable(module: Any, import_name: str, workload: Workload) -> Any:
         "pattern.match",
         "pattern.fullmatch",
         "pattern.finditer",
+        "pattern.sub",
         "pattern.subn",
     }:
         return pattern_helper_callable(module, workload)

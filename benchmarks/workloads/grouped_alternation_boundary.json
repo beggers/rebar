@@ -7,7 +7,7 @@
   ],
   "notes": [
     "Grouped-alternation boundary workloads keep captures, branches, replacements, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported grouped-branch slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b|c)d` and `a(?P<word>b|c)d` compile/search/fullmatch paths directly, while grouped-alternation replacement-template workflows stay as explicit known-gap rows until the replacement follow-ons land."
+    "Measured rows cover the bounded `a(b|c)d` and `a(?P<word>b|c)d` compile/search/fullmatch paths directly, while broader nested grouped replacement-template shapes stay as explicit known-gap rows and the supported bounded replacement slice now lives in the dedicated grouped-alternation replacement manifest."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -186,11 +186,11 @@
       ]
     },
     {
-      "id": "module-sub-template-grouped-alternation-warm-gap",
+      "id": "module-sub-template-nested-grouped-alternation-warm-gap",
       "bucket": "module-sub",
       "family": "module",
       "operation": "module.sub",
-      "pattern": "a(b|c)d",
+      "pattern": "a((b|c))d",
       "replacement": "<\\1>",
       "haystack": "abdacd",
       "flags": 0,
@@ -203,6 +203,7 @@
         "alternation",
         "replacement",
         "template",
+        "nested-groups",
         "sub",
         "warm-cache",
         "gap"
@@ -211,19 +212,20 @@
         "module-sub",
         "grouping-forms",
         "alternation",
+        "nested-groups",
         "replacement-template"
       ],
       "notes": [
-        "Explicit grouped-alternation replacement-template gap row so the next combined alternation-and-replacement frontier stays visible while replacement work is still queued."
+        "Explicit nested grouped-alternation replacement-template gap row so broader grouped replacement shapes stay visible while nested-group work is still queued."
       ]
     },
     {
-      "id": "pattern-subn-template-named-grouped-alternation-purged-gap",
+      "id": "pattern-subn-template-named-nested-grouped-alternation-purged-gap",
       "bucket": "pattern-subn",
       "family": "module",
       "operation": "pattern.subn",
-      "pattern": "a(?P<word>b|c)d",
-      "replacement": "<\\g<word>>",
+      "pattern": "a(?P<outer>(b|c))d",
+      "replacement": "<\\g<outer>>",
       "haystack": "abdacd",
       "flags": 0,
       "count": 1,
@@ -237,6 +239,7 @@
         "replacement",
         "template",
         "named-group",
+        "nested-groups",
         "subn",
         "purged-cache",
         "gap"
@@ -246,11 +249,12 @@
         "grouping-forms",
         "alternation",
         "named-groups",
+        "nested-groups",
         "replacement-template",
         "cache-purge"
       ],
       "notes": [
-        "Explicit named grouped-alternation replacement-template gap row so the next combined alternation-and-replacement frontier stays visible instead of disappearing until the replacement follow-ons land."
+        "Explicit named nested grouped-alternation replacement-template gap row so broader alternation-and-replacement shapes stay visible instead of disappearing until the nested-group follow-ons land."
       ]
     }
   ]

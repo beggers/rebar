@@ -1,8 +1,9 @@
 # RBR-0073: Catch grouped-alternation replacement benchmarks up with the new combined slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Extend the published benchmark surface so the bounded grouped-alternation replacement workflows supported by `RBR-0072` produce real `rebar` timings before the queue reopens a broader correctness frontier.
@@ -27,3 +28,6 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0070` and `RBR-0072`.
 - This task exists so the queue does not reach grouped-alternation replacement parity and then leave that newly supported combined slice absent from benchmark reporting.
+- Added a dedicated grouped-alternation replacement benchmark manifest with measured `module.sub`, `module.subn`, `pattern.sub`, and `pattern.subn` rows for the bounded numbered and named replacement-template workflows from `RBR-0072`.
+- Extended the benchmark harness to time `module.subn` and `pattern.sub` helper calls, then kept the older grouped-alternation manifest honest by retargeting its two replacement gap rows to still-unsupported nested grouped replacement shapes.
+- Added a dedicated benchmark regression test and republished `reports/benchmarks/latest.json`; the combined scorecard now covers 94 workloads with 73 measured timings and 21 explicit gaps.
