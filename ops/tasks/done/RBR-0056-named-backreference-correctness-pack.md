@@ -1,8 +1,9 @@
 # RBR-0056: Publish a named-backreference correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Extend the published correctness scorecard past named-group replacement templates with a bounded named-backreference manifest so the next grouped-reference frontier stays explicit before broader syntax work resumes.
@@ -27,3 +28,6 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0054` and `RBR-0055`.
 - This task exists so the worker can expose the next bounded grouped-reference frontier immediately after named-group replacement parity instead of letting the ready queue stop there.
+- Completed with a new `named-backreference-workflows` correctness manifest covering bounded compile, module `search()`, and compiled-`Pattern.search()` observations for `(?P<word>ab)(?P=word)` without changing runtime behavior.
+- Verified with `python3 -m unittest tests.conformance.test_correctness_named_backreference_workflows tests.conformance.test_correctness_named_group_replacement_workflows` and `PYTHONPATH=python python3 -m rebar_harness.correctness --report reports/correctness/latest.json`.
+- Republished `reports/correctness/latest.json`; the combined 12-manifest scorecard now reports 96 total cases with 93 passes, 0 failures, and 3 honest `unimplemented` named-backreference gaps.

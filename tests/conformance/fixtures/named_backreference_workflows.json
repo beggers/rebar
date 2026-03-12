@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "manifest_id": "named-backreference-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.named_backreference",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "named-backreference-compile-metadata-str",
+      "operation": "compile",
+      "family": "named_backreference_compile_metadata",
+      "pattern": "(?P<word>ab)(?P=word)",
+      "categories": ["grouped", "named-group", "named-backreference", "compile", "metadata", "str"],
+      "notes": [
+        "Publishes the tiny named-backreference compile path so the next grouped-reference frontier is visible in the combined scorecard."
+      ]
+    },
+    {
+      "id": "named-backreference-module-search-str",
+      "operation": "module_call",
+      "family": "named_backreference_module_workflow",
+      "helper": "search",
+      "args": ["(?P<word>ab)(?P=word)", "zzababzz"],
+      "categories": ["grouped", "named-group", "named-backreference", "search", "module", "str"],
+      "notes": [
+        "Captures the bounded module-level named-backreference match path for a tiny literal workflow without broadening into numbered or nested references."
+      ]
+    },
+    {
+      "id": "named-backreference-pattern-search-str",
+      "operation": "pattern_call",
+      "family": "named_backreference_pattern_workflow",
+      "pattern": "(?P<word>ab)(?P=word)",
+      "helper": "search",
+      "args": ["zzababzz"],
+      "categories": ["grouped", "named-group", "named-backreference", "search", "pattern", "str"],
+      "notes": [
+        "Captures the bound Pattern.search named-backreference path for the same tiny literal workflow while leaving broader backtracking behavior out of scope."
+      ]
+    }
+  ]
+}
