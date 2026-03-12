@@ -36,6 +36,7 @@ DEFAULT_FIXTURE_PATHS = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "collection_replacement_workflows.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "literal_flag_workflows.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_match_workflows.json",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "named_group_workflows.json",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 PHASE_BY_LAYER = {
@@ -248,6 +249,7 @@ def normalize_pattern_object_metadata(compiled_pattern: Any) -> dict[str, Any]:
 
 
 def normalize_match_metadata(match: Any) -> dict[str, Any]:
+    groupindex = getattr(match.re, "groupindex", {})
     payload = {
         "matched": bool(match),
         "group0": _normalize_value(match.group(0)),
@@ -262,6 +264,13 @@ def normalize_match_metadata(match: Any) -> dict[str, Any]:
         "span": list(match.span()),
         "string_type": type(match.string).__name__,
     }
+    if groupindex:
+        payload["named_groups"] = {
+            name: _normalize_value(match.group(name)) for name in sorted(groupindex)
+        }
+        payload["named_group_spans"] = {
+            name: list(match.span(name)) for name in sorted(groupindex)
+        }
     if match.re.groups >= 1:
         payload["group1"] = _normalize_value(match.group(1))
         payload["span1"] = list(match.span(1))

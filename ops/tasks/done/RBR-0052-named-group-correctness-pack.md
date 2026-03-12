@@ -1,6 +1,6 @@
 # RBR-0052: Publish a named-group correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0050` and `RBR-0051`.
 - This task exists so the worker can expose the next bounded grouping frontier immediately after numbered-capture parity instead of letting the ready queue stop there.
+
+## Completion Note
+- Added a tenth correctness manifest, `named-group-workflows`, covering named-group compile metadata plus module and `Pattern.search` match metadata for a tiny literal named capture.
+- Extended correctness-match normalization to publish named lookup observations explicitly through `named_groups` and `named_group_spans`, alongside `groupdict()` and `lastgroup`, without changing runtime behavior.
+- Republished `reports/correctness/latest.json` from the combined default fixture set; the published scorecard now covers 89 cases across 10 manifests with 86 passes and 3 honest `unimplemented` named-group gaps.
