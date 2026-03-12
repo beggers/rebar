@@ -1,6 +1,6 @@
 # RBR-0053: Add bounded named-group literal metadata parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,7 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0051`, `RBR-0052`, and the existing Rust-backed compile/match boundary.
 - This task exists so the next grouped/named-group scorecard expansion can turn into concrete behavior work immediately instead of becoming another reporting-only dead end.
+
+## Completion
+- Landed bounded Rust-backed named-group metadata for the published `(?P<word>abc)` literal path, including compile-time `groupindex` plus `Match.group("word")`, `groupdict()`, `span("word")`, and `lastgroup` parity through module and compiled-pattern flows.
+- Added focused Python and Rust coverage for the named-group literal slice and regenerated the combined correctness scorecard; `reports/correctness/latest.json` now reports 89 passes, 0 failures, and 0 unimplemented cases across the default ten-manifest fixture set.

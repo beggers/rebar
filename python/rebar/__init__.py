@@ -159,11 +159,12 @@ class Pattern:
         *,
         supports_literal: bool = False,
         groups: int = 0,
+        groupindex: dict[str, int] | None = None,
     ) -> None:
         self.pattern = pattern
         self.flags = flags
         self.groups = groups
-        self.groupindex: dict[str, int] = {}
+        self.groupindex = {} if groupindex is None else dict(groupindex)
         self._supports_literal = supports_literal
 
     def _raise_placeholder(self, method_name: str) -> object:
@@ -266,7 +267,10 @@ class Match:
             (index for index in range(len(group_spans), 0, -1) if group_spans[index - 1] is not None),
             None,
         )
-        self.lastgroup = None
+        self.lastgroup = next(
+            (name for name, index in self.re.groupindex.items() if index == self.lastindex),
+            None,
+        )
         self._span = span
 
     def __bool__(self) -> bool:
@@ -275,6 +279,10 @@ class Match:
     def _resolve_group_reference(self, group: object) -> int:
         if group == 0:
             return 0
+        if isinstance(group, str):
+            if group in self.re.groupindex:
+                return self.re.groupindex[group]
+            raise IndexError("no such group")
         if isinstance(group, int) and 1 <= group <= len(self._group_spans):
             return group
         raise IndexError("no such group")
@@ -301,7 +309,10 @@ class Match:
         return tuple(self._slice_group(group_index, default) for group_index in range(1, len(self._group_spans) + 1))
 
     def groupdict(self, default: object = None) -> dict[str, object]:
-        return {}
+        return {
+            name: self._slice_group(group_index, default)
+            for name, group_index in self.re.groupindex.items()
+        }
 
     def span(self, group: object = 0) -> tuple[int, int]:
         group_index = self._resolve_group_reference(group)
@@ -447,9 +458,17 @@ def _build_compiled_pattern(
     *,
     supports_literal: bool,
     groups: int = 0,
+    groupindex: dict[str, int] | None = None,
 ) -> Pattern:
     compiled = object.__new__(Pattern)
-    Pattern.__init__(compiled, pattern, flags, supports_literal=supports_literal, groups=groups)
+    Pattern.__init__(
+        compiled,
+        pattern,
+        flags,
+        supports_literal=supports_literal,
+        groups=groups,
+        groupindex=groupindex,
+    )
     return compiled
 
 
@@ -458,8 +477,14 @@ def _build_native_compile_result(pattern: str | bytes, flags: int) -> Pattern:
     if len(native_result) == 3:
         status, normalized_flags, supports_literal = native_result
         groups = 0
+        groupindex = {}
     else:
-        status, normalized_flags, supports_literal, groups = native_result
+        if len(native_result) == 4:
+            status, normalized_flags, supports_literal, groups = native_result
+            groupindex = {}
+        else:
+            status, normalized_flags, supports_literal, groups, groupindex_items = native_result
+            groupindex = dict(groupindex_items)
     if status != "compiled":
         return _raise_placeholder("compile")
     return _build_compiled_pattern(
@@ -467,6 +492,7 @@ def _build_native_compile_result(pattern: str | bytes, flags: int) -> Pattern:
         normalized_flags,
         supports_literal=supports_literal,
         groups=groups,
+        groupindex=groupindex,
     )
 
 

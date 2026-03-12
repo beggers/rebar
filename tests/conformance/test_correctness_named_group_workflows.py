@@ -85,10 +85,10 @@ class CorrectnessHarnessNamedGroupWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 89,
                     "failed_cases": 0,
-                    "passed_cases": 86,
+                    "passed_cases": 89,
                     "skipped_cases": 0,
                     "total_cases": 89,
-                    "unimplemented_cases": 3,
+                    "unimplemented_cases": 0,
                 },
             )
 
@@ -132,9 +132,9 @@ class CorrectnessHarnessNamedGroupWorkflowTest(unittest.TestCase):
 
         match_layer = scorecard["layers"]["match_behavior"]
         self.assertEqual(match_layer["summary"]["total_cases"], 15)
-        self.assertEqual(match_layer["summary"]["passed_cases"], 12)
+        self.assertEqual(match_layer["summary"]["passed_cases"], 15)
         self.assertEqual(match_layer["summary"]["failed_cases"], 0)
-        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 3)
+        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             match_layer["manifest_ids"],
             [
@@ -155,8 +155,8 @@ class CorrectnessHarnessNamedGroupWorkflowTest(unittest.TestCase):
 
         named_suite = next(suite for suite in scorecard["suites"] if suite["id"] == "match.named")
         self.assertEqual(named_suite["summary"]["total_cases"], 3)
-        self.assertEqual(named_suite["summary"]["passed_cases"], 0)
-        self.assertEqual(named_suite["summary"]["unimplemented_cases"], 3)
+        self.assertEqual(named_suite["summary"]["passed_cases"], 3)
+        self.assertEqual(named_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             named_suite["families"],
             [
@@ -169,19 +169,23 @@ class CorrectnessHarnessNamedGroupWorkflowTest(unittest.TestCase):
         compile_case = next(
             case for case in scorecard["cases"] if case["id"] == "named-group-compile-metadata-str"
         )
-        self.assertEqual(compile_case["comparison"], "unimplemented")
+        self.assertEqual(compile_case["comparison"], "pass")
         self.assertEqual(compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(
             compile_case["observations"]["cpython"]["result"]["groupindex"],
             {"word": 1},
         )
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groups"], 1)
-        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            compile_case["observations"]["rebar"]["result"]["groupindex"],
+            {"word": 1},
+        )
 
         module_case = next(
             case for case in scorecard["cases"] if case["id"] == "named-group-module-search-metadata-str"
         )
-        self.assertEqual(module_case["comparison"], "unimplemented")
+        self.assertEqual(module_case["comparison"], "pass")
         self.assertEqual(module_case["helper"], "search")
         self.assertEqual(module_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(
@@ -197,12 +201,25 @@ class CorrectnessHarnessNamedGroupWorkflowTest(unittest.TestCase):
             {"word": [2, 5]},
         )
         self.assertEqual(module_case["observations"]["cpython"]["result"]["lastgroup"], "word")
-        self.assertEqual(module_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(module_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            module_case["observations"]["rebar"]["result"]["groupdict"],
+            {"word": "abc"},
+        )
+        self.assertEqual(
+            module_case["observations"]["rebar"]["result"]["named_groups"],
+            {"word": "abc"},
+        )
+        self.assertEqual(
+            module_case["observations"]["rebar"]["result"]["named_group_spans"],
+            {"word": [2, 5]},
+        )
+        self.assertEqual(module_case["observations"]["rebar"]["result"]["lastgroup"], "word")
 
         pattern_case = next(
             case for case in scorecard["cases"] if case["id"] == "named-group-pattern-search-metadata-str"
         )
-        self.assertEqual(pattern_case["comparison"], "unimplemented")
+        self.assertEqual(pattern_case["comparison"], "pass")
         self.assertEqual(pattern_case["helper"], "search")
         self.assertEqual(
             pattern_case["observations"]["cpython"]["result"]["named_groups"],
@@ -213,7 +230,16 @@ class CorrectnessHarnessNamedGroupWorkflowTest(unittest.TestCase):
             {"word": [2, 5]},
         )
         self.assertEqual(pattern_case["observations"]["cpython"]["result"]["lastgroup"], "word")
-        self.assertEqual(pattern_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(pattern_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            pattern_case["observations"]["rebar"]["result"]["named_groups"],
+            {"word": "abc"},
+        )
+        self.assertEqual(
+            pattern_case["observations"]["rebar"]["result"]["named_group_spans"],
+            {"word": [2, 5]},
+        )
+        self.assertEqual(pattern_case["observations"]["rebar"]["result"]["lastgroup"], "word")
 
 
 if __name__ == "__main__":

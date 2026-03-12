@@ -121,7 +121,7 @@ fn boundary_compile(
     py: Python<'_>,
     pattern: &Bound<'_, PyAny>,
     flags: i32,
-) -> PyResult<(&'static str, i32, bool, usize)> {
+) -> PyResult<(&'static str, i32, bool, usize, Vec<(String, usize)>)> {
     let pattern_ref = py_pattern_ref(pattern)?;
     let outcome = match core_compile(pattern_ref, flags) {
         Ok(outcome) => outcome,
@@ -147,6 +147,11 @@ fn boundary_compile(
         outcome.normalized_flags,
         outcome.supports_literal,
         outcome.group_count,
+        outcome
+            .named_groups
+            .into_iter()
+            .map(|group| (group.name, group.index))
+            .collect(),
     ))
 }
 
