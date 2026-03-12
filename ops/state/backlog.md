@@ -4,21 +4,20 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0089` to publish a bounded branch-local backreference correctness pack so the queue combines already-supported alternation and backreference behavior before quantified branches or broader backtracking reopen the frontier.
-2. Land `RBR-0090` to convert the first bounded branch-local backreference cases into real Rust-backed behavior instead of leaving that combined workflow as publication-only coverage.
-3. Land `RBR-0091` to catch branch-local backreference benchmarks up so measurement stays aligned before quantified branches or broader backtracking reopen another correctness frontier.
-4. Land `RBR-0092` to publish a bounded optional-group correctness pack so quantified execution reopens through the smallest capture-aware slice instead of jumping straight to counted repeats, quantified alternation, or conditionals.
-5. Land `RBR-0093` to convert the first bounded optional-group cases into real Rust-backed behavior instead of leaving that quantifier slice as publication-only coverage.
-6. Land `RBR-0094` to catch optional-group benchmarks up so the first quantified execution slice reaches the published benchmark surface before counted repeats, quantified alternation, conditionals, or broader backtracking reopen the frontier.
-7. Land `RBR-0095` to publish a bounded exact-repeat quantified-group correctness pack so quantified execution continues through the smallest deterministic counted slice before ranged repeats, quantified alternation, or conditionals reopen the frontier.
-8. Land `RBR-0096` to convert the first bounded exact-repeat quantified-group cases into real Rust-backed behavior instead of leaving that counted slice as publication-only coverage.
-9. Land `RBR-0097` to catch exact-repeat quantified-group benchmarks up so the first deterministic counted-repeat slice reaches the published benchmark surface before ranged repeats, quantified alternation, conditionals, or broader backtracking reopen the frontier.
-10. Land `RBR-0098` to publish a bounded ranged-repeat quantified-group correctness pack so quantified execution extends from exact counts into the smallest bounded range before quantified alternation, conditionals, or broader backtracking reopen the frontier.
-11. Land `RBR-0099` to convert the first bounded ranged-repeat quantified-group cases into real Rust-backed behavior instead of leaving that bounded range slice as publication-only coverage.
-12. Land `RBR-0100` to catch ranged-repeat quantified-group benchmarks up so the first bounded counted-range slice reaches the published benchmark surface before quantified alternation, conditionals, or broader backtracking reopen the frontier.
-13. Land `RBR-0101` to publish a bounded optional-group alternation correctness pack so quantified execution combines one optional quantifier and one grouped alternation before conditionals or broader backtracking reopen the frontier.
-14. Land `RBR-0102` to convert the first bounded optional-group alternation cases into real Rust-backed behavior instead of leaving that combined quantified-branch slice as publication-only coverage.
-15. Land `RBR-0103` to catch optional-group alternation benchmarks up so the first bounded quantified-alternation slice reaches the published benchmark surface before conditionals or broader backtracking reopen the frontier.
+1. Land `RBR-0090` to convert the first bounded branch-local backreference cases into real Rust-backed behavior instead of leaving that combined workflow as publication-only coverage.
+2. Land `RBR-0091` to catch branch-local backreference benchmarks up so measurement stays aligned before quantified branches or broader backtracking reopen another correctness frontier.
+3. Land `RBR-0092` to publish a bounded optional-group correctness pack so quantified execution reopens through the smallest capture-aware slice instead of jumping straight to counted repeats, quantified alternation, or conditionals.
+4. Land `RBR-0093` to convert the first bounded optional-group cases into real Rust-backed behavior instead of leaving that quantifier slice as publication-only coverage.
+5. Land `RBR-0094` to catch optional-group benchmarks up so the first quantified execution slice reaches the published benchmark surface before counted repeats, quantified alternation, conditionals, or broader backtracking reopen the frontier.
+6. Land `RBR-0095` to publish a bounded exact-repeat quantified-group correctness pack so quantified execution continues through the smallest deterministic counted slice before ranged repeats, quantified alternation, or conditionals reopen the frontier.
+7. Land `RBR-0096` to convert the first bounded exact-repeat quantified-group cases into real Rust-backed behavior instead of leaving that counted slice as publication-only coverage.
+8. Land `RBR-0097` to catch exact-repeat quantified-group benchmarks up so the first deterministic counted-repeat slice reaches the published benchmark surface before ranged repeats, quantified alternation, conditionals, or broader backtracking reopen the frontier.
+9. Land `RBR-0098` to publish a bounded ranged-repeat quantified-group correctness pack so quantified execution extends from exact counts into the smallest bounded range before quantified alternation, conditionals, or broader backtracking reopen the frontier.
+10. Land `RBR-0099` to convert the first bounded ranged-repeat quantified-group cases into real Rust-backed behavior instead of leaving that bounded range slice as publication-only coverage.
+11. Land `RBR-0100` to catch ranged-repeat quantified-group benchmarks up so the first bounded counted-range slice reaches the published benchmark surface before quantified alternation, conditionals, or broader backtracking reopen the frontier.
+12. Land `RBR-0101` to publish a bounded optional-group alternation correctness pack so quantified execution combines one optional quantifier and one grouped alternation before conditionals or broader backtracking reopen the frontier.
+13. Land `RBR-0102` to convert the first bounded optional-group alternation cases into real Rust-backed behavior instead of leaving that combined quantified-branch slice as publication-only coverage.
+14. Land `RBR-0103` to catch optional-group alternation benchmarks up so the first bounded quantified-alternation slice reaches the published benchmark surface before conditionals or broader backtracking reopen the frontier.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
@@ -72,7 +71,7 @@ Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier,
 - After `RBR-0084`, catch nested-group callable-replacement benchmark coverage up before reopening correctness work, so the first combined nesting-and-callback slice reaches benchmark reporting promptly.
 - After `RBR-0086`, keep the ready queue extending into bounded nested-group alternation parity so the worker converts the newly published nesting-and-alternation cases behind the Rust boundary before quantified branches, branch-local backreferences, or broader backtracking reopen the frontier.
 - After `RBR-0087`, catch nested-group alternation benchmark coverage up before reopening correctness work, so the first combined nesting-and-alternation slice reaches benchmark reporting promptly.
-- After `RBR-0088`, keep the ready queue extending into bounded branch-local backreference publication and parity so the worker combines already-supported alternation and backreference semantics before quantified branches or broader backtracking reopen the frontier.
+- After `RBR-0089`, keep the ready queue extending into bounded branch-local backreference parity and benchmark catch-up so the worker converts that newly published combined alternation-and-backreference slice behind the Rust boundary before quantified branches or broader backtracking reopen the frontier.
 - After `RBR-0090`, catch branch-local backreference benchmark coverage up before reopening correctness work, so the first bounded alternation-and-backreference slice reaches benchmark reporting promptly.
 - After `RBR-0091`, keep the ready queue extending into bounded optional-group publication and parity so quantified execution reopens through the smallest capture-aware slice instead of jumping straight to counted repeats, quantified alternation, or conditionals.
 - After `RBR-0093`, catch optional-group benchmark coverage up before reopening correctness work, so the first bounded quantifier slice reaches benchmark reporting promptly.

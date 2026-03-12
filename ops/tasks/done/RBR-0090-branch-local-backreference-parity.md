@@ -1,8 +1,9 @@
 # RBR-0090: Add bounded branch-local backreference parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Convert the first bounded branch-local backreference cases from the published correctness pack into real CPython-shaped behavior without claiming quantified-branch, conditional, or broad backtracking support.
@@ -28,3 +29,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0060`, `RBR-0057`, and `RBR-0089`.
 - This task exists so the queue turns the first combined alternation-and-backreference workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+
+## Completion Notes
+- Added Rust-backed compile and match support for the published numbered and named branch-local backreference shapes, preserving CPython group metadata and `lastindex`/`lastgroup` behavior for the matched branch.
+- Added Python parity coverage for the six published compile/module/pattern cases and updated the correctness harness expectation test.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports `164` passes and `0` `unimplemented` cases.

@@ -7,13 +7,14 @@ This repository is run autonomously, but it is meant to be legible to humans fir
 <!-- REBAR:STATUS_START -->
 ## Current State
 
-_Foundation docs, harnesses, and scorecards are in place. The snapshot below focuses on implemented behavior and measured coverage, not long-term ambition._
+_This block reports the implemented slice and measurement coverage, not estimated end-state parity._
 
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while keeping the correctness and benchmark publications caught up with each newly supported slice. |
+| Compatibility outlook | Early subset, not near drop-in feature parity yet: literals, captures, bounded replacement/backreference workflows, and simple alternation now pass through the Rust boundary, but quantified groups, conditionals, and broader backtracking remain ahead of the frontier. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `14` ready, `0` in progress, `95` done, `0` blocked |
+| Work queue | `13` ready, `0` in progress, `96` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -21,11 +22,13 @@ _Foundation docs, harnesses, and scorecards are in place. The snapshot below foc
 | Metric | Value |
 | --- | --- |
 | Published cases | `164` |
-| Passing comparisons | `158` |
+| Passing in published slice | `164` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `6` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `23` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
+
+_These correctness counts cover only the published slice. Overall feature status: Early subset, not near drop-in feature parity yet: literals, captures, bounded replacement/backreference workflows, and simple alternation now pass through the Rust boundary, but quantified groups, conditionals, and broader backtracking remain ahead of the frontier._
 
 ### Benchmark Snapshot
 
@@ -38,11 +41,13 @@ _Foundation docs, harnesses, and scorecards are in place. The snapshot below foc
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json) |
 
+_Full-suite benchmark publication still runs through the source-tree shim; built-native timing remains limited to [`reports/benchmarks/native_smoke.json`](reports/benchmarks/native_smoke.json)._
+
 _README speedup rollups stay omitted while only `113` of `139` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- Land `RBR-0089` and `RBR-0090` so the queue combines already-supported alternation and backreference behavior through bounded branch-local workflows before quantified branches or broader backtracking reopen the frontier.
+- Land `RBR-0090` so the bounded branch-local backreference cases published by `RBR-0089` become real Rust-backed behavior before quantified branches or broader backtracking reopen the frontier.
 - After `RBR-0090`, land `RBR-0091` so branch-local backreference behavior reaches the published benchmark surface promptly instead of becoming another correctness-only island.
 - After `RBR-0091`, land `RBR-0092` and `RBR-0093` so the queue reopens quantified execution through one bounded optional-group slice before counted repeats, quantified alternation, conditionals, or broader backtracking reopen the frontier.
 - After `RBR-0093`, land `RBR-0094` so the first optional-group quantifier slice reaches the published benchmark surface promptly instead of becoming another correctness-only island.
@@ -56,26 +61,26 @@ _README speedup rollups stay omitted while only `113` of `139` published workloa
 ### Current Risks
 
 - The repo now publishes `reports/benchmarks/native_smoke.json` from a real built `rebar._rebar` path and the benchmark harness can distinguish shim versus built-native execution modes, but the primary `reports/benchmarks/latest.json` report still measures the default source-tree shim rather than the dedicated built-native timing path, so routine full-suite measurement can still drift away from the verified install/import path.
-- The supported compile, parser-diagnostic, literal-match, cache, `escape()`, collection/replacement helper, bounded replacement-template/callable replacement, bounded single-dot wildcard, inline-flag, bytes-`LOCALE`, grouped-literal replacement-template, grouped numbered-capture, grouped-segment parity, named-group metadata, bounded named-group replacement-template, bounded named-backreference, bounded numbered-backreference, bounded top-level literal-alternation, bounded grouped-alternation workflow slice, bounded grouped-alternation replacement-template workflow, bounded grouped-alternation callable-replacement workflow, bounded nested-group match workflow, bounded nested-group replacement-template workflow, bounded nested-group callable-replacement workflow, and bounded nested-group alternation workflow now live behind `rebar._rebar`; the next execution queue is branch-local backreference publication, optional-group quantifier publication, exact-repeat quantified-group publication, ranged-repeat quantified-group publication, and optional-group alternation publication rather than debt inside the existing twenty-two-manifest correctness surface.
-- The correctness harness now covers 158 published cases across parser, module-API, match-behavior, exported-symbol, pattern-object, module-workflow, collection/replacement, literal-flag, grouped-match, named-group, named-group replacement, named-backreference, numbered-backreference, grouped-segment, literal-alternation, grouped-alternation, grouped-alternation replacement, grouped-alternation callable-replacement, nested-group, nested-group replacement, nested-group callable-replacement, and nested-group alternation layers, with 158 passes, 0 explicit failures, and 0 honest `unimplemented` outcomes; the active queued frontier is bounded branch-local backreference publication in `RBR-0089` before optional-group quantifier, exact-repeat quantified-group, ranged-repeat quantified-group, and optional-group alternation follow-ons.
+- The supported compile, parser-diagnostic, literal-match, cache, `escape()`, collection/replacement helper, bounded replacement-template/callable replacement, bounded single-dot wildcard, inline-flag, bytes-`LOCALE`, grouped-literal replacement-template, grouped numbered-capture, grouped-segment parity, named-group metadata, bounded named-group replacement-template, bounded named-backreference, bounded numbered-backreference, bounded top-level literal-alternation, bounded grouped-alternation workflow slice, bounded grouped-alternation replacement-template workflow, bounded grouped-alternation callable-replacement workflow, bounded nested-group match workflow, bounded nested-group replacement-template workflow, bounded nested-group callable-replacement workflow, and bounded nested-group alternation workflow now live behind `rebar._rebar`; the next execution queue is branch-local backreference parity/benchmark catch-up, optional-group quantifier publication, exact-repeat quantified-group publication, ranged-repeat quantified-group publication, and optional-group alternation publication rather than debt inside the existing twenty-three-manifest correctness surface.
+- The correctness harness now covers 164 published cases across parser, module-API, match-behavior, exported-symbol, pattern-object, module-workflow, collection/replacement, literal-flag, grouped-match, named-group, named-group replacement, named-backreference, numbered-backreference, grouped-segment, literal-alternation, grouped-alternation, grouped-alternation replacement, grouped-alternation callable-replacement, nested-group, nested-group replacement, nested-group callable-replacement, nested-group alternation, and branch-local backreference layers, with 158 passes, 0 explicit failures, and 6 honest `unimplemented` outcomes; the active queued frontier is bounded branch-local backreference parity in `RBR-0090` before optional-group quantifier, exact-repeat quantified-group, ranged-repeat quantified-group, and optional-group alternation follow-ons.
 - The benchmark harness now measures 139 published workloads across the compile-path, module-boundary, pattern-boundary, collection/replacement-boundary, literal-flag-boundary, regression/stability, grouped-named, numbered-backreference, grouped-alternation, grouped-alternation replacement, grouped-alternation callable-replacement, nested-group, nested-group alternation, nested-group replacement, and nested-group callable-replacement boundary packs with explicit adapter-mode provenance, and 113 workloads now have real `rebar` timings; the remaining 26 known gaps are concentrated in the compile-matrix, module-boundary, grouped-named-boundary, numbered-backreference-boundary, grouped-alternation-boundary, grouped-alternation-replacement-boundary, grouped-alternation-callable-replacement-boundary, literal-flag-boundary, nested-group-boundary, nested-group-alternation-boundary, nested-group-replacement-boundary, nested-group-callable-replacement-boundary, and regression-matrix manifests, and the published suite still exercises the source-tree shim rather than the built native path.
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility at the Python surface.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Concurrent human and loop commits can still produce diverged git history that requires supervisor resolution; the harness now detects that state accurately but does not auto-rebase it.
-- The implementation worker has eighty-nine completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
+- The implementation worker has ninety completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
 <!-- REBAR:STATUS_END -->
 
 ## Implementation Snapshot
 
 `rebar` has the planning, harness, and reporting foundation in place, but it is still early in the actual regex-engine implementation. Today the repository contains a Rust core crate, a PyO3 extension scaffold, a Python-facing shim, and published correctness and benchmark reports that intentionally expose the current supported frontier and the remaining unsupported surface instead of pretending stdlib `re` compatibility already exists.
 
-On the Python surface, `rebar` now supports a real but still-bounded subset: literal compile/search/match/fullmatch, cache visibility, `escape()`, collection/replacement helpers, API-level `IGNORECASE`, grouped and named captures, bounded replacement-template and callable replacement workflows, bounded numbered and named backreferences, and bounded grouped/nested alternation through both module and compiled-`Pattern` entrypoints. The published correctness scorecard is `158/158` across `22` manifests, but that reflects only the current implemented slice, not overall stdlib `re` parity; the next queued frontier is branch-local backreferences, then the first quantified-group slices.
+On the Python surface, `rebar` now supports a real but still-bounded subset: literal compile/search/match/fullmatch, cache visibility, `escape()`, collection/replacement helpers, API-level `IGNORECASE`, grouped and named captures, bounded replacement-template and callable replacement workflows, bounded numbered and named backreferences, and bounded grouped/nested alternation through both module and compiled-`Pattern` entrypoints. The published correctness scorecard now covers `164` cases across `23` manifests, with `158` passing comparisons and `6` honest `unimplemented` branch-local backreference gaps; that reflects the current implemented slice plus one newly published frontier, not overall stdlib `re` parity. The next queued frontier is branch-local backreference parity, then the first quantified-group slices.
 
 Benchmark publication is still partial by design. `reports/benchmarks/latest.json` now covers `139` workloads with `113` real `rebar` timings and `26` explicit known gaps, while the full suite still times the source-tree shim and the built-native path remains a separate six-workload smoke artifact in `reports/benchmarks/native_smoke.json`.
 
 ## What The Numbers Mean
 
-The correctness report is honest by construction: `158/158` means the currently published slice matches CPython, not that `rebar` is close to full stdlib `re` coverage. Today the supported slice is still early and bounded; quantified groups, conditionals, and broader backtracking remain ahead of the frontier.
+The correctness report is honest by construction: `158` passing comparisons out of `164` published cases means the currently implemented slice matches CPython where `rebar` claims support, while the remaining `6` published cases stay visible as explicit branch-local backreference gaps. `rebar` is still early and bounded overall; quantified groups, conditionals, and broader backtracking remain ahead of the frontier.
 
 The benchmark report is also a coverage report before it is a performance story. It currently publishes `139` workloads with `113` measured `rebar` timings and `26` explicit gaps, and the main `reports/benchmarks/latest.json` run still exercises the source-tree shim rather than the full built-native path. Until compile and match workloads are both implemented and measured through the main publication path, performance headlines stay out of the landing page.
 

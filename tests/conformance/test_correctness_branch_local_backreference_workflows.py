@@ -161,10 +161,10 @@ class CorrectnessHarnessBranchLocalBackreferenceWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 164,
                     "failed_cases": 0,
-                    "passed_cases": 158,
+                    "passed_cases": 164,
                     "skipped_cases": 0,
                     "total_cases": 164,
-                    "unimplemented_cases": 6,
+                    "unimplemented_cases": 0,
                 },
             )
 
@@ -221,9 +221,9 @@ class CorrectnessHarnessBranchLocalBackreferenceWorkflowTest(unittest.TestCase):
 
         match_layer = scorecard["layers"]["match_behavior"]
         self.assertEqual(match_layer["summary"]["total_cases"], 54)
-        self.assertEqual(match_layer["summary"]["passed_cases"], 48)
+        self.assertEqual(match_layer["summary"]["passed_cases"], 54)
         self.assertEqual(match_layer["summary"]["failed_cases"], 0)
-        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 6)
+        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             match_layer["manifest_ids"],
             [
@@ -254,9 +254,9 @@ class CorrectnessHarnessBranchLocalBackreferenceWorkflowTest(unittest.TestCase):
             suite for suite in scorecard["suites"] if suite["id"] == "match.branch_local_backreference"
         )
         self.assertEqual(branch_local_suite["summary"]["total_cases"], 6)
-        self.assertEqual(branch_local_suite["summary"]["passed_cases"], 0)
+        self.assertEqual(branch_local_suite["summary"]["passed_cases"], 6)
         self.assertEqual(branch_local_suite["summary"]["failed_cases"], 0)
-        self.assertEqual(branch_local_suite["summary"]["unimplemented_cases"], 6)
+        self.assertEqual(branch_local_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             branch_local_suite["families"],
             [
@@ -274,60 +274,70 @@ class CorrectnessHarnessBranchLocalBackreferenceWorkflowTest(unittest.TestCase):
             for case in scorecard["cases"]
             if case["id"] == "branch-local-numbered-backreference-compile-metadata-str"
         )
-        self.assertEqual(numbered_compile_case["comparison"], "unimplemented")
+        self.assertEqual(numbered_compile_case["comparison"], "pass")
         self.assertEqual(numbered_compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(numbered_compile_case["observations"]["cpython"]["result"]["groupindex"], {})
         self.assertEqual(numbered_compile_case["observations"]["cpython"]["result"]["groups"], 2)
-        self.assertEqual(numbered_compile_case["observations"]["rebar"]["outcome"], "unimplemented")
-        self.assertEqual(
-            numbered_compile_case["observations"]["rebar"]["exception"]["type"], "NotImplementedError"
-        )
+        self.assertEqual(numbered_compile_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(numbered_compile_case["observations"]["rebar"]["result"]["groupindex"], {})
+        self.assertEqual(numbered_compile_case["observations"]["rebar"]["result"]["groups"], 2)
 
         numbered_module_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "branch-local-numbered-backreference-module-search-str"
         )
-        self.assertEqual(numbered_module_case["comparison"], "unimplemented")
+        self.assertEqual(numbered_module_case["comparison"], "pass")
         self.assertEqual(numbered_module_case["helper"], "search")
         self.assertEqual(numbered_module_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(numbered_module_case["observations"]["cpython"]["result"]["group0"], "abbd")
         self.assertEqual(numbered_module_case["observations"]["cpython"]["result"]["groups"], ["b", "b"])
         self.assertEqual(numbered_module_case["observations"]["cpython"]["result"]["group_spans"], [[3, 4], [3, 4]])
         self.assertEqual(numbered_module_case["observations"]["cpython"]["result"]["lastgroup"], None)
-        self.assertEqual(numbered_module_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(numbered_module_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(numbered_module_case["observations"]["rebar"]["result"]["group0"], "abbd")
+        self.assertEqual(numbered_module_case["observations"]["rebar"]["result"]["groups"], ["b", "b"])
+        self.assertEqual(numbered_module_case["observations"]["rebar"]["result"]["group_spans"], [[3, 4], [3, 4]])
+        self.assertEqual(numbered_module_case["observations"]["rebar"]["result"]["lastgroup"], None)
 
         numbered_pattern_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "branch-local-numbered-backreference-pattern-fullmatch-str"
         )
-        self.assertEqual(numbered_pattern_case["comparison"], "unimplemented")
+        self.assertEqual(numbered_pattern_case["comparison"], "pass")
         self.assertEqual(numbered_pattern_case["helper"], "fullmatch")
         self.assertEqual(numbered_pattern_case["observations"]["cpython"]["result"]["span"], [0, 4])
         self.assertEqual(numbered_pattern_case["observations"]["cpython"]["result"]["group_spans"], [[1, 2], [1, 2]])
-        self.assertEqual(numbered_pattern_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(numbered_pattern_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(numbered_pattern_case["observations"]["rebar"]["result"]["span"], [0, 4])
+        self.assertEqual(numbered_pattern_case["observations"]["rebar"]["result"]["group_spans"], [[1, 2], [1, 2]])
 
         named_compile_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "branch-local-named-backreference-compile-metadata-str"
         )
-        self.assertEqual(named_compile_case["comparison"], "unimplemented")
+        self.assertEqual(named_compile_case["comparison"], "pass")
         self.assertEqual(named_compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(
             named_compile_case["observations"]["cpython"]["result"]["groupindex"],
             {"inner": 2, "outer": 1},
         )
         self.assertEqual(named_compile_case["observations"]["cpython"]["result"]["groups"], 2)
-        self.assertEqual(named_compile_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_compile_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            named_compile_case["observations"]["rebar"]["result"]["groupindex"],
+            {"inner": 2, "outer": 1},
+        )
+        self.assertEqual(named_compile_case["observations"]["rebar"]["result"]["groups"], 2)
 
         named_module_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "branch-local-named-backreference-module-search-str"
         )
-        self.assertEqual(named_module_case["comparison"], "unimplemented")
+        self.assertEqual(named_module_case["comparison"], "pass")
         self.assertEqual(named_module_case["helper"], "search")
         self.assertEqual(named_module_case["observations"]["cpython"]["result"]["group0"], "abbd")
         self.assertEqual(named_module_case["observations"]["cpython"]["result"]["groupdict"], {"inner": "b", "outer": "b"})
@@ -336,14 +346,20 @@ class CorrectnessHarnessBranchLocalBackreferenceWorkflowTest(unittest.TestCase):
             {"inner": [3, 4], "outer": [3, 4]},
         )
         self.assertEqual(named_module_case["observations"]["cpython"]["result"]["lastgroup"], "outer")
-        self.assertEqual(named_module_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_module_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(named_module_case["observations"]["rebar"]["result"]["groupdict"], {"inner": "b", "outer": "b"})
+        self.assertEqual(
+            named_module_case["observations"]["rebar"]["result"]["named_group_spans"],
+            {"inner": [3, 4], "outer": [3, 4]},
+        )
+        self.assertEqual(named_module_case["observations"]["rebar"]["result"]["lastgroup"], "outer")
 
         named_pattern_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "branch-local-named-backreference-pattern-fullmatch-str"
         )
-        self.assertEqual(named_pattern_case["comparison"], "unimplemented")
+        self.assertEqual(named_pattern_case["comparison"], "pass")
         self.assertEqual(named_pattern_case["helper"], "fullmatch")
         self.assertEqual(
             named_pattern_case["observations"]["cpython"]["result"]["named_groups"],
@@ -354,7 +370,16 @@ class CorrectnessHarnessBranchLocalBackreferenceWorkflowTest(unittest.TestCase):
             {"inner": [1, 2], "outer": [1, 2]},
         )
         self.assertEqual(named_pattern_case["observations"]["cpython"]["result"]["lastgroup"], "outer")
-        self.assertEqual(named_pattern_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_pattern_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            named_pattern_case["observations"]["rebar"]["result"]["named_groups"],
+            {"inner": "b", "outer": "b"},
+        )
+        self.assertEqual(
+            named_pattern_case["observations"]["rebar"]["result"]["named_group_spans"],
+            {"inner": [1, 2], "outer": [1, 2]},
+        )
+        self.assertEqual(named_pattern_case["observations"]["rebar"]["result"]["lastgroup"], "outer")
 
 
 if __name__ == "__main__":
