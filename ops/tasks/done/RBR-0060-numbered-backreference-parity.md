@@ -1,6 +1,6 @@
 # RBR-0060: Add bounded numbered-backreference parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,7 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0057`, `RBR-0058`, and `RBR-0059`.
 - This task exists so the next grouped-reference scorecard expansion can turn into concrete behavior work immediately instead of becoming another reporting-only dead end.
+
+## Completion
+- Landed a bounded Rust-backed `(literal)\\1` numbered-backreference slice for `str` compile metadata plus module and compiled-`Pattern` search flows.
+- Added direct native-path parity coverage in `tests/python/test_numbered_backreference_parity.py`, updated the numbered-backreference correctness test to expect passes, and republished `reports/correctness/latest.json` at 99 passing cases with 0 unimplemented.

@@ -365,6 +365,11 @@ struct NamedBackreferenceLiteralPattern<'a> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+struct NumberedBackreferenceLiteralPattern<'a> {
+    capture: LiteralCapture<'a>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct LiteralCapture<'a> {
     body: &'a str,
     name: Option<&'a str>,
@@ -421,6 +426,25 @@ impl<'a> NamedBackreferenceLiteralPattern<'a> {
                 .to_string(),
             index: 1,
         }]
+    }
+
+    fn pattern_chars(&self) -> Vec<char> {
+        self.capture
+            .body
+            .chars()
+            .chain(self.capture.body.chars())
+            .collect()
+    }
+
+    fn group_spans(&self, match_start: usize) -> Vec<Option<(usize, usize)>> {
+        let end = match_start + self.capture.body.chars().count();
+        vec![Some((match_start, end))]
+    }
+}
+
+impl<'a> NumberedBackreferenceLiteralPattern<'a> {
+    fn group_count(&self) -> usize {
+        1
     }
 
     fn pattern_chars(&self) -> Vec<char> {
@@ -546,6 +570,21 @@ fn compile_known_supported_case(
             })
         }
         PatternRef::Str(pattern)
+            if parse_numbered_backreference_literal_pattern_str(pattern).is_some()
+                && normalized_flags == FLAG_UNICODE =>
+        {
+            let grouped_pattern = parse_numbered_backreference_literal_pattern_str(pattern)
+                .expect("guarded numbered backreference literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: Vec::new(),
+                warning: None,
+            })
+        }
+        PatternRef::Str(pattern)
             if parse_capture_literal_pattern_str(pattern).is_some()
                 && normalized_flags == FLAG_UNICODE =>
         {
@@ -594,19 +633,24 @@ fn parse_capture_literal_pattern_str(pattern: &str) -> Option<CaptureLiteralPatt
         }
 
         let remainder = &pattern[index + 1..];
-        let (name, body, close_offset) = if let Some(named_remainder) = remainder.strip_prefix("?P<") {
-            let name_end = named_remainder.find('>')?;
-            let name = &named_remainder[..name_end];
-            if !is_supported_group_name(name) {
-                return None;
-            }
-            let body = &named_remainder[name_end + 1..];
-            let close_offset = body.find(')')?;
-            (Some(name), &body[..close_offset], 3 + name_end + 1 + close_offset)
-        } else {
-            let close_offset = remainder.find(')')?;
-            (None, &remainder[..close_offset], close_offset)
-        };
+        let (name, body, close_offset) =
+            if let Some(named_remainder) = remainder.strip_prefix("?P<") {
+                let name_end = named_remainder.find('>')?;
+                let name = &named_remainder[..name_end];
+                if !is_supported_group_name(name) {
+                    return None;
+                }
+                let body = &named_remainder[name_end + 1..];
+                let close_offset = body.find(')')?;
+                (
+                    Some(name),
+                    &body[..close_offset],
+                    3 + name_end + 1 + close_offset,
+                )
+            } else {
+                let close_offset = remainder.find(')')?;
+                (None, &remainder[..close_offset], close_offset)
+            };
         if body.is_empty() || body.chars().any(is_meta_character) {
             return None;
         }
@@ -636,9 +680,7 @@ fn parse_named_backreference_literal_pattern_str(
     }
 
     let backreference = &body_and_remainder[close_offset + 1..];
-    let reference_name = backreference
-        .strip_prefix("(?P=")?
-        .strip_suffix(')')?;
+    let reference_name = backreference.strip_prefix("(?P=")?.strip_suffix(')')?;
     if reference_name != capture_name {
         return None;
     }
@@ -647,6 +689,33 @@ fn parse_named_backreference_literal_pattern_str(
         capture: LiteralCapture {
             body: capture_body,
             name: Some(capture_name),
+        },
+    })
+}
+
+fn parse_numbered_backreference_literal_pattern_str(
+    pattern: &str,
+) -> Option<NumberedBackreferenceLiteralPattern<'_>> {
+    let capture_remainder = pattern.strip_prefix('(')?;
+    if capture_remainder.starts_with("?P<") {
+        return None;
+    }
+
+    let close_offset = capture_remainder.find(')')?;
+    let capture_body = &capture_remainder[..close_offset];
+    if capture_body.is_empty() || capture_body.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let backreference = &capture_remainder[close_offset + 1..];
+    if backreference != r"\1" {
+        return None;
+    }
+
+    Some(NumberedBackreferenceLiteralPattern {
+        capture: LiteralCapture {
+            body: capture_body,
+            name: None,
         },
     })
 }
@@ -768,6 +837,32 @@ fn literal_match_str(
             );
             let group_spans = span
                 .map(|(start, _)| named_backreference_pattern.group_spans(start))
+                .unwrap_or_default();
+            (span, group_spans)
+        } else if let Some(numbered_backreference_pattern) =
+            parse_numbered_backreference_literal_pattern_str(pattern_value)
+        {
+            if flags != FLAG_UNICODE {
+                return MatchOutcome {
+                    status: MatchStatus::Unsupported,
+                    pos: normalized_pos,
+                    endpos: normalized_endpos,
+                    span: None,
+                    group_spans: Vec::new(),
+                };
+            }
+
+            let pattern_chars = numbered_backreference_pattern.pattern_chars();
+            let span = find_match_span_str(
+                pattern_chars.as_slice(),
+                flags,
+                mode,
+                &string_chars,
+                normalized_pos,
+                normalized_endpos,
+            );
+            let group_spans = span
+                .map(|(start, _)| numbered_backreference_pattern.group_spans(start))
                 .unwrap_or_default();
             (span, group_spans)
         } else {

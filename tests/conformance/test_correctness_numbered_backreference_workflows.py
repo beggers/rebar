@@ -97,10 +97,10 @@ class CorrectnessHarnessNumberedBackreferenceWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 99,
                     "failed_cases": 0,
-                    "passed_cases": 96,
+                    "passed_cases": 99,
                     "skipped_cases": 0,
                     "total_cases": 99,
-                    "unimplemented_cases": 3,
+                    "unimplemented_cases": 0,
                 },
             )
 
@@ -147,9 +147,9 @@ class CorrectnessHarnessNumberedBackreferenceWorkflowTest(unittest.TestCase):
 
         match_layer = scorecard["layers"]["match_behavior"]
         self.assertEqual(match_layer["summary"]["total_cases"], 21)
-        self.assertEqual(match_layer["summary"]["passed_cases"], 18)
+        self.assertEqual(match_layer["summary"]["passed_cases"], 21)
         self.assertEqual(match_layer["summary"]["failed_cases"], 0)
-        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 3)
+        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             match_layer["manifest_ids"],
             [
@@ -174,9 +174,9 @@ class CorrectnessHarnessNumberedBackreferenceWorkflowTest(unittest.TestCase):
             suite for suite in scorecard["suites"] if suite["id"] == "match.numbered_backreference"
         )
         self.assertEqual(numbered_backreference_suite["summary"]["total_cases"], 3)
-        self.assertEqual(numbered_backreference_suite["summary"]["passed_cases"], 0)
+        self.assertEqual(numbered_backreference_suite["summary"]["passed_cases"], 3)
         self.assertEqual(numbered_backreference_suite["summary"]["failed_cases"], 0)
-        self.assertEqual(numbered_backreference_suite["summary"]["unimplemented_cases"], 3)
+        self.assertEqual(numbered_backreference_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             numbered_backreference_suite["families"],
             [
@@ -191,45 +191,42 @@ class CorrectnessHarnessNumberedBackreferenceWorkflowTest(unittest.TestCase):
             for case in scorecard["cases"]
             if case["id"] == "numbered-backreference-compile-metadata-str"
         )
-        self.assertEqual(compile_case["comparison"], "unimplemented")
+        self.assertEqual(compile_case["comparison"], "pass")
         self.assertEqual(compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groupindex"], {})
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groups"], 1)
-        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "unimplemented")
-        self.assertEqual(
-            compile_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
-        )
+        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(compile_case["observations"]["rebar"]["result"]["groupindex"], {})
+        self.assertEqual(compile_case["observations"]["rebar"]["result"]["groups"], 1)
 
         module_case = next(
             case for case in scorecard["cases"] if case["id"] == "numbered-backreference-module-search-str"
         )
-        self.assertEqual(module_case["comparison"], "unimplemented")
+        self.assertEqual(module_case["comparison"], "pass")
         self.assertEqual(module_case["helper"], "search")
         self.assertEqual(module_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(module_case["observations"]["cpython"]["result"]["group0"], "abab")
         self.assertEqual(module_case["observations"]["cpython"]["result"]["groups"], ["ab"])
         self.assertEqual(module_case["observations"]["cpython"]["result"]["lastgroup"], None)
-        self.assertEqual(module_case["observations"]["rebar"]["outcome"], "unimplemented")
-        self.assertEqual(
-            module_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
-        )
+        self.assertEqual(module_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(module_case["observations"]["rebar"]["result"]["group0"], "abab")
+        self.assertEqual(module_case["observations"]["rebar"]["result"]["groups"], ["ab"])
+        self.assertEqual(module_case["observations"]["rebar"]["result"]["lastgroup"], None)
 
         pattern_case = next(
             case for case in scorecard["cases"] if case["id"] == "numbered-backreference-pattern-search-str"
         )
-        self.assertEqual(pattern_case["comparison"], "unimplemented")
+        self.assertEqual(pattern_case["comparison"], "pass")
         self.assertEqual(pattern_case["helper"], "search")
         self.assertEqual(pattern_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(
             pattern_case["observations"]["cpython"]["result"]["group_spans"],
             [[2, 4]],
         )
-        self.assertEqual(pattern_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(pattern_case["observations"]["rebar"]["outcome"], "success")
         self.assertEqual(
-            pattern_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
+            pattern_case["observations"]["rebar"]["result"]["group_spans"],
+            [[2, 4]],
         )
 
 
