@@ -55,21 +55,21 @@
   "cache_modes": {
     "cold": {
       "known_gap_count": 8,
-      "median_baseline_ns": 19976,
-      "median_implementation_ns": 113482,
-      "median_speedup_vs_cpython": 9.7271,
+      "median_baseline_ns": 23768,
+      "median_implementation_ns": 417632,
+      "median_speedup_vs_cpython": 2.8611,
       "workload_count": 10
     },
     "purged": {
       "known_gap_count": 4,
-      "median_baseline_ns": 52825,
+      "median_baseline_ns": 59900,
       "median_implementation_ns": null,
       "median_speedup_vs_cpython": null,
       "workload_count": 4
     },
     "warm": {
       "known_gap_count": 5,
-      "median_baseline_ns": 241,
+      "median_baseline_ns": 296,
       "median_implementation_ns": null,
       "median_speedup_vs_cpython": null,
       "workload_count": 5
@@ -98,30 +98,30 @@
       "cache_modes": {
         "cold": {
           "known_gap_count": 4,
-          "median_baseline_ns": 8778,
-          "median_implementation_ns": 113482,
-          "median_speedup_vs_cpython": 9.7271,
+          "median_baseline_ns": 9984,
+          "median_implementation_ns": 417632,
+          "median_speedup_vs_cpython": 2.8611,
           "workload_count": 6
         },
         "purged": {
           "known_gap_count": 2,
-          "median_baseline_ns": 38167,
+          "median_baseline_ns": 44161,
           "median_implementation_ns": null,
           "median_speedup_vs_cpython": null,
           "workload_count": 2
         },
         "warm": {
           "known_gap_count": 3,
-          "median_baseline_ns": 333,
+          "median_baseline_ns": 388,
           "median_implementation_ns": null,
           "median_speedup_vs_cpython": null,
           "workload_count": 3
         }
       },
       "known_gap_count": 9,
-      "median_baseline_ns": 8669,
-      "median_implementation_ns": 113482,
-      "median_speedup_vs_cpython": 9.7271,
+      "median_baseline_ns": 9773,
+      "median_implementation_ns": 417632,
+      "median_speedup_vs_cpython": 2.8611,
       "notes": [
         "Phase 2 module-boundary timings use tiny import and helper-call workloads so the scorecard stays focused on public API overhead."
       ],
@@ -132,28 +132,28 @@
       "cache_modes": {
         "cold": {
           "known_gap_count": 4,
-          "median_baseline_ns": 87185,
+          "median_baseline_ns": 111152,
           "median_implementation_ns": null,
           "median_speedup_vs_cpython": null,
           "workload_count": 4
         },
         "purged": {
           "known_gap_count": 2,
-          "median_baseline_ns": 52825,
+          "median_baseline_ns": 61240,
           "median_implementation_ns": null,
           "median_speedup_vs_cpython": null,
           "workload_count": 2
         },
         "warm": {
           "known_gap_count": 2,
-          "median_baseline_ns": 231,
+          "median_baseline_ns": 284,
           "median_implementation_ns": null,
           "median_speedup_vs_cpython": null,
           "workload_count": 2
         }
       },
       "known_gap_count": 8,
-      "median_baseline_ns": 34816,
+      "median_baseline_ns": 38952,
       "median_implementation_ns": null,
       "median_speedup_vs_cpython": null,
       "notes": [
@@ -163,17 +163,22 @@
       "workload_count": 8
     }
   },
-  "generated_at": "2026-03-12T00:22:05Z",
+  "generated_at": "2026-03-12T00:59:17Z",
   "generator": "python -m rebar_harness.benchmarks",
   "implementation": {
     "adapter": "rebar.module-surface",
+    "adapter_mode_requested": "source-tree-shim",
+    "adapter_mode_resolved": "source-tree-shim",
     "build_mode": "source-tree-shim",
-    "git_commit": "4cb8a816723cda9410a9d329e723145b6d718588",
+    "git_commit": "512a2789ae15ccd1a2b7fd0259657e889f12cb23",
     "module_name": "rebar",
+    "native_build_tool": null,
     "native_module_loaded": false,
     "native_module_name": "rebar._rebar",
     "native_scaffold_status": null,
     "native_target_cpython_series": null,
+    "native_unavailable_reason": "built-native timing path not requested; using the default source-tree shim",
+    "native_wheel": null,
     "timing_path": "source-tree-shim"
   },
   "manifests": {
@@ -205,7 +210,7 @@
       ],
       "known_gap_count": 7,
       "measured_workloads": 1,
-      "median_speedup_vs_cpython": 9.6205,
+      "median_speedup_vs_cpython": 2.7765,
       "notes": [
         "Module-boundary workloads keep haystacks intentionally small so the timings emphasize public helper overhead."
       ],
@@ -230,7 +235,7 @@
       ],
       "known_gap_count": 4,
       "measured_workloads": 1,
-      "median_speedup_vs_cpython": 9.8338,
+      "median_speedup_vs_cpython": 2.9457,
       "notes": [
         "Phase 3 regression/stability pack keeps a curated set of parser-stress and module-boundary probes tied to the tracked specs.",
         "These workloads are intentionally small and explicitly labeled so the scorecard can flag regressions without pretending to measure regex-engine throughput."
@@ -260,15 +265,15 @@
   "schema_version": "1.0",
   "suite": "benchmarks",
   "summary": {
-    "baseline_median_ns": 8905,
-    "baseline_median_ops_per_second": 112296.46,
-    "geomean_speedup_vs_baseline": 9.7266,
-    "implementation_median_ns": 113482,
-    "implementation_median_ops_per_second": 8811.97,
+    "baseline_median_ns": 10195,
+    "baseline_median_ops_per_second": 98087.3,
+    "geomean_speedup_vs_baseline": 2.8598,
+    "implementation_median_ns": 417632,
+    "implementation_median_ops_per_second": 2394.45,
     "known_gap_count": 17,
     "measured_workloads": 2,
-    "median_speedup_vs_baseline": 9.7271,
-    "module_median_speedup_vs_cpython": 9.7271,
+    "median_speedup_vs_baseline": 2.8611,
+    "module_median_speedup_vs_cpython": 2.8611,
     "module_workloads": 11,
     "parser_median_speedup_vs_cpython": null,
     "parser_workloads": 8,
@@ -282,24 +287,24 @@
   },
   "workloads": [
     {
-      "baseline_ns": 9100,
-      "baseline_ops_per_second": 109890.11,
+      "baseline_ns": 11054,
+      "baseline_ops_per_second": 90464.99,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 10687,
-        "mean_ns": 9270,
-        "median_ns": 9100,
-        "min_ns": 8639,
+        "max_ns": 11601,
+        "mean_ns": 11080,
+        "median_ns": 11054,
+        "min_ns": 10564,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          10687,
-          9100,
-          9360,
-          9059,
-          8639,
-          9231,
-          8813
+          11382,
+          10719,
+          10998,
+          11054,
+          10564,
+          11601,
+          11244
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -339,33 +344,33 @@
       "timing_scope": "compile-path-proxy",
       "variance": {
         "baseline": {
-          "max_ns": 10687,
-          "mean_ns": 9270,
-          "min_ns": 8639,
+          "max_ns": 11601,
+          "mean_ns": 11080,
+          "min_ns": 10564,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 231,
-      "baseline_ops_per_second": 4329004.33,
+      "baseline_ns": 296,
+      "baseline_ops_per_second": 3378378.38,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 259,
-        "mean_ns": 237,
-        "median_ns": 231,
-        "min_ns": 220,
+        "max_ns": 359,
+        "mean_ns": 300,
+        "median_ns": 296,
+        "min_ns": 265,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          259,
-          252,
-          231,
-          231,
-          220,
-          233,
-          230
+          313,
+          313,
+          267,
+          265,
+          359,
+          296,
+          284
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -407,33 +412,33 @@
       "timing_scope": "compile-path-proxy",
       "variance": {
         "baseline": {
-          "max_ns": 259,
-          "mean_ns": 237,
-          "min_ns": 220,
+          "max_ns": 359,
+          "mean_ns": 300,
+          "min_ns": 265,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 143518,
-      "baseline_ops_per_second": 6967.77,
+      "baseline_ns": 186008,
+      "baseline_ops_per_second": 5376.11,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 144791,
-        "mean_ns": 142782,
-        "median_ns": 143518,
-        "min_ns": 139519,
+        "max_ns": 192019,
+        "mean_ns": 186771,
+        "median_ns": 186008,
+        "min_ns": 181850,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          141020,
-          143518,
-          144791,
-          142243,
-          139519,
-          144483,
-          143897
+          183563,
+          181850,
+          190624,
+          192019,
+          186008,
+          183007,
+          190325
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -478,33 +483,33 @@
       "timing_scope": "compile-path-proxy",
       "variance": {
         "baseline": {
-          "max_ns": 144791,
-          "mean_ns": 142782,
-          "min_ns": 139519,
+          "max_ns": 192019,
+          "mean_ns": 186771,
+          "min_ns": 181850,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 30853,
-      "baseline_ops_per_second": 32411.76,
+      "baseline_ns": 36483,
+      "baseline_ops_per_second": 27410.03,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 35530,
-        "mean_ns": 31559,
-        "median_ns": 30853,
-        "min_ns": 30536,
+        "max_ns": 39776,
+        "mean_ns": 36931,
+        "median_ns": 36483,
+        "min_ns": 34910,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          31412,
-          30830,
-          35530,
-          30853,
-          30536,
-          31083,
-          30668
+          38795,
+          36839,
+          36061,
+          35656,
+          34910,
+          36483,
+          39776
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -544,33 +549,33 @@
       "timing_scope": "compile-path-proxy",
       "variance": {
         "baseline": {
-          "max_ns": 35530,
-          "mean_ns": 31559,
-          "min_ns": 30536,
+          "max_ns": 39776,
+          "mean_ns": 36931,
+          "min_ns": 34910,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 232,
-      "baseline_ops_per_second": 4310344.83,
+      "baseline_ns": 272,
+      "baseline_ops_per_second": 3676470.59,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 261,
-        "mean_ns": 235,
-        "median_ns": 232,
-        "min_ns": 205,
+        "max_ns": 341,
+        "mean_ns": 287,
+        "median_ns": 272,
+        "min_ns": 257,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          261,
-          249,
-          223,
-          254,
-          223,
-          232,
-          205
+          309,
+          302,
+          272,
+          341,
+          263,
+          263,
+          257
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -613,33 +618,33 @@
       "timing_scope": "compile-path-proxy",
       "variance": {
         "baseline": {
-          "max_ns": 261,
-          "mean_ns": 235,
-          "min_ns": 205,
+          "max_ns": 341,
+          "mean_ns": 287,
+          "min_ns": 257,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 66871,
-      "baseline_ops_per_second": 14954.17,
+      "baseline_ns": 81059,
+      "baseline_ops_per_second": 12336.69,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 70483,
-        "mean_ns": 67822,
-        "median_ns": 66871,
-        "min_ns": 66458,
+        "max_ns": 84233,
+        "mean_ns": 80283,
+        "median_ns": 81059,
+        "min_ns": 74260,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          66458,
-          69934,
-          66856,
-          66840,
-          70483,
-          66871,
-          67312
+          78266,
+          78690,
+          83765,
+          81710,
+          84233,
+          81059,
+          74260
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -682,33 +687,33 @@
       "timing_scope": "compile-path-proxy",
       "variance": {
         "baseline": {
-          "max_ns": 70483,
-          "mean_ns": 67822,
-          "min_ns": 66458,
+          "max_ns": 84233,
+          "mean_ns": 80283,
+          "min_ns": 74260,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 1104527,
-      "baseline_ops_per_second": 905.36,
+      "baseline_ns": 1199846,
+      "baseline_ops_per_second": 833.44,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 1381538,
-        "mean_ns": 1159274,
-        "median_ns": 1104527,
-        "min_ns": 1055725,
+        "max_ns": 1585721,
+        "mean_ns": 1274108,
+        "median_ns": 1199846,
+        "min_ns": 1119261,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          1319081,
-          1060647,
-          1114940,
-          1381538,
-          1055725,
-          1104527,
-          1078458
+          1416643,
+          1177587,
+          1265803,
+          1585721,
+          1199846,
+          1119261,
+          1153892
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -723,24 +728,24 @@
       "flags": 0,
       "haystack": null,
       "id": "import-module-cold",
-      "implementation_ns": 114810,
-      "implementation_ops_per_second": 8710.04,
+      "implementation_ns": 432151,
+      "implementation_ops_per_second": 2314.01,
       "implementation_timing": {
         "adapter": "rebar",
-        "max_ns": 138057,
-        "mean_ns": 118991,
-        "median_ns": 114810,
-        "min_ns": 106819,
+        "max_ns": 753037,
+        "mean_ns": 465352,
+        "median_ns": 432151,
+        "min_ns": 381782,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          111325,
-          136373,
-          106819,
-          115803,
-          114810,
-          109747,
-          138057
+          436486,
+          753037,
+          386993,
+          436457,
+          381782,
+          430556,
+          432151
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -751,7 +756,7 @@
       ],
       "operation": "import",
       "pattern": "",
-      "speedup_vs_cpython": 9.6205,
+      "speedup_vs_cpython": 2.7765,
       "status": "measured",
       "syntax_features": [
         "module-import"
@@ -760,38 +765,38 @@
       "timing_scope": "module-import",
       "variance": {
         "baseline": {
-          "max_ns": 1381538,
-          "mean_ns": 1159274,
-          "min_ns": 1055725,
+          "max_ns": 1585721,
+          "mean_ns": 1274108,
+          "min_ns": 1119261,
           "sample_count": 7
         },
         "implementation": {
-          "max_ns": 138057,
-          "mean_ns": 118991,
-          "min_ns": 106819,
+          "max_ns": 753037,
+          "mean_ns": 465352,
+          "min_ns": 381782,
           "sample_count": 7
         }
       }
     },
     {
-      "baseline_ns": 8887,
-      "baseline_ops_per_second": 112523.91,
+      "baseline_ns": 9773,
+      "baseline_ops_per_second": 102322.73,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 9584,
-        "mean_ns": 8917,
-        "median_ns": 8887,
-        "min_ns": 8659,
+        "max_ns": 14463,
+        "mean_ns": 10488,
+        "median_ns": 9773,
+        "min_ns": 9651,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          8887,
-          8903,
-          8774,
-          8659,
-          8662,
-          9584,
-          8949
+          9773,
+          9709,
+          14463,
+          9754,
+          9651,
+          9925,
+          10138
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -831,33 +836,33 @@
       "timing_scope": "module-helper-call",
       "variance": {
         "baseline": {
-          "max_ns": 9584,
-          "mean_ns": 8917,
-          "min_ns": 8659,
+          "max_ns": 14463,
+          "mean_ns": 10488,
+          "min_ns": 9651,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 241,
-      "baseline_ops_per_second": 4149377.59,
+      "baseline_ns": 269,
+      "baseline_ops_per_second": 3717472.12,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 267,
-        "mean_ns": 238,
-        "median_ns": 241,
-        "min_ns": 219,
+        "max_ns": 280,
+        "mean_ns": 259,
+        "median_ns": 269,
+        "min_ns": 230,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          267,
-          255,
-          245,
-          241,
-          221,
-          219,
-          220
+          280,
+          276,
+          257,
+          269,
+          269,
+          230,
+          234
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -897,33 +902,33 @@
       "timing_scope": "module-helper-call",
       "variance": {
         "baseline": {
-          "max_ns": 267,
-          "mean_ns": 238,
-          "min_ns": 219,
+          "max_ns": 280,
+          "mean_ns": 259,
+          "min_ns": 230,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 8905,
-      "baseline_ops_per_second": 112296.46,
+      "baseline_ns": 9944,
+      "baseline_ops_per_second": 100563.15,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 13074,
-        "mean_ns": 9496,
-        "median_ns": 8905,
-        "min_ns": 8506,
+        "max_ns": 10124,
+        "mean_ns": 9837,
+        "median_ns": 9944,
+        "min_ns": 9266,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          8766,
-          13074,
-          9149,
-          8793,
-          8506,
-          9281,
-          8905
+          9266,
+          9615,
+          10124,
+          9883,
+          9944,
+          9969,
+          10055
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -964,33 +969,33 @@
       "timing_scope": "module-helper-call",
       "variance": {
         "baseline": {
-          "max_ns": 13074,
-          "mean_ns": 9496,
-          "min_ns": 8506,
+          "max_ns": 10124,
+          "mean_ns": 9837,
+          "min_ns": 9266,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 333,
-      "baseline_ops_per_second": 3003003.0,
+      "baseline_ns": 388,
+      "baseline_ops_per_second": 2577319.59,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 395,
-        "mean_ns": 346,
-        "median_ns": 333,
-        "min_ns": 302,
+        "max_ns": 419,
+        "mean_ns": 382,
+        "median_ns": 388,
+        "min_ns": 348,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          394,
-          348,
-          395,
-          328,
-          323,
-          333,
-          302
+          419,
+          398,
+          388,
+          402,
+          362,
+          358,
+          348
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -1030,33 +1035,33 @@
       "timing_scope": "module-helper-call",
       "variance": {
         "baseline": {
-          "max_ns": 395,
-          "mean_ns": 346,
-          "min_ns": 302,
+          "max_ns": 419,
+          "mean_ns": 382,
+          "min_ns": 348,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 8669,
-      "baseline_ops_per_second": 115353.56,
+      "baseline_ns": 10195,
+      "baseline_ops_per_second": 98087.3,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 9129,
-        "mean_ns": 8783,
-        "median_ns": 8669,
-        "min_ns": 8595,
+        "max_ns": 14450,
+        "mean_ns": 10817,
+        "median_ns": 10195,
+        "min_ns": 10020,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          9129,
-          9070,
-          8640,
-          8669,
-          8595,
-          8665,
-          8711
+          14450,
+          10677,
+          10055,
+          10195,
+          10020,
+          10229,
+          10093
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -1097,33 +1102,33 @@
       "timing_scope": "module-helper-call",
       "variance": {
         "baseline": {
-          "max_ns": 9129,
-          "mean_ns": 8783,
-          "min_ns": 8595,
+          "max_ns": 14450,
+          "mean_ns": 10817,
+          "min_ns": 10020,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 382,
-      "baseline_ops_per_second": 2617801.05,
+      "baseline_ns": 422,
+      "baseline_ops_per_second": 2369668.25,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 439,
-        "mean_ns": 395,
-        "median_ns": 382,
-        "min_ns": 377,
+        "max_ns": 445,
+        "mean_ns": 429,
+        "median_ns": 422,
+        "min_ns": 417,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          439,
-          409,
-          403,
-          380,
-          382,
-          377,
-          378
+          444,
+          445,
+          422,
+          438,
+          417,
+          417,
+          417
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -1163,33 +1168,33 @@
       "timing_scope": "module-helper-call",
       "variance": {
         "baseline": {
-          "max_ns": 439,
-          "mean_ns": 395,
-          "min_ns": 377,
+          "max_ns": 445,
+          "mean_ns": 429,
+          "min_ns": 417,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 8209,
-      "baseline_ops_per_second": 121817.52,
+      "baseline_ns": 8897,
+      "baseline_ops_per_second": 112397.44,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 11643,
-        "mean_ns": 8679,
-        "median_ns": 8209,
-        "min_ns": 7906,
+        "max_ns": 9493,
+        "mean_ns": 9053,
+        "median_ns": 8897,
+        "min_ns": 8630,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          8323,
-          11643,
-          8757,
-          8209,
-          7906,
-          7992,
-          7921
+          9493,
+          9363,
+          9332,
+          8897,
+          8802,
+          8630,
+          8853
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -1230,33 +1235,33 @@
       "timing_scope": "module-helper-call",
       "variance": {
         "baseline": {
-          "max_ns": 11643,
-          "mean_ns": 8679,
-          "min_ns": 7906,
+          "max_ns": 9493,
+          "mean_ns": 9053,
+          "min_ns": 8630,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 1102898,
-      "baseline_ops_per_second": 906.7,
+      "baseline_ns": 1187444,
+      "baseline_ops_per_second": 842.14,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 1390301,
-        "mean_ns": 1163457,
-        "median_ns": 1102898,
-        "min_ns": 1046492,
+        "max_ns": 1577238,
+        "mean_ns": 1259448,
+        "median_ns": 1187444,
+        "min_ns": 1098634,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          1059017,
-          1109476,
-          1385927,
-          1046492,
-          1050086,
-          1102898,
-          1390301
+          1187444,
+          1482352,
+          1135988,
+          1098634,
+          1577238,
+          1196307,
+          1138175
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -1273,24 +1278,24 @@
       "flags": 0,
       "haystack": null,
       "id": "regression-import-cold",
-      "implementation_ns": 112154,
-      "implementation_ops_per_second": 8916.31,
+      "implementation_ns": 403113,
+      "implementation_ops_per_second": 2480.69,
       "implementation_timing": {
         "adapter": "rebar",
-        "max_ns": 132247,
-        "mean_ns": 114090,
-        "median_ns": 112154,
-        "min_ns": 105348,
+        "max_ns": 431278,
+        "mean_ns": 399091,
+        "median_ns": 403113,
+        "min_ns": 369317,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          107825,
-          112154,
-          132247,
-          119013,
-          105875,
-          116166,
-          105348
+          431278,
+          403113,
+          377853,
+          419058,
+          369317,
+          407438,
+          385581
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -1301,7 +1306,7 @@
       ],
       "operation": "import",
       "pattern": "",
-      "speedup_vs_cpython": 9.8338,
+      "speedup_vs_cpython": 2.9457,
       "status": "measured",
       "syntax_features": [
         "module-import"
@@ -1310,38 +1315,38 @@
       "timing_scope": "module-import",
       "variance": {
         "baseline": {
-          "max_ns": 1390301,
-          "mean_ns": 1163457,
-          "min_ns": 1046492,
+          "max_ns": 1577238,
+          "mean_ns": 1259448,
+          "min_ns": 1098634,
           "sample_count": 7
         },
         "implementation": {
-          "max_ns": 132247,
-          "mean_ns": 114090,
-          "min_ns": 105348,
+          "max_ns": 431278,
+          "mean_ns": 399091,
+          "min_ns": 369317,
           "sample_count": 7
         }
       }
     },
     {
-      "baseline_ns": 165381,
-      "baseline_ops_per_second": 6046.64,
+      "baseline_ns": 185821,
+      "baseline_ops_per_second": 5381.52,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 167298,
-        "mean_ns": 165210,
-        "median_ns": 165381,
-        "min_ns": 162420,
+        "max_ns": 226036,
+        "mean_ns": 190101,
+        "median_ns": 185821,
+        "min_ns": 174469,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          165381,
-          167298,
-          164078,
-          166180,
-          162420,
-          164462,
-          166650
+          180813,
+          185071,
+          174469,
+          226036,
+          189580,
+          188917,
+          185821
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -1388,33 +1393,33 @@
       "timing_scope": "compile-path-proxy",
       "variance": {
         "baseline": {
-          "max_ns": 167298,
-          "mean_ns": 165210,
-          "min_ns": 162420,
+          "max_ns": 226036,
+          "mean_ns": 190101,
+          "min_ns": 174469,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 38779,
-      "baseline_ops_per_second": 25787.15,
+      "baseline_ns": 41421,
+      "baseline_ops_per_second": 24142.34,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 41964,
-        "mean_ns": 38945,
-        "median_ns": 38779,
-        "min_ns": 37951,
+        "max_ns": 43893,
+        "mean_ns": 41852,
+        "median_ns": 41421,
+        "min_ns": 40570,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          38779,
-          38007,
-          37951,
-          38203,
-          41964,
-          38918,
-          38790
+          43538,
+          40906,
+          40570,
+          40895,
+          43893,
+          41421,
+          41742
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -1458,33 +1463,33 @@
       "timing_scope": "compile-path-proxy",
       "variance": {
         "baseline": {
-          "max_ns": 41964,
-          "mean_ns": 38945,
-          "min_ns": 37951,
+          "max_ns": 43893,
+          "mean_ns": 41852,
+          "min_ns": 40570,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 67430,
-      "baseline_ops_per_second": 14830.19,
+      "baseline_ns": 78379,
+      "baseline_ops_per_second": 12758.52,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 71872,
-        "mean_ns": 68371,
-        "median_ns": 67430,
-        "min_ns": 67187,
+        "max_ns": 81935,
+        "mean_ns": 77868,
+        "median_ns": 78379,
+        "min_ns": 74041,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          67320,
-          67430,
-          71872,
-          67310,
-          67187,
-          69438,
-          68043
+          80460,
+          77165,
+          74041,
+          74170,
+          78379,
+          78928,
+          81935
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -1528,33 +1533,33 @@
       "timing_scope": "module-helper-call",
       "variance": {
         "baseline": {
-          "max_ns": 71872,
-          "mean_ns": 68371,
-          "min_ns": 67187,
+          "max_ns": 81935,
+          "mean_ns": 77868,
+          "min_ns": 74041,
           "sample_count": 7
         },
         "implementation": null
       }
     },
     {
-      "baseline_ns": 8121,
-      "baseline_ops_per_second": 123137.54,
+      "baseline_ns": 8824,
+      "baseline_ops_per_second": 113327.29,
       "baseline_timing": {
         "adapter": "cpython.re",
-        "max_ns": 8499,
-        "mean_ns": 8175,
-        "median_ns": 8121,
-        "min_ns": 7954,
+        "max_ns": 9217,
+        "mean_ns": 8886,
+        "median_ns": 8824,
+        "min_ns": 8745,
         "sample_count": 7,
         "sample_iterations": 5,
         "samples_ns": [
-          8499,
-          8414,
-          8090,
-          8121,
-          8136,
-          7954,
-          8013
+          8803,
+          9217,
+          8805,
+          8945,
+          8861,
+          8824,
+          8745
         ],
         "status": "measured",
         "warmup_iterations": 2
@@ -1596,9 +1601,9 @@
       "timing_scope": "module-helper-call",
       "variance": {
         "baseline": {
-          "max_ns": 8499,
-          "mean_ns": 8175,
-          "min_ns": 7954,
+          "max_ns": 9217,
+          "mean_ns": 8886,
+          "min_ns": 8745,
           "sample_count": 7
         },
         "implementation": null

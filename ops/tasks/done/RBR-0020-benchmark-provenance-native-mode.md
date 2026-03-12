@@ -1,6 +1,6 @@
 # RBR-0020: Harden benchmark provenance around source and native execution modes
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
 
@@ -26,3 +26,8 @@ Created: 2026-03-11
 ## Notes
 - Use `docs/benchmarks/plan.md` as the benchmark contract, especially the environment/provenance guidance and the requirement to keep benchmark claims honest.
 - Build on `RBR-0010` and `RBR-0015`; this task exists because the repo already has a verified built import smoke path, but the published benchmark report still reflects only the source-tree shim.
+
+## Completion Note
+- Added `--adapter-mode` to the benchmark harness with a default `source-tree-shim` path plus a `built-native` provisioning path that builds a wheel through `maturin`, installs it into an isolated target directory, and falls back honestly when native tooling or loading is unavailable.
+- Extended benchmark provenance in `reports/benchmarks/latest.json` with requested/resolved adapter mode, explicit timing-path/build-mode reporting, and a concrete `native_unavailable_reason` when the run remains on the shim.
+- Added provenance coverage in `tests/benchmarks/test_benchmark_adapter_provenance.py` and refreshed the existing benchmark tests/report expectations for the new fields and the now-measured literal compile smoke workload.

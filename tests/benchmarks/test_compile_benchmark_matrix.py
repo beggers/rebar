@@ -57,12 +57,15 @@ class CompileBenchmarkMatrixTest(unittest.TestCase):
         self.assertEqual(scorecard["baseline"]["python_version"], platform.python_version())
         self.assertEqual(scorecard["baseline"]["python_version_family"], "3.12.x")
         self.assertEqual(scorecard["implementation"]["module_name"], "rebar")
+        self.assertEqual(scorecard["implementation"]["adapter_mode_requested"], "source-tree-shim")
+        self.assertEqual(scorecard["implementation"]["adapter_mode_resolved"], "source-tree-shim")
         self.assertEqual(scorecard["implementation"]["build_mode"], "source-tree-shim")
         self.assertEqual(scorecard["implementation"]["timing_path"], "source-tree-shim")
         self.assertFalse(scorecard["implementation"]["native_module_loaded"])
         self.assertEqual(scorecard["implementation"]["native_module_name"], "rebar._rebar")
         self.assertIsNone(scorecard["implementation"]["native_scaffold_status"])
         self.assertIsNone(scorecard["implementation"]["native_target_cpython_series"])
+        self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase1")
         self.assertEqual(
             scorecard["artifacts"]["manifest"], "benchmarks/workloads/compile_matrix.json"

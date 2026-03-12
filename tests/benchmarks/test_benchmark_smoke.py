@@ -40,8 +40,8 @@ class BenchmarkHarnessSmokeTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 2,
-                    "measured_workloads": 0,
+                    "known_gap_count": 1,
+                    "measured_workloads": 1,
                     "module_workloads": 0,
                     "parser_workloads": 2,
                     "regression_workloads": 0,
@@ -67,7 +67,13 @@ class BenchmarkHarnessSmokeTest(unittest.TestCase):
         self.assertEqual(scorecard["baseline"]["executable"], sys.executable)
         self.assertEqual(scorecard["baseline"]["re_module"], "re")
         self.assertEqual(scorecard["implementation"]["module_name"], "rebar")
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 2)
+        self.assertEqual(scorecard["implementation"]["adapter_mode_requested"], "source-tree-shim")
+        self.assertEqual(scorecard["implementation"]["adapter_mode_resolved"], "source-tree-shim")
+        self.assertEqual(scorecard["implementation"]["build_mode"], "source-tree-shim")
+        self.assertEqual(scorecard["implementation"]["timing_path"], "source-tree-shim")
+        self.assertFalse(scorecard["implementation"]["native_module_loaded"])
+        self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 1)
         self.assertEqual(scorecard["summary"]["total_workloads"], 2)
         self.assertEqual(scorecard["artifacts"]["manifest"], "benchmarks/workloads/compile_smoke.json")
         self.assertEqual(scorecard["deferred"][0]["area"], "module-boundary")
@@ -79,9 +85,9 @@ class BenchmarkHarnessSmokeTest(unittest.TestCase):
         self.assertEqual(first_workload["family"], "parser")
         self.assertEqual(first_workload["baseline_timing"]["status"], "measured")
         self.assertGreater(first_workload["baseline_ns"], 0)
-        self.assertEqual(first_workload["implementation_timing"]["status"], "unimplemented")
-        self.assertIsNone(first_workload["implementation_ns"])
-        self.assertIsNone(first_workload["speedup_vs_cpython"])
+        self.assertEqual(first_workload["implementation_timing"]["status"], "measured")
+        self.assertGreater(first_workload["implementation_ns"], 0)
+        self.assertIsInstance(first_workload["speedup_vs_cpython"], float)
 
 
 if __name__ == "__main__":

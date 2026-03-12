@@ -10,22 +10,23 @@ import os
 import pathlib
 import platform
 import re as cpython_re
+import shutil
 import statistics
 import subprocess
 import sys
+import tempfile
 import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, Callable
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYTHON_SOURCE = REPO_ROOT / "python"
 
 if str(PYTHON_SOURCE) not in sys.path:
-    sys.path.insert(0, str(PYTHON_SOURCE))
+    sys.path.append(str(PYTHON_SOURCE))
 
-import rebar
 from rebar_harness.metadata import build_cpython_baseline
 
 
@@ -38,6 +39,9 @@ DEFAULT_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.json",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
+SOURCE_TREE_SHIM_MODE = "source-tree-shim"
+BUILT_NATIVE_MODE = "built-native"
+NATIVE_MODULE_NAME = "rebar._rebar"
 
 
 @dataclass(frozen=True)
@@ -120,6 +124,65 @@ class Workload:
         return self._encode_text(self.haystack)
 
 
+@dataclass
+class BenchmarkRunContext:
+    """Resolved benchmark execution mode plus adapter/runtime metadata."""
+
+    requested_mode: str
+    resolved_mode: str
+    baseline_adapter: "BenchmarkAdapter"
+    implementation_adapter: "BenchmarkAdapter"
+    implementation_metadata: dict[str, Any]
+    execution_model: str
+    cleanup: Callable[[], None]
+
+
+def workload_to_payload(workload: Workload) -> dict[str, Any]:
+    return {
+        "manifest_id": workload.manifest_id,
+        "workload_id": workload.workload_id,
+        "bucket": workload.bucket,
+        "family": workload.family,
+        "operation": workload.operation,
+        "pattern": workload.pattern,
+        "haystack": workload.haystack,
+        "flags": workload.flags,
+        "text_model": workload.text_model,
+        "cache_mode": workload.cache_mode,
+        "timing_scope": workload.timing_scope,
+        "warmup_iterations": workload.warmup_iterations,
+        "sample_iterations": workload.sample_iterations,
+        "timed_samples": workload.timed_samples,
+        "notes": list(workload.notes),
+        "categories": list(workload.categories),
+        "syntax_features": list(workload.syntax_features),
+        "smoke": workload.smoke,
+    }
+
+
+def workload_from_payload(payload: dict[str, Any]) -> Workload:
+    return Workload(
+        manifest_id=str(payload["manifest_id"]),
+        workload_id=str(payload["workload_id"]),
+        bucket=str(payload["bucket"]),
+        family=str(payload["family"]),
+        operation=str(payload["operation"]),
+        pattern=str(payload.get("pattern", "")),
+        haystack=None if payload.get("haystack") is None else str(payload["haystack"]),
+        flags=int(payload.get("flags", 0)),
+        text_model=str(payload["text_model"]),
+        cache_mode=str(payload["cache_mode"]),
+        timing_scope=str(payload["timing_scope"]),
+        warmup_iterations=int(payload["warmup_iterations"]),
+        sample_iterations=int(payload["sample_iterations"]),
+        timed_samples=int(payload["timed_samples"]),
+        notes=[str(note) for note in payload.get("notes", [])],
+        categories=[str(category) for category in payload.get("categories", [])],
+        syntax_features=[str(feature) for feature in payload.get("syntax_features", [])],
+        smoke=bool(payload.get("smoke", False)),
+    )
+
+
 def load_manifest(path: pathlib.Path) -> tuple[dict[str, Any], list[Workload]]:
     raw_manifest = json.loads(path.read_text(encoding="utf-8"))
     schema_version = raw_manifest.get("schema_version")
@@ -188,6 +251,14 @@ class BenchmarkAdapter:
 
     def run_workload(self, workload: Workload) -> dict[str, Any]:
         raise NotImplementedError
+
+
+def load_module(module_name: str) -> Any:
+    return importlib.import_module(module_name)
+
+
+def load_rebar_module() -> Any:
+    return load_module("rebar")
 
 
 def _clear_module(module_name: str) -> None:
@@ -355,7 +426,9 @@ class CpythonReBenchmarkAdapter(BenchmarkAdapter):
 class RebarBenchmarkAdapter(BenchmarkAdapter):
     adapter_name = "rebar"
     import_name = "rebar"
-    module = rebar
+
+    def __init__(self, module: Any) -> None:
+        self.module = module
 
     def run_workload(self, workload: Workload) -> dict[str, Any]:
         try:
@@ -374,6 +447,60 @@ class RebarBenchmarkAdapter(BenchmarkAdapter):
                 "reason": f"{type(exc).__name__}: {exc}",
             }
         return {"adapter": self.adapter_name, **timing}
+
+
+class SubprocessBenchmarkAdapter(BenchmarkAdapter):
+    """Runs one workload probe in a fresh subprocess environment."""
+
+    def __init__(
+        self,
+        *,
+        adapter_name: str,
+        import_name: str,
+        python_executable: pathlib.Path,
+        pythonpath_entries: list[pathlib.Path],
+    ) -> None:
+        self.adapter_name = adapter_name
+        self.import_name = import_name
+        self.python_executable = python_executable
+        self.pythonpath_entries = list(pythonpath_entries)
+
+    def _environment(self) -> dict[str, str]:
+        env = os.environ.copy()
+        pythonpath = os.pathsep.join(str(path) for path in self.pythonpath_entries)
+        existing_pythonpath = env.get("PYTHONPATH")
+        if existing_pythonpath:
+            pythonpath = os.pathsep.join((pythonpath, existing_pythonpath))
+        env["PYTHONPATH"] = pythonpath
+        return env
+
+    def run_workload(self, workload: Workload) -> dict[str, Any]:
+        result = subprocess.run(
+            [
+                str(self.python_executable),
+                "-m",
+                "rebar_harness.benchmarks",
+                "--internal-run-workload",
+                json.dumps(workload_to_payload(workload), sort_keys=True),
+                "--internal-import-name",
+                self.import_name,
+                "--internal-adapter-name",
+                self.adapter_name,
+            ],
+            cwd=REPO_ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+            env=self._environment(),
+        )
+        if result.returncode != 0:
+            detail = result.stderr.strip() or result.stdout.strip() or "unknown subprocess failure"
+            return {
+                "adapter": self.adapter_name,
+                "status": "unavailable",
+                "reason": f"subprocess benchmark probe failed: {detail}",
+            }
+        return json.loads(result.stdout)
 
 
 def calculate_speedup(
@@ -724,20 +851,216 @@ def determine_runner_version(workloads: list[dict[str, Any]]) -> str:
     return "phase1"
 
 
-def build_implementation_metadata(workloads: list[dict[str, Any]]) -> dict[str, Any]:
-    native_loaded = rebar.native_module_loaded()
-    includes_module_boundary = any(workload["family"] == "module" for workload in workloads)
+def probe_loaded_rebar_metadata(module: Any) -> dict[str, Any]:
+    native_loaded = bool(module.native_module_loaded())
+    native_module_name = getattr(module, "NATIVE_MODULE_NAME", NATIVE_MODULE_NAME)
+    native_scaffold_status = module.native_scaffold_status()
+    native_target_cpython_series = module.native_target_cpython_series()
+    return {
+        "native_module_loaded": native_loaded,
+        "native_module_name": native_module_name,
+        "native_scaffold_status": native_scaffold_status,
+        "native_target_cpython_series": native_target_cpython_series,
+    }
+
+
+def workload_family(workload: dict[str, Any] | Workload) -> str:
+    if isinstance(workload, Workload):
+        return workload.family
+    return str(workload["family"])
+
+
+def source_tree_metadata(
+    *,
+    workloads: list[dict[str, Any]] | list[Workload],
+    requested_mode: str,
+    native_unavailable_reason: str | None,
+) -> dict[str, Any]:
+    module = load_rebar_module()
+    probed = probe_loaded_rebar_metadata(module)
+    includes_module_boundary = any(workload_family(workload) == "module" for workload in workloads)
     return {
         "module_name": "rebar",
         "adapter": "rebar.module-surface" if includes_module_boundary else "rebar.compile",
-        "build_mode": "native-extension" if native_loaded else "source-tree-shim",
-        "timing_path": "native-extension" if native_loaded else "source-tree-shim",
-        "native_module_loaded": native_loaded,
-        "native_module_name": rebar.NATIVE_MODULE_NAME,
-        "native_scaffold_status": rebar.native_scaffold_status(),
-        "native_target_cpython_series": rebar.native_target_cpython_series(),
+        "adapter_mode_requested": requested_mode,
+        "adapter_mode_resolved": SOURCE_TREE_SHIM_MODE,
+        "build_mode": SOURCE_TREE_SHIM_MODE,
+        "timing_path": SOURCE_TREE_SHIM_MODE,
+        "native_unavailable_reason": native_unavailable_reason,
+        "native_build_tool": None,
+        "native_wheel": None,
         "git_commit": git_commit(),
+        **probed,
     }
+
+
+def _clean_failure_message(label: str, result: subprocess.CompletedProcess[str]) -> str:
+    detail = result.stderr.strip() or result.stdout.strip() or f"{label} failed"
+    return f"{label} failed: {detail}"
+
+
+def _pythonpath_env(entries: list[pathlib.Path]) -> dict[str, str]:
+    env = os.environ.copy()
+    pythonpath = os.pathsep.join(str(entry) for entry in entries)
+    existing_pythonpath = env.get("PYTHONPATH")
+    if existing_pythonpath:
+        pythonpath = os.pathsep.join((pythonpath, existing_pythonpath))
+    env["PYTHONPATH"] = pythonpath
+    return env
+
+
+def provision_built_native_runtime() -> tuple[dict[str, Any] | None, tempfile.TemporaryDirectory | None, str | None]:
+    maturin = shutil.which("maturin")
+    if maturin is None:
+        return None, None, "built-native mode unavailable because no `maturin` executable was found on PATH"
+
+    temp_dir = tempfile.TemporaryDirectory(prefix="rebar-bench-native-")
+    temp_root = pathlib.Path(temp_dir.name)
+    wheelhouse = temp_root / "wheelhouse"
+    install_root = temp_root / "site-packages"
+    wheelhouse.mkdir(parents=True, exist_ok=True)
+    install_root.mkdir(parents=True, exist_ok=True)
+
+    build_result = subprocess.run(
+        [
+            maturin,
+            "build",
+            "--manifest-path",
+            "crates/rebar-cpython/Cargo.toml",
+            "--interpreter",
+            sys.executable,
+            "--out",
+            str(wheelhouse),
+        ],
+        cwd=REPO_ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if build_result.returncode != 0:
+        temp_dir.cleanup()
+        return None, None, _clean_failure_message("maturin build", build_result)
+
+    wheels = sorted(wheelhouse.glob("rebar-*.whl"))
+    if len(wheels) != 1:
+        temp_dir.cleanup()
+        return None, None, f"built-native mode unavailable because wheel build produced {len(wheels)} rebar wheels"
+
+    install_result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--no-deps",
+            "--target",
+            str(install_root),
+            str(wheels[0]),
+        ],
+        cwd=REPO_ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if install_result.returncode != 0:
+        temp_dir.cleanup()
+        return None, None, _clean_failure_message("pip install --target", install_result)
+
+    probe_result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "rebar_harness.benchmarks",
+            "--internal-probe-rebar-metadata",
+        ],
+        cwd=REPO_ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+        env=_pythonpath_env([install_root, PYTHON_SOURCE]),
+    )
+    if probe_result.returncode != 0:
+        temp_dir.cleanup()
+        return None, None, _clean_failure_message("native metadata probe", probe_result)
+
+    probed = json.loads(probe_result.stdout)
+    if not probed.get("native_module_loaded", False):
+        temp_dir.cleanup()
+        return (
+            None,
+            None,
+            "built-native mode unavailable because the installed wheel did not load `rebar._rebar`",
+        )
+
+    return {
+        "install_root": install_root,
+        "maturin_path": pathlib.Path(maturin),
+        "wheel_name": wheels[0].name,
+        "probe": probed,
+    }, temp_dir, None
+
+
+def prepare_benchmark_run(
+    *,
+    workloads: list[Workload],
+    adapter_mode: str,
+) -> BenchmarkRunContext:
+    requested_mode = adapter_mode
+    if adapter_mode == BUILT_NATIVE_MODE:
+        provisioned, temp_dir, native_error = provision_built_native_runtime()
+        if provisioned is not None and temp_dir is not None:
+            includes_module_boundary = any(workload.family == "module" for workload in workloads)
+            probe = provisioned["probe"]
+            return BenchmarkRunContext(
+                requested_mode=BUILT_NATIVE_MODE,
+                resolved_mode=BUILT_NATIVE_MODE,
+                baseline_adapter=SubprocessBenchmarkAdapter(
+                    adapter_name="cpython.re",
+                    import_name="re",
+                    python_executable=pathlib.Path(sys.executable),
+                    pythonpath_entries=[PYTHON_SOURCE],
+                ),
+                implementation_adapter=SubprocessBenchmarkAdapter(
+                    adapter_name="rebar",
+                    import_name="rebar",
+                    python_executable=pathlib.Path(sys.executable),
+                    pythonpath_entries=[provisioned["install_root"], PYTHON_SOURCE],
+                ),
+                implementation_metadata={
+                    "module_name": "rebar",
+                    "adapter": "rebar.module-surface" if includes_module_boundary else "rebar.compile",
+                    "adapter_mode_requested": BUILT_NATIVE_MODE,
+                    "adapter_mode_resolved": BUILT_NATIVE_MODE,
+                    "build_mode": BUILT_NATIVE_MODE,
+                    "timing_path": BUILT_NATIVE_MODE,
+                    "native_unavailable_reason": None,
+                    "native_build_tool": "maturin",
+                    "native_wheel": provisioned["wheel_name"],
+                    "git_commit": git_commit(),
+                    **probe,
+                },
+                execution_model="single-interpreter subprocess workload probes against a built native wheel",
+                cleanup=temp_dir.cleanup,
+            )
+        native_unavailable_reason = native_error
+    else:
+        native_unavailable_reason = (
+            "built-native timing path not requested; using the default source-tree shim"
+        )
+
+    return BenchmarkRunContext(
+        requested_mode=requested_mode,
+        resolved_mode=SOURCE_TREE_SHIM_MODE,
+        baseline_adapter=CpythonReBenchmarkAdapter(),
+        implementation_adapter=RebarBenchmarkAdapter(load_rebar_module()),
+        implementation_metadata=source_tree_metadata(
+            workloads=workloads,
+            requested_mode=requested_mode,
+            native_unavailable_reason=native_unavailable_reason,
+        ),
+        execution_model="single-process in-process adapter comparison",
+        cleanup=lambda: None,
+    )
 
 
 def build_deferred_sections(workloads: list[dict[str, Any]]) -> list[dict[str, str]]:
@@ -798,12 +1121,48 @@ def build_artifacts(
     }
 
 
+def run_internal_workload_probe(
+    *,
+    workload_payload: str,
+    import_name: str,
+    adapter_name: str,
+) -> dict[str, Any]:
+    workload = workload_from_payload(json.loads(workload_payload))
+    try:
+        module = cpython_re if import_name == "re" else load_module(import_name)
+        callback = build_callable(module, import_name, workload)
+        timing = measure_callable(workload, callback)
+    except NotImplementedError as exc:
+        return {
+            "adapter": adapter_name,
+            "status": "unimplemented",
+            "reason": str(exc),
+        }
+    except Exception as exc:
+        return {
+            "adapter": adapter_name,
+            "status": "unavailable",
+            "reason": f"{type(exc).__name__}: {exc}",
+        }
+    return {"adapter": adapter_name, **timing}
+
+
+def run_internal_rebar_metadata_probe() -> dict[str, Any]:
+    module = load_rebar_module()
+    return {
+        "module_name": "rebar",
+        **probe_loaded_rebar_metadata(module),
+    }
+
+
 def build_scorecard(
     *,
     manifest_paths: list[pathlib.Path],
     raw_manifests: list[dict[str, Any]],
     workloads: list[dict[str, Any]],
     selection_mode: str,
+    implementation_metadata: dict[str, Any],
+    execution_model: str,
 ) -> dict[str, Any]:
     summary = build_summary(workloads)
     return {
@@ -813,7 +1172,7 @@ def build_scorecard(
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
         "generator": "python -m rebar_harness.benchmarks",
         "baseline": build_cpython_baseline(version_family=TARGET_CPYTHON_SERIES),
-        "implementation": build_implementation_metadata(workloads),
+        "implementation": implementation_metadata,
         "environment": {
             "hostname": platform.node(),
             "os": platform.system(),
@@ -823,7 +1182,7 @@ def build_scorecard(
             "logical_cpus": os.cpu_count(),
             "runner": "perf_counter_ns",
             "runner_version": determine_runner_version(workloads),
-            "execution_model": "single-process in-process adapter comparison",
+            "execution_model": execution_model,
         },
         "summary": summary,
         "manifests": build_manifest_summaries(
@@ -856,6 +1215,7 @@ def run_benchmarks(
     report_path: pathlib.Path = DEFAULT_REPORT_PATH,
     *,
     smoke_only: bool = False,
+    adapter_mode: str = SOURCE_TREE_SHIM_MODE,
 ) -> dict[str, Any]:
     resolved_manifest_paths = [
         path.resolve() for path in (manifest_paths or list(DEFAULT_MANIFEST_PATHS))
@@ -863,20 +1223,31 @@ def run_benchmarks(
     report_path = report_path.resolve()
     raw_manifests, manifest_workloads = load_manifests(resolved_manifest_paths)
     selected_manifest_workloads = select_workloads(manifest_workloads, smoke_only=smoke_only)
-    baseline_adapter = CpythonReBenchmarkAdapter()
-    implementation_adapter = RebarBenchmarkAdapter()
-    workloads = [
-        evaluate_workload(workload, baseline_adapter, implementation_adapter)
-        for workload in selected_manifest_workloads
-    ]
-    scorecard = build_scorecard(
-        manifest_paths=resolved_manifest_paths,
-        raw_manifests=raw_manifests,
-        workloads=workloads,
-        selection_mode="smoke" if smoke_only else "full",
+    run_context = prepare_benchmark_run(
+        workloads=selected_manifest_workloads,
+        adapter_mode=adapter_mode,
     )
-    write_scorecard(scorecard, report_path)
-    return scorecard
+    try:
+        workloads = [
+            evaluate_workload(
+                workload,
+                run_context.baseline_adapter,
+                run_context.implementation_adapter,
+            )
+            for workload in selected_manifest_workloads
+        ]
+        scorecard = build_scorecard(
+            manifest_paths=resolved_manifest_paths,
+            raw_manifests=raw_manifests,
+            workloads=workloads,
+            selection_mode="smoke" if smoke_only else "full",
+            implementation_metadata=run_context.implementation_metadata,
+            execution_model=run_context.execution_model,
+        )
+        write_scorecard(scorecard, report_path)
+        return scorecard
+    finally:
+        run_context.cleanup()
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -899,15 +1270,61 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="Run only workloads tagged as smoke within the selected manifests.",
     )
+    parser.add_argument(
+        "--adapter-mode",
+        choices=(SOURCE_TREE_SHIM_MODE, BUILT_NATIVE_MODE),
+        default=SOURCE_TREE_SHIM_MODE,
+        help=(
+            "Benchmark the source-tree shim or provision a built native wheel when possible. "
+            "The default keeps the existing source-tree shim path."
+        ),
+    )
+    parser.add_argument(
+        "--internal-run-workload",
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        "--internal-import-name",
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        "--internal-adapter-name",
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        "--internal-probe-rebar-metadata",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    if args.internal_probe_rebar_metadata:
+        print(json.dumps(run_internal_rebar_metadata_probe(), sort_keys=True))
+        return 0
+    if args.internal_run_workload is not None:
+        if args.internal_import_name is None or args.internal_adapter_name is None:
+            raise SystemExit(
+                "--internal-run-workload requires --internal-import-name and --internal-adapter-name"
+            )
+        print(
+            json.dumps(
+                run_internal_workload_probe(
+                    workload_payload=args.internal_run_workload,
+                    import_name=args.internal_import_name,
+                    adapter_name=args.internal_adapter_name,
+                ),
+                sort_keys=True,
+            )
+        )
+        return 0
     scorecard = run_benchmarks(
         manifest_paths=args.manifest,
         report_path=args.report,
         smoke_only=args.smoke,
+        adapter_mode=args.adapter_mode,
     )
     smoke_summary = {
         "total_workloads": scorecard["summary"]["total_workloads"],
