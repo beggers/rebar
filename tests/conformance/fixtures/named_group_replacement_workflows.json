@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "manifest_id": "named-group-replacement-workflows",
+  "layer": "module_workflow",
+  "suite_id": "collection.replacement.named_group",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "module-sub-template-named-group-str",
+      "operation": "module_call",
+      "family": "named_group_replacement_workflow",
+      "helper": "sub",
+      "args": [
+        "(?P<word>abc)",
+        "<\\g<word>>",
+        "abcabc"
+      ],
+      "categories": ["workflow", "sub", "replacement-template", "named-group", "module", "str"],
+      "notes": [
+        "Publishes the bounded module-level named-group replacement-template path for a tiny literal capture without broadening into named backreferences."
+      ]
+    },
+    {
+      "id": "module-subn-template-named-group-str",
+      "operation": "module_call",
+      "family": "named_group_replacement_workflow",
+      "helper": "subn",
+      "args": [
+        "(?P<word>abc)",
+        "<\\g<word>>",
+        "abcabc",
+        1
+      ],
+      "categories": ["workflow", "subn", "replacement-template", "named-group", "module", "str", "count"],
+      "notes": [
+        "Publishes the bounded module-level named-group replacement-template count path for the same tiny literal capture."
+      ]
+    },
+    {
+      "id": "pattern-sub-template-named-group-str",
+      "operation": "pattern_call",
+      "family": "named_group_replacement_workflow",
+      "pattern": "(?P<word>abc)",
+      "helper": "sub",
+      "args": [
+        "<\\g<word>>",
+        "abcabc"
+      ],
+      "categories": ["workflow", "sub", "replacement-template", "named-group", "pattern", "str"],
+      "notes": [
+        "Publishes the bound Pattern.sub named-group replacement-template path for the same tiny literal capture."
+      ]
+    },
+    {
+      "id": "pattern-subn-template-named-group-str",
+      "operation": "pattern_call",
+      "family": "named_group_replacement_workflow",
+      "pattern": "(?P<word>abc)",
+      "helper": "subn",
+      "args": [
+        "<\\g<word>>",
+        "abcabc",
+        1
+      ],
+      "categories": ["workflow", "subn", "replacement-template", "named-group", "pattern", "str", "count"],
+      "notes": [
+        "Publishes the bound Pattern.subn named-group replacement-template count path without claiming named-template support is implemented."
+      ]
+    }
+  ]
+}

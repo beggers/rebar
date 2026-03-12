@@ -25,6 +25,7 @@ EXPECTED_MANIFEST_IDS = [
     "literal-flag-workflows",
     "grouped-match-workflows",
     "named-group-workflows",
+    "named-group-replacement-workflows",
 ]
 
 

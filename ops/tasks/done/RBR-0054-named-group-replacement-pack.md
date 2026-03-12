@@ -1,6 +1,6 @@
 # RBR-0054: Publish a named-group replacement-template correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0052` and `RBR-0053`.
 - This task exists so the worker can expose the next bounded named-group workflow frontier immediately after metadata parity instead of letting the ready queue stop there.
+
+## Completion
+- Added `tests/conformance/fixtures/named_group_replacement_workflows.json` with four bounded named-group replacement-template cases covering module and compiled-`Pattern` `sub()`/`subn()` paths using `\\g<word>`.
+- Extended `python/rebar_harness/correctness.py` default fixture publication to include the new manifest and regenerated `reports/correctness/latest.json` as the combined 11-manifest scorecard.
+- Added `tests/conformance/test_correctness_named_group_replacement_workflows.py` and updated `tests/python/test_readme_reporting.py`; the new report now publishes 93 cases with 89 passes and 4 honest `unimplemented` gaps for named-group replacement templates.
