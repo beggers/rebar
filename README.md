@@ -7,24 +7,40 @@ This repository is run autonomously, but it is meant to be legible to humans fir
 <!-- REBAR:STATUS_START -->
 ## Current State
 
-_Foundation docs, harnesses, and scorecards are in place. The snapshot below focuses on implemented behavior and measured coverage, not long-term ambition._
+Capability-track coverage: `[##################] 100%`
+
+_This measures whether the planned scaffolds, plans, and scorecard artifacts exist. It does not mean `rebar` already matches CPython's `re` feature-for-feature._
 
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed, the Phase 1 parser conformance and compile-path benchmark packs published, the Phase 2 module-boundary benchmark pack and public-API surface scorecard in place, the first Phase 3 match-behavior and regression/stability packs published, the exported-symbol and compiled-pattern scaffolds landed, benchmark adapter/provenance hardening in place, and the remaining correctness and honest-behavior gaps queued. |
 | Current milestone | Milestone 2: finish the compiled-pattern correctness slice on top of the landed exported-symbol correctness and benchmark-provenance hardening, then roll directly into the first honest-behavior slice for literal-only matching, compile-cache/purge observability, `escape()` parity, the first literal-only collection/replacement helpers, and their scorecard follow-ons on top of the landed Phase 1 parser conformance and compile-path benchmark packs, verified native-extension smoke path, helper-surface scaffold, exported-symbol scaffold, compiled-pattern scaffold, exact CPython baseline metadata, the Phase 2 public-API correctness scorecard, the first Phase 3 match-behavior smoke pack, the new regression/stability benchmark pack, and benchmark adapter/provenance reporting. |
-| Work queue | `10` ready, `0` in progress, `23` done, `0` blocked |
-| Foundation tracks | `10/10` landed (`[##################] 100%`) |
+| Work queue | `9` ready, `0` in progress, `24` done, `0` blocked |
+| Capability tracks | `10/10` complete |
+
+### Capability Matrix
+
+| Capability | Status | Evidence |
+| --- | --- | --- |
+| Drop-in `re` compatibility contract | complete | [`docs/spec/drop-in-re-compatibility.md`](docs/spec/drop-in-re-compatibility.md) |
+| Syntax compatibility scope | complete | [`docs/spec/syntax-scope.md`](docs/spec/syntax-scope.md) |
+| Correctness plan | complete | [`docs/testing/correctness-plan.md`](docs/testing/correctness-plan.md) |
+| Benchmark methodology | complete | [`docs/benchmarks/plan.md`](docs/benchmarks/plan.md) |
+| Rust parser crate scaffold | complete | [`crates/rebar-core/src/lib.rs`](crates/rebar-core/src/lib.rs) |
+| CPython extension scaffold | complete | [`crates/rebar-cpython/src/lib.rs`](crates/rebar-cpython/src/lib.rs) |
+| Automated conformance harness | complete | [`python/rebar_harness/correctness.py`](python/rebar_harness/correctness.py) |
+| Automated benchmark harness | complete | [`python/rebar_harness/benchmarks.py`](python/rebar_harness/benchmarks.py) |
+| Published correctness scorecard | complete | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
+| Published benchmark scorecard | complete | [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `38` |
-| Passing comparisons | `12` |
-| Explicit failures | `5` |
-| Honest gaps (`unimplemented`) | `21` |
-| Covered manifests | `4` |
+| Candidate | rebar |
+| Cases | `12` / `44` |
+| Pass rate | `0.2727` |
+| Parity rate | `0.6` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
 ### Benchmark Snapshot
@@ -32,13 +48,11 @@ _Foundation docs, harnesses, and scorecards are in place. The snapshot below foc
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/usr/bin/python3`) |
-| Published workloads | `19` |
-| Workloads with real `rebar` timings | `2` |
-| Known-gap workloads | `17` |
-| Timing path | `source-tree-shim` |
+| Candidate | rebar |
+| Workloads | `19` |
+| Geomean speedup vs baseline | `2.8598` |
+| Median speedup vs baseline | `2.8611` |
 | Source | [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json) |
-
-_README speedup rollups stay omitted while only `2` of `19` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 

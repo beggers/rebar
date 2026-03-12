@@ -42,10 +42,10 @@ class CorrectnessHarnessParserMatrixTest(unittest.TestCase):
                 {
                     "executed_cases": 15,
                     "failed_cases": 0,
-                    "passed_cases": 0,
+                    "passed_cases": 2,
                     "skipped_cases": 0,
                     "total_cases": 15,
-                    "unimplemented_cases": 15,
+                    "unimplemented_cases": 13,
                 },
             )
 
@@ -98,17 +98,23 @@ class CorrectnessHarnessParserMatrixTest(unittest.TestCase):
         self.assertEqual(cpython_diagnostics["exception_types"], {"error": 6})
 
         rebar_diagnostics = scorecard["diagnostics"]["by_adapter"]["rebar"]
-        self.assertEqual(rebar_diagnostics["outcomes"], {"unimplemented": 15})
-        self.assertEqual(rebar_diagnostics["exception_case_count"], 15)
-        self.assertEqual(rebar_diagnostics["exception_types"], {"NotImplementedError": 15})
+        self.assertEqual(rebar_diagnostics["outcomes"], {"success": 2, "unimplemented": 13})
+        self.assertEqual(rebar_diagnostics["exception_case_count"], 13)
+        self.assertEqual(rebar_diagnostics["exception_types"], {"NotImplementedError": 13})
 
         str_suite = next(suite for suite in scorecard["suites"] if suite["id"] == "parser.compile.str")
         self.assertEqual(str_suite["summary"]["total_cases"], 11)
+        self.assertEqual(str_suite["summary"]["passed_cases"], 1)
 
         bytes_suite = next(
             suite for suite in scorecard["suites"] if suite["id"] == "parser.compile.bytes"
         )
         self.assertEqual(bytes_suite["summary"]["total_cases"], 4)
+        self.assertEqual(bytes_suite["summary"]["passed_cases"], 1)
+
+        first_str_case = next(case for case in scorecard["cases"] if case["id"] == "str-literal-success")
+        self.assertEqual(first_str_case["comparison"], "pass")
+        self.assertEqual(first_str_case["observations"]["rebar"]["outcome"], "success")
 
         first_bytes_case = next(
             case for case in scorecard["cases"] if case["id"] == "bytes-inline-unicode-flag-error"

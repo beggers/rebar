@@ -42,10 +42,10 @@ class CorrectnessHarnessSmokeTest(unittest.TestCase):
                 {
                     "executed_cases": 2,
                     "failed_cases": 0,
-                    "passed_cases": 0,
+                    "passed_cases": 1,
                     "skipped_cases": 0,
                     "total_cases": 2,
-                    "unimplemented_cases": 2,
+                    "unimplemented_cases": 1,
                 },
             )
 
@@ -72,9 +72,9 @@ class CorrectnessHarnessSmokeTest(unittest.TestCase):
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 
         first_case = scorecard["cases"][0]
-        self.assertEqual(first_case["comparison"], "unimplemented")
+        self.assertEqual(first_case["comparison"], "pass")
         self.assertEqual(first_case["observations"]["cpython"]["outcome"], "success")
-        self.assertEqual(first_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(first_case["observations"]["rebar"]["outcome"], "success")
 
         second_case = scorecard["cases"][1]
         self.assertEqual(second_case["comparison"], "unimplemented")

@@ -2038,6 +2038,389 @@
       },
       "operation": "module_call",
       "suite_id": "module.exports"
+    },
+    {
+      "categories": [
+        "pattern",
+        "metadata",
+        "str"
+      ],
+      "comparison": "fail",
+      "comparison_notes": [
+        "result payload mismatch"
+      ],
+      "family": "compiled_pattern_metadata",
+      "flags": 0,
+      "id": "pattern-object-str-metadata",
+      "layer": "pattern_object_parity",
+      "manifest_id": "pattern-object-surface",
+      "notes": [
+        "Captures the first compiled str pattern object's visible type identity and scaffold attributes."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_metadata",
+          "outcome": "success",
+          "result": {
+            "compiled_type": {
+              "module": "re",
+              "qualname": "Pattern",
+              "repr": "<class 're.Pattern'>"
+            },
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "abc",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_metadata",
+          "outcome": "success",
+          "result": {
+            "compiled_type": {
+              "module": "rebar",
+              "qualname": "Pattern",
+              "repr": "<class 'rebar.Pattern'>"
+            },
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "abc",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "pattern_metadata",
+      "pattern": "abc",
+      "suite_id": "pattern.object",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "pattern",
+        "metadata",
+        "flags",
+        "str"
+      ],
+      "comparison": "fail",
+      "comparison_notes": [
+        "result payload mismatch"
+      ],
+      "family": "compiled_pattern_metadata",
+      "flags": 2,
+      "id": "pattern-object-str-ignorecase-metadata",
+      "layer": "pattern_object_parity",
+      "manifest_id": "pattern-object-surface",
+      "notes": [
+        "Pins flag normalization on compiled str patterns alongside the scaffold type mismatch."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_metadata",
+          "outcome": "success",
+          "result": {
+            "compiled_type": {
+              "module": "re",
+              "qualname": "Pattern",
+              "repr": "<class 're.Pattern'>"
+            },
+            "flags": 34,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "abc",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_metadata",
+          "outcome": "success",
+          "result": {
+            "compiled_type": {
+              "module": "rebar",
+              "qualname": "Pattern",
+              "repr": "<class 'rebar.Pattern'>"
+            },
+            "flags": 34,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "abc",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "pattern_metadata",
+      "pattern": "abc",
+      "suite_id": "pattern.object",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "pattern",
+        "metadata",
+        "flags",
+        "bytes"
+      ],
+      "comparison": "fail",
+      "comparison_notes": [
+        "result payload mismatch"
+      ],
+      "family": "compiled_pattern_metadata",
+      "flags": 2,
+      "id": "pattern-object-bytes-ignorecase-metadata",
+      "layer": "pattern_object_parity",
+      "manifest_id": "pattern-object-surface",
+      "notes": [
+        "Mirrors compiled-pattern metadata for bytes payloads without relying on str-only UNICODE behavior."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_metadata",
+          "outcome": "success",
+          "result": {
+            "compiled_type": {
+              "module": "re",
+              "qualname": "Pattern",
+              "repr": "<class 're.Pattern'>"
+            },
+            "flags": 2,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": {
+              "encoding": "latin-1",
+              "value": "abc"
+            },
+            "pattern_type": "bytes"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_metadata",
+          "outcome": "success",
+          "result": {
+            "compiled_type": {
+              "module": "rebar",
+              "qualname": "Pattern",
+              "repr": "<class 'rebar.Pattern'>"
+            },
+            "flags": 2,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": {
+              "encoding": "latin-1",
+              "value": "abc"
+            },
+            "pattern_type": "bytes"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "pattern_metadata",
+      "pattern": "abc",
+      "suite_id": "pattern.object",
+      "text_model": "bytes"
+    },
+    {
+      "args": [
+        "zzabczz"
+      ],
+      "categories": [
+        "pattern",
+        "placeholder",
+        "search"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "compiled_pattern_placeholder_behavior",
+      "flags": 0,
+      "helper": "search",
+      "id": "pattern-search-placeholder-notimplemented",
+      "layer": "pattern_object_parity",
+      "manifest_id": "pattern-object-surface",
+      "notes": [
+        "Rebar should still fail loudly for Pattern.search() even though compile() returns a scaffold object."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abc",
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.Pattern.search() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "abc",
+      "suite_id": "pattern.object",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abc"
+      ],
+      "categories": [
+        "pattern",
+        "placeholder",
+        "match"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "compiled_pattern_placeholder_behavior",
+      "flags": 0,
+      "helper": "match",
+      "id": "pattern-match-placeholder-notimplemented",
+      "layer": "pattern_object_parity",
+      "manifest_id": "pattern-object-surface",
+      "notes": [
+        "Pins the current Pattern.match() placeholder contract against the stdlib bound-method result."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "abc",
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.Pattern.match() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "abc",
+      "suite_id": "pattern.object",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abc"
+      ],
+      "categories": [
+        "pattern",
+        "placeholder",
+        "fullmatch"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "compiled_pattern_placeholder_behavior",
+      "flags": 0,
+      "helper": "fullmatch",
+      "id": "pattern-fullmatch-placeholder-notimplemented",
+      "layer": "pattern_object_parity",
+      "manifest_id": "pattern-object-surface",
+      "notes": [
+        "Keeps Pattern.fullmatch() visible in the scorecard without miscounting the placeholder path as a pass."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "abc",
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.Pattern.fullmatch() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "abc",
+      "suite_id": "pattern.object",
+      "text_model": "str"
     }
   ],
   "diagnostics": {
@@ -2050,7 +2433,7 @@
         },
         "outcomes": {
           "exception": 8,
-          "success": 30
+          "success": 36
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -2058,15 +2441,15 @@
         }
       },
       "rebar": {
-        "exception_case_count": 23,
+        "exception_case_count": 26,
         "exception_types": {
-          "NotImplementedError": 21,
+          "NotImplementedError": 24,
           "TypeError": 2
         },
         "outcomes": {
           "exception": 2,
-          "success": 15,
-          "unimplemented": 21
+          "success": 18,
+          "unimplemented": 24
         },
         "warning_case_count": 0,
         "warning_categories": {}
@@ -2131,6 +2514,49 @@
         "skipped_cases": 0,
         "total_cases": 2,
         "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 3,
+      "id": "compiled_pattern_metadata",
+      "layers": [
+        "pattern_object_parity"
+      ],
+      "operations": [
+        "pattern_metadata"
+      ],
+      "summary": {
+        "executed_cases": 3,
+        "failed_cases": 3,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 3,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 3,
+      "id": "compiled_pattern_placeholder_behavior",
+      "layers": [
+        "pattern_object_parity"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 3,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 3,
+        "unimplemented_cases": 3
       },
       "text_models": [
         "str"
@@ -2442,22 +2868,24 @@
     }
   ],
   "fixtures": {
-    "case_count": 38,
-    "manifest_count": 4,
+    "case_count": 44,
+    "manifest_count": 5,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
       "match-behavior-smoke",
-      "exported-symbol-surface"
+      "exported-symbol-surface",
+      "pattern-object-surface"
     ],
     "paths": [
       "tests/conformance/fixtures/parser_matrix.json",
       "tests/conformance/fixtures/public_api_surface.json",
       "tests/conformance/fixtures/match_behavior_smoke.json",
-      "tests/conformance/fixtures/exported_symbol_surface.json"
+      "tests/conformance/fixtures/exported_symbol_surface.json",
+      "tests/conformance/fixtures/pattern_object_surface.json"
     ]
   },
-  "generated_at": "2026-03-12T01:12:10Z",
+  "generated_at": "2026-03-12T01:21:03Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -2636,6 +3064,60 @@
         "skipped_cases": 0,
         "total_cases": 15,
         "unimplemented_cases": 13
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    "pattern_object_parity": {
+      "case_count": 6,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 3,
+            "exception_types": {
+              "NotImplementedError": 3
+            },
+            "outcomes": {
+              "success": 3,
+              "unimplemented": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "compiled_pattern_metadata",
+        "compiled_pattern_placeholder_behavior"
+      ],
+      "manifest_ids": [
+        "pattern-object-surface"
+      ],
+      "operations": [
+        "pattern_call",
+        "pattern_metadata"
+      ],
+      "suite_ids": [
+        "pattern.object"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 3,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 3
       },
       "text_models": [
         "bytes",
@@ -3319,14 +3801,263 @@
         "unimplemented_cases": 0
       },
       "text_models": []
+    },
+    {
+      "case_count": 6,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 3,
+            "exception_types": {
+              "NotImplementedError": 3
+            },
+            "outcomes": {
+              "success": 3,
+              "unimplemented": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "compiled_pattern_metadata",
+        "compiled_pattern_placeholder_behavior"
+      ],
+      "id": "pattern.object",
+      "layer": "pattern_object_parity",
+      "manifest_ids": [
+        "pattern-object-surface"
+      ],
+      "operations": [
+        "pattern_call",
+        "pattern_metadata"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 3,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 3
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "compiled_pattern_metadata"
+      ],
+      "id": "pattern.object.bytes",
+      "layer": "pattern_object_parity",
+      "manifest_ids": [
+        "pattern-object-surface"
+      ],
+      "operations": [
+        "pattern_metadata"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 1,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes"
+      ]
+    },
+    {
+      "case_count": 5,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 5
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 3,
+            "exception_types": {
+              "NotImplementedError": 3
+            },
+            "outcomes": {
+              "success": 2,
+              "unimplemented": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "compiled_pattern_metadata",
+        "compiled_pattern_placeholder_behavior"
+      ],
+      "id": "pattern.object.str",
+      "layer": "pattern_object_parity",
+      "manifest_ids": [
+        "pattern-object-surface"
+      ],
+      "operations": [
+        "pattern_call",
+        "pattern_metadata"
+      ],
+      "summary": {
+        "executed_cases": 5,
+        "failed_cases": 2,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 5,
+        "unimplemented_cases": 3
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 3,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 3,
+            "exception_types": {
+              "NotImplementedError": 3
+            },
+            "outcomes": {
+              "unimplemented": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "compiled_pattern_placeholder_behavior"
+      ],
+      "id": "pattern.object.pattern_call",
+      "layer": "pattern_object_parity",
+      "manifest_ids": [
+        "pattern-object-surface"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 3,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 3,
+        "unimplemented_cases": 3
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 3,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "compiled_pattern_metadata"
+      ],
+      "id": "pattern.object.pattern_metadata",
+      "layer": "pattern_object_parity",
+      "manifest_ids": [
+        "pattern-object-surface"
+      ],
+      "operations": [
+        "pattern_metadata"
+      ],
+      "summary": {
+        "executed_cases": 3,
+        "failed_cases": 3,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 3,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
     }
   ],
   "summary": {
-    "executed_cases": 38,
-    "failed_cases": 5,
+    "executed_cases": 44,
+    "failed_cases": 8,
     "passed_cases": 12,
     "skipped_cases": 0,
-    "total_cases": 38,
-    "unimplemented_cases": 21
+    "total_cases": 44,
+    "unimplemented_cases": 24
   }
 }

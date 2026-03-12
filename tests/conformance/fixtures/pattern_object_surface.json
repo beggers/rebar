@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "manifest_id": "pattern-object-surface",
+  "layer": "pattern_object_parity",
+  "suite_id": "pattern.object",
+  "defaults": {
+    "flags": 0,
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "pattern-object-str-metadata",
+      "operation": "pattern_metadata",
+      "family": "compiled_pattern_metadata",
+      "pattern": "abc",
+      "categories": ["pattern", "metadata", "str"],
+      "notes": [
+        "Captures the first compiled str pattern object's visible type identity and scaffold attributes."
+      ]
+    },
+    {
+      "id": "pattern-object-str-ignorecase-metadata",
+      "operation": "pattern_metadata",
+      "family": "compiled_pattern_metadata",
+      "pattern": "abc",
+      "flags": 2,
+      "categories": ["pattern", "metadata", "flags", "str"],
+      "notes": [
+        "Pins flag normalization on compiled str patterns alongside the scaffold type mismatch."
+      ]
+    },
+    {
+      "id": "pattern-object-bytes-ignorecase-metadata",
+      "operation": "pattern_metadata",
+      "family": "compiled_pattern_metadata",
+      "pattern": "abc",
+      "flags": 2,
+      "text_model": "bytes",
+      "categories": ["pattern", "metadata", "flags", "bytes"],
+      "notes": [
+        "Mirrors compiled-pattern metadata for bytes payloads without relying on str-only UNICODE behavior."
+      ]
+    },
+    {
+      "id": "pattern-search-placeholder-notimplemented",
+      "operation": "pattern_call",
+      "family": "compiled_pattern_placeholder_behavior",
+      "pattern": "abc",
+      "helper": "search",
+      "args": ["zzabczz"],
+      "categories": ["pattern", "placeholder", "search"],
+      "notes": [
+        "Rebar should still fail loudly for Pattern.search() even though compile() returns a scaffold object."
+      ]
+    },
+    {
+      "id": "pattern-match-placeholder-notimplemented",
+      "operation": "pattern_call",
+      "family": "compiled_pattern_placeholder_behavior",
+      "pattern": "abc",
+      "helper": "match",
+      "args": ["abc"],
+      "categories": ["pattern", "placeholder", "match"],
+      "notes": [
+        "Pins the current Pattern.match() placeholder contract against the stdlib bound-method result."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-placeholder-notimplemented",
+      "operation": "pattern_call",
+      "family": "compiled_pattern_placeholder_behavior",
+      "pattern": "abc",
+      "helper": "fullmatch",
+      "args": ["abc"],
+      "categories": ["pattern", "placeholder", "fullmatch"],
+      "notes": [
+        "Keeps Pattern.fullmatch() visible in the scorecard without miscounting the placeholder path as a pass."
+      ]
+    }
+  ]
+}

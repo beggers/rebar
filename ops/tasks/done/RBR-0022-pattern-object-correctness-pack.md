@@ -1,6 +1,6 @@
 # RBR-0022: Expand correctness coverage across compiled pattern scaffolds
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
 
@@ -27,3 +27,8 @@ Created: 2026-03-11
 ## Notes
 - Use `docs/testing/correctness-plan.md` for Layer 2/3 scoring guidance and `docs/spec/drop-in-re-compatibility.md` for the near-term compiled-pattern contract.
 - Build on `RBR-0019`; this task should turn the new `Pattern` scaffold into published correctness coverage as soon as the object exists.
+
+## Completion
+- Added `pattern_metadata` and `pattern_call` observation modes to the correctness harness so compiled pattern attributes and bound method placeholder behavior can be scored without claiming compatibility wins.
+- Added `tests/conformance/fixtures/pattern_object_surface.json` plus an end-to-end conformance test, and regenerated `reports/correctness/latest.json` with a distinct `pattern_object_parity` layer.
+- Refreshed stale parser conformance expectations so the tracked correctness suite reflects the already-landed literal scaffold compile passes from `RBR-0019`.
