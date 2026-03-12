@@ -1,6 +1,6 @@
 # RBR-0077: Publish a nested-group correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0051`, `RBR-0053`, `RBR-0063`, and `RBR-0076`.
 - This task exists so the worker can reopen the correctness frontier with bounded nesting, which combines already-supported grouping semantics without jumping straight to quantified branches or broader backtracking.
+
+## Completion
+- Added `tests/conformance/fixtures/nested_group_workflows.json` and wired it into the default correctness harness manifest set.
+- Added `tests/conformance/test_correctness_nested_group_workflows.py` to lock the combined publication shape and the six honest nested-group `unimplemented` outcomes.
+- Regenerated `reports/correctness/latest.json`; the published combined scorecard is now 136 total cases across 19 manifests with 130 passes, 0 failures, and 6 unimplemented nested-group cases.

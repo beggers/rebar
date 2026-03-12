@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "manifest_id": "nested-group-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.nested_group",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "nested-group-compile-metadata-str",
+      "operation": "compile",
+      "family": "nested_group_compile_metadata",
+      "pattern": "a((b))d",
+      "categories": ["grouped", "nested-group", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the next grouped-execution frontier with one literal capture nested inside another and wrapped by literal prefix and suffix text."
+      ]
+    },
+    {
+      "id": "nested-group-module-search-str",
+      "operation": "module_call",
+      "family": "nested_group_module_workflow",
+      "helper": "search",
+      "args": ["a((b))d", "zzabdzz"],
+      "categories": ["grouped", "nested-group", "search", "module", "str", "gap"],
+      "notes": [
+        "Documents the public module search path for a tiny nested-group workflow without broadening into nested alternation, quantifiers, or branch-local references."
+      ]
+    },
+    {
+      "id": "nested-group-pattern-fullmatch-str",
+      "operation": "pattern_call",
+      "family": "nested_group_pattern_workflow",
+      "pattern": "a((b))d",
+      "helper": "fullmatch",
+      "args": ["abd"],
+      "categories": ["grouped", "nested-group", "fullmatch", "pattern", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch path for the same one-site nested capture shape while leaving replacement and broader backtracking behavior out of scope."
+      ]
+    },
+    {
+      "id": "named-nested-group-compile-metadata-str",
+      "operation": "compile",
+      "family": "named_nested_group_compile_metadata",
+      "pattern": "a(?P<outer>(?P<inner>b))d",
+      "categories": ["grouped", "nested-group", "named-group", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the matching named nested-group compile frontier for one named outer capture containing one named inner capture."
+      ]
+    },
+    {
+      "id": "named-nested-group-module-search-str",
+      "operation": "module_call",
+      "family": "named_nested_group_module_workflow",
+      "helper": "search",
+      "args": ["a(?P<outer>(?P<inner>b))d", "zzabdzz"],
+      "categories": ["grouped", "nested-group", "named-group", "search", "module", "str", "gap"],
+      "notes": [
+        "Documents the module-level named nested-group search path so the next combined grouping-and-nesting gap is explicit in the scorecard."
+      ]
+    },
+    {
+      "id": "named-nested-group-pattern-fullmatch-str",
+      "operation": "pattern_call",
+      "family": "named_nested_group_pattern_workflow",
+      "pattern": "a(?P<outer>(?P<inner>b))d",
+      "helper": "fullmatch",
+      "args": ["abd"],
+      "categories": ["grouped", "nested-group", "named-group", "fullmatch", "pattern", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch path for the same named nested-group shape without claiming support for nested replacement templates, callbacks, or alternation."
+      ]
+    }
+  ]
+}
