@@ -173,6 +173,7 @@ fn boundary_literal_match(
     usize,
     Option<(usize, usize)>,
     Vec<Option<(usize, usize)>>,
+    Option<usize>,
 )> {
     let pattern_ref = py_pattern_ref(pattern)?;
     let string_ref = py_pattern_ref(string)?;
@@ -194,6 +195,7 @@ fn boundary_literal_match(
         outcome.endpos,
         outcome.span,
         outcome.group_spans,
+        outcome.lastindex,
     ))
 }
 
@@ -687,7 +689,10 @@ fn _rebar(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(boundary_literal_split, module)?)?;
     module.add_function(wrap_pyfunction!(boundary_literal_findall, module)?)?;
     module.add_function(wrap_pyfunction!(boundary_literal_finditer, module)?)?;
-    module.add_function(wrap_pyfunction!(boundary_grouped_alternation_finditer, module)?)?;
+    module.add_function(wrap_pyfunction!(
+        boundary_grouped_alternation_finditer,
+        module
+    )?)?;
     module.add_function(wrap_pyfunction!(boundary_literal_subn, module)?)?;
     module.add_function(wrap_pyfunction!(boundary_literal_template_subn, module)?)?;
     module.add_function(wrap_pyfunction!(boundary_escape, module)?)?;

@@ -1,6 +1,6 @@
 # RBR-0078: Add bounded nested-group parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0077`.
 - This task exists so the queue turns the first bounded nesting cases into real Rust-backed behavior instead of leaving them as publication-only coverage.
+
+## Completion
+- Landed a bounded Rust-backed nested-capture parser/executor for literal prefix/suffix workflows such as `a((b))d` and `a(?P<outer>(?P<inner>b))d`, including CPython-shaped compile metadata and match capture spans.
+- Threaded native `lastindex` through the CPython boundary so nested named groups report the outer group as the last closed capture, matching CPython.
+- Added direct Python parity coverage and regenerated `reports/correctness/latest.json`; the combined published scorecard now reports 136 passes, 0 failures, and 0 unimplemented cases across the default fixture set.

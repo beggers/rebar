@@ -240,7 +240,16 @@ Pattern.__module__ = "re"
 class Match:
     """Concrete scaffold export for the bounded literal-only match subset."""
 
-    __slots__ = ("re", "string", "pos", "endpos", "lastindex", "lastgroup", "_span", "_group_spans")
+    __slots__ = (
+        "re",
+        "string",
+        "pos",
+        "endpos",
+        "lastindex",
+        "lastgroup",
+        "_span",
+        "_group_spans",
+    )
 
     def __new__(cls, *_args: object, **_kwargs: object) -> "Match":
         raise TypeError("cannot create 're.Match' instances")
@@ -253,15 +262,21 @@ class Match:
         endpos: int,
         span: tuple[int, int],
         group_spans: tuple[tuple[int, int] | None, ...] = (),
+        *,
+        lastindex: int | None = None,
     ) -> None:
         self.re = pattern
         self.string = string
         self.pos = pos
         self.endpos = endpos
         self._group_spans = group_spans
-        self.lastindex = next(
-            (index for index in range(len(group_spans), 0, -1) if group_spans[index - 1] is not None),
-            None,
+        self.lastindex = (
+            next(
+                (index for index in range(len(group_spans), 0, -1) if group_spans[index - 1] is not None),
+                None,
+            )
+            if lastindex is None
+            else lastindex
         )
         self.lastgroup = next(
             (name for name, index in self.re.groupindex.items() if index == self.lastindex),
@@ -515,8 +530,12 @@ def _dispatch_pattern_match(
         if len(native_result) == 4:
             status, normalized_pos, normalized_endpos, span = native_result
             group_spans = ()
-        else:
+            lastindex = None
+        elif len(native_result) == 5:
             status, normalized_pos, normalized_endpos, span, group_spans = native_result
+            lastindex = None
+        else:
+            status, normalized_pos, normalized_endpos, span, group_spans, lastindex = native_result
         if status == "unsupported":
             return compiled_pattern._raise_placeholder(mode)
         if status == "no-match":
@@ -528,6 +547,7 @@ def _dispatch_pattern_match(
             normalized_endpos,
             span,
             tuple(group_spans),
+            lastindex=lastindex,
         )
 
     if not (
@@ -817,9 +837,20 @@ def _build_match(
     endpos: int,
     span: tuple[int, int],
     group_spans: tuple[tuple[int, int] | None, ...] = (),
+    *,
+    lastindex: int | None = None,
 ) -> Match:
     match = object.__new__(Match)
-    Match.__init__(match, compiled_pattern, string, pos, endpos, span, group_spans)
+    Match.__init__(
+        match,
+        compiled_pattern,
+        string,
+        pos,
+        endpos,
+        span,
+        group_spans,
+        lastindex=lastindex,
+    )
     return match
 
 
