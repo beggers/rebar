@@ -1,6 +1,6 @@
 # RBR-0081: Add bounded nested-group replacement-template parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0078`, `RBR-0080`, and any grouped replacement-template support already landed.
 - This task exists so the queue turns the first nested capture plus replacement-template workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+
+## Completion
+- Landed Rust-backed nested-group replacement-template expansion for the published numbered and named outer/inner capture cases by widening bounded template expansion to consume multiple positional and named captures plus a dedicated nested repeated-span discovery path.
+- Added `tests/python/test_nested_group_replacement_template_parity.py`, updated the nested-group replacement correctness expectations, and republished `reports/correctness/latest.json` with the combined 144/144 passing scorecard.
+- Verified with `cargo test -p rebar-core replacement_template_expands_nested_group_references -- --nocapture`, `cargo test -p rebar-core nested_capture_find_spans_reports_repeated_matches_and_capture_spans -- --nocapture`, `python3 -m unittest tests.python.test_grouped_literal_replacement_template tests.python.test_named_group_replacement_template_parity tests.python.test_nested_group_replacement_template_parity`, and `python3 -m unittest tests.python.test_nested_group_replacement_template_parity tests.conformance.test_correctness_nested_group_replacement_workflows`.
