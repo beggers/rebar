@@ -1,6 +1,6 @@
 # RBR-0068: Publish a grouped-alternation correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,4 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0066` and `RBR-0067`.
 - This task exists so the worker can expose the next concrete branch-selection gap after top-level alternation without jumping straight to quantifiers, nested groups, or conditionals.
+- Completed 2026-03-12: added `grouped_alternation_workflows.json`, covered it with a combined-scorecard regression test, wired it into the default correctness harness, and republished `reports/correctness/latest.json` at 114 total cases with 108 passes and 6 honest `unimplemented` grouped-alternation cases.

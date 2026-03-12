@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "manifest_id": "grouped-alternation-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.grouped_alternation",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "grouped-alternation-compile-metadata-str",
+      "operation": "compile",
+      "family": "grouped_alternation_compile_metadata",
+      "pattern": "a(b|c)d",
+      "categories": ["grouped", "alternation", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the next grouped branch-selection compile frontier with one captured alternation wrapped by literal prefix and suffix text."
+      ]
+    },
+    {
+      "id": "grouped-alternation-module-search-str",
+      "operation": "module_call",
+      "family": "grouped_alternation_module_workflow",
+      "helper": "search",
+      "args": ["a(b|c)d", "zzacdzz"],
+      "categories": ["grouped", "alternation", "search", "module", "str", "gap"],
+      "notes": [
+        "Documents the module-level grouped-alternation search path for a tiny literal workflow without broadening into nested groups, quantified branches, or conditionals."
+      ]
+    },
+    {
+      "id": "grouped-alternation-pattern-fullmatch-str",
+      "operation": "pattern_call",
+      "family": "grouped_alternation_pattern_workflow",
+      "pattern": "a(b|c)d",
+      "helper": "fullmatch",
+      "args": ["abd"],
+      "categories": ["grouped", "alternation", "fullmatch", "pattern", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch path for the same single grouped alternation shape while leaving broader backtracking behavior out of scope."
+      ]
+    },
+    {
+      "id": "named-grouped-alternation-compile-metadata-str",
+      "operation": "compile",
+      "family": "named_grouped_alternation_compile_metadata",
+      "pattern": "a(?P<word>b|c)d",
+      "categories": ["grouped", "alternation", "named-group", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the matching named-group compile frontier for one grouped alternation site wrapped by literal text."
+      ]
+    },
+    {
+      "id": "named-grouped-alternation-module-search-str",
+      "operation": "module_call",
+      "family": "named_grouped_alternation_module_workflow",
+      "helper": "search",
+      "args": ["a(?P<word>b|c)d", "zzabdzz"],
+      "categories": ["grouped", "alternation", "named-group", "search", "module", "str", "gap"],
+      "notes": [
+        "Documents the module-level named grouped-alternation search path so the next combined grouping-and-branch-selection gap is explicit in the scorecard."
+      ]
+    },
+    {
+      "id": "named-grouped-alternation-pattern-fullmatch-str",
+      "operation": "pattern_call",
+      "family": "named_grouped_alternation_pattern_workflow",
+      "pattern": "a(?P<word>b|c)d",
+      "helper": "fullmatch",
+      "args": ["acd"],
+      "categories": ["grouped", "alternation", "named-group", "fullmatch", "pattern", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch path for the same named grouped-alternation shape without claiming support for nested branches or branch-local references."
+      ]
+    }
+  ]
+}
