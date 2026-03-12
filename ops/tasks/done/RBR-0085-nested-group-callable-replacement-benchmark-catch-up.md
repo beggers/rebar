@@ -1,6 +1,6 @@
 # RBR-0085: Catch nested-group callable-replacement benchmarks up with the new bounded slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,4 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0084`.
 - This task exists so the queue does not reach bounded nested-group callable-replacement parity and then leave that newly supported slice absent from benchmark reporting.
+- Completed 2026-03-12: added the dedicated nested-group callable-replacement benchmark manifest and suite test, refreshed the default benchmark manifest set plus `reports/benchmarks/latest.json`, and removed the stale callable overlap row from the nested-group replacement manifest so the published benchmark surface stays non-duplicative and honest.

@@ -100,12 +100,12 @@ class NestedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 27,
+                    "known_gap_count": 26,
                     "measured_workloads": 95,
-                    "module_workloads": 114,
+                    "module_workloads": 113,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
-                    "total_workloads": 122,
+                    "total_workloads": 121,
                 },
             )
 
@@ -124,22 +124,22 @@ class NestedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase3")
-        self.assertEqual(scorecard["summary"]["total_workloads"], 122)
+        self.assertEqual(scorecard["summary"]["total_workloads"], 121)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
-        self.assertEqual(scorecard["summary"]["module_workloads"], 114)
+        self.assertEqual(scorecard["summary"]["module_workloads"], 113)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
         self.assertEqual(scorecard["summary"]["measured_workloads"], 95)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 27)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 25)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 26)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 24)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 48)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 49)
         self.assertEqual(scorecard["families"]["parser"]["workload_count"], 8)
         self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 3)
         self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["workload_count"], 114)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 24)
+        self.assertEqual(scorecard["families"]["module"]["workload_count"], 113)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 23)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 21)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 20)
         self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 46)
         self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 47)
         self.assertEqual(scorecard["artifacts"]["manifest"], None)

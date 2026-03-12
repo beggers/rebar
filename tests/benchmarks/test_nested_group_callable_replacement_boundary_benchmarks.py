@@ -43,12 +43,17 @@ NESTED_GROUP_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "nested_gr
 NESTED_GROUP_REPLACEMENT_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.json"
 )
+NESTED_GROUP_CALLABLE_REPLACEMENT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_callable_replacement_boundary.json"
+)
 REGRESSION_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.json"
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
 
 
-class NestedGroupReplacementBoundaryBenchmarkSuiteTest(unittest.TestCase):
-    def test_runner_regenerates_combined_nested_group_replacement_scorecard(self) -> None:
+class NestedGroupCallableReplacementBoundaryBenchmarkSuiteTest(unittest.TestCase):
+    def test_runner_regenerates_combined_nested_group_callable_replacement_scorecard(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             report_path = pathlib.Path(temp_dir) / "benchmarks.json"
             result = subprocess.run(
@@ -85,6 +90,8 @@ class NestedGroupReplacementBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     "--manifest",
                     str(NESTED_GROUP_REPLACEMENT_MANIFEST_PATH),
                     "--manifest",
+                    str(NESTED_GROUP_CALLABLE_REPLACEMENT_MANIFEST_PATH),
+                    "--manifest",
                     str(REGRESSION_MANIFEST_PATH),
                     "--report",
                     str(report_path),
@@ -100,12 +107,12 @@ class NestedGroupReplacementBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 26,
-                    "measured_workloads": 95,
-                    "module_workloads": 113,
+                    "known_gap_count": 28,
+                    "measured_workloads": 103,
+                    "module_workloads": 123,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
-                    "total_workloads": 121,
+                    "total_workloads": 131,
                 },
             )
 
@@ -124,44 +131,44 @@ class NestedGroupReplacementBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase3")
-        self.assertEqual(scorecard["summary"]["total_workloads"], 121)
+        self.assertEqual(scorecard["summary"]["total_workloads"], 131)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
-        self.assertEqual(scorecard["summary"]["module_workloads"], 113)
+        self.assertEqual(scorecard["summary"]["module_workloads"], 123)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 95)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 26)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 24)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 48)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 49)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 103)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 28)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 25)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 52)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 54)
         self.assertEqual(scorecard["families"]["parser"]["workload_count"], 8)
         self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 3)
         self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["workload_count"], 113)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 23)
+        self.assertEqual(scorecard["families"]["module"]["workload_count"], 123)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 25)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 20)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 46)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 47)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 21)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 50)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 52)
         self.assertEqual(scorecard["artifacts"]["manifest"], None)
         self.assertEqual(scorecard["artifacts"]["manifest_id"], "combined-benchmark-suite")
         self.assertEqual(scorecard["artifacts"]["manifest_schema_version"], 1)
         self.assertEqual(scorecard["artifacts"]["selection_mode"], "full")
-        self.assertEqual(len(scorecard["artifacts"]["manifests"]), 15)
+        self.assertEqual(len(scorecard["artifacts"]["manifests"]), 16)
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 
-        manifest_summary = scorecard["manifests"]["nested-group-replacement-boundary"]
-        self.assertEqual(manifest_summary["workload_count"], 9)
-        self.assertEqual(manifest_summary["selected_workload_count"], 9)
+        manifest_summary = scorecard["manifests"]["nested-group-callable-replacement-boundary"]
+        self.assertEqual(manifest_summary["workload_count"], 10)
+        self.assertEqual(manifest_summary["selected_workload_count"], 10)
         self.assertEqual(manifest_summary["measured_workloads"], 8)
-        self.assertEqual(manifest_summary["known_gap_count"], 1)
+        self.assertEqual(manifest_summary["known_gap_count"], 2)
         self.assertEqual(manifest_summary["readiness"], "partial")
         self.assertEqual(manifest_summary["selection_mode"], "full")
         self.assertEqual(manifest_summary["available_smoke_workload_count"], 2)
         self.assertEqual(
             manifest_summary["smoke_workload_ids"],
             [
-                "module-sub-template-nested-group-numbered-warm-str",
-                "pattern-subn-template-nested-group-named-purged-str",
+                "module-sub-callable-nested-group-numbered-warm-str",
+                "pattern-subn-callable-nested-group-named-purged-str",
             ],
         )
         self.assertEqual(
@@ -181,34 +188,35 @@ class NestedGroupReplacementBoundaryBenchmarkSuiteTest(unittest.TestCase):
             ],
         )
         self.assertIn("helper-call overhead", manifest_summary["notes"][0])
-        self.assertIn("quantified nested replacement shapes", manifest_summary["notes"][1])
+        self.assertIn("known-gap rows", manifest_summary["notes"][1])
 
         manifest_record = next(
             manifest
             for manifest in scorecard["artifacts"]["manifests"]
-            if manifest["manifest_id"] == "nested-group-replacement-boundary"
+            if manifest["manifest_id"] == "nested-group-callable-replacement-boundary"
         )
         self.assertEqual(
             manifest_record["manifest"],
-            "benchmarks/workloads/nested_group_replacement_boundary.json",
+            "benchmarks/workloads/nested_group_callable_replacement_boundary.json",
         )
         self.assertEqual(
             manifest_record["smoke_workload_ids"],
             [
-                "module-sub-template-nested-group-numbered-warm-str",
-                "pattern-subn-template-nested-group-named-purged-str",
+                "module-sub-callable-nested-group-numbered-warm-str",
+                "pattern-subn-callable-nested-group-named-purged-str",
             ],
         )
 
         module_sub = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "module-sub-template-nested-group-numbered-warm-str"
+            if workload["id"] == "module-sub-callable-nested-group-numbered-warm-str"
         )
-        self.assertEqual(module_sub["manifest_id"], "nested-group-replacement-boundary")
+        self.assertEqual(module_sub["manifest_id"], "nested-group-callable-replacement-boundary")
         self.assertEqual(module_sub["operation"], "module.sub")
         self.assertEqual(module_sub["cache_mode"], "warm")
-        self.assertEqual(module_sub["replacement"], "\\1x")
+        self.assertEqual(module_sub["replacement"]["type"], "callable_match_group")
+        self.assertEqual(module_sub["replacement"]["group"], 1)
         self.assertEqual(module_sub["status"], "measured")
         self.assertEqual(module_sub["implementation_timing"]["status"], "measured")
         self.assertGreater(module_sub["implementation_ns"], 0)
@@ -216,11 +224,11 @@ class NestedGroupReplacementBoundaryBenchmarkSuiteTest(unittest.TestCase):
         module_subn = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "module-subn-template-nested-group-named-warm-str"
+            if workload["id"] == "module-subn-callable-nested-group-named-warm-str"
         )
         self.assertEqual(module_subn["operation"], "module.subn")
         self.assertEqual(module_subn["count"], 1)
-        self.assertEqual(module_subn["replacement"], "\\g<inner>x")
+        self.assertEqual(module_subn["replacement"]["group"], "inner")
         self.assertIn("named-groups", module_subn["syntax_features"])
         self.assertEqual(module_subn["status"], "measured")
         self.assertEqual(module_subn["implementation_timing"]["status"], "measured")
@@ -230,7 +238,7 @@ class NestedGroupReplacementBoundaryBenchmarkSuiteTest(unittest.TestCase):
         pattern_sub = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "pattern-sub-template-nested-group-numbered-purged-str"
+            if workload["id"] == "pattern-sub-callable-nested-group-numbered-purged-str"
         )
         self.assertEqual(pattern_sub["operation"], "pattern.sub")
         self.assertEqual(pattern_sub["cache_mode"], "purged")
@@ -241,18 +249,27 @@ class NestedGroupReplacementBoundaryBenchmarkSuiteTest(unittest.TestCase):
         pattern_subn = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "pattern-subn-template-nested-group-named-purged-str"
+            if workload["id"] == "pattern-subn-callable-nested-group-named-purged-str"
         )
         self.assertEqual(pattern_subn["operation"], "pattern.subn")
-        self.assertEqual(pattern_subn["replacement"], "\\g<inner>x")
+        self.assertEqual(pattern_subn["replacement"]["group"], "inner")
         self.assertEqual(pattern_subn["status"], "measured")
         self.assertEqual(pattern_subn["implementation_timing"]["status"], "measured")
+
+        alternation_gap = next(
+            workload
+            for workload in scorecard["workloads"]
+            if workload["id"] == "module-sub-callable-nested-group-alternation-cold-gap"
+        )
+        self.assertEqual(alternation_gap["status"], "unimplemented")
+        self.assertEqual(alternation_gap["implementation_timing"]["status"], "unimplemented")
+        self.assertIsNone(alternation_gap["implementation_ns"])
+        self.assertIsNone(alternation_gap["speedup_vs_cpython"])
 
         quantified_gap = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"]
-            == "pattern-subn-template-named-quantified-nested-group-replacement-purged-gap"
+            if workload["id"] == "pattern-subn-callable-named-quantified-nested-group-purged-gap"
         )
         self.assertEqual(quantified_gap["status"], "unimplemented")
         self.assertEqual(quantified_gap["implementation_timing"]["status"], "unimplemented")
