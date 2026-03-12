@@ -1,8 +1,9 @@
 # RBR-0034: Add literal-only flag-sensitive boundary benchmarks
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Extend the benchmark harness so the first bounded flag-sensitive helper paths have tiny call-boundary workloads in the published benchmark report once literal-only `IGNORECASE` behavior exists.
@@ -26,3 +27,6 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0026` and `RBR-0032`. This task exists so the first supported flag-sensitive helper behavior reaches the published benchmark scorecard quickly instead of staying invisible outside unit tests.
+- Added `benchmarks/workloads/literal_flag_boundary.json` with 10 tiny `IGNORECASE` boundary workloads spanning `module.search`, `module.match`, `pattern.search`, and `pattern.fullmatch` across `str` and `bytes`, including two explicit unsupported `IGNORECASE|ASCII` gap rows.
+- Extended the benchmark harness default manifest pack so `literal-flag-boundary` publishes alongside the existing compile, module, pattern, collection/replacement, and regression manifests without changing the scorecard schema.
+- Added `tests/benchmarks/test_literal_flag_boundary_benchmarks.py` and regenerated `reports/benchmarks/latest.json`; the published benchmark report now covers 45 workloads total, including an 8-measured/2-gap literal-flag manifest and 30 measured `rebar` timings overall.
