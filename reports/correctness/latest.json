@@ -8274,6 +8274,486 @@
       "pattern": "a(?P<word>b|c)d",
       "suite_id": "collection.replacement.grouped_alternation",
       "text_model": "str"
+    },
+    {
+      "args": [
+        "a(b|c)d",
+        {
+          "module": "__main__",
+          "qualname": "callable_match_group",
+          "type": "callable"
+        },
+        "abdacd"
+      ],
+      "categories": [
+        "workflow",
+        "sub",
+        "callable-replacement",
+        "grouped",
+        "alternation",
+        "module",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "grouped_alternation_callable_replacement_workflow",
+      "helper": "sub",
+      "id": "module-sub-callable-grouped-alternation-str",
+      "layer": "module_workflow",
+      "manifest_id": "grouped-alternation-callable-replacement-workflows",
+      "notes": [
+        "Publishes the bounded module-level grouped-alternation callable replacement path for one grouped branch-selection site feeding match.group(1)."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": "bxcx",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.sub() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.grouped_alternation.callable",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(b|c)d",
+        {
+          "module": "__main__",
+          "qualname": "callable_match_group",
+          "type": "callable"
+        },
+        "abdacd",
+        1
+      ],
+      "categories": [
+        "workflow",
+        "subn",
+        "callable-replacement",
+        "grouped",
+        "alternation",
+        "module",
+        "str",
+        "count",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "grouped_alternation_callable_replacement_workflow",
+      "helper": "subn",
+      "id": "module-subn-callable-grouped-alternation-str",
+      "layer": "module_workflow",
+      "manifest_id": "grouped-alternation-callable-replacement-workflows",
+      "notes": [
+        "Publishes the bounded module-level grouped-alternation callable replacement count path without broadening into nested groups, quantified branches, or general callback semantics."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": [
+            "bxacd",
+            1
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.subn() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.grouped_alternation.callable",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        {
+          "module": "__main__",
+          "qualname": "callable_match_group",
+          "type": "callable"
+        },
+        "acdabd"
+      ],
+      "categories": [
+        "workflow",
+        "sub",
+        "callable-replacement",
+        "grouped",
+        "alternation",
+        "pattern",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "grouped_alternation_callable_replacement_workflow",
+      "helper": "sub",
+      "id": "pattern-sub-callable-grouped-alternation-str",
+      "layer": "module_workflow",
+      "manifest_id": "grouped-alternation-callable-replacement-workflows",
+      "notes": [
+        "Publishes the bound Pattern.sub grouped-alternation callable replacement path for the same single grouped branch-selection shape."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": "cxbx",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.Pattern.sub() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(b|c)d",
+      "suite_id": "collection.replacement.grouped_alternation.callable",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        {
+          "module": "__main__",
+          "qualname": "callable_match_group",
+          "type": "callable"
+        },
+        "acdabd",
+        1
+      ],
+      "categories": [
+        "workflow",
+        "subn",
+        "callable-replacement",
+        "grouped",
+        "alternation",
+        "pattern",
+        "str",
+        "count",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "grouped_alternation_callable_replacement_workflow",
+      "helper": "subn",
+      "id": "pattern-subn-callable-grouped-alternation-str",
+      "layer": "module_workflow",
+      "manifest_id": "grouped-alternation-callable-replacement-workflows",
+      "notes": [
+        "Publishes the bound Pattern.subn grouped-alternation callable replacement count path while leaving nested groups and branch-local backreferences out of scope."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": [
+            "cxabd",
+            1
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.Pattern.subn() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(b|c)d",
+      "suite_id": "collection.replacement.grouped_alternation.callable",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<word>b|c)d",
+        {
+          "module": "__main__",
+          "qualname": "callable_match_group",
+          "type": "callable"
+        },
+        "abdacd"
+      ],
+      "categories": [
+        "workflow",
+        "sub",
+        "callable-replacement",
+        "grouped",
+        "alternation",
+        "named-group",
+        "module",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_grouped_alternation_callable_replacement_workflow",
+      "helper": "sub",
+      "id": "module-sub-callable-named-grouped-alternation-str",
+      "layer": "module_workflow",
+      "manifest_id": "grouped-alternation-callable-replacement-workflows",
+      "notes": [
+        "Publishes the bounded module-level named grouped-alternation callable replacement path for one named branch-selection site feeding match.group(\"word\")."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": "bxcx",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.sub() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.grouped_alternation.callable",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<word>b|c)d",
+        {
+          "module": "__main__",
+          "qualname": "callable_match_group",
+          "type": "callable"
+        },
+        "abdacd",
+        1
+      ],
+      "categories": [
+        "workflow",
+        "subn",
+        "callable-replacement",
+        "grouped",
+        "alternation",
+        "named-group",
+        "module",
+        "str",
+        "count",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_grouped_alternation_callable_replacement_workflow",
+      "helper": "subn",
+      "id": "module-subn-callable-named-grouped-alternation-str",
+      "layer": "module_workflow",
+      "manifest_id": "grouped-alternation-callable-replacement-workflows",
+      "notes": [
+        "Publishes the bounded module-level named grouped-alternation callable replacement count path without claiming broader callback semantics or nested branches."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": [
+            "bxacd",
+            1
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.subn() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.grouped_alternation.callable",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        {
+          "module": "__main__",
+          "qualname": "callable_match_group",
+          "type": "callable"
+        },
+        "acdabd"
+      ],
+      "categories": [
+        "workflow",
+        "sub",
+        "callable-replacement",
+        "grouped",
+        "alternation",
+        "named-group",
+        "pattern",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_grouped_alternation_callable_replacement_workflow",
+      "helper": "sub",
+      "id": "pattern-sub-callable-named-grouped-alternation-str",
+      "layer": "module_workflow",
+      "manifest_id": "grouped-alternation-callable-replacement-workflows",
+      "notes": [
+        "Publishes the bound Pattern.sub named grouped-alternation callable replacement path for the same single alternation site."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": "cxbx",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.Pattern.sub() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<word>b|c)d",
+      "suite_id": "collection.replacement.grouped_alternation.callable",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        {
+          "module": "__main__",
+          "qualname": "callable_match_group",
+          "type": "callable"
+        },
+        "acdabd",
+        1
+      ],
+      "categories": [
+        "workflow",
+        "subn",
+        "callable-replacement",
+        "grouped",
+        "alternation",
+        "named-group",
+        "pattern",
+        "str",
+        "count",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_grouped_alternation_callable_replacement_workflow",
+      "helper": "subn",
+      "id": "pattern-subn-callable-named-grouped-alternation-str",
+      "layer": "module_workflow",
+      "manifest_id": "grouped-alternation-callable-replacement-workflows",
+      "notes": [
+        "Publishes the bound Pattern.subn named grouped-alternation callable replacement count path while keeping nested groups and broader callback helpers out of scope."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": [
+            "cxabd",
+            1
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.Pattern.subn() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<word>b|c)d",
+      "suite_id": "collection.replacement.grouped_alternation.callable",
+      "text_model": "str"
     }
   ],
   "diagnostics": {
@@ -8286,7 +8766,7 @@
         },
         "outcomes": {
           "exception": 8,
-          "success": 114
+          "success": 122
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -8294,14 +8774,16 @@
         }
       },
       "rebar": {
-        "exception_case_count": 8,
+        "exception_case_count": 16,
         "exception_types": {
+          "NotImplementedError": 8,
           "TypeError": 2,
           "error": 6
         },
         "outcomes": {
           "exception": 8,
-          "success": 114
+          "success": 114,
+          "unimplemented": 8
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -8712,6 +9194,28 @@
       },
       "text_models": [
         "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 4,
+      "id": "grouped_alternation_callable_replacement_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 4
+      },
+      "text_models": [
         "str"
       ]
     },
@@ -9300,6 +9804,28 @@
       ]
     },
     {
+      "case_count": 4,
+      "id": "named_grouped_alternation_callable_replacement_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 4
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
       "case_count": 1,
       "id": "named_grouped_alternation_compile_metadata",
       "layers": [
@@ -9748,8 +10274,8 @@
     }
   ],
   "fixtures": {
-    "case_count": 122,
-    "manifest_count": 17,
+    "case_count": 130,
+    "manifest_count": 18,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
@@ -9767,7 +10293,8 @@
       "grouped-segment-workflows",
       "literal-alternation-workflows",
       "grouped-alternation-workflows",
-      "grouped-alternation-replacement-workflows"
+      "grouped-alternation-replacement-workflows",
+      "grouped-alternation-callable-replacement-workflows"
     ],
     "paths": [
       "tests/conformance/fixtures/parser_matrix.json",
@@ -9786,10 +10313,11 @@
       "tests/conformance/fixtures/grouped_segment_workflows.json",
       "tests/conformance/fixtures/literal_alternation_workflows.json",
       "tests/conformance/fixtures/grouped_alternation_workflows.json",
-      "tests/conformance/fixtures/grouped_alternation_replacement_workflows.json"
+      "tests/conformance/fixtures/grouped_alternation_replacement_workflows.json",
+      "tests/conformance/fixtures/grouped_alternation_callable_replacement_workflows.json"
     ]
   },
-  "generated_at": "2026-03-12T12:17:58Z",
+  "generated_at": "2026-03-12T12:44:54Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -9952,23 +10480,26 @@
       "text_models": []
     },
     "module_workflow": {
-      "case_count": 48,
+      "case_count": 56,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
             "exception_case_count": 0,
             "exception_types": {},
             "outcomes": {
-              "success": 48
+              "success": 56
             },
             "warning_case_count": 0,
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 0,
-            "exception_types": {},
+            "exception_case_count": 8,
+            "exception_types": {
+              "NotImplementedError": 8
+            },
             "outcomes": {
-              "success": 48
+              "success": 48,
+              "unimplemented": 8
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -9986,11 +10517,13 @@
         "escape_workflow",
         "findall_workflow",
         "finditer_workflow",
+        "grouped_alternation_callable_replacement_workflow",
         "grouped_alternation_replacement_workflow",
         "grouped_template_replacement_workflow",
         "literal_flag_cache_workflow",
         "literal_ignorecase_workflow",
         "named_group_replacement_workflow",
+        "named_grouped_alternation_callable_replacement_workflow",
         "named_grouped_alternation_replacement_workflow",
         "purge_workflow",
         "replacement_workflow",
@@ -9999,6 +10532,7 @@
       ],
       "manifest_ids": [
         "collection-replacement-workflows",
+        "grouped-alternation-callable-replacement-workflows",
         "grouped-alternation-replacement-workflows",
         "literal-flag-workflows",
         "module-workflow-surface",
@@ -10014,18 +10548,19 @@
       ],
       "suite_ids": [
         "collection.replacement.grouped_alternation",
+        "collection.replacement.grouped_alternation.callable",
         "collection.replacement.named_group",
         "collection.replacement.workflow",
         "literal.flag.workflow",
         "module.workflow"
       ],
       "summary": {
-        "executed_cases": 48,
+        "executed_cases": 56,
         "failed_cases": 0,
         "passed_cases": 48,
         "skipped_cases": 0,
-        "total_cases": 48,
-        "unimplemented_cases": 0
+        "total_cases": 56,
+        "unimplemented_cases": 8
       },
       "text_models": [
         "bytes",
@@ -14135,14 +14670,216 @@
       "text_models": [
         "str"
       ]
+    },
+    {
+      "case_count": 8,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 8,
+            "exception_types": {
+              "NotImplementedError": 8
+            },
+            "outcomes": {
+              "unimplemented": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "grouped_alternation_callable_replacement_workflow",
+        "named_grouped_alternation_callable_replacement_workflow"
+      ],
+      "id": "collection.replacement.grouped_alternation.callable",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "grouped-alternation-callable-replacement-workflows"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 8,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 8,
+        "unimplemented_cases": 8
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 8,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 8,
+            "exception_types": {
+              "NotImplementedError": 8
+            },
+            "outcomes": {
+              "unimplemented": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "grouped_alternation_callable_replacement_workflow",
+        "named_grouped_alternation_callable_replacement_workflow"
+      ],
+      "id": "collection.replacement.grouped_alternation.callable.str",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "grouped-alternation-callable-replacement-workflows"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 8,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 8,
+        "unimplemented_cases": 8
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 4,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 4,
+            "exception_types": {
+              "NotImplementedError": 4
+            },
+            "outcomes": {
+              "unimplemented": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "grouped_alternation_callable_replacement_workflow",
+        "named_grouped_alternation_callable_replacement_workflow"
+      ],
+      "id": "collection.replacement.grouped_alternation.callable.module_call",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "grouped-alternation-callable-replacement-workflows"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 4
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 4,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 4,
+            "exception_types": {
+              "NotImplementedError": 4
+            },
+            "outcomes": {
+              "unimplemented": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "grouped_alternation_callable_replacement_workflow",
+        "named_grouped_alternation_callable_replacement_workflow"
+      ],
+      "id": "collection.replacement.grouped_alternation.callable.pattern_call",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "grouped-alternation-callable-replacement-workflows"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 4
+      },
+      "text_models": [
+        "str"
+      ]
     }
   ],
   "summary": {
-    "executed_cases": 122,
+    "executed_cases": 130,
     "failed_cases": 0,
     "passed_cases": 122,
     "skipped_cases": 0,
-    "total_cases": 122,
-    "unimplemented_cases": 0
+    "total_cases": 130,
+    "unimplemented_cases": 8
   }
 }

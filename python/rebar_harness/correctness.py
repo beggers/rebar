@@ -44,6 +44,11 @@ DEFAULT_FIXTURE_PATHS = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "literal_alternation_workflows.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_alternation_workflows.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_alternation_replacement_workflows.json",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
+    / "grouped_alternation_callable_replacement_workflows.json",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 PHASE_BY_LAYER = {
@@ -159,6 +164,23 @@ def _materialize_fixture_value(value: Any) -> Any:
             _callable_constant.__name__ = "callable_constant"
             _callable_constant.__qualname__ = "callable_constant"
             return _callable_constant
+        if value_type == "callable_match_group":
+            group_reference = value.get("group", 0)
+            prefix = _materialize_fixture_value(value.get("prefix", ""))
+            suffix = _materialize_fixture_value(value.get("suffix", ""))
+
+            def _callable_match_group(
+                match: Any,
+                *,
+                _group_reference: Any = group_reference,
+                _prefix: Any = prefix,
+                _suffix: Any = suffix,
+            ) -> Any:
+                return _prefix + match.group(_group_reference) + _suffix
+
+            _callable_match_group.__name__ = "callable_match_group"
+            _callable_match_group.__qualname__ = "callable_match_group"
+            return _callable_match_group
         return {
             str(key): _materialize_fixture_value(item_value)
             for key, item_value in value.items()

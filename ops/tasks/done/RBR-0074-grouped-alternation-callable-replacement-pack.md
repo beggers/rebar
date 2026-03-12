@@ -1,8 +1,9 @@
 # RBR-0074: Publish a grouped-alternation callable-replacement correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Extend the published correctness scorecard with a bounded grouped-alternation callable-replacement manifest so the next combined alternation-and-callback frontier is explicit before nested groups, quantified branches, or broader callback semantics reopen the queue.
@@ -27,3 +28,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0072` and `RBR-0073`.
 - This task exists so the worker can expose the next concrete workflow gap after grouped-alternation replacement-template parity without jumping straight to nested groups, quantified branches, or broader callback semantics.
+
+## Completion
+- Added `grouped_alternation_callable_replacement_workflows.json` plus a narrow harness-side `callable_match_group` fixture helper so the combined correctness report can publish grouped-alternation callable-replacement cases without changing `rebar` runtime behavior.
+- Regenerated `reports/correctness/latest.json`; the combined scorecard now covers 130 cases across 18 manifests with the new grouped-alternation callable-replacement suite recorded as 8 honest `unimplemented` cases.
+- Added a task-specific regression test covering the new manifest, combined summary counts, and representative CPython-vs-`rebar` observations for numbered and named grouped-alternation callable replacement.
