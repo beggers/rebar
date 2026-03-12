@@ -1,8 +1,9 @@
 # RBR-0102: Add bounded optional-group alternation parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Convert the first bounded optional-group alternation cases from the published correctness pack into real CPython-shaped behavior without claiming broader quantified alternation, conditional, or broad backtracking support.
@@ -28,3 +29,4 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0069`, `RBR-0093`, and `RBR-0101`.
 - This task exists so the queue turns the first combined optional-quantifier and grouped-alternation workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+- Completed with bounded Rust-core parsing and execution for `a(b|c)?d` and `a(?P<word>b|c)?d`, a direct native parity test in `tests/python/test_optional_group_alternation_parity.py`, refreshed correctness expectations, and a republished combined scorecard at 188 passes, 0 failures, 0 unimplemented.

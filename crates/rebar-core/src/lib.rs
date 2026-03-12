@@ -476,6 +476,14 @@ struct OptionalGroupPattern<'a> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+struct OptionalGroupAlternationPattern<'a> {
+    prefix: &'a str,
+    branches: Vec<&'a str>,
+    capture_name: Option<&'a str>,
+    suffix: &'a str,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct ExactRepeatGroupPattern<'a> {
     prefix: &'a str,
     capture: LiteralCapture<'a>,
@@ -789,13 +797,48 @@ impl<'a> OptionalGroupPattern<'a> {
             .unwrap_or_default()
     }
 
-    fn group_spans(&self, match_start: usize, capture_present: bool) -> Vec<Option<(usize, usize)>> {
+    fn group_spans(
+        &self,
+        match_start: usize,
+        capture_present: bool,
+    ) -> Vec<Option<(usize, usize)>> {
         if !capture_present {
             return vec![None];
         }
 
         let start = match_start + self.prefix.chars().count();
         let end = start + self.capture.body.chars().count();
+        vec![Some((start, end))]
+    }
+}
+
+impl<'a> OptionalGroupAlternationPattern<'a> {
+    fn group_count(&self) -> usize {
+        1
+    }
+
+    fn named_groups(&self) -> Vec<NamedGroup> {
+        self.capture_name
+            .map(|name| {
+                vec![NamedGroup {
+                    name: name.to_string(),
+                    index: 1,
+                }]
+            })
+            .unwrap_or_default()
+    }
+
+    fn group_spans(
+        &self,
+        match_start: usize,
+        matched_branch: Option<&str>,
+    ) -> Vec<Option<(usize, usize)>> {
+        let Some(branch) = matched_branch else {
+            return vec![None];
+        };
+
+        let start = match_start + self.prefix.chars().count();
+        let end = start + branch.chars().count();
         vec![Some((start, end))]
     }
 }
@@ -1103,10 +1146,26 @@ fn compile_known_supported_case(
             })
         }
         PatternRef::Str(pattern)
-            if parse_optional_group_pattern_str(pattern).is_some() && normalized_flags == FLAG_UNICODE =>
+            if parse_optional_group_pattern_str(pattern).is_some()
+                && normalized_flags == FLAG_UNICODE =>
         {
             let grouped_pattern =
                 parse_optional_group_pattern_str(pattern).expect("guarded optional group literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
+                warning: None,
+            })
+        }
+        PatternRef::Str(pattern)
+            if parse_optional_group_alternation_pattern_str(pattern).is_some()
+                && normalized_flags == FLAG_UNICODE =>
+        {
+            let grouped_pattern = parse_optional_group_alternation_pattern_str(pattern)
+                .expect("guarded optional-group alternation literal");
             Some(CompileOutcome {
                 status: CompileStatus::Compiled,
                 normalized_flags,
@@ -1679,6 +1738,57 @@ fn parse_optional_group_pattern_str(pattern: &str) -> Option<OptionalGroupPatter
     })
 }
 
+fn parse_optional_group_alternation_pattern_str(
+    pattern: &str,
+) -> Option<OptionalGroupAlternationPattern<'_>> {
+    let open_offset = pattern.find('(')?;
+    let prefix = &pattern[..open_offset];
+    if prefix.is_empty() || prefix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let remainder = &pattern[open_offset + 1..];
+    let (capture_name, body, close_offset) =
+        if let Some(named_remainder) = remainder.strip_prefix("?P<") {
+            let name_end = named_remainder.find('>')?;
+            let name = &named_remainder[..name_end];
+            if !is_supported_group_name(name) {
+                return None;
+            }
+            let body = &named_remainder[name_end + 1..];
+            let close_offset = body.find(')')?;
+            (
+                Some(name),
+                &body[..close_offset],
+                3 + name_end + 1 + close_offset,
+            )
+        } else {
+            let close_offset = remainder.find(')')?;
+            (None, &remainder[..close_offset], close_offset)
+        };
+
+    let branches: Vec<&str> = body.split('|').collect();
+    if branches.len() < 2
+        || branches
+            .iter()
+            .any(|branch| branch.is_empty() || branch.chars().any(is_meta_character))
+    {
+        return None;
+    }
+
+    let suffix = remainder[close_offset + 1..].strip_prefix('?')?;
+    if suffix.is_empty() || suffix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    Some(OptionalGroupAlternationPattern {
+        prefix,
+        branches,
+        capture_name,
+        suffix,
+    })
+}
+
 fn parse_exact_repeat_group_pattern_str(pattern: &str) -> Option<ExactRepeatGroupPattern<'_>> {
     let open_offset = pattern.find('(')?;
     let prefix = &pattern[..open_offset];
@@ -2125,6 +2235,31 @@ fn literal_match_str(
                 }
 
                 find_optional_group_match_span_str(
+                    &grouped_pattern,
+                    flags,
+                    mode,
+                    &string_chars,
+                    normalized_pos,
+                    normalized_endpos,
+                )
+                .map_or((None, Vec::new()), |(span, group_spans)| {
+                    (Some(span), group_spans)
+                })
+            } else if let Some(grouped_pattern) =
+                parse_optional_group_alternation_pattern_str(pattern_value)
+            {
+                if flags != FLAG_UNICODE {
+                    return MatchOutcome {
+                        status: MatchStatus::Unsupported,
+                        pos: normalized_pos,
+                        endpos: normalized_endpos,
+                        span: None,
+                        group_spans: Vec::new(),
+                        lastindex: None,
+                    };
+                }
+
+                find_optional_group_alternation_match_span_str(
                     &grouped_pattern,
                     flags,
                     mode,
@@ -2807,14 +2942,25 @@ fn optional_group_matches_at_str(
     let capture_start = start + prefix_chars.len();
     let capture_end = capture_start + capture_chars.len();
 
-    if literal_matches_at_str(capture_chars.as_slice(), flags, string, capture_start, endpos)
-        && literal_matches_at_str(suffix_chars.as_slice(), flags, string, capture_end, endpos)
+    if literal_matches_at_str(
+        capture_chars.as_slice(),
+        flags,
+        string,
+        capture_start,
+        endpos,
+    ) && literal_matches_at_str(suffix_chars.as_slice(), flags, string, capture_end, endpos)
     {
         return Some((true, capture_end + suffix_chars.len()));
     }
 
-    literal_matches_at_str(suffix_chars.as_slice(), flags, string, capture_start, endpos)
-        .then_some((false, capture_start + suffix_chars.len()))
+    literal_matches_at_str(
+        suffix_chars.as_slice(),
+        flags,
+        string,
+        capture_start,
+        endpos,
+    )
+    .then_some((false, capture_start + suffix_chars.len()))
 }
 
 fn find_optional_group_match_span_str(
@@ -2836,18 +2982,91 @@ fn find_optional_group_match_span_str(
                 },
             )
         }),
-        MatchMode::Match => optional_group_matches_at_str(pattern, flags, string, pos, endpos)
-            .map(|(capture_present, match_end)| {
-                (
-                    (pos, match_end),
-                    pattern.group_spans(pos, capture_present),
-                )
-            }),
+        MatchMode::Match => optional_group_matches_at_str(pattern, flags, string, pos, endpos).map(
+            |(capture_present, match_end)| {
+                ((pos, match_end), pattern.group_spans(pos, capture_present))
+            },
+        ),
         MatchMode::Fullmatch => optional_group_matches_at_str(pattern, flags, string, pos, endpos)
             .and_then(|(capture_present, match_end)| {
                 (match_end == endpos)
                     .then_some(((pos, match_end), pattern.group_spans(pos, capture_present)))
             }),
+    }
+}
+
+fn optional_group_alternation_matches_at_str<'a>(
+    pattern: &'a OptionalGroupAlternationPattern<'_>,
+    flags: i32,
+    string: &[char],
+    start: usize,
+    endpos: usize,
+) -> Option<(Option<&'a str>, usize)> {
+    let prefix_chars: Vec<char> = pattern.prefix.chars().collect();
+    let suffix_chars: Vec<char> = pattern.suffix.chars().collect();
+
+    if !literal_matches_at_str(prefix_chars.as_slice(), flags, string, start, endpos) {
+        return None;
+    }
+
+    let capture_start = start + prefix_chars.len();
+    for branch in &pattern.branches {
+        let branch_chars: Vec<char> = branch.chars().collect();
+        let capture_end = capture_start + branch_chars.len();
+        if literal_matches_at_str(
+            branch_chars.as_slice(),
+            flags,
+            string,
+            capture_start,
+            endpos,
+        ) && literal_matches_at_str(suffix_chars.as_slice(), flags, string, capture_end, endpos)
+        {
+            return Some((Some(*branch), capture_end + suffix_chars.len()));
+        }
+    }
+
+    literal_matches_at_str(
+        suffix_chars.as_slice(),
+        flags,
+        string,
+        capture_start,
+        endpos,
+    )
+    .then_some((None, capture_start + suffix_chars.len()))
+}
+
+fn find_optional_group_alternation_match_span_str(
+    pattern: &OptionalGroupAlternationPattern<'_>,
+    flags: i32,
+    mode: MatchMode,
+    string: &[char],
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    match mode {
+        MatchMode::Search => (pos..=endpos).find_map(|start| {
+            optional_group_alternation_matches_at_str(pattern, flags, string, start, endpos).map(
+                |(matched_branch, match_end)| {
+                    (
+                        (start, match_end),
+                        pattern.group_spans(start, matched_branch),
+                    )
+                },
+            )
+        }),
+        MatchMode::Match => optional_group_alternation_matches_at_str(
+            pattern, flags, string, pos, endpos,
+        )
+        .map(|(matched_branch, match_end)| {
+            ((pos, match_end), pattern.group_spans(pos, matched_branch))
+        }),
+        MatchMode::Fullmatch => optional_group_alternation_matches_at_str(
+            pattern, flags, string, pos, endpos,
+        )
+        .and_then(|(matched_branch, match_end)| {
+            (match_end == endpos)
+                .then_some(((pos, match_end), pattern.group_spans(pos, matched_branch)))
+        }),
     }
 }
 
@@ -2868,7 +3087,13 @@ fn ranged_repeat_group_matches_at_str(
 
     let capture_start = start + prefix_chars.len();
     let capture_end = capture_start + capture_chars.len();
-    if !literal_matches_at_str(capture_chars.as_slice(), flags, string, capture_start, endpos) {
+    if !literal_matches_at_str(
+        capture_chars.as_slice(),
+        flags,
+        string,
+        capture_start,
+        endpos,
+    ) {
         return None;
     }
 
@@ -2901,25 +3126,21 @@ fn find_ranged_repeat_group_match_span_str(
         MatchMode::Search => (pos..=endpos).find_map(|start| {
             ranged_repeat_group_matches_at_str(pattern, flags, string, start, endpos).map(
                 |(repeat_count, match_end)| {
-                    (
-                        (start, match_end),
-                        pattern.group_spans(start, repeat_count),
-                    )
+                    ((start, match_end), pattern.group_spans(start, repeat_count))
                 },
             )
         }),
         MatchMode::Match => ranged_repeat_group_matches_at_str(pattern, flags, string, pos, endpos)
             .map(|(repeat_count, match_end)| {
-                (
-                    (pos, match_end),
-                    pattern.group_spans(pos, repeat_count),
-                )
+                ((pos, match_end), pattern.group_spans(pos, repeat_count))
             }),
-        MatchMode::Fullmatch => ranged_repeat_group_matches_at_str(pattern, flags, string, pos, endpos)
-            .and_then(|(repeat_count, match_end)| {
-                (match_end == endpos)
-                    .then_some(((pos, match_end), pattern.group_spans(pos, repeat_count)))
-            }),
+        MatchMode::Fullmatch => ranged_repeat_group_matches_at_str(
+            pattern, flags, string, pos, endpos,
+        )
+        .and_then(|(repeat_count, match_end)| {
+            (match_end == endpos)
+                .then_some(((pos, match_end), pattern.group_spans(pos, repeat_count)))
+        }),
     }
 }
 
@@ -3558,6 +3779,29 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_bounded_optional_group_alternation_cases() {
+        let outcome = compile(PatternRef::Str("a(b|c)?d"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.group_count, 1);
+        assert!(outcome.named_groups.is_empty());
+
+        let named_outcome = compile(PatternRef::Str("a(?P<word>b|c)?d"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!named_outcome.supports_literal);
+        assert_eq!(named_outcome.group_count, 1);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "word".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
     fn compile_accepts_bounded_exact_repeat_group_cases() {
         let outcome = compile(PatternRef::Str("a(bc){2}d"), 0).unwrap();
         assert_eq!(outcome.status, CompileStatus::Compiled);
@@ -3901,6 +4145,42 @@ mod tests {
     fn named_optional_group_fullmatch_reports_absent_capture_as_none() {
         let outcome = literal_match(
             PatternRef::Str("a(?P<word>b)?d"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("ad"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 2)));
+        assert_eq!(outcome.group_spans, vec![None]);
+        assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
+    fn optional_group_alternation_search_reports_selected_capture_span() {
+        let outcome = literal_match(
+            PatternRef::Str("a(b|c)?d"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzacdzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 5)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 4))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn named_optional_group_alternation_fullmatch_reports_absent_capture_as_none() {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<word>b|c)?d"),
             FLAG_UNICODE,
             MatchMode::Fullmatch,
             PatternRef::Str("ad"),
