@@ -1,6 +1,6 @@
 # RBR-0058: Catch grouped and named workflow benchmarks up with the new behavior slices
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0048`, `RBR-0051`, `RBR-0053`, `RBR-0055`, and `RBR-0057`.
 - This task exists so grouped and named behavior work reaches the published benchmark report promptly instead of piling up as correctness-only wins.
+
+## Completion
+- Added a dedicated `grouped-named-boundary` benchmark manifest covering grouped numbered captures, named-group metadata, named-group replacement templates, and named-backreference workflows, plus explicit grouped-segment gap rows.
+- Extended the benchmark harness to time `module.fullmatch()` so the grouped numbered-capture parity slice is measured through both module and compiled-`Pattern` entrypoints.
+- Added a benchmark regression test for the new pack and republished `reports/benchmarks/latest.json`; the combined suite now reports 58 workloads with 47 measured timings and 11 explicit known gaps.

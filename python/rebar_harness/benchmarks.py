@@ -39,6 +39,7 @@ DEFAULT_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "pattern_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "collection_replacement_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "literal_flag_boundary.json",
+    REPO_ROOT / "benchmarks" / "workloads" / "grouped_named_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.json",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
@@ -376,6 +377,8 @@ def module_helper_invoke(module: Any, workload: Workload) -> object:
         return module.search(pattern, haystack, workload.flags)
     if workload.operation == "module.match":
         return module.match(pattern, haystack, workload.flags)
+    if workload.operation == "module.fullmatch":
+        return module.fullmatch(pattern, haystack, workload.flags)
     if workload.operation == "module.split":
         return module.split(pattern, haystack, workload.maxsplit, workload.flags)
     if workload.operation == "module.findall":
@@ -488,6 +491,7 @@ def build_callable(module: Any, import_name: str, workload: Workload) -> Any:
     if workload.operation in {
         "module.search",
         "module.match",
+        "module.fullmatch",
         "module.split",
         "module.findall",
         "module.sub",

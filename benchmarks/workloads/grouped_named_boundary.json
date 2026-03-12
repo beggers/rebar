@@ -1,0 +1,387 @@
+{
+  "schema_version": 1,
+  "manifest_id": "grouped-named-boundary",
+  "spec_refs": [
+    "docs/benchmarks/plan.md",
+    "docs/spec/drop-in-re-compatibility.md"
+  ],
+  "notes": [
+    "Grouped/named boundary workloads keep captures, replacements, and haystacks intentionally tiny so the scorecard stays about public helper overhead rather than regex throughput.",
+    "Supported grouped-capture, named-group, named-template, and named-backreference paths produce real timings here, while still-unsupported grouped-segment cases stay as explicit known-gap rows instead of disappearing from the benchmark surface."
+  ],
+  "defaults": {
+    "warmup_iterations": 2,
+    "sample_iterations": 5,
+    "timed_samples": 7
+  },
+  "workloads": [
+    {
+      "id": "module-compile-grouped-two-capture-cold-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "(ab)(c)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "numbered-capture",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "numbered-captures"
+      ],
+      "notes": [
+        "Cold module.compile benchmark for the bounded two-capture grouped literal slice so compile metadata parity is timed alongside the helper workflows."
+      ]
+    },
+    {
+      "id": "module-fullmatch-grouped-two-capture-warm-str",
+      "bucket": "module-fullmatch",
+      "family": "module",
+      "operation": "module.fullmatch",
+      "pattern": "(ab)(c)",
+      "haystack": "abc",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "smoke": true,
+      "categories": [
+        "grouped",
+        "fullmatch",
+        "numbered-capture",
+        "warm-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "module-fullmatch",
+        "grouping-forms",
+        "numbered-captures"
+      ],
+      "notes": [
+        "Warm module.fullmatch helper path over the supported two-capture grouped literal slice."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-grouped-two-capture-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "(ab)(c)",
+      "haystack": "abc",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "fullmatch",
+        "numbered-capture",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "numbered-captures",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the same bounded two-capture grouped literal path."
+      ]
+    },
+    {
+      "id": "module-compile-named-group-warm-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "(?P<word>abc)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "named-group",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.compile path for the bounded named-group literal slice so compile metadata timing reaches the benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-named-group-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "(?P<word>abc)",
+      "haystack": "zzabczz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "named-group",
+        "search",
+        "module",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.search helper path for a tiny named-group capture so named metadata workflows produce real timings."
+      ]
+    },
+    {
+      "id": "pattern-search-named-group-purged-str",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "(?P<word>abc)",
+      "haystack": "zzabczz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "named-group",
+        "search",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "grouping-forms",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.search path for the same bounded named-group literal workflow."
+      ]
+    },
+    {
+      "id": "module-sub-template-named-group-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "(?P<word>abc)",
+      "replacement": "<\\g<word>>",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "template",
+        "named-group",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "named-groups",
+        "replacement-template"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded named-group replacement-template workflow."
+      ]
+    },
+    {
+      "id": "pattern-subn-template-named-group-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "(?P<word>abc)",
+      "replacement": "<\\g<word>>",
+      "haystack": "abcabc",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "subn",
+        "template",
+        "named-group",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "named-groups",
+        "replacement-template",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded named-group replacement-template count workflow."
+      ]
+    },
+    {
+      "id": "module-compile-named-backreference-purged-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "(?P<word>ab)(?P=word)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "named-group",
+        "named-backreference",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "named-groups",
+        "named-backreferences",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged module.compile path for the bounded named-backreference literal slice so grouped-reference compile timing reaches the scorecard."
+      ]
+    },
+    {
+      "id": "module-search-named-backreference-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "(?P<word>ab)(?P=word)",
+      "haystack": "zzababzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "named-group",
+        "named-backreference",
+        "search",
+        "module",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "named-groups",
+        "named-backreferences"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded named-backreference literal workflow."
+      ]
+    },
+    {
+      "id": "pattern-search-named-backreference-purged-str",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "(?P<word>ab)(?P=word)",
+      "haystack": "zzababzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "smoke": true,
+      "categories": [
+        "pattern",
+        "grouped",
+        "named-group",
+        "named-backreference",
+        "search",
+        "purged-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "grouping-forms",
+        "named-groups",
+        "named-backreferences",
+        "cache-purge"
+      ],
+      "notes": [
+        "Smoke-sized Pattern.search probe for the bounded named-backreference workflow with compile cost kept outside the timed loop."
+      ]
+    },
+    {
+      "id": "module-search-grouped-segment-cold-gap",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "(ab)c",
+      "haystack": "zabcz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "segment",
+        "search",
+        "module",
+        "cold-cache",
+        "gap"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "grouped-segments"
+      ],
+      "notes": [
+        "Explicit grouped-segment gap row so unsupported literal text around captures stays visible while the grouped frontier advances."
+      ]
+    },
+    {
+      "id": "pattern-search-grouped-segment-warm-gap",
+      "bucket": "pattern-search",
+      "family": "module",
+      "operation": "pattern.search",
+      "pattern": "(ab)c",
+      "haystack": "zabcz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "segment",
+        "search",
+        "warm-cache",
+        "gap"
+      ],
+      "syntax_features": [
+        "pattern-search",
+        "grouping-forms",
+        "grouped-segments"
+      ],
+      "notes": [
+        "Matching Pattern.search grouped-segment gap row that keeps the precompiled helper frontier honest until grouped-segment support lands."
+      ]
+    }
+  ]
+}
