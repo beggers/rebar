@@ -39,6 +39,7 @@ DEFAULT_FIXTURE_PATHS = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "named_group_workflows.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "named_group_replacement_workflows.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "named_backreference_workflows.json",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "numbered_backreference_workflows.json",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 PHASE_BY_LAYER = {

@@ -6301,6 +6301,209 @@
       "pattern": "(?P<word>ab)(?P=word)",
       "suite_id": "match.named_backreference",
       "text_model": "str"
+    },
+    {
+      "categories": [
+        "grouped",
+        "numbered-backreference",
+        "compile",
+        "metadata",
+        "str"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "numbered_backreference_compile_metadata",
+      "id": "numbered-backreference-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "numbered-backreference-workflows",
+      "notes": [
+        "Publishes the tiny numbered-backreference compile path so the next grouped-reference frontier stays visible in the combined scorecard."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 1,
+            "pattern": "(ab)\\1",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "compile",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "(ab)\\1",
+      "suite_id": "match.numbered_backreference",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "(ab)\\1",
+        "zzababzz"
+      ],
+      "categories": [
+        "grouped",
+        "numbered-backreference",
+        "search",
+        "module",
+        "str"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "numbered_backreference_module_workflow",
+      "helper": "search",
+      "id": "numbered-backreference-module-search-str",
+      "layer": "match_behavior",
+      "manifest_id": "numbered-backreference-workflows",
+      "notes": [
+        "Captures the bounded module-level numbered-backreference match path for a tiny literal workflow without broadening into nested references, alternation, or conditional groups."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 8,
+            "group0": "abab",
+            "group1": "ab",
+            "group_spans": [
+              [
+                2,
+                4
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "ab"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              6
+            ],
+            "span1": [
+              2,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.numbered_backreference",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "zzababzz"
+      ],
+      "categories": [
+        "grouped",
+        "numbered-backreference",
+        "search",
+        "pattern",
+        "str"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "numbered_backreference_pattern_workflow",
+      "helper": "search",
+      "id": "numbered-backreference-pattern-search-str",
+      "layer": "match_behavior",
+      "manifest_id": "numbered-backreference-workflows",
+      "notes": [
+        "Captures the bounded Pattern.search numbered-backreference path for the same tiny literal workflow while leaving broader grouped execution out of scope."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 8,
+            "group0": "abab",
+            "group1": "ab",
+            "group_spans": [
+              [
+                2,
+                4
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "ab"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              6
+            ],
+            "span1": [
+              2,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "(ab)\\1",
+      "suite_id": "match.numbered_backreference",
+      "text_model": "str"
     }
   ],
   "diagnostics": {
@@ -6313,7 +6516,7 @@
         },
         "outcomes": {
           "exception": 8,
-          "success": 88
+          "success": 91
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -6321,14 +6524,16 @@
         }
       },
       "rebar": {
-        "exception_case_count": 8,
+        "exception_case_count": 11,
         "exception_types": {
+          "NotImplementedError": 3,
           "TypeError": 2,
           "error": 6
         },
         "outcomes": {
           "exception": 8,
-          "success": 88
+          "success": 88,
+          "unimplemented": 3
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -7116,6 +7321,69 @@
       ]
     },
     {
+      "case_count": 1,
+      "id": "numbered_backreference_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "numbered_backreference_module_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "numbered_backreference_pattern_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
       "case_count": 2,
       "id": "numbered_capture_gap_workflow",
       "layers": [
@@ -7353,8 +7621,8 @@
     }
   ],
   "fixtures": {
-    "case_count": 96,
-    "manifest_count": 12,
+    "case_count": 99,
+    "manifest_count": 13,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
@@ -7367,7 +7635,8 @@
       "grouped-match-workflows",
       "named-group-workflows",
       "named-group-replacement-workflows",
-      "named-backreference-workflows"
+      "named-backreference-workflows",
+      "numbered-backreference-workflows"
     ],
     "paths": [
       "tests/conformance/fixtures/parser_matrix.json",
@@ -7381,30 +7650,34 @@
       "tests/conformance/fixtures/grouped_match_workflows.json",
       "tests/conformance/fixtures/named_group_workflows.json",
       "tests/conformance/fixtures/named_group_replacement_workflows.json",
-      "tests/conformance/fixtures/named_backreference_workflows.json"
+      "tests/conformance/fixtures/named_backreference_workflows.json",
+      "tests/conformance/fixtures/numbered_backreference_workflows.json"
     ]
   },
-  "generated_at": "2026-03-12T09:13:48Z",
+  "generated_at": "2026-03-12T09:38:46Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
-      "case_count": 18,
+      "case_count": 21,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
             "exception_case_count": 0,
             "exception_types": {},
             "outcomes": {
-              "success": 18
+              "success": 21
             },
             "warning_case_count": 0,
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 0,
-            "exception_types": {},
+            "exception_case_count": 3,
+            "exception_types": {
+              "NotImplementedError": 3
+            },
             "outcomes": {
-              "success": 18
+              "success": 18,
+              "unimplemented": 3
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -7420,6 +7693,9 @@
         "named_group_compile_metadata",
         "named_group_module_workflow",
         "named_group_pattern_workflow",
+        "numbered_backreference_compile_metadata",
+        "numbered_backreference_module_workflow",
+        "numbered_backreference_pattern_workflow",
         "numbered_capture_gap_workflow",
         "search_result_shape",
         "single_capture_module_workflow",
@@ -7429,7 +7705,8 @@
         "grouped-match-workflows",
         "match-behavior-smoke",
         "named-backreference-workflows",
-        "named-group-workflows"
+        "named-group-workflows",
+        "numbered-backreference-workflows"
       ],
       "operations": [
         "compile",
@@ -7440,15 +7717,16 @@
         "match.behavior",
         "match.grouped",
         "match.named",
-        "match.named_backreference"
+        "match.named_backreference",
+        "match.numbered_backreference"
       ],
       "summary": {
-        "executed_cases": 18,
+        "executed_cases": 21,
         "failed_cases": 0,
         "passed_cases": 18,
         "skipped_cases": 0,
-        "total_cases": 18,
-        "unimplemented_cases": 0
+        "total_cases": 21,
+        "unimplemented_cases": 3
       },
       "text_models": [
         "bytes",
@@ -10516,14 +10794,267 @@
       "text_models": [
         "str"
       ]
+    },
+    {
+      "case_count": 3,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 3,
+            "exception_types": {
+              "NotImplementedError": 3
+            },
+            "outcomes": {
+              "unimplemented": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "numbered_backreference_compile_metadata",
+        "numbered_backreference_module_workflow",
+        "numbered_backreference_pattern_workflow"
+      ],
+      "id": "match.numbered_backreference",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "numbered-backreference-workflows"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 3,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 3,
+        "unimplemented_cases": 3
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 3,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 3,
+            "exception_types": {
+              "NotImplementedError": 3
+            },
+            "outcomes": {
+              "unimplemented": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "numbered_backreference_compile_metadata",
+        "numbered_backreference_module_workflow",
+        "numbered_backreference_pattern_workflow"
+      ],
+      "id": "match.numbered_backreference.str",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "numbered-backreference-workflows"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 3,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 3,
+        "unimplemented_cases": 3
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 1,
+            "exception_types": {
+              "NotImplementedError": 1
+            },
+            "outcomes": {
+              "unimplemented": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "numbered_backreference_compile_metadata"
+      ],
+      "id": "match.numbered_backreference.compile",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "numbered-backreference-workflows"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 1,
+            "exception_types": {
+              "NotImplementedError": 1
+            },
+            "outcomes": {
+              "unimplemented": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "numbered_backreference_module_workflow"
+      ],
+      "id": "match.numbered_backreference.module_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "numbered-backreference-workflows"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 1,
+            "exception_types": {
+              "NotImplementedError": 1
+            },
+            "outcomes": {
+              "unimplemented": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "numbered_backreference_pattern_workflow"
+      ],
+      "id": "match.numbered_backreference.pattern_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "numbered-backreference-workflows"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
     }
   ],
   "summary": {
-    "executed_cases": 96,
+    "executed_cases": 99,
     "failed_cases": 0,
     "passed_cases": 96,
     "skipped_cases": 0,
-    "total_cases": 96,
-    "unimplemented_cases": 0
+    "total_cases": 99,
+    "unimplemented_cases": 3
   }
 }

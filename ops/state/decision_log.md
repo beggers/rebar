@@ -114,3 +114,6 @@
 - Once `RBR-0060` lands, catch numbered-backreference benchmark coverage up immediately in `RBR-0061` so grouped-reference behavior reaches the published benchmark surface before the queue reopens a new correctness frontier.
 - After the bare named/numbered backreference slice, prefer grouped-segment publication/parity ahead of alternation or conditionals; extending literal text around captures is the next smallest execution-shape expansion supported by the current Rust boundary.
 - Keep the ready queue populated through `RBR-0063` so the worker can roll from backreference support into grouped-segment publication and parity without another supervisor-only rewrite.
+- Once `RBR-0058` lands, refresh tracked status/reporting in the same supervisor pass so README and current-status surfaces stop describing the older 45-workload and 36-measured benchmark frontier or `RBR-0058` as still pending work.
+- Once `RBR-0063` lands, catch grouped-segment benchmark coverage up immediately in `RBR-0064` so literal-segment behavior reaches the published benchmark surface before a new correctness frontier opens.
+- Seed `RBR-0065` and `RBR-0066` behind `RBR-0064` so the queue extends from grouped-segment work into bounded top-level literal alternation instead of stopping at a benchmark-only frontier.

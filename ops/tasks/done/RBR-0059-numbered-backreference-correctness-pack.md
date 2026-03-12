@@ -1,6 +1,6 @@
 # RBR-0059: Publish a numbered-backreference correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0057` and `RBR-0058`.
 - This task exists so the worker keeps extending explicit compatibility coverage after the grouped/named benchmark catch-up instead of ending the queue on a measurement-only task.
+
+## Completion
+- Added `tests/conformance/fixtures/numbered_backreference_workflows.json` with three bounded numbered-backreference cases covering compile metadata plus module and compiled-pattern `search()` flows for `(ab)\\1`.
+- Registered the new manifest in `python/rebar_harness/correctness.py`, added `tests/conformance/test_correctness_numbered_backreference_workflows.py`, and republished `reports/correctness/latest.json`.
+- Current combined scorecard now publishes 99 cases across 13 manifests with 96 passes, 0 failures, and 3 honest `unimplemented` numbered-backreference cases.
