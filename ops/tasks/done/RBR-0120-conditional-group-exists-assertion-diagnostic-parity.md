@@ -1,6 +1,6 @@
 # RBR-0120: Add bounded assertion-conditioned conditional diagnostic parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0119`.
 - This task exists so the queue turns the next exact conditional diagnostic frontier into real Rust-backed behavior instead of leaving it as publication-only coverage.
+
+## Completion
+- Added narrow Rust-backed compile diagnostics for the two published assertion-conditioned conditional forms, matching CPython's `re.error` message and position payload through `rebar._rebar`.
+- Added native-backed Python parity coverage for those compile failures and updated the correctness regression to expect `pass` instead of `unimplemented`.
+- Republished the combined tracked correctness scorecard; `reports/correctness/latest.json` now reports `220` passes, `0` failures, and `0` unimplemented cases.

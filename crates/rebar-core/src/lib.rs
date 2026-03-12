@@ -991,6 +991,14 @@ fn compile_known_parser_error(pattern: PatternRef<'_>) -> Option<CompileError> {
             message: "look-behind requires fixed-width pattern",
             pos: None,
         }),
+        PatternRef::Str("a(?(?=b)b|c)d") => Some(CompileError {
+            message: "bad character in group name '?=b'",
+            pos: Some(4),
+        }),
+        PatternRef::Str("a(?(?!b)b|c)d") => Some(CompileError {
+            message: "bad character in group name '?!b'",
+            pos: Some(4),
+        }),
         _ => None,
     }
 }
@@ -4158,6 +4166,17 @@ mod tests {
                 index: 1,
             }]
         );
+    }
+
+    #[test]
+    fn compile_rejects_assertion_conditioned_group_exists_cases() {
+        let positive = compile(PatternRef::Str("a(?(?=b)b|c)d"), 0).unwrap_err();
+        assert_eq!(positive.message, "bad character in group name '?=b'");
+        assert_eq!(positive.pos, Some(4));
+
+        let negative = compile(PatternRef::Str("a(?(?!b)b|c)d"), 0).unwrap_err();
+        assert_eq!(negative.message, "bad character in group name '?!b'");
+        assert_eq!(negative.pos, Some(4));
     }
 
     #[test]

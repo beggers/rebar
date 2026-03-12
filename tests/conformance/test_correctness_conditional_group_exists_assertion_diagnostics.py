@@ -239,10 +239,10 @@ class CorrectnessHarnessConditionalGroupExistsAssertionDiagnosticsTest(unittest.
                 {
                     "executed_cases": 220,
                     "failed_cases": 0,
-                    "passed_cases": 218,
+                    "passed_cases": 220,
                     "skipped_cases": 0,
                     "total_cases": 220,
-                    "unimplemented_cases": 2,
+                    "unimplemented_cases": 0,
                 },
             )
 
@@ -275,8 +275,8 @@ class CorrectnessHarnessConditionalGroupExistsAssertionDiagnosticsTest(unittest.
 
         parser_layer = scorecard["layers"]["parser_acceptance_and_diagnostics"]
         self.assertEqual(parser_layer["summary"]["total_cases"], 17)
-        self.assertEqual(parser_layer["summary"]["passed_cases"], 15)
-        self.assertEqual(parser_layer["summary"]["unimplemented_cases"], 2)
+        self.assertEqual(parser_layer["summary"]["passed_cases"], 17)
+        self.assertEqual(parser_layer["summary"]["unimplemented_cases"], 0)
         self.assertIn(
             "conditional-group-exists-assertion-diagnostics",
             parser_layer["manifest_ids"],
@@ -288,8 +288,8 @@ class CorrectnessHarnessConditionalGroupExistsAssertionDiagnosticsTest(unittest.
             if suite["id"] == "parser.conditional_group_exists_assertion_diagnostics"
         )
         self.assertEqual(assertion_suite["summary"]["total_cases"], 2)
-        self.assertEqual(assertion_suite["summary"]["passed_cases"], 0)
-        self.assertEqual(assertion_suite["summary"]["unimplemented_cases"], 2)
+        self.assertEqual(assertion_suite["summary"]["passed_cases"], 2)
+        self.assertEqual(assertion_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             assertion_suite["families"],
             ["conditional_group_exists_assertion_compile_diagnostic"],
@@ -301,7 +301,8 @@ class CorrectnessHarnessConditionalGroupExistsAssertionDiagnosticsTest(unittest.
             if suite["id"] == "parser.conditional_group_exists_assertion_diagnostics.str"
         )
         self.assertEqual(assertion_str_suite["summary"]["total_cases"], 2)
-        self.assertEqual(assertion_str_suite["summary"]["unimplemented_cases"], 2)
+        self.assertEqual(assertion_str_suite["summary"]["passed_cases"], 2)
+        self.assertEqual(assertion_str_suite["summary"]["unimplemented_cases"], 0)
 
         cpython_diagnostics = assertion_suite["diagnostics"]["by_adapter"]["cpython"]
         self.assertEqual(cpython_diagnostics["outcomes"], {"exception": 2})
@@ -309,9 +310,9 @@ class CorrectnessHarnessConditionalGroupExistsAssertionDiagnosticsTest(unittest.
         self.assertEqual(cpython_diagnostics["exception_types"], {"error": 2})
 
         rebar_diagnostics = assertion_suite["diagnostics"]["by_adapter"]["rebar"]
-        self.assertEqual(rebar_diagnostics["outcomes"], {"unimplemented": 2})
+        self.assertEqual(rebar_diagnostics["outcomes"], {"exception": 2})
         self.assertEqual(rebar_diagnostics["exception_case_count"], 2)
-        self.assertEqual(rebar_diagnostics["exception_types"], {"NotImplementedError": 2})
+        self.assertEqual(rebar_diagnostics["exception_types"], {"error": 2})
 
         positive_case = next(
             case
@@ -319,7 +320,7 @@ class CorrectnessHarnessConditionalGroupExistsAssertionDiagnosticsTest(unittest.
             if case["id"] == "conditional-group-exists-assertion-positive-lookahead-error-str"
         )
         self.assertEqual(positive_case["layer"], "parser_acceptance_and_diagnostics")
-        self.assertEqual(positive_case["comparison"], "unimplemented")
+        self.assertEqual(positive_case["comparison"], "pass")
         self.assertEqual(positive_case["observations"]["cpython"]["outcome"], "exception")
         self.assertEqual(
             positive_case["observations"]["cpython"]["exception"],
@@ -331,14 +332,18 @@ class CorrectnessHarnessConditionalGroupExistsAssertionDiagnosticsTest(unittest.
                 "type": "error",
             },
         )
-        self.assertEqual(positive_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(positive_case["observations"]["rebar"]["outcome"], "exception")
+        self.assertEqual(
+            positive_case["observations"]["rebar"]["exception"],
+            positive_case["observations"]["cpython"]["exception"],
+        )
 
         negative_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "conditional-group-exists-assertion-negative-lookahead-error-str"
         )
-        self.assertEqual(negative_case["comparison"], "unimplemented")
+        self.assertEqual(negative_case["comparison"], "pass")
         self.assertEqual(
             negative_case["observations"]["cpython"]["exception"],
             {
@@ -349,7 +354,11 @@ class CorrectnessHarnessConditionalGroupExistsAssertionDiagnosticsTest(unittest.
                 "type": "error",
             },
         )
-        self.assertEqual(negative_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(negative_case["observations"]["rebar"]["outcome"], "exception")
+        self.assertEqual(
+            negative_case["observations"]["rebar"]["exception"],
+            negative_case["observations"]["cpython"]["exception"],
+        )
 
 
 if __name__ == "__main__":
