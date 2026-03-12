@@ -2457,6 +2457,666 @@
       "pattern": "abc",
       "suite_id": "pattern.object",
       "text_model": "str"
+    },
+    {
+      "categories": [
+        "workflow",
+        "compile",
+        "literal",
+        "str"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "compile_workflow",
+      "flags": 0,
+      "id": "workflow-compile-str-literal",
+      "layer": "module_workflow",
+      "manifest_id": "module-workflow-surface",
+      "notes": [
+        "Pins the literal-only module compile workflow on a supported str pattern."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "abc",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "abc",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "abc",
+      "suite_id": "module.workflow",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "workflow",
+        "compile",
+        "literal",
+        "bytes"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "compile_workflow",
+      "flags": 0,
+      "id": "workflow-compile-bytes-literal",
+      "layer": "module_workflow",
+      "manifest_id": "module-workflow-surface",
+      "notes": [
+        "Mirrors the supported compile workflow for bytes payloads."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 0,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": {
+              "encoding": "latin-1",
+              "value": "abc"
+            },
+            "pattern_type": "bytes"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 0,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": {
+              "encoding": "latin-1",
+              "value": "abc"
+            },
+            "pattern_type": "bytes"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "abc",
+      "suite_id": "module.workflow",
+      "text_model": "bytes"
+    },
+    {
+      "args": [
+        "zzabczz"
+      ],
+      "categories": [
+        "workflow",
+        "search",
+        "literal",
+        "str"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "bound_search_workflow",
+      "flags": 0,
+      "helper": "search",
+      "id": "workflow-pattern-search-str",
+      "layer": "module_workflow",
+      "manifest_id": "module-workflow-surface",
+      "notes": [
+        "Compiles through the module entry point and exercises the bound Pattern.search path."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abc",
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abc",
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "abc",
+      "suite_id": "module.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abcdef"
+      ],
+      "categories": [
+        "workflow",
+        "match",
+        "literal",
+        "str"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "bound_match_workflow",
+      "flags": 0,
+      "helper": "match",
+      "id": "workflow-pattern-match-str",
+      "layer": "module_workflow",
+      "manifest_id": "module-workflow-surface",
+      "notes": [
+        "Pins the anchored bound Pattern.match workflow for supported literal input."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 6,
+            "group0": "abc",
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 6,
+            "group0": "abc",
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "abc",
+      "suite_id": "module.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        {
+          "encoding": "latin-1",
+          "value": "123"
+        }
+      ],
+      "categories": [
+        "workflow",
+        "fullmatch",
+        "literal",
+        "bytes"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "bound_fullmatch_workflow",
+      "flags": 0,
+      "helper": "fullmatch",
+      "id": "workflow-pattern-fullmatch-bytes",
+      "layer": "module_workflow",
+      "manifest_id": "module-workflow-surface",
+      "notes": [
+        "Mirrors the end-to-end fullmatch workflow with bytes payloads."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": {
+              "encoding": "latin-1",
+              "value": "123"
+            },
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "string_type": "bytes"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": {
+              "encoding": "latin-1",
+              "value": "123"
+            },
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "string_type": "bytes"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "123",
+      "suite_id": "module.workflow",
+      "text_model": "bytes"
+    },
+    {
+      "categories": [
+        "workflow",
+        "cache",
+        "str"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "cache_workflow",
+      "flags": 0,
+      "id": "workflow-cache-hit-str",
+      "layer": "module_workflow",
+      "manifest_id": "module-workflow-surface",
+      "notes": [
+        "Observes that repeated supported compile() calls reuse the cached compiled object."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "cache_workflow",
+          "outcome": "success",
+          "result": {
+            "first": {
+              "flags": 32,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "cache-me",
+              "pattern_type": "str"
+            },
+            "same_object": true,
+            "second": {
+              "flags": 32,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "cache-me",
+              "pattern_type": "str"
+            }
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "cache_workflow",
+          "outcome": "success",
+          "result": {
+            "first": {
+              "flags": 32,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "cache-me",
+              "pattern_type": "str"
+            },
+            "same_object": true,
+            "second": {
+              "flags": 32,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "cache-me",
+              "pattern_type": "str"
+            }
+          },
+          "warnings": []
+        }
+      },
+      "operation": "cache_workflow",
+      "pattern": "cache-me",
+      "suite_id": "module.workflow",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "workflow",
+        "cache",
+        "bytes"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "cache_workflow",
+      "flags": 0,
+      "id": "workflow-cache-hit-bytes",
+      "layer": "module_workflow",
+      "manifest_id": "module-workflow-surface",
+      "notes": [
+        "Mirrors the compile cache-hit observation for supported bytes patterns."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "cache_workflow",
+          "outcome": "success",
+          "result": {
+            "first": {
+              "flags": 0,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": {
+                "encoding": "latin-1",
+                "value": "cache-me"
+              },
+              "pattern_type": "bytes"
+            },
+            "same_object": true,
+            "second": {
+              "flags": 0,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": {
+                "encoding": "latin-1",
+                "value": "cache-me"
+              },
+              "pattern_type": "bytes"
+            }
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "cache_workflow",
+          "outcome": "success",
+          "result": {
+            "first": {
+              "flags": 0,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": {
+                "encoding": "latin-1",
+                "value": "cache-me"
+              },
+              "pattern_type": "bytes"
+            },
+            "same_object": true,
+            "second": {
+              "flags": 0,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": {
+                "encoding": "latin-1",
+                "value": "cache-me"
+              },
+              "pattern_type": "bytes"
+            }
+          },
+          "warnings": []
+        }
+      },
+      "operation": "cache_workflow",
+      "pattern": "cache-me",
+      "suite_id": "module.workflow",
+      "text_model": "bytes"
+    },
+    {
+      "categories": [
+        "workflow",
+        "cache",
+        "purge",
+        "str"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "purge_workflow",
+      "flags": 0,
+      "id": "workflow-purge-reset-str",
+      "layer": "module_workflow",
+      "manifest_id": "module-workflow-surface",
+      "notes": [
+        "Pins that purge() clears the observable compile cache before the next supported compile."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "purge_workflow",
+          "outcome": "success",
+          "result": {
+            "after_purge": {
+              "flags": 32,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "purge-me",
+              "pattern_type": "str"
+            },
+            "after_purge_cache_hit": true,
+            "after_purge_new_object": true,
+            "before_purge": {
+              "flags": 32,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "purge-me",
+              "pattern_type": "str"
+            },
+            "before_purge_same_object": true,
+            "purge_result": null
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "purge_workflow",
+          "outcome": "success",
+          "result": {
+            "after_purge": {
+              "flags": 32,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "purge-me",
+              "pattern_type": "str"
+            },
+            "after_purge_cache_hit": true,
+            "after_purge_new_object": true,
+            "before_purge": {
+              "flags": 32,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "purge-me",
+              "pattern_type": "str"
+            },
+            "before_purge_same_object": true,
+            "purge_result": null
+          },
+          "warnings": []
+        }
+      },
+      "operation": "purge_workflow",
+      "pattern": "purge-me",
+      "suite_id": "module.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a-b.c"
+      ],
+      "categories": [
+        "workflow",
+        "escape",
+        "str"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "escape_workflow",
+      "flags": 0,
+      "helper": "escape",
+      "id": "workflow-escape-str",
+      "layer": "module_workflow",
+      "manifest_id": "module-workflow-surface",
+      "notes": [
+        "Carries the local escape() helper into the module-workflow scorecard for str payloads."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": "a\\-b\\.c",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": "a\\-b\\.c",
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "module.workflow",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        {
+          "encoding": "latin-1",
+          "value": "a-b.c"
+        }
+      ],
+      "categories": [
+        "workflow",
+        "escape",
+        "bytes"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "escape_workflow",
+      "flags": 0,
+      "helper": "escape",
+      "id": "workflow-escape-bytes",
+      "layer": "module_workflow",
+      "manifest_id": "module-workflow-surface",
+      "notes": [
+        "Mirrors escape() parity for bytes payloads in the workflow pack."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "encoding": "latin-1",
+            "value": "a\\-b\\.c"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "encoding": "latin-1",
+            "value": "a\\-b\\.c"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "module.workflow",
+      "text_model": "bytes"
     }
   ],
   "diagnostics": {
@@ -2469,7 +3129,7 @@
         },
         "outcomes": {
           "exception": 8,
-          "success": 36
+          "success": 46
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -2484,7 +3144,7 @@
         },
         "outcomes": {
           "exception": 2,
-          "success": 29,
+          "success": 39,
           "unimplemented": 13
         },
         "warning_case_count": 0,
@@ -2515,6 +3175,69 @@
       ]
     },
     {
+      "case_count": 1,
+      "id": "bound_fullmatch_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "bound_match_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "bound_search_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
       "case_count": 2,
       "id": "cache_surface",
       "layers": [
@@ -2536,6 +3259,28 @@
     },
     {
       "case_count": 2,
+      "id": "cache_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "cache_workflow"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 2,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
       "id": "character_classes",
       "layers": [
         "parser_acceptance_and_diagnostics"
@@ -2552,6 +3297,28 @@
         "unimplemented_cases": 2
       },
       "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "id": "compile_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 2,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
         "str"
       ]
     },
@@ -2591,6 +3358,28 @@
         "passed_cases": 0,
         "skipped_cases": 0,
         "total_cases": 3,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "id": "escape_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 2,
+        "skipped_cases": 0,
+        "total_cases": 2,
         "unimplemented_cases": 0
       },
       "text_models": [
@@ -2880,6 +3669,27 @@
       ]
     },
     {
+      "case_count": 1,
+      "id": "purge_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "purge_workflow"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
       "case_count": 2,
       "id": "quantifiers",
       "layers": [
@@ -2923,24 +3733,26 @@
     }
   ],
   "fixtures": {
-    "case_count": 44,
-    "manifest_count": 5,
+    "case_count": 54,
+    "manifest_count": 6,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
       "match-behavior-smoke",
       "exported-symbol-surface",
-      "pattern-object-surface"
+      "pattern-object-surface",
+      "module-workflow-surface"
     ],
     "paths": [
       "tests/conformance/fixtures/parser_matrix.json",
       "tests/conformance/fixtures/public_api_surface.json",
       "tests/conformance/fixtures/match_behavior_smoke.json",
       "tests/conformance/fixtures/exported_symbol_surface.json",
-      "tests/conformance/fixtures/pattern_object_surface.json"
+      "tests/conformance/fixtures/pattern_object_surface.json",
+      "tests/conformance/fixtures/module_workflow_surface.json"
     ]
   },
-  "generated_at": "2026-03-12T01:58:44Z",
+  "generated_at": "2026-03-12T02:22:06Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -3059,6 +3871,65 @@
       },
       "text_models": []
     },
+    "module_workflow": {
+      "case_count": 10,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 10
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 10
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "bound_fullmatch_workflow",
+        "bound_match_workflow",
+        "bound_search_workflow",
+        "cache_workflow",
+        "compile_workflow",
+        "escape_workflow",
+        "purge_workflow"
+      ],
+      "manifest_ids": [
+        "module-workflow-surface"
+      ],
+      "operations": [
+        "cache_workflow",
+        "compile",
+        "module_call",
+        "pattern_call",
+        "purge_workflow"
+      ],
+      "suite_ids": [
+        "module.workflow"
+      ],
+      "summary": {
+        "executed_cases": 10,
+        "failed_cases": 0,
+        "passed_cases": 10,
+        "skipped_cases": 0,
+        "total_cases": 10,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
     "parser_acceptance_and_diagnostics": {
       "case_count": 15,
       "diagnostics": {
@@ -3174,7 +4045,7 @@
       ]
     }
   },
-  "phase": "phase3-match-behavior-pack",
+  "phase": "phase3-module-workflow-pack",
   "schema_version": "1.0",
   "suite": "correctness",
   "suites": [
@@ -4081,14 +4952,422 @@
         "bytes",
         "str"
       ]
+    },
+    {
+      "case_count": 10,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 10
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 10
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "bound_fullmatch_workflow",
+        "bound_match_workflow",
+        "bound_search_workflow",
+        "cache_workflow",
+        "compile_workflow",
+        "escape_workflow",
+        "purge_workflow"
+      ],
+      "id": "module.workflow",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "module-workflow-surface"
+      ],
+      "operations": [
+        "cache_workflow",
+        "compile",
+        "module_call",
+        "pattern_call",
+        "purge_workflow"
+      ],
+      "summary": {
+        "executed_cases": 10,
+        "failed_cases": 0,
+        "passed_cases": 10,
+        "skipped_cases": 0,
+        "total_cases": 10,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 4,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "bound_fullmatch_workflow",
+        "cache_workflow",
+        "compile_workflow",
+        "escape_workflow"
+      ],
+      "id": "module.workflow.bytes",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "module-workflow-surface"
+      ],
+      "operations": [
+        "cache_workflow",
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 4,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes"
+      ]
+    },
+    {
+      "case_count": 6,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "bound_match_workflow",
+        "bound_search_workflow",
+        "cache_workflow",
+        "compile_workflow",
+        "escape_workflow",
+        "purge_workflow"
+      ],
+      "id": "module.workflow.str",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "module-workflow-surface"
+      ],
+      "operations": [
+        "cache_workflow",
+        "compile",
+        "module_call",
+        "pattern_call",
+        "purge_workflow"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 0,
+        "passed_cases": 6,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "cache_workflow"
+      ],
+      "id": "module.workflow.cache_workflow",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "module-workflow-surface"
+      ],
+      "operations": [
+        "cache_workflow"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 2,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "compile_workflow"
+      ],
+      "id": "module.workflow.compile",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "module-workflow-surface"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 2,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "escape_workflow"
+      ],
+      "id": "module.workflow.module_call",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "module-workflow-surface"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 2,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 3,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 3
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "bound_fullmatch_workflow",
+        "bound_match_workflow",
+        "bound_search_workflow"
+      ],
+      "id": "module.workflow.pattern_call",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "module-workflow-surface"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 3,
+        "failed_cases": 0,
+        "passed_cases": 3,
+        "skipped_cases": 0,
+        "total_cases": 3,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "bytes",
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 1
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "purge_workflow"
+      ],
+      "id": "module.workflow.purge_workflow",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "module-workflow-surface"
+      ],
+      "operations": [
+        "purge_workflow"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
     }
   ],
   "summary": {
-    "executed_cases": 44,
+    "executed_cases": 54,
     "failed_cases": 8,
-    "passed_cases": 23,
+    "passed_cases": 33,
     "skipped_cases": 0,
-    "total_cases": 44,
+    "total_cases": 54,
     "unimplemented_cases": 13
   }
 }

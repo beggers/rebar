@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "manifest_id": "module-workflow-surface",
+  "layer": "module_workflow",
+  "suite_id": "module.workflow",
+  "defaults": {
+    "flags": 0,
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "workflow-compile-str-literal",
+      "operation": "compile",
+      "family": "compile_workflow",
+      "pattern": "abc",
+      "categories": ["workflow", "compile", "literal", "str"],
+      "notes": [
+        "Pins the literal-only module compile workflow on a supported str pattern."
+      ]
+    },
+    {
+      "id": "workflow-compile-bytes-literal",
+      "operation": "compile",
+      "family": "compile_workflow",
+      "pattern": "abc",
+      "text_model": "bytes",
+      "categories": ["workflow", "compile", "literal", "bytes"],
+      "notes": [
+        "Mirrors the supported compile workflow for bytes payloads."
+      ]
+    },
+    {
+      "id": "workflow-pattern-search-str",
+      "operation": "pattern_call",
+      "family": "bound_search_workflow",
+      "pattern": "abc",
+      "helper": "search",
+      "args": ["zzabczz"],
+      "categories": ["workflow", "search", "literal", "str"],
+      "notes": [
+        "Compiles through the module entry point and exercises the bound Pattern.search path."
+      ]
+    },
+    {
+      "id": "workflow-pattern-match-str",
+      "operation": "pattern_call",
+      "family": "bound_match_workflow",
+      "pattern": "abc",
+      "helper": "match",
+      "args": ["abcdef"],
+      "categories": ["workflow", "match", "literal", "str"],
+      "notes": [
+        "Pins the anchored bound Pattern.match workflow for supported literal input."
+      ]
+    },
+    {
+      "id": "workflow-pattern-fullmatch-bytes",
+      "operation": "pattern_call",
+      "family": "bound_fullmatch_workflow",
+      "pattern": "123",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "123"
+        }
+      ],
+      "categories": ["workflow", "fullmatch", "literal", "bytes"],
+      "notes": [
+        "Mirrors the end-to-end fullmatch workflow with bytes payloads."
+      ]
+    },
+    {
+      "id": "workflow-cache-hit-str",
+      "operation": "cache_workflow",
+      "family": "cache_workflow",
+      "pattern": "cache-me",
+      "categories": ["workflow", "cache", "str"],
+      "notes": [
+        "Observes that repeated supported compile() calls reuse the cached compiled object."
+      ]
+    },
+    {
+      "id": "workflow-cache-hit-bytes",
+      "operation": "cache_workflow",
+      "family": "cache_workflow",
+      "pattern": "cache-me",
+      "text_model": "bytes",
+      "categories": ["workflow", "cache", "bytes"],
+      "notes": [
+        "Mirrors the compile cache-hit observation for supported bytes patterns."
+      ]
+    },
+    {
+      "id": "workflow-purge-reset-str",
+      "operation": "purge_workflow",
+      "family": "purge_workflow",
+      "pattern": "purge-me",
+      "categories": ["workflow", "cache", "purge", "str"],
+      "notes": [
+        "Pins that purge() clears the observable compile cache before the next supported compile."
+      ]
+    },
+    {
+      "id": "workflow-escape-str",
+      "operation": "module_call",
+      "family": "escape_workflow",
+      "helper": "escape",
+      "args": ["a-b.c"],
+      "categories": ["workflow", "escape", "str"],
+      "notes": [
+        "Carries the local escape() helper into the module-workflow scorecard for str payloads."
+      ]
+    },
+    {
+      "id": "workflow-escape-bytes",
+      "operation": "module_call",
+      "family": "escape_workflow",
+      "helper": "escape",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a-b.c"
+        }
+      ],
+      "categories": ["workflow", "escape", "bytes"],
+      "notes": [
+        "Mirrors escape() parity for bytes payloads in the workflow pack."
+      ]
+    }
+  ]
+}

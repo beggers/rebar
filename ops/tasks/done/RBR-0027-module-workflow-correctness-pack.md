@@ -1,6 +1,6 @@
 # RBR-0027: Expand correctness into a module-workflow pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -26,3 +26,4 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0016`, `RBR-0022`, `RBR-0023`, `RBR-0024`, and `RBR-0025`; this task exists so new bounded behavior reaches the published correctness scorecard immediately instead of living only in unit tests.
+- 2026-03-12: Extended `python/rebar_harness/correctness.py` with a dedicated `module_workflow` manifest plus cache/purge workflow operations, added `tests/conformance/fixtures/module_workflow_surface.json` and `tests/conformance/test_correctness_module_workflow.py`, regenerated `reports/correctness/latest.json` to 54 cases with a separate 10-case workflow layer, and verified with `python3 -m unittest tests.conformance.test_correctness_public_api_surface tests.conformance.test_correctness_match_behavior tests.conformance.test_correctness_exported_symbol_surface tests.conformance.test_correctness_pattern_object_surface tests.conformance.test_correctness_module_workflow` and `python3 -m unittest tests.python.test_literal_match_scaffold tests.python.test_compile_cache_scaffold tests.python.test_escape_surface`.
