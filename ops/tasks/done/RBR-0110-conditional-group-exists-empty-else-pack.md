@@ -1,6 +1,6 @@
 # RBR-0110: Publish a bounded conditional explicit-empty-else correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -29,3 +29,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0109`.
 - This task exists so the worker publishes the next exact CPython-accepted conditional syntax surface instead of treating omitted-no-arm and explicit-empty-else forms as indistinguishable coverage.
+
+## Completion
+- Added `conditional_group_exists_empty_else_workflows.json` as a thirtieth correctness manifest for the explicit `|)` numbered and named group-exists forms across compile, module-call, and pattern-call observations.
+- Extended the default correctness fixture set and added a dedicated harness test that verifies the combined scorecard now publishes 206 cases across 30 manifests, with the new six explicit-empty-else cases recorded honestly as `unimplemented`.
+- Regenerated `reports/correctness/latest.json`; the published combined summary is now 200 passes, 0 failures, and 6 honest `unimplemented` cases while runtime parity for this slice remains queued in `RBR-0111`.
