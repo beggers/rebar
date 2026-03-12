@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "manifest_id": "nested-group-boundary",
+  "manifest_id": "nested-group-alternation-boundary",
   "spec_refs": [
     "docs/benchmarks/plan.md",
     "docs/spec/drop-in-re-compatibility.md"
   ],
   "notes": [
-    "Nested-group boundary workloads keep captures, names, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded nesting slice rather than regex throughput.",
-    "Measured rows cover the bounded `a((b))d` and `a(?P<outer>(?P<inner>b))d` compile/search/fullmatch paths directly, while deeper nesting and quantified nested-group shapes stay as explicit known-gap rows and the supported bounded nested alternation slice now lives in the dedicated nested-group alternation manifest."
+    "Nested-group alternation boundary workloads keep captures, branches, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded nested-branch slice rather than regex throughput.",
+    "Measured rows cover the bounded `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d` compile/search/fullmatch paths directly, while multi-alternation, quantified-branch, and branch-local backreference shapes stay as explicit known-gap rows until the queued follow-ons land."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -16,11 +16,11 @@
   },
   "workloads": [
     {
-      "id": "module-compile-nested-group-cold-str",
+      "id": "module-compile-nested-group-alternation-cold-str",
       "bucket": "module-compile",
       "family": "module",
       "operation": "module.compile",
-      "pattern": "a((b))d",
+      "pattern": "a((b|c))d",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "cold",
@@ -29,24 +29,26 @@
         "compile",
         "grouped",
         "nested-group",
+        "alternation",
         "cold-cache"
       ],
       "syntax_features": [
         "module-compile",
         "grouping-forms",
-        "nested-groups"
+        "nested-groups",
+        "alternation"
       ],
       "notes": [
-        "Cold module.compile benchmark for the bounded nested-group slice so compile metadata timing reaches the published benchmark report."
+        "Cold module.compile benchmark for the bounded nested-group alternation slice so compile metadata timing reaches the published benchmark report."
       ]
     },
     {
-      "id": "module-search-nested-group-warm-str",
+      "id": "module-search-nested-group-alternation-warm-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a((b))d",
-      "haystack": "zzabdzz",
+      "pattern": "a((b|c))d",
+      "haystack": "zzacdzz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
@@ -55,6 +57,7 @@
       "categories": [
         "grouped",
         "nested-group",
+        "alternation",
         "search",
         "module",
         "warm-cache",
@@ -63,18 +66,19 @@
       "syntax_features": [
         "module-search",
         "grouping-forms",
-        "nested-groups"
+        "nested-groups",
+        "alternation"
       ],
       "notes": [
-        "Warm module.search helper path for the bounded nested-group workflow on a tiny haystack."
+        "Warm module.search helper path for the bounded nested-group alternation workflow on a tiny haystack."
       ]
     },
     {
-      "id": "pattern-fullmatch-nested-group-purged-str",
+      "id": "pattern-fullmatch-nested-group-alternation-purged-str",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a((b))d",
+      "pattern": "a((b|c))d",
       "haystack": "abd",
       "flags": 0,
       "text_model": "str",
@@ -84,6 +88,7 @@
         "pattern",
         "grouped",
         "nested-group",
+        "alternation",
         "fullmatch",
         "purged-cache"
       ],
@@ -91,18 +96,19 @@
         "pattern-fullmatch",
         "grouping-forms",
         "nested-groups",
+        "alternation",
         "cache-purge"
       ],
       "notes": [
-        "Purged-cache Pattern.fullmatch probe for the same bounded nested-group workflow."
+        "Purged-cache Pattern.fullmatch probe for the same bounded nested-group alternation workflow."
       ]
     },
     {
-      "id": "module-compile-named-nested-group-warm-str",
+      "id": "module-compile-named-nested-group-alternation-warm-str",
       "bucket": "module-compile",
       "family": "module",
       "operation": "module.compile",
-      "pattern": "a(?P<outer>(?P<inner>b))d",
+      "pattern": "a(?P<outer>(?P<inner>b|c))d",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
@@ -111,6 +117,7 @@
         "compile",
         "grouped",
         "nested-group",
+        "alternation",
         "named-group",
         "warm-cache"
       ],
@@ -118,18 +125,19 @@
         "module-compile",
         "grouping-forms",
         "nested-groups",
+        "alternation",
         "named-groups"
       ],
       "notes": [
-        "Warm module.compile path for the bounded named nested-group slice so named metadata timing reaches the benchmark report."
+        "Warm module.compile path for the bounded named nested-group alternation slice so named metadata timing reaches the benchmark report."
       ]
     },
     {
-      "id": "module-search-named-nested-group-warm-str",
+      "id": "module-search-named-nested-group-alternation-warm-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(?P<outer>(?P<inner>b))d",
+      "pattern": "a(?P<outer>(?P<inner>b|c))d",
       "haystack": "zzabdzz",
       "flags": 0,
       "text_model": "str",
@@ -138,6 +146,7 @@
       "categories": [
         "grouped",
         "nested-group",
+        "alternation",
         "named-group",
         "search",
         "module",
@@ -147,19 +156,20 @@
         "module-search",
         "grouping-forms",
         "nested-groups",
+        "alternation",
         "named-groups"
       ],
       "notes": [
-        "Warm module.search helper path for a tiny named nested-group capture so named runtime workflows produce real timings."
+        "Warm module.search helper path for a tiny named nested-group alternation capture so named runtime workflows produce real timings."
       ]
     },
     {
-      "id": "pattern-fullmatch-named-nested-group-purged-str",
+      "id": "pattern-fullmatch-named-nested-group-alternation-purged-str",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(?P<outer>(?P<inner>b))d",
-      "haystack": "abd",
+      "pattern": "a(?P<outer>(?P<inner>b|c))d",
+      "haystack": "acd",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "purged",
@@ -169,6 +179,7 @@
         "pattern",
         "grouped",
         "nested-group",
+        "alternation",
         "named-group",
         "fullmatch",
         "purged-cache",
@@ -178,20 +189,21 @@
         "pattern-fullmatch",
         "grouping-forms",
         "nested-groups",
+        "alternation",
         "named-groups",
         "cache-purge"
       ],
       "notes": [
-        "Smoke-sized Pattern.fullmatch probe for the bounded named nested-group workflow with compile cost kept outside the timed loop."
+        "Smoke-sized Pattern.fullmatch probe for the bounded named nested-group alternation workflow with compile cost kept outside the timed loop."
       ]
     },
     {
-      "id": "module-search-triple-nested-group-cold-gap",
+      "id": "module-search-nested-group-quantified-alternation-cold-gap",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(((b)))d",
-      "haystack": "zzabdzz",
+      "pattern": "a((b|c)+)d",
+      "haystack": "zzabccdzz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "cold",
@@ -199,7 +211,8 @@
       "categories": [
         "grouped",
         "nested-group",
-        "deeper-nesting",
+        "alternation",
+        "quantified",
         "search",
         "module",
         "cold-cache",
@@ -209,19 +222,19 @@
         "module-search",
         "grouping-forms",
         "nested-groups",
-        "deeper-nesting"
+        "alternation"
       ],
       "notes": [
-        "Explicit triple-nested group gap row so deeper nesting stays visible instead of disappearing while the queue focuses on bounded nested alternation and nearby grouped execution slices."
+        "Explicit quantified nested alternation gap row so repeated branch selection inside a nested capture stays visible now that the single-pass slice has real timings."
       ]
     },
     {
-      "id": "pattern-fullmatch-named-quantified-nested-group-purged-gap",
+      "id": "pattern-fullmatch-named-nested-group-branch-local-backreference-purged-gap",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(?P<outer>(?P<inner>bc)+)d",
-      "haystack": "abcbcd",
+      "pattern": "a(?P<outer>(?P<inner>b|c))(?P=inner)d",
+      "haystack": "accd",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "purged",
@@ -230,8 +243,9 @@
         "pattern",
         "grouped",
         "nested-group",
+        "alternation",
         "named-group",
-        "quantified",
+        "backreference",
         "fullmatch",
         "purged-cache",
         "gap"
@@ -240,12 +254,13 @@
         "pattern-fullmatch",
         "grouping-forms",
         "nested-groups",
+        "alternation",
         "named-groups",
-        "quantifiers",
+        "backreferences",
         "cache-purge"
       ],
       "notes": [
-        "Explicit quantified nested-group gap row so one repeated inner capture stays on the benchmark surface instead of disappearing until the broader grouped execution frontier lands."
+        "Explicit branch-local backreference gap row so the next combined nested-branch-and-reference frontier stays visible instead of disappearing until the queued follow-on lands."
       ]
     }
   ]

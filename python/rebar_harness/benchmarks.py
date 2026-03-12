@@ -47,6 +47,7 @@ DEFAULT_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_replacement_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_callable_replacement_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.json",
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_alternation_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "nested_group_callable_replacement_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.json",

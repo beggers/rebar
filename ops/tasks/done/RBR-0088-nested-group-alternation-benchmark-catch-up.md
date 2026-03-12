@@ -1,6 +1,6 @@
 # RBR-0088: Catch nested-group alternation benchmarks up with the new bounded slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0087`.
 - This task exists so the queue does not reach bounded nested-group alternation parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Added the dedicated `nested_group_alternation_boundary.json` benchmark manifest and wired it into the default combined benchmark publication list.
+- Republished `reports/benchmarks/latest.json`; the combined scorecard now reports 139 workloads with 113 measured timings and 26 explicit known gaps, including real `rebar` timings for the bounded numbered and named nested-group alternation compile/search/fullmatch workflows.
+- Refreshed benchmark regression coverage for the new manifest and updated the older nested-group benchmark expectations so the dedicated alternation pack no longer leaves the now-supported slice mislabeled as a gap.
