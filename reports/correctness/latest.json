@@ -1463,18 +1463,594 @@
       "operation": "module_call",
       "suite_id": "match.behavior",
       "text_model": "bytes"
+    },
+    {
+      "categories": [
+        "surface",
+        "type",
+        "enum"
+      ],
+      "comparison": "fail",
+      "comparison_notes": [
+        "result payload mismatch"
+      ],
+      "family": "helper_type_metadata",
+      "helper": "RegexFlag",
+      "id": "regexflag-type-metadata",
+      "layer": "module_api_surface",
+      "manifest_id": "exported-symbol-surface",
+      "notes": [
+        "Captures the exported RegexFlag type surface, including module identity and enum members."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_attr_metadata",
+          "outcome": "success",
+          "result": {
+            "callable": true,
+            "is_type": true,
+            "members": {
+              "A": 256,
+              "ASCII": 256,
+              "DEBUG": 128,
+              "DOTALL": 16,
+              "I": 2,
+              "IGNORECASE": 2,
+              "L": 4,
+              "LOCALE": 4,
+              "M": 8,
+              "MULTILINE": 8,
+              "NOFLAG": 0,
+              "S": 16,
+              "T": 1,
+              "TEMPLATE": 1,
+              "U": 32,
+              "UNICODE": 32,
+              "VERBOSE": 64,
+              "X": 64
+            },
+            "module": "re",
+            "mro": [
+              "re.RegexFlag",
+              "enum.IntFlag",
+              "builtins.int",
+              "enum.ReprEnum",
+              "enum.Flag",
+              "enum.Enum",
+              "builtins.object"
+            ],
+            "present": true,
+            "qualname": "RegexFlag",
+            "repr": "<flag 'RegexFlag'>",
+            "type_name": "EnumType"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_attr_metadata",
+          "outcome": "success",
+          "result": {
+            "callable": true,
+            "is_type": true,
+            "members": {
+              "ASCII": 256,
+              "DEBUG": 128,
+              "DOTALL": 16,
+              "IGNORECASE": 2,
+              "LOCALE": 4,
+              "MULTILINE": 8,
+              "NOFLAG": 0,
+              "TEMPLATE": 1,
+              "UNICODE": 32,
+              "VERBOSE": 64
+            },
+            "module": "rebar",
+            "mro": [
+              "rebar.RegexFlag",
+              "enum.IntFlag",
+              "builtins.int",
+              "enum.ReprEnum",
+              "enum.Flag",
+              "enum.Enum",
+              "builtins.object"
+            ],
+            "present": true,
+            "qualname": "RegexFlag",
+            "repr": "<flag 'RegexFlag'>",
+            "type_name": "EnumType"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_attr_metadata",
+      "suite_id": "module.exports"
+    },
+    {
+      "categories": [
+        "surface",
+        "exception"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "exception_type_metadata",
+      "helper": "error",
+      "id": "error-type-metadata",
+      "layer": "module_api_surface",
+      "manifest_id": "exported-symbol-surface",
+      "notes": [
+        "Pins the public re.error export as an observable module attribute."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_attr_metadata",
+          "outcome": "success",
+          "result": {
+            "callable": true,
+            "is_type": true,
+            "module": "re",
+            "mro": [
+              "re.error",
+              "builtins.Exception",
+              "builtins.BaseException",
+              "builtins.object"
+            ],
+            "present": true,
+            "qualname": "error",
+            "repr": "<class 're.error'>",
+            "type_name": "type"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_attr_metadata",
+          "outcome": "success",
+          "result": {
+            "callable": true,
+            "is_type": true,
+            "module": "re",
+            "mro": [
+              "re.error",
+              "builtins.Exception",
+              "builtins.BaseException",
+              "builtins.object"
+            ],
+            "present": true,
+            "qualname": "error",
+            "repr": "<class 're.error'>",
+            "type_name": "type"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_attr_metadata",
+      "suite_id": "module.exports"
+    },
+    {
+      "categories": [
+        "surface",
+        "type",
+        "pattern"
+      ],
+      "comparison": "fail",
+      "comparison_notes": [
+        "result payload mismatch"
+      ],
+      "family": "helper_type_metadata",
+      "helper": "Pattern",
+      "id": "pattern-type-metadata",
+      "layer": "module_api_surface",
+      "manifest_id": "exported-symbol-surface",
+      "notes": [
+        "Records the exported Pattern helper type metadata without claiming compiled-pattern parity."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_attr_metadata",
+          "outcome": "success",
+          "result": {
+            "callable": true,
+            "is_type": true,
+            "module": "re",
+            "mro": [
+              "re.Pattern",
+              "builtins.object"
+            ],
+            "present": true,
+            "qualname": "Pattern",
+            "repr": "<class 're.Pattern'>",
+            "type_name": "type"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_attr_metadata",
+          "outcome": "success",
+          "result": {
+            "callable": true,
+            "is_type": true,
+            "module": "rebar",
+            "mro": [
+              "rebar.Pattern",
+              "builtins.object"
+            ],
+            "present": true,
+            "qualname": "Pattern",
+            "repr": "<class 'rebar.Pattern'>",
+            "type_name": "_PatternScaffoldType"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_attr_metadata",
+      "suite_id": "module.exports"
+    },
+    {
+      "categories": [
+        "surface",
+        "type",
+        "match"
+      ],
+      "comparison": "fail",
+      "comparison_notes": [
+        "result payload mismatch"
+      ],
+      "family": "helper_type_metadata",
+      "helper": "Match",
+      "id": "match-type-metadata",
+      "layer": "module_api_surface",
+      "manifest_id": "exported-symbol-surface",
+      "notes": [
+        "Records the exported Match helper type metadata while the real match object remains unimplemented."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_attr_metadata",
+          "outcome": "success",
+          "result": {
+            "callable": true,
+            "is_type": true,
+            "module": "re",
+            "mro": [
+              "re.Match",
+              "builtins.object"
+            ],
+            "present": true,
+            "qualname": "Match",
+            "repr": "<class 're.Match'>",
+            "type_name": "type"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_attr_metadata",
+          "outcome": "success",
+          "result": {
+            "callable": true,
+            "is_type": true,
+            "module": "rebar",
+            "mro": [
+              "rebar.Match",
+              "builtins.object"
+            ],
+            "present": true,
+            "qualname": "Match",
+            "repr": "<class 'rebar.Match'>",
+            "type_name": "_NonInstantiableScaffoldType"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_attr_metadata",
+      "suite_id": "module.exports"
+    },
+    {
+      "categories": [
+        "surface",
+        "flag",
+        "value"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "flag_constant_values",
+      "helper": "ASCII",
+      "id": "ascii-constant-value",
+      "layer": "module_api_surface",
+      "manifest_id": "exported-symbol-surface",
+      "notes": [
+        "Pins a representative exported flag constant value and type."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_attr_value",
+          "outcome": "success",
+          "result": {
+            "name": "ASCII",
+            "present": true,
+            "type_name": "RegexFlag",
+            "value": 256
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_attr_value",
+          "outcome": "success",
+          "result": {
+            "name": "ASCII",
+            "present": true,
+            "type_name": "RegexFlag",
+            "value": 256
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_attr_value",
+      "suite_id": "module.exports"
+    },
+    {
+      "categories": [
+        "surface",
+        "flag",
+        "value"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "flag_constant_values",
+      "helper": "IGNORECASE",
+      "id": "ignorecase-constant-value",
+      "layer": "module_api_surface",
+      "manifest_id": "exported-symbol-surface",
+      "notes": [
+        "Checks another representative flag constant against stdlib re."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_attr_value",
+          "outcome": "success",
+          "result": {
+            "name": "IGNORECASE",
+            "present": true,
+            "type_name": "RegexFlag",
+            "value": 2
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_attr_value",
+          "outcome": "success",
+          "result": {
+            "name": "IGNORECASE",
+            "present": true,
+            "type_name": "RegexFlag",
+            "value": 2
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_attr_value",
+      "suite_id": "module.exports"
+    },
+    {
+      "categories": [
+        "surface",
+        "flag",
+        "value"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "flag_constant_values",
+      "helper": "NOFLAG",
+      "id": "noflag-constant-value",
+      "layer": "module_api_surface",
+      "manifest_id": "exported-symbol-surface",
+      "notes": [
+        "Pins the zero-valued exported flag constant without relying on alias-only behavior."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_attr_value",
+          "outcome": "success",
+          "result": {
+            "name": "NOFLAG",
+            "present": true,
+            "type_name": "RegexFlag",
+            "value": 0
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_attr_value",
+          "outcome": "success",
+          "result": {
+            "name": "NOFLAG",
+            "present": true,
+            "type_name": "RegexFlag",
+            "value": 0
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_attr_value",
+      "suite_id": "module.exports"
+    },
+    {
+      "categories": [
+        "surface",
+        "flag",
+        "value"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "flag_constant_values",
+      "helper": "DEBUG",
+      "id": "debug-constant-value",
+      "layer": "module_api_surface",
+      "manifest_id": "exported-symbol-surface",
+      "notes": [
+        "Checks a non-default representative flag constant from the exported surface."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_attr_value",
+          "outcome": "success",
+          "result": {
+            "name": "DEBUG",
+            "present": true,
+            "type_name": "RegexFlag",
+            "value": 128
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_attr_value",
+          "outcome": "success",
+          "result": {
+            "name": "DEBUG",
+            "present": true,
+            "type_name": "RegexFlag",
+            "value": 128
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_attr_value",
+      "suite_id": "module.exports"
+    },
+    {
+      "categories": [
+        "surface",
+        "type",
+        "guard",
+        "pattern"
+      ],
+      "comparison": "fail",
+      "comparison_notes": [
+        "exception payload mismatch"
+      ],
+      "family": "helper_type_instantiation_guard",
+      "helper": "Pattern",
+      "id": "pattern-constructor-guard",
+      "layer": "module_api_surface",
+      "manifest_id": "exported-symbol-surface",
+      "notes": [
+        "Exposes the current non-instantiable Pattern contract so message drift stays visible in the scorecard."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": {
+            "message": "cannot create 're.Pattern' instances",
+            "type": "TypeError"
+          },
+          "operation": "module_call",
+          "outcome": "exception",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "cannot create 'rebar.Pattern' instances",
+            "type": "TypeError"
+          },
+          "operation": "module_call",
+          "outcome": "exception",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "module.exports"
+    },
+    {
+      "categories": [
+        "surface",
+        "type",
+        "guard",
+        "match"
+      ],
+      "comparison": "fail",
+      "comparison_notes": [
+        "exception payload mismatch"
+      ],
+      "family": "helper_type_instantiation_guard",
+      "helper": "Match",
+      "id": "match-constructor-guard",
+      "layer": "module_api_surface",
+      "manifest_id": "exported-symbol-surface",
+      "notes": [
+        "Exposes the current non-instantiable Match contract without hiding scaffold-specific exception text."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": {
+            "message": "cannot create 're.Match' instances",
+            "type": "TypeError"
+          },
+          "operation": "module_call",
+          "outcome": "exception",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "cannot create 'rebar.Match' instances",
+            "type": "TypeError"
+          },
+          "operation": "module_call",
+          "outcome": "exception",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "module.exports"
     }
   ],
   "diagnostics": {
     "by_adapter": {
       "cpython": {
-        "exception_case_count": 6,
+        "exception_case_count": 8,
         "exception_types": {
+          "TypeError": 2,
           "error": 6
         },
         "outcomes": {
-          "exception": 6,
-          "success": 22
+          "exception": 8,
+          "success": 30
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -1482,12 +2058,14 @@
         }
       },
       "rebar": {
-        "exception_case_count": 21,
+        "exception_case_count": 23,
         "exception_types": {
-          "NotImplementedError": 21
+          "NotImplementedError": 21,
+          "TypeError": 2
         },
         "outcomes": {
-          "success": 7,
+          "exception": 2,
+          "success": 15,
           "unimplemented": 21
         },
         "warning_case_count": 0,
@@ -1557,6 +2135,44 @@
       "text_models": [
         "str"
       ]
+    },
+    {
+      "case_count": 1,
+      "id": "exception_type_metadata",
+      "layers": [
+        "module_api_surface"
+      ],
+      "operations": [
+        "module_attr_metadata"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": []
+    },
+    {
+      "case_count": 4,
+      "id": "flag_constant_values",
+      "layers": [
+        "module_api_surface"
+      ],
+      "operations": [
+        "module_attr_value"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 4,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 0
+      },
+      "text_models": []
     },
     {
       "case_count": 5,
@@ -1638,6 +2254,44 @@
         "passed_cases": 2,
         "skipped_cases": 0,
         "total_cases": 2,
+        "unimplemented_cases": 0
+      },
+      "text_models": []
+    },
+    {
+      "case_count": 2,
+      "id": "helper_type_instantiation_guard",
+      "layers": [
+        "module_api_surface"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 2,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 0
+      },
+      "text_models": []
+    },
+    {
+      "case_count": 3,
+      "id": "helper_type_metadata",
+      "layers": [
+        "module_api_surface"
+      ],
+      "operations": [
+        "module_attr_metadata"
+      ],
+      "summary": {
+        "executed_cases": 3,
+        "failed_cases": 3,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 3,
         "unimplemented_cases": 0
       },
       "text_models": []
@@ -1788,20 +2442,22 @@
     }
   ],
   "fixtures": {
-    "case_count": 28,
-    "manifest_count": 3,
+    "case_count": 38,
+    "manifest_count": 4,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
-      "match-behavior-smoke"
+      "match-behavior-smoke",
+      "exported-symbol-surface"
     ],
     "paths": [
       "tests/conformance/fixtures/parser_matrix.json",
       "tests/conformance/fixtures/public_api_surface.json",
-      "tests/conformance/fixtures/match_behavior_smoke.json"
+      "tests/conformance/fixtures/match_behavior_smoke.json",
+      "tests/conformance/fixtures/exported_symbol_surface.json"
     ]
   },
-  "generated_at": "2026-03-12T00:44:51Z",
+  "generated_at": "2026-03-12T01:12:10Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -1858,25 +2514,30 @@
       ]
     },
     "module_api_surface": {
-      "case_count": 7,
+      "case_count": 17,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
-            "exception_case_count": 0,
-            "exception_types": {},
+            "exception_case_count": 2,
+            "exception_types": {
+              "TypeError": 2
+            },
             "outcomes": {
-              "success": 7
+              "exception": 2,
+              "success": 15
             },
             "warning_case_count": 0,
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 2,
+            "exception_case_count": 4,
             "exception_types": {
-              "NotImplementedError": 2
+              "NotImplementedError": 2,
+              "TypeError": 2
             },
             "outcomes": {
-              "success": 5,
+              "exception": 2,
+              "success": 13,
               "unimplemented": 2
             },
             "warning_case_count": 0,
@@ -1886,26 +2547,34 @@
       },
       "families": [
         "cache_surface",
+        "exception_type_metadata",
+        "flag_constant_values",
         "helper_presence",
+        "helper_type_instantiation_guard",
+        "helper_type_metadata",
         "pattern_scaffold",
         "placeholder_behavior"
       ],
       "manifest_ids": [
+        "exported-symbol-surface",
         "public-api-surface"
       ],
       "operations": [
+        "module_attr_metadata",
+        "module_attr_value",
         "module_call",
         "module_has_attr"
       ],
       "suite_ids": [
+        "module.exports",
         "module.surface"
       ],
       "summary": {
-        "executed_cases": 7,
-        "failed_cases": 0,
-        "passed_cases": 5,
+        "executed_cases": 17,
+        "failed_cases": 5,
+        "passed_cases": 10,
         "skipped_cases": 0,
-        "total_cases": 7,
+        "total_cases": 17,
         "unimplemented_cases": 2
       },
       "text_models": []
@@ -2454,14 +3123,210 @@
       "text_models": [
         "str"
       ]
+    },
+    {
+      "case_count": 10,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "TypeError": 2
+            },
+            "outcomes": {
+              "exception": 2,
+              "success": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "TypeError": 2
+            },
+            "outcomes": {
+              "exception": 2,
+              "success": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "exception_type_metadata",
+        "flag_constant_values",
+        "helper_type_instantiation_guard",
+        "helper_type_metadata"
+      ],
+      "id": "module.exports",
+      "layer": "module_api_surface",
+      "manifest_ids": [
+        "exported-symbol-surface"
+      ],
+      "operations": [
+        "module_attr_metadata",
+        "module_attr_value",
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 10,
+        "failed_cases": 5,
+        "passed_cases": 5,
+        "skipped_cases": 0,
+        "total_cases": 10,
+        "unimplemented_cases": 0
+      },
+      "text_models": []
+    },
+    {
+      "case_count": 4,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "exception_type_metadata",
+        "helper_type_metadata"
+      ],
+      "id": "module.exports.module_attr_metadata",
+      "layer": "module_api_surface",
+      "manifest_ids": [
+        "exported-symbol-surface"
+      ],
+      "operations": [
+        "module_attr_metadata"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 3,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 0
+      },
+      "text_models": []
+    },
+    {
+      "case_count": 4,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "flag_constant_values"
+      ],
+      "id": "module.exports.module_attr_value",
+      "layer": "module_api_surface",
+      "manifest_ids": [
+        "exported-symbol-surface"
+      ],
+      "operations": [
+        "module_attr_value"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 4,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 0
+      },
+      "text_models": []
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "TypeError": 2
+            },
+            "outcomes": {
+              "exception": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "TypeError": 2
+            },
+            "outcomes": {
+              "exception": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "helper_type_instantiation_guard"
+      ],
+      "id": "module.exports.module_call",
+      "layer": "module_api_surface",
+      "manifest_ids": [
+        "exported-symbol-surface"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 2,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 0
+      },
+      "text_models": []
     }
   ],
   "summary": {
-    "executed_cases": 28,
-    "failed_cases": 0,
-    "passed_cases": 7,
+    "executed_cases": 38,
+    "failed_cases": 5,
+    "passed_cases": 12,
     "skipped_cases": 0,
-    "total_cases": 28,
+    "total_cases": 38,
     "unimplemented_cases": 21
   }
 }

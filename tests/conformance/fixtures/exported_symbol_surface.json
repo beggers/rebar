@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "manifest_id": "exported-symbol-surface",
+  "layer": "module_api_surface",
+  "suite_id": "module.exports",
+  "cases": [
+    {
+      "id": "regexflag-type-metadata",
+      "operation": "module_attr_metadata",
+      "family": "helper_type_metadata",
+      "helper": "RegexFlag",
+      "categories": ["surface", "type", "enum"],
+      "notes": [
+        "Captures the exported RegexFlag type surface, including module identity and enum members."
+      ]
+    },
+    {
+      "id": "error-type-metadata",
+      "operation": "module_attr_metadata",
+      "family": "exception_type_metadata",
+      "helper": "error",
+      "categories": ["surface", "exception"],
+      "notes": [
+        "Pins the public re.error export as an observable module attribute."
+      ]
+    },
+    {
+      "id": "pattern-type-metadata",
+      "operation": "module_attr_metadata",
+      "family": "helper_type_metadata",
+      "helper": "Pattern",
+      "categories": ["surface", "type", "pattern"],
+      "notes": [
+        "Records the exported Pattern helper type metadata without claiming compiled-pattern parity."
+      ]
+    },
+    {
+      "id": "match-type-metadata",
+      "operation": "module_attr_metadata",
+      "family": "helper_type_metadata",
+      "helper": "Match",
+      "categories": ["surface", "type", "match"],
+      "notes": [
+        "Records the exported Match helper type metadata while the real match object remains unimplemented."
+      ]
+    },
+    {
+      "id": "ascii-constant-value",
+      "operation": "module_attr_value",
+      "family": "flag_constant_values",
+      "helper": "ASCII",
+      "categories": ["surface", "flag", "value"],
+      "notes": [
+        "Pins a representative exported flag constant value and type."
+      ]
+    },
+    {
+      "id": "ignorecase-constant-value",
+      "operation": "module_attr_value",
+      "family": "flag_constant_values",
+      "helper": "IGNORECASE",
+      "categories": ["surface", "flag", "value"],
+      "notes": [
+        "Checks another representative flag constant against stdlib re."
+      ]
+    },
+    {
+      "id": "noflag-constant-value",
+      "operation": "module_attr_value",
+      "family": "flag_constant_values",
+      "helper": "NOFLAG",
+      "categories": ["surface", "flag", "value"],
+      "notes": [
+        "Pins the zero-valued exported flag constant without relying on alias-only behavior."
+      ]
+    },
+    {
+      "id": "debug-constant-value",
+      "operation": "module_attr_value",
+      "family": "flag_constant_values",
+      "helper": "DEBUG",
+      "categories": ["surface", "flag", "value"],
+      "notes": [
+        "Checks a non-default representative flag constant from the exported surface."
+      ]
+    },
+    {
+      "id": "pattern-constructor-guard",
+      "operation": "module_call",
+      "family": "helper_type_instantiation_guard",
+      "helper": "Pattern",
+      "categories": ["surface", "type", "guard", "pattern"],
+      "notes": [
+        "Exposes the current non-instantiable Pattern contract so message drift stays visible in the scorecard."
+      ]
+    },
+    {
+      "id": "match-constructor-guard",
+      "operation": "module_call",
+      "family": "helper_type_instantiation_guard",
+      "helper": "Match",
+      "categories": ["surface", "type", "guard", "match"],
+      "notes": [
+        "Exposes the current non-instantiable Match contract without hiding scaffold-specific exception text."
+      ]
+    }
+  ]
+}

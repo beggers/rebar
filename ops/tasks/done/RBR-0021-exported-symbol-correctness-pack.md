@@ -1,8 +1,9 @@
 # RBR-0021: Expand correctness coverage across exported symbols
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
+Completed: 2026-03-12
 
 ## Goal
 - Extend the correctness harness so the published scorecard can measure exported flags, exceptions, and helper types once the `rebar` import surface grows beyond the first helper scaffold.
@@ -27,3 +28,8 @@ Created: 2026-03-11
 ## Notes
 - Use `docs/spec/drop-in-re-compatibility.md` for which public `re` symbols matter and `docs/testing/correctness-plan.md` for scorecard/layer guidance.
 - Build on `RBR-0014` and `RBR-0018`; this task should publish correctness coverage for the landed symbol surface instead of relying only on narrow unit tests.
+
+## Completion Note
+- Extended `python/rebar_harness/correctness.py` with `module_attr_value` and `module_attr_metadata` observations and added the exported-symbol manifest to the default correctness run so symbol coverage reaches the published scorecard.
+- Added `tests/conformance/fixtures/exported_symbol_surface.json` plus `tests/conformance/test_correctness_exported_symbol_surface.py`, covering `RegexFlag`, `error`, `Pattern`, `Match`, representative flag constants, and the current non-instantiable helper-type guard behavior.
+- Regenerated `reports/correctness/latest.json`; the combined report now covers 38 cases across parser, module-surface, match-behavior, and exported-symbol packs, with 12 passes, 5 explicit failures, and 21 honest unimplemented outcomes.

@@ -30,6 +30,7 @@ DEFAULT_FIXTURE_PATHS = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "public_api_surface.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "match_behavior_smoke.json",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "exported_symbol_surface.json",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 PHASE_BY_LAYER = {
@@ -269,6 +270,59 @@ def normalize_exception(exc: BaseException) -> dict[str, Any]:
     return payload
 
 
+def normalize_exported_symbol_value(value: Any) -> dict[str, Any]:
+    if value is None:
+        return {
+            "present": False,
+            "type_name": None,
+            "value": None,
+        }
+
+    payload: dict[str, Any] = {
+        "present": True,
+        "type_name": type(value).__name__,
+        "value": _normalize_value(value),
+    }
+    if hasattr(value, "name"):
+        payload["name"] = getattr(value, "name")
+    return payload
+
+
+def normalize_exported_symbol_metadata(value: Any) -> dict[str, Any]:
+    if value is None:
+        return {
+            "present": False,
+            "callable": False,
+            "is_type": False,
+            "type_name": None,
+        }
+
+    payload: dict[str, Any] = {
+        "present": True,
+        "callable": callable(value),
+        "is_type": isinstance(value, type),
+        "type_name": type(value).__name__,
+    }
+
+    if isinstance(value, type):
+        payload.update(
+            {
+                "module": value.__module__,
+                "qualname": value.__qualname__,
+                "repr": repr(value),
+                "mro": [f"{cls.__module__}.{cls.__qualname__}" for cls in value.__mro__],
+            }
+        )
+        if hasattr(value, "__members__"):
+            payload["members"] = {
+                name: int(member) for name, member in sorted(value.__members__.items())
+            }
+    else:
+        payload["repr"] = repr(value)
+
+    return payload
+
+
 class Adapter:
     """Adapter boundary for correctness observations."""
 
@@ -282,6 +336,10 @@ class Adapter:
             return self.observe_module_has_attr(case)
         if case.operation == "module_call":
             return self.observe_module_call(case)
+        if case.operation == "module_attr_value":
+            return self.observe_module_attr_value(case)
+        if case.operation == "module_attr_metadata":
+            return self.observe_module_attr_metadata(case)
         raise ValueError(f"unsupported operation {case.operation!r}")
 
     def observe_compile(self, case: FixtureCase) -> dict[str, Any]:
@@ -334,6 +392,32 @@ class Adapter:
             outcome="success",
             warnings_payload=normalize_warning_records(caught),
             result=_normalize_value(result),
+        )
+
+    def observe_module_attr_value(self, case: FixtureCase) -> dict[str, Any]:
+        if case.helper is None:
+            raise ValueError(f"case {case.case_id!r} requires a helper name")
+
+        attribute = getattr(self.module, case.helper, None)
+        return finalize_observation(
+            adapter=self.adapter_name,
+            case=case,
+            outcome="success",
+            warnings_payload=[],
+            result=normalize_exported_symbol_value(attribute),
+        )
+
+    def observe_module_attr_metadata(self, case: FixtureCase) -> dict[str, Any]:
+        if case.helper is None:
+            raise ValueError(f"case {case.case_id!r} requires a helper name")
+
+        attribute = getattr(self.module, case.helper, None)
+        return finalize_observation(
+            adapter=self.adapter_name,
+            case=case,
+            outcome="success",
+            warnings_payload=[],
+            result=normalize_exported_symbol_metadata(attribute),
         )
 
 
