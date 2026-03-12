@@ -1,6 +1,6 @@
 # RBR-0063: Add bounded grouped-segment parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,7 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0060`, `RBR-0061`, and `RBR-0062`.
 - This task exists so the queue extends from bare grouped-reference parity into the next realistic literal-pattern shape instead of stopping at patterns made only of adjacent captures or references.
+
+## Completion Notes
+- Added bounded Rust-core grouped-segment parsing and execution for exactly one captured literal wrapped by non-empty literal prefix and suffix text, including the named-group variant used by the published fixtures.
+- Added direct Python parity coverage in `tests/python/test_grouped_segment_parity.py`, updated the grouped-segment correctness test to expect passes, and republished `reports/correctness/latest.json` at 105 passing cases with 0 unimplemented.

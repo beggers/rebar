@@ -370,6 +370,13 @@ struct NumberedBackreferenceLiteralPattern<'a> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+struct SegmentedCaptureLiteralPattern<'a> {
+    prefix: &'a str,
+    capture: LiteralCapture<'a>,
+    suffix: &'a str,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct LiteralCapture<'a> {
     body: &'a str,
     name: Option<&'a str>,
@@ -458,6 +465,38 @@ impl<'a> NumberedBackreferenceLiteralPattern<'a> {
     fn group_spans(&self, match_start: usize) -> Vec<Option<(usize, usize)>> {
         let end = match_start + self.capture.body.chars().count();
         vec![Some((match_start, end))]
+    }
+}
+
+impl<'a> SegmentedCaptureLiteralPattern<'a> {
+    fn group_count(&self) -> usize {
+        1
+    }
+
+    fn named_groups(&self) -> Vec<NamedGroup> {
+        self.capture
+            .name
+            .map(|name| {
+                vec![NamedGroup {
+                    name: name.to_string(),
+                    index: 1,
+                }]
+            })
+            .unwrap_or_default()
+    }
+
+    fn pattern_chars(&self) -> Vec<char> {
+        self.prefix
+            .chars()
+            .chain(self.capture.body.chars())
+            .chain(self.suffix.chars())
+            .collect()
+    }
+
+    fn group_spans(&self, match_start: usize) -> Vec<Option<(usize, usize)>> {
+        let start = match_start + self.prefix.chars().count();
+        let end = start + self.capture.body.chars().count();
+        vec![Some((start, end))]
     }
 }
 
@@ -599,6 +638,21 @@ fn compile_known_supported_case(
                 warning: None,
             })
         }
+        PatternRef::Str(pattern)
+            if parse_grouped_segment_literal_pattern_str(pattern).is_some()
+                && normalized_flags == FLAG_UNICODE =>
+        {
+            let grouped_pattern = parse_grouped_segment_literal_pattern_str(pattern)
+                .expect("guarded grouped segment literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
+                warning: None,
+            })
+        }
         PatternRef::Str("(?u:a)")
         | PatternRef::Str("a*+")
         | PatternRef::Str("(?>ab|a)b")
@@ -717,6 +771,50 @@ fn parse_numbered_backreference_literal_pattern_str(
             body: capture_body,
             name: None,
         },
+    })
+}
+
+fn parse_grouped_segment_literal_pattern_str(
+    pattern: &str,
+) -> Option<SegmentedCaptureLiteralPattern<'_>> {
+    let open_offset = pattern.find('(')?;
+    let prefix = &pattern[..open_offset];
+    if prefix.is_empty() || prefix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let remainder = &pattern[open_offset + 1..];
+    let (name, body, close_offset) = if let Some(named_remainder) = remainder.strip_prefix("?P<") {
+        let name_end = named_remainder.find('>')?;
+        let name = &named_remainder[..name_end];
+        if !is_supported_group_name(name) {
+            return None;
+        }
+        let body = &named_remainder[name_end + 1..];
+        let close_offset = body.find(')')?;
+        (
+            Some(name),
+            &body[..close_offset],
+            3 + name_end + 1 + close_offset,
+        )
+    } else {
+        let close_offset = remainder.find(')')?;
+        (None, &remainder[..close_offset], close_offset)
+    };
+
+    if body.is_empty() || body.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let suffix = &remainder[close_offset + 1..];
+    if suffix.is_empty() || suffix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    Some(SegmentedCaptureLiteralPattern {
+        prefix,
+        capture: LiteralCapture { body, name },
+        suffix,
     })
 }
 
@@ -866,16 +964,55 @@ fn literal_match_str(
                 .unwrap_or_default();
             (span, group_spans)
         } else {
-            let Some(grouped_pattern) = parse_capture_literal_pattern_str(pattern_value) else {
-                return MatchOutcome {
-                    status: MatchStatus::Unsupported,
-                    pos: normalized_pos,
-                    endpos: normalized_endpos,
-                    span: None,
-                    group_spans: Vec::new(),
-                };
-            };
-            if flags != FLAG_UNICODE {
+            if let Some(grouped_pattern) = parse_capture_literal_pattern_str(pattern_value) {
+                if flags != FLAG_UNICODE {
+                    return MatchOutcome {
+                        status: MatchStatus::Unsupported,
+                        pos: normalized_pos,
+                        endpos: normalized_endpos,
+                        span: None,
+                        group_spans: Vec::new(),
+                    };
+                }
+                let pattern_chars = grouped_pattern.pattern_chars();
+                let span = find_match_span_str(
+                    pattern_chars.as_slice(),
+                    flags,
+                    mode,
+                    &string_chars,
+                    normalized_pos,
+                    normalized_endpos,
+                );
+                let group_spans = span
+                    .map(|(start, _)| grouped_pattern.group_spans(start))
+                    .unwrap_or_default();
+                (span, group_spans)
+            } else if let Some(grouped_pattern) =
+                parse_grouped_segment_literal_pattern_str(pattern_value)
+            {
+                if flags != FLAG_UNICODE {
+                    return MatchOutcome {
+                        status: MatchStatus::Unsupported,
+                        pos: normalized_pos,
+                        endpos: normalized_endpos,
+                        span: None,
+                        group_spans: Vec::new(),
+                    };
+                }
+                let pattern_chars = grouped_pattern.pattern_chars();
+                let span = find_match_span_str(
+                    pattern_chars.as_slice(),
+                    flags,
+                    mode,
+                    &string_chars,
+                    normalized_pos,
+                    normalized_endpos,
+                );
+                let group_spans = span
+                    .map(|(start, _)| grouped_pattern.group_spans(start))
+                    .unwrap_or_default();
+                (span, group_spans)
+            } else {
                 return MatchOutcome {
                     status: MatchStatus::Unsupported,
                     pos: normalized_pos,
@@ -884,19 +1021,6 @@ fn literal_match_str(
                     group_spans: Vec::new(),
                 };
             }
-            let pattern_chars = grouped_pattern.pattern_chars();
-            let span = find_match_span_str(
-                pattern_chars.as_slice(),
-                flags,
-                mode,
-                &string_chars,
-                normalized_pos,
-                normalized_endpos,
-            );
-            let group_spans = span
-                .map(|(start, _)| grouped_pattern.group_spans(start))
-                .unwrap_or_default();
-            (span, group_spans)
         }
     } else {
         return MatchOutcome {
@@ -1600,6 +1724,29 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_bounded_grouped_segment_cases() {
+        let outcome = compile(PatternRef::Str("a(b)c"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.group_count, 1);
+        assert!(outcome.named_groups.is_empty());
+
+        let named_outcome = compile(PatternRef::Str("a(?P<word>b)c"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!named_outcome.supports_literal);
+        assert_eq!(named_outcome.group_count, 1);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "word".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
     fn compile_accepts_bounded_named_backreference_literal_case() {
         let outcome = compile(PatternRef::Str("(?P<word>ab)(?P=word)"), 0).unwrap();
         assert_eq!(outcome.status, CompileStatus::Compiled);
@@ -1766,6 +1913,40 @@ mod tests {
         assert_eq!(outcome.status, MatchStatus::Matched);
         assert_eq!(outcome.span, Some((2, 5)));
         assert_eq!(outcome.group_spans, vec![Some((2, 5))]);
+    }
+
+    #[test]
+    fn grouped_segment_literal_match_reports_group_1_span() {
+        let outcome = literal_match(
+            PatternRef::Str("a(b)c"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabcz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 5)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 4))]);
+    }
+
+    #[test]
+    fn named_grouped_segment_literal_match_reports_named_group_span() {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<word>b)c"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abc"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 3)));
+        assert_eq!(outcome.group_spans, vec![Some((1, 2))]);
     }
 
     #[test]
