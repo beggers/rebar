@@ -2,8 +2,9 @@
 //!
 //! This crate intentionally implements only the already-published behavior:
 //! bounded compile classification, a handful of parser diagnostics, literal
-//! search/match plus collection/replacement span discovery, and `escape()`
-//! parity for `str` and `bytes`.
+//! search/match plus collection/replacement span discovery, one exact
+//! single-dot wildcard workflow case, and `escape()` parity for `str` and
+//! `bytes`.
 
 /// The pinned CPython compatibility line for the initial parser target.
 pub const TARGET_CPYTHON_SERIES: &str = "3.12.x";
@@ -55,6 +56,16 @@ impl<'a> PatternRef<'a> {
         self.supports_pattern_scaffold()
             && !self.is_empty()
             && flags == self.literal_match_base_flags()
+    }
+
+    fn supports_bounded_single_dot_execution(self, flags: i32) -> bool {
+        let base_flags = self.literal_match_base_flags();
+        matches!(self, Self::Str("a.c"))
+            && (flags == base_flags || flags == base_flags | FLAG_IGNORECASE)
+    }
+
+    fn supports_bounded_single_dot_collection_execution(self, flags: i32) -> bool {
+        matches!(self, Self::Str("a.c")) && flags == self.literal_match_base_flags()
     }
 
     fn is_empty(self) -> bool {
@@ -358,6 +369,17 @@ fn compile_known_supported_case(
                 warning: None,
             })
         }
+        PatternRef::Str("a.c")
+            if normalized_flags == FLAG_UNICODE
+                || normalized_flags == FLAG_IGNORECASE | FLAG_UNICODE =>
+        {
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                warning: None,
+            })
+        }
         PatternRef::Str("(?u:a)")
         | PatternRef::Str("a*+")
         | PatternRef::Str("(?>ab|a)b")
@@ -412,28 +434,37 @@ fn literal_match_str(
 ) -> MatchOutcome {
     let pattern = PatternRef::Str(pattern);
     let (normalized_pos, normalized_endpos) = normalize_bounds(string.chars().count(), pos, endpos);
-    if !pattern.supports_literal_execution(flags) {
+    let pattern_chars: Vec<char> = match pattern {
+        PatternRef::Str(value) => value.chars().collect(),
+        PatternRef::Bytes(_) => unreachable!(),
+    };
+    let string_chars: Vec<char> = string.chars().collect();
+    let span = if pattern.supports_literal_execution(flags) {
+        find_match_span_str(
+            &pattern_chars,
+            flags,
+            mode,
+            &string_chars,
+            normalized_pos,
+            normalized_endpos,
+        )
+    } else if pattern.supports_bounded_single_dot_execution(flags) {
+        find_bounded_single_dot_span_str(
+            &pattern_chars,
+            flags,
+            mode,
+            &string_chars,
+            normalized_pos,
+            normalized_endpos,
+        )
+    } else {
         return MatchOutcome {
             status: MatchStatus::Unsupported,
             pos: normalized_pos,
             endpos: normalized_endpos,
             span: None,
         };
-    }
-
-    let pattern_chars: Vec<char> = match pattern {
-        PatternRef::Str(value) => value.chars().collect(),
-        PatternRef::Bytes(_) => unreachable!(),
     };
-    let string_chars: Vec<char> = string.chars().collect();
-    let span = find_match_span_str(
-        &pattern_chars,
-        flags,
-        mode,
-        &string_chars,
-        normalized_pos,
-        normalized_endpos,
-    );
     MatchOutcome {
         status: if span.is_some() {
             MatchStatus::Matched
@@ -457,22 +488,30 @@ fn literal_find_spans_str(
     let string_chars: Vec<char> = string.chars().collect();
     let pattern_chars: Vec<char> = pattern.chars().collect();
     let (normalized_pos, normalized_endpos) = normalize_bounds(string_chars.len(), pos, endpos);
-    if !pattern_ref.supports_literal_collection_execution(flags) {
+    let spans = if pattern_ref.supports_literal_collection_execution(flags) {
+        collect_literal_spans_str(
+            &pattern_chars,
+            flags,
+            &string_chars,
+            normalized_pos,
+            normalized_endpos,
+        )
+    } else if pattern_ref.supports_bounded_single_dot_collection_execution(flags) {
+        collect_bounded_single_dot_spans_str(
+            &pattern_chars,
+            flags,
+            &string_chars,
+            normalized_pos,
+            normalized_endpos,
+        )
+    } else {
         return FindSpansOutcome {
             status: MatchStatus::Unsupported,
             pos: normalized_pos,
             endpos: normalized_endpos,
             spans: Vec::new(),
         };
-    }
-
-    let spans = collect_literal_spans_str(
-        &pattern_chars,
-        flags,
-        &string_chars,
-        normalized_pos,
-        normalized_endpos,
-    );
+    };
     FindSpansOutcome {
         status: if spans.is_empty() {
             MatchStatus::NoMatch
@@ -727,6 +766,99 @@ fn collect_literal_spans_str(
     spans
 }
 
+fn find_bounded_single_dot_span_str(
+    pattern: &[char],
+    flags: i32,
+    mode: MatchMode,
+    string: &[char],
+    pos: usize,
+    endpos: usize,
+) -> Option<(usize, usize)> {
+    match mode {
+        MatchMode::Search => {
+            let start = find_bounded_single_dot_start_str(pattern, flags, string, pos, endpos)?;
+            Some((start, start + pattern.len()))
+        }
+        MatchMode::Match => {
+            if bounded_single_dot_matches_at_str(pattern, flags, string, pos, endpos) {
+                Some((pos, pos + pattern.len()))
+            } else {
+                None
+            }
+        }
+        MatchMode::Fullmatch => {
+            if endpos.saturating_sub(pos) != pattern.len() {
+                return None;
+            }
+            if bounded_single_dot_matches_at_str(pattern, flags, string, pos, endpos) {
+                Some((pos, endpos))
+            } else {
+                None
+            }
+        }
+    }
+}
+
+fn bounded_single_dot_matches_at_str(
+    pattern: &[char],
+    flags: i32,
+    string: &[char],
+    start: usize,
+    endpos: usize,
+) -> bool {
+    let stop = start + pattern.len();
+    if stop > endpos {
+        return false;
+    }
+
+    pattern.iter().enumerate().all(|(offset, pattern_char)| {
+        if *pattern_char == '.' {
+            true
+        } else if flags & FLAG_IGNORECASE == 0 {
+            string[start + offset] == *pattern_char
+        } else {
+            folded_chars_equal(*pattern_char, string[start + offset])
+        }
+    })
+}
+
+fn find_bounded_single_dot_start_str(
+    pattern: &[char],
+    flags: i32,
+    string: &[char],
+    pos: usize,
+    endpos: usize,
+) -> Option<usize> {
+    if pattern.is_empty() {
+        return Some(pos);
+    }
+
+    let last_start = endpos.checked_sub(pattern.len())?;
+    (pos..=last_start)
+        .find(|start| bounded_single_dot_matches_at_str(pattern, flags, string, *start, endpos))
+}
+
+fn collect_bounded_single_dot_spans_str(
+    pattern: &[char],
+    flags: i32,
+    string: &[char],
+    pos: usize,
+    endpos: usize,
+) -> Vec<(usize, usize)> {
+    let mut spans = Vec::new();
+    let mut next_start = pos;
+
+    while let Some(start) =
+        find_bounded_single_dot_start_str(pattern, flags, string, next_start, endpos)
+    {
+        let span = (start, start + pattern.len());
+        spans.push(span);
+        next_start = span.1;
+    }
+
+    spans
+}
+
 fn collect_literal_spans_bytes(
     pattern: &[u8],
     flags: i32,
@@ -870,11 +1002,27 @@ mod tests {
     }
 
     #[test]
-    fn compile_rejects_non_literal_patterns_as_unsupported() {
-        let outcome = compile(PatternRef::Str("a.c"), 0).unwrap();
+    fn compile_rejects_other_non_literal_patterns_as_unsupported() {
+        let outcome = compile(PatternRef::Str("[ab]c"), 0).unwrap();
         assert_eq!(outcome.status, CompileStatus::Unsupported);
         assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
         assert!(!outcome.supports_literal);
+    }
+
+    #[test]
+    fn compile_accepts_bounded_single_dot_workflow_case() {
+        let default_outcome = compile(PatternRef::Str("a.c"), 0).unwrap();
+        assert_eq!(default_outcome.status, CompileStatus::Compiled);
+        assert_eq!(default_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!default_outcome.supports_literal);
+
+        let ignorecase_outcome = compile(PatternRef::Str("a.c"), FLAG_IGNORECASE).unwrap();
+        assert_eq!(ignorecase_outcome.status, CompileStatus::Compiled);
+        assert_eq!(
+            ignorecase_outcome.normalized_flags,
+            FLAG_IGNORECASE | FLAG_UNICODE
+        );
+        assert!(!ignorecase_outcome.supports_literal);
     }
 
     #[test]
@@ -933,6 +1081,22 @@ mod tests {
     }
 
     #[test]
+    fn bounded_single_dot_match_supports_ignorecase_search() {
+        let outcome = literal_match(
+            PatternRef::Str("a.c"),
+            FLAG_IGNORECASE | FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("ABC"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 3)));
+    }
+
+    #[test]
     fn literal_match_rejects_ascii_flag_combo() {
         let outcome = literal_match(
             PatternRef::Str("abc"),
@@ -963,6 +1127,21 @@ mod tests {
         assert_eq!(outcome.pos, 1);
         assert_eq!(outcome.endpos, 7);
         assert_eq!(outcome.spans, vec![(1, 4), (4, 7)]);
+    }
+
+    #[test]
+    fn bounded_single_dot_find_spans_reports_repeated_matches() {
+        let outcome = literal_find_spans(
+            PatternRef::Str("a.c"),
+            FLAG_UNICODE,
+            PatternRef::Str("abcaxc"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.spans, vec![(0, 3), (3, 6)]);
     }
 
     #[test]

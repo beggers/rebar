@@ -160,7 +160,10 @@ class Pattern:
     def findall(self, string: object, pos: int = 0, endpos: int | None = None) -> object:
         if _native is not None:
             return _run_native_literal_findall(self, string, pos=pos, endpos=endpos)
-        if not _supports_literal_collection_execution(self):
+        if not (
+            _supports_literal_collection_execution(self)
+            or _supports_bounded_single_dot_collection_execution(self)
+        ):
             return self._raise_placeholder("findall")
         return _run_literal_findall(self, string, pos=pos, endpos=endpos)
 
@@ -361,6 +364,20 @@ def _supports_literal_replacement_execution(compiled_pattern: Pattern) -> bool:
     return _supports_literal_collection_execution(compiled_pattern)
 
 
+def _supports_bounded_single_dot_execution(compiled_pattern: Pattern) -> bool:
+    if compiled_pattern.pattern != "a.c":
+        return False
+    base_flags = _literal_match_base_flags(compiled_pattern.pattern)
+    return compiled_pattern.flags in (base_flags, base_flags | int(IGNORECASE))
+
+
+def _supports_bounded_single_dot_collection_execution(compiled_pattern: Pattern) -> bool:
+    return (
+        compiled_pattern.pattern == "a.c"
+        and compiled_pattern.flags == _literal_match_base_flags(compiled_pattern.pattern)
+    )
+
+
 def _raise_regex_error(message: str, pattern: str | bytes, pos: int) -> object:
     raise error(message, pattern, pos)
 
@@ -405,7 +422,10 @@ def _dispatch_pattern_match(
             return None
         return _build_match(compiled_pattern, _ensure_compatible_string(compiled_pattern.pattern, string), normalized_pos, normalized_endpos, span)
 
-    if not _supports_literal_execution(compiled_pattern):
+    if not (
+        _supports_literal_execution(compiled_pattern)
+        or _supports_bounded_single_dot_execution(compiled_pattern)
+    ):
         return compiled_pattern._raise_placeholder(mode)
     return _run_literal_match(compiled_pattern, mode, string, pos=pos, endpos=endpos)
 
@@ -596,6 +616,9 @@ def _compile_known_parser_case(pattern: str | bytes, flags: int) -> Pattern | No
         warnings.warn("Possible nested set at position 1", FutureWarning, stacklevel=2)
         return _build_compiled_pattern(pattern, flags, supports_literal=False)
 
+    if pattern == "a.c" and flags in (int(UNICODE), int(IGNORECASE | UNICODE)):
+        return _build_compiled_pattern(pattern, flags, supports_literal=False)
+
     if (
         pattern == "[A-Z_][a-z0-9_]+"
         and flags == int(IGNORECASE | UNICODE)
@@ -659,6 +682,16 @@ def _literal_matches_at(
     stop = start + pattern_length
     if stop > endpos:
         return False
+    if _supports_bounded_single_dot_execution(compiled_pattern):
+        for offset, pattern_unit in enumerate(pattern):
+            if pattern_unit == ".":
+                continue
+            if not _literal_ignores_case(compiled_pattern):
+                if pattern_unit != string[start + offset]:
+                    return False
+            elif not _literal_units_equal(pattern_unit, string[start + offset]):
+                return False
+        return True
     if not _literal_ignores_case(compiled_pattern):
         return string.startswith(pattern, start, endpos)
     for offset, pattern_unit in enumerate(pattern):
@@ -677,7 +710,9 @@ def _find_literal_start(
     pattern_length = len(pattern)
     if pattern_length == 0:
         return pos
-    if not _literal_ignores_case(compiled_pattern):
+    if not _literal_ignores_case(compiled_pattern) and not _supports_bounded_single_dot_execution(
+        compiled_pattern
+    ):
         return string.find(pattern, pos, endpos)
     last_start = endpos - pattern_length
     for start in range(pos, last_start + 1):

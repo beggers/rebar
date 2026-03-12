@@ -91,7 +91,7 @@ class RebarLiteralMatchScaffoldTest(unittest.TestCase):
         self.assertIn("rebar.search() is a scaffold placeholder", str(module_flags.exception))
 
         with self.assertRaises(NotImplementedError) as module_meta:
-            rebar.search("a.c", "abc")
+            rebar.search("[ab]c", "abc")
         self.assertIn("rebar.compile() is a scaffold placeholder", str(module_meta.exception))
 
         pattern = rebar.compile("abc", rebar.IGNORECASE | rebar.ASCII)

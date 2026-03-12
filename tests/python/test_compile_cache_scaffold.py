@@ -48,7 +48,7 @@ class RebarCompileCacheScaffoldTest(unittest.TestCase):
         cached = rebar.compile("abc")
 
         with self.assertRaises(NotImplementedError):
-            rebar.compile("a.c")
+            rebar.compile("[ab]c")
         self.assertIs(rebar.compile("abc"), cached)
 
         with self.assertRaisesRegex(TypeError, "first argument must be string or compiled pattern"):

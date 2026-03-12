@@ -169,13 +169,13 @@
     {
       "id": "flag-unsupported-nonliteral-ignorecase-search",
       "operation": "module_call",
-      "family": "unsupported_flag_workflow",
+      "family": "bounded_wildcard_flag_workflow",
       "helper": "search",
       "args": ["a.c", "ABC", 2],
       "flags": 2,
-      "categories": ["workflow", "flag", "unsupported", "ignorecase", "non-literal", "str"],
+      "categories": ["workflow", "flag", "ignorecase", "bounded-wildcard", "non-literal", "str"],
       "notes": [
-        "Keeps non-literal IGNORECASE behavior explicit rather than silently broadening the supported literal slice."
+        "Pins the bounded single-dot wildcard IGNORECASE search workflow without broadening into general metacharacter support."
       ]
     }
   ]

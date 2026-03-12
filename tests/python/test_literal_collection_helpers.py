@@ -93,7 +93,7 @@ class RebarLiteralCollectionHelpersTest(unittest.TestCase):
         self.assertIn("rebar.findall() is a scaffold placeholder", str(module_flags.exception))
 
         with self.assertRaises(NotImplementedError) as module_meta:
-            rebar.finditer("a.c", "abc")
+            rebar.finditer("[ab]c", "abc")
         self.assertIn("rebar.compile() is a scaffold placeholder", str(module_meta.exception))
 
         with self.assertRaises(NotImplementedError) as module_empty:

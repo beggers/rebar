@@ -1,6 +1,6 @@
 # RBR-0044: Add a bounded single-dot non-literal workflow slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -29,3 +29,6 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0032`, `RBR-0038`, `RBR-0042`, and `RBR-0042A`. This task exists so the next published non-literal workflow debt is addressed as a bounded Rust-backed compatibility slice instead of another broad parser rewrite.
+
+## Completion
+- 2026-03-12: Added the bounded Rust-backed `a.c` str compile/match/findall slice, kept broader metacharacters unsupported, added focused wildcard workflow coverage, and republished `reports/correctness/latest.json` at 80 executed / 77 passed / 3 unimplemented. The existing `rebar._rebar` boundary functions were sufficient, so `crates/rebar-cpython/src/lib.rs` did not need interface changes for this slice.

@@ -4024,22 +4024,20 @@
       "categories": [
         "workflow",
         "findall",
-        "unsupported",
+        "bounded-wildcard",
         "non-literal",
         "str"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
-      "family": "unsupported_collection_workflow",
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "bounded_wildcard_collection_workflow",
       "flags": 0,
       "helper": "findall",
       "id": "module-findall-nonliteral-str",
       "layer": "module_workflow",
       "manifest_id": "collection-replacement-workflows",
       "notes": [
-        "Keeps non-literal collection behavior explicit rather than letting it disappear behind the supported literal-only pass set."
+        "Pins the bounded single-dot wildcard findall workflow without broadening into general metacharacter support."
       ],
       "observations": {
         "cpython": {
@@ -4054,13 +4052,12 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "module_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": [
+            "abc"
+          ],
           "warnings": []
         }
       },
@@ -4818,23 +4815,21 @@
       "categories": [
         "workflow",
         "flag",
-        "unsupported",
         "ignorecase",
+        "bounded-wildcard",
         "non-literal",
         "str"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
-      "family": "unsupported_flag_workflow",
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "bounded_wildcard_flag_workflow",
       "flags": 2,
       "helper": "search",
       "id": "flag-unsupported-nonliteral-ignorecase-search",
       "layer": "module_workflow",
       "manifest_id": "literal-flag-workflows",
       "notes": [
-        "Keeps non-literal IGNORECASE behavior explicit rather than silently broadening the supported literal slice."
+        "Pins the bounded single-dot wildcard IGNORECASE search workflow without broadening into general metacharacter support."
       ],
       "observations": {
         "cpython": {
@@ -4861,13 +4856,24 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "module_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "ABC",
+            "groupdict": {},
+            "groups": [],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "string_type": "str"
+          },
           "warnings": []
         }
       },
@@ -4894,16 +4900,16 @@
         }
       },
       "rebar": {
-        "exception_case_count": 13,
+        "exception_case_count": 11,
         "exception_types": {
-          "NotImplementedError": 5,
+          "NotImplementedError": 3,
           "TypeError": 2,
           "error": 6
         },
         "outcomes": {
           "exception": 8,
-          "success": 67,
-          "unimplemented": 5
+          "success": 69,
+          "unimplemented": 3
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -4984,6 +4990,48 @@
       ],
       "operations": [
         "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "bounded_wildcard_collection_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "bounded_wildcard_flag_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call"
       ],
       "summary": {
         "executed_cases": 1,
@@ -5630,28 +5678,7 @@
       ]
     },
     {
-      "case_count": 1,
-      "id": "unsupported_collection_workflow",
-      "layers": [
-        "module_workflow"
-      ],
-      "operations": [
-        "module_call"
-      ],
-      "summary": {
-        "executed_cases": 1,
-        "failed_cases": 0,
-        "passed_cases": 0,
-        "skipped_cases": 0,
-        "total_cases": 1,
-        "unimplemented_cases": 1
-      },
-      "text_models": [
-        "str"
-      ]
-    },
-    {
-      "case_count": 3,
+      "case_count": 2,
       "id": "unsupported_flag_workflow",
       "layers": [
         "module_workflow"
@@ -5660,12 +5687,12 @@
         "module_call"
       ],
       "summary": {
-        "executed_cases": 3,
+        "executed_cases": 2,
         "failed_cases": 0,
         "passed_cases": 0,
         "skipped_cases": 0,
-        "total_cases": 3,
-        "unimplemented_cases": 3
+        "total_cases": 2,
+        "unimplemented_cases": 2
       },
       "text_models": [
         "bytes",
@@ -5718,7 +5745,7 @@
       "tests/conformance/fixtures/literal_flag_workflows.json"
     ]
   },
-  "generated_at": "2026-03-12T05:57:18Z",
+  "generated_at": "2026-03-12T06:14:29Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -5851,13 +5878,13 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 5,
+            "exception_case_count": 3,
             "exception_types": {
-              "NotImplementedError": 5
+              "NotImplementedError": 3
             },
             "outcomes": {
-              "success": 31,
-              "unimplemented": 5
+              "success": 33,
+              "unimplemented": 3
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -5868,6 +5895,8 @@
         "bound_fullmatch_workflow",
         "bound_match_workflow",
         "bound_search_workflow",
+        "bounded_wildcard_collection_workflow",
+        "bounded_wildcard_flag_workflow",
         "cache_workflow",
         "compile_workflow",
         "escape_workflow",
@@ -5878,7 +5907,6 @@
         "purge_workflow",
         "replacement_workflow",
         "split_workflow",
-        "unsupported_collection_workflow",
         "unsupported_flag_workflow",
         "unsupported_replacement_workflow"
       ],
@@ -5903,10 +5931,10 @@
       "summary": {
         "executed_cases": 36,
         "failed_cases": 0,
-        "passed_cases": 31,
+        "passed_cases": 33,
         "skipped_cases": 0,
         "total_cases": 36,
-        "unimplemented_cases": 5
+        "unimplemented_cases": 3
       },
       "text_models": [
         "bytes",
@@ -7364,13 +7392,13 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 2,
+            "exception_case_count": 1,
             "exception_types": {
-              "NotImplementedError": 2
+              "NotImplementedError": 1
             },
             "outcomes": {
-              "success": 13,
-              "unimplemented": 2
+              "success": 14,
+              "unimplemented": 1
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -7378,11 +7406,11 @@
         }
       },
       "families": [
+        "bounded_wildcard_collection_workflow",
         "findall_workflow",
         "finditer_workflow",
         "replacement_workflow",
         "split_workflow",
-        "unsupported_collection_workflow",
         "unsupported_replacement_workflow"
       ],
       "id": "collection.replacement.workflow",
@@ -7397,10 +7425,10 @@
       "summary": {
         "executed_cases": 15,
         "failed_cases": 0,
-        "passed_cases": 13,
+        "passed_cases": 14,
         "skipped_cases": 0,
         "total_cases": 15,
-        "unimplemented_cases": 2
+        "unimplemented_cases": 1
       },
       "text_models": [
         "bytes",
@@ -7472,13 +7500,13 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 2,
+            "exception_case_count": 1,
             "exception_types": {
-              "NotImplementedError": 2
+              "NotImplementedError": 1
             },
             "outcomes": {
-              "success": 9,
-              "unimplemented": 2
+              "success": 10,
+              "unimplemented": 1
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -7486,11 +7514,11 @@
         }
       },
       "families": [
+        "bounded_wildcard_collection_workflow",
         "findall_workflow",
         "finditer_workflow",
         "replacement_workflow",
         "split_workflow",
-        "unsupported_collection_workflow",
         "unsupported_replacement_workflow"
       ],
       "id": "collection.replacement.workflow.str",
@@ -7505,10 +7533,10 @@
       "summary": {
         "executed_cases": 11,
         "failed_cases": 0,
-        "passed_cases": 9,
+        "passed_cases": 10,
         "skipped_cases": 0,
         "total_cases": 11,
-        "unimplemented_cases": 2
+        "unimplemented_cases": 1
       },
       "text_models": [
         "str"
@@ -7528,13 +7556,13 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 2,
+            "exception_case_count": 1,
             "exception_types": {
-              "NotImplementedError": 2
+              "NotImplementedError": 1
             },
             "outcomes": {
-              "success": 8,
-              "unimplemented": 2
+              "success": 9,
+              "unimplemented": 1
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -7542,11 +7570,11 @@
         }
       },
       "families": [
+        "bounded_wildcard_collection_workflow",
         "findall_workflow",
         "finditer_workflow",
         "replacement_workflow",
         "split_workflow",
-        "unsupported_collection_workflow",
         "unsupported_replacement_workflow"
       ],
       "id": "collection.replacement.workflow.module_call",
@@ -7560,10 +7588,10 @@
       "summary": {
         "executed_cases": 10,
         "failed_cases": 0,
-        "passed_cases": 8,
+        "passed_cases": 9,
         "skipped_cases": 0,
         "total_cases": 10,
-        "unimplemented_cases": 2
+        "unimplemented_cases": 1
       },
       "text_models": [
         "bytes",
@@ -7635,13 +7663,13 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 3,
+            "exception_case_count": 2,
             "exception_types": {
-              "NotImplementedError": 3
+              "NotImplementedError": 2
             },
             "outcomes": {
-              "success": 8,
-              "unimplemented": 3
+              "success": 9,
+              "unimplemented": 2
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -7649,6 +7677,7 @@
         }
       },
       "families": [
+        "bounded_wildcard_flag_workflow",
         "literal_flag_cache_workflow",
         "literal_ignorecase_workflow",
         "unsupported_flag_workflow"
@@ -7667,10 +7696,10 @@
       "summary": {
         "executed_cases": 11,
         "failed_cases": 0,
-        "passed_cases": 8,
+        "passed_cases": 9,
         "skipped_cases": 0,
         "total_cases": 11,
-        "unimplemented_cases": 3
+        "unimplemented_cases": 2
       },
       "text_models": [
         "bytes",
@@ -7745,13 +7774,13 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 2,
+            "exception_case_count": 1,
             "exception_types": {
-              "NotImplementedError": 2
+              "NotImplementedError": 1
             },
             "outcomes": {
-              "success": 5,
-              "unimplemented": 2
+              "success": 6,
+              "unimplemented": 1
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -7759,6 +7788,7 @@
         }
       },
       "families": [
+        "bounded_wildcard_flag_workflow",
         "literal_flag_cache_workflow",
         "literal_ignorecase_workflow",
         "unsupported_flag_workflow"
@@ -7776,10 +7806,10 @@
       "summary": {
         "executed_cases": 7,
         "failed_cases": 0,
-        "passed_cases": 5,
+        "passed_cases": 6,
         "skipped_cases": 0,
         "total_cases": 7,
-        "unimplemented_cases": 2
+        "unimplemented_cases": 1
       },
       "text_models": [
         "str"
@@ -7893,13 +7923,13 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 3,
+            "exception_case_count": 2,
             "exception_types": {
-              "NotImplementedError": 3
+              "NotImplementedError": 2
             },
             "outcomes": {
-              "success": 3,
-              "unimplemented": 3
+              "success": 4,
+              "unimplemented": 2
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -7907,6 +7937,7 @@
         }
       },
       "families": [
+        "bounded_wildcard_flag_workflow",
         "literal_ignorecase_workflow",
         "unsupported_flag_workflow"
       ],
@@ -7921,10 +7952,10 @@
       "summary": {
         "executed_cases": 6,
         "failed_cases": 0,
-        "passed_cases": 3,
+        "passed_cases": 4,
         "skipped_cases": 0,
         "total_cases": 6,
-        "unimplemented_cases": 3
+        "unimplemented_cases": 2
       },
       "text_models": [
         "bytes",
@@ -7983,9 +8014,9 @@
   "summary": {
     "executed_cases": 80,
     "failed_cases": 0,
-    "passed_cases": 75,
+    "passed_cases": 77,
     "skipped_cases": 0,
     "total_cases": 80,
-    "unimplemented_cases": 5
+    "unimplemented_cases": 3
   }
 }

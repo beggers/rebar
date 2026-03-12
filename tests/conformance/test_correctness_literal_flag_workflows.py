@@ -70,10 +70,10 @@ class CorrectnessHarnessLiteralFlagWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 80,
                     "failed_cases": 0,
-                    "passed_cases": 68,
+                    "passed_cases": 77,
                     "skipped_cases": 0,
                     "total_cases": 80,
-                    "unimplemented_cases": 12,
+                    "unimplemented_cases": 3,
                 },
             )
 
@@ -115,9 +115,9 @@ class CorrectnessHarnessLiteralFlagWorkflowTest(unittest.TestCase):
 
         workflow_layer = scorecard["layers"]["module_workflow"]
         self.assertEqual(workflow_layer["summary"]["total_cases"], 36)
-        self.assertEqual(workflow_layer["summary"]["passed_cases"], 29)
+        self.assertEqual(workflow_layer["summary"]["passed_cases"], 33)
         self.assertEqual(workflow_layer["summary"]["failed_cases"], 0)
-        self.assertEqual(workflow_layer["summary"]["unimplemented_cases"], 7)
+        self.assertEqual(workflow_layer["summary"]["unimplemented_cases"], 3)
         self.assertEqual(
             workflow_layer["operations"],
             [
@@ -149,11 +149,16 @@ class CorrectnessHarnessLiteralFlagWorkflowTest(unittest.TestCase):
 
         flag_suite = next(suite for suite in scorecard["suites"] if suite["id"] == "literal.flag.workflow")
         self.assertEqual(flag_suite["summary"]["total_cases"], 11)
-        self.assertEqual(flag_suite["summary"]["passed_cases"], 8)
-        self.assertEqual(flag_suite["summary"]["unimplemented_cases"], 3)
+        self.assertEqual(flag_suite["summary"]["passed_cases"], 9)
+        self.assertEqual(flag_suite["summary"]["unimplemented_cases"], 2)
         self.assertEqual(
             flag_suite["families"],
-            ["literal_flag_cache_workflow", "literal_ignorecase_workflow", "unsupported_flag_workflow"],
+            [
+                "bounded_wildcard_flag_workflow",
+                "literal_flag_cache_workflow",
+                "literal_ignorecase_workflow",
+                "unsupported_flag_workflow",
+            ],
         )
 
         search_case = next(
@@ -214,9 +219,14 @@ class CorrectnessHarnessLiteralFlagWorkflowTest(unittest.TestCase):
             for case in scorecard["cases"]
             if case["id"] == "flag-unsupported-nonliteral-ignorecase-search"
         )
-        self.assertEqual(nonliteral_case["comparison"], "unimplemented")
+        self.assertEqual(nonliteral_case["comparison"], "pass")
+        self.assertEqual(nonliteral_case["family"], "bounded_wildcard_flag_workflow")
         self.assertEqual(nonliteral_case["observations"]["cpython"]["outcome"], "success")
-        self.assertEqual(nonliteral_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(nonliteral_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            nonliteral_case["observations"]["rebar"]["result"],
+            nonliteral_case["observations"]["cpython"]["result"],
+        )
 
 
 if __name__ == "__main__":

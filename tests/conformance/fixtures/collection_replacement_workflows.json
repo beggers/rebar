@@ -224,12 +224,12 @@
     {
       "id": "module-findall-nonliteral-str",
       "operation": "module_call",
-      "family": "unsupported_collection_workflow",
+      "family": "bounded_wildcard_collection_workflow",
       "helper": "findall",
       "args": ["a.c", "abc"],
-      "categories": ["workflow", "findall", "unsupported", "non-literal", "str"],
+      "categories": ["workflow", "findall", "bounded-wildcard", "non-literal", "str"],
       "notes": [
-        "Keeps non-literal collection behavior explicit rather than letting it disappear behind the supported literal-only pass set."
+        "Pins the bounded single-dot wildcard findall workflow without broadening into general metacharacter support."
       ]
     }
   ]

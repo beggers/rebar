@@ -86,7 +86,7 @@ class RebarLiteralReplacementHelpersTest(unittest.TestCase):
         self.assertEqual(rebar._COMPILE_CACHE, {})
 
         with self.assertRaises(NotImplementedError) as module_meta:
-            rebar.sub("a.c", "x", "abc")
+            rebar.sub("[ab]c", "x", "abc")
         self.assertIn("rebar.compile() is a scaffold placeholder", str(module_meta.exception))
         self.assertEqual(rebar._COMPILE_CACHE, {})
 
