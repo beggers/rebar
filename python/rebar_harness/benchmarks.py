@@ -45,6 +45,7 @@ DEFAULT_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "literal_alternation_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_replacement_boundary.json",
+    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_callable_replacement_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.json",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
@@ -70,7 +71,7 @@ class Workload:
     operation: str
     pattern: str
     haystack: str | None
-    replacement: str | None
+    replacement: Any | None
     flags: int
     count: int
     maxsplit: int
@@ -106,11 +107,7 @@ class Workload:
                 if raw_workload.get("haystack") is None
                 else str(raw_workload.get("haystack"))
             ),
-            replacement=(
-                None
-                if raw_workload.get("replacement") is None
-                else str(raw_workload.get("replacement"))
-            ),
+            replacement=normalize_workload_value(raw_workload.get("replacement")),
             flags=int(raw_workload.get("flags", 0)),
             count=int(raw_workload.get("count", 0)),
             maxsplit=int(raw_workload.get("maxsplit", 0)),
@@ -148,10 +145,70 @@ class Workload:
             raise ValueError(f"workload {self.workload_id!r} requires a haystack payload")
         return self._encode_text(self.haystack)
 
-    def replacement_payload(self) -> str | bytes:
+    def replacement_payload(self) -> Any:
         if self.replacement is None:
             raise ValueError(f"workload {self.workload_id!r} requires a replacement payload")
-        return self._encode_text(self.replacement)
+        return materialize_workload_value(self.replacement, text_model=self.text_model)
+
+
+def normalize_workload_value(value: Any) -> Any:
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, list):
+        return [normalize_workload_value(item) for item in value]
+    if isinstance(value, dict):
+        return {
+            str(key): normalize_workload_value(item_value)
+            for key, item_value in value.items()
+        }
+    raise ValueError(f"unsupported workload value {value!r}")
+
+
+def materialize_workload_value(value: Any, *, text_model: str) -> Any:
+    if isinstance(value, str):
+        if text_model == "str":
+            return value
+        if text_model == "bytes":
+            return value.encode("utf-8")
+        raise ValueError(f"unsupported text model {text_model!r}")
+    if isinstance(value, list):
+        return [materialize_workload_value(item, text_model=text_model) for item in value]
+    if isinstance(value, dict):
+        value_type = value.get("type")
+        if value_type == "bytes":
+            encoding = str(value.get("encoding", "latin-1"))
+            return str(value["value"]).encode(encoding)
+        if value_type == "callable_constant":
+            constant_value = materialize_workload_value(value.get("value"), text_model=text_model)
+
+            def _callable_constant(_match: Any, *, _value: Any = constant_value) -> Any:
+                return _value
+
+            _callable_constant.__name__ = "callable_constant"
+            _callable_constant.__qualname__ = "callable_constant"
+            return _callable_constant
+        if value_type == "callable_match_group":
+            group_reference = value.get("group", 0)
+            prefix = materialize_workload_value(value.get("prefix", ""), text_model=text_model)
+            suffix = materialize_workload_value(value.get("suffix", ""), text_model=text_model)
+
+            def _callable_match_group(
+                match: Any,
+                *,
+                _group_reference: Any = group_reference,
+                _prefix: Any = prefix,
+                _suffix: Any = suffix,
+            ) -> Any:
+                return _prefix + match.group(_group_reference) + _suffix
+
+            _callable_match_group.__name__ = "callable_match_group"
+            _callable_match_group.__qualname__ = "callable_match_group"
+            return _callable_match_group
+        return {
+            str(key): materialize_workload_value(item_value, text_model=text_model)
+            for key, item_value in value.items()
+        }
+    return value
 
 
 @dataclass
@@ -206,9 +263,7 @@ def workload_from_payload(payload: dict[str, Any]) -> Workload:
         operation=str(payload["operation"]),
         pattern=str(payload.get("pattern", "")),
         haystack=None if payload.get("haystack") is None else str(payload["haystack"]),
-        replacement=(
-            None if payload.get("replacement") is None else str(payload["replacement"])
-        ),
+        replacement=normalize_workload_value(payload.get("replacement")),
         flags=int(payload.get("flags", 0)),
         count=int(payload.get("count", 0)),
         maxsplit=int(payload.get("maxsplit", 0)),

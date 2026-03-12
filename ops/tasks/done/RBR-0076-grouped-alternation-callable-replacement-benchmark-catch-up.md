@@ -1,6 +1,6 @@
 # RBR-0076: Catch grouped-alternation callable-replacement benchmarks up with the new combined slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,9 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0073` and `RBR-0075`.
 - This task exists so the queue does not reach grouped-alternation callable-replacement parity and then leave that newly supported combined slice absent from benchmark reporting.
+
+## Completion Notes
+- Added a dedicated `grouped-alternation-callable-replacement-boundary` benchmark manifest covering the bounded module and compiled-`Pattern` `sub()`/`subn()` callback workflows already supported by `RBR-0075`, plus two explicit nested-group gap rows.
+- Extended `python/rebar_harness/benchmarks.py` so benchmark manifests can describe callable replacements with the same small JSON callback descriptors already used by the correctness fixtures, while preserving the existing string-replacement path.
+- Regenerated `reports/benchmarks/latest.json`; the published combined benchmark scorecard now covers 104 workloads with 81 measured `rebar` timings and 23 explicit known gaps.
+- Verified with `PYTHONPATH=python python3 -m unittest tests.benchmarks.test_grouped_alternation_callable_replacement_boundary_benchmarks` and `PYTHONPATH=python python3 -m unittest tests.benchmarks.test_grouped_alternation_replacement_boundary_benchmarks`.
