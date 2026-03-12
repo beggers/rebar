@@ -46,8 +46,8 @@ class RegressionBenchmarkPackTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 17,
-                    "measured_workloads": 2,
+                    "known_gap_count": 13,
+                    "measured_workloads": 6,
                     "module_workloads": 11,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
@@ -73,8 +73,8 @@ class RegressionBenchmarkPackTest(unittest.TestCase):
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
         self.assertEqual(scorecard["summary"]["module_workloads"], 11)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 2)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 17)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 6)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 13)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 10)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 5)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 4)
@@ -88,8 +88,8 @@ class RegressionBenchmarkPackTest(unittest.TestCase):
         regression_manifest = scorecard["manifests"]["regression-matrix"]
         self.assertEqual(regression_manifest["workload_count"], 5)
         self.assertEqual(regression_manifest["selected_workload_count"], 5)
-        self.assertEqual(regression_manifest["measured_workloads"], 1)
-        self.assertEqual(regression_manifest["known_gap_count"], 4)
+        self.assertEqual(regression_manifest["measured_workloads"], 2)
+        self.assertEqual(regression_manifest["known_gap_count"], 3)
         self.assertEqual(regression_manifest["readiness"], "partial")
         self.assertEqual(regression_manifest["selection_mode"], "full")
         self.assertEqual(regression_manifest["available_smoke_workload_count"], 2)
@@ -140,6 +140,15 @@ class RegressionBenchmarkPackTest(unittest.TestCase):
         self.assertEqual(parser_workload["cache_mode"], "purged")
         self.assertEqual(parser_workload["implementation_timing"]["status"], "unimplemented")
         self.assertIsNone(parser_workload["speedup_vs_cpython"])
+
+        bytes_module_workload = next(
+            workload
+            for workload in scorecard["workloads"]
+            if workload["id"] == "regression-module-search-bytes-cold-miss"
+        )
+        self.assertEqual(bytes_module_workload["status"], "measured")
+        self.assertEqual(bytes_module_workload["implementation_timing"]["status"], "measured")
+        self.assertGreater(bytes_module_workload["implementation_ns"], 0)
 
     def test_runner_can_execute_smoke_subset_for_regression_pack(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

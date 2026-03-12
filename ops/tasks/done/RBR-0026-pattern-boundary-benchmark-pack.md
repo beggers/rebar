@@ -1,6 +1,6 @@
 # RBR-0026: Add precompiled pattern-boundary benchmarks
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -26,3 +26,9 @@ Created: 2026-03-12
 
 ## Notes
 - Use `docs/benchmarks/plan.md` as the primary task spec, especially the Phase 2 guidance that distinguishes module-level helpers from precompiled pattern calls.
+
+## Completion
+- Added `pattern.search`, `pattern.match`, and `pattern.fullmatch` benchmark operations to the harness with precompiled-pattern timing paths and pattern-specific gap messaging.
+- Published `benchmarks/workloads/pattern_boundary.json` with six tiny literal-only `str`/`bytes` workloads plus smoke tags and cache-provenance notes that keep the pack focused on call-boundary cost.
+- Regenerated `reports/benchmarks/latest.json`; the combined suite now publishes 25 workloads with 12 measured timings, including 6 measured pattern-boundary workloads under a distinct `pattern-boundary` manifest.
+- Added `tests/benchmarks/test_pattern_boundary_benchmarks.py` and updated the existing module/regression benchmark tests to match the current literal-only helper behavior that now produces real timings.

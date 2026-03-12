@@ -11,9 +11,9 @@ _Foundation docs, harnesses, and scorecards are in place. The snapshot below foc
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed, the Phase 1 parser conformance and compile-path benchmark packs published, the Phase 2 module-boundary benchmark pack and public-API surface scorecard in place, the first Phase 3 match-behavior and regression/stability packs published, the exported-symbol and compiled-pattern scaffolds landed, the first literal-only `compile`/`search`/`match`/`fullmatch` behavior slice plus observable compile-cache/purge behavior now implemented, benchmark adapter/provenance hardening in place, and the remaining `escape()`/helper/scorecard gaps queued. |
-| Current milestone | Milestone 2: build on the landed exported-symbol and compiled-pattern scaffolds plus the first literal-only `compile`/`search`/`match`/`fullmatch` behavior slice and observable compile-cache/purge behavior by adding `escape()` parity, precompiled-pattern and module-workflow scorecard coverage, the first literal-only collection/replacement helpers, their follow-on correctness/benchmark packs, and then the next bounded literal-flag slice on top of the landed Phase 1 parser conformance and compile-path benchmark packs, verified native-extension smoke path, helper-surface scaffold, exact CPython baseline metadata, the Phase 2 public-API correctness scorecard, the first Phase 3 match-behavior smoke pack, the regression/stability benchmark pack, benchmark adapter/provenance reporting, and the pattern-object correctness pack. |
-| Work queue | `9` ready, `0` in progress, `27` done, `0` blocked |
+| Phase | Phase 3: implementation and harness bootstrap, with the Rust workspace plus CPython/package scaffolds landed, the Phase 1 parser conformance and compile-path benchmark packs published, the Phase 2 module-boundary benchmark pack and public-API surface scorecard in place, the first Phase 3 match-behavior and regression/stability packs published, the exported-symbol and compiled-pattern scaffolds landed, the first literal-only `compile`/`search`/`match`/`fullmatch` behavior slice plus observable compile-cache/purge behavior and local `escape()` parity now implemented, benchmark adapter/provenance hardening in place, and the remaining helper/workflow/scorecard gaps queued. |
+| Current milestone | Milestone 2: build on the landed exported-symbol and compiled-pattern scaffolds plus the first literal-only `compile`/`search`/`match`/`fullmatch` behavior slice, observable compile-cache/purge behavior, and local `escape()` parity by adding precompiled-pattern and module-workflow scorecard coverage, the first literal-only collection/replacement helpers, their follow-on correctness/benchmark packs, and then the next bounded literal-flag slice on top of the landed Phase 1 parser conformance and compile-path benchmark packs, verified native-extension smoke path, helper-surface scaffold, exact CPython baseline metadata, the Phase 2 public-API correctness scorecard, the first Phase 3 match-behavior smoke pack, the regression/stability benchmark pack, benchmark adapter/provenance reporting, and the pattern-object correctness pack. |
+| Work queue | `8` ready, `0` in progress, `28` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -32,37 +32,37 @@ _Foundation docs, harnesses, and scorecards are in place. The snapshot below foc
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/usr/bin/python3`) |
-| Published workloads | `19` |
-| Workloads with real `rebar` timings | `2` |
-| Known-gap workloads | `17` |
+| Published workloads | `25` |
+| Workloads with real `rebar` timings | `12` |
+| Known-gap workloads | `13` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json) |
 
-_README speedup rollups stay omitted while only `2` of `19` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `12` of `25` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- Land `RBR-0025`, `RBR-0026`, and `RBR-0027` so the new literal-only cache/purge behavior is followed immediately by a real `escape()` helper plus benchmark/correctness scorecards for precompiled-pattern overhead and end-to-end module workflows.
-- Keep `RBR-0028` through `RBR-0031` directly behind that `escape()`/workflow slice so the queue extends from literal-only collection and replacement helpers straight into their correctness and benchmark scorecards instead of stalling after implementation-only helper work.
+- Land `RBR-0026` and `RBR-0027` so the new literal-only match/cache/`escape()` slice is followed immediately by benchmark and correctness scorecards for precompiled-pattern overhead and end-to-end module workflows.
+- Keep `RBR-0028` through `RBR-0031` directly behind that workflow slice so the queue extends from literal-only collection and replacement helpers straight into their correctness and benchmark scorecards instead of stalling after implementation-only helper work.
 - Roll from `RBR-0031` into `RBR-0032` through `RBR-0034` so the next bounded behavior slice tackles literal-only `IGNORECASE` parity and its scorecards before the roadmap jumps to broader parser or engine work.
 
 ### Current Risks
 
 - The repo now validates a dedicated built `rebar._rebar` smoke path and the benchmark harness can distinguish shim versus built-native execution modes, but the published benchmark report still reflects the default source-tree shim with `native_module_loaded: false`, so routine measurement paths can still drift away from the verified install/import path.
-- The scaffolded Python surface now includes the first helper layer, published match-behavior smoke coverage, CPython-shaped exported flags/constants, a concrete `Pattern` scaffold, real literal-only `Match` behavior, and observable compile-cache/purge behavior, but `escape()` parity, module-workflow coverage, and the broader helper scorecards are still outside the published compatibility surface.
-- The correctness harness now covers 44 published cases across parser, module-API, match-behavior, exported-symbol, and pattern-object layers, but 14 `rebar` comparisons still end in honest `unimplemented` outcomes, 8 more still fail explicitly, and there is no module-workflow layer yet.
+- The scaffolded Python surface now includes the first helper layer, published match-behavior smoke coverage, CPython-shaped exported flags/constants, a concrete `Pattern` scaffold, real literal-only `Match` behavior, observable compile-cache/purge behavior, and a local `escape()` helper, but module-workflow coverage and the broader collection/replacement/flag scorecards are still outside the published compatibility surface.
+- The correctness harness now covers 44 published cases across parser, module-API, match-behavior, exported-symbol, and pattern-object layers, but 13 `rebar` comparisons still end in honest `unimplemented` outcomes, 8 more still fail explicitly, and there is no module-workflow layer yet.
 - The benchmark harness now measures 19 published workloads across the compile-path, module-boundary, and regression/stability packs with explicit adapter-mode provenance, but only 2 workloads have real `rebar` timings so compile and match performance claims are still premature and the published suite still exercises the source-tree shim rather than the built native path.
 - The project can accidentally optimize for parser internals while missing bug-for-bug `re` module compatibility at the Python surface.
 - Long-running supervisor cycles can still delay worker verification and leave runtime state temporarily behind the checked-in harness code.
 - Concurrent human and loop commits can still produce diverged git history that requires supervisor resolution; the harness now detects that state accurately but does not auto-rebase it.
-- The implementation worker has twenty-four completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
+- The implementation worker has twenty-five completed delivery tasks under the hardened harness so far, so worker throughput and terminal-state handling still need confirmation across additional cycles.
 <!-- REBAR:STATUS_END -->
 
 ## Implementation Snapshot
 
 `rebar` has the planning, harness, and reporting foundation in place, but it is still early in the actual regex-engine implementation. Today the repository contains a Rust core crate, a PyO3 extension scaffold, a Python-facing shim, and published correctness and benchmark reports that intentionally expose gaps instead of pretending stdlib `re` compatibility already exists.
 
-On the Python surface, `rebar` now exports CPython-shaped flags, exceptions, and helper types, supports a tiny literal-only `compile`/`search`/`match`/`fullmatch` path for `str` and `bytes`, reuses supported `compile()` results through an observable cache, and returns concrete `Pattern`/`Match` scaffolds for that bounded subset. Most collection, replacement, flag-sensitive, and general regex behavior is still explicitly unimplemented. The next queue slice is about `escape()` parity, precompiled-pattern and module-workflow scorecards, then the first literal-only collection/replacement helpers and a bounded literal-flag follow-on.
+On the Python surface, `rebar` now exports CPython-shaped flags, exceptions, and helper types, supports a tiny literal-only `compile`/`search`/`match`/`fullmatch` path for `str` and `bytes`, reuses supported `compile()` results through an observable cache, returns concrete `Pattern`/`Match` scaffolds for that bounded subset, and implements a local `escape()` helper with CPython-shaped `str`/`bytes` behavior. Most collection, replacement, flag-sensitive, and general regex behavior is still explicitly unimplemented. The next queue slice is about precompiled-pattern and module-workflow scorecards, then the first literal-only collection/replacement helpers and a bounded literal-flag follow-on.
 
 ## What The Numbers Mean
 

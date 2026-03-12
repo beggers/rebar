@@ -1,4 +1,4 @@
-"""Benchmark harness for compile-path and module-boundary workload suites."""
+"""Benchmark harness for compile-path and Python-surface workload suites."""
 
 from __future__ import annotations
 
@@ -36,6 +36,7 @@ MANIFEST_SCHEMA_VERSION = 1
 DEFAULT_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.json",
     REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.json",
+    REPO_ROOT / "benchmarks" / "workloads" / "pattern_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.json",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
@@ -372,6 +373,44 @@ def helper_callable(module: Any, workload: Workload, helper_name: str) -> Any:
     raise ValueError(f"unsupported cache mode {workload.cache_mode!r}")
 
 
+def pattern_helper_callable(module: Any, workload: Workload, helper_name: str) -> Any:
+    pattern = workload.pattern_payload()
+    haystack = workload.haystack_payload()
+
+    def compile_pattern() -> Any:
+        return module.compile(pattern, workload.flags)
+
+    if workload.cache_mode == "cold":
+
+        def run_once() -> object:
+            if hasattr(module, "purge"):
+                module.purge()
+            compiled = compile_pattern()
+            return getattr(compiled, helper_name)(haystack)
+
+        return run_once
+
+    if workload.cache_mode == "warm":
+        compiled = compile_pattern()
+
+        def run_once() -> object:
+            return getattr(compiled, helper_name)(haystack)
+
+        return run_once
+
+    if workload.cache_mode == "purged":
+        compiled = compile_pattern()
+        if hasattr(module, "purge"):
+            module.purge()
+
+        def run_once() -> object:
+            return getattr(compiled, helper_name)(haystack)
+
+        return run_once
+
+    raise ValueError(f"unsupported cache mode {workload.cache_mode!r}")
+
+
 def build_callable(module: Any, import_name: str, workload: Workload) -> Any:
     if workload.operation == "import":
         return import_callable(import_name, workload)
@@ -381,6 +420,12 @@ def build_callable(module: Any, import_name: str, workload: Workload) -> Any:
         return helper_callable(module, workload, "search")
     if workload.operation == "module.match":
         return helper_callable(module, workload, "match")
+    if workload.operation == "pattern.search":
+        return pattern_helper_callable(module, workload, "search")
+    if workload.operation == "pattern.match":
+        return pattern_helper_callable(module, workload, "match")
+    if workload.operation == "pattern.fullmatch":
+        return pattern_helper_callable(module, workload, "fullmatch")
     raise ValueError(f"unsupported benchmark operation {workload.operation!r}")
 
 
@@ -538,6 +583,8 @@ def gap_note_for_workload(workload: Workload) -> str:
         return "Implementation timing is unavailable until the rebar compile surface exists."
     if workload.operation == "import":
         return "Implementation import timing is unavailable until the rebar package can be imported in the benchmark environment."
+    if workload.operation.startswith("pattern."):
+        return "Implementation timing is unavailable until the rebar compiled-pattern helper surface performs real work."
     return "Implementation timing is unavailable until the rebar module helper surface performs real work."
 
 
@@ -671,6 +718,10 @@ def manifest_notes(raw_manifest: dict[str, Any], selected_workloads: list[dict[s
     if manifest_id == "module-boundary":
         return [
             "Module-boundary workloads keep haystacks intentionally small so the timings emphasize public helper overhead."
+        ]
+    if manifest_id == "pattern-boundary":
+        return [
+            "Pattern-boundary workloads precompile tiny literal patterns ahead of the timed call so the scorecard isolates bound-method overhead from module helper and compile costs."
         ]
     if selected_workloads:
         return [

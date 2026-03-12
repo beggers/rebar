@@ -43,8 +43,8 @@ class ModuleBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 13,
-                    "measured_workloads": 1,
+                    "known_gap_count": 10,
+                    "measured_workloads": 4,
                     "module_workloads": 8,
                     "parser_workloads": 6,
                     "regression_workloads": 0,
@@ -70,14 +70,14 @@ class ModuleBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(scorecard["summary"]["total_workloads"], 14)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 6)
         self.assertEqual(scorecard["summary"]["module_workloads"], 8)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 1)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 13)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 4)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 10)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 7)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 5)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 2)
         self.assertEqual(scorecard["families"]["parser"]["workload_count"], 6)
         self.assertEqual(scorecard["families"]["module"]["workload_count"], 8)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 7)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 4)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
         self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 4)
         self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 3)
@@ -124,6 +124,15 @@ class ModuleBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertIsNone(helper_workload["implementation_ns"])
         self.assertIsNone(helper_workload["speedup_vs_cpython"])
 
+        warm_helper = next(
+            workload
+            for workload in scorecard["workloads"]
+            if workload["id"] == "module-search-literal-warm-hit"
+        )
+        self.assertEqual(warm_helper["status"], "measured")
+        self.assertEqual(warm_helper["implementation_timing"]["status"], "measured")
+        self.assertGreater(warm_helper["implementation_ns"], 0)
+
         bytes_workload = next(
             workload
             for workload in scorecard["workloads"]
@@ -131,6 +140,7 @@ class ModuleBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(bytes_workload["text_model"], "bytes")
         self.assertIn("pattern-text-model", bytes_workload["syntax_features"])
+        self.assertEqual(bytes_workload["status"], "measured")
 
 
 if __name__ == "__main__":
