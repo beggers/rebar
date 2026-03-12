@@ -1,8 +1,9 @@
 # RBR-0071: Publish a grouped-alternation replacement correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Extend the published correctness scorecard with a bounded grouped-alternation replacement manifest so the next combined capture-and-replacement frontier is explicit before nested groups, quantified branches, or broader template parsing work resumes.
@@ -27,3 +28,5 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0069` and `RBR-0070`.
 - This task exists so the worker can expose the next concrete workflow gap after grouped alternation without jumping straight to nested groups, quantified branches, or broader replacement-template parsing.
+- Landed a new `grouped-alternation-replacement-workflows` manifest plus a combined-scorecard regression test.
+- Republished `reports/correctness/latest.json`; the combined scorecard now covers 122 cases across 17 manifests with 114 passes, 0 explicit failures, and 8 honest `unimplemented` grouped-alternation replacement outcomes.
