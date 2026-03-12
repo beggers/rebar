@@ -13150,6 +13150,461 @@
       "pattern": "a(?P<word>bc){1,2}d",
       "suite_id": "match.ranged_repeat_quantified_group",
       "text_model": "str"
+    },
+    {
+      "categories": [
+        "grouped",
+        "optional-group",
+        "alternation",
+        "quantifier",
+        "compile",
+        "metadata",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "optional_group_alternation_compile_metadata",
+      "id": "optional-group-alternation-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "optional-group-alternation-workflows",
+      "notes": [
+        "Publishes the bounded compile frontier for one optional numbered capture whose body contains exactly one literal alternation site between literal prefix and suffix text."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 1,
+            "pattern": "a(b|c)?d",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "compile",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a(b|c)?d",
+      "suite_id": "match.optional_group_alternation",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(b|c)?d",
+        "zzacdzz"
+      ],
+      "categories": [
+        "grouped",
+        "optional-group",
+        "alternation",
+        "quantifier",
+        "search",
+        "module",
+        "present",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "optional_group_alternation_module_present_workflow",
+      "helper": "search",
+      "id": "optional-group-alternation-module-search-present-str",
+      "layer": "match_behavior",
+      "manifest_id": "optional-group-alternation-workflows",
+      "notes": [
+        "Documents the module-level numbered optional-group alternation search path when the optional capture is present and the alternation selects the c branch."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "acd",
+            "group1": "c",
+            "group_spans": [
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "c"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "span1": [
+              3,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.optional_group_alternation",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "ad"
+      ],
+      "categories": [
+        "grouped",
+        "optional-group",
+        "alternation",
+        "quantifier",
+        "fullmatch",
+        "pattern",
+        "absent",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "optional_group_alternation_pattern_absent_workflow",
+      "helper": "fullmatch",
+      "id": "optional-group-alternation-pattern-fullmatch-absent-str",
+      "layer": "match_behavior",
+      "manifest_id": "optional-group-alternation-workflows",
+      "notes": [
+        "Documents the bound Pattern.fullmatch numbered optional-group alternation path when the capture is omitted so the published scorecard records the observable None-valued group outcome."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 2,
+            "group0": "ad",
+            "group1": null,
+            "group_spans": [
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              null
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              2
+            ],
+            "span1": [
+              -1,
+              -1
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(b|c)?d",
+      "suite_id": "match.optional_group_alternation",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "grouped",
+        "optional-group",
+        "alternation",
+        "quantifier",
+        "named-group",
+        "compile",
+        "metadata",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_optional_group_alternation_compile_metadata",
+      "id": "named-optional-group-alternation-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "optional-group-alternation-workflows",
+      "notes": [
+        "Publishes the matching named optional-group alternation compile frontier for the same bounded quantified-branch shape."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {
+              "word": 1
+            },
+            "groups": 1,
+            "pattern": "a(?P<word>b|c)?d",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "compile",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a(?P<word>b|c)?d",
+      "suite_id": "match.optional_group_alternation",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<word>b|c)?d",
+        "zzabdzz"
+      ],
+      "categories": [
+        "grouped",
+        "optional-group",
+        "alternation",
+        "quantifier",
+        "named-group",
+        "search",
+        "module",
+        "present",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_optional_group_alternation_module_present_workflow",
+      "helper": "search",
+      "id": "named-optional-group-alternation-module-search-present-str",
+      "layer": "match_behavior",
+      "manifest_id": "optional-group-alternation-workflows",
+      "notes": [
+        "Documents the module-level named optional-group alternation search path when the optional capture is present and the alternation selects the b branch."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abd",
+            "group1": "b",
+            "group_spans": [
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {
+              "word": "b"
+            },
+            "groups": [
+              "b"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                3,
+                4
+              ]
+            },
+            "named_groups": {
+              "word": "b"
+            },
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "span1": [
+              3,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.optional_group_alternation",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "ad"
+      ],
+      "categories": [
+        "grouped",
+        "optional-group",
+        "alternation",
+        "quantifier",
+        "named-group",
+        "fullmatch",
+        "pattern",
+        "absent",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_optional_group_alternation_pattern_absent_workflow",
+      "helper": "fullmatch",
+      "id": "named-optional-group-alternation-pattern-fullmatch-absent-str",
+      "layer": "match_behavior",
+      "manifest_id": "optional-group-alternation-workflows",
+      "notes": [
+        "Documents the bound Pattern.fullmatch named optional-group alternation path when the capture is omitted so the named-group None payload stays explicit in the published gap."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 2,
+            "group0": "ad",
+            "group1": null,
+            "group_spans": [
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {
+              "word": null
+            },
+            "groups": [
+              null
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                -1,
+                -1
+              ]
+            },
+            "named_groups": {
+              "word": null
+            },
+            "pos": 0,
+            "span": [
+              0,
+              2
+            ],
+            "span1": [
+              -1,
+              -1
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<word>b|c)?d",
+      "suite_id": "match.optional_group_alternation",
+      "text_model": "str"
     }
   ],
   "diagnostics": {
@@ -13162,7 +13617,7 @@
         },
         "outcomes": {
           "exception": 8,
-          "success": 174
+          "success": 180
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -13170,14 +13625,16 @@
         }
       },
       "rebar": {
-        "exception_case_count": 8,
+        "exception_case_count": 14,
         "exception_types": {
+          "NotImplementedError": 6,
           "TypeError": 2,
           "error": 6
         },
         "outcomes": {
           "exception": 8,
-          "success": 174
+          "success": 174,
+          "unimplemented": 6
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -14791,6 +15248,69 @@
     },
     {
       "case_count": 1,
+      "id": "named_optional_group_alternation_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "named_optional_group_alternation_module_present_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "named_optional_group_alternation_pattern_absent_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
       "id": "named_optional_group_compile_metadata",
       "layers": [
         "match_behavior"
@@ -15102,6 +15622,69 @@
         "skipped_cases": 0,
         "total_cases": 2,
         "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "optional_group_alternation_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "optional_group_alternation_module_present_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "optional_group_alternation_pattern_absent_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
       },
       "text_models": [
         "str"
@@ -15512,8 +16095,8 @@
     }
   ],
   "fixtures": {
-    "case_count": 182,
-    "manifest_count": 26,
+    "case_count": 188,
+    "manifest_count": 27,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
@@ -15540,7 +16123,8 @@
       "branch-local-backreference-workflows",
       "optional-group-workflows",
       "exact-repeat-quantified-group-workflows",
-      "ranged-repeat-quantified-group-workflows"
+      "ranged-repeat-quantified-group-workflows",
+      "optional-group-alternation-workflows"
     ],
     "paths": [
       "tests/conformance/fixtures/parser_matrix.json",
@@ -15568,30 +16152,34 @@
       "tests/conformance/fixtures/branch_local_backreference_workflows.json",
       "tests/conformance/fixtures/optional_group_workflows.json",
       "tests/conformance/fixtures/exact_repeat_quantified_group_workflows.json",
-      "tests/conformance/fixtures/ranged_repeat_quantified_group_workflows.json"
+      "tests/conformance/fixtures/ranged_repeat_quantified_group_workflows.json",
+      "tests/conformance/fixtures/optional_group_alternation_workflows.json"
     ]
   },
-  "generated_at": "2026-03-12T18:12:39Z",
+  "generated_at": "2026-03-12T18:38:09Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
-      "case_count": 72,
+      "case_count": 78,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
             "exception_case_count": 0,
             "exception_types": {},
             "outcomes": {
-              "success": 72
+              "success": 78
             },
             "warning_case_count": 0,
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 0,
-            "exception_types": {},
+            "exception_case_count": 6,
+            "exception_types": {
+              "NotImplementedError": 6
+            },
             "outcomes": {
-              "success": 72
+              "success": 72,
+              "unimplemented": 6
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -15640,6 +16228,9 @@
         "named_nested_group_compile_metadata",
         "named_nested_group_module_workflow",
         "named_nested_group_pattern_workflow",
+        "named_optional_group_alternation_compile_metadata",
+        "named_optional_group_alternation_module_present_workflow",
+        "named_optional_group_alternation_pattern_absent_workflow",
         "named_optional_group_compile_metadata",
         "named_optional_group_module_absent_workflow",
         "named_optional_group_pattern_present_workflow",
@@ -15653,6 +16244,9 @@
         "numbered_backreference_module_workflow",
         "numbered_backreference_pattern_workflow",
         "numbered_capture_gap_workflow",
+        "optional_group_alternation_compile_metadata",
+        "optional_group_alternation_module_present_workflow",
+        "optional_group_alternation_pattern_absent_workflow",
         "optional_group_compile_metadata",
         "optional_group_module_present_workflow",
         "optional_group_pattern_absent_workflow",
@@ -15679,6 +16273,7 @@
         "nested-group-alternation-workflows",
         "nested-group-workflows",
         "numbered-backreference-workflows",
+        "optional-group-alternation-workflows",
         "optional-group-workflows",
         "ranged-repeat-quantified-group-workflows"
       ],
@@ -15701,15 +16296,16 @@
         "match.nested_group_alternation",
         "match.numbered_backreference",
         "match.optional_group",
+        "match.optional_group_alternation",
         "match.ranged_repeat_quantified_group"
       ],
       "summary": {
-        "executed_cases": 72,
+        "executed_cases": 78,
         "failed_cases": 0,
         "passed_cases": 72,
         "skipped_cases": 0,
-        "total_cases": 72,
-        "unimplemented_cases": 0
+        "total_cases": 78,
+        "unimplemented_cases": 6
       },
       "text_models": [
         "bytes",
@@ -22071,14 +22667,276 @@
       "text_models": [
         "str"
       ]
+    },
+    {
+      "case_count": 6,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 6,
+            "exception_types": {
+              "NotImplementedError": 6
+            },
+            "outcomes": {
+              "unimplemented": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "named_optional_group_alternation_compile_metadata",
+        "named_optional_group_alternation_module_present_workflow",
+        "named_optional_group_alternation_pattern_absent_workflow",
+        "optional_group_alternation_compile_metadata",
+        "optional_group_alternation_module_present_workflow",
+        "optional_group_alternation_pattern_absent_workflow"
+      ],
+      "id": "match.optional_group_alternation",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "optional-group-alternation-workflows"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 6
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 6,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 6,
+            "exception_types": {
+              "NotImplementedError": 6
+            },
+            "outcomes": {
+              "unimplemented": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "named_optional_group_alternation_compile_metadata",
+        "named_optional_group_alternation_module_present_workflow",
+        "named_optional_group_alternation_pattern_absent_workflow",
+        "optional_group_alternation_compile_metadata",
+        "optional_group_alternation_module_present_workflow",
+        "optional_group_alternation_pattern_absent_workflow"
+      ],
+      "id": "match.optional_group_alternation.str",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "optional-group-alternation-workflows"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 6
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "named_optional_group_alternation_compile_metadata",
+        "optional_group_alternation_compile_metadata"
+      ],
+      "id": "match.optional_group_alternation.compile",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "optional-group-alternation-workflows"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "named_optional_group_alternation_module_present_workflow",
+        "optional_group_alternation_module_present_workflow"
+      ],
+      "id": "match.optional_group_alternation.module_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "optional-group-alternation-workflows"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "named_optional_group_alternation_pattern_absent_workflow",
+        "optional_group_alternation_pattern_absent_workflow"
+      ],
+      "id": "match.optional_group_alternation.pattern_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "optional-group-alternation-workflows"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
     }
   ],
   "summary": {
-    "executed_cases": 182,
+    "executed_cases": 188,
     "failed_cases": 0,
     "passed_cases": 182,
     "skipped_cases": 0,
-    "total_cases": 182,
-    "unimplemented_cases": 0
+    "total_cases": 188,
+    "unimplemented_cases": 6
   }
 }

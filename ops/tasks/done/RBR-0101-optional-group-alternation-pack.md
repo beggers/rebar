@@ -1,8 +1,9 @@
 # RBR-0101: Publish a bounded optional-group alternation correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Extend the published correctness scorecard with a bounded optional-group alternation manifest so quantified execution combines one optional quantifier and one grouped alternation before conditionals or broader backtracking work resume.
@@ -28,3 +29,5 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0069`, `RBR-0093`, and `RBR-0100`.
 - This task exists so the worker can combine already-supported optional quantifier and grouped-alternation semantics before conditionals or broader backtracking reopen the frontier.
+- Added `optional-group-alternation-workflows` as the twenty-seventh published correctness manifest with six bounded `a(b|c)?d` / `a(?P<word>b|c)?d` cases covering compile metadata, present-branch module calls, and absent-group pattern calls.
+- Regenerated `reports/correctness/latest.json`; the combined published scorecard now reports 188 total cases with 182 passes, 0 explicit failures, and 6 honest `unimplemented` optional-group alternation outcomes.
