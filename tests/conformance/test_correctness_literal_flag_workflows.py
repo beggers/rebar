@@ -77,10 +77,10 @@ class CorrectnessHarnessLiteralFlagWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 80,
                     "failed_cases": 0,
-                    "passed_cases": 79,
+                    "passed_cases": 80,
                     "skipped_cases": 0,
                     "total_cases": 80,
-                    "unimplemented_cases": 1,
+                    "unimplemented_cases": 0,
                 },
             )
 
@@ -122,9 +122,9 @@ class CorrectnessHarnessLiteralFlagWorkflowTest(unittest.TestCase):
 
         workflow_layer = scorecard["layers"]["module_workflow"]
         self.assertEqual(workflow_layer["summary"]["total_cases"], 36)
-        self.assertEqual(workflow_layer["summary"]["passed_cases"], 35)
+        self.assertEqual(workflow_layer["summary"]["passed_cases"], 36)
         self.assertEqual(workflow_layer["summary"]["failed_cases"], 0)
-        self.assertEqual(workflow_layer["summary"]["unimplemented_cases"], 1)
+        self.assertEqual(workflow_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             workflow_layer["operations"],
             [

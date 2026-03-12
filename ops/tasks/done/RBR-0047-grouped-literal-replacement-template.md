@@ -1,6 +1,6 @@
 # RBR-0047: Add narrow grouped-literal replacement-template parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -29,3 +29,7 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0042A` and `RBR-0043`. This task exists so the last published replacement-template gap is worked off as a bounded Rust-backed follow-on rather than forcing a much broader grouping rewrite.
+
+## Completion
+- Completed 2026-03-12.
+- Added a bounded Rust-backed grouped-literal compile/search/template-sub slice for a single outer capturing group around a literal body, wired `Pattern`/`Match` capture metadata through the Python surface, added focused grouped-template tests, updated the grouped-template correctness fixture metadata, and republished `reports/correctness/latest.json` at 80 passes / 0 failures / 0 unimplemented.

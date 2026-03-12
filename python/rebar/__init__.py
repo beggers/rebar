@@ -152,10 +152,17 @@ class Pattern:
     def __new__(cls, *_args: object, **_kwargs: object) -> "Pattern":
         raise TypeError("cannot create 're.Pattern' instances")
 
-    def __init__(self, pattern: str | bytes, flags: int = 0, *, supports_literal: bool = False) -> None:
+    def __init__(
+        self,
+        pattern: str | bytes,
+        flags: int = 0,
+        *,
+        supports_literal: bool = False,
+        groups: int = 0,
+    ) -> None:
         self.pattern = pattern
         self.flags = flags
-        self.groups = 0
+        self.groups = groups
         self.groupindex: dict[str, int] = {}
         self._supports_literal = supports_literal
 
@@ -203,6 +210,7 @@ class Pattern:
             repl,
             unsupported=self._raise_placeholder,
             helper_name="sub",
+            allow_native_template_passthrough=_native is not None and self.groups > 0,
         )
         if _native is not None:
             return _run_native_literal_sub(self, compatible_replacement, string, count=count)
@@ -216,6 +224,7 @@ class Pattern:
             repl,
             unsupported=self._raise_placeholder,
             helper_name="subn",
+            allow_native_template_passthrough=_native is not None and self.groups > 0,
         )
         if _native is not None:
             return _run_native_literal_subn(self, compatible_replacement, string, count=count)
@@ -230,7 +239,7 @@ Pattern.__module__ = "re"
 class Match:
     """Concrete scaffold export for the bounded literal-only match subset."""
 
-    __slots__ = ("re", "string", "pos", "endpos", "lastindex", "lastgroup", "_span")
+    __slots__ = ("re", "string", "pos", "endpos", "lastindex", "lastgroup", "_span", "_group_spans")
 
     def __new__(cls, *_args: object, **_kwargs: object) -> "Match":
         raise TypeError("cannot create 're.Match' instances")
@@ -242,12 +251,17 @@ class Match:
         pos: int,
         endpos: int,
         span: tuple[int, int],
+        group_spans: tuple[tuple[int, int] | None, ...] = (),
     ) -> None:
         self.re = pattern
         self.string = string
         self.pos = pos
         self.endpos = endpos
-        self.lastindex = None
+        self._group_spans = group_spans
+        self.lastindex = next(
+            (index for index in range(len(group_spans), 0, -1) if group_spans[index - 1] is not None),
+            None,
+        )
         self.lastgroup = None
         self._span = span
 
@@ -257,37 +271,46 @@ class Match:
     def _resolve_group_reference(self, group: object) -> int:
         if group == 0:
             return 0
+        if isinstance(group, int) and 1 <= group <= len(self._group_spans):
+            return group
         raise IndexError("no such group")
+
+    def _slice_group(self, group_index: int, default: object = None) -> str | bytes | object:
+        if group_index == 0:
+            return self.string[self._span[0] : self._span[1]]
+        span = self._group_spans[group_index - 1]
+        if span is None:
+            return default
+        return self.string[span[0] : span[1]]
 
     def group(self, *groups: object) -> str | bytes | tuple[str | bytes, ...]:
         if not groups:
-            return self.string[self._span[0] : self._span[1]]
+            return self._slice_group(0)
         if len(groups) == 1:
-            self._resolve_group_reference(groups[0])
-            return self.string[self._span[0] : self._span[1]]
+            return self._slice_group(self._resolve_group_reference(groups[0]))
         values: list[str | bytes] = []
         for group in groups:
-            self._resolve_group_reference(group)
-            values.append(self.string[self._span[0] : self._span[1]])
+            values.append(self._slice_group(self._resolve_group_reference(group)))
         return tuple(values)
 
-    def groups(self, default: object = None) -> tuple[()]:
-        return ()
+    def groups(self, default: object = None) -> tuple[object, ...]:
+        return tuple(self._slice_group(group_index, default) for group_index in range(1, len(self._group_spans) + 1))
 
     def groupdict(self, default: object = None) -> dict[str, object]:
         return {}
 
     def span(self, group: object = 0) -> tuple[int, int]:
-        self._resolve_group_reference(group)
-        return self._span
+        group_index = self._resolve_group_reference(group)
+        if group_index == 0:
+            return self._span
+        span = self._group_spans[group_index - 1]
+        return (-1, -1) if span is None else span
 
     def start(self, group: object = 0) -> int:
-        self._resolve_group_reference(group)
-        return self._span[0]
+        return self.span(group)[0]
 
     def end(self, group: object = 0) -> int:
-        self._resolve_group_reference(group)
-        return self._span[1]
+        return self.span(group)[1]
 
 
 Match.__module__ = "re"
@@ -366,6 +389,15 @@ def _supports_pattern_scaffold(pattern: str | bytes) -> bool:
     return not any(character in _LITERAL_METACHARACTERS for character in pattern)
 
 
+def _grouped_literal_body(pattern: str) -> str | None:
+    if not pattern.startswith("(") or not pattern.endswith(")"):
+        return None
+    body = pattern[1:-1]
+    if not body or not _supports_pattern_scaffold(body):
+        return None
+    return body
+
+
 def _literal_match_base_flags(pattern: str | bytes) -> int:
     return _normalize_pattern_flags(pattern, 0)
 
@@ -410,17 +442,28 @@ def _build_compiled_pattern(
     flags: int,
     *,
     supports_literal: bool,
+    groups: int = 0,
 ) -> Pattern:
     compiled = object.__new__(Pattern)
-    Pattern.__init__(compiled, pattern, flags, supports_literal=supports_literal)
+    Pattern.__init__(compiled, pattern, flags, supports_literal=supports_literal, groups=groups)
     return compiled
 
 
 def _build_native_compile_result(pattern: str | bytes, flags: int) -> Pattern:
-    status, normalized_flags, supports_literal = _native.boundary_compile(pattern, int(flags))
+    native_result = _native.boundary_compile(pattern, int(flags))
+    if len(native_result) == 3:
+        status, normalized_flags, supports_literal = native_result
+        groups = 0
+    else:
+        status, normalized_flags, supports_literal, groups = native_result
     if status != "compiled":
         return _raise_placeholder("compile")
-    return _build_compiled_pattern(pattern, normalized_flags, supports_literal=supports_literal)
+    return _build_compiled_pattern(
+        pattern,
+        normalized_flags,
+        supports_literal=supports_literal,
+        groups=groups,
+    )
 
 
 def _dispatch_pattern_match(
@@ -431,7 +474,7 @@ def _dispatch_pattern_match(
     endpos: int | None = None,
 ) -> Match | None:
     if _native is not None:
-        status, normalized_pos, normalized_endpos, span = _native.boundary_literal_match(
+        native_result = _native.boundary_literal_match(
             compiled_pattern.pattern,
             compiled_pattern.flags,
             mode,
@@ -439,11 +482,23 @@ def _dispatch_pattern_match(
             pos,
             endpos,
         )
+        if len(native_result) == 4:
+            status, normalized_pos, normalized_endpos, span = native_result
+            group_spans = ()
+        else:
+            status, normalized_pos, normalized_endpos, span, group_spans = native_result
         if status == "unsupported":
             return compiled_pattern._raise_placeholder(mode)
         if status == "no-match":
             return None
-        return _build_match(compiled_pattern, _ensure_compatible_string(compiled_pattern.pattern, string), normalized_pos, normalized_endpos, span)
+        return _build_match(
+            compiled_pattern,
+            _ensure_compatible_string(compiled_pattern.pattern, string),
+            normalized_pos,
+            normalized_endpos,
+            span,
+            tuple(group_spans),
+        )
 
     if not (
         _supports_literal_execution(compiled_pattern)
@@ -493,13 +548,17 @@ def _run_native_literal_finditer(
     pos: int = 0,
     endpos: int | None = None,
 ):
-    status, normalized_pos, normalized_endpos, spans = _native.boundary_literal_finditer(
+    native_result = _native.boundary_literal_finditer(
         compiled_pattern.pattern,
         compiled_pattern.flags,
         string,
         pos,
         endpos,
     )
+    if len(native_result) == 4:
+        status, normalized_pos, normalized_endpos, spans = native_result
+    else:
+        status, normalized_pos, normalized_endpos, spans, _group_spans = native_result
     if status == "unsupported":
         return compiled_pattern._raise_placeholder("finditer")
 
@@ -642,6 +701,11 @@ def _compile_known_parser_case(pattern: str | bytes, flags: int) -> Pattern | No
     if pattern == "a.c" and flags in (int(UNICODE), int(IGNORECASE | UNICODE)):
         return _build_compiled_pattern(pattern, flags, supports_literal=False)
 
+    if isinstance(pattern, str) and flags == int(UNICODE):
+        grouped_literal_body = _grouped_literal_body(pattern)
+        if grouped_literal_body is not None:
+            return _build_compiled_pattern(pattern, flags, supports_literal=False, groups=1)
+
     if (
         pattern == "[A-Z_][a-z0-9_]+"
         and flags == int(IGNORECASE | UNICODE)
@@ -676,9 +740,10 @@ def _build_match(
     pos: int,
     endpos: int,
     span: tuple[int, int],
+    group_spans: tuple[tuple[int, int] | None, ...] = (),
 ) -> Match:
     match = object.__new__(Match)
-    Match.__init__(match, compiled_pattern, string, pos, endpos, span)
+    Match.__init__(match, compiled_pattern, string, pos, endpos, span, group_spans)
     return match
 
 
@@ -848,6 +913,7 @@ def _ensure_literal_replacement_payload(
     *,
     unsupported,
     helper_name: str,
+    allow_native_template_passthrough: bool = False,
 ) -> object:
     if callable(repl):
         if isinstance(pattern, bytes):
@@ -858,7 +924,11 @@ def _ensure_literal_replacement_payload(
     if isinstance(pattern, str):
         if not isinstance(repl, str):
             raise TypeError(f"sequence item 0: expected str instance, {type(repl).__name__} found")
-        if "\\" in repl and _expand_literal_replacement_template(repl, "") is None:
+        if (
+            "\\" in repl
+            and not allow_native_template_passthrough
+            and _expand_literal_replacement_template(repl, "") is None
+        ):
             unsupported(helper_name)
             raise AssertionError("unsupported() should raise")  # pragma: no cover
         return repl
@@ -1180,7 +1250,15 @@ def sub(
     if not isinstance(pattern, Pattern):
         if not isinstance(pattern, (str, bytes)):
             raise TypeError("first argument must be string or compiled pattern")
-        _ensure_literal_replacement_payload(pattern, repl, unsupported=_raise_placeholder, helper_name="sub")
+        _ensure_literal_replacement_payload(
+            pattern,
+            repl,
+            unsupported=_raise_placeholder,
+            helper_name="sub",
+            allow_native_template_passthrough=_native is not None
+            and isinstance(pattern, str)
+            and _grouped_literal_body(pattern) is not None,
+        )
         if len(pattern) == 0:
             return _raise_placeholder("sub")
         normalized_flags = _normalize_pattern_flags(pattern, int(flags))
@@ -1203,7 +1281,15 @@ def subn(
     if not isinstance(pattern, Pattern):
         if not isinstance(pattern, (str, bytes)):
             raise TypeError("first argument must be string or compiled pattern")
-        _ensure_literal_replacement_payload(pattern, repl, unsupported=_raise_placeholder, helper_name="subn")
+        _ensure_literal_replacement_payload(
+            pattern,
+            repl,
+            unsupported=_raise_placeholder,
+            helper_name="subn",
+            allow_native_template_passthrough=_native is not None
+            and isinstance(pattern, str)
+            and _grouped_literal_body(pattern) is not None,
+        )
         if len(pattern) == 0:
             return _raise_placeholder("subn")
         normalized_flags = _normalize_pattern_flags(pattern, int(flags))

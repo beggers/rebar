@@ -213,12 +213,12 @@
     {
       "id": "module-sub-grouping-template",
       "operation": "module_call",
-      "family": "unsupported_replacement_workflow",
+      "family": "grouped_template_replacement_workflow",
       "helper": "sub",
       "args": ["(abc)", "\\1x", "abc"],
-      "categories": ["workflow", "sub", "unsupported", "grouping-dependent", "str"],
+      "categories": ["workflow", "sub", "replacement-template", "grouping-dependent", "str"],
       "notes": [
-        "Makes grouping-dependent replacement templates visible as honest compatibility debt because the literal-only slice does not compile grouped patterns."
+        "Pins the bounded grouped-literal replacement-template slice without broadening into general grouped-pattern or backreference support."
       ]
     },
     {

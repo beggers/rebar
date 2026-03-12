@@ -3974,22 +3974,20 @@
       "categories": [
         "workflow",
         "sub",
-        "unsupported",
+        "replacement-template",
         "grouping-dependent",
         "str"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
-      "family": "unsupported_replacement_workflow",
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "grouped_template_replacement_workflow",
       "flags": 0,
       "helper": "sub",
       "id": "module-sub-grouping-template",
       "layer": "module_workflow",
       "manifest_id": "collection-replacement-workflows",
       "notes": [
-        "Makes grouping-dependent replacement templates visible as honest compatibility debt because the literal-only slice does not compile grouped patterns."
+        "Pins the bounded grouped-literal replacement-template slice without broadening into general grouped-pattern or backreference support."
       ],
       "observations": {
         "cpython": {
@@ -4002,13 +4000,10 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.sub() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "module_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": "abcx",
           "warnings": []
         }
       },
@@ -4921,16 +4916,14 @@
         }
       },
       "rebar": {
-        "exception_case_count": 9,
+        "exception_case_count": 8,
         "exception_types": {
-          "NotImplementedError": 1,
           "TypeError": 2,
           "error": 6
         },
         "outcomes": {
           "exception": 8,
-          "success": 71,
-          "unimplemented": 1
+          "success": 72
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -5346,6 +5339,27 @@
     },
     {
       "case_count": 1,
+      "id": "grouped_template_replacement_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
       "id": "grouping",
       "layers": [
         "parser_acceptance_and_diagnostics"
@@ -5719,27 +5733,6 @@
         "bytes",
         "str"
       ]
-    },
-    {
-      "case_count": 1,
-      "id": "unsupported_replacement_workflow",
-      "layers": [
-        "module_workflow"
-      ],
-      "operations": [
-        "module_call"
-      ],
-      "summary": {
-        "executed_cases": 1,
-        "failed_cases": 0,
-        "passed_cases": 0,
-        "skipped_cases": 0,
-        "total_cases": 1,
-        "unimplemented_cases": 1
-      },
-      "text_models": [
-        "str"
-      ]
     }
   ],
   "fixtures": {
@@ -5766,7 +5759,7 @@
       "tests/conformance/fixtures/literal_flag_workflows.json"
     ]
   },
-  "generated_at": "2026-03-12T06:40:45Z",
+  "generated_at": "2026-03-12T06:56:54Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -5899,13 +5892,10 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 1,
-            "exception_types": {
-              "NotImplementedError": 1
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "success": 35,
-              "unimplemented": 1
+              "success": 36
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -5923,13 +5913,13 @@
         "escape_workflow",
         "findall_workflow",
         "finditer_workflow",
+        "grouped_template_replacement_workflow",
         "literal_flag_cache_workflow",
         "literal_ignorecase_workflow",
         "purge_workflow",
         "replacement_workflow",
         "split_workflow",
-        "unsupported_flag_workflow",
-        "unsupported_replacement_workflow"
+        "unsupported_flag_workflow"
       ],
       "manifest_ids": [
         "collection-replacement-workflows",
@@ -5952,10 +5942,10 @@
       "summary": {
         "executed_cases": 36,
         "failed_cases": 0,
-        "passed_cases": 35,
+        "passed_cases": 36,
         "skipped_cases": 0,
         "total_cases": 36,
-        "unimplemented_cases": 1
+        "unimplemented_cases": 0
       },
       "text_models": [
         "bytes",
@@ -7413,13 +7403,10 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 1,
-            "exception_types": {
-              "NotImplementedError": 1
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "success": 14,
-              "unimplemented": 1
+              "success": 15
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -7430,9 +7417,9 @@
         "bounded_wildcard_collection_workflow",
         "findall_workflow",
         "finditer_workflow",
+        "grouped_template_replacement_workflow",
         "replacement_workflow",
-        "split_workflow",
-        "unsupported_replacement_workflow"
+        "split_workflow"
       ],
       "id": "collection.replacement.workflow",
       "layer": "module_workflow",
@@ -7446,10 +7433,10 @@
       "summary": {
         "executed_cases": 15,
         "failed_cases": 0,
-        "passed_cases": 14,
+        "passed_cases": 15,
         "skipped_cases": 0,
         "total_cases": 15,
-        "unimplemented_cases": 1
+        "unimplemented_cases": 0
       },
       "text_models": [
         "bytes",
@@ -7521,13 +7508,10 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 1,
-            "exception_types": {
-              "NotImplementedError": 1
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "success": 10,
-              "unimplemented": 1
+              "success": 11
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -7538,9 +7522,9 @@
         "bounded_wildcard_collection_workflow",
         "findall_workflow",
         "finditer_workflow",
+        "grouped_template_replacement_workflow",
         "replacement_workflow",
-        "split_workflow",
-        "unsupported_replacement_workflow"
+        "split_workflow"
       ],
       "id": "collection.replacement.workflow.str",
       "layer": "module_workflow",
@@ -7554,10 +7538,10 @@
       "summary": {
         "executed_cases": 11,
         "failed_cases": 0,
-        "passed_cases": 10,
+        "passed_cases": 11,
         "skipped_cases": 0,
         "total_cases": 11,
-        "unimplemented_cases": 1
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -7577,13 +7561,10 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 1,
-            "exception_types": {
-              "NotImplementedError": 1
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "success": 9,
-              "unimplemented": 1
+              "success": 10
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -7594,9 +7575,9 @@
         "bounded_wildcard_collection_workflow",
         "findall_workflow",
         "finditer_workflow",
+        "grouped_template_replacement_workflow",
         "replacement_workflow",
-        "split_workflow",
-        "unsupported_replacement_workflow"
+        "split_workflow"
       ],
       "id": "collection.replacement.workflow.module_call",
       "layer": "module_workflow",
@@ -7609,10 +7590,10 @@
       "summary": {
         "executed_cases": 10,
         "failed_cases": 0,
-        "passed_cases": 9,
+        "passed_cases": 10,
         "skipped_cases": 0,
         "total_cases": 10,
-        "unimplemented_cases": 1
+        "unimplemented_cases": 0
       },
       "text_models": [
         "bytes",
@@ -8023,9 +8004,9 @@
   "summary": {
     "executed_cases": 80,
     "failed_cases": 0,
-    "passed_cases": 79,
+    "passed_cases": 80,
     "skipped_cases": 0,
     "total_cases": 80,
-    "unimplemented_cases": 1
+    "unimplemented_cases": 0
   }
 }

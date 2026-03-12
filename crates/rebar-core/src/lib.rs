@@ -112,6 +112,8 @@ pub struct CompileOutcome {
     pub normalized_flags: i32,
     /// Whether the compiled pattern is eligible for the literal-only match slice.
     pub supports_literal: bool,
+    /// Number of positional capture groups in the bounded supported slice.
+    pub group_count: usize,
     /// Optional warning emitted during compilation.
     pub warning: Option<CompileWarning>,
 }
@@ -138,6 +140,7 @@ pub fn compile(pattern: PatternRef<'_>, flags: i32) -> Result<CompileOutcome, Co
             status: CompileStatus::Compiled,
             normalized_flags,
             supports_literal: false,
+            group_count: 0,
             warning: Some(CompileWarning {
                 message: FUTURE_WARNING_MESSAGE,
             }),
@@ -153,6 +156,7 @@ pub fn compile(pattern: PatternRef<'_>, flags: i32) -> Result<CompileOutcome, Co
             status: CompileStatus::Unsupported,
             normalized_flags,
             supports_literal: false,
+            group_count: 0,
             warning: None,
         });
     }
@@ -161,6 +165,7 @@ pub fn compile(pattern: PatternRef<'_>, flags: i32) -> Result<CompileOutcome, Co
         status: CompileStatus::Compiled,
         normalized_flags,
         supports_literal: true,
+        group_count: 0,
         warning: None,
     })
 }
@@ -188,7 +193,7 @@ pub enum MatchStatus {
 }
 
 /// Successful result metadata for a literal-match attempt.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MatchOutcome {
     /// Match status.
     pub status: MatchStatus,
@@ -198,6 +203,8 @@ pub struct MatchOutcome {
     pub endpos: usize,
     /// Matched span when `status == Matched`.
     pub span: Option<(usize, usize)>,
+    /// Positional capture spans aligned to groups `1..=n`.
+    pub group_spans: Vec<Option<(usize, usize)>>,
 }
 
 /// Successful result metadata for repeated literal span discovery.
@@ -288,6 +295,7 @@ pub fn literal_find_spans(
 pub fn expand_literal_replacement_template_str(
     template: &str,
     whole_match: &str,
+    capture_1: Option<&str>,
 ) -> Option<String> {
     let mut expanded = String::new();
     let mut chars = template.chars();
@@ -308,6 +316,7 @@ pub fn expand_literal_replacement_template_str(
                 }
                 expanded.push_str(whole_match);
             }
+            Some('1') => expanded.push_str(capture_1?),
             _ => return None,
         }
     }
@@ -378,6 +387,7 @@ fn compile_known_supported_case(
                 status: CompileStatus::Compiled,
                 normalized_flags: FLAG_IGNORECASE | FLAG_UNICODE,
                 supports_literal: false,
+                group_count: 0,
                 warning: None,
             })
         }
@@ -388,6 +398,7 @@ fn compile_known_supported_case(
                 status: CompileStatus::Compiled,
                 normalized_flags,
                 supports_literal: false,
+                group_count: 0,
                 warning: None,
             })
         }
@@ -399,6 +410,18 @@ fn compile_known_supported_case(
                 status: CompileStatus::Compiled,
                 normalized_flags,
                 supports_literal: false,
+                group_count: 0,
+                warning: None,
+            })
+        }
+        PatternRef::Str(pattern)
+            if grouped_literal_body_str(pattern).is_some() && normalized_flags == FLAG_UNICODE =>
+        {
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: 1,
                 warning: None,
             })
         }
@@ -410,6 +433,7 @@ fn compile_known_supported_case(
             status: CompileStatus::Compiled,
             normalized_flags,
             supports_literal: false,
+            group_count: 0,
             warning: None,
         }),
         _ => None,
@@ -418,6 +442,19 @@ fn compile_known_supported_case(
 
 fn is_nested_set_warning(pattern: PatternRef<'_>) -> bool {
     matches!(pattern, PatternRef::Str("[[a]"))
+}
+
+fn grouped_literal_body_str(pattern: &str) -> Option<&str> {
+    if !pattern.starts_with('(') || !pattern.ends_with(')') {
+        return None;
+    }
+
+    let body = &pattern[1..pattern.len() - 1];
+    if body.is_empty() || body.chars().any(is_meta_character) {
+        return None;
+    }
+
+    Some(body)
 }
 
 fn is_meta_character(character: char) -> bool {
@@ -457,42 +494,83 @@ fn literal_match_str(
     let pattern = PatternRef::Str(pattern);
     let (normalized_pos, normalized_endpos) = normalize_bounds(string.chars().count(), pos, endpos);
     let string_chars: Vec<char> = string.chars().collect();
-    let span = if pattern.supports_literal_execution(flags) {
+    let (span, group_spans) = if pattern.supports_literal_execution(flags) {
         let pattern_chars: Vec<char> = match pattern {
             PatternRef::Str(value) => value.chars().collect(),
             PatternRef::Bytes(_) => unreachable!(),
         };
-        find_match_span_str(
-            &pattern_chars,
-            flags,
-            mode,
-            &string_chars,
-            normalized_pos,
-            normalized_endpos,
+        (
+            find_match_span_str(
+                &pattern_chars,
+                flags,
+                mode,
+                &string_chars,
+                normalized_pos,
+                normalized_endpos,
+            ),
+            Vec::new(),
         )
     } else if pattern.supports_bounded_inline_flag_search_execution(flags)
         && mode == MatchMode::Search
     {
-        find_match_span_str(
-            &['a', 'b', 'c'],
-            flags,
-            mode,
-            &string_chars,
-            normalized_pos,
-            normalized_endpos,
+        (
+            find_match_span_str(
+                &['a', 'b', 'c'],
+                flags,
+                mode,
+                &string_chars,
+                normalized_pos,
+                normalized_endpos,
+            ),
+            Vec::new(),
         )
     } else if pattern.supports_bounded_single_dot_execution(flags) {
         let pattern_chars: Vec<char> = match pattern {
             PatternRef::Str(value) => value.chars().collect(),
             PatternRef::Bytes(_) => unreachable!(),
         };
-        find_bounded_single_dot_span_str(
+        (
+            find_bounded_single_dot_span_str(
+                &pattern_chars,
+                flags,
+                mode,
+                &string_chars,
+                normalized_pos,
+                normalized_endpos,
+            ),
+            Vec::new(),
+        )
+    } else if let PatternRef::Str(pattern_value) = pattern {
+        let Some(group_body) = grouped_literal_body_str(pattern_value) else {
+            return MatchOutcome {
+                status: MatchStatus::Unsupported,
+                pos: normalized_pos,
+                endpos: normalized_endpos,
+                span: None,
+                group_spans: Vec::new(),
+            };
+        };
+        if flags != FLAG_UNICODE {
+            return MatchOutcome {
+                status: MatchStatus::Unsupported,
+                pos: normalized_pos,
+                endpos: normalized_endpos,
+                span: None,
+                group_spans: Vec::new(),
+            };
+        }
+        let pattern_chars: Vec<char> = group_body.chars().collect();
+        let span = find_match_span_str(
             &pattern_chars,
             flags,
             mode,
             &string_chars,
             normalized_pos,
             normalized_endpos,
+        );
+        (
+            span,
+            span.map(|capture| vec![Some(capture)]).unwrap_or_default(),
         )
     } else {
         return MatchOutcome {
@@ -500,6 +578,7 @@ fn literal_match_str(
             pos: normalized_pos,
             endpos: normalized_endpos,
             span: None,
+            group_spans: Vec::new(),
         };
     };
     MatchOutcome {
@@ -511,6 +590,7 @@ fn literal_match_str(
         pos: normalized_pos,
         endpos: normalized_endpos,
         span,
+        group_spans,
     }
 }
 
@@ -577,6 +657,7 @@ fn literal_match_bytes(
             pos: normalized_pos,
             endpos: normalized_endpos,
             span: None,
+            group_spans: Vec::new(),
         };
     }
 
@@ -597,6 +678,55 @@ fn literal_match_bytes(
         pos: normalized_pos,
         endpos: normalized_endpos,
         span,
+        group_spans: Vec::new(),
+    }
+}
+
+/// Discover repeated spans for the bounded grouped-literal replacement slice.
+#[must_use]
+pub fn grouped_literal_find_spans_str(
+    pattern: &str,
+    flags: i32,
+    string: &str,
+    pos: isize,
+    endpos: Option<isize>,
+) -> FindSpansOutcome {
+    let string_chars: Vec<char> = string.chars().collect();
+    let (normalized_pos, normalized_endpos) = normalize_bounds(string_chars.len(), pos, endpos);
+    let Some(group_body) = grouped_literal_body_str(pattern) else {
+        return FindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            spans: Vec::new(),
+        };
+    };
+    if flags != FLAG_UNICODE {
+        return FindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            spans: Vec::new(),
+        };
+    }
+
+    let pattern_chars: Vec<char> = group_body.chars().collect();
+    let spans = collect_literal_spans_str(
+        &pattern_chars,
+        flags,
+        &string_chars,
+        normalized_pos,
+        normalized_endpos,
+    );
+    FindSpansOutcome {
+        status: if spans.is_empty() {
+            MatchStatus::NoMatch
+        } else {
+            MatchStatus::Matched
+        },
+        pos: normalized_pos,
+        endpos: normalized_endpos,
+        spans,
     }
 }
 
@@ -1008,8 +1138,8 @@ fn push_escaped_byte(output: &mut Vec<u8>, byte: u8) {
 mod tests {
     use super::{
         compile, escape_bytes, escape_str, expand_literal_replacement_template_str,
-        literal_find_spans, literal_match, CompileStatus, MatchMode, MatchStatus, PatternRef,
-        FLAG_ASCII, FLAG_IGNORECASE, FLAG_LOCALE, FLAG_UNICODE,
+        grouped_literal_find_spans_str, literal_find_spans, literal_match, CompileStatus,
+        MatchMode, MatchStatus, PatternRef, FLAG_ASCII, FLAG_IGNORECASE, FLAG_LOCALE, FLAG_UNICODE,
     };
 
     #[test]
@@ -1110,6 +1240,15 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_grouped_literal_template_case() {
+        let outcome = compile(PatternRef::Str("(abc)"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.group_count, 1);
+    }
+
+    #[test]
     fn literal_match_supports_search_with_ignorecase() {
         let outcome = literal_match(
             PatternRef::Str("AbC"),
@@ -1123,6 +1262,7 @@ mod tests {
 
         assert_eq!(outcome.status, MatchStatus::Matched);
         assert_eq!(outcome.span, Some((2, 5)));
+        assert!(outcome.group_spans.is_empty());
     }
 
     #[test]
@@ -1139,6 +1279,7 @@ mod tests {
 
         assert_eq!(outcome.status, MatchStatus::Matched);
         assert_eq!(outcome.span, Some((0, 3)));
+        assert!(outcome.group_spans.is_empty());
     }
 
     #[test]
@@ -1155,6 +1296,7 @@ mod tests {
 
         assert_eq!(outcome.status, MatchStatus::Matched);
         assert_eq!(outcome.span, Some((0, 3)));
+        assert!(outcome.group_spans.is_empty());
     }
 
     #[test]
@@ -1204,7 +1346,25 @@ mod tests {
 
             assert_eq!(outcome.status, MatchStatus::Matched);
             assert_eq!(outcome.span, Some((0, 3)));
+            assert!(outcome.group_spans.is_empty());
         }
+    }
+
+    #[test]
+    fn grouped_literal_match_reports_group_1_span() {
+        let outcome = literal_match(
+            PatternRef::Str("(abc)"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabczz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 5)));
+        assert_eq!(outcome.group_spans, vec![Some((2, 5))]);
     }
 
     #[test]
@@ -1271,14 +1431,35 @@ mod tests {
 
     #[test]
     fn replacement_template_expands_whole_match_reference() {
-        let expanded = expand_literal_replacement_template_str(r"\g<0>x", "abc").unwrap();
+        let expanded = expand_literal_replacement_template_str(r"\g<0>x", "abc", None).unwrap();
         assert_eq!(expanded, "abcx");
     }
 
     #[test]
-    fn replacement_template_rejects_other_backslash_forms() {
-        assert_eq!(expand_literal_replacement_template_str(r"\1x", "abc"), None);
-        assert_eq!(expand_literal_replacement_template_str("\\", "abc"), None);
+    fn replacement_template_expands_group_1_reference_for_grouped_literal_case() {
+        let expanded = expand_literal_replacement_template_str(r"\1x", "abc", Some("abc")).unwrap();
+        assert_eq!(expanded, "abcx");
+    }
+
+    #[test]
+    fn replacement_template_rejects_unsupported_backslash_forms() {
+        assert_eq!(
+            expand_literal_replacement_template_str(r"\1x", "abc", None),
+            None
+        );
+        assert_eq!(
+            expand_literal_replacement_template_str("\\", "abc", None),
+            None
+        );
+    }
+
+    #[test]
+    fn grouped_literal_find_spans_reports_repeated_matches() {
+        let outcome = grouped_literal_find_spans_str("(abc)", FLAG_UNICODE, "zabcabcx", 1, Some(7));
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.pos, 1);
+        assert_eq!(outcome.endpos, 7);
+        assert_eq!(outcome.spans, vec![(1, 4), (4, 7)]);
     }
 
     #[test]

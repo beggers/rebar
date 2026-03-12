@@ -7,6 +7,7 @@ use pyo3::types::{PyBytes, PyList, PyString};
 use rebar_core::{
     compile as core_compile, escape_bytes as core_escape_bytes, escape_str as core_escape_str,
     expand_literal_replacement_template_str as core_expand_literal_replacement_template_str,
+    grouped_literal_find_spans_str as core_grouped_literal_find_spans_str,
     literal_find_spans as core_literal_find_spans, literal_match as core_literal_match,
     CompileStatus, MatchMode, MatchStatus, PatternRef, TARGET_CPYTHON_SERIES,
 };
@@ -120,7 +121,7 @@ fn boundary_compile(
     py: Python<'_>,
     pattern: &Bound<'_, PyAny>,
     flags: i32,
-) -> PyResult<(&'static str, i32, bool)> {
+) -> PyResult<(&'static str, i32, bool, usize)> {
     let pattern_ref = py_pattern_ref(pattern)?;
     let outcome = match core_compile(pattern_ref, flags) {
         Ok(outcome) => outcome,
@@ -141,7 +142,12 @@ fn boundary_compile(
         CompileStatus::Compiled => "compiled",
         CompileStatus::Unsupported => "unsupported",
     };
-    Ok((status, outcome.normalized_flags, outcome.supports_literal))
+    Ok((
+        status,
+        outcome.normalized_flags,
+        outcome.supports_literal,
+        outcome.group_count,
+    ))
 }
 
 #[pyfunction]
@@ -155,7 +161,13 @@ fn boundary_literal_match(
     string: &Bound<'_, PyAny>,
     pos: isize,
     endpos: Option<isize>,
-) -> PyResult<(&'static str, usize, usize, Option<(usize, usize)>)> {
+) -> PyResult<(
+    &'static str,
+    usize,
+    usize,
+    Option<(usize, usize)>,
+    Vec<Option<(usize, usize)>>,
+)> {
     let pattern_ref = py_pattern_ref(pattern)?;
     let string_ref = py_pattern_ref(string)?;
     let mode = mode_from_name(mode)?;
@@ -170,7 +182,13 @@ fn boundary_literal_match(
         MatchStatus::Unsupported => "unsupported",
     };
 
-    Ok((status, outcome.pos, outcome.endpos, outcome.span))
+    Ok((
+        status,
+        outcome.pos,
+        outcome.endpos,
+        outcome.span,
+        outcome.group_spans,
+    ))
 }
 
 #[pyfunction(signature = (pattern, flags, string, maxsplit=0))]
@@ -405,21 +423,51 @@ fn boundary_literal_template_subn(
     string: &Bound<'_, PyAny>,
     count: isize,
 ) -> PyResult<(&'static str, PyObject, usize)> {
-    if core_expand_literal_replacement_template_str(repl, "").is_none() {
-        return Ok(("unsupported", py.None(), 0));
-    }
-
     let pattern_ref = py_pattern_ref(pattern)?;
     let string_ref = py_pattern_ref(string)?;
-    let outcome = match core_literal_find_spans(pattern_ref, flags, string_ref, 0, None) {
-        Ok(outcome) => outcome,
-        Err(error) => return Err(PyTypeError::new_err(error.message())),
+    let (outcome, supports_capture_1) = match (pattern_ref, string_ref) {
+        (PatternRef::Str(pattern_value), PatternRef::Str(string_value)) => {
+            let literal_outcome =
+                match core_literal_find_spans(pattern_ref, flags, string_ref, 0, None) {
+                    Ok(outcome) => outcome,
+                    Err(error) => return Err(PyTypeError::new_err(error.message())),
+                };
+            if literal_outcome.status != MatchStatus::Unsupported {
+                (literal_outcome, false)
+            } else {
+                (
+                    core_grouped_literal_find_spans_str(
+                        pattern_value,
+                        flags,
+                        string_value,
+                        0,
+                        None,
+                    ),
+                    true,
+                )
+            }
+        }
+        _ => {
+            let outcome = match core_literal_find_spans(pattern_ref, flags, string_ref, 0, None) {
+                Ok(outcome) => outcome,
+                Err(error) => return Err(PyTypeError::new_err(error.message())),
+            };
+            (outcome, false)
+        }
     };
 
+    if core_expand_literal_replacement_template_str(
+        repl,
+        "",
+        if supports_capture_1 { Some("") } else { None },
+    )
+    .is_none()
+    {
+        return Ok(("unsupported", py.None(), 0));
+    }
     if outcome.status == MatchStatus::Unsupported {
         return Ok(("unsupported", py.None(), 0));
     }
-
     if count < 0 {
         return match string_ref {
             PatternRef::Str(value) => {
@@ -430,7 +478,6 @@ fn boundary_literal_template_subn(
             }
         };
     }
-
     let replacement_limit = replacement_limit(count, outcome.spans.len());
 
     match string_ref {
@@ -449,10 +496,16 @@ fn boundary_literal_template_subn(
             for &(start, end) in outcome.spans.iter().take(replacement_limit) {
                 output.push_str(str_slice(string_value, &boundaries, last_end, start));
                 let whole_match = str_slice(string_value, &boundaries, start, end);
-                let expanded = core_expand_literal_replacement_template_str(repl, whole_match)
-                    .ok_or_else(|| {
-                        PyTypeError::new_err("unsupported literal replacement template")
-                    })?;
+                let expanded = core_expand_literal_replacement_template_str(
+                    repl,
+                    whole_match,
+                    if supports_capture_1 {
+                        Some(whole_match)
+                    } else {
+                        None
+                    },
+                )
+                .ok_or_else(|| PyTypeError::new_err("unsupported literal replacement template"))?;
                 output.push_str(&expanded);
                 last_end = end;
             }

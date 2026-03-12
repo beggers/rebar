@@ -66,10 +66,10 @@ class CorrectnessHarnessCollectionReplacementWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 69,
                     "failed_cases": 0,
-                    "passed_cases": 68,
+                    "passed_cases": 69,
                     "skipped_cases": 0,
                     "total_cases": 69,
-                    "unimplemented_cases": 1,
+                    "unimplemented_cases": 0,
                 },
             )
 
@@ -110,9 +110,9 @@ class CorrectnessHarnessCollectionReplacementWorkflowTest(unittest.TestCase):
 
         workflow_layer = scorecard["layers"]["module_workflow"]
         self.assertEqual(workflow_layer["summary"]["total_cases"], 25)
-        self.assertEqual(workflow_layer["summary"]["passed_cases"], 24)
+        self.assertEqual(workflow_layer["summary"]["passed_cases"], 25)
         self.assertEqual(workflow_layer["summary"]["failed_cases"], 0)
-        self.assertEqual(workflow_layer["summary"]["unimplemented_cases"], 1)
+        self.assertEqual(workflow_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             workflow_layer["operations"],
             ["cache_workflow", "compile", "module_call", "pattern_call", "purge_workflow"],
@@ -136,17 +136,17 @@ class CorrectnessHarnessCollectionReplacementWorkflowTest(unittest.TestCase):
             if suite["id"] == "collection.replacement.workflow"
         )
         self.assertEqual(collection_suite["summary"]["total_cases"], 15)
-        self.assertEqual(collection_suite["summary"]["passed_cases"], 14)
-        self.assertEqual(collection_suite["summary"]["unimplemented_cases"], 1)
+        self.assertEqual(collection_suite["summary"]["passed_cases"], 15)
+        self.assertEqual(collection_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             collection_suite["families"],
             [
                 "bounded_wildcard_collection_workflow",
                 "findall_workflow",
                 "finditer_workflow",
+                "grouped_template_replacement_workflow",
                 "replacement_workflow",
                 "split_workflow",
-                "unsupported_replacement_workflow",
             ],
         )
 
@@ -228,6 +228,15 @@ class CorrectnessHarnessCollectionReplacementWorkflowTest(unittest.TestCase):
         self.assertEqual(callable_case["observations"]["rebar"]["result"], "xx")
         self.assertEqual(callable_case["args"][1]["type"], "callable")
         self.assertEqual(callable_case["args"][1]["qualname"], "callable_constant")
+
+        grouped_template_case = next(
+            case for case in scorecard["cases"] if case["id"] == "module-sub-grouping-template"
+        )
+        self.assertEqual(grouped_template_case["comparison"], "pass")
+        self.assertEqual(grouped_template_case["family"], "grouped_template_replacement_workflow")
+        self.assertEqual(grouped_template_case["observations"]["cpython"]["outcome"], "success")
+        self.assertEqual(grouped_template_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(grouped_template_case["observations"]["rebar"]["result"], "abcx")
 
         non_literal_case = next(
             case for case in scorecard["cases"] if case["id"] == "module-findall-nonliteral-str"
