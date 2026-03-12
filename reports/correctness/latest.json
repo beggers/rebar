@@ -1479,10 +1479,8 @@
         "type",
         "enum"
       ],
-      "comparison": "fail",
-      "comparison_notes": [
-        "result payload mismatch"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "helper_type_metadata",
       "helper": "RegexFlag",
       "id": "regexflag-type-metadata",
@@ -1546,20 +1544,28 @@
             "callable": true,
             "is_type": true,
             "members": {
+              "A": 256,
               "ASCII": 256,
               "DEBUG": 128,
               "DOTALL": 16,
+              "I": 2,
               "IGNORECASE": 2,
+              "L": 4,
               "LOCALE": 4,
+              "M": 8,
               "MULTILINE": 8,
               "NOFLAG": 0,
+              "S": 16,
+              "T": 1,
               "TEMPLATE": 1,
+              "U": 32,
               "UNICODE": 32,
-              "VERBOSE": 64
+              "VERBOSE": 64,
+              "X": 64
             },
-            "module": "rebar",
+            "module": "re",
             "mro": [
-              "rebar.RegexFlag",
+              "re.RegexFlag",
               "enum.IntFlag",
               "builtins.int",
               "enum.ReprEnum",
@@ -1648,10 +1654,8 @@
         "type",
         "pattern"
       ],
-      "comparison": "fail",
-      "comparison_notes": [
-        "result payload mismatch"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "helper_type_metadata",
       "helper": "Pattern",
       "id": "pattern-type-metadata",
@@ -1689,15 +1693,15 @@
           "result": {
             "callable": true,
             "is_type": true,
-            "module": "rebar",
+            "module": "re",
             "mro": [
-              "rebar.Pattern",
+              "re.Pattern",
               "builtins.object"
             ],
             "present": true,
             "qualname": "Pattern",
-            "repr": "<class 'rebar.Pattern'>",
-            "type_name": "_PatternScaffoldType"
+            "repr": "<class 're.Pattern'>",
+            "type_name": "type"
           },
           "warnings": []
         }
@@ -1711,10 +1715,8 @@
         "type",
         "match"
       ],
-      "comparison": "fail",
-      "comparison_notes": [
-        "result payload mismatch"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "helper_type_metadata",
       "helper": "Match",
       "id": "match-type-metadata",
@@ -1752,15 +1754,15 @@
           "result": {
             "callable": true,
             "is_type": true,
-            "module": "rebar",
+            "module": "re",
             "mro": [
-              "rebar.Match",
+              "re.Match",
               "builtins.object"
             ],
             "present": true,
             "qualname": "Match",
-            "repr": "<class 'rebar.Match'>",
-            "type_name": "_MatchScaffoldType"
+            "repr": "<class 're.Match'>",
+            "type_name": "type"
           },
           "warnings": []
         }
@@ -1963,10 +1965,8 @@
         "guard",
         "pattern"
       ],
-      "comparison": "fail",
-      "comparison_notes": [
-        "exception payload mismatch"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "helper_type_instantiation_guard",
       "helper": "Pattern",
       "id": "pattern-constructor-guard",
@@ -1990,7 +1990,7 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "cannot create 'rebar.Pattern' instances",
+            "message": "cannot create 're.Pattern' instances",
             "type": "TypeError"
           },
           "operation": "module_call",
@@ -2009,10 +2009,8 @@
         "guard",
         "match"
       ],
-      "comparison": "fail",
-      "comparison_notes": [
-        "exception payload mismatch"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "helper_type_instantiation_guard",
       "helper": "Match",
       "id": "match-constructor-guard",
@@ -2036,7 +2034,7 @@
         "rebar": {
           "adapter": "rebar",
           "exception": {
-            "message": "cannot create 'rebar.Match' instances",
+            "message": "cannot create 're.Match' instances",
             "type": "TypeError"
           },
           "operation": "module_call",
@@ -2054,10 +2052,8 @@
         "metadata",
         "str"
       ],
-      "comparison": "fail",
-      "comparison_notes": [
-        "result payload mismatch"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "compiled_pattern_metadata",
       "flags": 0,
       "id": "pattern-object-str-metadata",
@@ -2093,9 +2089,9 @@
           "outcome": "success",
           "result": {
             "compiled_type": {
-              "module": "rebar",
+              "module": "re",
               "qualname": "Pattern",
-              "repr": "<class 'rebar.Pattern'>"
+              "repr": "<class 're.Pattern'>"
             },
             "flags": 32,
             "groupindex": {},
@@ -2118,10 +2114,8 @@
         "flags",
         "str"
       ],
-      "comparison": "fail",
-      "comparison_notes": [
-        "result payload mismatch"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "compiled_pattern_metadata",
       "flags": 2,
       "id": "pattern-object-str-ignorecase-metadata",
@@ -2157,9 +2151,9 @@
           "outcome": "success",
           "result": {
             "compiled_type": {
-              "module": "rebar",
+              "module": "re",
               "qualname": "Pattern",
-              "repr": "<class 'rebar.Pattern'>"
+              "repr": "<class 're.Pattern'>"
             },
             "flags": 34,
             "groupindex": {},
@@ -2182,10 +2176,8 @@
         "flags",
         "bytes"
       ],
-      "comparison": "fail",
-      "comparison_notes": [
-        "result payload mismatch"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "compiled_pattern_metadata",
       "flags": 2,
       "id": "pattern-object-bytes-ignorecase-metadata",
@@ -2224,9 +2216,9 @@
           "outcome": "success",
           "result": {
             "compiled_type": {
-              "module": "rebar",
+              "module": "re",
               "qualname": "Pattern",
-              "repr": "<class 'rebar.Pattern'>"
+              "repr": "<class 're.Pattern'>"
             },
             "flags": 2,
             "groupindex": {},
@@ -5113,8 +5105,8 @@
       ],
       "summary": {
         "executed_cases": 3,
-        "failed_cases": 3,
-        "passed_cases": 0,
+        "failed_cases": 0,
+        "passed_cases": 3,
         "skipped_cases": 0,
         "total_cases": 3,
         "unimplemented_cases": 0
@@ -5344,8 +5336,8 @@
       ],
       "summary": {
         "executed_cases": 2,
-        "failed_cases": 2,
-        "passed_cases": 0,
+        "failed_cases": 0,
+        "passed_cases": 2,
         "skipped_cases": 0,
         "total_cases": 2,
         "unimplemented_cases": 0
@@ -5363,8 +5355,8 @@
       ],
       "summary": {
         "executed_cases": 3,
-        "failed_cases": 3,
-        "passed_cases": 0,
+        "failed_cases": 0,
+        "passed_cases": 3,
         "skipped_cases": 0,
         "total_cases": 3,
         "unimplemented_cases": 0
@@ -5717,7 +5709,7 @@
       "tests/conformance/fixtures/literal_flag_workflows.json"
     ]
   },
-  "generated_at": "2026-03-12T03:34:01Z",
+  "generated_at": "2026-03-12T03:58:25Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -5828,8 +5820,8 @@
       ],
       "summary": {
         "executed_cases": 17,
-        "failed_cases": 5,
-        "passed_cases": 12,
+        "failed_cases": 0,
+        "passed_cases": 17,
         "skipped_cases": 0,
         "total_cases": 17,
         "unimplemented_cases": 0
@@ -6015,8 +6007,8 @@
       ],
       "summary": {
         "executed_cases": 6,
-        "failed_cases": 3,
-        "passed_cases": 3,
+        "failed_cases": 0,
+        "passed_cases": 6,
         "skipped_cases": 0,
         "total_cases": 6,
         "unimplemented_cases": 0
@@ -6546,8 +6538,8 @@
       ],
       "summary": {
         "executed_cases": 10,
-        "failed_cases": 5,
-        "passed_cases": 5,
+        "failed_cases": 0,
+        "passed_cases": 10,
         "skipped_cases": 0,
         "total_cases": 10,
         "unimplemented_cases": 0
@@ -6592,8 +6584,8 @@
       ],
       "summary": {
         "executed_cases": 4,
-        "failed_cases": 3,
-        "passed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 4,
         "skipped_cases": 0,
         "total_cases": 4,
         "unimplemented_cases": 0
@@ -6686,8 +6678,8 @@
       ],
       "summary": {
         "executed_cases": 2,
-        "failed_cases": 2,
-        "passed_cases": 0,
+        "failed_cases": 0,
+        "passed_cases": 2,
         "skipped_cases": 0,
         "total_cases": 2,
         "unimplemented_cases": 0
@@ -6733,8 +6725,8 @@
       ],
       "summary": {
         "executed_cases": 6,
-        "failed_cases": 3,
-        "passed_cases": 3,
+        "failed_cases": 0,
+        "passed_cases": 6,
         "skipped_cases": 0,
         "total_cases": 6,
         "unimplemented_cases": 0
@@ -6781,8 +6773,8 @@
       ],
       "summary": {
         "executed_cases": 1,
-        "failed_cases": 1,
-        "passed_cases": 0,
+        "failed_cases": 0,
+        "passed_cases": 1,
         "skipped_cases": 0,
         "total_cases": 1,
         "unimplemented_cases": 0
@@ -6830,8 +6822,8 @@
       ],
       "summary": {
         "executed_cases": 5,
-        "failed_cases": 2,
-        "passed_cases": 3,
+        "failed_cases": 0,
+        "passed_cases": 5,
         "skipped_cases": 0,
         "total_cases": 5,
         "unimplemented_cases": 0
@@ -6924,8 +6916,8 @@
       ],
       "summary": {
         "executed_cases": 3,
-        "failed_cases": 3,
-        "passed_cases": 0,
+        "failed_cases": 0,
+        "passed_cases": 3,
         "skipped_cases": 0,
         "total_cases": 3,
         "unimplemented_cases": 0
@@ -7975,8 +7967,8 @@
   ],
   "summary": {
     "executed_cases": 80,
-    "failed_cases": 8,
-    "passed_cases": 52,
+    "failed_cases": 0,
+    "passed_cases": 60,
     "skipped_cases": 0,
     "total_cases": 80,
     "unimplemented_cases": 20

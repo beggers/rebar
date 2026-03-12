@@ -57,8 +57,8 @@ class CorrectnessHarnessPatternObjectSurfaceTest(unittest.TestCase):
                 summary,
                 {
                     "executed_cases": 44,
-                    "failed_cases": 8,
-                    "passed_cases": 23,
+                    "failed_cases": 0,
+                    "passed_cases": 31,
                     "skipped_cases": 0,
                     "total_cases": 44,
                     "unimplemented_cases": 13,
@@ -100,8 +100,8 @@ class CorrectnessHarnessPatternObjectSurfaceTest(unittest.TestCase):
 
         pattern_layer = scorecard["layers"]["pattern_object_parity"]
         self.assertEqual(pattern_layer["summary"]["total_cases"], 6)
-        self.assertEqual(pattern_layer["summary"]["passed_cases"], 3)
-        self.assertEqual(pattern_layer["summary"]["failed_cases"], 3)
+        self.assertEqual(pattern_layer["summary"]["passed_cases"], 6)
+        self.assertEqual(pattern_layer["summary"]["failed_cases"], 0)
         self.assertEqual(pattern_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(pattern_layer["operations"], ["pattern_call", "pattern_metadata"])
         self.assertEqual(pattern_layer["text_models"], ["bytes", "str"])
@@ -133,8 +133,8 @@ class CorrectnessHarnessPatternObjectSurfaceTest(unittest.TestCase):
 
         pattern_suite = next(suite for suite in scorecard["suites"] if suite["id"] == "pattern.object")
         self.assertEqual(pattern_suite["summary"]["total_cases"], 6)
-        self.assertEqual(pattern_suite["summary"]["failed_cases"], 3)
-        self.assertEqual(pattern_suite["summary"]["passed_cases"], 3)
+        self.assertEqual(pattern_suite["summary"]["failed_cases"], 0)
+        self.assertEqual(pattern_suite["summary"]["passed_cases"], 6)
         self.assertEqual(pattern_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             pattern_suite["families"],
@@ -144,7 +144,7 @@ class CorrectnessHarnessPatternObjectSurfaceTest(unittest.TestCase):
         metadata_case = next(
             case for case in scorecard["cases"] if case["id"] == "pattern-object-str-metadata"
         )
-        self.assertEqual(metadata_case["comparison"], "fail")
+        self.assertEqual(metadata_case["comparison"], "pass")
         self.assertEqual(metadata_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(metadata_case["observations"]["rebar"]["outcome"], "success")
         self.assertEqual(
@@ -153,7 +153,7 @@ class CorrectnessHarnessPatternObjectSurfaceTest(unittest.TestCase):
         )
         self.assertEqual(
             metadata_case["observations"]["rebar"]["result"]["compiled_type"]["module"],
-            "rebar",
+            "re",
         )
         self.assertEqual(
             metadata_case["observations"]["cpython"]["result"]["pattern"],
@@ -165,13 +165,17 @@ class CorrectnessHarnessPatternObjectSurfaceTest(unittest.TestCase):
         )
         self.assertEqual(metadata_case["observations"]["cpython"]["result"]["flags"], 32)
         self.assertEqual(metadata_case["observations"]["rebar"]["result"]["flags"], 32)
+        self.assertEqual(
+            metadata_case["observations"]["rebar"]["result"],
+            metadata_case["observations"]["cpython"]["result"],
+        )
 
         bytes_metadata_case = next(
             case
             for case in scorecard["cases"]
             if case["id"] == "pattern-object-bytes-ignorecase-metadata"
         )
-        self.assertEqual(bytes_metadata_case["comparison"], "fail")
+        self.assertEqual(bytes_metadata_case["comparison"], "pass")
         self.assertEqual(bytes_metadata_case["text_model"], "bytes")
         self.assertEqual(
             bytes_metadata_case["observations"]["cpython"]["result"]["pattern"],
@@ -183,6 +187,10 @@ class CorrectnessHarnessPatternObjectSurfaceTest(unittest.TestCase):
         )
         self.assertEqual(bytes_metadata_case["observations"]["cpython"]["result"]["flags"], 2)
         self.assertEqual(bytes_metadata_case["observations"]["rebar"]["result"]["flags"], 2)
+        self.assertEqual(
+            bytes_metadata_case["observations"]["rebar"]["result"],
+            bytes_metadata_case["observations"]["cpython"]["result"],
+        )
 
         literal_case = next(
             case for case in scorecard["cases"] if case["id"] == "pattern-search-literal-success"

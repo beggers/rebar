@@ -1,8 +1,9 @@
 # RBR-0035: Fix exported helper metadata and constructor parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Eliminate the current explicit correctness failures in exported `RegexFlag`, `Pattern`, and `Match` type metadata plus the direct-constructor guard behavior, without broadening the supported regex feature set.
@@ -25,3 +26,9 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0018`, `RBR-0021`, and the current explicit-failure set in `reports/correctness/latest.json`; this task exists to work off wrong behavior, not to add new placeholder surface area.
+
+## Completion
+- Reworked `RegexFlag`, `Pattern`, and `Match` so the exported helper metadata now matches the observed CPython surface for module/name/type payloads without delegating behavior to stdlib `re`.
+- Replaced the custom `Pattern`/`Match` metaclass guard with internal `object.__new__` construction plus CPython-shaped public `TypeError` messages, preserving the existing literal-only execution path.
+- Regenerated `reports/correctness/latest.json`; the published scorecard now reports `80` executed, `60` passed, `0` failed, and `20` unimplemented cases.
+- Side effect: because compiled patterns use the exported `Pattern` type, the currently published pattern-metadata failures also disappeared; supervisor should re-scope or retire `RBR-0036` if that debt is now fully covered.

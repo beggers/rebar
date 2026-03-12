@@ -69,8 +69,8 @@ class CorrectnessHarnessLiteralFlagWorkflowTest(unittest.TestCase):
                 summary,
                 {
                     "executed_cases": 80,
-                    "failed_cases": 8,
-                    "passed_cases": 52,
+                    "failed_cases": 0,
+                    "passed_cases": 60,
                     "skipped_cases": 0,
                     "total_cases": 80,
                     "unimplemented_cases": 20,

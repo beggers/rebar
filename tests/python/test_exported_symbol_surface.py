@@ -47,8 +47,9 @@ class RebarExportedSymbolSurfaceTest(unittest.TestCase):
         self.assertIs(rebar.error, re.error)
         self.assertIsInstance(rebar.Pattern, type)
         self.assertIsInstance(rebar.Match, type)
-        self.assertEqual(rebar.Pattern.__module__, "rebar")
-        self.assertEqual(rebar.Match.__module__, "rebar")
+        self.assertEqual(rebar.RegexFlag.__module__, "re")
+        self.assertEqual(rebar.Pattern.__module__, "re")
+        self.assertEqual(rebar.Match.__module__, "re")
 
     def test_primary_flag_values_match_cpython(self) -> None:
         for name in PRIMARY_FLAG_EXPORTS:
@@ -76,9 +77,9 @@ class RebarExportedSymbolSurfaceTest(unittest.TestCase):
         )
 
     def test_pattern_and_match_are_non_instantiable_placeholders(self) -> None:
-        with self.assertRaisesRegex(TypeError, "cannot create 'rebar.Pattern' instances"):
+        with self.assertRaisesRegex(TypeError, "cannot create 're.Pattern' instances"):
             rebar.Pattern()
-        with self.assertRaisesRegex(TypeError, "cannot create 'rebar.Match' instances"):
+        with self.assertRaisesRegex(TypeError, "cannot create 're.Match' instances"):
             rebar.Match()
 
     def test_compile_returns_the_exported_pattern_type(self) -> None:

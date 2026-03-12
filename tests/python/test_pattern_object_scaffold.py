@@ -180,7 +180,7 @@ print(json.dumps(result))
 
             self.assertTrue(result["native_module_loaded"])
             self.assertEqual(result["pattern_type_name"], "Pattern")
-            self.assertEqual(result["pattern_type_module"], "rebar")
+            self.assertEqual(result["pattern_type_module"], "re")
             self.assertEqual(result["pattern_value"], "abc")
             self.assertEqual(result["flags"], int(rebar.IGNORECASE | rebar.UNICODE))
             self.assertEqual(result["groups"], 0)

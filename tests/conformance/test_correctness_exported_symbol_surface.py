@@ -53,8 +53,8 @@ class CorrectnessHarnessExportedSymbolSurfaceTest(unittest.TestCase):
                 summary,
                 {
                     "executed_cases": 38,
-                    "failed_cases": 5,
-                    "passed_cases": 20,
+                    "failed_cases": 0,
+                    "passed_cases": 25,
                     "skipped_cases": 0,
                     "total_cases": 38,
                     "unimplemented_cases": 13,
@@ -95,8 +95,8 @@ class CorrectnessHarnessExportedSymbolSurfaceTest(unittest.TestCase):
 
         public_api_layer = scorecard["layers"]["module_api_surface"]
         self.assertEqual(public_api_layer["summary"]["total_cases"], 17)
-        self.assertEqual(public_api_layer["summary"]["passed_cases"], 12)
-        self.assertEqual(public_api_layer["summary"]["failed_cases"], 5)
+        self.assertEqual(public_api_layer["summary"]["passed_cases"], 17)
+        self.assertEqual(public_api_layer["summary"]["failed_cases"], 0)
         self.assertEqual(public_api_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             public_api_layer["operations"],
@@ -125,8 +125,8 @@ class CorrectnessHarnessExportedSymbolSurfaceTest(unittest.TestCase):
 
         export_suite = next(suite for suite in scorecard["suites"] if suite["id"] == "module.exports")
         self.assertEqual(export_suite["summary"]["total_cases"], 10)
-        self.assertEqual(export_suite["summary"]["passed_cases"], 5)
-        self.assertEqual(export_suite["summary"]["failed_cases"], 5)
+        self.assertEqual(export_suite["summary"]["passed_cases"], 10)
+        self.assertEqual(export_suite["summary"]["failed_cases"], 0)
         self.assertEqual(
             export_suite["families"],
             [
@@ -138,16 +138,20 @@ class CorrectnessHarnessExportedSymbolSurfaceTest(unittest.TestCase):
         )
 
         regexflag_case = next(case for case in scorecard["cases"] if case["id"] == "regexflag-type-metadata")
-        self.assertEqual(regexflag_case["comparison"], "fail")
+        self.assertEqual(regexflag_case["comparison"], "pass")
         self.assertEqual(regexflag_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(regexflag_case["observations"]["rebar"]["outcome"], "success")
         self.assertEqual(regexflag_case["observations"]["cpython"]["result"]["module"], "re")
-        self.assertEqual(regexflag_case["observations"]["rebar"]["result"]["module"], "rebar")
+        self.assertEqual(regexflag_case["observations"]["rebar"]["result"]["module"], "re")
         self.assertIn("A", regexflag_case["observations"]["cpython"]["result"]["members"])
-        self.assertNotIn("A", regexflag_case["observations"]["rebar"]["result"]["members"])
+        self.assertIn("A", regexflag_case["observations"]["rebar"]["result"]["members"])
         self.assertEqual(
             regexflag_case["observations"]["rebar"]["result"]["members"]["ASCII"],
             256,
+        )
+        self.assertEqual(
+            regexflag_case["observations"]["rebar"]["result"],
+            regexflag_case["observations"]["cpython"]["result"],
         )
 
         error_case = next(case for case in scorecard["cases"] if case["id"] == "error-type-metadata")
@@ -172,16 +176,20 @@ class CorrectnessHarnessExportedSymbolSurfaceTest(unittest.TestCase):
         )
 
         pattern_case = next(case for case in scorecard["cases"] if case["id"] == "pattern-type-metadata")
-        self.assertEqual(pattern_case["comparison"], "fail")
+        self.assertEqual(pattern_case["comparison"], "pass")
         self.assertEqual(pattern_case["observations"]["cpython"]["result"]["qualname"], "Pattern")
         self.assertEqual(pattern_case["observations"]["rebar"]["result"]["qualname"], "Pattern")
         self.assertEqual(pattern_case["observations"]["cpython"]["result"]["type_name"], "type")
-        self.assertEqual(pattern_case["observations"]["rebar"]["result"]["type_name"], "_PatternScaffoldType")
+        self.assertEqual(pattern_case["observations"]["rebar"]["result"]["type_name"], "type")
+        self.assertEqual(
+            pattern_case["observations"]["rebar"]["result"],
+            pattern_case["observations"]["cpython"]["result"],
+        )
 
         constructor_case = next(
             case for case in scorecard["cases"] if case["id"] == "pattern-constructor-guard"
         )
-        self.assertEqual(constructor_case["comparison"], "fail")
+        self.assertEqual(constructor_case["comparison"], "pass")
         self.assertEqual(constructor_case["observations"]["cpython"]["outcome"], "exception")
         self.assertEqual(constructor_case["observations"]["rebar"]["outcome"], "exception")
         self.assertEqual(
@@ -190,7 +198,7 @@ class CorrectnessHarnessExportedSymbolSurfaceTest(unittest.TestCase):
         )
         self.assertEqual(
             constructor_case["observations"]["rebar"]["exception"]["message"],
-            "cannot create 'rebar.Pattern' instances",
+            "cannot create 're.Pattern' instances",
         )
 
 

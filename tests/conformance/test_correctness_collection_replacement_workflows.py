@@ -65,8 +65,8 @@ class CorrectnessHarnessCollectionReplacementWorkflowTest(unittest.TestCase):
                 summary,
                 {
                     "executed_cases": 69,
-                    "failed_cases": 8,
-                    "passed_cases": 44,
+                    "failed_cases": 0,
+                    "passed_cases": 52,
                     "skipped_cases": 0,
                     "total_cases": 69,
                     "unimplemented_cases": 17,

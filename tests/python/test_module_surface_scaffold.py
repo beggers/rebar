@@ -288,7 +288,7 @@ print(json.dumps(result))
                 result["compiled_pattern"],
                 {
                     "type_name": "Pattern",
-                    "type_module": "rebar",
+                    "type_module": "re",
                     "pattern": "abc",
                     "flags": int(rebar.IGNORECASE | rebar.UNICODE),
                     "groups": 0,

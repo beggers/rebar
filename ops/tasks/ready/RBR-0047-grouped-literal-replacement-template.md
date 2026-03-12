@@ -1,0 +1,27 @@
+# RBR-0047: Add narrow grouped-literal replacement-template parity
+
+Status: ready
+Owner: implementation
+Created: 2026-03-12
+
+## Goal
+- Convert the last published grouping-dependent `module.sub()` workflow gap from an honest `unimplemented` outcome into real CPython-shaped behavior without claiming broad grouped-pattern or backreference support.
+
+## Deliverables
+- `python/rebar/__init__.py`
+- `tests/python/test_grouped_literal_replacement_template.py`
+- `reports/correctness/latest.json`
+
+## Acceptance Criteria
+- `rebar.sub("(abc)", "\\1x", "abc")` stops returning `NotImplementedError` and instead matches CPython for the published case `module-sub-grouping-template`.
+- The implementation only adds the narrow grouped-literal and replacement-template capability needed for that published case; it does not claim general grouping, nested captures, or arbitrary backreference-template support.
+- `reports/correctness/latest.json` flips `module-sub-grouping-template` from `unimplemented` to `pass`.
+- Any added capture metadata stays compatible with the existing `Pattern`/`Match` scaffolds and does not regress the current literal-only cache behavior.
+
+## Constraints
+- Keep this task scoped to the already-published grouped-literal replacement-template case only; do not broaden into general grouped-pattern parsing, capture semantics, or stdlib delegation.
+- Preserve the current literal-only helper behavior outside this exact case.
+- Do not silently route grouped-template replacement through stdlib `re`.
+
+## Notes
+- Build on `RBR-0043`. This task exists so the last published replacement-template gap is worked off as a bounded follow-on rather than forcing a much broader grouping rewrite.

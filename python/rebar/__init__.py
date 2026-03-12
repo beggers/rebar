@@ -78,14 +78,25 @@ class RegexFlag(enum.IntFlag):
 
     NOFLAG = 0
     TEMPLATE = 1
+    T = TEMPLATE
     IGNORECASE = 2
+    I = IGNORECASE
     LOCALE = 4
+    L = LOCALE
     MULTILINE = 8
+    M = MULTILINE
     DOTALL = 16
+    S = DOTALL
     UNICODE = 32
+    U = UNICODE
     VERBOSE = 64
+    X = VERBOSE
     DEBUG = 128
     ASCII = 256
+    A = ASCII
+
+
+RegexFlag.__module__ = "re"
 
 
 NOFLAG = RegexFlag.NOFLAG
@@ -109,35 +120,13 @@ A = ASCII
 error = _stdlib_re.error
 
 
-class _NonInstantiableScaffoldType(type):
-    def __call__(cls, *_args: object, **_kwargs: object) -> object:
-        raise TypeError(f"cannot create '{cls.__module__}.{cls.__name__}' instances")
-
-
-_PATTERN_CONSTRUCTION_TOKEN = object()
-_MATCH_CONSTRUCTION_TOKEN = object()
-
-
-class _PatternScaffoldType(_NonInstantiableScaffoldType):
-    def __call__(cls, *_args: object, **kwargs: object) -> object:
-        token = kwargs.pop("_rebar_internal_token", None)
-        if token is _PATTERN_CONSTRUCTION_TOKEN:
-            return super(_NonInstantiableScaffoldType, cls).__call__(*_args, **kwargs)
-        raise TypeError(f"cannot create '{cls.__module__}.{cls.__name__}' instances")
-
-
-class _MatchScaffoldType(_NonInstantiableScaffoldType):
-    def __call__(cls, *_args: object, **kwargs: object) -> object:
-        token = kwargs.pop("_rebar_internal_token", None)
-        if token is _MATCH_CONSTRUCTION_TOKEN:
-            return super(_NonInstantiableScaffoldType, cls).__call__(*_args, **kwargs)
-        raise TypeError(f"cannot create '{cls.__module__}.{cls.__name__}' instances")
-
-
-class Pattern(metaclass=_PatternScaffoldType):
+class Pattern:
     """Scaffold export for the future compiled-pattern type."""
 
     __slots__ = ("pattern", "flags", "groups", "groupindex")
+
+    def __new__(cls, *_args: object, **_kwargs: object) -> "Pattern":
+        raise TypeError("cannot create 're.Pattern' instances")
 
     def __init__(self, pattern: str | bytes, flags: int = 0) -> None:
         self.pattern = pattern
@@ -191,10 +180,16 @@ class Pattern(metaclass=_PatternScaffoldType):
         return _run_literal_subn(self, repl, string, count=count)
 
 
-class Match(metaclass=_MatchScaffoldType):
+Pattern.__module__ = "re"
+
+
+class Match:
     """Concrete scaffold export for the bounded literal-only match subset."""
 
     __slots__ = ("re", "string", "pos", "endpos", "lastindex", "lastgroup", "_span")
+
+    def __new__(cls, *_args: object, **_kwargs: object) -> "Match":
+        raise TypeError("cannot create 're.Match' instances")
 
     def __init__(
         self,
@@ -249,6 +244,9 @@ class Match(metaclass=_MatchScaffoldType):
     def end(self, group: object = 0) -> int:
         self._resolve_group_reference(group)
         return self._span[1]
+
+
+Match.__module__ = "re"
 
 
 __all__ = [
@@ -367,14 +365,9 @@ def _build_match(
     endpos: int,
     span: tuple[int, int],
 ) -> Match:
-    return Match(
-        compiled_pattern,
-        string,
-        pos,
-        endpos,
-        span,
-        _rebar_internal_token=_MATCH_CONSTRUCTION_TOKEN,
-    )
+    match = object.__new__(Match)
+    Match.__init__(match, compiled_pattern, string, pos, endpos, span)
+    return match
 
 
 def _fold_ascii_byte(value: int) -> int:
@@ -622,11 +615,8 @@ def compile(pattern: str | bytes | Pattern, flags: int = 0) -> Pattern:
     if cached is not None:
         return cached
 
-    compiled = Pattern(
-        pattern,
-        normalized_flags,
-        _rebar_internal_token=_PATTERN_CONSTRUCTION_TOKEN,
-    )
+    compiled = object.__new__(Pattern)
+    Pattern.__init__(compiled, pattern, normalized_flags)
     _COMPILE_CACHE[cache_key] = compiled
     return compiled
 
