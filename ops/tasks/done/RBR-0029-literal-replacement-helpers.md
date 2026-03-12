@@ -1,8 +1,9 @@
 # RBR-0029: Implement literal-only replacement helpers
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Extend the bounded literal-only module surface so `sub` and `subn` perform real replacements for tiny `str` and `bytes` cases without delegating to stdlib `re`.
@@ -24,3 +25,7 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0023`; this task should give the module and `Pattern` surfaces their first honest replacement behavior while leaving the broader template grammar for later follow-on work.
+- Implemented bounded non-empty literal `sub`/`subn` behavior for `str` and `bytes` on both module and `Pattern` surfaces, including repeated-match, bounded-`count`, and no-match behavior without delegating replacement execution to stdlib `re`.
+- Kept callable replacements, backslash/template payloads, unsupported flags, empty patterns, and unsupported literal-compile cases loud with `NotImplementedError`, while preventing those module-level unsupported paths from mutating the compile cache.
+- Added `tests/python/test_literal_replacement_helpers.py` and updated older scaffold tests so they no longer expect `sub`/`subn` to remain placeholders.
+- Verified with `python3 -m unittest tests.python.test_literal_replacement_helpers tests.python.test_literal_collection_helpers tests.python.test_module_surface_scaffold tests.python.test_pattern_object_scaffold tests.python.test_compile_cache_scaffold tests.python.test_import_rebar tests.python.test_literal_match_scaffold tests.python.test_exported_symbol_surface tests.python.test_escape_surface`.

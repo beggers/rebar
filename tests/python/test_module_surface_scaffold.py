@@ -22,8 +22,6 @@ import rebar
 
 
 PLACEHOLDER_CASES = [
-    ("sub", ("abc", "x", "abc"), {}),
-    ("subn", ("abc", "x", "abc"), {}),
     ("template", ("abc",), {}),
 ]
 
@@ -160,8 +158,6 @@ import json
 import rebar
 
 placeholder_cases = {
-    "sub": [["abc", "x", "abc"], {}],
-    "subn": [["abc", "x", "abc"], {}],
     "template": [["abc"], {}],
 }
 
@@ -300,7 +296,7 @@ print(json.dumps(result))
                 },
             )
 
-            for helper_name in {"sub", "subn", "template"}:
+            for helper_name in {"template"}:
                 with self.subTest(helper=helper_name):
                     exception_payload = result["exceptions"][helper_name]
                     self.assertEqual(exception_payload["type"], "NotImplementedError")

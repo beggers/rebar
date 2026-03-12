@@ -178,11 +178,17 @@ class Pattern(metaclass=_PatternScaffoldType):
             return self._raise_placeholder("finditer")
         return _run_literal_finditer(self, string, pos=pos, endpos=endpos)
 
-    def sub(self, *_args: object, **_kwargs: object) -> object:
-        return self._raise_placeholder("sub")
+    def sub(self, repl: object, string: object, count: int = 0) -> object:
+        if not _supports_literal_replacement_execution(self):
+            return self._raise_placeholder("sub")
+        _ensure_literal_replacement_payload(self.pattern, repl, unsupported=self._raise_placeholder, helper_name="sub")
+        return _run_literal_sub(self, repl, string, count=count)
 
-    def subn(self, *_args: object, **_kwargs: object) -> object:
-        return self._raise_placeholder("subn")
+    def subn(self, repl: object, string: object, count: int = 0) -> object:
+        if not _supports_literal_replacement_execution(self):
+            return self._raise_placeholder("subn")
+        _ensure_literal_replacement_payload(self.pattern, repl, unsupported=self._raise_placeholder, helper_name="subn")
+        return _run_literal_subn(self, repl, string, count=count)
 
 
 class Match(metaclass=_MatchScaffoldType):
@@ -326,6 +332,10 @@ def _supports_literal_collection_execution(compiled_pattern: Pattern) -> bool:
     return _supports_literal_execution(compiled_pattern) and len(compiled_pattern.pattern) > 0
 
 
+def _supports_literal_replacement_execution(compiled_pattern: Pattern) -> bool:
+    return _supports_literal_collection_execution(compiled_pattern)
+
+
 def _ensure_compatible_string(pattern: str | bytes, string: object) -> str | bytes:
     if isinstance(pattern, str):
         if not isinstance(string, str):
@@ -456,6 +466,83 @@ def _run_literal_finditer(
         yield _build_match(compiled_pattern, compatible_string, normalized_pos, normalized_endpos, span)
 
 
+def _ensure_literal_replacement_payload(
+    pattern: str | bytes,
+    repl: object,
+    *,
+    unsupported,
+    helper_name: str,
+) -> str | bytes:
+    if callable(repl):
+        unsupported(helper_name)
+        raise AssertionError("unsupported() should raise")  # pragma: no cover
+
+    if isinstance(pattern, str):
+        if not isinstance(repl, str):
+            raise TypeError(f"sequence item 0: expected str instance, {type(repl).__name__} found")
+        if "\\" in repl:
+            unsupported(helper_name)
+            raise AssertionError("unsupported() should raise")  # pragma: no cover
+        return repl
+
+    if not isinstance(repl, bytes):
+        raise TypeError(f"sequence item 0: expected a bytes-like object, {type(repl).__name__} found")
+    if b"\\" in repl:
+        unsupported(helper_name)
+        raise AssertionError("unsupported() should raise")  # pragma: no cover
+    return repl
+
+
+def _run_literal_sub(
+    compiled_pattern: Pattern,
+    repl: object,
+    string: object,
+    count: int = 0,
+) -> str | bytes:
+    substituted, _replacement_count = _run_literal_subn(compiled_pattern, repl, string, count=count)
+    return substituted
+
+
+def _run_literal_subn(
+    compiled_pattern: Pattern,
+    repl: object,
+    string: object,
+    count: int = 0,
+) -> tuple[str | bytes, int]:
+    compatible_string = _ensure_compatible_string(compiled_pattern.pattern, string)
+    compatible_replacement = _ensure_literal_replacement_payload(
+        compiled_pattern.pattern,
+        repl,
+        unsupported=_raise_placeholder,
+        helper_name="subn",
+    )
+    normalized_count = operator.index(count)
+    if normalized_count < 0:
+        return compatible_string, 0
+
+    remaining = None if normalized_count == 0 else normalized_count
+    parts: list[str] | list[bytes] = []
+    last_end = 0
+    replacement_count = 0
+
+    for _compatible_string, _normalized_pos, _normalized_endpos, span in _iter_literal_match_spans(
+        compiled_pattern,
+        compatible_string,
+    ):
+        if remaining is not None and replacement_count >= remaining:
+            break
+        parts.append(compatible_string[last_end : span[0]])
+        parts.append(compatible_replacement)
+        last_end = span[1]
+        replacement_count += 1
+
+    if replacement_count == 0:
+        return compatible_string, 0
+
+    parts.append(compatible_string[last_end:])
+    return compatible_string[:0].join(parts), replacement_count
+
+
 def compile(pattern: str | bytes | Pattern, flags: int = 0) -> Pattern:
     """Return a narrow compiled-pattern scaffold without matching semantics."""
 
@@ -544,16 +631,54 @@ def finditer(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> 
     return compiled.finditer(string)
 
 
-def sub(*_args: object, **_kwargs: object) -> object:
-    """Placeholder for the future drop-in `re.sub` surface."""
+def sub(
+    pattern: str | bytes | Pattern,
+    repl: object,
+    string: object,
+    count: int = 0,
+    flags: int = 0,
+) -> object:
+    """Literal-only drop-in slice for `re.sub`."""
 
-    return _raise_placeholder("sub")
+    if not isinstance(pattern, Pattern):
+        if not isinstance(pattern, (str, bytes)):
+            raise TypeError("first argument must be string or compiled pattern")
+        _ensure_literal_replacement_payload(pattern, repl, unsupported=_raise_placeholder, helper_name="sub")
+        if len(pattern) == 0:
+            return _raise_placeholder("sub")
+        normalized_flags = _normalize_pattern_flags(pattern, int(flags))
+        if normalized_flags != _normalize_pattern_flags(pattern, 0):
+            return _raise_placeholder("sub")
+
+    compiled = compile(pattern, flags)
+    if not _supports_literal_replacement_execution(compiled):
+        return _raise_placeholder("sub")
+    return compiled.sub(repl, string, count=count)
 
 
-def subn(*_args: object, **_kwargs: object) -> object:
-    """Placeholder for the future drop-in `re.subn` surface."""
+def subn(
+    pattern: str | bytes | Pattern,
+    repl: object,
+    string: object,
+    count: int = 0,
+    flags: int = 0,
+) -> object:
+    """Literal-only drop-in slice for `re.subn`."""
 
-    return _raise_placeholder("subn")
+    if not isinstance(pattern, Pattern):
+        if not isinstance(pattern, (str, bytes)):
+            raise TypeError("first argument must be string or compiled pattern")
+        _ensure_literal_replacement_payload(pattern, repl, unsupported=_raise_placeholder, helper_name="subn")
+        if len(pattern) == 0:
+            return _raise_placeholder("subn")
+        normalized_flags = _normalize_pattern_flags(pattern, int(flags))
+        if normalized_flags != _normalize_pattern_flags(pattern, 0):
+            return _raise_placeholder("subn")
+
+    compiled = compile(pattern, flags)
+    if not _supports_literal_replacement_execution(compiled):
+        return _raise_placeholder("subn")
+    return compiled.subn(repl, string, count=count)
 
 
 def template(*_args: object, **_kwargs: object) -> object:

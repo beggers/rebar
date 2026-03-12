@@ -21,12 +21,6 @@ if str(PYTHON_SOURCE) not in sys.path:
 import rebar
 
 
-PATTERN_METHOD_CASES = [
-    ("sub", ("x", "abc"), {}),
-    ("subn", ("x", "abc"), {}),
-]
-
-
 def _venv_python(venv_root: pathlib.Path) -> pathlib.Path:
     return venv_root / "bin" / "python"
 
@@ -61,19 +55,6 @@ class RebarPatternObjectScaffoldTest(unittest.TestCase):
     def test_compile_rejects_non_pattern_inputs(self) -> None:
         with self.assertRaisesRegex(TypeError, "first argument must be string or compiled pattern"):
             rebar.compile(123)
-
-    def test_pattern_placeholder_methods_fail_loudly(self) -> None:
-        pattern = rebar.compile("abc")
-
-        for method_name, args, kwargs in PATTERN_METHOD_CASES:
-            with self.subTest(method=method_name):
-                method = getattr(pattern, method_name)
-                with self.assertRaises(NotImplementedError) as raised:
-                    method(*args, **kwargs)
-                self.assertIn(
-                    f"rebar.Pattern.{method_name}() is a scaffold placeholder",
-                    str(raised.exception),
-                )
 
     def test_pattern_literal_methods_return_match_objects(self) -> None:
         pattern = rebar.compile("abc")
