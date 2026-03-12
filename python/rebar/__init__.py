@@ -87,12 +87,21 @@ class _NonInstantiableScaffoldType(type):
 
 
 _PATTERN_CONSTRUCTION_TOKEN = object()
+_MATCH_CONSTRUCTION_TOKEN = object()
 
 
 class _PatternScaffoldType(_NonInstantiableScaffoldType):
     def __call__(cls, *_args: object, **kwargs: object) -> object:
         token = kwargs.pop("_rebar_internal_token", None)
         if token is _PATTERN_CONSTRUCTION_TOKEN:
+            return super(_NonInstantiableScaffoldType, cls).__call__(*_args, **kwargs)
+        raise TypeError(f"cannot create '{cls.__module__}.{cls.__name__}' instances")
+
+
+class _MatchScaffoldType(_NonInstantiableScaffoldType):
+    def __call__(cls, *_args: object, **kwargs: object) -> object:
+        token = kwargs.pop("_rebar_internal_token", None)
+        if token is _MATCH_CONSTRUCTION_TOKEN:
             return super(_NonInstantiableScaffoldType, cls).__call__(*_args, **kwargs)
         raise TypeError(f"cannot create '{cls.__module__}.{cls.__name__}' instances")
 
@@ -112,13 +121,19 @@ class Pattern(metaclass=_PatternScaffoldType):
         raise NotImplementedError(_pattern_placeholder_message(method_name))
 
     def search(self, *_args: object, **_kwargs: object) -> object:
-        return self._raise_placeholder("search")
+        if not _supports_literal_execution(self):
+            return self._raise_placeholder("search")
+        return _run_literal_match(self, "search", *_args, **_kwargs)
 
     def match(self, *_args: object, **_kwargs: object) -> object:
-        return self._raise_placeholder("match")
+        if not _supports_literal_execution(self):
+            return self._raise_placeholder("match")
+        return _run_literal_match(self, "match", *_args, **_kwargs)
 
     def fullmatch(self, *_args: object, **_kwargs: object) -> object:
-        return self._raise_placeholder("fullmatch")
+        if not _supports_literal_execution(self):
+            return self._raise_placeholder("fullmatch")
+        return _run_literal_match(self, "fullmatch", *_args, **_kwargs)
 
     def split(self, *_args: object, **_kwargs: object) -> object:
         return self._raise_placeholder("split")
@@ -136,8 +151,64 @@ class Pattern(metaclass=_PatternScaffoldType):
         return self._raise_placeholder("subn")
 
 
-class Match(metaclass=_NonInstantiableScaffoldType):
-    """Placeholder export for the future match-result type."""
+class Match(metaclass=_MatchScaffoldType):
+    """Concrete scaffold export for the bounded literal-only match subset."""
+
+    __slots__ = ("re", "string", "pos", "endpos", "lastindex", "lastgroup", "_span")
+
+    def __init__(
+        self,
+        pattern: Pattern,
+        string: str | bytes,
+        pos: int,
+        endpos: int,
+        span: tuple[int, int],
+    ) -> None:
+        self.re = pattern
+        self.string = string
+        self.pos = pos
+        self.endpos = endpos
+        self.lastindex = None
+        self.lastgroup = None
+        self._span = span
+
+    def __bool__(self) -> bool:
+        return True
+
+    def _resolve_group_reference(self, group: object) -> int:
+        if group == 0:
+            return 0
+        raise IndexError("no such group")
+
+    def group(self, *groups: object) -> str | bytes | tuple[str | bytes, ...]:
+        if not groups:
+            return self.string[self._span[0] : self._span[1]]
+        if len(groups) == 1:
+            self._resolve_group_reference(groups[0])
+            return self.string[self._span[0] : self._span[1]]
+        values: list[str | bytes] = []
+        for group in groups:
+            self._resolve_group_reference(group)
+            values.append(self.string[self._span[0] : self._span[1]])
+        return tuple(values)
+
+    def groups(self, default: object = None) -> tuple[()]:
+        return ()
+
+    def groupdict(self, default: object = None) -> dict[str, object]:
+        return {}
+
+    def span(self, group: object = 0) -> tuple[int, int]:
+        self._resolve_group_reference(group)
+        return self._span
+
+    def start(self, group: object = 0) -> int:
+        self._resolve_group_reference(group)
+        return self._span[0]
+
+    def end(self, group: object = 0) -> int:
+        self._resolve_group_reference(group)
+        return self._span[1]
 
 
 __all__ = [
@@ -209,6 +280,74 @@ def _supports_pattern_scaffold(pattern: str | bytes) -> bool:
     return not any(character in _LITERAL_METACHARACTERS for character in pattern)
 
 
+def _supports_literal_execution(compiled_pattern: Pattern) -> bool:
+    return compiled_pattern.flags == _normalize_pattern_flags(compiled_pattern.pattern, 0)
+
+
+def _ensure_compatible_string(pattern: str | bytes, string: object) -> str | bytes:
+    if isinstance(pattern, str):
+        if not isinstance(string, str):
+            raise TypeError("cannot use a string pattern on a bytes-like object")
+        return string
+    if not isinstance(string, bytes):
+        raise TypeError("cannot use a bytes pattern on a string-like object")
+    return string
+
+
+def _normalize_match_bounds(string: str | bytes, pos: int = 0, endpos: int | None = None) -> tuple[int, int]:
+    start, stop, _ = slice(pos, endpos).indices(len(string))
+    return start, stop
+
+
+def _build_match(
+    compiled_pattern: Pattern,
+    string: str | bytes,
+    pos: int,
+    endpos: int,
+    span: tuple[int, int],
+) -> Match:
+    return Match(
+        compiled_pattern,
+        string,
+        pos,
+        endpos,
+        span,
+        _rebar_internal_token=_MATCH_CONSTRUCTION_TOKEN,
+    )
+
+
+def _run_literal_match(
+    compiled_pattern: Pattern,
+    mode: str,
+    string: object,
+    pos: int = 0,
+    endpos: int | None = None,
+) -> Match | None:
+    compatible_string = _ensure_compatible_string(compiled_pattern.pattern, string)
+    normalized_pos, normalized_endpos = _normalize_match_bounds(compatible_string, pos, endpos)
+    pattern = compiled_pattern.pattern
+
+    if mode == "search":
+        start = compatible_string.find(pattern, normalized_pos, normalized_endpos)
+        if start < 0:
+            return None
+        span = (start, start + len(pattern))
+    elif mode == "match":
+        if not compatible_string.startswith(pattern, normalized_pos, normalized_endpos):
+            return None
+        span = (normalized_pos, normalized_pos + len(pattern))
+    elif mode == "fullmatch":
+        if normalized_endpos - normalized_pos != len(pattern):
+            return None
+        if not compatible_string.startswith(pattern, normalized_pos, normalized_endpos):
+            return None
+        span = (normalized_pos, normalized_endpos)
+    else:  # pragma: no cover - internal misuse guard
+        raise ValueError(f"unsupported literal match mode {mode!r}")
+
+    return _build_match(compiled_pattern, compatible_string, normalized_pos, normalized_endpos, span)
+
+
 def compile(pattern: str | bytes | Pattern, flags: int = 0) -> Pattern:
     """Return a narrow compiled-pattern scaffold without matching semantics."""
 
@@ -231,22 +370,31 @@ def compile(pattern: str | bytes | Pattern, flags: int = 0) -> Pattern:
     )
 
 
-def search(*_args: object, **_kwargs: object) -> object:
-    """Placeholder for the future drop-in `re.search` surface."""
+def search(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> Match | None:
+    """Literal-only drop-in slice for `re.search`."""
 
-    return _raise_placeholder("search")
-
-
-def match(*_args: object, **_kwargs: object) -> object:
-    """Placeholder for the future drop-in `re.match` surface."""
-
-    return _raise_placeholder("match")
+    compiled = compile(pattern, flags)
+    if not _supports_literal_execution(compiled):
+        return _raise_placeholder("search")
+    return compiled.search(string)
 
 
-def fullmatch(*_args: object, **_kwargs: object) -> object:
-    """Placeholder for the future drop-in `re.fullmatch` surface."""
+def match(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> Match | None:
+    """Literal-only drop-in slice for `re.match`."""
 
-    return _raise_placeholder("fullmatch")
+    compiled = compile(pattern, flags)
+    if not _supports_literal_execution(compiled):
+        return _raise_placeholder("match")
+    return compiled.match(string)
+
+
+def fullmatch(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> Match | None:
+    """Literal-only drop-in slice for `re.fullmatch`."""
+
+    compiled = compile(pattern, flags)
+    if not _supports_literal_execution(compiled):
+        return _raise_placeholder("fullmatch")
+    return compiled.fullmatch(string)
 
 
 def split(*_args: object, **_kwargs: object) -> object:

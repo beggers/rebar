@@ -86,8 +86,12 @@ class RebarExportedSymbolSurfaceTest(unittest.TestCase):
 
         self.assertIs(type(compiled), rebar.Pattern)
         self.assertIsInstance(compiled, rebar.Pattern)
-        with self.assertRaisesRegex(NotImplementedError, "scaffold placeholder"):
-            rebar.search("abc", "abc")
+
+        match = rebar.search("abc", "zzabczz")
+        self.assertIs(type(match), rebar.Match)
+        self.assertIsInstance(match, rebar.Match)
+        self.assertEqual(match.group(0), "abc")
+        self.assertEqual(match.span(), (2, 5))
 
 
 if __name__ == "__main__":

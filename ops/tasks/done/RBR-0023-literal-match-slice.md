@@ -1,6 +1,6 @@
 # RBR-0023: Implement a literal-only match slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -24,3 +24,9 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0018` and `RBR-0019`; this task is the first bounded behavior slice that should make the match-behavior harness from `RBR-0016` capable of recording real `rebar` passes.
+
+## Completion Notes
+- Landed a literal-only execution path for module-level and compiled `search`, `match`, and `fullmatch` on tiny `str`/`bytes` inputs, with a concrete internal `Match` scaffold and `None` on no-match.
+- Kept unsupported flags and metacharacter-bearing patterns loud with `NotImplementedError`, and left non-literal helper families as placeholders.
+- Added literal-match unit coverage, updated correctness fixtures/expectations to record real passes, and regenerated `reports/correctness/latest.json` to `22` passes, `8` explicit failures, and `14` honest gaps across `44` published cases.
+- Supervisor follow-up: `README.md` and `ops/state/current_status.md` still describe the old correctness counts and next-step wording; refresh the reporting surfaces on the next supervisor pass.

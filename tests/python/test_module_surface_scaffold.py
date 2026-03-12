@@ -22,9 +22,6 @@ import rebar
 
 
 PLACEHOLDER_CASES = [
-    ("search", ("abc", "abc"), {}),
-    ("match", ("abc", "abc"), {}),
-    ("fullmatch", ("abc", "abc"), {}),
     ("split", ("abc", "abc"), {}),
     ("findall", ("abc", "abc"), {}),
     ("finditer", ("abc", "abc"), {}),
@@ -86,6 +83,26 @@ class RebarModuleSurfaceScaffoldTest(unittest.TestCase):
         self.assertEqual(compiled.groups, 0)
         self.assertEqual(compiled.groupindex, {})
 
+    def test_source_package_literal_helpers_return_match_objects(self) -> None:
+        search_match = rebar.search("abc", "zzabczz")
+        self.assertIs(type(search_match), rebar.Match)
+        self.assertEqual(search_match.group(0), "abc")
+        self.assertEqual(search_match.span(), (2, 5))
+
+        anchored_match = rebar.match("abc", "abcdef")
+        self.assertIs(type(anchored_match), rebar.Match)
+        self.assertEqual(anchored_match.group(0), "abc")
+        self.assertEqual(anchored_match.span(), (0, 3))
+
+        full_match = rebar.fullmatch("abc", "abc")
+        self.assertIs(type(full_match), rebar.Match)
+        self.assertEqual(full_match.group(0), "abc")
+        self.assertEqual(full_match.span(), (0, 3))
+
+        self.assertIsNone(rebar.search("abc", "zzz"))
+        self.assertIsNone(rebar.match("abc", "zabc"))
+        self.assertIsNone(rebar.fullmatch("abc", "abcz"))
+
     def test_source_package_purge_is_safe_noop(self) -> None:
         self.assertIsNone(rebar.purge())
         self.assertIsNone(rebar.purge())
@@ -143,9 +160,6 @@ import json
 import rebar
 
 cases = {
-    "search": [["abc", "abc"], {}],
-    "match": [["abc", "abc"], {}],
-    "fullmatch": [["abc", "abc"], {}],
     "split": [["abc", "abc"], {}],
     "findall": [["abc", "abc"], {}],
     "finditer": [["abc", "abc"], {}],
@@ -158,7 +172,10 @@ cases = {
 result = {
     "native_module_loaded": rebar.native_module_loaded(),
     "native_scaffold_status": rebar.native_scaffold_status(),
-    "exported_helpers_present": all(hasattr(rebar, name) for name in sorted(cases) + ["purge"]),
+    "exported_helpers_present": all(
+        hasattr(rebar, name)
+        for name in ["search", "match", "fullmatch"] + sorted(cases) + ["purge"]
+    ),
     "purge_result": rebar.purge(),
 }
 
@@ -170,6 +187,21 @@ result["compiled_pattern"] = {
     "flags": compiled.flags,
     "groups": compiled.groups,
     "groupindex": compiled.groupindex,
+}
+
+search_match = rebar.search("abc", "zzabczz")
+result["literal_search"] = {
+    "type_name": type(search_match).__name__,
+    "group0": search_match.group(0),
+    "span": list(search_match.span()),
+}
+
+result["literal_match_none"] = rebar.match("abc", "zabc")
+full_match = rebar.fullmatch("abc", "abc")
+result["literal_fullmatch"] = {
+    "type_name": type(full_match).__name__,
+    "group0": full_match.group(0),
+    "span": list(full_match.span()),
 }
 
 exceptions = {}
@@ -202,6 +234,23 @@ print(json.dumps(result))
             self.assertTrue(result["exported_helpers_present"])
             self.assertIsNone(result["purge_result"])
             self.assertEqual(
+                result["literal_search"],
+                {
+                    "type_name": "Match",
+                    "group0": "abc",
+                    "span": [2, 5],
+                },
+            )
+            self.assertIsNone(result["literal_match_none"])
+            self.assertEqual(
+                result["literal_fullmatch"],
+                {
+                    "type_name": "Match",
+                    "group0": "abc",
+                    "span": [0, 3],
+                },
+            )
+            self.assertEqual(
                 result["compiled_pattern"],
                 {
                     "type_name": "Pattern",
@@ -213,7 +262,7 @@ print(json.dumps(result))
                 },
             )
 
-            for helper_name in EXPECTED_HELPERS - {"purge"}:
+            for helper_name in EXPECTED_HELPERS - {"purge", "search", "match", "fullmatch"}:
                 with self.subTest(helper=helper_name):
                     exception_payload = result["exceptions"][helper_name]
                     self.assertEqual(exception_payload["type"], "NotImplementedError")

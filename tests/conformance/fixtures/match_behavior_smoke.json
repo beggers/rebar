@@ -9,13 +9,13 @@
   },
   "cases": [
     {
-      "id": "search-str-success-groups",
+      "id": "search-str-success-literal",
       "family": "search_result_shape",
       "helper": "search",
-      "args": ["(?P<head>ab)(c)", "zzabczz"],
-      "categories": ["search", "success", "groups", "str"],
+      "args": ["abc", "zzabczz"],
+      "categories": ["search", "success", "literal", "str"],
       "notes": [
-        "Captures a successful module-level search result with span and group payloads."
+        "Captures a successful module-level literal search result with the first concrete Match scaffold."
       ]
     },
     {
@@ -29,13 +29,13 @@
       ]
     },
     {
-      "id": "match-str-success-groups",
+      "id": "match-str-success-literal",
       "family": "match_result_shape",
       "helper": "match",
-      "args": ["(?P<head>a)(b+)", "abbb"],
-      "categories": ["match", "success", "groups", "str"],
+      "args": ["ab", "abbb"],
+      "categories": ["match", "success", "literal", "str"],
       "notes": [
-        "Captures a successful anchored match with named and positional groups."
+        "Captures a successful anchored literal match result."
       ]
     },
     {
@@ -49,17 +49,17 @@
       ]
     },
     {
-      "id": "fullmatch-str-success-lastgroup",
+      "id": "fullmatch-str-success-literal",
       "family": "fullmatch_result_shape",
       "helper": "fullmatch",
-      "args": ["(?P<num>\\d+)", "123"],
-      "categories": ["fullmatch", "success", "named-group", "str"],
+      "args": ["123", "123"],
+      "categories": ["fullmatch", "success", "literal", "str"],
       "notes": [
-        "Exercises fullmatch truthiness plus named-group payloads for str results."
+        "Exercises fullmatch truthiness and the minimal literal Match payload for str results."
       ]
     },
     {
-      "id": "fullmatch-bytes-success-mirrored",
+      "id": "fullmatch-bytes-success-literal",
       "family": "fullmatch_result_shape",
       "helper": "fullmatch",
       "text_model": "bytes",
@@ -67,7 +67,7 @@
         {
           "type": "bytes",
           "encoding": "latin-1",
-          "value": "(?P<num>\\d+)"
+          "value": "123"
         },
         {
           "type": "bytes",
@@ -75,9 +75,9 @@
           "value": "123"
         }
       ],
-      "categories": ["fullmatch", "success", "named-group", "bytes", "mirror"],
+      "categories": ["fullmatch", "success", "literal", "bytes", "mirror"],
       "notes": [
-        "Mirrors the str fullmatch success case with bytes payloads and bytes-typed captures."
+        "Mirrors the str literal fullmatch success case with bytes payloads and bytes-typed group(0)."
       ]
     }
   ]

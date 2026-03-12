@@ -22,9 +22,6 @@ import rebar
 
 
 PATTERN_METHOD_CASES = [
-    ("search", ("abc",), {}),
-    ("match", ("abc",), {}),
-    ("fullmatch", ("abc",), {}),
     ("split", ("abc",), {}),
     ("findall", ("abc",), {}),
     ("finditer", ("abc",), {}),
@@ -68,7 +65,7 @@ class RebarPatternObjectScaffoldTest(unittest.TestCase):
         with self.assertRaisesRegex(TypeError, "first argument must be string or compiled pattern"):
             rebar.compile(123)
 
-    def test_pattern_methods_fail_loudly(self) -> None:
+    def test_pattern_placeholder_methods_fail_loudly(self) -> None:
         pattern = rebar.compile("abc")
 
         for method_name, args, kwargs in PATTERN_METHOD_CASES:
@@ -76,6 +73,40 @@ class RebarPatternObjectScaffoldTest(unittest.TestCase):
                 method = getattr(pattern, method_name)
                 with self.assertRaises(NotImplementedError) as raised:
                     method(*args, **kwargs)
+                self.assertIn(
+                    f"rebar.Pattern.{method_name}() is a scaffold placeholder",
+                    str(raised.exception),
+                )
+
+    def test_pattern_literal_methods_return_match_objects(self) -> None:
+        pattern = rebar.compile("abc")
+
+        search_match = pattern.search("zzabczz")
+        self.assertIs(type(search_match), rebar.Match)
+        self.assertEqual(search_match.group(0), "abc")
+        self.assertEqual(search_match.span(), (2, 5))
+
+        anchored_match = pattern.match("abcdef")
+        self.assertIs(type(anchored_match), rebar.Match)
+        self.assertEqual(anchored_match.group(0), "abc")
+        self.assertEqual(anchored_match.span(), (0, 3))
+
+        full_match = pattern.fullmatch("abc")
+        self.assertIs(type(full_match), rebar.Match)
+        self.assertEqual(full_match.group(0), "abc")
+        self.assertEqual(full_match.span(), (0, 3))
+
+        self.assertIsNone(pattern.search("zzz"))
+        self.assertIsNone(pattern.match("zabc"))
+        self.assertIsNone(pattern.fullmatch("abcz"))
+
+    def test_pattern_literal_methods_stay_placeholder_for_unsupported_flags(self) -> None:
+        pattern = rebar.compile("abc", rebar.IGNORECASE)
+
+        for method_name in ("search", "match", "fullmatch"):
+            with self.subTest(method=method_name):
+                with self.assertRaises(NotImplementedError) as raised:
+                    getattr(pattern, method_name)("abc")
                 self.assertIn(
                     f"rebar.Pattern.{method_name}() is a scaffold placeholder",
                     str(raised.exception),
@@ -153,6 +184,10 @@ except Exception as exc:
 else:
     result["search_exception_type"] = None
     result["search_exception_message"] = None
+    result["search_result"] = {
+        "type_name": type(compiled.search("abc")).__name__,
+        "group0": compiled.search("abc").group(0),
+    }
 
 print(json.dumps(result))
 """
@@ -172,10 +207,14 @@ print(json.dumps(result))
             self.assertEqual(result["flags"], int(rebar.IGNORECASE | rebar.UNICODE))
             self.assertEqual(result["groups"], 0)
             self.assertEqual(result["groupindex"], {})
-            self.assertEqual(result["search_exception_type"], "NotImplementedError")
-            self.assertIn(
-                "rebar.Pattern.search() is a scaffold placeholder",
-                result["search_exception_message"],
+            self.assertIsNone(result["search_exception_type"])
+            self.assertIsNone(result["search_exception_message"])
+            self.assertEqual(
+                result["search_result"],
+                {
+                    "type_name": "Match",
+                    "group0": "abc",
+                },
             )
 
 

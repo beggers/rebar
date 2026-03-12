@@ -50,10 +50,10 @@ class CorrectnessHarnessMatchBehaviorTest(unittest.TestCase):
                 {
                     "executed_cases": 28,
                     "failed_cases": 0,
-                    "passed_cases": 7,
+                    "passed_cases": 14,
                     "skipped_cases": 0,
                     "total_cases": 28,
-                    "unimplemented_cases": 21,
+                    "unimplemented_cases": 14,
                 },
             )
 
@@ -91,13 +91,13 @@ class CorrectnessHarnessMatchBehaviorTest(unittest.TestCase):
 
         public_api_layer = scorecard["layers"]["module_api_surface"]
         self.assertEqual(public_api_layer["summary"]["total_cases"], 7)
-        self.assertEqual(public_api_layer["summary"]["passed_cases"], 5)
-        self.assertEqual(public_api_layer["summary"]["unimplemented_cases"], 2)
+        self.assertEqual(public_api_layer["summary"]["passed_cases"], 6)
+        self.assertEqual(public_api_layer["summary"]["unimplemented_cases"], 1)
 
         match_layer = scorecard["layers"]["match_behavior"]
         self.assertEqual(match_layer["summary"]["total_cases"], 6)
-        self.assertEqual(match_layer["summary"]["passed_cases"], 0)
-        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 6)
+        self.assertEqual(match_layer["summary"]["passed_cases"], 6)
+        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(match_layer["operations"], ["module_call"])
         self.assertEqual(match_layer["text_models"], ["bytes", "str"])
 
@@ -119,7 +119,8 @@ class CorrectnessHarnessMatchBehaviorTest(unittest.TestCase):
 
         match_suite = next(suite for suite in scorecard["suites"] if suite["id"] == "match.behavior")
         self.assertEqual(match_suite["summary"]["total_cases"], 6)
-        self.assertEqual(match_suite["summary"]["unimplemented_cases"], 6)
+        self.assertEqual(match_suite["summary"]["passed_cases"], 6)
+        self.assertEqual(match_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             match_suite["families"],
             ["fullmatch_result_shape", "match_result_shape", "search_result_shape"],
@@ -127,41 +128,47 @@ class CorrectnessHarnessMatchBehaviorTest(unittest.TestCase):
 
         bytes_suite = next(suite for suite in scorecard["suites"] if suite["id"] == "match.behavior.bytes")
         self.assertEqual(bytes_suite["summary"]["total_cases"], 1)
+        self.assertEqual(bytes_suite["summary"]["passed_cases"], 1)
 
-        search_case = next(case for case in scorecard["cases"] if case["id"] == "search-str-success-groups")
+        search_case = next(case for case in scorecard["cases"] if case["id"] == "search-str-success-literal")
         self.assertEqual(search_case["layer"], "match_behavior")
         self.assertEqual(search_case["helper"], "search")
-        self.assertEqual(search_case["comparison"], "unimplemented")
+        self.assertEqual(search_case["comparison"], "pass")
         self.assertEqual(search_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(search_case["observations"]["cpython"]["result"]["matched"], True)
         self.assertEqual(search_case["observations"]["cpython"]["result"]["group0"], "abc")
-        self.assertEqual(search_case["observations"]["cpython"]["result"]["groups"], ["ab", "c"])
-        self.assertEqual(search_case["observations"]["cpython"]["result"]["groupdict"], {"head": "ab"})
+        self.assertEqual(search_case["observations"]["cpython"]["result"]["groups"], [])
+        self.assertEqual(search_case["observations"]["cpython"]["result"]["groupdict"], {})
         self.assertEqual(search_case["observations"]["cpython"]["result"]["span"], [2, 5])
-        self.assertEqual(search_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(search_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            search_case["observations"]["rebar"]["result"],
+            search_case["observations"]["cpython"]["result"],
+        )
 
         no_match_case = next(case for case in scorecard["cases"] if case["id"] == "match-str-no-match")
+        self.assertEqual(no_match_case["comparison"], "pass")
         self.assertEqual(no_match_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(no_match_case["observations"]["cpython"]["result"], None)
+        self.assertEqual(no_match_case["observations"]["rebar"]["result"], None)
 
         bytes_case = next(
-            case for case in scorecard["cases"] if case["id"] == "fullmatch-bytes-success-mirrored"
+            case for case in scorecard["cases"] if case["id"] == "fullmatch-bytes-success-literal"
         )
         self.assertEqual(bytes_case["text_model"], "bytes")
+        self.assertEqual(bytes_case["comparison"], "pass")
         self.assertEqual(bytes_case["observations"]["cpython"]["result"]["matched"], True)
         self.assertEqual(
             bytes_case["observations"]["cpython"]["result"]["group0"],
             {"encoding": "latin-1", "value": "123"},
         )
-        self.assertEqual(
-            bytes_case["observations"]["cpython"]["result"]["groups"],
-            [{"encoding": "latin-1", "value": "123"}],
-        )
-        self.assertEqual(
-            bytes_case["observations"]["cpython"]["result"]["groupdict"],
-            {"num": {"encoding": "latin-1", "value": "123"}},
-        )
+        self.assertEqual(bytes_case["observations"]["cpython"]["result"]["groups"], [])
+        self.assertEqual(bytes_case["observations"]["cpython"]["result"]["groupdict"], {})
         self.assertEqual(bytes_case["observations"]["cpython"]["result"]["string_type"], "bytes")
+        self.assertEqual(
+            bytes_case["observations"]["rebar"]["result"],
+            bytes_case["observations"]["cpython"]["result"],
+        )
 
 
 if __name__ == "__main__":

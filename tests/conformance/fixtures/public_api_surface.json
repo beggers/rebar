@@ -56,14 +56,14 @@
       ]
     },
     {
-      "id": "search-placeholder-notimplemented",
+      "id": "search-literal-success",
       "operation": "module_call",
-      "family": "placeholder_behavior",
+      "family": "literal_behavior",
       "helper": "search",
       "args": ["abc", "abc"],
-      "categories": ["placeholder", "search"],
+      "categories": ["literal", "search"],
       "notes": [
-        "Rebar should still fail loudly for search instead of delegating to stdlib matching."
+        "Rebar now returns a concrete Match scaffold for tiny literal-only search calls."
       ]
     },
     {

@@ -45,8 +45,13 @@ class ReadmeReportingTest(unittest.TestCase):
         self.assertEqual(scorecard["candidate"], payload["baseline"]["target_module"])
 
         rendered = rebar_ops.render_readme_status(config)
-        self.assertIn(f"| Cases | `{expected_passed}` / `{expected_total}` |", rendered)
-        self.assertIn("| Pass rate | `", rendered)
+        self.assertIn(f"| Published cases | `{expected_total}` |", rendered)
+        self.assertIn(f"| Passing comparisons | `{expected_passed}` |", rendered)
+        expected_unimplemented = summary.get(
+            "cases_unimplemented",
+            summary.get("unimplemented_cases", summary.get("unimplemented")),
+        )
+        self.assertIn(f"| Honest gaps (`unimplemented`) | `{expected_unimplemented}` |", rendered)
 
 
 if __name__ == "__main__":

@@ -42,39 +42,39 @@
       ]
     },
     {
-      "id": "pattern-search-placeholder-notimplemented",
+      "id": "pattern-search-literal-success",
       "operation": "pattern_call",
-      "family": "compiled_pattern_placeholder_behavior",
+      "family": "compiled_pattern_literal_behavior",
       "pattern": "abc",
       "helper": "search",
       "args": ["zzabczz"],
-      "categories": ["pattern", "placeholder", "search"],
+      "categories": ["pattern", "literal", "search"],
       "notes": [
-        "Rebar should still fail loudly for Pattern.search() even though compile() returns a scaffold object."
+        "Captures a successful Pattern.search() result for the bounded literal-only slice."
       ]
     },
     {
-      "id": "pattern-match-placeholder-notimplemented",
+      "id": "pattern-match-literal-success",
       "operation": "pattern_call",
-      "family": "compiled_pattern_placeholder_behavior",
+      "family": "compiled_pattern_literal_behavior",
       "pattern": "abc",
       "helper": "match",
       "args": ["abc"],
-      "categories": ["pattern", "placeholder", "match"],
+      "categories": ["pattern", "literal", "match"],
       "notes": [
-        "Pins the current Pattern.match() placeholder contract against the stdlib bound-method result."
+        "Pins the successful anchored literal Pattern.match() contract against stdlib."
       ]
     },
     {
-      "id": "pattern-fullmatch-placeholder-notimplemented",
+      "id": "pattern-fullmatch-literal-success",
       "operation": "pattern_call",
-      "family": "compiled_pattern_placeholder_behavior",
+      "family": "compiled_pattern_literal_behavior",
       "pattern": "abc",
       "helper": "fullmatch",
       "args": ["abc"],
-      "categories": ["pattern", "placeholder", "fullmatch"],
+      "categories": ["pattern", "literal", "fullmatch"],
       "notes": [
-        "Keeps Pattern.fullmatch() visible in the scorecard without miscounting the placeholder path as a pass."
+        "Captures the successful literal Pattern.fullmatch() contract."
       ]
     }
   ]
