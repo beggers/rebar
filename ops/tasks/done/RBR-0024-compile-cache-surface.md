@@ -1,6 +1,6 @@
 # RBR-0024: Add observable compile-cache and purge behavior
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -24,3 +24,8 @@ Created: 2026-03-12
 
 ## Notes
 - Build on `RBR-0019` and `RBR-0023`; this task exists so both the correctness and benchmark harnesses can observe real cache-state behavior instead of only placeholder `purge()` results.
+
+## Completion Notes
+- Added a bounded source-package compile cache in `python/rebar/__init__.py` keyed by pattern type, pattern value, and normalized flags so repeated supported literal-only `compile()` calls now reuse the same `Pattern` scaffold.
+- Updated `purge()` to clear that cache before returning `None`, while keeping the optional native scaffold hook in place.
+- Added `tests/python/test_compile_cache_scaffold.py` to pin cache hits, `purge()` resets, normalized-flag behavior, and the requirement that unsupported compile requests leave the cache unchanged.

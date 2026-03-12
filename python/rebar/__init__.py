@@ -37,6 +37,7 @@ def _pattern_placeholder_message(method_name: str) -> str:
 
 
 _LITERAL_METACHARACTERS = frozenset(".^$*+?{}[]\\|()")
+_COMPILE_CACHE: dict[tuple[type[str] | type[bytes], str | bytes, int], "Pattern"] = {}
 
 
 def _raise_placeholder(helper_name: str) -> object:
@@ -274,6 +275,10 @@ def _normalize_pattern_flags(pattern: str | bytes, flags: int) -> int:
     return flags
 
 
+def _compile_cache_key(pattern: str | bytes, flags: int) -> tuple[type[str] | type[bytes], str | bytes, int]:
+    return (type(pattern), pattern, flags)
+
+
 def _supports_pattern_scaffold(pattern: str | bytes) -> bool:
     if isinstance(pattern, bytes):
         return not any(byte in pattern for byte in br".^$*+?{}[]\|()")
@@ -363,11 +368,18 @@ def compile(pattern: str | bytes | Pattern, flags: int = 0) -> Pattern:
         return _raise_placeholder("compile")
 
     normalized_flags = _normalize_pattern_flags(pattern, int(flags))
-    return Pattern(
+    cache_key = _compile_cache_key(pattern, normalized_flags)
+    cached = _COMPILE_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+
+    compiled = Pattern(
         pattern,
         normalized_flags,
         _rebar_internal_token=_PATTERN_CONSTRUCTION_TOKEN,
     )
+    _COMPILE_CACHE[cache_key] = compiled
+    return compiled
 
 
 def search(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> Match | None:
@@ -440,8 +452,9 @@ def escape(*_args: object, **_kwargs: object) -> object:
 
 
 def purge() -> None:
-    """Placeholder for the future cache-management hook."""
+    """Clear the bounded source-package compile cache."""
 
+    _COMPILE_CACHE.clear()
     if _native is not None:
         _native.scaffold_purge()
     return None
