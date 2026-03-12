@@ -6549,6 +6549,445 @@
       "pattern": "(ab)\\1",
       "suite_id": "match.numbered_backreference",
       "text_model": "str"
+    },
+    {
+      "categories": [
+        "grouped",
+        "segment",
+        "compile",
+        "metadata",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "grouped_segment_compile_metadata",
+      "id": "grouped-segment-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "grouped-segment-workflows",
+      "notes": [
+        "Publishes the next grouped-execution frontier where one capture is surrounded by literal prefix and suffix text."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 1,
+            "pattern": "a(b)c",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "compile",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a(b)c",
+      "suite_id": "match.grouped_segment",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(b)c",
+        "zabcz"
+      ],
+      "categories": [
+        "grouped",
+        "segment",
+        "search",
+        "module",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "grouped_segment_module_workflow",
+      "helper": "search",
+      "id": "grouped-segment-module-search-str",
+      "layer": "match_behavior",
+      "manifest_id": "grouped-segment-workflows",
+      "notes": [
+        "Documents the public module search path for a tiny grouped-segment workflow without broadening into alternation, nesting, or quantified groups."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 5,
+            "group0": "abc",
+            "group1": "b",
+            "group_spans": [
+              [
+                2,
+                3
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "b"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              1,
+              4
+            ],
+            "span1": [
+              2,
+              3
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.grouped_segment",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abc"
+      ],
+      "categories": [
+        "grouped",
+        "segment",
+        "fullmatch",
+        "pattern",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "grouped_segment_pattern_workflow",
+      "helper": "fullmatch",
+      "id": "grouped-segment-pattern-fullmatch-str",
+      "layer": "match_behavior",
+      "manifest_id": "grouped-segment-workflows",
+      "notes": [
+        "Documents the bound Pattern.fullmatch grouped-segment path for the same single-capture literal-prefix/suffix shape."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "abc",
+            "group1": "b",
+            "group_spans": [
+              [
+                1,
+                2
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "b"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "span1": [
+              1,
+              2
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(b)c",
+      "suite_id": "match.grouped_segment",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "grouped",
+        "segment",
+        "named-group",
+        "compile",
+        "metadata",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_grouped_segment_compile_metadata",
+      "id": "named-grouped-segment-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "grouped-segment-workflows",
+      "notes": [
+        "Publishes the matching named-group compile frontier for one captured literal wrapped by literal text."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {
+              "word": 1
+            },
+            "groups": 1,
+            "pattern": "a(?P<word>b)c",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "compile",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a(?P<word>b)c",
+      "suite_id": "match.grouped_segment",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<word>b)c",
+        "zabcz"
+      ],
+      "categories": [
+        "grouped",
+        "segment",
+        "named-group",
+        "search",
+        "module",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_grouped_segment_module_workflow",
+      "helper": "search",
+      "id": "named-grouped-segment-module-search-str",
+      "layer": "match_behavior",
+      "manifest_id": "grouped-segment-workflows",
+      "notes": [
+        "Documents the public module search path for the named grouped-segment slice so the next gap is explicit in the combined scorecard."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 5,
+            "group0": "abc",
+            "group1": "b",
+            "group_spans": [
+              [
+                2,
+                3
+              ]
+            ],
+            "groupdict": {
+              "word": "b"
+            },
+            "groups": [
+              "b"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                2,
+                3
+              ]
+            },
+            "named_groups": {
+              "word": "b"
+            },
+            "pos": 0,
+            "span": [
+              1,
+              4
+            ],
+            "span1": [
+              2,
+              3
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.grouped_segment",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abc"
+      ],
+      "categories": [
+        "grouped",
+        "segment",
+        "named-group",
+        "fullmatch",
+        "pattern",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_grouped_segment_pattern_workflow",
+      "helper": "fullmatch",
+      "id": "named-grouped-segment-pattern-fullmatch-str",
+      "layer": "match_behavior",
+      "manifest_id": "grouped-segment-workflows",
+      "notes": [
+        "Documents the bound Pattern.fullmatch path for the same named grouped-segment shape without claiming runtime support yet."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "abc",
+            "group1": "b",
+            "group_spans": [
+              [
+                1,
+                2
+              ]
+            ],
+            "groupdict": {
+              "word": "b"
+            },
+            "groups": [
+              "b"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                1,
+                2
+              ]
+            },
+            "named_groups": {
+              "word": "b"
+            },
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "span1": [
+              1,
+              2
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<word>b)c",
+      "suite_id": "match.grouped_segment",
+      "text_model": "str"
     }
   ],
   "diagnostics": {
@@ -6561,7 +7000,7 @@
         },
         "outcomes": {
           "exception": 8,
-          "success": 91
+          "success": 97
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -6569,14 +7008,16 @@
         }
       },
       "rebar": {
-        "exception_case_count": 8,
+        "exception_case_count": 14,
         "exception_types": {
+          "NotImplementedError": 6,
           "TypeError": 2,
           "error": 6
         },
         "outcomes": {
           "exception": 8,
-          "success": 91
+          "success": 91,
+          "unimplemented": 6
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -6992,6 +7433,69 @@
     },
     {
       "case_count": 1,
+      "id": "grouped_segment_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "grouped_segment_module_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "grouped_segment_pattern_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
       "id": "grouped_template_replacement_workflow",
       "layers": [
         "module_workflow"
@@ -7365,6 +7869,69 @@
     },
     {
       "case_count": 1,
+      "id": "named_grouped_segment_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "named_grouped_segment_module_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "named_grouped_segment_pattern_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
       "id": "numbered_backreference_compile_metadata",
       "layers": [
         "match_behavior"
@@ -7664,8 +8231,8 @@
     }
   ],
   "fixtures": {
-    "case_count": 99,
-    "manifest_count": 13,
+    "case_count": 105,
+    "manifest_count": 14,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
@@ -7679,7 +8246,8 @@
       "named-group-workflows",
       "named-group-replacement-workflows",
       "named-backreference-workflows",
-      "numbered-backreference-workflows"
+      "numbered-backreference-workflows",
+      "grouped-segment-workflows"
     ],
     "paths": [
       "tests/conformance/fixtures/parser_matrix.json",
@@ -7694,30 +8262,34 @@
       "tests/conformance/fixtures/named_group_workflows.json",
       "tests/conformance/fixtures/named_group_replacement_workflows.json",
       "tests/conformance/fixtures/named_backreference_workflows.json",
-      "tests/conformance/fixtures/numbered_backreference_workflows.json"
+      "tests/conformance/fixtures/numbered_backreference_workflows.json",
+      "tests/conformance/fixtures/grouped_segment_workflows.json"
     ]
   },
-  "generated_at": "2026-03-12T09:48:55Z",
+  "generated_at": "2026-03-12T10:14:14Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
-      "case_count": 21,
+      "case_count": 27,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
             "exception_case_count": 0,
             "exception_types": {},
             "outcomes": {
-              "success": 21
+              "success": 27
             },
             "warning_case_count": 0,
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 0,
-            "exception_types": {},
+            "exception_case_count": 6,
+            "exception_types": {
+              "NotImplementedError": 6
+            },
             "outcomes": {
-              "success": 21
+              "success": 21,
+              "unimplemented": 6
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -7726,6 +8298,9 @@
       },
       "families": [
         "fullmatch_result_shape",
+        "grouped_segment_compile_metadata",
+        "grouped_segment_module_workflow",
+        "grouped_segment_pattern_workflow",
         "match_result_shape",
         "named_backreference_compile_metadata",
         "named_backreference_module_workflow",
@@ -7733,6 +8308,9 @@
         "named_group_compile_metadata",
         "named_group_module_workflow",
         "named_group_pattern_workflow",
+        "named_grouped_segment_compile_metadata",
+        "named_grouped_segment_module_workflow",
+        "named_grouped_segment_pattern_workflow",
         "numbered_backreference_compile_metadata",
         "numbered_backreference_module_workflow",
         "numbered_backreference_pattern_workflow",
@@ -7743,6 +8321,7 @@
       ],
       "manifest_ids": [
         "grouped-match-workflows",
+        "grouped-segment-workflows",
         "match-behavior-smoke",
         "named-backreference-workflows",
         "named-group-workflows",
@@ -7756,17 +8335,18 @@
       "suite_ids": [
         "match.behavior",
         "match.grouped",
+        "match.grouped_segment",
         "match.named",
         "match.named_backreference",
         "match.numbered_backreference"
       ],
       "summary": {
-        "executed_cases": 21,
+        "executed_cases": 27,
         "failed_cases": 0,
         "passed_cases": 21,
         "skipped_cases": 0,
-        "total_cases": 21,
-        "unimplemented_cases": 0
+        "total_cases": 27,
+        "unimplemented_cases": 6
       },
       "text_models": [
         "bytes",
@@ -11077,14 +11657,276 @@
       "text_models": [
         "str"
       ]
+    },
+    {
+      "case_count": 6,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 6,
+            "exception_types": {
+              "NotImplementedError": 6
+            },
+            "outcomes": {
+              "unimplemented": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "grouped_segment_compile_metadata",
+        "grouped_segment_module_workflow",
+        "grouped_segment_pattern_workflow",
+        "named_grouped_segment_compile_metadata",
+        "named_grouped_segment_module_workflow",
+        "named_grouped_segment_pattern_workflow"
+      ],
+      "id": "match.grouped_segment",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "grouped-segment-workflows"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 6
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 6,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 6,
+            "exception_types": {
+              "NotImplementedError": 6
+            },
+            "outcomes": {
+              "unimplemented": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "grouped_segment_compile_metadata",
+        "grouped_segment_module_workflow",
+        "grouped_segment_pattern_workflow",
+        "named_grouped_segment_compile_metadata",
+        "named_grouped_segment_module_workflow",
+        "named_grouped_segment_pattern_workflow"
+      ],
+      "id": "match.grouped_segment.str",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "grouped-segment-workflows"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 6
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "grouped_segment_compile_metadata",
+        "named_grouped_segment_compile_metadata"
+      ],
+      "id": "match.grouped_segment.compile",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "grouped-segment-workflows"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "grouped_segment_module_workflow",
+        "named_grouped_segment_module_workflow"
+      ],
+      "id": "match.grouped_segment.module_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "grouped-segment-workflows"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "grouped_segment_pattern_workflow",
+        "named_grouped_segment_pattern_workflow"
+      ],
+      "id": "match.grouped_segment.pattern_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "grouped-segment-workflows"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
     }
   ],
   "summary": {
-    "executed_cases": 99,
+    "executed_cases": 105,
     "failed_cases": 0,
     "passed_cases": 99,
     "skipped_cases": 0,
-    "total_cases": 99,
-    "unimplemented_cases": 0
+    "total_cases": 105,
+    "unimplemented_cases": 6
   }
 }

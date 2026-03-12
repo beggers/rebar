@@ -1,8 +1,9 @@
 # RBR-0062: Publish a grouped-segment correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Extend the published correctness scorecard with a bounded grouped-segment manifest so `rebar` explicitly records the next grouped-execution frontier after bare backreferences: literal text surrounding a single capture group.
@@ -27,3 +28,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0060` and the existing grouped/named correctness manifests.
 - This task exists so the worker can expose the next concrete grouped-execution gap without jumping straight to alternation, conditionals, or other broader regex features.
+
+## Completion
+- Added `tests/conformance/fixtures/grouped_segment_workflows.json` with six bounded grouped-segment cases covering numbered and named single-capture patterns wrapped by literal prefix/suffix text.
+- Registered the new manifest in `python/rebar_harness/correctness.py`, added `tests/conformance/test_correctness_grouped_segment_workflows.py`, updated combined-report manifest assertions in `tests/python/test_readme_reporting.py`, and republished `reports/correctness/latest.json`.
+- The published combined correctness scorecard now covers 105 cases across 14 manifests with 99 passes, 0 failures, and 6 honest `unimplemented` grouped-segment cases.

@@ -26,6 +26,9 @@ EXPECTED_MANIFEST_IDS = [
     "grouped-match-workflows",
     "named-group-workflows",
     "named-group-replacement-workflows",
+    "named-backreference-workflows",
+    "numbered-backreference-workflows",
+    "grouped-segment-workflows",
 ]
 
 

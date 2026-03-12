@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "manifest_id": "grouped-segment-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.grouped_segment",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "grouped-segment-compile-metadata-str",
+      "operation": "compile",
+      "family": "grouped_segment_compile_metadata",
+      "pattern": "a(b)c",
+      "categories": ["grouped", "segment", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the next grouped-execution frontier where one capture is surrounded by literal prefix and suffix text."
+      ]
+    },
+    {
+      "id": "grouped-segment-module-search-str",
+      "operation": "module_call",
+      "family": "grouped_segment_module_workflow",
+      "helper": "search",
+      "args": ["a(b)c", "zabcz"],
+      "categories": ["grouped", "segment", "search", "module", "str", "gap"],
+      "notes": [
+        "Documents the public module search path for a tiny grouped-segment workflow without broadening into alternation, nesting, or quantified groups."
+      ]
+    },
+    {
+      "id": "grouped-segment-pattern-fullmatch-str",
+      "operation": "pattern_call",
+      "family": "grouped_segment_pattern_workflow",
+      "pattern": "a(b)c",
+      "helper": "fullmatch",
+      "args": ["abc"],
+      "categories": ["grouped", "segment", "fullmatch", "pattern", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch grouped-segment path for the same single-capture literal-prefix/suffix shape."
+      ]
+    },
+    {
+      "id": "named-grouped-segment-compile-metadata-str",
+      "operation": "compile",
+      "family": "named_grouped_segment_compile_metadata",
+      "pattern": "a(?P<word>b)c",
+      "categories": ["grouped", "segment", "named-group", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the matching named-group compile frontier for one captured literal wrapped by literal text."
+      ]
+    },
+    {
+      "id": "named-grouped-segment-module-search-str",
+      "operation": "module_call",
+      "family": "named_grouped_segment_module_workflow",
+      "helper": "search",
+      "args": ["a(?P<word>b)c", "zabcz"],
+      "categories": ["grouped", "segment", "named-group", "search", "module", "str", "gap"],
+      "notes": [
+        "Documents the public module search path for the named grouped-segment slice so the next gap is explicit in the combined scorecard."
+      ]
+    },
+    {
+      "id": "named-grouped-segment-pattern-fullmatch-str",
+      "operation": "pattern_call",
+      "family": "named_grouped_segment_pattern_workflow",
+      "pattern": "a(?P<word>b)c",
+      "helper": "fullmatch",
+      "args": ["abc"],
+      "categories": ["grouped", "segment", "named-group", "fullmatch", "pattern", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch path for the same named grouped-segment shape without claiming runtime support yet."
+      ]
+    }
+  ]
+}
