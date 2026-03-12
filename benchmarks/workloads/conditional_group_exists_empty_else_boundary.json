@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "manifest_id": "conditional-group-exists-no-else-boundary",
+  "manifest_id": "conditional-group-exists-empty-else-boundary",
   "spec_refs": [
     "docs/benchmarks/plan.md",
     "docs/spec/drop-in-re-compatibility.md"
   ],
   "notes": [
-    "Conditional group-exists no-else boundary workloads keep one optional capture, one conditional site, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported bounded omitted-no-arm conditional slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b)?c(?(1)d)` and `a(?P<word>b)?c(?(word)d)` compile/search/fullmatch paths directly, and the carry-forward explicit-empty-else search row now also measures real timings, while nested conditionals, quantified conditionals, conditional replacement helpers, and broader alternation-heavy conditional arms stay as explicit known-gap rows until later follow-ons land.",
+    "Conditional group-exists explicit-empty-else boundary workloads keep one optional capture, one conditional site, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported bounded explicit-empty-else conditional slice rather than regex throughput.",
+    "Measured rows cover the bounded `a(b)?c(?(1)d|)` and `a(?P<word>b)?c(?(word)d|)` compile/search/fullmatch paths directly, while empty-yes-arm forms, nested conditionals, quantified conditionals, conditional replacement helpers, and broader alternation-heavy conditional arms stay as explicit known-gap rows until later follow-ons land.",
     "Assertion-conditioned branches remain outside this benchmark manifest because CPython rejects them and the current benchmark harness only publishes timing rows for accepted syntax."
   ],
   "defaults": {
@@ -17,11 +17,11 @@
   },
   "workloads": [
     {
-      "id": "module-compile-numbered-conditional-group-exists-no-else-cold-str",
+      "id": "module-compile-numbered-conditional-group-exists-empty-else-cold-str",
       "bucket": "module-compile",
       "family": "module",
       "operation": "module.compile",
-      "pattern": "a(b)?c(?(1)d)",
+      "pattern": "a(b)?c(?(1)d|)",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "cold",
@@ -32,7 +32,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "no-else",
+        "empty-else",
         "cold-cache"
       ],
       "syntax_features": [
@@ -42,15 +42,15 @@
         "conditionals"
       ],
       "notes": [
-        "Cold module.compile benchmark for the bounded numbered omitted-no-arm conditional slice so compile metadata timing reaches the published benchmark report."
+        "Cold module.compile benchmark for the bounded numbered explicit-empty-else conditional slice so compile metadata timing reaches the published benchmark report."
       ]
     },
     {
-      "id": "module-search-numbered-conditional-group-exists-no-else-present-warm-str",
+      "id": "module-search-numbered-conditional-group-exists-empty-else-present-warm-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(b)?c(?(1)d)",
+      "pattern": "a(b)?c(?(1)d|)",
       "haystack": "zzabcdzz",
       "flags": 0,
       "text_model": "str",
@@ -62,7 +62,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "no-else",
+        "empty-else",
         "search",
         "module",
         "present",
@@ -76,15 +76,15 @@
         "conditionals"
       ],
       "notes": [
-        "Warm module.search helper path for the bounded numbered omitted-no-arm conditional workflow when the optional capture is present and the yes-arm literal suffix is required."
+        "Warm module.search helper path for the bounded numbered explicit-empty-else workflow when the optional capture is present and the yes-arm literal suffix is selected."
       ]
     },
     {
-      "id": "pattern-fullmatch-numbered-conditional-group-exists-no-else-absent-purged-str",
+      "id": "pattern-fullmatch-numbered-conditional-group-exists-empty-else-absent-purged-str",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(b)?c(?(1)d)",
+      "pattern": "a(b)?c(?(1)d|)",
       "haystack": "ac",
       "flags": 0,
       "text_model": "str",
@@ -96,7 +96,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "no-else",
+        "empty-else",
         "fullmatch",
         "absent",
         "purged-cache"
@@ -109,15 +109,15 @@
         "cache-purge"
       ],
       "notes": [
-        "Purged-cache Pattern.fullmatch probe for the bounded numbered omitted-no-arm conditional workflow when the optional capture is omitted and the pattern terminates at the conditional site."
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered explicit-empty-else conditional workflow when the optional capture is omitted and the else arm contributes an empty suffix."
       ]
     },
     {
-      "id": "module-compile-named-conditional-group-exists-no-else-warm-str",
+      "id": "module-compile-named-conditional-group-exists-empty-else-warm-str",
       "bucket": "module-compile",
       "family": "module",
       "operation": "module.compile",
-      "pattern": "a(?P<word>b)?c(?(word)d)",
+      "pattern": "a(?P<word>b)?c(?(word)d|)",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
@@ -128,7 +128,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "no-else",
+        "empty-else",
         "named-group",
         "warm-cache"
       ],
@@ -140,15 +140,15 @@
         "named-groups"
       ],
       "notes": [
-        "Warm module.compile path for the bounded named omitted-no-arm conditional slice so named metadata timing reaches the benchmark report."
+        "Warm module.compile path for the bounded named explicit-empty-else conditional slice so named metadata timing reaches the benchmark report."
       ]
     },
     {
-      "id": "module-search-named-conditional-group-exists-no-else-present-warm-str",
+      "id": "module-search-named-conditional-group-exists-empty-else-present-warm-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(?P<word>b)?c(?(word)d)",
+      "pattern": "a(?P<word>b)?c(?(word)d|)",
       "haystack": "zzabcdzz",
       "flags": 0,
       "text_model": "str",
@@ -159,7 +159,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "no-else",
+        "empty-else",
         "named-group",
         "search",
         "module",
@@ -174,15 +174,15 @@
         "named-groups"
       ],
       "notes": [
-        "Warm module.search helper path for the bounded named omitted-no-arm conditional workflow when the optional named capture is present and the yes-arm literal suffix is required."
+        "Warm module.search helper path for the bounded named explicit-empty-else workflow when the optional named capture is present and the yes-arm literal suffix is selected."
       ]
     },
     {
-      "id": "pattern-fullmatch-named-conditional-group-exists-no-else-absent-purged-str",
+      "id": "pattern-fullmatch-named-conditional-group-exists-empty-else-absent-purged-str",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(?P<word>b)?c(?(word)d)",
+      "pattern": "a(?P<word>b)?c(?(word)d|)",
       "haystack": "ac",
       "flags": 0,
       "text_model": "str",
@@ -195,7 +195,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "no-else",
+        "empty-else",
         "named-group",
         "fullmatch",
         "absent",
@@ -211,16 +211,16 @@
         "cache-purge"
       ],
       "notes": [
-        "Smoke-sized Pattern.fullmatch probe for the bounded named omitted-no-arm conditional workflow when the optional capture is omitted so named-group None payload timing reaches the benchmark report."
+        "Smoke-sized Pattern.fullmatch probe for the bounded named explicit-empty-else workflow when the optional capture is omitted so the empty else arm stays on the published benchmark surface."
       ]
     },
     {
-      "id": "module-search-numbered-conditional-group-exists-explicit-empty-else-cold-gap",
+      "id": "module-search-numbered-conditional-group-exists-empty-yes-arm-cold-gap",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(b)?c(?(1)d|)",
-      "haystack": "zzaczz",
+      "pattern": "a(b)?c(?(1)|e)",
+      "haystack": "zzacezz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "cold",
@@ -230,7 +230,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "explicit-empty-else",
+        "empty-yes-arm",
         "search",
         "module",
         "unsupported",
@@ -243,15 +243,15 @@
         "conditionals"
       ],
       "notes": [
-        "Carry-forward explicit-empty-else row so `(?(1)yes|)` and `(?(name)yes|)` stay visible alongside the omitted-no-arm slice after the accepted syntax reaches real benchmark timings."
+        "Explicit empty-yes-arm gap row so `(?(1)|else)` and `(?(name)|else)` stay visible on the benchmark surface until the next accepted conditional follow-on lands."
       ]
     },
     {
-      "id": "module-search-numbered-nested-conditional-group-exists-no-else-cold-gap",
+      "id": "module-search-numbered-nested-conditional-group-exists-empty-else-cold-gap",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(b)?c(?(1)(?(1)d))",
+      "pattern": "a(b)?c(?(1)(?(1)d|)|)",
       "haystack": "zzabcdzz",
       "flags": 0,
       "text_model": "str",
@@ -262,7 +262,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "no-else",
+        "empty-else",
         "nested-conditional",
         "search",
         "module",
@@ -276,15 +276,15 @@
         "conditionals"
       ],
       "notes": [
-        "Explicit nested-conditional gap row so broader conditional composition stays visible now that the bounded omitted-no-arm slice has real timings."
+        "Explicit nested-conditional gap row so broader explicit-empty-else conditional composition stays visible now that the bounded accepted slice has real timings."
       ]
     },
     {
-      "id": "pattern-fullmatch-numbered-quantified-conditional-group-exists-no-else-purged-gap",
+      "id": "pattern-fullmatch-numbered-quantified-conditional-group-exists-empty-else-purged-gap",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(b)?c(?(1)d){2}",
+      "pattern": "a(b)?c(?(1)d|){2}",
       "haystack": "abcdd",
       "flags": 0,
       "text_model": "str",
@@ -296,7 +296,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "no-else",
+        "empty-else",
         "quantified",
         "fullmatch",
         "unsupported",
@@ -311,15 +311,15 @@
         "cache-purge"
       ],
       "notes": [
-        "Explicit quantified-conditional gap row so repeated omitted-no-arm conditional behavior stays on the benchmark surface instead of disappearing."
+        "Explicit quantified-conditional gap row so repeated explicit-empty-else conditional behavior stays on the benchmark surface instead of disappearing."
       ]
     },
     {
-      "id": "module-sub-numbered-conditional-group-exists-no-else-replacement-warm-gap",
+      "id": "module-sub-numbered-conditional-group-exists-empty-else-replacement-warm-gap",
       "bucket": "module-sub",
       "family": "module",
       "operation": "module.sub",
-      "pattern": "a(b)?c(?(1)d)",
+      "pattern": "a(b)?c(?(1)d|)",
       "haystack": "zzabcd ac zz",
       "replacement": "X",
       "flags": 0,
@@ -332,7 +332,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "no-else",
+        "empty-else",
         "replacement",
         "module",
         "unsupported",
@@ -345,15 +345,15 @@
         "conditionals"
       ],
       "notes": [
-        "Explicit conditional replacement gap row so omitted-no-arm `sub()` helper behavior stays visible instead of being mistaken for the already-supported search/fullmatch slice."
+        "Explicit conditional replacement gap row so explicit-empty-else `sub()` helper behavior stays visible instead of being mistaken for the already-supported search/fullmatch slice."
       ]
     },
     {
-      "id": "module-search-numbered-conditional-group-exists-no-else-alternation-heavy-warm-gap",
+      "id": "module-search-numbered-conditional-group-exists-empty-else-alternation-heavy-warm-gap",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(b)?c(?(1)(de|df))",
+      "pattern": "a(b)?c(?(1)(de|df)|)",
       "haystack": "zzabcdfzz",
       "flags": 0,
       "text_model": "str",
@@ -364,7 +364,7 @@
         "optional-group",
         "conditional",
         "group-exists",
-        "no-else",
+        "empty-else",
         "alternation",
         "backtracking-heavy",
         "search",
@@ -380,7 +380,7 @@
         "alternation"
       ],
       "notes": [
-        "Explicit broader backtracking-heavy gap row so alternation inside an omitted-no-arm conditional arm stays on the benchmark surface until the engine supports that wider execution shape."
+        "Explicit broader backtracking-heavy gap row so alternation inside an explicit-empty-else conditional arm stays on the benchmark surface until the engine supports that wider execution shape."
       ]
     }
   ]

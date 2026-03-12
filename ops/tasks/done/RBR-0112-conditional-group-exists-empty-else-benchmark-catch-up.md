@@ -1,6 +1,6 @@
 # RBR-0112: Catch bounded conditional explicit-empty-else benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,6 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0111`.
 - This task exists so the queue does not reach bounded explicit-empty-else conditional parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- 2026-03-12: Added `conditional_group_exists_empty_else_boundary.json`, wired it into the default benchmark manifest set, added dedicated combined-scorecard coverage in `tests/benchmarks/test_conditional_group_exists_empty_else_boundary_benchmarks.py`, refreshed the adjacent omitted-no-arm benchmark expectations now that the carry-forward explicit-empty-else row measures after `RBR-0111`, and regenerated `reports/benchmarks/latest.json` to publish the new 208-workload / 162-measured / 46-gap combined benchmark surface.
