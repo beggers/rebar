@@ -1,6 +1,6 @@
 # RBR-0116: Publish a bounded conditional fully-empty correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -29,3 +29,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0115`.
 - This task exists so the worker publishes the next exact CPython-accepted conditional syntax surface instead of stopping the queue at empty-yes-arm coverage.
+
+## Completion
+- Added `conditional_group_exists_fully_empty_workflows.json` as a dedicated six-case manifest for numbered and named `(?(1)|)` / `(?(name)|)` module and compiled-pattern observations.
+- Extended `python/rebar_harness/correctness.py` so the fully empty conditional manifest is part of the default combined correctness publication set.
+- Added `test_correctness_conditional_group_exists_fully_empty_workflows.py` and republished `reports/correctness/latest.json`; the combined scorecard now reports 218 total published cases with the new fully empty conditional slice recorded honestly as 6 `unimplemented` cases against CPython success observations.
