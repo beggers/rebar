@@ -1,6 +1,6 @@
 # RBR-0115: Catch bounded conditional empty-yes-arm benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0114`.
 - This task exists so the queue does not reach bounded empty-yes-arm conditional parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Added the dedicated `conditional_group_exists_empty_yes_else_boundary.json` benchmark manifest and registered it in the default benchmark publication set.
+- Added regression coverage for the new manifest and refreshed the prior explicit-empty-else benchmark expectations because its carry-forward empty-yes-arm row now records real timings.
+- Republished `reports/benchmarks/latest.json`; the combined benchmark scorecard now covers 219 workloads with 169 measured `rebar` timings and 50 explicit known gaps.
