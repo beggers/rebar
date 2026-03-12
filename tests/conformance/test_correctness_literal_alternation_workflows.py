@@ -105,10 +105,10 @@ class CorrectnessHarnessLiteralAlternationWorkflowTest(unittest.TestCase):
                 {
                     "executed_cases": 108,
                     "failed_cases": 0,
-                    "passed_cases": 105,
+                    "passed_cases": 108,
                     "skipped_cases": 0,
                     "total_cases": 108,
-                    "unimplemented_cases": 3,
+                    "unimplemented_cases": 0,
                 },
             )
 
@@ -157,9 +157,9 @@ class CorrectnessHarnessLiteralAlternationWorkflowTest(unittest.TestCase):
 
         match_layer = scorecard["layers"]["match_behavior"]
         self.assertEqual(match_layer["summary"]["total_cases"], 30)
-        self.assertEqual(match_layer["summary"]["passed_cases"], 27)
+        self.assertEqual(match_layer["summary"]["passed_cases"], 30)
         self.assertEqual(match_layer["summary"]["failed_cases"], 0)
-        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 3)
+        self.assertEqual(match_layer["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             match_layer["manifest_ids"],
             [
@@ -186,9 +186,9 @@ class CorrectnessHarnessLiteralAlternationWorkflowTest(unittest.TestCase):
             suite for suite in scorecard["suites"] if suite["id"] == "match.literal_alternation"
         )
         self.assertEqual(literal_alternation_suite["summary"]["total_cases"], 3)
-        self.assertEqual(literal_alternation_suite["summary"]["passed_cases"], 0)
+        self.assertEqual(literal_alternation_suite["summary"]["passed_cases"], 3)
         self.assertEqual(literal_alternation_suite["summary"]["failed_cases"], 0)
-        self.assertEqual(literal_alternation_suite["summary"]["unimplemented_cases"], 3)
+        self.assertEqual(literal_alternation_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             literal_alternation_suite["families"],
             [
@@ -203,43 +203,37 @@ class CorrectnessHarnessLiteralAlternationWorkflowTest(unittest.TestCase):
             for case in scorecard["cases"]
             if case["id"] == "literal-alternation-compile-metadata-str"
         )
-        self.assertEqual(compile_case["comparison"], "unimplemented")
+        self.assertEqual(compile_case["comparison"], "pass")
         self.assertEqual(compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groupindex"], {})
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groups"], 0)
-        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "unimplemented")
-        self.assertEqual(
-            compile_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
-        )
+        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(compile_case["observations"]["rebar"]["result"]["groupindex"], {})
+        self.assertEqual(compile_case["observations"]["rebar"]["result"]["groups"], 0)
 
         module_case = next(
             case for case in scorecard["cases"] if case["id"] == "literal-alternation-module-search-str"
         )
-        self.assertEqual(module_case["comparison"], "unimplemented")
+        self.assertEqual(module_case["comparison"], "pass")
         self.assertEqual(module_case["helper"], "search")
         self.assertEqual(module_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(module_case["observations"]["cpython"]["result"]["group0"], "ac")
         self.assertEqual(module_case["observations"]["cpython"]["result"]["groups"], [])
-        self.assertEqual(module_case["observations"]["rebar"]["outcome"], "unimplemented")
-        self.assertEqual(
-            module_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
-        )
+        self.assertEqual(module_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(module_case["observations"]["rebar"]["result"]["group0"], "ac")
+        self.assertEqual(module_case["observations"]["rebar"]["result"]["groups"], [])
 
         pattern_case = next(
             case for case in scorecard["cases"] if case["id"] == "literal-alternation-pattern-fullmatch-str"
         )
-        self.assertEqual(pattern_case["comparison"], "unimplemented")
+        self.assertEqual(pattern_case["comparison"], "pass")
         self.assertEqual(pattern_case["helper"], "fullmatch")
         self.assertEqual(pattern_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(pattern_case["observations"]["cpython"]["result"]["group0"], "ac")
         self.assertEqual(pattern_case["observations"]["cpython"]["result"]["groups"], [])
-        self.assertEqual(pattern_case["observations"]["rebar"]["outcome"], "unimplemented")
-        self.assertEqual(
-            pattern_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
-        )
+        self.assertEqual(pattern_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(pattern_case["observations"]["rebar"]["result"]["group0"], "ac")
+        self.assertEqual(pattern_case["observations"]["rebar"]["result"]["groups"], [])
 
 
 if __name__ == "__main__":

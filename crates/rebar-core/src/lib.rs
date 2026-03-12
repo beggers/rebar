@@ -370,6 +370,11 @@ struct NumberedBackreferenceLiteralPattern<'a> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+struct LiteralAlternationPattern<'a> {
+    branches: Vec<&'a str>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct SegmentedCaptureLiteralPattern<'a> {
     prefix: &'a str,
     capture: LiteralCapture<'a>,
@@ -583,6 +588,19 @@ fn compile_known_supported_case(
         PatternRef::Str("a.c")
             if normalized_flags == FLAG_UNICODE
                 || normalized_flags == FLAG_IGNORECASE | FLAG_UNICODE =>
+        {
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: 0,
+                named_groups: Vec::new(),
+                warning: None,
+            })
+        }
+        PatternRef::Str(pattern)
+            if parse_literal_alternation_pattern_str(pattern).is_some()
+                && normalized_flags == FLAG_UNICODE =>
         {
             Some(CompileOutcome {
                 status: CompileStatus::Compiled,
@@ -818,6 +836,22 @@ fn parse_grouped_segment_literal_pattern_str(
     })
 }
 
+fn parse_literal_alternation_pattern_str(pattern: &str) -> Option<LiteralAlternationPattern<'_>> {
+    let branches: Vec<&str> = pattern.split('|').collect();
+    if branches.len() < 2 {
+        return None;
+    }
+
+    if branches
+        .iter()
+        .any(|branch| branch.is_empty() || branch.chars().any(is_meta_character))
+    {
+        return None;
+    }
+
+    Some(LiteralAlternationPattern { branches })
+}
+
 fn is_supported_group_name(name: &str) -> bool {
     let mut chars = name.chars();
     match chars.next() {
@@ -911,7 +945,29 @@ fn literal_match_str(
             Vec::new(),
         )
     } else if let PatternRef::Str(pattern_value) = pattern {
-        if let Some(named_backreference_pattern) =
+        if let Some(alternation_pattern) = parse_literal_alternation_pattern_str(pattern_value) {
+            if flags != FLAG_UNICODE {
+                return MatchOutcome {
+                    status: MatchStatus::Unsupported,
+                    pos: normalized_pos,
+                    endpos: normalized_endpos,
+                    span: None,
+                    group_spans: Vec::new(),
+                };
+            }
+
+            (
+                find_literal_alternation_match_span_str(
+                    &alternation_pattern,
+                    flags,
+                    mode,
+                    &string_chars,
+                    normalized_pos,
+                    normalized_endpos,
+                ),
+                Vec::new(),
+            )
+        } else if let Some(named_backreference_pattern) =
             parse_named_backreference_literal_pattern_str(pattern_value)
         {
             if flags != FLAG_UNICODE {
@@ -1364,6 +1420,39 @@ fn find_literal_start_bytes(
         .find(|start| literal_matches_at_bytes(pattern, flags, string, *start, endpos))
 }
 
+fn find_literal_alternation_match_span_str(
+    pattern: &LiteralAlternationPattern<'_>,
+    flags: i32,
+    mode: MatchMode,
+    string: &[char],
+    pos: usize,
+    endpos: usize,
+) -> Option<(usize, usize)> {
+    let branch_chars: Vec<Vec<char>> = pattern
+        .branches
+        .iter()
+        .map(|branch| branch.chars().collect())
+        .collect();
+
+    match mode {
+        MatchMode::Search => (pos..=endpos).find_map(|start| {
+            branch_chars.iter().find_map(|branch| {
+                literal_matches_at_str(branch.as_slice(), flags, string, start, endpos)
+                    .then_some((start, start + branch.len()))
+            })
+        }),
+        MatchMode::Match => branch_chars.iter().find_map(|branch| {
+            literal_matches_at_str(branch.as_slice(), flags, string, pos, endpos)
+                .then_some((pos, pos + branch.len()))
+        }),
+        MatchMode::Fullmatch => branch_chars.iter().find_map(|branch| {
+            (endpos.saturating_sub(pos) == branch.len()
+                && literal_matches_at_str(branch.as_slice(), flags, string, pos, endpos))
+            .then_some((pos, endpos))
+        }),
+    }
+}
+
 fn collect_literal_spans_str(
     pattern: &[char],
     flags: i32,
@@ -1747,6 +1836,16 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_bounded_literal_alternation_case() {
+        let outcome = compile(PatternRef::Str("ab|ac"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.group_count, 0);
+        assert!(outcome.named_groups.is_empty());
+    }
+
+    #[test]
     fn compile_accepts_bounded_named_backreference_literal_case() {
         let outcome = compile(PatternRef::Str("(?P<word>ab)(?P=word)"), 0).unwrap();
         assert_eq!(outcome.status, CompileStatus::Compiled);
@@ -1964,6 +2063,40 @@ mod tests {
         assert_eq!(outcome.status, MatchStatus::Matched);
         assert_eq!(outcome.span, Some((2, 6)));
         assert_eq!(outcome.group_spans, vec![Some((2, 4))]);
+    }
+
+    #[test]
+    fn literal_alternation_search_matches_second_branch() {
+        let outcome = literal_match(
+            PatternRef::Str("ab|ac"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzaczz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 4)));
+        assert!(outcome.group_spans.is_empty());
+    }
+
+    #[test]
+    fn literal_alternation_fullmatch_matches_second_branch() {
+        let outcome = literal_match(
+            PatternRef::Str("ab|ac"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("ac"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 2)));
+        assert!(outcome.group_spans.is_empty());
     }
 
     #[test]

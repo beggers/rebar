@@ -1,6 +1,6 @@
 # RBR-0066: Add bounded literal-alternation parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,7 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0063`, `RBR-0064`, and `RBR-0065`.
 - This task exists so the queue extends from grouped-segment work into the next realistic branch-selection shape instead of stopping at a reporting-only frontier.
+
+## Completion
+- Landed a narrow Rust-backed top-level literal-alternation slice for `str` patterns like `ab|ac`, covering compile metadata plus bounded module `search()` and compiled-pattern `fullmatch()` behavior without widening into grouped or nested alternation.
+- Added focused Rust and Python parity tests and regenerated `reports/correctness/latest.json`, which now publishes 108 passing cases and 0 `unimplemented` outcomes.
