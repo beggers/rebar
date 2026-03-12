@@ -44,6 +44,7 @@ class CompileBenchmarkMatrixTest(unittest.TestCase):
                     "measured_workloads": 0,
                     "module_workloads": 0,
                     "parser_workloads": 6,
+                    "regression_workloads": 0,
                     "total_workloads": 6,
                 },
             )

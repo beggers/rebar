@@ -47,6 +47,7 @@ class ModuleBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     "measured_workloads": 1,
                     "module_workloads": 8,
                     "parser_workloads": 6,
+                    "regression_workloads": 0,
                     "total_workloads": 14,
                 },
             )

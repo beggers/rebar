@@ -44,6 +44,7 @@ class BenchmarkHarnessSmokeTest(unittest.TestCase):
                     "measured_workloads": 0,
                     "module_workloads": 0,
                     "parser_workloads": 2,
+                    "regression_workloads": 0,
                     "total_workloads": 2,
                 },
             )

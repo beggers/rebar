@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "manifest_id": "regression-matrix",
+  "spec_refs": [
+    "docs/benchmarks/plan.md",
+    "docs/spec/syntax-scope.md",
+    "docs/spec/drop-in-re-compatibility.md"
+  ],
+  "notes": [
+    "Phase 3 regression/stability pack keeps a curated set of parser-stress and module-boundary probes tied to the tracked specs.",
+    "These workloads are intentionally small and explicitly labeled so the scorecard can flag regressions without pretending to measure regex-engine throughput."
+  ],
+  "defaults": {
+    "warmup_iterations": 2,
+    "sample_iterations": 5,
+    "timed_samples": 7
+  },
+  "workloads": [
+    {
+      "id": "regression-import-cold",
+      "bucket": "module-import",
+      "family": "module",
+      "operation": "import",
+      "cache_mode": "cold",
+      "timing_scope": "module-import",
+      "text_model": "str",
+      "smoke": true,
+      "categories": [
+        "regression",
+        "import",
+        "cold-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "module-import"
+      ],
+      "notes": [
+        "Regression sentinel for import-path drift between the tracked source-tree shim and future native timing paths."
+      ]
+    },
+    {
+      "id": "regression-parser-atomic-lookbehind-cold",
+      "bucket": "parser-stress",
+      "family": "parser",
+      "operation": "compile",
+      "pattern": "(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\\d{2}))?(?:(?<=foo)bar)?(?P=lemma)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "compile-path-proxy",
+      "smoke": true,
+      "categories": [
+        "regression",
+        "parser-stress",
+        "atomic-group",
+        "lookbehind",
+        "backreference",
+        "cold-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "grouping-forms",
+        "quantifiers",
+        "assertions-and-anchors",
+        "backreferences-and-conditionals",
+        "flag-syntax"
+      ],
+      "notes": [
+        "Smoke-sized parser-stress sentinel covering modern CPython 3.12 syntax that is easy to rerun after harness changes."
+      ]
+    },
+    {
+      "id": "regression-parser-bytes-backreference-purged",
+      "bucket": "bytes-parser-stress",
+      "family": "parser",
+      "operation": "compile",
+      "pattern": "(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "compile-path-proxy",
+      "categories": [
+        "regression",
+        "bytes",
+        "named-group",
+        "backreference",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-text-model",
+        "grouping-forms",
+        "backreferences-and-conditionals",
+        "quantifiers"
+      ],
+      "notes": [
+        "Bytes parser regression probe that keeps purged-cache behavior visible for a named-group backreference path."
+      ]
+    },
+    {
+      "id": "regression-module-compile-verbose-purged",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "flags": 72,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "regression",
+        "compile",
+        "verbose",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "quantifiers",
+        "cache-purge"
+      ],
+      "notes": [
+        "Module compile regression probe that combines verbose-mode tokenization with explicit cache reset labeling."
+      ]
+    },
+    {
+      "id": "regression-module-search-bytes-cold-miss",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "abc",
+      "haystack": "zzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "regression",
+        "search",
+        "bytes",
+        "cold-cache",
+        "no-match"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model"
+      ],
+      "notes": [
+        "Bytes module-boundary regression probe that keeps the no-match helper path visible without turning into a haystack-throughput claim."
+      ]
+    }
+  ]
+}

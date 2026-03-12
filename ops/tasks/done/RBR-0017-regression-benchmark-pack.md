@@ -1,6 +1,6 @@
 # RBR-0017: Expand the benchmark harness into a regression and stability pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-11
 
@@ -27,3 +27,8 @@ Created: 2026-03-11
 ## Notes
 - Use `docs/benchmarks/plan.md` as the primary task spec, especially the Phase 3 regression and stability expansion guidance.
 - Build on `RBR-0012` and `RBR-0015`; this task should add durable regression-oriented coverage on top of those suites, not reopen baseline metadata work.
+
+## Completion Notes
+- Added `benchmarks/workloads/regression_matrix.json` as a five-workload curated regression/stability pack spanning parser-stress and module-boundary probes, with two smoke-tagged workloads for quick reruns.
+- Extended `python/rebar_harness/benchmarks.py` with phase-3 report labeling, per-manifest summaries/provenance, and a `--smoke` mode that filters selected manifests to smoke-tagged workloads.
+- Added `tests/benchmarks/test_regression_benchmark_pack.py`, updated existing benchmark summary assertions, and regenerated `reports/benchmarks/latest.json` as a 19-workload combined Phase 3 scorecard.

@@ -1,21 +1,20 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2: finish Phase 2 module-boundary benchmarking and the remaining import-surface/pattern scaffolds, then roll directly into the first honest-behavior slice for literal-only matching, compile-cache/purge observability, and `escape()` parity on top of the landed Phase 1 parser conformance and compile-path benchmark packs, verified native-extension smoke path, helper-surface scaffold, exact CPython baseline metadata, and the Phase 2 public-API correctness scorecard.
+Milestone 2: finish Phase 2 module-boundary benchmarking and the remaining import-surface/pattern scaffolds, then roll directly into the first honest-behavior slice for literal-only matching, compile-cache/purge observability, and `escape()` parity on top of the landed Phase 1 parser conformance and compile-path benchmark packs, verified native-extension smoke path, helper-surface scaffold, exact CPython baseline metadata, the Phase 2 public-API correctness scorecard, and the first Phase 3 match-behavior smoke pack.
 
 ## Ordered Work
-1. Land `RBR-0016` to expand the correctness harness into the first Layer 3 match-behavior pack with tiny success/no-match fixtures and structured result observations.
-2. Land `RBR-0017` to expand the benchmark harness into a small regression/stability pack with curated workloads and a repeatable smoke subset.
-3. Land `RBR-0018` to expose CPython-shaped exported flags, types, and exceptions so import-surface compatibility keeps advancing after the first module helper scaffold lands.
-4. Land `RBR-0019` to scaffold compiled-pattern objects and their early observable attributes/method surfaces so Layer 2 correctness can advance beyond module-level helpers.
-5. Land `RBR-0020` to teach the benchmark harness to report source-tree-shim versus built-native timing provenance so measurement paths stay aligned with the validated `rebar._rebar` smoke route.
-6. Land `RBR-0021` to expand correctness coverage across exported flags/constants and public helper types once the symbol surface lands.
-7. Land `RBR-0022` to expand correctness coverage across compiled `Pattern` scaffold attributes and method placeholders once `compile()` returns a concrete scaffold object.
-8. Land `RBR-0023` to implement a tiny literal-only `compile`/`search`/`match`/`fullmatch` path plus a concrete `Match` scaffold so the first match-behavior pack can start accumulating real passes instead of only honest unimplemented results.
-9. Land `RBR-0024` to make successful literal-only `compile()` results observable through cache hits and `purge()` resets so public cache behavior and benchmark cache modes stop being placeholder-only.
-10. Land `RBR-0025` to turn `escape()` into a real CPython-compatible helper for both `str` and `bytes` so the module surface gains at least one fully implemented public helper without waiting for the general engine.
-11. Land `RBR-0026` to extend the benchmark harness with precompiled-pattern helper workloads once `Pattern` objects and a bounded literal-only path exist.
-12. Land `RBR-0027` to extend the correctness harness into a module-workflow pack that covers literal-only compile/search flows, cache/purge observations, and `escape()` parity.
+1. Land `RBR-0017` to expand the benchmark harness into a small regression/stability pack with curated workloads and a repeatable smoke subset.
+2. Land `RBR-0018` to expose CPython-shaped exported flags, types, and exceptions so import-surface compatibility keeps advancing after the first module helper scaffold lands.
+3. Land `RBR-0019` to scaffold compiled-pattern objects and their early observable attributes/method surfaces so Layer 2 correctness can advance beyond module-level helpers.
+4. Land `RBR-0020` to teach the benchmark harness to report source-tree-shim versus built-native timing provenance so measurement paths stay aligned with the validated `rebar._rebar` smoke route.
+5. Land `RBR-0021` to expand correctness coverage across exported flags/constants and public helper types once the symbol surface lands.
+6. Land `RBR-0022` to expand correctness coverage across compiled `Pattern` scaffold attributes and method placeholders once `compile()` returns a concrete scaffold object.
+7. Land `RBR-0023` to implement a tiny literal-only `compile`/`search`/`match`/`fullmatch` path plus a concrete `Match` scaffold so the first match-behavior pack can start accumulating real passes instead of only honest unimplemented results.
+8. Land `RBR-0024` to make successful literal-only `compile()` results observable through cache hits and `purge()` resets so public cache behavior and benchmark cache modes stop being placeholder-only.
+9. Land `RBR-0025` to turn `escape()` into a real CPython-compatible helper for both `str` and `bytes` so the module surface gains at least one fully implemented public helper without waiting for the general engine.
+10. Land `RBR-0026` to extend the benchmark harness with precompiled-pattern helper workloads once `Pattern` objects and a bounded literal-only path exist.
+11. Land `RBR-0027` to extend the correctness harness into a module-workflow pack that covers literal-only compile/search flows, cache/purge observations, and `escape()` parity.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
