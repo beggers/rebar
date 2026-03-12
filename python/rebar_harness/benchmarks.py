@@ -37,6 +37,7 @@ DEFAULT_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.json",
     REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "pattern_boundary.json",
+    REPO_ROOT / "benchmarks" / "workloads" / "collection_replacement_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.json",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
@@ -56,7 +57,10 @@ class Workload:
     operation: str
     pattern: str
     haystack: str | None
+    replacement: str | None
     flags: int
+    count: int
+    maxsplit: int
     text_model: str
     cache_mode: str
     timing_scope: str
@@ -89,7 +93,14 @@ class Workload:
                 if raw_workload.get("haystack") is None
                 else str(raw_workload.get("haystack"))
             ),
+            replacement=(
+                None
+                if raw_workload.get("replacement") is None
+                else str(raw_workload.get("replacement"))
+            ),
             flags=int(raw_workload.get("flags", 0)),
+            count=int(raw_workload.get("count", 0)),
+            maxsplit=int(raw_workload.get("maxsplit", 0)),
             text_model=str(raw_workload.get("text_model", "str")),
             cache_mode=str(raw_workload.get("cache_mode", "cold")),
             timing_scope=str(raw_workload.get("timing_scope", "compile-path-proxy")),
@@ -124,6 +135,11 @@ class Workload:
             raise ValueError(f"workload {self.workload_id!r} requires a haystack payload")
         return self._encode_text(self.haystack)
 
+    def replacement_payload(self) -> str | bytes:
+        if self.replacement is None:
+            raise ValueError(f"workload {self.workload_id!r} requires a replacement payload")
+        return self._encode_text(self.replacement)
+
 
 @dataclass
 class BenchmarkRunContext:
@@ -147,7 +163,10 @@ def workload_to_payload(workload: Workload) -> dict[str, Any]:
         "operation": workload.operation,
         "pattern": workload.pattern,
         "haystack": workload.haystack,
+        "replacement": workload.replacement,
         "flags": workload.flags,
+        "count": workload.count,
+        "maxsplit": workload.maxsplit,
         "text_model": workload.text_model,
         "cache_mode": workload.cache_mode,
         "timing_scope": workload.timing_scope,
@@ -170,7 +189,12 @@ def workload_from_payload(payload: dict[str, Any]) -> Workload:
         operation=str(payload["operation"]),
         pattern=str(payload.get("pattern", "")),
         haystack=None if payload.get("haystack") is None else str(payload["haystack"]),
+        replacement=(
+            None if payload.get("replacement") is None else str(payload["replacement"])
+        ),
         flags=int(payload.get("flags", 0)),
+        count=int(payload.get("count", 0)),
+        maxsplit=int(payload.get("maxsplit", 0)),
         text_model=str(payload["text_model"]),
         cache_mode=str(payload["cache_mode"]),
         timing_scope=str(payload["timing_scope"]),
@@ -333,13 +357,32 @@ def compile_callable(module: Any, workload: Workload) -> Any:
     raise ValueError(f"unsupported cache mode {workload.cache_mode!r}")
 
 
-def helper_callable(module: Any, workload: Workload, helper_name: str) -> Any:
+def module_helper_invoke(module: Any, workload: Workload) -> object:
     pattern = workload.pattern_payload()
     haystack = workload.haystack_payload()
-    helper = getattr(module, helper_name)
 
+    if workload.operation == "module.search":
+        return module.search(pattern, haystack, workload.flags)
+    if workload.operation == "module.match":
+        return module.match(pattern, haystack, workload.flags)
+    if workload.operation == "module.split":
+        return module.split(pattern, haystack, workload.maxsplit, workload.flags)
+    if workload.operation == "module.findall":
+        return module.findall(pattern, haystack, workload.flags)
+    if workload.operation == "module.sub":
+        return module.sub(
+            pattern,
+            workload.replacement_payload(),
+            haystack,
+            workload.count,
+            workload.flags,
+        )
+    raise ValueError(f"unsupported module helper operation {workload.operation!r}")
+
+
+def helper_callable(module: Any, workload: Workload) -> Any:
     def invoke() -> object:
-        return helper(pattern, haystack, workload.flags)
+        return module_helper_invoke(module, workload)
 
     if workload.cache_mode == "cold":
 
@@ -373,9 +416,24 @@ def helper_callable(module: Any, workload: Workload, helper_name: str) -> Any:
     raise ValueError(f"unsupported cache mode {workload.cache_mode!r}")
 
 
-def pattern_helper_callable(module: Any, workload: Workload, helper_name: str) -> Any:
-    pattern = workload.pattern_payload()
+def pattern_helper_invoke(compiled: Any, workload: Workload) -> object:
     haystack = workload.haystack_payload()
+
+    if workload.operation == "pattern.search":
+        return compiled.search(haystack)
+    if workload.operation == "pattern.match":
+        return compiled.match(haystack)
+    if workload.operation == "pattern.fullmatch":
+        return compiled.fullmatch(haystack)
+    if workload.operation == "pattern.finditer":
+        return list(compiled.finditer(haystack))
+    if workload.operation == "pattern.subn":
+        return compiled.subn(workload.replacement_payload(), haystack, count=workload.count)
+    raise ValueError(f"unsupported pattern helper operation {workload.operation!r}")
+
+
+def pattern_helper_callable(module: Any, workload: Workload) -> Any:
+    pattern = workload.pattern_payload()
 
     def compile_pattern() -> Any:
         return module.compile(pattern, workload.flags)
@@ -386,7 +444,7 @@ def pattern_helper_callable(module: Any, workload: Workload, helper_name: str) -
             if hasattr(module, "purge"):
                 module.purge()
             compiled = compile_pattern()
-            return getattr(compiled, helper_name)(haystack)
+            return pattern_helper_invoke(compiled, workload)
 
         return run_once
 
@@ -394,7 +452,7 @@ def pattern_helper_callable(module: Any, workload: Workload, helper_name: str) -
         compiled = compile_pattern()
 
         def run_once() -> object:
-            return getattr(compiled, helper_name)(haystack)
+            return pattern_helper_invoke(compiled, workload)
 
         return run_once
 
@@ -404,7 +462,7 @@ def pattern_helper_callable(module: Any, workload: Workload, helper_name: str) -
             module.purge()
 
         def run_once() -> object:
-            return getattr(compiled, helper_name)(haystack)
+            return pattern_helper_invoke(compiled, workload)
 
         return run_once
 
@@ -416,16 +474,22 @@ def build_callable(module: Any, import_name: str, workload: Workload) -> Any:
         return import_callable(import_name, workload)
     if workload.operation in {"compile", "module.compile"}:
         return compile_callable(module, workload)
-    if workload.operation == "module.search":
-        return helper_callable(module, workload, "search")
-    if workload.operation == "module.match":
-        return helper_callable(module, workload, "match")
-    if workload.operation == "pattern.search":
-        return pattern_helper_callable(module, workload, "search")
-    if workload.operation == "pattern.match":
-        return pattern_helper_callable(module, workload, "match")
-    if workload.operation == "pattern.fullmatch":
-        return pattern_helper_callable(module, workload, "fullmatch")
+    if workload.operation in {
+        "module.search",
+        "module.match",
+        "module.split",
+        "module.findall",
+        "module.sub",
+    }:
+        return helper_callable(module, workload)
+    if workload.operation in {
+        "pattern.search",
+        "pattern.match",
+        "pattern.fullmatch",
+        "pattern.finditer",
+        "pattern.subn",
+    }:
+        return pattern_helper_callable(module, workload)
     raise ValueError(f"unsupported benchmark operation {workload.operation!r}")
 
 
@@ -615,7 +679,10 @@ def evaluate_workload(
         "text_model": workload.text_model,
         "pattern": workload.pattern,
         "haystack": workload.haystack,
+        "replacement": workload.replacement,
         "flags": workload.flags,
+        "count": workload.count,
+        "maxsplit": workload.maxsplit,
         "categories": workload.categories,
         "syntax_features": workload.syntax_features,
         "status": status,
