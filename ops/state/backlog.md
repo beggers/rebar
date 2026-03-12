@@ -4,10 +4,9 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0103` to catch optional-group alternation benchmarks up so the first bounded quantified-alternation slice reaches the published benchmark surface before conditionals or broader backtracking reopen the frontier.
-2. Land `RBR-0104` to publish a bounded conditional group-exists correctness pack so the queue reopens conditional execution through the smallest capture-aware slice before broader backtracking reopens the frontier further.
-3. Land `RBR-0105` to convert the first bounded conditional group-exists cases into real Rust-backed behavior instead of leaving that conditional slice as publication-only coverage.
-4. Land `RBR-0106` to catch bounded conditional group-exists benchmarks up so the first conditional slice reaches the published benchmark surface before broader backtracking reopens the frontier further.
+1. Land `RBR-0104` to publish a bounded conditional group-exists correctness pack so the queue reopens conditional execution through the smallest capture-aware slice before broader backtracking reopens the frontier further.
+2. Land `RBR-0105` to convert the first bounded conditional group-exists cases into real Rust-backed behavior instead of leaving that conditional slice as publication-only coverage.
+3. Land `RBR-0106` to catch bounded conditional group-exists benchmarks up so the first conditional slice reaches the published benchmark surface before broader backtracking reopens the frontier further.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
@@ -70,10 +69,9 @@ Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier,
 - After `RBR-0097`, keep the ready queue extending into bounded ranged-repeat quantified-group publication and parity so quantified execution expands from exact counts into the smallest bounded range before quantified alternation, conditionals, or broader backtracking reopen the frontier.
 - After `RBR-0099`, catch ranged-repeat quantified-group benchmark coverage up before reopening correctness work, so the first bounded counted-range slice reaches benchmark reporting promptly.
 - Once `RBR-0101` lands, keep the honest 188-case, 27-manifest, 6-gap optional-group alternation frontier explicit in tracked reporting until `RBR-0102` converts that slice behind `rebar._rebar`.
-- After `RBR-0102`, catch optional-group alternation benchmark coverage up before reopening correctness work, so the first bounded quantified-alternation slice reaches benchmark reporting promptly.
-- After `RBR-0103`, keep the ready queue extending into bounded conditional group-exists publication and parity so the worker reopens conditional execution through the smallest capture-aware slice before replacement-conditioned work, rejected-syntax diagnostic follow-ons, or broader backtracking reopen the frontier.
+- With `RBR-0103` landed, treat bounded optional-group alternation benchmark catch-up as part of the published benchmark baseline and keep the ready queue extending into bounded conditional group-exists publication and parity so the worker reopens conditional execution through the smallest capture-aware slice before replacement-conditioned work, rejected-syntax diagnostic follow-ons, or broader backtracking reopen the frontier.
 - After `RBR-0105`, catch bounded conditional benchmark coverage up before reopening correctness work, so the first conditional slice reaches benchmark reporting promptly.
-- Keep the active queue front at `RBR-0103` through `RBR-0106`; do not seed post-conditional runtime work until the next CPython-accepted conditional or diagnostic slice is pinned explicitly.
+- Keep the active queue front at `RBR-0104` through `RBR-0106`; do not seed post-conditional runtime work until the next CPython-accepted conditional or diagnostic slice is pinned explicitly.
 - Do not queue runtime assertion-conditioned conditional tasks from prose alone; CPython `re` rejects tested shapes like `a(?(?=b)b|c)d`, so any post-`RBR-0106` follow-on should first decide whether it is rejected-syntax diagnostics or another accepted runtime conditional slice.
 - After `RBR-0035`, retarget the queue to bounded parser compile-parity tasks because the remaining currently published correctness gaps then sat in parser-matrix compile cases rather than module-surface failures.
 - Keep compile-benchmark catch-up queued immediately behind the parser compile-parity tasks so the compile-path report starts measuring new parser support instead of lagging one milestone behind the correctness surface.

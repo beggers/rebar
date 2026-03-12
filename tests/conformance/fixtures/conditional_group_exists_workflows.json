@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "manifest_id": "conditional-group-exists-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.conditional_group_exists",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "conditional-group-exists-compile-metadata-str",
+      "operation": "compile",
+      "family": "conditional_group_exists_compile_metadata",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes one bounded numbered group-exists conditional compile path where an already-open optional capture chooses between two literal suffix arms."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-module-search-present-str",
+      "operation": "module_call",
+      "family": "conditional_group_exists_module_present_workflow",
+      "helper": "search",
+      "args": ["a(b)?c(?(1)d|e)", "zzabcdzz"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "search", "module", "present", "str", "gap"],
+      "notes": [
+        "Documents the module-level numbered conditional search path when the optional capture is present so the conditional takes the yes-arm and exposes a populated group value."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-pattern-fullmatch-absent-str",
+      "operation": "pattern_call",
+      "family": "conditional_group_exists_pattern_absent_workflow",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "helper": "fullmatch",
+      "args": ["ace"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "fullmatch", "pattern", "absent", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch numbered conditional path when the optional capture is omitted so the scorecard records the observable None-valued group outcome and no-branch selection."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-compile-metadata-str",
+      "operation": "compile",
+      "family": "named_conditional_group_exists_compile_metadata",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "named-group", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the matching named group-exists conditional compile frontier for the same bounded optional-capture shape."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-module-search-present-str",
+      "operation": "module_call",
+      "family": "named_conditional_group_exists_module_present_workflow",
+      "helper": "search",
+      "args": ["a(?P<word>b)?c(?(word)d|e)", "zzabcdzz"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "named-group", "search", "module", "present", "str", "gap"],
+      "notes": [
+        "Documents the module-level named conditional search path when the optional named capture is present so the conditional yes-arm executes and the named group remains observable."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-pattern-fullmatch-absent-str",
+      "operation": "pattern_call",
+      "family": "named_conditional_group_exists_pattern_absent_workflow",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "helper": "fullmatch",
+      "args": ["ace"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "named-group", "fullmatch", "pattern", "absent", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch named conditional path when the optional capture is omitted so the named-group None payload stays explicit in the published gap."
+      ]
+    }
+  ]
+}

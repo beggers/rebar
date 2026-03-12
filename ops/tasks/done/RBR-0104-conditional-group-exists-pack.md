@@ -1,6 +1,6 @@
 # RBR-0104: Publish a bounded conditional group-exists correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0093`, `RBR-0102`, and `RBR-0103`.
 - This task exists so the worker can reopen conditional execution with the smallest capture-aware slice instead of jumping directly to assertion-conditioned branches or broader backtracking semantics.
+
+## Completion Notes
+- Added `tests/conformance/fixtures/conditional_group_exists_workflows.json` with six bounded numbered and named group-exists conditional cases covering compile metadata plus present/absent public workflow observations.
+- Wired the manifest into `python/rebar_harness/correctness.py`, added `tests/conformance/test_correctness_conditional_group_exists_workflows.py`, and republished `reports/correctness/latest.json`.
+- The published combined scorecard now reports 194 cases across 28 manifests with 6 honest `unimplemented` conditional cases.
