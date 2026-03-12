@@ -1,8 +1,9 @@
 # RBR-0065: Publish a bounded literal-alternation correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-12
 
 ## Goal
 - Extend the published correctness scorecard with a bounded literal-alternation manifest so the next post-segment execution frontier is explicit before broader grouped or conditional regex work resumes.
@@ -27,3 +28,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0063` and `RBR-0064`.
 - This task exists so the worker can expose the next concrete branch-selection gap without jumping straight to grouped alternation, conditionals, or broader regex features.
+
+## Completion Note
+- Added `tests/conformance/fixtures/literal_alternation_workflows.json` with three bounded top-level literal alternation cases covering compile metadata, module-level search, and bound `Pattern.fullmatch` for `ab|ac`.
+- Wired the new manifest into the default combined correctness suite in `python/rebar_harness/correctness.py` and regenerated `reports/correctness/latest.json`, moving the published scorecard to 108 cases across 15 manifests with 3 explicit `unimplemented` literal-alternation gaps.
+- Added `tests/conformance/test_correctness_literal_alternation_workflows.py` to lock the expanded combined-suite counts, manifest ordering, and the new alternation cases' honest `unimplemented` outcomes.
