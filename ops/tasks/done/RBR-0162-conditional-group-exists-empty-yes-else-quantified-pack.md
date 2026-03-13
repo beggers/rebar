@@ -1,6 +1,6 @@
 # RBR-0162: Publish a bounded quantified empty-yes-arm conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0161`, `RBR-0158`, and `RBR-0149`.
 - This task exists so the queue reopens repeated empty-yes-arm conditional composition through one exact accepted slice before the alternation-heavy empty-arm follow-ons are even eligible to queue.
+
+## Completion
+- Added `conditional_group_exists_empty_yes_else_quantified_workflows.json` and wired it into the default combined correctness publication.
+- Published eight bounded quantified empty-yes-arm cases across numbered and named module/`Pattern` paths using a non-capturing repeated wrapper so the numbered optional capture stays addressable as group `1`.
+- Regenerated `reports/correctness/latest.json`; the combined scorecard now reports 346 total cases with 338 passes and 8 honest `unimplemented` outcomes for this newly published slice pending `RBR-0163`.
