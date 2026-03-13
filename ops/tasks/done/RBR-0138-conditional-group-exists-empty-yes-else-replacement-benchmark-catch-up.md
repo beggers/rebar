@@ -1,8 +1,9 @@
 # RBR-0138: Catch bounded empty-yes-arm conditional replacement benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published benchmark surface so the bounded empty-yes-arm conditional replacement workflows supported by `RBR-0137` produce real `rebar` timings before fully-empty replacement, nested conditionals, quantified conditionals, or broader backtracking reopen the correctness frontier.
@@ -28,3 +29,8 @@ Created: 2026-03-12
 - Build on `RBR-0115` and `RBR-0137`.
 - Use the existing `module-sub-numbered-conditional-group-exists-empty-yes-else-replacement-warm-gap` row in `benchmarks/workloads/conditional_group_exists_empty_yes_else_boundary.json` as the benchmark anchor for this slice.
 - This task exists so the queue does not reach bounded empty-yes-arm conditional replacement parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Expanded the empty-yes-arm conditional benchmark manifest from 11 to 18 workloads so the bounded numbered and named `sub()` and `subn()` workflows now publish real module and compiled-`Pattern` timings alongside the existing compile/search/fullmatch rows.
+- Updated the benchmark regression test to cover the current full 29-manifest suite and assert the new empty-yes-arm replacement rows.
+- Republished `reports/benchmarks/latest.json`; the combined benchmark scorecard now reports 276 workloads with 218 measured timings and 58 explicit known gaps, and the empty-yes-arm manifest now reports 15 measured workloads with 3 remaining gaps.
