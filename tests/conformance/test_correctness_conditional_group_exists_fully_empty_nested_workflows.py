@@ -75,10 +75,10 @@ class CorrectnessHarnessConditionalGroupExistsFullyEmptyNestedWorkflowTest(unitt
             {
                 "executed_cases": 338,
                 "failed_cases": 0,
-                "passed_cases": 330,
+                "passed_cases": 338,
                 "skipped_cases": 0,
                 "total_cases": 338,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(len(scorecard["cases"]), 338)
@@ -89,10 +89,10 @@ class CorrectnessHarnessConditionalGroupExistsFullyEmptyNestedWorkflowTest(unitt
             {
                 "executed_cases": 194,
                 "failed_cases": 0,
-                "passed_cases": 186,
+                "passed_cases": 194,
                 "skipped_cases": 0,
                 "total_cases": 194,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertIn(
@@ -119,10 +119,10 @@ class CorrectnessHarnessConditionalGroupExistsFullyEmptyNestedWorkflowTest(unitt
             {
                 "executed_cases": 8,
                 "failed_cases": 0,
-                "passed_cases": 0,
+                "passed_cases": 8,
                 "skipped_cases": 0,
                 "total_cases": 8,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(
@@ -144,96 +144,83 @@ class CorrectnessHarnessConditionalGroupExistsFullyEmptyNestedWorkflowTest(unitt
         compile_case = cases_by_id[
             "conditional-group-exists-fully-empty-nested-compile-metadata-str"
         ]
-        self.assertEqual(compile_case["comparison"], "unimplemented")
+        self.assertEqual(compile_case["comparison"], "pass")
         self.assertEqual(compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groupindex"], {})
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groups"], 1)
-        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "success")
+        self.assertIsNone(compile_case["observations"]["rebar"]["exception"])
         self.assertEqual(
-            compile_case["observations"]["rebar"]["exception"],
-            {
-                "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-                "type": "NotImplementedError",
-            },
+            compile_case["observations"]["rebar"]["result"],
+            compile_case["observations"]["cpython"]["result"],
         )
 
         present_case = cases_by_id[
             "conditional-group-exists-fully-empty-nested-module-search-present-str"
         ]
-        self.assertEqual(present_case["comparison"], "unimplemented")
+        self.assertEqual(present_case["comparison"], "pass")
         self.assertEqual(present_case["helper"], "search")
         self.assertEqual(present_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(present_case["observations"]["cpython"]["result"]["group0"], "abc")
         self.assertEqual(present_case["observations"]["cpython"]["result"]["groups"], ["b"])
         self.assertEqual(present_case["observations"]["cpython"]["result"]["lastindex"], 1)
         self.assertEqual(present_case["observations"]["cpython"]["result"]["span1"], [3, 4])
-        self.assertEqual(present_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(present_case["observations"]["rebar"]["outcome"], "success")
+        self.assertIsNone(present_case["observations"]["rebar"]["exception"])
         self.assertEqual(
-            present_case["observations"]["rebar"]["exception"],
-            {
-                "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-                "type": "NotImplementedError",
-            },
+            present_case["observations"]["rebar"]["result"],
+            present_case["observations"]["cpython"]["result"],
         )
 
         absent_case = cases_by_id[
             "conditional-group-exists-fully-empty-nested-module-fullmatch-absent-str"
         ]
-        self.assertEqual(absent_case["comparison"], "unimplemented")
+        self.assertEqual(absent_case["comparison"], "pass")
         self.assertEqual(absent_case["helper"], "fullmatch")
         self.assertEqual(absent_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(absent_case["observations"]["cpython"]["result"]["group0"], "ac")
         self.assertEqual(absent_case["observations"]["cpython"]["result"]["groups"], [None])
         self.assertEqual(absent_case["observations"]["cpython"]["result"]["lastindex"], None)
         self.assertEqual(absent_case["observations"]["cpython"]["result"]["span1"], [-1, -1])
-        self.assertEqual(absent_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(absent_case["observations"]["rebar"]["outcome"], "success")
+        self.assertIsNone(absent_case["observations"]["rebar"]["exception"])
         self.assertEqual(
-            absent_case["observations"]["rebar"]["exception"],
-            {
-                "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-                "type": "NotImplementedError",
-            },
+            absent_case["observations"]["rebar"]["result"],
+            absent_case["observations"]["cpython"]["result"],
         )
 
         extra_suffix_failure_case = cases_by_id[
             "conditional-group-exists-fully-empty-nested-pattern-fullmatch-extra-suffix-failure-str"
         ]
-        self.assertEqual(extra_suffix_failure_case["comparison"], "unimplemented")
+        self.assertEqual(extra_suffix_failure_case["comparison"], "pass")
         self.assertEqual(extra_suffix_failure_case["helper"], "fullmatch")
         self.assertEqual(extra_suffix_failure_case["observations"]["cpython"]["outcome"], "success")
         self.assertIsNone(extra_suffix_failure_case["observations"]["cpython"]["result"])
-        self.assertEqual(extra_suffix_failure_case["observations"]["rebar"]["outcome"], "unimplemented")
-        self.assertEqual(
-            extra_suffix_failure_case["observations"]["rebar"]["exception"],
-            {
-                "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-                "type": "NotImplementedError",
-            },
-        )
+        self.assertEqual(extra_suffix_failure_case["observations"]["rebar"]["outcome"], "success")
+        self.assertIsNone(extra_suffix_failure_case["observations"]["rebar"]["exception"])
+        self.assertIsNone(extra_suffix_failure_case["observations"]["rebar"]["result"])
 
         named_compile_case = cases_by_id[
             "named-conditional-group-exists-fully-empty-nested-compile-metadata-str"
         ]
-        self.assertEqual(named_compile_case["comparison"], "unimplemented")
+        self.assertEqual(named_compile_case["comparison"], "pass")
         self.assertEqual(named_compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(
             named_compile_case["observations"]["cpython"]["result"]["groupindex"],
             {"word": 1},
         )
         self.assertEqual(named_compile_case["observations"]["cpython"]["result"]["groups"], 1)
-        self.assertEqual(named_compile_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_compile_case["observations"]["rebar"]["outcome"], "success")
+        self.assertIsNone(named_compile_case["observations"]["rebar"]["exception"])
         self.assertEqual(
-            named_compile_case["observations"]["rebar"]["exception"],
-            {
-                "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-                "type": "NotImplementedError",
-            },
+            named_compile_case["observations"]["rebar"]["result"],
+            named_compile_case["observations"]["cpython"]["result"],
         )
 
         named_present_case = cases_by_id[
             "named-conditional-group-exists-fully-empty-nested-module-search-present-str"
         ]
-        self.assertEqual(named_present_case["comparison"], "unimplemented")
+        self.assertEqual(named_present_case["comparison"], "pass")
         self.assertEqual(named_present_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(named_present_case["observations"]["cpython"]["result"]["group0"], "abc")
         self.assertEqual(named_present_case["observations"]["cpython"]["result"]["groups"], ["b"])
@@ -247,19 +234,17 @@ class CorrectnessHarnessConditionalGroupExistsFullyEmptyNestedWorkflowTest(unitt
         )
         self.assertEqual(named_present_case["observations"]["cpython"]["result"]["lastindex"], 1)
         self.assertEqual(named_present_case["observations"]["cpython"]["result"]["span1"], [3, 4])
-        self.assertEqual(named_present_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_present_case["observations"]["rebar"]["outcome"], "success")
+        self.assertIsNone(named_present_case["observations"]["rebar"]["exception"])
         self.assertEqual(
-            named_present_case["observations"]["rebar"]["exception"],
-            {
-                "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-                "type": "NotImplementedError",
-            },
+            named_present_case["observations"]["rebar"]["result"],
+            named_present_case["observations"]["cpython"]["result"],
         )
 
         named_absent_case = cases_by_id[
             "named-conditional-group-exists-fully-empty-nested-module-fullmatch-absent-str"
         ]
-        self.assertEqual(named_absent_case["comparison"], "unimplemented")
+        self.assertEqual(named_absent_case["comparison"], "pass")
         self.assertEqual(named_absent_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(named_absent_case["observations"]["cpython"]["result"]["group0"], "ac")
         self.assertEqual(named_absent_case["observations"]["cpython"]["result"]["groups"], [None])
@@ -273,32 +258,22 @@ class CorrectnessHarnessConditionalGroupExistsFullyEmptyNestedWorkflowTest(unitt
         )
         self.assertEqual(named_absent_case["observations"]["cpython"]["result"]["lastindex"], None)
         self.assertEqual(named_absent_case["observations"]["cpython"]["result"]["span1"], [-1, -1])
-        self.assertEqual(named_absent_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_absent_case["observations"]["rebar"]["outcome"], "success")
+        self.assertIsNone(named_absent_case["observations"]["rebar"]["exception"])
         self.assertEqual(
-            named_absent_case["observations"]["rebar"]["exception"],
-            {
-                "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-                "type": "NotImplementedError",
-            },
+            named_absent_case["observations"]["rebar"]["result"],
+            named_absent_case["observations"]["cpython"]["result"],
         )
 
         named_extra_suffix_failure_case = cases_by_id[
             "named-conditional-group-exists-fully-empty-nested-pattern-fullmatch-extra-suffix-failure-str"
         ]
-        self.assertEqual(named_extra_suffix_failure_case["comparison"], "unimplemented")
+        self.assertEqual(named_extra_suffix_failure_case["comparison"], "pass")
         self.assertEqual(named_extra_suffix_failure_case["observations"]["cpython"]["outcome"], "success")
         self.assertIsNone(named_extra_suffix_failure_case["observations"]["cpython"]["result"])
-        self.assertEqual(
-            named_extra_suffix_failure_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
-        )
-        self.assertEqual(
-            named_extra_suffix_failure_case["observations"]["rebar"]["exception"],
-            {
-                "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-                "type": "NotImplementedError",
-            },
-        )
+        self.assertEqual(named_extra_suffix_failure_case["observations"]["rebar"]["outcome"], "success")
+        self.assertIsNone(named_extra_suffix_failure_case["observations"]["rebar"]["exception"])
+        self.assertIsNone(named_extra_suffix_failure_case["observations"]["rebar"]["result"])
 
 
 if __name__ == "__main__":

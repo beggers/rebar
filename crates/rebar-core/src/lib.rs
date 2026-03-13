@@ -516,6 +516,9 @@ struct NestedConditionalGroupExistsEmptyYesElseBranch<'a> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+struct NestedConditionalGroupExistsFullyEmptyBranch;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct ExactRepeatGroupPattern<'a> {
     prefix: &'a str,
     capture: LiteralCapture<'a>,
@@ -2122,6 +2125,28 @@ fn parse_nested_conditional_group_exists_empty_yes_else_no_branch<'a>(
     })
 }
 
+fn parse_nested_conditional_group_exists_fully_empty_no_branch(
+    branch: &str,
+    capture_name: Option<&str>,
+) -> Option<NestedConditionalGroupExistsFullyEmptyBranch> {
+    let conditional = branch.strip_prefix("(?(")?.strip_suffix(')')?;
+    let reference_end = conditional.find(')')?;
+    let reference = &conditional[..reference_end];
+    match capture_name {
+        Some(name) if reference == name => {}
+        None if reference == "1" => {}
+        _ => return None,
+    }
+
+    let inner_branches = &conditional[reference_end + 1..];
+    let (inner_yes_branch, inner_no_branch) = split_first_top_level_pipe(inner_branches)?;
+    if !inner_yes_branch.is_empty() || !inner_no_branch.is_empty() {
+        return None;
+    }
+
+    Some(NestedConditionalGroupExistsFullyEmptyBranch)
+}
+
 fn parse_conditional_group_exists_pattern_str(
     pattern: &str,
 ) -> Option<ConditionalGroupExistsPattern<'_>> {
@@ -2189,6 +2214,16 @@ fn parse_conditional_group_exists_pattern_str(
     let nested_no_branch = if yes_branch.is_empty() {
         no_branch.and_then(|branch| {
             parse_nested_conditional_group_exists_empty_yes_else_no_branch(branch, capture_name)
+                .or_else(|| {
+                    parse_nested_conditional_group_exists_fully_empty_no_branch(
+                        branch,
+                        capture_name,
+                    )
+                    .map(|_| NestedConditionalGroupExistsEmptyYesElseBranch {
+                        yes_branch: "",
+                        no_branch: "",
+                    })
+                })
         })
     } else {
         None
@@ -5133,6 +5168,30 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_bounded_nested_conditional_group_exists_fully_empty_cases() {
+        let outcome = compile(PatternRef::Str("a(b)?c(?(1)|(?(1)|))"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.group_count, 1);
+        assert!(outcome.named_groups.is_empty());
+
+        let named_outcome =
+            compile(PatternRef::Str("a(?P<word>b)?c(?(word)|(?(word)|))"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!named_outcome.supports_literal);
+        assert_eq!(named_outcome.group_count, 1);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "word".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
     fn compile_rejects_assertion_conditioned_group_exists_cases() {
         let positive = compile(PatternRef::Str("a(?(?=b)b|c)d"), 0).unwrap_err();
         assert_eq!(positive.message, "bad character in group name '?=b'");
@@ -5914,6 +5973,61 @@ mod tests {
             FLAG_UNICODE,
             MatchMode::Fullmatch,
             PatternRef::Str("ace"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::NoMatch);
+        assert_eq!(outcome.span, None);
+        assert!(outcome.group_spans.is_empty());
+        assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
+    fn conditional_group_exists_fully_empty_nested_search_reports_present_capture_span() {
+        let outcome = literal_match(
+            PatternRef::Str("a(b)?c(?(1)|(?(1)|))"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabczz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 5)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 4))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn named_conditional_group_exists_fully_empty_nested_fullmatch_reports_absent_capture_as_none()
+    {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<word>b)?c(?(word)|(?(word)|))"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("ac"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 2)));
+        assert_eq!(outcome.group_spans, vec![None]);
+        assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
+    fn conditional_group_exists_fully_empty_nested_reports_extra_suffix_as_no_match() {
+        let outcome = literal_match(
+            PatternRef::Str("a(b)?c(?(1)|(?(1)|))"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("acf"),
             0,
             None,
         )

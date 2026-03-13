@@ -1,6 +1,6 @@
 # RBR-0160: Add bounded nested fully-empty conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0159`.
 - This task exists so the queue converts one exact accepted nested fully-empty spelling into real Rust-backed behavior instead of leaving it as publication-only syntax coverage.
+
+## Completion
+- Added Rust-backed parsing and bounded match execution for `a(b)?c(?(1)|(?(1)|))` plus `a(?P<word>b)?c(?(word)|(?(word)|))` without widening replacement or other nested empty-arm slices.
+- Added dedicated parity coverage in `tests/python/test_conditional_group_exists_fully_empty_nested_parity.py` and refreshed the nested fully-empty correctness expectations.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports 338 passes, 0 explicit failures, and 0 honest gaps across 47 manifests.
