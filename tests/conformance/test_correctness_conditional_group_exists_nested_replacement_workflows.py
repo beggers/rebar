@@ -88,10 +88,10 @@ class CorrectnessHarnessConditionalGroupExistsNestedReplacementWorkflowTest(
             {
                 "executed_cases": 440,
                 "failed_cases": 0,
-                "passed_cases": 432,
+                "passed_cases": 440,
                 "skipped_cases": 0,
                 "total_cases": 440,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(len(scorecard["cases"]), 440)
@@ -102,10 +102,10 @@ class CorrectnessHarnessConditionalGroupExistsNestedReplacementWorkflowTest(
             {
                 "executed_cases": 128,
                 "failed_cases": 0,
-                "passed_cases": 120,
+                "passed_cases": 128,
                 "skipped_cases": 0,
                 "total_cases": 128,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertIn(
@@ -147,10 +147,10 @@ class CorrectnessHarnessConditionalGroupExistsNestedReplacementWorkflowTest(
             {
                 "executed_cases": 8,
                 "failed_cases": 0,
-                "passed_cases": 0,
+                "passed_cases": 8,
                 "skipped_cases": 0,
                 "total_cases": 8,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(
@@ -168,7 +168,7 @@ class CorrectnessHarnessConditionalGroupExistsNestedReplacementWorkflowTest(
         module_present_case = cases_by_id[
             "module-sub-conditional-group-exists-nested-replacement-present-str"
         ]
-        self.assertEqual(module_present_case["comparison"], "unimplemented")
+        self.assertEqual(module_present_case["comparison"], "pass")
         self.assertEqual(module_present_case["helper"], "sub")
         self.assertEqual(
             module_present_case["args"],
@@ -178,18 +178,14 @@ class CorrectnessHarnessConditionalGroupExistsNestedReplacementWorkflowTest(
         self.assertEqual(module_present_case["observations"]["cpython"]["result"], "zzXzz")
         self.assertEqual(
             module_present_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            "success",
         )
-        self.assertIsNone(module_present_case["observations"]["rebar"]["result"])
-        self.assertEqual(
-            module_present_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
-        )
+        self.assertEqual(module_present_case["observations"]["rebar"]["result"], "zzXzz")
 
         module_absent_case = cases_by_id[
             "module-subn-conditional-group-exists-nested-replacement-absent-str"
         ]
-        self.assertEqual(module_absent_case["comparison"], "unimplemented")
+        self.assertEqual(module_absent_case["comparison"], "pass")
         self.assertEqual(module_absent_case["helper"], "subn")
         self.assertEqual(
             module_absent_case["args"],
@@ -197,32 +193,26 @@ class CorrectnessHarnessConditionalGroupExistsNestedReplacementWorkflowTest(
         )
         self.assertEqual(module_absent_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(module_absent_case["observations"]["cpython"]["result"], ["zzXzz", 1])
-        self.assertEqual(module_absent_case["observations"]["rebar"]["outcome"], "unimplemented")
-        self.assertEqual(
-            module_absent_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
-        )
+        self.assertEqual(module_absent_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(module_absent_case["observations"]["rebar"]["result"], ["zzXzz", 1])
 
         pattern_present_case = cases_by_id[
             "pattern-sub-conditional-group-exists-nested-replacement-present-str"
         ]
-        self.assertEqual(pattern_present_case["comparison"], "unimplemented")
+        self.assertEqual(pattern_present_case["comparison"], "pass")
         self.assertEqual(pattern_present_case["helper"], "sub")
         self.assertEqual(
             pattern_present_case["observations"]["cpython"]["outcome"],
             "success",
         )
         self.assertEqual(pattern_present_case["observations"]["cpython"]["result"], "zzXzz")
-        self.assertEqual(pattern_present_case["observations"]["rebar"]["outcome"], "unimplemented")
-        self.assertEqual(
-            pattern_present_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
-        )
+        self.assertEqual(pattern_present_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(pattern_present_case["observations"]["rebar"]["result"], "zzXzz")
 
         named_pattern_absent_case = cases_by_id[
             "pattern-subn-named-conditional-group-exists-nested-replacement-absent-str"
         ]
-        self.assertEqual(named_pattern_absent_case["comparison"], "unimplemented")
+        self.assertEqual(named_pattern_absent_case["comparison"], "pass")
         self.assertEqual(named_pattern_absent_case["helper"], "subn")
         self.assertEqual(
             named_pattern_absent_case["observations"]["cpython"]["outcome"],
@@ -232,13 +222,10 @@ class CorrectnessHarnessConditionalGroupExistsNestedReplacementWorkflowTest(
             named_pattern_absent_case["observations"]["cpython"]["result"],
             ["zzXzz", 1],
         )
+        self.assertEqual(named_pattern_absent_case["observations"]["rebar"]["outcome"], "success")
         self.assertEqual(
-            named_pattern_absent_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
-        )
-        self.assertEqual(
-            named_pattern_absent_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
+            named_pattern_absent_case["observations"]["rebar"]["result"],
+            ["zzXzz", 1],
         )
 
 

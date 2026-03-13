@@ -1,6 +1,6 @@
 # RBR-0199: Add bounded nested two-arm conditional replacement parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0198`.
 - This task exists so the queue converts the smallest remaining nested replacement-conditioned workflow into real Rust-backed behavior instead of leaving it as publication-only coverage.
+- Completed 2026-03-13: added a narrow Rust-backed nested conditional replacement span finder for the one-level nested yes-arm slice, wired `rebar._rebar` replacement dispatch through it, added Python/Rust parity coverage, and republished `reports/correctness/latest.json` with the eight nested replacement cases flipped from `unimplemented` to `pass`.
