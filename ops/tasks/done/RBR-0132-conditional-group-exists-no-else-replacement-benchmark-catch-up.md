@@ -1,6 +1,6 @@
 # RBR-0132: Catch bounded conditional no-else replacement benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,7 @@ Created: 2026-03-12
 - Build on `RBR-0109` and `RBR-0131`.
 - Use the existing `module-sub-numbered-conditional-group-exists-no-else-replacement-warm-gap` row in `benchmarks/workloads/conditional_group_exists_no_else_boundary.json` as the benchmark anchor for this slice.
 - This task exists so the queue does not reach bounded omitted-no-arm conditional replacement parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Added bounded numbered and named omitted-no-arm conditional replacement benchmark rows for module and compiled-`Pattern` `sub()`/`subn()` entrypoints while leaving nested, quantified, and alternation-heavy conditional shapes as explicit gaps.
+- Regenerated `reports/benchmarks/latest.json`; the published benchmark report now records 262 total workloads with 201 measured `rebar` timings and 61 known gaps.
