@@ -25,7 +25,7 @@ Constraints:
 - Do not queue multiple unrelated architecture tasks in one run.
 - Do not use a healthy feature queue or active implementation work as a reason to skip this role.
 - If the ready queue already contains the exact simplification you want, refine that task instead of queuing a duplicate sibling.
-- Because the harness has a single shared ready queue with owner-routed task workers, make queued tasks concrete and priority-aware. Append them after the current frontier unless the simplification is an immediate prerequisite or unblocker.
+- Because the harness has a single shared ready queue with owner-routed task workers, make queued tasks concrete, priority-aware, and executable against the current checkout. Do not seed architecture tasks whose acceptance criteria depend on ready or in-progress feature work landing later in the same cycle.
 - Prefer deleting or consolidating machinery over adding new abstractions.
 - Favor tasks that shrink duplicated fixtures, duplicated benchmark rows, duplicate report plumbing, redundant wrappers, or unnecessary architectural layers.
 - Prefer rearchitecture tasks that replace bespoke JSON-heavy harness plumbing with ordinary Python tests, helpers, and workload definitions when they preserve or improve coverage.
