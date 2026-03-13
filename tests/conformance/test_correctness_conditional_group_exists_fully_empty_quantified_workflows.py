@@ -69,7 +69,7 @@ class CorrectnessHarnessConditionalGroupExistsFullyEmptyQuantifiedWorkflowTest(
         self.assertEqual(scorecard["summary"], summary)
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 
-        self.assertEqual(scorecard["fixtures"]["manifest_count"], 53)
+        self.assertEqual(scorecard["fixtures"]["manifest_count"], 57)
         self.assertIn(
             "conditional-group-exists-fully-empty-quantified-workflows",
             scorecard["fixtures"]["manifest_ids"],
@@ -78,26 +78,26 @@ class CorrectnessHarnessConditionalGroupExistsFullyEmptyQuantifiedWorkflowTest(
         self.assertEqual(
             scorecard["summary"],
             {
-                "executed_cases": 388,
+                "executed_cases": 424,
                 "failed_cases": 0,
-                "passed_cases": 380,
+                "passed_cases": 424,
                 "skipped_cases": 0,
-                "total_cases": 388,
-                "unimplemented_cases": 8,
+                "total_cases": 424,
+                "unimplemented_cases": 0,
             },
         )
-        self.assertEqual(len(scorecard["cases"]), 388)
+        self.assertEqual(len(scorecard["cases"]), 424)
 
         match_layer = scorecard["layers"]["match_behavior"]
         self.assertEqual(
             match_layer["summary"],
             {
-                "executed_cases": 244,
+                "executed_cases": 272,
                 "failed_cases": 0,
-                "passed_cases": 236,
+                "passed_cases": 272,
                 "skipped_cases": 0,
-                "total_cases": 244,
-                "unimplemented_cases": 8,
+                "total_cases": 272,
+                "unimplemented_cases": 0,
             },
         )
         self.assertIn(

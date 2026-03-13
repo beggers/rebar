@@ -1,6 +1,6 @@
 # RBR-0193: Add bounded two-arm conditional replacement parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0192`.
 - This task exists so the queue converts the smallest remaining two-arm conditional replacement workflow into real Rust-backed behavior instead of leaving it as publication-only coverage.
+- Completed 2026-03-13: added a narrow Rust/core two-arm conditional replacement span collector for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`, wired the native `sub()`/`subn()` boundary through that path, added Python parity coverage, refreshed the conditional correctness regressions that track the combined published scorecard, and republished `reports/correctness/latest.json` at 424 passing cases with 0 `unimplemented` outcomes.

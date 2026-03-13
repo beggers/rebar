@@ -64,7 +64,7 @@ class CorrectnessHarnessConditionalGroupExistsAlternationWorkflowTest(unittest.T
         self.assertEqual(scorecard["summary"], summary)
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 
-        self.assertEqual(scorecard["fixtures"]["manifest_count"], 55)
+        self.assertEqual(scorecard["fixtures"]["manifest_count"], 57)
         self.assertIn(
             "conditional-group-exists-alternation-workflows",
             scorecard["fixtures"]["manifest_ids"],
@@ -73,25 +73,25 @@ class CorrectnessHarnessConditionalGroupExistsAlternationWorkflowTest(unittest.T
         self.assertEqual(
             scorecard["summary"],
             {
-                "executed_cases": 406,
+                "executed_cases": 424,
                 "failed_cases": 0,
-                "passed_cases": 406,
+                "passed_cases": 424,
                 "skipped_cases": 0,
-                "total_cases": 406,
+                "total_cases": 424,
                 "unimplemented_cases": 0,
             },
         )
-        self.assertEqual(len(scorecard["cases"]), 406)
+        self.assertEqual(len(scorecard["cases"]), 424)
 
         match_layer = scorecard["layers"]["match_behavior"]
         self.assertEqual(
             match_layer["summary"],
             {
-                "executed_cases": 262,
+                "executed_cases": 272,
                 "failed_cases": 0,
-                "passed_cases": 262,
+                "passed_cases": 272,
                 "skipped_cases": 0,
-                "total_cases": 262,
+                "total_cases": 272,
                 "unimplemented_cases": 0,
             },
         )
