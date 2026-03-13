@@ -1,8 +1,9 @@
 # RBR-0248: Catch open-ended quantified-group alternation plus conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published benchmark surface so the bounded open-ended grouped-alternation-plus-conditional `{1,}` workflows supported by `RBR-0247` produce real `rebar` timings before broader grouped backtracking reopens the frontier.
@@ -28,3 +29,4 @@ Created: 2026-03-13
 - Build on `RBR-0247`.
 - Reuse the existing `module-search-numbered-open-ended-group-conditional-warm-gap` row as the benchmark anchor instead of forking another manifest.
 - This task exists so the queue does not reach open-ended grouped-alternation-plus-conditional parity and then leave that newly supported slice absent from benchmark reporting.
+- Completed with six measured open-ended grouped-conditional compile/search/fullmatch rows in `benchmarks/workloads/open_ended_quantified_group_boundary.json`, refreshed combined benchmark assertions in `tests/benchmarks/test_open_ended_quantified_group_boundary_benchmarks.py`, and a republished `reports/benchmarks/latest.json` showing the combined benchmark surface at 430 workloads with 395 measured rows and 35 explicit known gaps.
