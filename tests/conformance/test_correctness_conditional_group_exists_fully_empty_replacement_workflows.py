@@ -66,7 +66,7 @@ class CorrectnessHarnessConditionalGroupExistsFullyEmptyReplacementWorkflowTest(
         self.assertEqual(scorecard["summary"], summary)
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 
-        self.assertEqual(scorecard["fixtures"]["manifest_count"], 45)
+        self.assertEqual(scorecard["fixtures"]["manifest_count"], 46)
         self.assertIn(
             "conditional-group-exists-fully-empty-replacement-workflows",
             scorecard["fixtures"]["manifest_ids"],
@@ -75,15 +75,15 @@ class CorrectnessHarnessConditionalGroupExistsFullyEmptyReplacementWorkflowTest(
         self.assertEqual(
             scorecard["summary"],
             {
-                "executed_cases": 322,
+                "executed_cases": 330,
                 "failed_cases": 0,
                 "passed_cases": 322,
                 "skipped_cases": 0,
-                "total_cases": 322,
-                "unimplemented_cases": 0,
+                "total_cases": 330,
+                "unimplemented_cases": 8,
             },
         )
-        self.assertEqual(len(scorecard["cases"]), 322)
+        self.assertEqual(len(scorecard["cases"]), 330)
 
         workflow_layer = scorecard["layers"]["module_workflow"]
         self.assertEqual(

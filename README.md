@@ -14,18 +14,18 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is widening a real Rust-backed subset, but the project is still early relative to the drop-in `re` target. |
 | Delivery estimate | Foundation work is complete, the published slice is expanding with explicit honest gaps and catch-up tasks, and overall stdlib-parity progress is still in the early implementation stage. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `12` ready, `0` in progress, `162` done, `0` blocked |
+| Work queue | `12` ready, `0` in progress, `163` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `322` |
+| Published cases | `330` |
 | Passing in published slice | `322` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `45` |
+| Honest gaps (`unimplemented`) | `8` |
+| Covered manifests | `46` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
 _These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, the published slice is expanding with explicit honest gaps and catch-up tasks, and overall stdlib-parity progress is still in the early implementation stage._
@@ -47,8 +47,8 @@ _README speedup rollups stay omitted while only `239` of `293` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0155` through `RBR-0161` for nested empty-arm benchmark cleanup plus the bounded nested empty-yes-arm and nested fully-empty slices.
-- Then land `RBR-0162` through `RBR-0167` for quantified empty-yes-arm and quantified fully-empty follow-ons while alternation-heavy empty-arm work stays behind a later anchor cleanup.
+- Land `RBR-0156` through `RBR-0161` for the bounded nested empty-yes-arm and nested fully-empty slices.
+- Then land `RBR-0162` through `RBR-0168` for quantified empty-arm follow-ons plus the alternation-heavy empty-arm anchor cleanup that reopens the broader queue.
 
 ### Current Risks
 
@@ -60,7 +60,7 @@ _README speedup rollups stay omitted while only `239` of `293` published workloa
 
 `rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The published slice currently reports `322` passes with `0` honest gaps across `322` cases in `45` manifests, and that bounded frontier is still far from full stdlib `re` parity.
 
-The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. The deterministic systematic corpus has now joined the published correctness baseline, and near-term work is about landing nested empty-arm benchmark-anchor cleanup, bounded nested empty-yes-arm and fully-empty conditionals, and then their quantified empty-arm follow-ons.
+The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. The deterministic systematic corpus has now joined the published correctness baseline, and near-term work is about landing bounded nested empty-yes-arm and fully-empty conditionals, then their quantified empty-arm follow-ons, and then the queued alternation-heavy empty-arm anchor cleanup that reopens the next broader slice.
 
 Benchmark publication is still partial by design. The generated status block above carries the current workload and known-gap totals, while the full suite still times the source-tree shim and the built-native path remains a separate six-workload smoke artifact in `reports/benchmarks/native_smoke.json`.
 

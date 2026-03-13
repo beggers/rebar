@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "manifest_id": "conditional-group-exists-empty-yes-else-nested-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.conditional_group_exists_empty_yes_else_nested",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "conditional-group-exists-empty-yes-else-nested-compile-metadata-str",
+      "operation": "compile",
+      "family": "conditional_group_exists_empty_yes_else_nested_compile_metadata",
+      "pattern": "a(b)?c(?(1)|(?(1)e|f))",
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-yes", "else", "nested", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes one bounded numbered nested empty-yes-arm conditional compile path whose outer else arm contains a single nested conditional site so the accepted nested `|(?(1)e|f)` spelling stays explicit in the scorecard."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-empty-yes-else-nested-module-search-present-str",
+      "operation": "module_call",
+      "family": "conditional_group_exists_empty_yes_else_nested_module_present_workflow",
+      "helper": "search",
+      "args": ["a(b)?c(?(1)|(?(1)e|f))", "zzabczz"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-yes", "else", "nested", "search", "module", "present", "str", "gap"],
+      "notes": [
+        "Documents the numbered module-level nested empty-yes-arm search path when the optional capture is present so the outer yes arm succeeds at zero width and the nested else arm is bypassed."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-empty-yes-else-nested-module-fullmatch-absent-str",
+      "operation": "module_call",
+      "family": "conditional_group_exists_empty_yes_else_nested_module_absent_workflow",
+      "helper": "fullmatch",
+      "args": ["a(b)?c(?(1)|(?(1)e|f))", "acf"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-yes", "else", "nested", "fullmatch", "module", "absent", "str", "gap"],
+      "notes": [
+        "Documents the numbered module-level nested empty-yes-arm fullmatch path when the optional capture is absent so the outer else arm selects the nested conditional and its absent-capture else arm contributes `f`."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-empty-yes-else-nested-pattern-fullmatch-absent-failure-str",
+      "operation": "pattern_call",
+      "family": "conditional_group_exists_empty_yes_else_nested_pattern_absent_failure_workflow",
+      "pattern": "a(b)?c(?(1)|(?(1)e|f))",
+      "helper": "fullmatch",
+      "args": ["ace"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-yes", "else", "nested", "fullmatch", "pattern", "absent", "failure", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch numbered nested empty-yes-arm failure path when the optional capture is absent so the nested `e` arm is proven unreachable and only the else-arm `f` path remains accepted."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-empty-yes-else-nested-compile-metadata-str",
+      "operation": "compile",
+      "family": "named_conditional_group_exists_empty_yes_else_nested_compile_metadata",
+      "pattern": "a(?P<word>b)?c(?(word)|(?(word)e|f))",
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-yes", "else", "nested", "named-group", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the matching named nested empty-yes-arm conditional compile frontier for the same bounded single-site nested shape."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-empty-yes-else-nested-module-search-present-str",
+      "operation": "module_call",
+      "family": "named_conditional_group_exists_empty_yes_else_nested_module_present_workflow",
+      "helper": "search",
+      "args": ["a(?P<word>b)?c(?(word)|(?(word)e|f))", "zzabczz"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-yes", "else", "nested", "named-group", "search", "module", "present", "str", "gap"],
+      "notes": [
+        "Documents the named module-level nested empty-yes-arm search path when the optional named capture is present so the outer yes arm remains the accepted zero-width branch."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-empty-yes-else-nested-module-fullmatch-absent-str",
+      "operation": "module_call",
+      "family": "named_conditional_group_exists_empty_yes_else_nested_module_absent_workflow",
+      "helper": "fullmatch",
+      "args": ["a(?P<word>b)?c(?(word)|(?(word)e|f))", "acf"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-yes", "else", "nested", "named-group", "fullmatch", "module", "absent", "str", "gap"],
+      "notes": [
+        "Documents the named module-level nested empty-yes-arm fullmatch path when the optional named capture is absent so the nested else-arm literal `f` stays explicit in the published gap."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-empty-yes-else-nested-pattern-fullmatch-absent-failure-str",
+      "operation": "pattern_call",
+      "family": "named_conditional_group_exists_empty_yes_else_nested_pattern_absent_failure_workflow",
+      "pattern": "a(?P<word>b)?c(?(word)|(?(word)e|f))",
+      "helper": "fullmatch",
+      "args": ["ace"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-yes", "else", "nested", "named-group", "fullmatch", "pattern", "absent", "failure", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch named nested empty-yes-arm failure path when the optional named capture is omitted so the nested `e` arm is not taken when the group is missing."
+      ]
+    }
+  ]
+}

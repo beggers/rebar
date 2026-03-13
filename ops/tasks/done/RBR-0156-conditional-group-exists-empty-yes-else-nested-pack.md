@@ -1,8 +1,9 @@
 # RBR-0156: Publish a bounded nested empty-yes-arm conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published correctness scorecard with one bounded nested empty-yes-arm conditional manifest so the queue keeps accepted nested empty-arm composition explicit before nested fully-empty conditionals or broader backtracking reopen the frontier.
@@ -28,3 +29,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0155` and the already-landed empty-yes-arm baseline.
 - This task exists so the queue keeps accepted nested empty-yes-arm syntax explicit instead of jumping from nested explicit-empty-else directly to broader nested empty-arm or backtracking-heavy composition.
+
+## Completion
+- Added `conditional_group_exists_empty_yes_else_nested_workflows.json` and a focused combined-scorecard test to publish the bounded numbered and named nested empty-yes-arm slice for `a(b)?c(?(1)|(?(1)e|f))` and `a(?P<word>b)?c(?(word)|(?(word)e|f))`.
+- Regenerated `reports/correctness/latest.json`; the published combined correctness baseline is now 330 total cases with 322 passes and 8 honest `unimplemented` outcomes from this newly published slice.
+- Verified with `python3 -m unittest discover -s tests/conformance -p 'test_correctness_conditional_group_exists*.py'`.
