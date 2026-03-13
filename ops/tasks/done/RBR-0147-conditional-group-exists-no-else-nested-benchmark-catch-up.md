@@ -1,8 +1,9 @@
 # RBR-0147: Catch bounded nested omitted-no-arm conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published benchmark surface so the bounded nested omitted-no-arm conditional workflows supported by `RBR-0146` produce real `rebar` timings before quantified conditionals or broader backtracking reopen the frontier.
@@ -28,3 +29,4 @@ Created: 2026-03-13
 - Build on `RBR-0146`.
 - Use the existing `module-search-numbered-nested-conditional-group-exists-no-else-cold-gap` row in `benchmarks/workloads/conditional_group_exists_no_else_boundary.json` as the benchmark anchor for this slice.
 - This task exists so the queue does not reach bounded nested omitted-no-arm parity and then leave that newly supported slice absent from benchmark reporting.
+- Expanded the existing nested anchor into four measured numbered/named module-search and Pattern.fullmatch workloads covering capture-present and capture-absent haystacks, updated the cumulative benchmark assertions to the published 289-workload / 234-measured / 55-gap suite totals, and republished `reports/benchmarks/latest.json`.

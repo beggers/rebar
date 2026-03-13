@@ -4,15 +4,14 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0146` to convert the published bounded nested omitted-no-arm conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-2. Land `RBR-0147` to catch bounded nested omitted-no-arm conditional benchmarks up so that accepted nested no-else conditional composition reaches the published benchmark surface before quantified conditionals or broader backtracking reopen the frontier further.
-3. Land `RBR-0148` to publish one bounded quantified-conditional correctness pack for `a(b)?c(?(1)d|e){2}` and `a(?P<word>b)?c(?(word)d|e){2}` so the queue reopens quantified conditional composition through one exact CPython-supported slice before broader backtracking-heavy conditional execution reopens the frontier.
-4. Land `RBR-0149` to convert that bounded quantified-conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-5. Land `RBR-0150` to catch bounded quantified-conditional benchmarks up so that repeated conditional-arm behavior reaches the published benchmark surface before broader backtracking-heavy conditional execution reopens the frontier further.
-6. Land `RBR-0151` to publish one bounded nested explicit-empty-else conditional correctness pack for `a(b)?c(?(1)(?(1)d)|)` and `a(?P<word>b)?c(?(word)(?(word)d)|)` so the queue keeps accepted nested conditional syntax explicit before empty-yes-arm or fully-empty nested variants reopen the frontier.
-7. Land `RBR-0152` to convert that bounded nested explicit-empty-else conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-8. Land `RBR-0153` to catch bounded nested explicit-empty-else conditional benchmarks up so that accepted nested explicit-empty-else composition reaches the published benchmark surface before broader nested conditional expansion reopens the frontier further.
-9. Land `RBR-0154` to add a deterministic systematic correctness-corpus harness for already-landed slices so stronger evidence can accumulate alongside feature work instead of relying only on hand-written per-slice fixture growth.
+1. Land `RBR-0147` to catch bounded nested omitted-no-arm conditional benchmarks up so that accepted nested no-else conditional composition reaches the published benchmark surface before quantified conditionals or broader backtracking reopen the frontier further.
+2. Land `RBR-0148` to publish one bounded quantified-conditional correctness pack for `a(b)?c(?(1)d|e){2}` and `a(?P<word>b)?c(?(word)d|e){2}` so the queue reopens quantified conditional composition through one exact CPython-supported slice before broader backtracking-heavy conditional execution reopens the frontier.
+3. Land `RBR-0149` to convert that bounded quantified-conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+4. Land `RBR-0150` to catch bounded quantified-conditional benchmarks up so that repeated conditional-arm behavior reaches the published benchmark surface before broader backtracking-heavy conditional execution reopens the frontier further.
+5. Land `RBR-0151` to publish one bounded nested explicit-empty-else conditional correctness pack for `a(b)?c(?(1)(?(1)d)|)` and `a(?P<word>b)?c(?(word)(?(word)d)|)` so the queue keeps accepted nested conditional syntax explicit before empty-yes-arm or fully-empty nested variants reopen the frontier.
+6. Land `RBR-0152` to convert that bounded nested explicit-empty-else conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+7. Land `RBR-0153` to catch bounded nested explicit-empty-else conditional benchmarks up so that accepted nested explicit-empty-else composition reaches the published benchmark surface before broader nested conditional expansion reopens the frontier further.
+8. Land `RBR-0154` to add a deterministic systematic correctness-corpus harness for already-landed slices so stronger evidence can accumulate alongside feature work instead of relying only on hand-written per-slice fixture growth.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
