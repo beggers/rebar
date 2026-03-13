@@ -4,7 +4,8 @@
 Milestone 2 now has the broader `{1,4}` grouped-alternation slice benchmark-caught-up and the adjacent broader grouped-conditional pack published; the active frontier is now converting that `{1,4}` grouped-conditional slice behind `rebar._rebar` with `RBR-0271`.
 
 ## Ordered Work
-1. Land `RBR-0271` to convert the broader `{1,4}` wider-ranged-repeat grouped-alternation-plus-conditional slice `a((bc|de){1,4})?(?(1)d|e)` / `a(?P<outer>(bc|de){1,4})?(?(outer)d|e)` into Rust-backed parity, then keep Python-path benchmark catch-up sequenced directly behind it.
+1. Land `RBR-0271` to convert the broader `{1,4}` wider-ranged-repeat grouped-alternation-plus-conditional slice `a((bc|de){1,4})?(?(1)d|e)` / `a(?P<outer>(bc|de){1,4})?(?(outer)d|e)` into Rust-backed parity.
+2. Land `RBR-0273` to catch that same broader `{1,4}` grouped-conditional slice up on the Python-path benchmark surface through `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.json`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
