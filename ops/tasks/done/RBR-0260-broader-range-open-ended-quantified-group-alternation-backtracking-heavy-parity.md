@@ -1,6 +1,6 @@
 # RBR-0260: Add broader-range open-ended quantified-group alternation backtracking-heavy parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0259`.
 - This task exists so the queue turns one exact broader-range open-ended grouped backtracking-heavy frontier into real Rust-backed behavior instead of leaving it as publication-only coverage.
+- Completed 2026-03-13: widened the shared Rust open-ended grouped-backtracking parser/matcher to accept the `{2,}` lower bound for `a((bc|b)c){2,}d` and `a(?P<word>(bc|b)c){2,}d`, added focused Rust and Python parity coverage, and regenerated `reports/correctness/latest.json` so the published 14-case broader-range grouped-backtracking pack now passes through the native `rebar` path.

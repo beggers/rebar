@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is widening a real Rust-backed subset one bounded regex slice at a time, and the project is still far from drop-in `re` parity. |
 | Delivery estimate | Foundation work is complete, but the published Rust-backed slice is still narrow and benchmark coverage is catching up immediately behind each newly landed parity slice. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `3` ready, `0` in progress, `262` done, `0` blocked |
+| Work queue | `2` ready, `0` in progress, `263` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -22,9 +22,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Metric | Value |
 | --- | --- |
 | Published cases | `677` |
-| Passing in published slice | `663` |
+| Passing in published slice | `677` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `14` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `79` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
@@ -47,8 +47,8 @@ _README speedup rollups stay omitted while only `413` of `447` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0260` through `RBR-0261` so the broader-range open-ended `{2,}` grouped-backtracking slice reaches Rust-backed parity and benchmark publication.
-- Keep `RBR-0262` immediately behind that frontier so source-tree benchmark wrapper coverage can be consolidated without interrupting the active regex slice.
+- Land `RBR-0261` so the broader-range open-ended `{2,}` grouped-backtracking slice reaches published benchmark coverage after parity landed.
+- Keep `RBR-0262` immediately behind that frontier so source-tree benchmark wrapper coverage can be consolidated as soon as the current grouped `{2,}` slice is fully caught up.
 
 ### Current Risks
 
@@ -60,7 +60,7 @@ _README speedup rollups stay omitted while only `413` of `447` published workloa
 
 `rebar` is past the pure-harness stage. The repo now has a Rust core, a CPython-facing extension boundary, canonical correctness and benchmark publications, and a specialist-agent loop that keeps widening one bounded regex slice at a time.
 
-The implementation frontier is real but still narrow. The published correctness slice now includes a small number of explicit `unimplemented` gaps, and that slice is still much smaller than the full stdlib `re` surface; the immediate queue is the broader-range open-ended grouped-backtracking `{2,}` parity-and-benchmark pair, with benchmark-wrapper consolidation held directly behind it. Benchmarking is still coverage-first: the main report remains source-tree-shim based, while built-native full-suite and smoke runs live in separate sidecars so performance claims stay explicitly qualified.
+The implementation frontier is real but still narrow. The published correctness slice is currently clean at 677 passing cases across 79 manifests, but that slice is still much smaller than the full stdlib `re` surface; the immediate queue is the broader-range open-ended grouped-backtracking `{2,}` benchmark catch-up, with benchmark-wrapper consolidation held directly behind it. Benchmarking is still coverage-first: the main report remains source-tree-shim based, while built-native full-suite and smoke runs live in separate sidecars so performance claims stay explicitly qualified.
 
 ## What The Numbers Mean
 

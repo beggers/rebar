@@ -12,8 +12,8 @@ Phase 3 is widening a real Rust-backed subset one bounded regex slice at a time,
 Foundation work is complete, but the published Rust-backed slice is still narrow and benchmark coverage is catching up immediately behind each newly landed parity slice.
 
 ## README Next Steps
-- Land `RBR-0260` through `RBR-0261` so the broader-range open-ended `{2,}` grouped-backtracking slice reaches Rust-backed parity and benchmark publication.
-- Keep `RBR-0262` immediately behind that frontier so source-tree benchmark wrapper coverage can be consolidated without interrupting the active regex slice.
+- Land `RBR-0261` so the broader-range open-ended `{2,}` grouped-backtracking slice reaches published benchmark coverage after parity landed.
+- Keep `RBR-0262` immediately behind that frontier so source-tree benchmark wrapper coverage can be consolidated as soon as the current grouped `{2,}` slice is fully caught up.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
