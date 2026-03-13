@@ -504,6 +504,11 @@ struct ConditionalGroupExistsPattern<'a> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+struct QuantifiedConditionalGroupExistsPattern<'a> {
+    conditional: ConditionalGroupExistsPattern<'a>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct ExactRepeatGroupPattern<'a> {
     prefix: &'a str,
     capture: LiteralCapture<'a>,
@@ -978,6 +983,25 @@ impl<'a> ExactRepeatGroupPattern<'a> {
     }
 }
 
+impl<'a> QuantifiedConditionalGroupExistsPattern<'a> {
+    fn group_count(&self) -> usize {
+        self.conditional.group_count()
+    }
+
+    fn named_groups(&self) -> Vec<NamedGroup> {
+        self.conditional.named_groups()
+    }
+
+    fn group_spans(
+        &self,
+        match_start: usize,
+        capture_present: bool,
+    ) -> Vec<Option<(usize, usize)>> {
+        self.conditional
+            .group_spans(match_start, capture_present, None)
+    }
+}
+
 impl<'a> RangedRepeatGroupPattern<'a> {
     fn group_count(&self) -> usize {
         1
@@ -1274,6 +1298,21 @@ fn compile_known_supported_case(
         {
             let grouped_pattern = parse_optional_group_alternation_pattern_str(pattern)
                 .expect("guarded optional-group alternation literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
+                warning: None,
+            })
+        }
+        PatternRef::Str(pattern)
+            if parse_quantified_conditional_group_exists_pattern_str(pattern).is_some()
+                && normalized_flags == FLAG_UNICODE =>
+        {
+            let grouped_pattern = parse_quantified_conditional_group_exists_pattern_str(pattern)
+                .expect("guarded quantified conditional group-exists literal");
             Some(CompileOutcome {
                 status: CompileStatus::Compiled,
                 normalized_flags,
@@ -2150,6 +2189,23 @@ fn parse_conditional_group_exists_pattern_str(
     })
 }
 
+fn parse_quantified_conditional_group_exists_pattern_str(
+    pattern: &str,
+) -> Option<QuantifiedConditionalGroupExistsPattern<'_>> {
+    let grouped_pattern = parse_conditional_group_exists_pattern_str(pattern.strip_suffix("{2}")?)?;
+    if grouped_pattern.yes_branch.is_empty()
+        || grouped_pattern.no_branch.is_none_or(str::is_empty)
+        || grouped_pattern.yes_branch_alternation.is_some()
+        || grouped_pattern.nested_yes_branch.is_some()
+    {
+        return None;
+    }
+
+    Some(QuantifiedConditionalGroupExistsPattern {
+        conditional: grouped_pattern,
+    })
+}
+
 fn parse_exact_repeat_group_pattern_str(pattern: &str) -> Option<ExactRepeatGroupPattern<'_>> {
     let open_offset = pattern.find('(')?;
     let prefix = &pattern[..open_offset];
@@ -2629,6 +2685,31 @@ fn literal_match_str(
                 }
 
                 find_optional_group_alternation_match_span_str(
+                    &grouped_pattern,
+                    flags,
+                    mode,
+                    &string_chars,
+                    normalized_pos,
+                    normalized_endpos,
+                )
+                .map_or((None, Vec::new()), |(span, group_spans)| {
+                    (Some(span), group_spans)
+                })
+            } else if let Some(grouped_pattern) =
+                parse_quantified_conditional_group_exists_pattern_str(pattern_value)
+            {
+                if flags != FLAG_UNICODE {
+                    return MatchOutcome {
+                        status: MatchStatus::Unsupported,
+                        pos: normalized_pos,
+                        endpos: normalized_endpos,
+                        span: None,
+                        group_spans: Vec::new(),
+                        lastindex: None,
+                    };
+                }
+
+                find_quantified_conditional_group_exists_match_span_str(
                     &grouped_pattern,
                     flags,
                     mode,
@@ -3828,6 +3909,107 @@ fn find_conditional_group_exists_match_span_str(
                 pattern.group_spans(pos, capture_present, matched_yes_branch),
             ))
         }),
+    }
+}
+
+fn quantified_conditional_group_exists_matches_at_str(
+    pattern: &QuantifiedConditionalGroupExistsPattern<'_>,
+    flags: i32,
+    string: &[char],
+    start: usize,
+    endpos: usize,
+) -> Option<(bool, usize)> {
+    let conditional = &pattern.conditional;
+    let prefix_chars: Vec<char> = conditional.prefix.chars().collect();
+    let capture_chars: Vec<char> = conditional.capture.body.chars().collect();
+    let middle_chars: Vec<char> = conditional.middle.chars().collect();
+
+    if !literal_matches_at_str(prefix_chars.as_slice(), flags, string, start, endpos) {
+        return None;
+    }
+
+    let capture_start = start + prefix_chars.len();
+    let (capture_present, middle_start) = if literal_matches_at_str(
+        capture_chars.as_slice(),
+        flags,
+        string,
+        capture_start,
+        endpos,
+    ) {
+        (true, capture_start + capture_chars.len())
+    } else {
+        (false, capture_start)
+    };
+
+    if !literal_matches_at_str(middle_chars.as_slice(), flags, string, middle_start, endpos) {
+        return None;
+    }
+
+    let branch_chars: Vec<char> = if capture_present {
+        conditional.yes_branch.chars().collect()
+    } else {
+        conditional
+            .no_branch
+            .expect("quantified conditional group-exists pattern must have a no-branch")
+            .chars()
+            .collect()
+    };
+
+    let first_branch_start = middle_start + middle_chars.len();
+    if !literal_matches_at_str(
+        branch_chars.as_slice(),
+        flags,
+        string,
+        first_branch_start,
+        endpos,
+    ) {
+        return None;
+    }
+
+    let second_branch_start = first_branch_start + branch_chars.len();
+    literal_matches_at_str(
+        branch_chars.as_slice(),
+        flags,
+        string,
+        second_branch_start,
+        endpos,
+    )
+    .then_some((capture_present, second_branch_start + branch_chars.len()))
+}
+
+fn find_quantified_conditional_group_exists_match_span_str(
+    pattern: &QuantifiedConditionalGroupExistsPattern<'_>,
+    flags: i32,
+    mode: MatchMode,
+    string: &[char],
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    match mode {
+        MatchMode::Search => (pos..=endpos).find_map(|start| {
+            quantified_conditional_group_exists_matches_at_str(
+                pattern, flags, string, start, endpos,
+            )
+            .map(|(capture_present, match_end)| {
+                (
+                    (start, match_end),
+                    pattern.group_spans(start, capture_present),
+                )
+            })
+        }),
+        MatchMode::Match => {
+            quantified_conditional_group_exists_matches_at_str(pattern, flags, string, pos, endpos)
+                .map(|(capture_present, match_end)| {
+                    ((pos, match_end), pattern.group_spans(pos, capture_present))
+                })
+        }
+        MatchMode::Fullmatch => {
+            quantified_conditional_group_exists_matches_at_str(pattern, flags, string, pos, endpos)
+                .and_then(|(capture_present, match_end)| {
+                    (match_end == endpos)
+                        .then_some(((pos, match_end), pattern.group_spans(pos, capture_present)))
+                })
+        }
     }
 }
 

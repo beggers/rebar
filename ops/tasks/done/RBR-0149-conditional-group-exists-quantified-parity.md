@@ -1,6 +1,6 @@
 # RBR-0149: Add bounded quantified-conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0148`, `RBR-0105`, and `RBR-0096`.
 - This task exists so the queue converts the first quantified-conditional workflow into real Rust-backed behavior instead of leaving it as publication-only coverage.
+
+## Completion
+- Added a bounded Rust-backed matcher/parser path for `a(b)?c(?(1)d|e){2}` and `a(?P<word>b)?c(?(word)d|e){2}` without widening into empty-arm, omitted-no-arm, nested repeated, replacement, or ranged-repeat conditional behavior.
+- Added native parity coverage in `tests/python/test_conditional_group_exists_quantified_parity.py` and refreshed the quantified correctness-harness expectations to require `pass` instead of `unimplemented`.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports `296` passed cases, `0` failures, and `0` unimplemented cases, and the quantified suite reports `8/8` passing.
