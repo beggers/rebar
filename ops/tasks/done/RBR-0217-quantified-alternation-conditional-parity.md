@@ -1,6 +1,6 @@
 # RBR-0217: Add bounded quantified-alternation-plus-conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0216`.
 - This task exists so the queue turns the first bounded quantified-alternation-plus-conditional workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+
+## Completion
+- Added a narrow Rust parser/matcher path for `a((b|c){1,2})?(?(1)d|e)` and `a(?P<outer>(b|c){1,2})?(?(outer)d|e)` with CPython-aligned compile metadata, capture spans, and `lastindex` behavior.
+- Added focused Rust regression coverage plus `tests/python/test_quantified_alternation_conditional_parity.py`.
+- Rebuilt `rebar._rebar`, ran the targeted parity and fixture-backed correctness tests, and republished `reports/correctness/latest.json` at 494 passed / 0 unimplemented.
