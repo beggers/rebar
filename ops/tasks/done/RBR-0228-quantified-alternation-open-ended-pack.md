@@ -1,6 +1,6 @@
 # RBR-0228: Publish a bounded open-ended quantified-alternation correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0227`.
 - This task exists so the queue reopens quantified alternation through one exact open-ended follow-on with an existing benchmark-gap anchor instead of jumping directly to broader repeated-backtracking work.
+
+## Completion
+- Added `tests/conformance/fixtures/quantified_alternation_open_ended_workflows.json` and wired it into `python/rebar_harness/correctness.py` so the default combined correctness publication now includes a dedicated open-ended `{1,}` quantified-alternation manifest.
+- Added `tests/conformance/test_correctness_quantified_alternation_open_ended_workflows.py` to verify the manifest is present in the combined scorecard and that the numbered/named compile, module, and compiled-`Pattern` observations for `a(b|c){1,}d` and `a(?P<word>b|c){1,}d` stay honest as `pass` or `unimplemented`.
+- Regenerated `reports/correctness/latest.json`; the published combined report now covers 69 manifests / 548 cases, with the new 16 open-ended quantified-alternation cases currently reported as honest `unimplemented` outcomes.

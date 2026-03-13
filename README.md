@@ -14,18 +14,18 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is widening a real Rust-backed subset, but the project is still early relative to the drop-in `re` target. |
 | Delivery estimate | Foundation work is complete, the published slice is expanding through benchmark catch-up and exact follow-on tasks, and overall stdlib-parity progress is still in the early implementation stage. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `6` ready, `0` in progress, `235` done, `0` blocked |
+| Work queue | `8` ready, `0` in progress, `236` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `532` |
+| Published cases | `548` |
 | Passing in published slice | `532` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `68` |
+| Honest gaps (`unimplemented`) | `16` |
+| Covered manifests | `69` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
 _These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, the published slice is expanding through benchmark catch-up and exact follow-on tasks, and overall stdlib-parity progress is still in the early implementation stage._
@@ -47,8 +47,8 @@ _README speedup rollups stay omitted while only `359` of `396` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0227` so the Rust-backed `{1,3}` quantified-alternation slice reaches the published benchmark surface.
-- Then land `RBR-0228` through `RBR-0230` so one exact open-ended `{1,}` quantified-alternation follow-on reaches the same frontier.
+- Land `RBR-0228` through `RBR-0230` so the first exact open-ended `{1,}` quantified-alternation follow-on reaches the published benchmark surface.
+- Then land `RBR-0231` through `RBR-0233`, with `RBR-0234` through `RBR-0236` already seeded behind them for the wider ranged-repeat quantified-group alternation follow-on.
 
 ### Current Risks
 
@@ -58,15 +58,15 @@ _README speedup rollups stay omitted while only `359` of `396` published workloa
 
 ## Implementation Snapshot
 
-`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The exact published counts live in the generated status block above; the short version is that the first bounded two-arm, alternation-heavy two-arm, nested two-arm, and quantified two-arm conditional replacement slices reach the Rust-backed correctness baseline, the repo carries a strict built-native full-suite benchmark sidecar, the conditional-plus-branch-local-backreference and quantified-alternation-plus-conditional slices already reach both Rust-backed correctness and published benchmark coverage, the quantified-alternation nested-branch, backtracking-heavy, and broader-range `{1,3}` slices now reach Rust-backed correctness, and the active queue now leads with `RBR-0227` for broader-range benchmark catch-up, followed by `RBR-0228` through `RBR-0230` for the open-ended `{1,}` follow-on and `RBR-0231` through `RBR-0233` for one exact-repeat quantified-group alternation follow-on.
+`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The exact published counts live in the generated status block above; the short version is that the first bounded two-arm, alternation-heavy two-arm, nested two-arm, and quantified two-arm conditional replacement slices reach the Rust-backed correctness baseline, the repo carries a strict built-native full-suite benchmark sidecar, the conditional-plus-branch-local-backreference and quantified-alternation-plus-conditional slices already reach both Rust-backed correctness and published benchmark coverage, the quantified-alternation nested-branch, backtracking-heavy, and broader-range `{1,3}` slice now also reaches published benchmark coverage, and the active queue now leads with `RBR-0228` through `RBR-0230` for the open-ended `{1,}` follow-on, then `RBR-0231` through `RBR-0233` for one exact-repeat quantified-group alternation follow-on, with `RBR-0234` through `RBR-0236` already seeded behind them for the wider ranged-repeat quantified-group alternation follow-on.
 
-The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. The tracked frontier already includes deterministic corpus coverage, multiple bounded conditional execution and replacement slices, quantified branch-local-backreference work, and quantified-alternation combinations through the broader-range `{1,3}` frontier, while benchmark catch-up and the next exact follow-ons remain explicit. The immediate follow-ons are `RBR-0227` through `RBR-0230` for broader-range benchmark catch-up and the open-ended quantified-alternation trio, with `RBR-0231` through `RBR-0233` already seeded behind them for exact-repeat quantified-group alternation.
+The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. The tracked frontier already includes deterministic corpus coverage, multiple bounded conditional execution and replacement slices, quantified branch-local-backreference work, and quantified-alternation combinations through the broader-range `{1,3}` frontier, while the next exact follow-ons remain explicit. The immediate follow-ons are `RBR-0228` through `RBR-0230` for the open-ended quantified-alternation trio, then `RBR-0231` through `RBR-0233` for exact-repeat quantified-group alternation, with `RBR-0234` through `RBR-0236` already seeded behind them for wider ranged-repeat quantified-group alternation.
 
 Benchmark publication is still partial by design. The generated status block above carries the current workload and known-gap totals, while the primary full-suite report still times the source-tree shim, `reports/benchmarks/native_full.json` records the latest checked-in strict built-native full-suite sidecar, and `reports/benchmarks/native_smoke.json` remains the quick six-workload native check.
 
 ## What The Numbers Mean
 
-The correctness report is a slice-health signal, not an end-state signal. The current publication covers 532 cases across 68 manifests, with all 532 passing and no honest `unimplemented` gaps in the published slice, and that still does not mean the project is close to replacing stdlib `re` across the board. The immediate queue is `RBR-0227` through `RBR-0233` to catch the broader-range benchmark surface up, then take open-ended quantified alternation and one exact-repeat quantified-group alternation follow-on through the same publish/parity/benchmark sequence.
+The correctness report is a slice-health signal, not an end-state signal. The current publication covers 532 cases across 68 manifests, with all 532 passing and no honest `unimplemented` gaps in the published slice, and that still does not mean the project is close to replacing stdlib `re` across the board. The immediate queue is `RBR-0228` through `RBR-0236` to take one exact open-ended quantified-alternation follow-on, then one exact-repeat quantified-group alternation follow-on, then one wider ranged-repeat quantified-group alternation follow-on through the same publish/parity/benchmark sequence.
 
 The benchmark report is still a coverage-first artifact too. It already exercises a wide workload set, but dozens of workloads are still explicit gaps and the main published run still measures the source-tree shim rather than the fully built-native path. That is enough to guide the queue, but not enough to make broad speed claims yet.
 
