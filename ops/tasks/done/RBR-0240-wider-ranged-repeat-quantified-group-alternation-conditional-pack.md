@@ -1,6 +1,6 @@
 # RBR-0240: Publish a bounded wider ranged-repeat quantified-group alternation plus conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0239`.
 - This task exists so grouped alternation reopens conditional composition through one exact bounded `{1,3}` slice instead of a vague broader backtracking bucket.
+- Completed 2026-03-13: added the dedicated `wider_ranged_repeat_quantified_group_alternation_conditional_workflows.json` manifest, wired it into the default correctness harness, added a conformance test that accepts either `pass` or honest `unimplemented` for the new slice, and regenerated `reports/correctness/latest.json` with 596 total published cases across 73 manifests and 12 honest `unimplemented` outcomes for this newly published pack.
