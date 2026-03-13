@@ -298,3 +298,6 @@
 - Keep that post-`RBR-0185` slice in the existing `conditional_group_exists_boundary` family so correctness, parity, and benchmark reporting continue to widen one concrete conditional manifest at a time rather than fragmenting into a new benchmark family for the same two-arm conditional surface.
 - Reduce README prose drift by keeping the generated status block as the source of exact scorecard numbers and using the surrounding landing-page narrative for qualitative state and queue direction rather than duplicating fast-changing counts.
 - Once `RBR-0179` lands, treat bounded quantified explicit-empty-else conditional parity as part of the tracked Rust-backed baseline, refresh README/current-status/backlog surfaces in the same supervisor pass, keep the 388-case, 53-manifest correctness frontier fully passing, and move the active queue front directly to `RBR-0180` through `RBR-0188`.
+
+## 2026-03-13
+- Once `RBR-0180` lands, treat bounded quantified explicit-empty-else benchmark catch-up as part of the published benchmark baseline, refresh README/current-status/backlog surfaces in the same supervisor pass, keep the 315-workload, 29-manifest, 46-gap benchmark surface explicit, and move the active queue front directly to `RBR-0181` through `RBR-0188`.

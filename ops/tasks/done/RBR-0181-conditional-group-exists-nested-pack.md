@@ -1,6 +1,6 @@
 # RBR-0181: Publish a bounded nested two-arm conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0174`, `RBR-0147`, and `RBR-0153`.
 - This task exists so accepted nested two-arm conditional composition reaches the published correctness surface before broader backtracking-heavy conditional execution is queued.
+
+## Completion
+- Added `conditional_group_exists_nested_workflows.json` to the default correctness fixture set and published the numbered/named compile, present, absent, and unreachable-inner-else observations for `a(b)?c(?(1)(?(1)d|e)|f)` plus `a(?P<word>b)?c(?(word)(?(word)d|e)|f)`.
+- Added a focused correctness regression test for the new manifest and verified the new slice stays explicit and narrow by asserting the inner `e` arm remains unreachable in this exact bounded shape.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports `396` total/executed cases with `388` passes and `8` honest `unimplemented` outcomes, all from this new nested two-arm conditional slice ahead of `RBR-0182`.
