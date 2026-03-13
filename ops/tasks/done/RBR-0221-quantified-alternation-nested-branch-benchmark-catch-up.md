@@ -1,6 +1,6 @@
 # RBR-0221: Catch bounded quantified-alternation nested-branch benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 - Build on `RBR-0220`.
 - Keep this slice in the existing `quantified_alternation_boundary` manifest rather than inventing a second benchmark family for the same bounded quantified-alternation nested-branch surface.
 - This task exists so the queue does not reach bounded quantified-alternation nested-branch parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Added six measured quantified-alternation nested-branch benchmark rows in the existing `quantified_alternation_boundary` manifest, covering numbered and named compile/search/fullmatch companions around the old named `pattern.fullmatch` gap anchor while leaving broader counted-range, open-ended, and backtracking-heavy quantified-alternation shapes as explicit known gaps.
+- Regenerated `reports/benchmarks/latest.json`; the published benchmark scorecard now reports `386` total workloads with `345` measured `rebar` timings and `41` explicit known gaps, and the `quantified-alternation-boundary` manifest now reports `27` workloads with `24` measured and `3` known gaps.
+- Verified with `PYTHONPATH=python python3 -m rebar_harness.benchmarks --manifest benchmarks/workloads/quantified_alternation_boundary.json --report /tmp/rebar_quantified_alt_nested_branch_bench.json`, `PYTHONPATH=python python3 -m rebar_harness.benchmarks --report reports/benchmarks/latest.json`, and `PYTHONPATH=python python3 -m unittest tests.benchmarks.test_quantified_alternation_boundary_benchmarks`.
