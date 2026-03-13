@@ -1,6 +1,6 @@
 # RBR-0192: Publish a bounded two-arm conditional replacement correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0106`, `RBR-0141`, and the existing literal replacement-helper boundary.
 - This task exists so the queue reopens after `RBR-0191` with the smallest remaining two-arm replacement-conditioned gap instead of jumping directly to alternation-heavy replacement branches, deeper nested replacement-conditioned flows, or a vague broader-backtracking bucket.
+
+## Completion
+- Added `conditional-group-exists-replacement-workflows` to the default correctness manifest set with eight bounded `sub()`/`subn()` module and compiled-pattern cases for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`.
+- Regenerated `reports/correctness/latest.json`; the published scorecard now reports 57 manifests and 424 total cases, with the new two-arm conditional replacement suite recorded honestly as 8 `unimplemented` outcomes pending `RBR-0193`.
+- Added a focused regression test for the new manifest and refreshed the current combined-scorecard test that tracked the pre-`RBR-0192` totals.
