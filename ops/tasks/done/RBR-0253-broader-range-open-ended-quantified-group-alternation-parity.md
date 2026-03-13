@@ -1,6 +1,6 @@
 # RBR-0253: Add broader-range open-ended quantified-group alternation parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0252`.
 - This task exists so the queue turns one exact broader-range open-ended grouped-alternation frontier into real Rust-backed behavior instead of leaving it as publication-only coverage.
+- Completed 2026-03-13: widened the shared Rust quantified-alternation path to carry a `{2,}` lower bound for `a(bc|de){2,}d` and `a(?P<word>bc|de){2,}d`, added focused Python parity coverage, and regenerated `reports/correctness/latest.json` so the published 16-case suite now passes through the native `rebar` path.
