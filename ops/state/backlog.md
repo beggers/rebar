@@ -4,18 +4,18 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0243` so one bounded wider ranged-repeat `{1,3}` grouped backtracking-heavy slice pinned to `a((bc|b)c){1,3}d` and `a(?P<word>(bc|b)c){1,3}d` reaches published correctness coverage.
-2. Then land `RBR-0244` and `RBR-0245` so that same bounded `{1,3}` grouped backtracking-heavy slice reaches Rust-backed parity and published benchmark coverage before open-ended grouped-conditionals resume.
-3. Keep `RBR-0246` through `RBR-0251` pre-seeded so the queue rolls straight into open-ended grouped-conditional and grouped backtracking-heavy follow-ons through the existing `open_ended_quantified_group_boundary.json` gap rows.
+1. Land `RBR-0244` so one bounded wider ranged-repeat `{1,3}` grouped backtracking-heavy slice pinned to `a((bc|b)c){1,3}d` and `a(?P<word>(bc|b)c){1,3}d` reaches Rust-backed parity.
+2. Then land `RBR-0245` and keep `RBR-0246` through `RBR-0248` contiguous so benchmark catch-up lands before and alongside the open-ended grouped-conditional trio.
+3. Keep `RBR-0249` through `RBR-0251` pre-seeded so the queue rolls straight into the open-ended grouped backtracking-heavy follow-on through the existing `open_ended_quantified_group_boundary.json` gap rows.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
 - Prefer replacing vague items with concrete task files instead of growing this document indefinitely.
 - Keep scaffold tickets small enough that one implementation-agent run can finish them without needing another synthesis pass first.
 - Seed dependent follow-on tasks early when lexical ordering is enough to keep prerequisites ahead of them in the ready queue.
-- With `RBR-0242` landed, treat wider ranged-repeat quantified-group alternation plus conditional benchmark catch-up as part of the tracked frontier, keep the fully passing 596-case, 73-manifest correctness surface plus the 420-workload, 30-manifest, 384-measured, 36-gap benchmark surface explicit, and keep the active queue front at `RBR-0243` through `RBR-0251`.
-- Keep `RBR-0243` through `RBR-0251` pre-seeded in lexical order; the task contracts are explicit enough that the worker should not need another supervisor-only reseed pass across one bounded `{1,3}` grouped backtracking-heavy trio and the next open-ended grouped trios.
-- Keep the 420-workload, 30-manifest, 384-measured, 36-gap benchmark frontier explicit while `RBR-0243` through `RBR-0251` widen grouped alternation through bounded and open-ended follow-ons.
+- With `RBR-0243` landed, treat wider ranged-repeat quantified-group alternation backtracking-heavy publication as part of the tracked frontier, keep the honest 608-case, 74-manifest, 596-pass, 12-unimplemented correctness surface plus the 420-workload, 30-manifest, 384-measured, 36-gap benchmark surface explicit, and keep the active queue front at `RBR-0244` through `RBR-0251`.
+- Keep `RBR-0244` through `RBR-0251` pre-seeded in lexical order; the task contracts are explicit enough that the worker should not need another supervisor-only reseed pass across one bounded `{1,3}` grouped backtracking-heavy parity/benchmark pair and the next open-ended grouped trios.
+- Keep the 420-workload, 30-manifest, 384-measured, 36-gap benchmark frontier explicit while `RBR-0244` through `RBR-0251` widen grouped alternation through bounded and open-ended follow-ons.
 - After `RBR-0188`, extend the queue through one bounded quantified alternation-heavy two-arm conditional slice as `RBR-0189` through `RBR-0191`, pinned to `a(b)?c(?(1)(de|df)|(eg|eh)){2}` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}`, so quantified composition follows the newly reopened two-arm alternation frontier through one exact numbered/named pair instead of another vague backtracking bucket.
 - After `RBR-0194`, extend the queue through one bounded alternation-heavy two-arm conditional replacement slice as `RBR-0195` through `RBR-0197`, pinned to `a(b)?c(?(1)(de|df)|(eg|eh))` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` through `sub()` and `subn()`, so replacement-conditioned work reopens through one exact alternation-heavy follow-on before nested replacement-conditioned flows, quantified replacement-conditioned conditionals, branch-local-backreference arms, or broader backtracking reopen the frontier.
 - After `RBR-0197`, extend the queue through one bounded nested two-arm conditional replacement slice as `RBR-0198` through `RBR-0200`, pinned to `a(b)?c(?(1)(?(1)d|e)|f)` and `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` through `sub()` and `subn()`, so replacement-conditioned work reopens through one exact nested follow-on before quantified replacement-conditioned conditionals, branch-local-backreference arms, or broader backtracking reopen the frontier.

@@ -1,8 +1,9 @@
 # RBR-0244: Add bounded wider ranged-repeat quantified-group alternation backtracking-heavy parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Convert the first bounded wider ranged-repeat grouped backtracking-heavy cases from the published correctness pack into real Rust-backed behavior without claiming open-ended grouped-conditionals, replacement workflows, or broader grouped backtracking support.
@@ -28,3 +29,7 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0243`.
 - This task exists so the queue turns one exact wider ranged-repeat grouped backtracking-heavy frontier into real Rust-backed behavior instead of leaving it as publication-only coverage.
+
+## Completion Notes
+- Completed 2026-03-13 by adding a narrow Rust parser and matcher for `a((bc|b)c){1,3}d` / `a(?P<word>(bc|b)c){1,3}d`, including compile metadata, bounded search/fullmatch execution, capture-span reporting, and `lastindex` parity for the outer repeated group.
+- Added `tests/python/test_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_parity.py` and republished `reports/correctness/latest.json`; the combined scorecard now covers 608 cases across 74 manifests with 608 passes, 0 explicit failures, and 0 `unimplemented` outcomes.

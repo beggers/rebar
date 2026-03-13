@@ -608,6 +608,16 @@ struct RangedRepeatGroupPattern<'a> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+struct WiderRangedRepeatGroupedAlternationBacktrackingHeavyPattern<'a> {
+    prefix: &'a str,
+    outer_name: Option<&'a str>,
+    branches: Vec<&'a str>,
+    repeated_suffix: &'a str,
+    suffix: &'a str,
+    max_repeat: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct LiteralCapture<'a> {
     body: &'a str,
     name: Option<&'a str>,
@@ -1429,6 +1439,35 @@ impl<'a> RangedRepeatGroupPattern<'a> {
     }
 }
 
+impl<'a> WiderRangedRepeatGroupedAlternationBacktrackingHeavyPattern<'a> {
+    fn group_count(&self) -> usize {
+        2
+    }
+
+    fn named_groups(&self) -> Vec<NamedGroup> {
+        self.outer_name
+            .map(|name| {
+                vec![NamedGroup {
+                    name: name.to_string(),
+                    index: 1,
+                }]
+            })
+            .unwrap_or_default()
+    }
+
+    fn group_spans(
+        &self,
+        outer_span: (usize, usize),
+        inner_span: (usize, usize),
+    ) -> Vec<Option<(usize, usize)>> {
+        vec![Some(outer_span), Some(inner_span)]
+    }
+
+    fn matched_lastindex(&self, group_spans: &[Option<(usize, usize)>]) -> Option<usize> {
+        group_spans.first().copied().flatten().map(|_| 1)
+    }
+}
+
 /// Escape the current bounded `str` slice.
 #[must_use]
 pub fn escape_str(pattern: &str) -> String {
@@ -1902,6 +1941,27 @@ fn compile_known_supported_case(
         {
             let grouped_pattern = parse_ranged_repeat_group_pattern_str(pattern)
                 .expect("guarded ranged-repeat group literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
+                warning: None,
+            })
+        }
+        PatternRef::Str(pattern)
+            if parse_wider_ranged_repeat_grouped_alternation_backtracking_heavy_pattern_str(
+                pattern,
+            )
+            .is_some()
+                && normalized_flags == FLAG_UNICODE =>
+        {
+            let grouped_pattern =
+                parse_wider_ranged_repeat_grouped_alternation_backtracking_heavy_pattern_str(
+                    pattern,
+                )
+                .expect("guarded wider ranged-repeat grouped backtracking-heavy literal");
             Some(CompileOutcome {
                 status: CompileStatus::Compiled,
                 normalized_flags,
@@ -3163,17 +3223,16 @@ fn parse_quantified_alternation_conditional_pattern_str(
         return None;
     }
 
-    let (max_repeat, outer_suffix) =
-        if let Some(outer_suffix) = inner_remainder[inner_close_offset + 1..].strip_prefix("{1,2})?")
-        {
-            (2, outer_suffix)
-        } else if branches.as_slice() == ["bc", "de"] {
-            let outer_suffix =
-                inner_remainder[inner_close_offset + 1..].strip_prefix("{1,3})?")?;
-            (3, outer_suffix)
-        } else {
-            return None;
-        };
+    let (max_repeat, outer_suffix) = if let Some(outer_suffix) =
+        inner_remainder[inner_close_offset + 1..].strip_prefix("{1,2})?")
+    {
+        (2, outer_suffix)
+    } else if branches.as_slice() == ["bc", "de"] {
+        let outer_suffix = inner_remainder[inner_close_offset + 1..].strip_prefix("{1,3})?")?;
+        (3, outer_suffix)
+    } else {
+        return None;
+    };
     let conditional = outer_suffix.strip_prefix("(?(")?.strip_suffix(')')?;
     let reference_end = conditional.find(')')?;
     let reference = &conditional[..reference_end];
@@ -3757,6 +3816,63 @@ fn parse_ranged_repeat_group_pattern_str(pattern: &str) -> Option<RangedRepeatGr
         suffix,
         max_repeat,
     })
+}
+
+fn parse_wider_ranged_repeat_grouped_alternation_backtracking_heavy_pattern_str(
+    pattern: &str,
+) -> Option<WiderRangedRepeatGroupedAlternationBacktrackingHeavyPattern<'_>> {
+    let open_offset = pattern.find('(')?;
+    let prefix = &pattern[..open_offset];
+    if prefix.is_empty() || prefix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let remainder = &pattern[open_offset + 1..];
+    let (outer_name, outer_body) = if let Some(named_remainder) = remainder.strip_prefix("?P<") {
+        let name_end = named_remainder.find('>')?;
+        let name = &named_remainder[..name_end];
+        if !is_supported_group_name(name) {
+            return None;
+        }
+        (Some(name), &named_remainder[name_end + 1..])
+    } else {
+        (None, remainder)
+    };
+
+    let inner_remainder = outer_body.strip_prefix('(')?;
+    if inner_remainder.starts_with("?P<") {
+        return None;
+    }
+
+    let inner_close_offset = inner_remainder.find(')')?;
+    let inner_body = &inner_remainder[..inner_close_offset];
+    let branches: Vec<&str> = inner_body.split('|').collect();
+    if branches.as_slice() != ["bc", "b"] {
+        return None;
+    }
+
+    let outer_suffix_and_remainder = &outer_body[inner_close_offset + 2..];
+    let outer_close_offset = outer_suffix_and_remainder.find(')')?;
+    let repeated_suffix = &outer_suffix_and_remainder[..outer_close_offset];
+    if repeated_suffix != "c" {
+        return None;
+    }
+
+    let suffix = outer_suffix_and_remainder[outer_close_offset + 1..].strip_prefix("{1,3}")?;
+    if suffix.is_empty() || suffix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    Some(
+        WiderRangedRepeatGroupedAlternationBacktrackingHeavyPattern {
+            prefix,
+            outer_name,
+            branches,
+            repeated_suffix,
+            suffix,
+            max_repeat: 3,
+        },
+    )
 }
 
 fn is_supported_group_name(name: &str) -> bool {
@@ -4487,6 +4603,33 @@ fn literal_match_str(
                     (Some(span), group_spans)
                 })
             } else if let Some(grouped_pattern) =
+                parse_wider_ranged_repeat_grouped_alternation_backtracking_heavy_pattern_str(
+                    pattern_value,
+                )
+            {
+                if flags != FLAG_UNICODE {
+                    return MatchOutcome {
+                        status: MatchStatus::Unsupported,
+                        pos: normalized_pos,
+                        endpos: normalized_endpos,
+                        span: None,
+                        group_spans: Vec::new(),
+                        lastindex: None,
+                    };
+                }
+
+                find_wider_ranged_repeat_grouped_alternation_backtracking_heavy_match_span_str(
+                    &grouped_pattern,
+                    flags,
+                    mode,
+                    &string_chars,
+                    normalized_pos,
+                    normalized_endpos,
+                )
+                .map_or((None, Vec::new()), |(span, group_spans)| {
+                    (Some(span), group_spans)
+                })
+            } else if let Some(grouped_pattern) =
                 parse_quantified_alternation_nested_branch_pattern_str(pattern_value)
             {
                 if flags != FLAG_UNICODE {
@@ -4677,6 +4820,12 @@ fn literal_match_str(
             .or_else(|| {
                 parse_quantified_alternation_conditional_pattern_str(pattern_value)
                     .and_then(|grouped_pattern| grouped_pattern.matched_lastindex(&group_spans))
+            })
+            .or_else(|| {
+                parse_wider_ranged_repeat_grouped_alternation_backtracking_heavy_pattern_str(
+                    pattern_value,
+                )
+                .and_then(|grouped_pattern| grouped_pattern.matched_lastindex(&group_spans))
             })
             .or_else(|| {
                 parse_optional_group_alternation_branch_local_numbered_backreference_pattern_str(
@@ -6583,6 +6732,136 @@ fn find_ranged_repeat_group_match_span_str(
             (match_end == endpos)
                 .then_some(((pos, match_end), pattern.group_spans(pos, repeat_count)))
         }),
+    }
+}
+
+fn wider_ranged_repeat_grouped_alternation_backtracking_heavy_matches_exact_repeats<'a>(
+    branches: &[&'a str],
+    repeated_suffix_chars: &[char],
+    flags: i32,
+    string: &[char],
+    start: usize,
+    endpos: usize,
+    repeat_count: usize,
+    suffix_chars: &[char],
+) -> Option<(((usize, usize), (usize, usize)), usize)> {
+    for branch in branches {
+        let branch_chars: Vec<char> = branch.chars().collect();
+        let branch_end = start + branch_chars.len();
+        let outer_end = branch_end + repeated_suffix_chars.len();
+        if !literal_matches_at_str(branch_chars.as_slice(), flags, string, start, endpos)
+            || !literal_matches_at_str(repeated_suffix_chars, flags, string, branch_end, endpos)
+        {
+            continue;
+        }
+
+        if repeat_count == 1 {
+            if literal_matches_at_str(suffix_chars, flags, string, outer_end, endpos) {
+                return Some((
+                    ((start, outer_end), (start, branch_end)),
+                    outer_end + suffix_chars.len(),
+                ));
+            }
+            continue;
+        }
+
+        if let Some(result) =
+            wider_ranged_repeat_grouped_alternation_backtracking_heavy_matches_exact_repeats(
+                branches,
+                repeated_suffix_chars,
+                flags,
+                string,
+                outer_end,
+                endpos,
+                repeat_count - 1,
+                suffix_chars,
+            )
+        {
+            return Some(result);
+        }
+    }
+
+    None
+}
+
+fn wider_ranged_repeat_grouped_alternation_backtracking_heavy_matches_at_str<'a>(
+    pattern: &'a WiderRangedRepeatGroupedAlternationBacktrackingHeavyPattern<'_>,
+    flags: i32,
+    string: &[char],
+    start: usize,
+    endpos: usize,
+) -> Option<((usize, usize), (usize, usize), usize)> {
+    let prefix_chars: Vec<char> = pattern.prefix.chars().collect();
+    let repeated_suffix_chars: Vec<char> = pattern.repeated_suffix.chars().collect();
+    let suffix_chars: Vec<char> = pattern.suffix.chars().collect();
+
+    if !literal_matches_at_str(prefix_chars.as_slice(), flags, string, start, endpos) {
+        return None;
+    }
+
+    let repetition_start = start + prefix_chars.len();
+    for candidate_count in (1..=pattern.max_repeat).rev() {
+        if let Some(((outer_span, inner_span), match_end)) =
+            wider_ranged_repeat_grouped_alternation_backtracking_heavy_matches_exact_repeats(
+                pattern.branches.as_slice(),
+                repeated_suffix_chars.as_slice(),
+                flags,
+                string,
+                repetition_start,
+                endpos,
+                candidate_count,
+                suffix_chars.as_slice(),
+            )
+        {
+            return Some((outer_span, inner_span, match_end));
+        }
+    }
+
+    None
+}
+
+fn find_wider_ranged_repeat_grouped_alternation_backtracking_heavy_match_span_str(
+    pattern: &WiderRangedRepeatGroupedAlternationBacktrackingHeavyPattern<'_>,
+    flags: i32,
+    mode: MatchMode,
+    string: &[char],
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    match mode {
+        MatchMode::Search => (pos..=endpos).find_map(|start| {
+            wider_ranged_repeat_grouped_alternation_backtracking_heavy_matches_at_str(
+                pattern, flags, string, start, endpos,
+            )
+            .map(|(outer_span, inner_span, match_end)| {
+                (
+                    (start, match_end),
+                    pattern.group_spans(outer_span, inner_span),
+                )
+            })
+        }),
+        MatchMode::Match => {
+            wider_ranged_repeat_grouped_alternation_backtracking_heavy_matches_at_str(
+                pattern, flags, string, pos, endpos,
+            )
+            .map(|(outer_span, inner_span, match_end)| {
+                (
+                    (pos, match_end),
+                    pattern.group_spans(outer_span, inner_span),
+                )
+            })
+        }
+        MatchMode::Fullmatch => {
+            wider_ranged_repeat_grouped_alternation_backtracking_heavy_matches_at_str(
+                pattern, flags, string, pos, endpos,
+            )
+            .and_then(|(outer_span, inner_span, match_end)| {
+                (match_end == endpos).then_some((
+                    (pos, match_end),
+                    pattern.group_spans(outer_span, inner_span),
+                ))
+            })
+        }
     }
 }
 
@@ -10152,6 +10431,99 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_wider_ranged_repeat_grouped_backtracking_heavy_cases() {
+        let numbered_outcome = compile(PatternRef::Str("a((bc|b)c){1,3}d"), 0).unwrap();
+        assert_eq!(numbered_outcome.status, CompileStatus::Compiled);
+        assert_eq!(numbered_outcome.normalized_flags, FLAG_UNICODE);
+        assert_eq!(numbered_outcome.group_count, 2);
+        assert!(numbered_outcome.named_groups.is_empty());
+
+        let named_outcome = compile(PatternRef::Str("a(?P<word>(bc|b)c){1,3}d"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert_eq!(named_outcome.group_count, 2);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "word".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
+    fn wider_ranged_repeat_grouped_backtracking_heavy_search_reports_short_branch_spans() {
+        let outcome = literal_match(
+            PatternRef::Str("a((bc|b)c){1,3}d"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabcdzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 6)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 5)), Some((3, 4))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn wider_ranged_repeat_grouped_backtracking_heavy_fullmatch_backtracks_to_long_branch() {
+        let outcome = literal_match(
+            PatternRef::Str("a((bc|b)c){1,3}d"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abcbccd"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 7)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 6)), Some((3, 5))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn named_wider_ranged_repeat_grouped_backtracking_heavy_fullmatch_reports_third_repetition() {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<word>(bc|b)c){1,3}d"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abcbcbccd"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 9)));
+        assert_eq!(outcome.group_spans, vec![Some((5, 8)), Some((5, 7))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn wider_ranged_repeat_grouped_backtracking_heavy_fullmatch_reports_no_match() {
+        let outcome = literal_match(
+            PatternRef::Str("a((bc|b)c){1,3}d"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abcccd"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::NoMatch);
+        assert_eq!(outcome.span, None);
+        assert!(outcome.group_spans.is_empty());
+        assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
     fn quantified_alternation_search_reports_lower_bound_capture_span() {
         let outcome = literal_match(
             PatternRef::Str("a(b|c){1,2}d"),
@@ -10559,8 +10931,8 @@ mod tests {
     }
 
     #[test]
-    fn named_wider_ranged_repeat_grouped_alternation_conditional_search_reports_named_outer_lastindex()
-    {
+    fn named_wider_ranged_repeat_grouped_alternation_conditional_search_reports_named_outer_lastindex(
+    ) {
         let outcome = literal_match(
             PatternRef::Str("a(?P<outer>(bc|de){1,3})?(?(outer)d|e)"),
             FLAG_UNICODE,
