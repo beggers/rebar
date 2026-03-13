@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pathlib
 import platform
 from typing import Any
 
@@ -113,6 +114,7 @@ def assert_source_tree_benchmark_contract(
     expected_phase: str,
     expected_runner_version: str,
     expected_manifest_paths: list[str],
+    tracked_report_path: pathlib.Path | None = None,
 ) -> None:
     assert_benchmark_summary_consistent(testcase, scorecard, summary)
     testcase.assertEqual(scorecard["schema_version"], "1.0")
@@ -148,6 +150,8 @@ def assert_source_tree_benchmark_contract(
         [artifact["manifest"] for artifact in scorecard["artifacts"]["manifests"]],
         expected_manifest_paths,
     )
+    if tracked_report_path is not None:
+        testcase.assertTrue(tracked_report_path.is_file())
 
 
 def assert_benchmark_manifest_contract(
@@ -175,8 +179,10 @@ def assert_benchmark_manifest_contract(
     testcase.assertEqual(manifest_summary["available_smoke_workload_count"], len(smoke_ids))
     testcase.assertEqual(manifest_summary["smoke_workload_ids"], smoke_ids)
     testcase.assertEqual(manifest_summary["operations"], operations)
-    testcase.assertEqual(manifest_summary["spec_refs"], manifest_document["spec_refs"])
-    testcase.assertEqual(manifest_summary["notes"], manifest_document["notes"])
+    if "spec_refs" in manifest_document:
+        testcase.assertEqual(manifest_summary["spec_refs"], manifest_document["spec_refs"])
+    if "notes" in manifest_document:
+        testcase.assertEqual(manifest_summary["notes"], manifest_document["notes"])
 
     testcase.assertEqual(manifest_record["manifest_id"], manifest_document["manifest_id"])
     testcase.assertEqual(manifest_record["manifest"], manifest_path)
@@ -224,3 +230,29 @@ def assert_benchmark_workload_contract(
     if expected_status == "measured":
         testcase.assertGreater(workload_record["implementation_ns"], 0)
         testcase.assertIsInstance(workload_record["speedup_vs_cpython"], float)
+
+
+def find_manifest_record(scorecard: dict[str, Any], manifest_id: str) -> dict[str, Any]:
+    for manifest_record in scorecard["artifacts"]["manifests"]:
+        if manifest_record["manifest_id"] == manifest_id:
+            return manifest_record
+    raise AssertionError(f"missing manifest record for {manifest_id!r}")
+
+
+def find_workload_record(scorecard: dict[str, Any], workload_id: str) -> dict[str, Any]:
+    for workload in scorecard["workloads"]:
+        if workload["id"] == workload_id:
+            return workload
+    raise AssertionError(f"missing workload record for {workload_id!r}")
+
+
+def find_workload_document(
+    manifest_document: dict[str, Any],
+    workload_id: str,
+) -> dict[str, Any]:
+    for workload in manifest_document["workloads"]:
+        if workload["id"] == workload_id:
+            return workload
+    raise AssertionError(
+        f"missing workload definition {workload_id!r} in {manifest_document['manifest_id']!r}"
+    )

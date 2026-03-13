@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is widening a real Rust-backed subset one bounded regex slice at a time, and the project is still far from drop-in `re` parity. |
 | Delivery estimate | Foundation work is complete, but the published Rust-backed slice is still narrow and benchmark coverage is catching up immediately behind each newly landed parity slice. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `1` ready, `0` in progress, `264` done, `0` blocked |
+| Work queue | `0` ready, `0` in progress, `265` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -57,35 +57,17 @@ _README speedup rollups stay omitted while only `419` of `452` published workloa
 
 ## Implementation Snapshot
 
-`rebar` is past the pure-harness stage. The repo now has a Rust core, a CPython-facing extension boundary, canonical correctness and benchmark publications, and a specialist-agent loop that keeps widening one bounded regex slice at a time.
+`rebar` is no longer just a harness scaffold. There is a real Rust core, a CPython-facing extension boundary, published correctness and benchmark reports, and a repeatable workflow for widening one bounded regex slice at a time.
 
-The implementation frontier is real but still narrow. The published correctness slice is currently clean at 677 passing cases across 79 manifests, and the benchmark surface now covers the current broader-range open-ended grouped-backtracking `{2,}` frontier at 452 published workloads with 419 real `rebar` timings. That slice is still much smaller than the full stdlib `re` surface, and the immediate queue has shifted to consolidating the repeated source-tree benchmark wrapper tests before the next regex frontier move. Benchmarking is still coverage-first: the main report remains source-tree-shim based, while built-native full-suite and smoke runs live in separate sidecars so performance claims stay explicitly qualified.
+The important caveat is still project shape, not raw counts: the published slice is internally clean, but it remains small relative to stdlib `re`. Benchmarking is also still in the qualification phase. The main published suite measures the source-tree shim, while built-native runs are published separately so the repo can distinguish "measured" from "ready to claim faster than CPython."
 
-## What The Numbers Mean
+## Reading The Status Block
 
-The counts in the status block are progress signals, not a claim of general drop-in parity. A clean published correctness slice means the currently documented frontier is internally consistent; it does not mean most accepted `re` syntax or behavior is implemented yet.
+Treat the correctness numbers as "the current documented frontier is coherent," not as a claim of broad drop-in compatibility. Treat the benchmark numbers as coverage signals first; until the built-native path is the main published path, the README deliberately avoids headline speed claims.
 
-The benchmark totals are coverage signals too. The main suite still has known gaps and still measures the source-tree shim, so broad speed claims stay out of the README; the built-native sidecars exist to keep that distinction visible until benchmark publication is unified.
+## Where To Look
 
-## Operating Model
-
-The repo now runs with a specialist-agent loop. The supervisor only tunes the harness and agent set; architecture and feature-planning agents seed concrete work; the Feature Implementation Agent executes the ready queue; the QA+testing agent widens or hardens test coverage; the implementation-faithfulness agent repairs implementation-only test failures; the cleanup agent removes duplication and unnecessary code without changing overall behavior; and the reporting agent keeps the landing page honest. Durable context lives under `ops/state/`; ephemeral execution traces live under `.rebar/runtime/`.
-
-## Important Paths
-
-| Path | Purpose |
-| --- | --- |
-| `ops/state/current_status.md` | Durable project status, risks, and near-term next steps. |
-| `ops/state/backlog.md` | Ordered milestone queue plus supervisor notes about sequencing. |
-| `ops/tasks/` | Ready, in-progress, done, and blocked task queues. |
-| `ops/user_asks/inbox/` | Supervisor-owned intake for future human notes and harness requests. |
-| `.rebar/runtime/dashboard.md` | Latest cycle health, git state, and queue counts. |
-| `reports/correctness/latest.json` | Latest published correctness scorecard. |
-| `reports/benchmarks/latest.json` | Latest published full benchmark scorecard, currently through the source-tree shim. |
-| `reports/benchmarks/native_full.json` | Strict built-native sidecar for the full published benchmark suite. |
-| `reports/benchmarks/native_smoke.json` | Dedicated built-native smoke benchmark artifact for the verified `rebar._rebar` path. |
-| `python/rebar/__init__.py` | Current Python-facing shim and scaffold behavior. |
-| `python/rebar_harness/` | Correctness and benchmark runners. |
+If you want the detailed project state, start with `ops/state/current_status.md` and `ops/state/backlog.md`. If you want the published scorecards, use `reports/correctness/latest.json`, `reports/benchmarks/latest.json`, `reports/benchmarks/native_full.json`, and `reports/benchmarks/native_smoke.json`. For the operating model and queue layout, `ops/README.md` is the canonical reference.
 
 ## Useful Commands
 
@@ -103,4 +85,3 @@ bash scripts/loop_forever.sh
 - Run the forever loop from a normal shell on a writable checkout.
 - Do not start a second `python3 scripts/rebar_ops.py cycle ...` run against the same checkout while `scripts/loop_forever.sh` is active.
 - Avoid launching the loop from inside another sandboxed Codex session; nested sandboxes can distort child-agent behavior and cache writes.
-- The supervisor is expected to tune the harness and agent set, while the specialist workers own queue shaping, README quality, test growth, and implementation work inside their scoped roles.

@@ -1,6 +1,6 @@
 # RBR-0262: Consolidate the source-tree benchmark wrapper tests into one data-driven suite
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-13
 
@@ -29,3 +29,8 @@ Created: 2026-03-13
 ## Notes
 - Today the 28 repeated wrapper files account for roughly 9k lines of test code and restate about 490 `--manifest` arguments even though the ordering already exists in `rebar_harness.benchmarks.DEFAULT_MANIFEST_PATHS`.
 - Queue this after the current `RBR-0251` through `RBR-0261` frontier; it is worthwhile simplification work, but not an immediate prerequisite for the next regex slice.
+
+## Completion Note
+- Consolidated the remaining source-tree combined benchmark wrapper coverage into `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, with manifest selection and per-manifest expectation data centralized in `tests/benchmarks/benchmark_expectations.py` and common scorecard helpers extended in `tests/report_assertions.py`.
+- Deleted the superseded wrapper modules `tests/benchmarks/test_module_boundary_benchmarks.py`, `tests/benchmarks/test_pattern_boundary_benchmarks.py`, and `tests/benchmarks/test_open_ended_quantified_group_boundary_benchmarks.py`; their manifest-specific contract checks now live in the single data-driven suite.
+- Verified the preserved benchmark test surface with `python3 -m unittest tests.benchmarks.test_source_tree_combined_boundary_benchmarks tests.benchmarks.test_benchmark_smoke tests.benchmarks.test_compile_benchmark_matrix tests.benchmarks.test_post_parser_workflow_benchmarks tests.benchmarks.test_benchmark_adapter_provenance tests.benchmarks.test_built_native_benchmark_smoke tests.benchmarks.test_built_native_full_suite_benchmarks tests.benchmarks.test_regression_benchmark_pack`.
