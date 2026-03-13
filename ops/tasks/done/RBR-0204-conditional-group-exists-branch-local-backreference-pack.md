@@ -1,6 +1,6 @@
 # RBR-0204: Publish a bounded conditional-plus-branch-local-backreference correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0090`, `RBR-0091`, and `RBR-0182`.
 - This task exists so the queue reopens after `RBR-0203` through one exact combined branch-local/conditional slice that already has a stored benchmark anchor instead of jumping directly to a vague broader-backtracking bucket.
+
+## Completion
+- Added `conditional-group-exists-branch-local-backreference-workflows` to the default correctness fixture set with six bounded numbered/named compile, module-search, and pattern-fullmatch cases for `a((b)|c)\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)`.
+- Regenerated `reports/correctness/latest.json`; the published combined scorecard now reports 61 manifests, 454 total cases, 448 passes, and 6 honest `unimplemented` results for this new slice.
+- Added a dedicated regression test for the new manifest and updated default combined-scorecard tests to expect the expanded published totals.

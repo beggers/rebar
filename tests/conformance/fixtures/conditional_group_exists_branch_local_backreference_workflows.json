@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "manifest_id": "conditional-group-exists-branch-local-backreference-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.conditional_group_exists_branch_local_backreference",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "conditional-group-exists-branch-local-numbered-backreference-compile-metadata-str",
+      "operation": "compile",
+      "family": "conditional_group_exists_branch_local_numbered_backreference_compile_metadata",
+      "pattern": "a((b)|c)\\2(?(2)d|e)",
+      "categories": ["grouped", "alternation", "numbered-backreference", "branch-local", "conditional", "group-exists", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes one bounded numbered compile frontier where a branch-local capture is referenced before a later group-exists conditional checks the same capture slot."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-branch-local-numbered-backreference-module-search-present-str",
+      "operation": "module_call",
+      "family": "conditional_group_exists_branch_local_numbered_backreference_module_present_workflow",
+      "helper": "search",
+      "args": ["a((b)|c)\\2(?(2)d|e)", "zzabbdzz"],
+      "categories": ["grouped", "alternation", "numbered-backreference", "branch-local", "conditional", "group-exists", "search", "module", "present", "str", "gap"],
+      "notes": [
+        "Documents the numbered module-level success path where the inner branch-local capture exists on the `b` branch, the backreference resolves, and the later conditional takes the yes arm on `abbd`."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-branch-local-numbered-backreference-pattern-fullmatch-absent-str",
+      "operation": "pattern_call",
+      "family": "conditional_group_exists_branch_local_numbered_backreference_pattern_absent_workflow",
+      "pattern": "a((b)|c)\\2(?(2)d|e)",
+      "helper": "fullmatch",
+      "args": ["ace"],
+      "categories": ["grouped", "alternation", "numbered-backreference", "branch-local", "conditional", "group-exists", "fullmatch", "pattern", "absent", "str", "gap"],
+      "notes": [
+        "Documents the numbered no-match path on the `c` branch so the scorecard records that the unresolved branch-local backreference fails before the conditional else arm can rescue the match."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-branch-local-named-backreference-compile-metadata-str",
+      "operation": "compile",
+      "family": "conditional_group_exists_branch_local_named_backreference_compile_metadata",
+      "pattern": "a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)",
+      "categories": ["grouped", "alternation", "named-group", "named-backreference", "branch-local", "conditional", "group-exists", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the matching named compile frontier where the inner named capture is branch-local but still feeds both a backreference and a later group-exists conditional."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-branch-local-named-backreference-module-search-present-str",
+      "operation": "module_call",
+      "family": "conditional_group_exists_branch_local_named_backreference_module_present_workflow",
+      "helper": "search",
+      "args": ["a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)", "zzabbdzz"],
+      "categories": ["grouped", "alternation", "named-group", "named-backreference", "branch-local", "conditional", "group-exists", "search", "module", "present", "str", "gap"],
+      "notes": [
+        "Documents the named module-level success path for the same bounded composition when the `inner` capture exists, the named backreference resolves, and the later conditional chooses the yes arm."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-branch-local-named-backreference-pattern-fullmatch-absent-str",
+      "operation": "pattern_call",
+      "family": "conditional_group_exists_branch_local_named_backreference_pattern_absent_workflow",
+      "pattern": "a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)",
+      "helper": "fullmatch",
+      "args": ["ace"],
+      "categories": ["grouped", "alternation", "named-group", "named-backreference", "branch-local", "conditional", "group-exists", "fullmatch", "pattern", "absent", "str", "gap"],
+      "notes": [
+        "Documents the named no-match path on the `c` branch so the published frontier makes it explicit that the missing named backreference prevents the later conditional else arm from recovering the match."
+      ]
+    }
+  ]
+}
