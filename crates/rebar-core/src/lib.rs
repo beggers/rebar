@@ -3151,12 +3151,18 @@ fn parse_quantified_alternation_pattern_str(
             (1, Some(2), suffix)
         } else if let Some(suffix) = remainder[close_offset + 1..].strip_prefix("{1,3}") {
             (1, Some(3), suffix)
+        } else if branches.as_slice() == ["bc", "de"] {
+            if let Some(suffix) = remainder[close_offset + 1..].strip_prefix("{1,4}") {
+                (1, Some(4), suffix)
+            } else if let Some(suffix) = remainder[close_offset + 1..].strip_prefix("{1,}") {
+                (1, None, suffix)
+            } else {
+                let suffix = remainder[close_offset + 1..].strip_prefix("{2,}")?;
+                (2, None, suffix)
+            }
         } else if matches!(branches.as_slice(), ["b", "c"] | ["bc", "de"]) {
             if let Some(suffix) = remainder[close_offset + 1..].strip_prefix("{1,}") {
                 (1, None, suffix)
-            } else if branches.as_slice() == ["bc", "de"] {
-                let suffix = remainder[close_offset + 1..].strip_prefix("{2,}")?;
-                (2, None, suffix)
             } else {
                 return None;
             }
@@ -11452,6 +11458,27 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_broader_range_wider_ranged_repeat_quantified_group_alternation_cases() {
+        let numbered_outcome = compile(PatternRef::Str("a(bc|de){1,4}d"), 0).unwrap();
+        assert_eq!(numbered_outcome.status, CompileStatus::Compiled);
+        assert_eq!(numbered_outcome.normalized_flags, FLAG_UNICODE);
+        assert_eq!(numbered_outcome.group_count, 1);
+        assert!(numbered_outcome.named_groups.is_empty());
+
+        let named_outcome = compile(PatternRef::Str("a(?P<word>bc|de){1,4}d"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert_eq!(named_outcome.group_count, 1);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "word".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
     fn quantified_alternation_fullmatch_reports_third_repetition_capture_span() {
         let outcome = literal_match(
             PatternRef::Str("a(b|c){1,3}d"),
@@ -11660,6 +11687,62 @@ mod tests {
             FLAG_UNICODE,
             MatchMode::Fullmatch,
             PatternRef::Str("abcd"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::NoMatch);
+        assert_eq!(outcome.span, None);
+        assert!(outcome.group_spans.is_empty());
+        assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
+    fn broader_range_wider_ranged_repeat_quantified_group_alternation_search_reports_lower_bound_capture_span(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Str("a(bc|de){1,4}d"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabcdzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 6)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 5))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn named_broader_range_wider_ranged_repeat_quantified_group_alternation_fullmatch_reports_upper_bound_capture_span(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<word>bc|de){1,4}d"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abcbcdeded"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 10)));
+        assert_eq!(outcome.group_spans, vec![Some((7, 9))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn broader_range_wider_ranged_repeat_quantified_group_alternation_fullmatch_rejects_overflow() {
+        let outcome = literal_match(
+            PatternRef::Str("a(bc|de){1,4}d"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abcbcbcbcbcd"),
             0,
             None,
         )

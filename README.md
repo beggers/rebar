@@ -11,10 +11,10 @@ _This block reports the implemented slice and measurement coverage, not estimate
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 3 is widening a real Rust-backed subset one bounded regex slice at a time; the published frontier now includes a broader `{1,4}` grouped-alternation correctness pack with honest gaps, and the project is still far from drop-in `re` parity. |
-| Delivery estimate | Foundation work is complete, benchmark reporting is live, and most published workloads now have real `rebar` timings, but the Rust-backed surface is still narrow and the newest `{1,4}` grouped-alternation slice is not yet behind the Rust boundary. |
-| Current milestone | Milestone 2 has now published the broader `{1,4}` grouped-alternation correctness frontier; the next queue work should convert that slice behind the Rust boundary and catch it up on the Python-path benchmark surface. |
-| Work queue | `0` ready, `0` in progress, `270` done, `0` blocked |
+| Phase | Phase 3 is still widening a bounded Rust-backed subset one regex slice at a time; the published frontier now includes the broader `{1,4}` grouped-alternation slice with zero published correctness gaps, and the project remains far from drop-in `re` parity. |
+| Delivery estimate | Foundation work is complete, benchmark reporting is live, and most published workloads now have real `rebar` timings; the newest `{1,4}` grouped-alternation slice is now behind the Rust boundary, but its Python-path benchmark catch-up is still missing. |
+| Current milestone | Milestone 2 now has the broader `{1,4}` grouped-alternation slice behind the Rust boundary; the next planning pass should seed its Python-path benchmark catch-up so benchmark coverage stops lagging correctness. |
+| Work queue | `0` ready, `0` in progress, `271` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -22,13 +22,13 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Metric | Value |
 | --- | --- |
 | Published cases | `701` |
-| Passing in published slice | `691` |
+| Passing in published slice | `701` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `10` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `81` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, benchmark reporting is live, and most published workloads now have real `rebar` timings, but the Rust-backed surface is still narrow and the newest `{1,4}` grouped-alternation slice is not yet behind the Rust boundary._
+_These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, benchmark reporting is live, and most published workloads now have real `rebar` timings; the newest `{1,4}` grouped-alternation slice is now behind the Rust boundary, but its Python-path benchmark catch-up is still missing._
 
 ### Benchmark Snapshot
 
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `424` of `456` published workloa
 
 ### Immediate Next Steps
 
-- Seed and land the parity and Python-path benchmark catch-up follow-ons for the broader `{1,4}` grouped-alternation slice so the newly published correctness pack does not remain stranded as 10 explicit `unimplemented` cases.
+- Seed and land the Python-path benchmark catch-up for the broader `{1,4}` grouped-alternation slice so benchmark coverage catches up with the now-zero-gap correctness frontier.
 
 ### Current Risks
 
