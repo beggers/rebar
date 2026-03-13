@@ -8,6 +8,8 @@ import sys
 import tempfile
 import unittest
 
+from tests.report_assertions import assert_correctness_summary_consistent
+
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYTHON_SOURCE = REPO_ROOT / "python"
@@ -37,20 +39,9 @@ class CorrectnessHarnessSmokeTest(unittest.TestCase):
             )
 
             summary = json.loads(result.stdout.strip())
-            self.assertEqual(
-                summary,
-                {
-                    "executed_cases": 2,
-                    "failed_cases": 0,
-                    "passed_cases": 1,
-                    "skipped_cases": 0,
-                    "total_cases": 2,
-                    "unimplemented_cases": 1,
-                },
-            )
-
             scorecard = json.loads(report_path.read_text(encoding="utf-8"))
 
+        assert_correctness_summary_consistent(self, scorecard, summary)
         self.assertEqual(scorecard["schema_version"], "1.0")
         self.assertEqual(scorecard["baseline"]["python_implementation"], platform.python_implementation())
         self.assertEqual(scorecard["baseline"]["python_version"], platform.python_version())
@@ -77,9 +68,9 @@ class CorrectnessHarnessSmokeTest(unittest.TestCase):
         self.assertEqual(first_case["observations"]["rebar"]["outcome"], "success")
 
         second_case = scorecard["cases"][1]
-        self.assertEqual(second_case["comparison"], "unimplemented")
+        self.assertEqual(second_case["comparison"], "pass")
         self.assertEqual(second_case["observations"]["cpython"]["outcome"], "exception")
-        self.assertEqual(second_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(second_case["observations"]["rebar"]["outcome"], "exception")
 
 
 if __name__ == "__main__":

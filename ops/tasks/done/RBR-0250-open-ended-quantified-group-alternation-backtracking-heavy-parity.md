@@ -1,6 +1,6 @@
 # RBR-0250: Add open-ended quantified-group alternation backtracking-heavy parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0249`.
 - This task exists so the queue turns one exact open-ended grouped backtracking-heavy frontier into real Rust-backed behavior instead of leaving it as publication-only coverage.
+- Completed 2026-03-13: added Rust parser/compile/match support for `a((bc|b)c){1,}d` and `a(?P<word>(bc|b)c){1,}d`, added focused Python parity coverage, and republished `reports/correctness/latest.json` at 633/633 passing cases with zero `unimplemented` outcomes.

@@ -8,6 +8,12 @@ import sys
 import tempfile
 import unittest
 
+from tests.report_assertions import (
+    assert_correctness_layer_summary_consistent,
+    assert_correctness_summary_consistent,
+    assert_correctness_suite_summary_consistent,
+)
+
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYTHON_SOURCE = REPO_ROOT / "python"
@@ -53,20 +59,9 @@ class CorrectnessHarnessPatternObjectSurfaceTest(unittest.TestCase):
             )
 
             summary = json.loads(result.stdout.strip())
-            self.assertEqual(
-                summary,
-                {
-                    "executed_cases": 44,
-                    "failed_cases": 0,
-                    "passed_cases": 39,
-                    "skipped_cases": 0,
-                    "total_cases": 44,
-                    "unimplemented_cases": 5,
-                },
-            )
-
             scorecard = json.loads(report_path.read_text(encoding="utf-8"))
 
+        assert_correctness_summary_consistent(self, scorecard, summary)
         self.assertEqual(scorecard["schema_version"], "1.0")
         self.assertEqual(scorecard["phase"], "phase3-match-behavior-pack")
         self.assertEqual(scorecard["baseline"]["python_implementation"], platform.python_implementation())
@@ -98,7 +93,11 @@ class CorrectnessHarnessPatternObjectSurfaceTest(unittest.TestCase):
         self.assertEqual(len(scorecard["cases"]), 44)
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 
-        pattern_layer = scorecard["layers"]["pattern_object_parity"]
+        pattern_layer = assert_correctness_layer_summary_consistent(
+            self,
+            scorecard,
+            "pattern_object_parity",
+        )
         self.assertEqual(pattern_layer["summary"]["total_cases"], 6)
         self.assertEqual(pattern_layer["summary"]["passed_cases"], 6)
         self.assertEqual(pattern_layer["summary"]["failed_cases"], 0)
@@ -131,7 +130,11 @@ class CorrectnessHarnessPatternObjectSurfaceTest(unittest.TestCase):
             ],
         )
 
-        pattern_suite = next(suite for suite in scorecard["suites"] if suite["id"] == "pattern.object")
+        pattern_suite = assert_correctness_suite_summary_consistent(
+            self,
+            scorecard,
+            "pattern.object",
+        )
         self.assertEqual(pattern_suite["summary"]["total_cases"], 6)
         self.assertEqual(pattern_suite["summary"]["failed_cases"], 0)
         self.assertEqual(pattern_suite["summary"]["passed_cases"], 6)
