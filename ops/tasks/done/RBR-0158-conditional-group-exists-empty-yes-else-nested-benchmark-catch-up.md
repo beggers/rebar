@@ -1,6 +1,6 @@
 # RBR-0158: Catch bounded nested empty-yes-arm conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,7 @@ Created: 2026-03-13
 - Build on `RBR-0157`.
 - Use the existing `module-search-numbered-nested-conditional-group-exists-empty-yes-else-cold-gap` row in `benchmarks/workloads/conditional_group_exists_empty_yes_else_boundary.json` as the benchmark anchor for this slice.
 - This task exists so the queue does not reach bounded nested empty-yes-arm parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Added bounded nested empty-yes-arm benchmark rows for numbered and named workflows across module-search present and `Pattern.fullmatch` absent probes, keeping the existing numbered row as the anchor.
+- Regenerated `reports/benchmarks/latest.json`; the combined benchmark scorecard now reports 296 workloads with 243 measured rows and 53 explicit known gaps.

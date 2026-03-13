@@ -170,12 +170,12 @@ class ConditionalGroupExistsEmptyYesElseBoundaryBenchmarkSuiteTest(unittest.Test
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 54,
-                    "measured_workloads": 239,
-                    "module_workloads": 285,
+                    "known_gap_count": 53,
+                    "measured_workloads": 243,
+                    "module_workloads": 288,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
-                    "total_workloads": 293,
+                    "total_workloads": 296,
                 },
             )
 
@@ -194,24 +194,24 @@ class ConditionalGroupExistsEmptyYesElseBoundaryBenchmarkSuiteTest(unittest.Test
         self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase3")
-        self.assertEqual(scorecard["summary"]["total_workloads"], 293)
+        self.assertEqual(scorecard["summary"]["total_workloads"], 296)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
-        self.assertEqual(scorecard["summary"]["module_workloads"], 285)
+        self.assertEqual(scorecard["summary"]["module_workloads"], 288)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 239)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 54)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 243)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 53)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 55)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 117)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 121)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 118)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 123)
         self.assertEqual(scorecard["families"]["parser"]["workload_count"], 8)
         self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 3)
         self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["workload_count"], 285)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 51)
+        self.assertEqual(scorecard["families"]["module"]["workload_count"], 288)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 50)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
         self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 51)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 115)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 119)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 116)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 121)
         self.assertEqual(scorecard["artifacts"]["manifest"], None)
         self.assertEqual(scorecard["artifacts"]["manifest_id"], "combined-benchmark-suite")
         self.assertEqual(scorecard["artifacts"]["manifest_schema_version"], 1)
@@ -220,10 +220,10 @@ class ConditionalGroupExistsEmptyYesElseBoundaryBenchmarkSuiteTest(unittest.Test
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 
         manifest_summary = scorecard["manifests"]["conditional-group-exists-empty-yes-else-boundary"]
-        self.assertEqual(manifest_summary["workload_count"], 18)
-        self.assertEqual(manifest_summary["selected_workload_count"], 18)
-        self.assertEqual(manifest_summary["measured_workloads"], 15)
-        self.assertEqual(manifest_summary["known_gap_count"], 3)
+        self.assertEqual(manifest_summary["workload_count"], 21)
+        self.assertEqual(manifest_summary["selected_workload_count"], 21)
+        self.assertEqual(manifest_summary["measured_workloads"], 19)
+        self.assertEqual(manifest_summary["known_gap_count"], 2)
         self.assertEqual(manifest_summary["readiness"], "partial")
         self.assertEqual(manifest_summary["selection_mode"], "full")
         self.assertEqual(manifest_summary["available_smoke_workload_count"], 2)
@@ -255,6 +255,7 @@ class ConditionalGroupExistsEmptyYesElseBoundaryBenchmarkSuiteTest(unittest.Test
         )
         self.assertIn("helper-call overhead", manifest_summary["notes"][0])
         self.assertIn("constant-replacement `sub()`/`subn()` paths", manifest_summary["notes"][1])
+        self.assertIn("bounded nested empty-yes-arm slice now times", manifest_summary["notes"][1])
         self.assertIn("Assertion-conditioned branches remain outside", manifest_summary["notes"][2])
 
         manifest_record = next(
@@ -379,11 +380,49 @@ class ConditionalGroupExistsEmptyYesElseBoundaryBenchmarkSuiteTest(unittest.Test
             if workload["id"] == "module-search-numbered-nested-conditional-group-exists-empty-yes-else-cold-gap"
         )
         self.assertEqual(nested_gap["pattern"], "a(b)?c(?(1)|(?(1)e|f))")
-        self.assertEqual(nested_gap["haystack"], "zzacezz")
-        self.assertEqual(nested_gap["status"], "unimplemented")
-        self.assertEqual(nested_gap["implementation_timing"]["status"], "unimplemented")
-        self.assertIsNone(nested_gap["implementation_ns"])
-        self.assertIn("not implemented", nested_gap["implementation_timing"]["reason"].lower())
+        self.assertEqual(nested_gap["haystack"], "zzabczz")
+        self.assertEqual(nested_gap["status"], "measured")
+        self.assertEqual(nested_gap["implementation_timing"]["status"], "measured")
+        self.assertGreater(nested_gap["implementation_ns"], 0)
+
+        numbered_pattern_nested = next(
+            workload
+            for workload in scorecard["workloads"]
+            if workload["id"]
+            == "pattern-fullmatch-numbered-nested-conditional-group-exists-empty-yes-else-absent-purged-str"
+        )
+        self.assertEqual(numbered_pattern_nested["status"], "measured")
+        self.assertEqual(numbered_pattern_nested["implementation_timing"]["status"], "measured")
+        self.assertEqual(numbered_pattern_nested["operation"], "pattern.fullmatch")
+        self.assertEqual(numbered_pattern_nested["cache_mode"], "purged")
+        self.assertEqual(numbered_pattern_nested["haystack"], "acf")
+        self.assertGreater(numbered_pattern_nested["implementation_ns"], 0)
+
+        named_nested = next(
+            workload
+            for workload in scorecard["workloads"]
+            if workload["id"]
+            == "module-search-named-nested-conditional-group-exists-empty-yes-else-present-warm-str"
+        )
+        self.assertEqual(named_nested["status"], "measured")
+        self.assertEqual(named_nested["implementation_timing"]["status"], "measured")
+        self.assertEqual(named_nested["operation"], "module.search")
+        self.assertEqual(named_nested["pattern"], "a(?P<word>b)?c(?(word)|(?(word)e|f))")
+        self.assertEqual(named_nested["haystack"], "zzabczz")
+        self.assertGreater(named_nested["implementation_ns"], 0)
+
+        named_pattern_nested = next(
+            workload
+            for workload in scorecard["workloads"]
+            if workload["id"]
+            == "pattern-fullmatch-named-nested-conditional-group-exists-empty-yes-else-absent-purged-str"
+        )
+        self.assertEqual(named_pattern_nested["status"], "measured")
+        self.assertEqual(named_pattern_nested["implementation_timing"]["status"], "measured")
+        self.assertEqual(named_pattern_nested["operation"], "pattern.fullmatch")
+        self.assertEqual(named_pattern_nested["cache_mode"], "purged")
+        self.assertEqual(named_pattern_nested["haystack"], "acf")
+        self.assertGreater(named_pattern_nested["implementation_ns"], 0)
 
 
 if __name__ == "__main__":
