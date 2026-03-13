@@ -1,8 +1,9 @@
 # RBR-0186: Publish a bounded alternation-heavy two-arm conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published correctness scorecard with one bounded alternation-heavy two-arm conditional manifest so broader backtracking-heavy conditional execution reopens through an explicit published slice instead of a vague frontier jump.
@@ -28,3 +29,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0185`, `RBR-0182`, and `RBR-0174`.
 - This task exists so the queue reopens broader conditional execution through one exact two-arm alternation slice instead of an underspecified backtracking bucket.
+
+## Completion
+- Added `conditional-group-exists-alternation-workflows` to the default correctness publication set with 10 bounded numbered/named cases covering compile metadata plus both yes-arm (`de`, `df`) and else-arm (`eg`, `eh`) alternation outcomes across module and compiled-pattern paths.
+- Added a regression test that verifies the combined scorecard includes the new suite and records the current slice honestly as `10` `unimplemented` cases rather than dropping it from publication.
+- Republished `reports/correctness/latest.json`; the combined published scorecard now reports `406` total cases across `55` manifests with `396` passes and `10` explicit `unimplemented` outcomes.
