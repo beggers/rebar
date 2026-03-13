@@ -1,6 +1,6 @@
 # RBR-0242: Catch bounded wider ranged-repeat quantified-group alternation plus conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 - Build on `RBR-0241`.
 - Reuse the existing `module-search-numbered-wider-ranged-repeat-group-conditional-warm-gap` row as the benchmark anchor instead of forking another manifest.
 - This task exists so the queue does not reach grouped-alternation-plus-conditional parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Promoted the existing wider ranged-repeat grouped-conditional benchmark anchor into measured coverage and added the minimal numbered and named compile/module/pattern companion rows in `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.json`.
+- Refreshed the combined benchmark assertions, including the adjacent carried-forward bounded conditional anchor in `benchmarks/workloads/open_ended_quantified_group_boundary.json`, so the published report stays honest now that the shared bounded `a((bc|de){1,3})?(?(1)d|e)` slice benchmarks successfully in both manifests.
+- Republished `reports/benchmarks/latest.json`; the combined scorecard now reports 420 workloads across 30 manifests with 384 real `rebar` timings and 36 explicit known gaps, while the wider ranged-repeat quantified-group manifest now reports 16 workloads with 13 measured rows and 3 remaining gaps.

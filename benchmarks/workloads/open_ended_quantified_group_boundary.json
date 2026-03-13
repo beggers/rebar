@@ -7,7 +7,7 @@
   ],
   "notes": [
     "Open-ended quantified-group boundary workloads keep captures, one grouped `bc|de` alternation site, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded `{1,}` slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(bc|de){1,}d` and `a(?P<word>bc|de){1,}d` compile/search/fullmatch paths directly at representative lower-bound, mixed-branch, and fourth-repetition haystacks, while broader counted-repeat grouped families, grouped-conditionals, and broader grouped backtracking-heavy shapes stay as explicit known-gap rows until queued follow-on slices land."
+    "Measured rows cover the bounded `a(bc|de){1,}d` and `a(?P<word>bc|de){1,}d` compile/search/fullmatch paths directly at representative lower-bound, mixed-branch, and fourth-repetition haystacks, and retain one carried-forward bounded grouped-conditional anchor `a((bc|de){1,3})?(?(1)d|e)` as a measured comparison row, while broader counted-repeat grouped families and broader grouped backtracking-heavy shapes stay as explicit known-gap rows until queued follow-on slices land."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -272,12 +272,15 @@
         "grouped",
         "alternation",
         "quantifier",
+        "ranged-repeat",
         "counted-repeat",
-        "open-ended-repeat",
         "conditional",
+        "optional-group",
         "search",
         "module",
-        "unsupported",
+        "present",
+        "second-repetition",
+        "bc-branch",
         "warm-cache"
       ],
       "syntax_features": [
@@ -289,7 +292,7 @@
         "conditionals"
       ],
       "notes": [
-        "Explicit grouped-conditional known-gap row so grouped alternation plus conditional composition stays visible while that follow-on slice remains queued."
+        "Carried-forward bounded grouped-conditional anchor that now benchmarks the already supported `a((bc|de){1,3})?(?(1)d|e)` slice alongside the open-ended grouped-alternation rows without claiming open-ended grouped-conditional support."
       ]
     },
     {
