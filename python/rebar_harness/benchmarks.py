@@ -55,6 +55,7 @@ DEFAULT_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "exact_repeat_quantified_group_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "ranged_repeat_quantified_group_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "wider_ranged_repeat_quantified_group_boundary.json",
+    REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "quantified_alternation_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "optional_group_alternation_boundary.json",
     REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_boundary.json",

@@ -92,10 +92,8 @@ REGRESSION_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "regression_
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
 
 
-class WiderRangedRepeatQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
-    def test_runner_regenerates_combined_wider_ranged_repeat_quantified_group_scorecard(
-        self,
-    ) -> None:
+class OpenEndedQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
+    def test_runner_regenerates_combined_open_ended_quantified_group_scorecard(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             report_path = pathlib.Path(temp_dir) / "benchmarks.json"
             result = subprocess.run(
@@ -226,19 +224,19 @@ class WiderRangedRepeatQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCa
         self.assertEqual(len(scorecard["artifacts"]["manifests"]), 30)
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 
-        manifest_summary = scorecard["manifests"]["wider-ranged-repeat-quantified-group-boundary"]
-        self.assertEqual(manifest_summary["workload_count"], 11)
-        self.assertEqual(manifest_summary["selected_workload_count"], 11)
-        self.assertEqual(manifest_summary["measured_workloads"], 7)
-        self.assertEqual(manifest_summary["known_gap_count"], 4)
+        manifest_summary = scorecard["manifests"]["open-ended-quantified-group-boundary"]
+        self.assertEqual(manifest_summary["workload_count"], 9)
+        self.assertEqual(manifest_summary["selected_workload_count"], 9)
+        self.assertEqual(manifest_summary["measured_workloads"], 6)
+        self.assertEqual(manifest_summary["known_gap_count"], 3)
         self.assertEqual(manifest_summary["readiness"], "partial")
         self.assertEqual(manifest_summary["selection_mode"], "full")
         self.assertEqual(manifest_summary["available_smoke_workload_count"], 2)
         self.assertEqual(
             manifest_summary["smoke_workload_ids"],
             [
-                "module-search-numbered-wider-ranged-repeat-group-alternation-lower-bound-bc-warm-str",
-                "pattern-fullmatch-named-wider-ranged-repeat-group-alternation-lower-bound-bc-purged-str",
+                "module-search-numbered-open-ended-group-alternation-lower-bound-bc-warm-str",
+                "pattern-fullmatch-named-open-ended-group-alternation-fourth-repetition-de-purged-str",
             ],
         )
         self.assertEqual(
@@ -257,37 +255,34 @@ class WiderRangedRepeatQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCa
             ],
         )
         self.assertIn("helper-call overhead", manifest_summary["notes"][0])
-        self.assertIn("a(bc|de){1,3}d", manifest_summary["notes"][1])
+        self.assertIn("a(bc|de){1,}d", manifest_summary["notes"][1])
 
         manifest_record = next(
             manifest
             for manifest in scorecard["artifacts"]["manifests"]
-            if manifest["manifest_id"] == "wider-ranged-repeat-quantified-group-boundary"
+            if manifest["manifest_id"] == "open-ended-quantified-group-boundary"
         )
         self.assertEqual(
             manifest_record["manifest"],
-            "benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.json",
+            "benchmarks/workloads/open_ended_quantified_group_boundary.json",
         )
         self.assertEqual(
             manifest_record["smoke_workload_ids"],
             [
-                "module-search-numbered-wider-ranged-repeat-group-alternation-lower-bound-bc-warm-str",
-                "pattern-fullmatch-named-wider-ranged-repeat-group-alternation-lower-bound-bc-purged-str",
+                "module-search-numbered-open-ended-group-alternation-lower-bound-bc-warm-str",
+                "pattern-fullmatch-named-open-ended-group-alternation-fourth-repetition-de-purged-str",
             ],
         )
 
         compile_workload = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"]
-            == "module-compile-numbered-wider-ranged-repeat-group-alternation-cold-str"
+            if workload["id"] == "module-compile-numbered-open-ended-group-alternation-cold-str"
         )
-        self.assertEqual(
-            compile_workload["manifest_id"], "wider-ranged-repeat-quantified-group-boundary"
-        )
+        self.assertEqual(compile_workload["manifest_id"], "open-ended-quantified-group-boundary")
         self.assertEqual(compile_workload["operation"], "module.compile")
         self.assertEqual(compile_workload["cache_mode"], "cold")
-        self.assertIn("ranged-repeats", compile_workload["syntax_features"])
+        self.assertIn("counted-repeats", compile_workload["syntax_features"])
         self.assertEqual(compile_workload["status"], "measured")
         self.assertEqual(compile_workload["implementation_timing"]["status"], "measured")
         self.assertGreater(compile_workload["implementation_ns"], 0)
@@ -296,10 +291,10 @@ class WiderRangedRepeatQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCa
             workload
             for workload in scorecard["workloads"]
             if workload["id"]
-            == "module-search-numbered-wider-ranged-repeat-group-alternation-lower-bound-bc-warm-str"
+            == "module-search-numbered-open-ended-group-alternation-lower-bound-bc-warm-str"
         )
         self.assertEqual(module_search["operation"], "module.search")
-        self.assertEqual(module_search["pattern"], "a(bc|de){1,3}d")
+        self.assertEqual(module_search["pattern"], "a(bc|de){1,}d")
         self.assertEqual(module_search["haystack"], "zzabcdzz")
         self.assertEqual(module_search["status"], "measured")
         self.assertEqual(module_search["implementation_timing"]["status"], "measured")
@@ -310,51 +305,31 @@ class WiderRangedRepeatQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCa
             workload
             for workload in scorecard["workloads"]
             if workload["id"]
-            == "pattern-fullmatch-named-wider-ranged-repeat-group-alternation-lower-bound-bc-purged-str"
+            == "pattern-fullmatch-named-open-ended-group-alternation-fourth-repetition-de-purged-str"
         )
         self.assertEqual(named_pattern["operation"], "pattern.fullmatch")
         self.assertEqual(named_pattern["cache_mode"], "purged")
         self.assertIn("named-groups", named_pattern["syntax_features"])
+        self.assertEqual(named_pattern["haystack"], "adededed")
         self.assertEqual(named_pattern["status"], "measured")
         self.assertEqual(named_pattern["implementation_timing"]["status"], "measured")
+        self.assertGreater(named_pattern["implementation_ns"], 0)
 
         broader_range_gap = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "module-search-numbered-wider-ranged-repeat-group-broader-range-cold-gap"
+            if workload["id"] == "module-search-numbered-open-ended-group-broader-range-cold-gap"
         )
         self.assertEqual(broader_range_gap["status"], "unimplemented")
-        self.assertEqual(broader_range_gap["pattern"], "a(bc|de){1,4}d")
+        self.assertEqual(broader_range_gap["pattern"], "a(bc|de){2,}d")
         self.assertEqual(broader_range_gap["implementation_timing"]["status"], "unimplemented")
         self.assertIsNone(broader_range_gap["implementation_ns"])
         self.assertIsNone(broader_range_gap["speedup_vs_cpython"])
 
-        open_ended_gap = next(
-            workload
-            for workload in scorecard["workloads"]
-            if workload["id"] == "pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-gap"
-        )
-        self.assertEqual(open_ended_gap["status"], "unimplemented")
-        self.assertEqual(open_ended_gap["pattern"], "a((bc|de){1,})d")
-        self.assertEqual(open_ended_gap["implementation_timing"]["status"], "unimplemented")
-        self.assertIsNone(open_ended_gap["implementation_ns"])
-        self.assertIsNone(open_ended_gap["speedup_vs_cpython"])
-
-        alternation_gap = next(
-            workload
-            for workload in scorecard["workloads"]
-            if workload["id"] == "pattern-fullmatch-named-wider-ranged-repeat-group-alternation-purged-gap"
-        )
-        self.assertEqual(alternation_gap["status"], "measured")
-        self.assertIn("alternation", alternation_gap["syntax_features"])
-        self.assertEqual(alternation_gap["haystack"], "adededed")
-        self.assertEqual(alternation_gap["implementation_timing"]["status"], "measured")
-        self.assertGreater(alternation_gap["implementation_ns"], 0)
-
         conditional_gap = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "module-search-numbered-wider-ranged-repeat-group-conditional-warm-gap"
+            if workload["id"] == "module-search-numbered-open-ended-group-conditional-warm-gap"
         )
         self.assertEqual(conditional_gap["status"], "unimplemented")
         self.assertEqual(conditional_gap["pattern"], "a((bc|de){1,3})?(?(1)d|e)")
@@ -366,12 +341,11 @@ class WiderRangedRepeatQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCa
         backtracking_gap = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"]
-            == "pattern-fullmatch-numbered-wider-ranged-repeat-group-backtracking-heavy-purged-gap"
+            if workload["id"] == "pattern-fullmatch-named-open-ended-group-backtracking-heavy-purged-gap"
         )
         self.assertEqual(backtracking_gap["status"], "unimplemented")
-        self.assertEqual(backtracking_gap["pattern"], "a((bc|b)c){1,3}d")
-        self.assertIn("alternation", backtracking_gap["syntax_features"])
+        self.assertEqual(backtracking_gap["pattern"], "a(?P<word>(bc|b)c){1,3}d")
+        self.assertIn("named-groups", backtracking_gap["syntax_features"])
         self.assertEqual(backtracking_gap["implementation_timing"]["status"], "unimplemented")
         self.assertIsNone(backtracking_gap["implementation_ns"])
         self.assertIsNone(backtracking_gap["speedup_vs_cpython"])

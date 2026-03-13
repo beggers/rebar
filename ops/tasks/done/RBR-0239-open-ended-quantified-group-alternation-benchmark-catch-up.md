@@ -1,6 +1,6 @@
 # RBR-0239: Catch bounded open-ended quantified-group alternation benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,9 @@ Created: 2026-03-13
 - Build on `RBR-0238`.
 - Use a dedicated benchmark manifest for this slice instead of overloading `wider_ranged_repeat_quantified_group_boundary.json`; that file only carries a non-alternation open-ended placeholder today.
 - This task exists so the queue does not reach open-ended quantified-group alternation parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Added a dedicated `open-ended-quantified-group-boundary` benchmark manifest and wired it into the default benchmark harness manifest list so the bounded `a(bc|de){1,}d` and `a(?P<word>bc|de){1,}d` slice now publishes real compile/search/fullmatch timings.
+- Added focused benchmark assertions in `tests/benchmarks/test_open_ended_quantified_group_boundary_benchmarks.py` and updated the adjacent full-suite benchmark tests to account for the expanded manifest set and refreshed scorecard totals.
+- Retargeted the stale open-ended placeholder in `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.json` back to an actually unsupported nested grouped-open-ended shape so the report no longer double-counts the newly supported top-level `{1,}` slice.
+- Republished `reports/benchmarks/latest.json`; the combined benchmark scorecard now reports 415 workloads across 30 manifests with 377 real `rebar` timings and 38 explicit known gaps.
