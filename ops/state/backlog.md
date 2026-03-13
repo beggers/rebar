@@ -4,22 +4,23 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0175` to publish one bounded quantified omitted-no-arm conditional correctness pack for `a(b)?c(?(1)d){2}` and `a(?P<word>b)?c(?(word)d){2}` so repeated accepted no-else behavior becomes explicit instead of living only as a benchmark gap row.
-2. Land `RBR-0176` to convert that bounded quantified omitted-no-arm conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
-3. Land `RBR-0177` to catch bounded quantified omitted-no-arm conditional benchmarks up so that the accepted repeated no-else slice reaches the published benchmark surface.
-4. Land `RBR-0178` to publish one bounded quantified explicit-empty-else conditional correctness pack for `a(b)?c(?(1)d|){2}` and `a(?P<word>b)?c(?(word)d|){2}` so the accepted `|)` spelling stays explicit even where its bounded absent-arm runtime overlaps the omitted-no-arm form.
-5. Land `RBR-0179` to convert that bounded quantified explicit-empty-else conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
-6. Land `RBR-0180` to catch bounded quantified explicit-empty-else conditional benchmarks up so that the accepted repeated explicit-empty-else slice reaches the published benchmark surface.
-7. Land `RBR-0181` to publish one bounded nested two-arm conditional correctness pack for `a(b)?c(?(1)(?(1)d|e)|f)` and `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` so the remaining `conditional_group_exists_boundary` gap turns into explicit published behavior rather than a lingering benchmark-only hole.
-8. Land `RBR-0182` to convert that bounded nested two-arm conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
-9. Land `RBR-0183` to catch bounded nested two-arm conditional benchmarks up so that the last currently queued `conditional_group_exists_boundary` gap reaches the published benchmark surface.
+1. Land `RBR-0176` to convert the published bounded quantified omitted-no-arm conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
+2. Land `RBR-0177` to catch bounded quantified omitted-no-arm conditional benchmarks up so that the accepted repeated no-else slice reaches the published benchmark surface.
+3. Land `RBR-0178` to publish one bounded quantified explicit-empty-else conditional correctness pack for `a(b)?c(?(1)d|){2}` and `a(?P<word>b)?c(?(word)d|){2}` so the accepted `|)` spelling stays explicit even where its bounded absent-arm runtime overlaps the omitted-no-arm form.
+4. Land `RBR-0179` to convert that bounded quantified explicit-empty-else conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
+5. Land `RBR-0180` to catch bounded quantified explicit-empty-else conditional benchmarks up so that the accepted repeated explicit-empty-else slice reaches the published benchmark surface.
+6. Land `RBR-0181` to publish one bounded nested two-arm conditional correctness pack for `a(b)?c(?(1)(?(1)d|e)|f)` and `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` so the remaining `conditional_group_exists_boundary` gap turns into explicit published behavior rather than a lingering benchmark-only hole.
+7. Land `RBR-0182` to convert that bounded nested two-arm conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
+8. Land `RBR-0183` to catch bounded nested two-arm conditional benchmarks up so that the last currently queued `conditional_group_exists_boundary` gap reaches the published benchmark surface.
+9. Land `RBR-0184` to publish one strict built-native full-suite benchmark sidecar report for the existing combined workload set so native-path measurement no longer stops at the six-workload smoke artifact.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
 - Prefer replacing vague items with concrete task files instead of growing this document indefinitely.
 - Keep scaffold tickets small enough that one implementation-agent run can finish them without needing another synthesis pass first.
 - Seed dependent follow-on tasks early when lexical ordering is enough to keep prerequisites ahead of them in the ready queue.
-- Keep `RBR-0175` through `RBR-0183` pre-seeded in lexical order; the task contracts are explicit enough that the worker should not need another supervisor-only reseed pass between the quantified conditional follow-ons and the first bounded nested two-arm conditional composition slice.
+- Keep `RBR-0176` through `RBR-0184` pre-seeded in lexical order; the task contracts are explicit enough that the worker should not need another supervisor-only reseed pass between the quantified conditional follow-ons, the first bounded nested two-arm conditional composition slice, and the built-native full-suite sidecar follow-on.
+- After `RBR-0183`, keep one bounded built-native full-suite sidecar task queued before reopening broader backtracking-heavy conditional execution, so the persistent shim-only full-suite publication risk gets a concrete follow-on without replacing the primary benchmark report.
 - Keep README landing-page summaries short, and keep published-slice pass counts clearly separate from any claim about overall stdlib `re` feature completeness.
 - Translate remote-only user requests into concrete local queue items when git history is diverged, so the working queue can keep moving before a later merge or rebase reconciles `origin/main`.
 - Once exact baseline provenance lands, keep the next milestone focused on native import validation and broader harness coverage instead of reopening metadata-only work.

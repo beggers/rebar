@@ -947,7 +947,8 @@ impl<'a> ConditionalGroupExistsPattern<'a> {
             let mut spans = vec![None];
             if self.no_branch_alternation.is_some() {
                 let no_branch_span = matched_alternation_branch.map(|branch| {
-                    let start = match_start + self.prefix.chars().count() + self.middle.chars().count();
+                    let start =
+                        match_start + self.prefix.chars().count() + self.middle.chars().count();
                     let end = start + branch.chars().count();
                     (start, end)
                 });
@@ -2357,7 +2358,7 @@ fn parse_quantified_conditional_group_exists_pattern_str(
 ) -> Option<QuantifiedConditionalGroupExistsPattern<'_>> {
     let grouped_pattern = parse_conditional_group_exists_pattern_str(pattern.strip_suffix("{2}")?)?;
     if grouped_pattern.yes_branch.is_empty()
-        || grouped_pattern.no_branch.is_none_or(str::is_empty)
+        || grouped_pattern.no_branch == Some("")
         || grouped_pattern.yes_branch_alternation.is_some()
         || grouped_pattern.no_branch_alternation.is_some()
         || grouped_pattern.nested_yes_branch.is_some()
@@ -4083,13 +4084,8 @@ fn conditional_group_exists_matches_at_str<'a>(
     if let Some(no_branch_alternation) = &pattern.no_branch_alternation {
         for branch in no_branch_alternation {
             let branch_chars: Vec<char> = branch.chars().collect();
-            if literal_matches_at_str(
-                branch_chars.as_slice(),
-                flags,
-                string,
-                branch_start,
-                endpos,
-            ) {
+            if literal_matches_at_str(branch_chars.as_slice(), flags, string, branch_start, endpos)
+            {
                 return Some((false, branch_start + branch_chars.len(), Some(branch)));
             }
         }
@@ -4192,11 +4188,7 @@ fn quantified_conditional_group_exists_matches_at_str(
     let branch_chars: Vec<char> = if capture_present {
         conditional.yes_branch.chars().collect()
     } else {
-        conditional
-            .no_branch
-            .expect("quantified conditional group-exists pattern must have a no-branch")
-            .chars()
-            .collect()
+        conditional.no_branch.unwrap_or("").chars().collect()
     };
 
     let first_branch_start = middle_start + middle_chars.len();
@@ -5397,8 +5389,7 @@ mod tests {
         assert_eq!(outcome.group_count, 1);
         assert!(outcome.named_groups.is_empty());
 
-        let named_outcome =
-            compile(PatternRef::Str("a(?P<word>b)?c(?(word)|(?:|))"), 0).unwrap();
+        let named_outcome = compile(PatternRef::Str("a(?P<word>b)?c(?(word)|(?:|))"), 0).unwrap();
         assert_eq!(named_outcome.status, CompileStatus::Compiled);
         assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
         assert!(!named_outcome.supports_literal);
@@ -5423,6 +5414,29 @@ mod tests {
 
         let named_outcome =
             compile(PatternRef::Str("(?:a(?P<word>b)?c(?(word)|e)){2}"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!named_outcome.supports_literal);
+        assert_eq!(named_outcome.group_count, 1);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "word".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
+    fn compile_accepts_bounded_quantified_conditional_group_exists_no_else_cases() {
+        let outcome = compile(PatternRef::Str("a(b)?c(?(1)d){2}"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.group_count, 1);
+        assert!(outcome.named_groups.is_empty());
+
+        let named_outcome = compile(PatternRef::Str("a(?P<word>b)?c(?(word)d){2}"), 0).unwrap();
         assert_eq!(named_outcome.status, CompileStatus::Compiled);
         assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
         assert!(!named_outcome.supports_literal);
@@ -6352,6 +6366,61 @@ mod tests {
             FLAG_UNICODE,
             MatchMode::Fullmatch,
             PatternRef::Str("abcace"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::NoMatch);
+        assert_eq!(outcome.span, None);
+        assert!(outcome.group_spans.is_empty());
+        assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
+    fn conditional_group_exists_no_else_quantified_search_reports_present_capture_span() {
+        let outcome = literal_match(
+            PatternRef::Str("a(b)?c(?(1)d){2}"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabcddzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 7)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 4))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn named_conditional_group_exists_no_else_quantified_fullmatch_reports_absent_capture_as_none()
+    {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<word>b)?c(?(word)d){2}"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("ac"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 2)));
+        assert_eq!(outcome.group_spans, vec![None]);
+        assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
+    fn conditional_group_exists_no_else_quantified_reports_missing_repeat_as_no_match() {
+        let outcome = literal_match(
+            PatternRef::Str("a(b)?c(?(1)d){2}"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abcd"),
             0,
             None,
         )

@@ -1,8 +1,9 @@
 # RBR-0176: Add bounded quantified omitted-no-arm conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Convert the first quantified omitted-no-arm conditional cases from the published correctness pack into real Rust-backed behavior without claiming broader quantified or backtracking-heavy conditional execution.
@@ -28,3 +29,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0175`.
 - This task exists so the queue converts the first quantified omitted-no-arm workflow into real Rust-backed behavior instead of leaving it as publication-only coverage.
+- Completed with a narrow Rust-core parser/matcher update for `a(b)?c(?(1)d){2}` and `a(?P<word>b)?c(?(word)d){2}`, a dedicated Python parity test, refreshed quantified no-else correctness assertions, and a republished combined `reports/correctness/latest.json` showing `380/380` passing with `0` published gaps.
