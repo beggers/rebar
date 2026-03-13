@@ -18386,6 +18386,502 @@
       "text_model": "str"
     },
     {
+      "args": [
+        "a(b)?c(?(1)|e)",
+        "X",
+        "zzabczz"
+      ],
+      "categories": [
+        "workflow",
+        "sub",
+        "replacement",
+        "constant-replacement",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "empty-yes",
+        "else",
+        "module",
+        "present",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "conditional_group_exists_empty_yes_else_replacement_present_workflow",
+      "helper": "sub",
+      "id": "module-sub-conditional-group-exists-empty-yes-else-replacement-present-str",
+      "layer": "module_workflow",
+      "manifest_id": "conditional-group-exists-empty-yes-else-replacement-workflows",
+      "notes": [
+        "Publishes one bounded module-level empty-yes-arm conditional replacement path where the numbered capture is present and the accepted empty yes arm keeps the matched span at `abc` before constant replacement is applied."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": "zzXzz",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.sub() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.conditional_group_exists_empty_yes_else",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(b)?c(?(1)|e)",
+        "X",
+        "zzacezz",
+        1
+      ],
+      "categories": [
+        "workflow",
+        "subn",
+        "replacement",
+        "constant-replacement",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "empty-yes",
+        "else",
+        "module",
+        "absent",
+        "str",
+        "count",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
+      "helper": "subn",
+      "id": "module-subn-conditional-group-exists-empty-yes-else-replacement-absent-str",
+      "layer": "module_workflow",
+      "manifest_id": "conditional-group-exists-empty-yes-else-replacement-workflows",
+      "notes": [
+        "Publishes the matching module-level empty-yes-arm conditional replacement count path when the numbered capture is absent, keeping the accepted `(|e)` spelling explicit without broadening into templates, callbacks, nested conditionals, or wider backtracking."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": [
+            "zzXzz",
+            1
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.subn() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.conditional_group_exists_empty_yes_else",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "X",
+        "zzabczz"
+      ],
+      "categories": [
+        "workflow",
+        "sub",
+        "replacement",
+        "constant-replacement",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "empty-yes",
+        "else",
+        "pattern",
+        "present",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "conditional_group_exists_empty_yes_else_replacement_present_workflow",
+      "helper": "sub",
+      "id": "pattern-sub-conditional-group-exists-empty-yes-else-replacement-present-str",
+      "layer": "module_workflow",
+      "manifest_id": "conditional-group-exists-empty-yes-else-replacement-workflows",
+      "notes": [
+        "Publishes the bound Pattern.sub empty-yes-arm conditional replacement path for the same numbered present-capture workflow."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": "zzXzz",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.Pattern.sub() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(b)?c(?(1)|e)",
+      "suite_id": "collection.replacement.conditional_group_exists_empty_yes_else",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "X",
+        "zzacezz",
+        1
+      ],
+      "categories": [
+        "workflow",
+        "subn",
+        "replacement",
+        "constant-replacement",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "empty-yes",
+        "else",
+        "pattern",
+        "absent",
+        "str",
+        "count",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
+      "helper": "subn",
+      "id": "pattern-subn-conditional-group-exists-empty-yes-else-replacement-absent-str",
+      "layer": "module_workflow",
+      "manifest_id": "conditional-group-exists-empty-yes-else-replacement-workflows",
+      "notes": [
+        "Publishes the bound Pattern.subn empty-yes-arm conditional replacement count path when the numbered capture is absent so the compiled-entrypoint gap stays visible too."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": [
+            "zzXzz",
+            1
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.Pattern.subn() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(b)?c(?(1)|e)",
+      "suite_id": "collection.replacement.conditional_group_exists_empty_yes_else",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<word>b)?c(?(word)|e)",
+        "X",
+        "zzabczz"
+      ],
+      "categories": [
+        "workflow",
+        "sub",
+        "replacement",
+        "constant-replacement",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "empty-yes",
+        "else",
+        "named-group",
+        "module",
+        "present",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_conditional_group_exists_empty_yes_else_replacement_present_workflow",
+      "helper": "sub",
+      "id": "module-sub-named-conditional-group-exists-empty-yes-else-replacement-present-str",
+      "layer": "module_workflow",
+      "manifest_id": "conditional-group-exists-empty-yes-else-replacement-workflows",
+      "notes": [
+        "Publishes the bounded module-level named empty-yes-arm conditional replacement path for the same tiny optional-capture shape."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": "zzXzz",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.sub() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.conditional_group_exists_empty_yes_else",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<word>b)?c(?(word)|e)",
+        "X",
+        "zzacezz",
+        1
+      ],
+      "categories": [
+        "workflow",
+        "subn",
+        "replacement",
+        "constant-replacement",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "empty-yes",
+        "else",
+        "named-group",
+        "module",
+        "absent",
+        "str",
+        "count",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
+      "helper": "subn",
+      "id": "module-subn-named-conditional-group-exists-empty-yes-else-replacement-absent-str",
+      "layer": "module_workflow",
+      "manifest_id": "conditional-group-exists-empty-yes-else-replacement-workflows",
+      "notes": [
+        "Publishes the matching module-level named empty-yes-arm conditional replacement count path when the named capture is absent without broadening into named templates or callable replacement semantics."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": [
+            "zzXzz",
+            1
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.subn() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.conditional_group_exists_empty_yes_else",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "X",
+        "zzabczz"
+      ],
+      "categories": [
+        "workflow",
+        "sub",
+        "replacement",
+        "constant-replacement",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "empty-yes",
+        "else",
+        "named-group",
+        "pattern",
+        "present",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_conditional_group_exists_empty_yes_else_replacement_present_workflow",
+      "helper": "sub",
+      "id": "pattern-sub-named-conditional-group-exists-empty-yes-else-replacement-present-str",
+      "layer": "module_workflow",
+      "manifest_id": "conditional-group-exists-empty-yes-else-replacement-workflows",
+      "notes": [
+        "Publishes the bound Pattern.sub named empty-yes-arm conditional replacement path for the same present-capture workflow."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": "zzXzz",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.Pattern.sub() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<word>b)?c(?(word)|e)",
+      "suite_id": "collection.replacement.conditional_group_exists_empty_yes_else",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "X",
+        "zzacezz",
+        1
+      ],
+      "categories": [
+        "workflow",
+        "subn",
+        "replacement",
+        "constant-replacement",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "empty-yes",
+        "else",
+        "named-group",
+        "pattern",
+        "absent",
+        "str",
+        "count",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
+      "helper": "subn",
+      "id": "pattern-subn-named-conditional-group-exists-empty-yes-else-replacement-absent-str",
+      "layer": "module_workflow",
+      "manifest_id": "conditional-group-exists-empty-yes-else-replacement-workflows",
+      "notes": [
+        "Publishes the bound Pattern.subn named empty-yes-arm conditional replacement count path when the named capture is absent so the smallest compiled empty-yes-arm conditional-replacement gap stays explicit in the scorecard."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": [
+            "zzXzz",
+            1
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.Pattern.subn() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<word>b)?c(?(word)|e)",
+      "suite_id": "collection.replacement.conditional_group_exists_empty_yes_else",
+      "text_model": "str"
+    },
+    {
       "categories": [
         "grouped",
         "optional-group",
@@ -19654,7 +20150,7 @@
         },
         "outcomes": {
           "exception": 10,
-          "success": 246
+          "success": 254
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -19662,14 +20158,16 @@
         }
       },
       "rebar": {
-        "exception_case_count": 10,
+        "exception_case_count": 18,
         "exception_types": {
+          "NotImplementedError": 8,
           "TypeError": 2,
           "error": 8
         },
         "outcomes": {
           "exception": 10,
-          "success": 246
+          "success": 246,
+          "unimplemented": 8
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -20350,6 +20848,50 @@
         "skipped_cases": 0,
         "total_cases": 1,
         "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "id": "conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "id": "conditional_group_exists_empty_yes_else_replacement_present_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
       },
       "text_models": [
         "str"
@@ -21634,6 +22176,50 @@
         "skipped_cases": 0,
         "total_cases": 1,
         "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "id": "named_conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "id": "named_conditional_group_exists_empty_yes_else_replacement_present_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
       },
       "text_models": [
         "str"
@@ -23377,8 +23963,8 @@
     }
   ],
   "fixtures": {
-    "case_count": 256,
-    "manifest_count": 38,
+    "case_count": 264,
+    "manifest_count": 39,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
@@ -23415,6 +24001,7 @@
       "conditional-group-exists-empty-else-replacement-workflows",
       "conditional-group-exists-empty-else-alternation-workflows",
       "conditional-group-exists-empty-yes-else-workflows",
+      "conditional-group-exists-empty-yes-else-replacement-workflows",
       "conditional-group-exists-fully-empty-workflows",
       "conditional-group-exists-assertion-diagnostics",
       "quantified-alternation-workflows"
@@ -23455,12 +24042,13 @@
       "tests/conformance/fixtures/conditional_group_exists_empty_else_replacement_workflows.json",
       "tests/conformance/fixtures/conditional_group_exists_empty_else_alternation_workflows.json",
       "tests/conformance/fixtures/conditional_group_exists_empty_yes_else_workflows.json",
+      "tests/conformance/fixtures/conditional_group_exists_empty_yes_else_replacement_workflows.json",
       "tests/conformance/fixtures/conditional_group_exists_fully_empty_workflows.json",
       "tests/conformance/fixtures/conditional_group_exists_assertion_diagnostics.json",
       "tests/conformance/fixtures/quantified_alternation_workflows.json"
     ]
   },
-  "generated_at": "2026-03-13T01:44:38Z",
+  "generated_at": "2026-03-13T02:09:30Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -23745,23 +24333,26 @@
       "text_models": []
     },
     "module_workflow": {
-      "case_count": 88,
+      "case_count": 96,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
             "exception_case_count": 0,
             "exception_types": {},
             "outcomes": {
-              "success": 88
+              "success": 96
             },
             "warning_case_count": 0,
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 0,
-            "exception_types": {},
+            "exception_case_count": 8,
+            "exception_types": {
+              "NotImplementedError": 8
+            },
             "outcomes": {
-              "success": 88
+              "success": 88,
+              "unimplemented": 8
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -23778,6 +24369,8 @@
         "compile_workflow",
         "conditional_group_exists_empty_else_replacement_absent_count_workflow",
         "conditional_group_exists_empty_else_replacement_present_workflow",
+        "conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
+        "conditional_group_exists_empty_yes_else_replacement_present_workflow",
         "conditional_group_exists_no_else_replacement_absent_count_workflow",
         "conditional_group_exists_no_else_replacement_present_workflow",
         "escape_workflow",
@@ -23790,6 +24383,8 @@
         "literal_ignorecase_workflow",
         "named_conditional_group_exists_empty_else_replacement_absent_count_workflow",
         "named_conditional_group_exists_empty_else_replacement_present_workflow",
+        "named_conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
+        "named_conditional_group_exists_empty_yes_else_replacement_present_workflow",
         "named_conditional_group_exists_no_else_replacement_absent_count_workflow",
         "named_conditional_group_exists_no_else_replacement_present_workflow",
         "named_group_replacement_workflow",
@@ -23807,6 +24402,7 @@
       "manifest_ids": [
         "collection-replacement-workflows",
         "conditional-group-exists-empty-else-replacement-workflows",
+        "conditional-group-exists-empty-yes-else-replacement-workflows",
         "conditional-group-exists-no-else-replacement-workflows",
         "grouped-alternation-callable-replacement-workflows",
         "grouped-alternation-replacement-workflows",
@@ -23826,6 +24422,7 @@
       ],
       "suite_ids": [
         "collection.replacement.conditional_group_exists_empty_else",
+        "collection.replacement.conditional_group_exists_empty_yes_else",
         "collection.replacement.conditional_group_exists_no_else",
         "collection.replacement.grouped_alternation",
         "collection.replacement.grouped_alternation.callable",
@@ -23837,12 +24434,12 @@
         "module.workflow"
       ],
       "summary": {
-        "executed_cases": 88,
+        "executed_cases": 96,
         "failed_cases": 0,
         "passed_cases": 88,
         "skipped_cases": 0,
-        "total_cases": 88,
-        "unimplemented_cases": 0
+        "total_cases": 96,
+        "unimplemented_cases": 8
       },
       "text_models": [
         "bytes",
@@ -32225,6 +32822,216 @@
       ]
     },
     {
+      "case_count": 8,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 8,
+            "exception_types": {
+              "NotImplementedError": 8
+            },
+            "outcomes": {
+              "unimplemented": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
+        "conditional_group_exists_empty_yes_else_replacement_present_workflow",
+        "named_conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
+        "named_conditional_group_exists_empty_yes_else_replacement_present_workflow"
+      ],
+      "id": "collection.replacement.conditional_group_exists_empty_yes_else",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "conditional-group-exists-empty-yes-else-replacement-workflows"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 8,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 8,
+        "unimplemented_cases": 8
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 8,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 8,
+            "exception_types": {
+              "NotImplementedError": 8
+            },
+            "outcomes": {
+              "unimplemented": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
+        "conditional_group_exists_empty_yes_else_replacement_present_workflow",
+        "named_conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
+        "named_conditional_group_exists_empty_yes_else_replacement_present_workflow"
+      ],
+      "id": "collection.replacement.conditional_group_exists_empty_yes_else.str",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "conditional-group-exists-empty-yes-else-replacement-workflows"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 8,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 8,
+        "unimplemented_cases": 8
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 4,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 4,
+            "exception_types": {
+              "NotImplementedError": 4
+            },
+            "outcomes": {
+              "unimplemented": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
+        "conditional_group_exists_empty_yes_else_replacement_present_workflow",
+        "named_conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
+        "named_conditional_group_exists_empty_yes_else_replacement_present_workflow"
+      ],
+      "id": "collection.replacement.conditional_group_exists_empty_yes_else.module_call",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "conditional-group-exists-empty-yes-else-replacement-workflows"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 4
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 4,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 4,
+            "exception_types": {
+              "NotImplementedError": 4
+            },
+            "outcomes": {
+              "unimplemented": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
+        "conditional_group_exists_empty_yes_else_replacement_present_workflow",
+        "named_conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
+        "named_conditional_group_exists_empty_yes_else_replacement_present_workflow"
+      ],
+      "id": "collection.replacement.conditional_group_exists_empty_yes_else.pattern_call",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "conditional-group-exists-empty-yes-else-replacement-workflows"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 4
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
       "case_count": 6,
       "diagnostics": {
         "by_adapter": {
@@ -32832,11 +33639,11 @@
     }
   ],
   "summary": {
-    "executed_cases": 256,
+    "executed_cases": 264,
     "failed_cases": 0,
     "passed_cases": 256,
     "skipped_cases": 0,
-    "total_cases": 256,
-    "unimplemented_cases": 0
+    "total_cases": 264,
+    "unimplemented_cases": 8
   }
 }
