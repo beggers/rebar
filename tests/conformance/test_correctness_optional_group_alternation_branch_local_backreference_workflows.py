@@ -216,7 +216,7 @@ class CorrectnessHarnessOptionalGroupAlternationBranchLocalBackreferenceWorkflow
                 "matched": True,
                 "pos": 0,
                 "span": [2, 6],
-                "span1": [2, 4],
+                "span1": [3, 5],
                 "string_type": "str",
             },
         )
@@ -354,7 +354,7 @@ class CorrectnessHarnessOptionalGroupAlternationBranchLocalBackreferenceWorkflow
                 "named_groups": {"inner": "c", "outer": "cc"},
                 "pos": 0,
                 "span": [2, 6],
-                "span1": [2, 4],
+                "span1": [3, 5],
                 "string_type": "str",
             },
         )

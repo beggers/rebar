@@ -1,6 +1,6 @@
 # RBR-0211: Add bounded optional-group-alternation-plus-branch-local-backreference parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0210`.
 - This task exists so the queue turns the first bounded optional-group-alternation-plus-branch-local-backreference workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+- Completed 2026-03-13: added bounded Rust compile/match support for `a((b|c)\\2)?d` and `a(?P<outer>(?P<inner>b|c)(?P=inner))?d`, added focused parity coverage, corrected the task-local conformance expectations to match CPython span offsets, and republished `reports/correctness/latest.json` to 472 passes / 0 unimplemented.
