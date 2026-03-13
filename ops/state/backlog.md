@@ -4,19 +4,18 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0187` to convert the published bounded alternation-heavy two-arm conditional slice for `a(b)?c(?(1)(de|df)|(eg|eh))` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` into real Rust-backed behavior instead of leaving it as publication-only coverage.
-2. Land `RBR-0188` to catch bounded alternation-heavy two-arm conditional benchmarks up so the new backtracking-heavier slice reaches the published benchmark surface immediately after parity lands.
-3. Land `RBR-0189` to publish one bounded quantified alternation-heavy two-arm conditional correctness pack for `a(b)?c(?(1)(de|df)|(eg|eh)){2}` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` so quantified composition reopens through an exact follow-on instead of a vague broader-backtracking bucket.
-4. Land `RBR-0190` to convert that bounded quantified alternation-heavy two-arm conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
-5. Land `RBR-0191` to catch bounded quantified alternation-heavy two-arm conditional benchmarks up so the quantified follow-on reaches the published benchmark surface immediately after parity lands.
+1. Land `RBR-0188` to catch bounded alternation-heavy two-arm conditional benchmarks up so the newly Rust-backed backtracking-heavier slice reaches the published benchmark surface immediately after parity.
+2. Land `RBR-0189` to publish one bounded quantified alternation-heavy two-arm conditional correctness pack for `a(b)?c(?(1)(de|df)|(eg|eh)){2}` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` so quantified composition reopens through an exact follow-on instead of a vague broader-backtracking bucket.
+3. Land `RBR-0190` to convert that bounded quantified alternation-heavy two-arm conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
+4. Land `RBR-0191` to catch bounded quantified alternation-heavy two-arm conditional benchmarks up so the quantified follow-on reaches the published benchmark surface immediately after parity lands.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
 - Prefer replacing vague items with concrete task files instead of growing this document indefinitely.
 - Keep scaffold tickets small enough that one implementation-agent run can finish them without needing another synthesis pass first.
 - Seed dependent follow-on tasks early when lexical ordering is enough to keep prerequisites ahead of them in the ready queue.
-- Keep `RBR-0187` through `RBR-0191` pre-seeded in lexical order; the task contracts are explicit enough that the worker should not need another supervisor-only reseed pass between the published bounded alternation-heavy two-arm slice and its exact quantified follow-on.
-- With `RBR-0186` landed, treat the bounded alternation-heavy two-arm correctness pack as part of the published baseline, keep the honest 406-case, 55-manifest, 10-gap frontier explicit until `RBR-0187` converts that slice behind `rebar._rebar`, and keep the active queue front at `RBR-0187` through `RBR-0191`.
+- Keep `RBR-0188` through `RBR-0191` pre-seeded in lexical order; the task contracts are explicit enough that the worker should not need another supervisor-only reseed pass between the alternation-heavy two-arm benchmark catch-up and its exact quantified follow-on.
+- With `RBR-0187` landed, treat the bounded alternation-heavy two-arm slice as part of the tracked Rust-backed baseline, keep the fully green 406-case, 55-manifest correctness frontier explicit, and keep the active queue front at `RBR-0188` through `RBR-0191`.
 - After `RBR-0188`, extend the queue through one bounded quantified alternation-heavy two-arm conditional slice as `RBR-0189` through `RBR-0191`, pinned to `a(b)?c(?(1)(de|df)|(eg|eh)){2}` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}`, so quantified composition follows the newly reopened two-arm alternation frontier through one exact numbered/named pair instead of another vague backtracking bucket.
 - Keep README landing-page summaries short, and keep published-slice pass counts clearly separate from any claim about overall stdlib `re` feature completeness.
 - Translate remote-only user requests into concrete local queue items when git history is diverged, so the working queue can keep moving before a later merge or rebase reconciles `origin/main`.
