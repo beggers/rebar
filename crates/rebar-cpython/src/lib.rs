@@ -9,15 +9,13 @@ use rebar_core::{
     conditional_group_exists_empty_else_find_spans_str as core_conditional_group_exists_empty_else_find_spans_str,
     conditional_group_exists_empty_yes_else_find_spans_str as core_conditional_group_exists_empty_yes_else_find_spans_str,
     conditional_group_exists_no_else_find_spans_str as core_conditional_group_exists_no_else_find_spans_str,
-    escape_bytes as core_escape_bytes,
-    escape_str as core_escape_str,
+    escape_bytes as core_escape_bytes, escape_str as core_escape_str,
     expand_literal_replacement_template_str as core_expand_literal_replacement_template_str,
     grouped_alternation_find_spans_str as core_grouped_alternation_find_spans_str,
     grouped_literal_find_spans_str as core_grouped_literal_find_spans_str,
-    literal_find_spans as core_literal_find_spans,
-    literal_match as core_literal_match,
-    nested_capture_find_spans_str as core_nested_capture_find_spans_str,
-    CapturedMatchSpan, CompileStatus, MatchMode, MatchStatus, PatternRef, TARGET_CPYTHON_SERIES,
+    literal_find_spans as core_literal_find_spans, literal_match as core_literal_match,
+    nested_capture_find_spans_str as core_nested_capture_find_spans_str, CapturedMatchSpan,
+    CompileStatus, MatchMode, MatchStatus, PatternRef, TARGET_CPYTHON_SERIES,
 };
 
 const SCAFFOLD_STATUS: &str = "scaffold-only";

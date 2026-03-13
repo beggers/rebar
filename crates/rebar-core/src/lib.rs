@@ -2002,7 +2002,10 @@ fn split_first_top_level_pipe(value: &str) -> Option<(&str, &str)> {
 
 fn parse_grouped_literal_alternation_branch(branch: &str) -> Option<Vec<&str>> {
     let inner = branch.strip_prefix('(')?.strip_suffix(')')?;
-    if inner.chars().any(|character| matches!(character, '(' | ')')) {
+    if inner
+        .chars()
+        .any(|character| matches!(character, '(' | ')'))
+    {
         return None;
     }
 
@@ -2080,7 +2083,7 @@ fn parse_conditional_group_exists_pattern_str(
     let yes_branch_alternation = if yes_branch.is_empty() {
         None
     } else if yes_branch.chars().any(is_meta_character) {
-        if no_branch != Some("") {
+        if !matches!(no_branch, None | Some("")) {
             return None;
         }
         parse_grouped_literal_alternation_branch(yes_branch)
@@ -3721,8 +3724,13 @@ fn conditional_group_exists_matches_at_str<'a>(
         if let Some(yes_branch_alternation) = &pattern.yes_branch_alternation {
             for branch in yes_branch_alternation {
                 let branch_chars: Vec<char> = branch.chars().collect();
-                if literal_matches_at_str(branch_chars.as_slice(), flags, string, branch_start, endpos)
-                {
+                if literal_matches_at_str(
+                    branch_chars.as_slice(),
+                    flags,
+                    string,
+                    branch_start,
+                    endpos,
+                ) {
                     return Some((true, branch_start + branch_chars.len(), Some(branch)));
                 }
             }
@@ -3730,13 +3738,22 @@ fn conditional_group_exists_matches_at_str<'a>(
         }
 
         let yes_branch_chars: Vec<char> = pattern.yes_branch.chars().collect();
-        return literal_matches_at_str(yes_branch_chars.as_slice(), flags, string, branch_start, endpos)
-            .then_some((true, branch_start + yes_branch_chars.len(), None));
+        return literal_matches_at_str(
+            yes_branch_chars.as_slice(),
+            flags,
+            string,
+            branch_start,
+            endpos,
+        )
+        .then_some((true, branch_start + yes_branch_chars.len(), None));
     }
 
     let selected_branch = no_branch_chars.as_deref().unwrap_or(&[]);
-    literal_matches_at_str(selected_branch, flags, string, branch_start, endpos)
-        .then_some((false, branch_start + selected_branch.len(), None))
+    literal_matches_at_str(selected_branch, flags, string, branch_start, endpos).then_some((
+        false,
+        branch_start + selected_branch.len(),
+        None,
+    ))
 }
 
 fn find_conditional_group_exists_match_span_str(
@@ -3771,11 +3788,10 @@ fn find_conditional_group_exists_match_span_str(
             pattern, flags, string, pos, endpos,
         )
         .and_then(|(capture_present, match_end, matched_yes_branch)| {
-            (match_end == endpos)
-                .then_some((
-                    (pos, match_end),
-                    pattern.group_spans(pos, capture_present, matched_yes_branch),
-                ))
+            (match_end == endpos).then_some((
+                (pos, match_end),
+                pattern.group_spans(pos, capture_present, matched_yes_branch),
+            ))
         }),
     }
 }
@@ -4708,8 +4724,30 @@ mod tests {
         assert_eq!(outcome.group_count, 2);
         assert!(outcome.named_groups.is_empty());
 
-        let named_outcome =
-            compile(PatternRef::Str("a(?P<word>b)?c(?(word)(de|df)|)"), 0).unwrap();
+        let named_outcome = compile(PatternRef::Str("a(?P<word>b)?c(?(word)(de|df)|)"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!named_outcome.supports_literal);
+        assert_eq!(named_outcome.group_count, 2);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "word".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
+    fn compile_accepts_bounded_conditional_group_exists_no_else_alternation_cases() {
+        let outcome = compile(PatternRef::Str("a(b)?c(?(1)(de|df))"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.group_count, 2);
+        assert!(outcome.named_groups.is_empty());
+
+        let named_outcome = compile(PatternRef::Str("a(?P<word>b)?c(?(word)(de|df))"), 0).unwrap();
         assert_eq!(named_outcome.status, CompileStatus::Compiled);
         assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
         assert!(!named_outcome.supports_literal);
@@ -5348,6 +5386,43 @@ mod tests {
     ) {
         let outcome = literal_match(
             PatternRef::Str("a(?P<word>b)?c(?(word)(de|df)|)"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("ac"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 2)));
+        assert_eq!(outcome.group_spans, vec![None, None]);
+        assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
+    fn conditional_group_exists_no_else_alternation_search_reports_selected_yes_branch_span() {
+        let outcome = literal_match(
+            PatternRef::Str("a(b)?c(?(1)(de|df))"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabcdfzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 7)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 4)), Some((5, 7))]);
+        assert_eq!(outcome.lastindex, Some(2));
+    }
+
+    #[test]
+    fn named_conditional_group_exists_no_else_alternation_fullmatch_reports_absent_groups_as_none()
+    {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<word>b)?c(?(word)(de|df))"),
             FLAG_UNICODE,
             MatchMode::Fullmatch,
             PatternRef::Str("ac"),

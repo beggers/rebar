@@ -1,6 +1,6 @@
 # RBR-0143: Add bounded alternation-heavy omitted-no-arm conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,9 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0108`, `RBR-0128`, and `RBR-0142`.
 - This task exists so the queue converts the accepted omitted-no-arm alternation-heavy spelling into real Rust-backed behavior instead of leaving it as publication-only syntax coverage.
+
+## Completion Notes
+- Completed 2026-03-13.
+- Relaxed the bounded conditional parser so the existing Rust matcher now accepts omitted-no-arm yes-arm alternation for `a(b)?c(?(1)(de|df))` and `a(?P<word>b)?c(?(word)(de|df))` without broadening replacement helpers or other conditional shapes.
+- Added dedicated Python parity coverage for numbered and named module/compiled-`Pattern` compile, present-branch search, second-arm search, and absent-arm fullmatch behavior.
+- Regenerated `reports/correctness/latest.json`; the combined published scorecard now reports 280 passes out of 280 cases with 0 honest `unimplemented` gaps.
