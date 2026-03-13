@@ -4,16 +4,16 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0144` to catch bounded omitted-no-arm alternation-heavy conditional benchmarks up so that the accepted no-else alternation-heavy syntax reaches the published benchmark surface before nested conditionals, quantified conditionals, or broader backtracking reopen the frontier further.
-2. Land `RBR-0145` to publish one bounded nested omitted-no-arm conditional correctness pack for `a(b)?c(?(1)(?(1)d))` and `a(?P<word>b)?c(?(word)(?(word)d))` so the queue broadens accepted conditional composition through one exact CPython-supported nested slice before quantified conditionals or broader backtracking reopen the frontier.
-3. Land `RBR-0146` to convert that bounded nested omitted-no-arm conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-4. Land `RBR-0147` to catch bounded nested omitted-no-arm conditional benchmarks up so that accepted nested no-else conditional composition reaches the published benchmark surface before quantified conditionals or broader backtracking reopen the frontier further.
-5. Land `RBR-0148` to publish one bounded quantified-conditional correctness pack for `a(b)?c(?(1)d|e){2}` and `a(?P<word>b)?c(?(word)d|e){2}` so the queue reopens quantified conditional composition through one exact CPython-supported slice before broader backtracking-heavy conditional execution reopens the frontier.
-6. Land `RBR-0149` to convert that bounded quantified-conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-7. Land `RBR-0150` to catch bounded quantified-conditional benchmarks up so that repeated conditional-arm behavior reaches the published benchmark surface before broader backtracking-heavy conditional execution reopens the frontier further.
-8. Land `RBR-0151` to publish one bounded nested explicit-empty-else conditional correctness pack for `a(b)?c(?(1)(?(1)d)|)` and `a(?P<word>b)?c(?(word)(?(word)d)|)` so the queue keeps accepted nested conditional syntax explicit before empty-yes-arm or fully-empty nested variants reopen the frontier.
-9. Land `RBR-0152` to convert that bounded nested explicit-empty-else conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-10. Land `RBR-0153` to catch bounded nested explicit-empty-else conditional benchmarks up so that accepted nested explicit-empty-else composition reaches the published benchmark surface before broader nested conditional expansion reopens the frontier further.
+1. Land `RBR-0145` to publish one bounded nested omitted-no-arm conditional correctness pack for `a(b)?c(?(1)(?(1)d))` and `a(?P<word>b)?c(?(word)(?(word)d))` so the queue broadens accepted conditional composition through one exact CPython-supported nested slice before quantified conditionals or broader backtracking reopen the frontier.
+2. Land `RBR-0146` to convert that bounded nested omitted-no-arm conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+3. Land `RBR-0147` to catch bounded nested omitted-no-arm conditional benchmarks up so that accepted nested no-else conditional composition reaches the published benchmark surface before quantified conditionals or broader backtracking reopen the frontier further.
+4. Land `RBR-0148` to publish one bounded quantified-conditional correctness pack for `a(b)?c(?(1)d|e){2}` and `a(?P<word>b)?c(?(word)d|e){2}` so the queue reopens quantified conditional composition through one exact CPython-supported slice before broader backtracking-heavy conditional execution reopens the frontier.
+5. Land `RBR-0149` to convert that bounded quantified-conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+6. Land `RBR-0150` to catch bounded quantified-conditional benchmarks up so that repeated conditional-arm behavior reaches the published benchmark surface before broader backtracking-heavy conditional execution reopens the frontier further.
+7. Land `RBR-0151` to publish one bounded nested explicit-empty-else conditional correctness pack for `a(b)?c(?(1)(?(1)d)|)` and `a(?P<word>b)?c(?(word)(?(word)d)|)` so the queue keeps accepted nested conditional syntax explicit before empty-yes-arm or fully-empty nested variants reopen the frontier.
+8. Land `RBR-0152` to convert that bounded nested explicit-empty-else conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+9. Land `RBR-0153` to catch bounded nested explicit-empty-else conditional benchmarks up so that accepted nested explicit-empty-else composition reaches the published benchmark surface before broader nested conditional expansion reopens the frontier further.
+10. Land `RBR-0154` to add a deterministic systematic correctness-corpus harness for already-landed slices so stronger evidence can accumulate alongside feature work instead of relying only on hand-written per-slice fixture growth.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
@@ -21,6 +21,7 @@ Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier,
 - Keep scaffold tickets small enough that one implementation-agent run can finish them without needing another synthesis pass first.
 - Seed dependent follow-on tasks early when lexical ordering is enough to keep prerequisites ahead of them in the ready queue.
 - Keep README landing-page summaries short, and keep published-slice pass counts clearly separate from any claim about overall stdlib `re` feature completeness.
+- Translate remote-only user requests into concrete local queue items when git history is diverged, so the working queue can keep moving before a later merge or rebase reconciles `origin/main`.
 - Once exact baseline provenance lands, keep the next milestone focused on native import validation and broader harness coverage instead of reopening metadata-only work.
 - Keep a native-extension build/import smoke task queued behind package scaffolding so the project does not mistake source-only imports for a validated CPython extension path.
 - Now that native import validation and compile-path benchmark depth have landed, keep Milestone 2 centered on module-surface scaffolding plus public-API and module-boundary catch-up instead of reopening parser-only benchmark breadth.

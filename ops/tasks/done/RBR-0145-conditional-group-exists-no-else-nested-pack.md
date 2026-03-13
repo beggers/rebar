@@ -1,6 +1,6 @@
 # RBR-0145: Publish a bounded nested omitted-no-arm conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0144` and the already-landed omitted-no-arm conditional baseline in `RBR-0108` and `RBR-0131`.
 - This task exists so the queue keeps accepted conditional composition explicit instead of jumping straight from single-site conditionals to quantified conditionals or a vague broader-backtracking bucket.
+
+## Completion
+- Added `conditional_group_exists_no_else_nested_workflows.json` with eight bounded numbered and named nested omitted-no-arm conditional cases covering compile metadata, present-capture success, present-capture missing-suffix failure, and absent-capture success.
+- Wired the manifest into the default correctness harness, added a regression test that asserts the new cases publish as honest `unimplemented` gaps under the current Rust-backed frontier, and regenerated `reports/correctness/latest.json` to `288` total cases with `8` explicit unimplemented nested-conditional gaps.
+- Updated the neighboring default-harness regression tests whose combined-scorecard totals changed from the new manifest.
