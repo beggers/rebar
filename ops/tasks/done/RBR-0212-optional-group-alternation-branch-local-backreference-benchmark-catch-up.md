@@ -1,6 +1,6 @@
 # RBR-0212: Catch bounded optional-group-alternation-plus-branch-local-backreference benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 - Build on `RBR-0211`.
 - Keep this slice in the existing `optional_group_alternation_boundary` manifest rather than inventing a second benchmark family for the same bounded optional-group-alternation-plus-branch-local-backreference surface.
 - This task exists so the queue does not reach bounded optional-group-alternation-plus-branch-local-backreference parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Added numbered and named compile/search/fullmatch benchmark rows for `a((b|c)\\2)?d` and `a(?P<outer>(?P<inner>b|c)(?P=inner))?d` in `benchmarks/workloads/optional_group_alternation_boundary.json`, reusing the existing numbered `pattern.fullmatch` anchor and leaving the broader counted-repeat alternation row as the remaining explicit gap.
+- Regenerated `reports/benchmarks/latest.json`; the published report now records 371 total workloads, 327 measured `rebar` timings, and 44 explicit known gaps, with the optional-group alternation manifest at 13 workloads / 12 measured / 1 gap.
+- Verified with `python3 -m unittest -q tests.benchmarks.test_optional_group_alternation_boundary_benchmarks tests.benchmarks.test_quantified_alternation_boundary_benchmarks tests.benchmarks.test_conditional_group_exists_boundary_benchmarks tests.benchmarks.test_conditional_group_exists_no_else_boundary_benchmarks tests.benchmarks.test_conditional_group_exists_empty_else_boundary_benchmarks tests.benchmarks.test_conditional_group_exists_empty_yes_else_boundary_benchmarks tests.benchmarks.test_conditional_group_exists_fully_empty_boundary_benchmarks`.

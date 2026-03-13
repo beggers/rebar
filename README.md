@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is widening a real Rust-backed subset, but the project is still early relative to the drop-in `re` target. |
 | Delivery estimate | Foundation work is complete, the published slice is expanding through benchmark catch-up and exact follow-on tasks, and overall stdlib-parity progress is still in the early implementation stage. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `7` ready, `0` in progress, `219` done, `0` blocked |
+| Work queue | `6` ready, `0` in progress, `220` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -35,20 +35,20 @@ _These correctness counts cover only the published slice. Overall delivery estim
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/usr/bin/python3`) |
-| Published workloads | `366` |
-| Workloads with real `rebar` timings | `321` |
-| Known-gap workloads | `45` |
+| Published workloads | `371` |
+| Workloads with real `rebar` timings | `327` |
+| Known-gap workloads | `44` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native sidecars are checked in separately at [`reports/benchmarks/native_full.json`](reports/benchmarks/native_full.json) for the latest built-native full-suite run and [`reports/benchmarks/native_smoke.json`](reports/benchmarks/native_smoke.json) for the smoke slice._
 
-_README speedup rollups stay omitted while only `321` of `366` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `327` of `371` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- Land `RBR-0211` to convert the newly published bounded optional-group-alternation-plus-branch-local-backreference pack into real Rust-backed behavior.
-- Keep `RBR-0212` through `RBR-0218` queued for benchmark catch-up plus the bounded quantified-alternation branch-local and conditional follow-ons.
+- Land `RBR-0212` to catch the now-Rust-backed bounded optional-group-alternation-plus-branch-local-backreference slice up on the published benchmark surface.
+- Keep `RBR-0213` through `RBR-0218` queued for the bounded quantified-alternation branch-local and conditional follow-ons.
 
 ### Current Risks
 
@@ -58,15 +58,15 @@ _README speedup rollups stay omitted while only `321` of `366` published workloa
 
 ## Implementation Snapshot
 
-`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The exact published counts live in the generated status block above; the short version is that the first bounded two-arm, alternation-heavy two-arm, nested two-arm, and quantified two-arm conditional replacement slices now reach the Rust-backed correctness baseline, the repo also carries a strict built-native full-suite benchmark sidecar, the first bounded conditional-plus-branch-local-backreference slice now reaches both the Rust-backed correctness baseline and the published benchmark surface, the bounded quantified branch-local-backreference slice now also reaches the published benchmark surface, one bounded optional-group-alternation-plus-branch-local-backreference correctness pack is now published as an honest gap, and the active queue leads with `RBR-0211`, with `RBR-0212` through `RBR-0215` queued behind it and `RBR-0216` through `RBR-0218` already seeded as the next exact follow-on trio.
+`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The exact published counts live in the generated status block above; the short version is that the first bounded two-arm, alternation-heavy two-arm, nested two-arm, and quantified two-arm conditional replacement slices now reach the Rust-backed correctness baseline, the repo also carries a strict built-native full-suite benchmark sidecar, the first bounded conditional-plus-branch-local-backreference slice now reaches both the Rust-backed correctness baseline and the published benchmark surface, the bounded quantified branch-local-backreference slice now also reaches the published benchmark surface, the first bounded optional-group-alternation-plus-branch-local-backreference slice now reaches the Rust-backed correctness baseline, and the active queue leads with `RBR-0212`, with `RBR-0213` through `RBR-0215` queued behind it and `RBR-0216` through `RBR-0218` already seeded as the next exact follow-on trio.
 
-The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. The deterministic systematic corpus, the bounded nested empty-yes-arm and fully-empty conditional slices, both bounded quantified empty-arm conditional slices, the alternation-heavy empty-yes-arm conditional slice, the alternation-bearing fully-empty conditional slice, both bounded quantified no-else and explicit-empty-else conditional slices, the first bounded nested two-arm conditional composition slice, the numbered conditional-replacement benchmark cleanup, the bounded alternation-heavy two-arm conditional benchmark catch-up, the bounded quantified alternation-heavy two-arm conditional correctness/parity/benchmark slice, the first bounded two-arm, alternation-heavy two-arm, nested two-arm, plus quantified two-arm conditional replacement correctness/parity/benchmark slices, the first bounded conditional-plus-branch-local-backreference plus quantified branch-local-backreference correctness/parity/benchmark slices, and the first bounded optional-group-alternation-plus-branch-local-backreference correctness publication are already part of the tracked baseline. The immediate follow-ons are `RBR-0211` and `RBR-0212` to turn that new optional-group-alternation-plus-branch-local-backreference pack into Rust-backed behavior and benchmark coverage, `RBR-0213` through `RBR-0215` for one bounded quantified-alternation-plus-branch-local-backreference follow-on, and `RBR-0216` through `RBR-0218` for one bounded quantified-alternation-plus-conditional follow-on.
+The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. The deterministic systematic corpus, the bounded nested empty-yes-arm and fully-empty conditional slices, both bounded quantified empty-arm conditional slices, the alternation-heavy empty-yes-arm conditional slice, the alternation-bearing fully-empty conditional slice, both bounded quantified no-else and explicit-empty-else conditional slices, the first bounded nested two-arm conditional composition slice, the numbered conditional-replacement benchmark cleanup, the bounded alternation-heavy two-arm conditional benchmark catch-up, the bounded quantified alternation-heavy two-arm conditional correctness/parity/benchmark slice, the first bounded two-arm, alternation-heavy two-arm, nested two-arm, plus quantified two-arm conditional replacement correctness/parity/benchmark slices, the first bounded conditional-plus-branch-local-backreference, quantified branch-local-backreference, and optional-group-alternation-plus-branch-local-backreference correctness/parity slices are already part of the tracked baseline. The immediate follow-ons are `RBR-0212` to add benchmark coverage for the now-Rust-backed optional-group-alternation-plus-branch-local-backreference slice, `RBR-0213` through `RBR-0215` for one bounded quantified-alternation-plus-branch-local-backreference follow-on, and `RBR-0216` through `RBR-0218` for one bounded quantified-alternation-plus-conditional follow-on.
 
 Benchmark publication is still partial by design. The generated status block above carries the current workload and known-gap totals, while the primary full-suite report still times the source-tree shim, `reports/benchmarks/native_full.json` records the latest checked-in strict built-native full-suite sidecar, and `reports/benchmarks/native_smoke.json` remains the quick six-workload native check.
 
 ## What The Numbers Mean
 
-The correctness report is a slice-health signal, not an end-state signal. The current publication covers 472 cases across 63 manifests, with 462 passes and 10 honest `unimplemented` outcomes, and that still does not mean the project is close to replacing stdlib `re` across the board. The immediate queue is `RBR-0211` through `RBR-0218` for one bounded optional-group-alternation-plus-branch-local-backreference parity/benchmark catch-up, one bounded quantified-alternation-plus-branch-local-backreference follow-on, and one bounded quantified-alternation-plus-conditional follow-on.
+The correctness report is a slice-health signal, not an end-state signal. The current publication covers 472 cases across 63 manifests, all passing in the published slice, and that still does not mean the project is close to replacing stdlib `re` across the board. The immediate queue is `RBR-0212` through `RBR-0218` for one bounded optional-group-alternation-plus-branch-local-backreference benchmark catch-up, one bounded quantified-alternation-plus-branch-local-backreference follow-on, and one bounded quantified-alternation-plus-conditional follow-on.
 
 The benchmark report is still a coverage-first artifact too. It already exercises a wide workload set, but dozens of workloads are still explicit gaps and the main published run still measures the source-tree shim rather than the fully built-native path. That is enough to guide the queue, but not enough to make broad speed claims yet.
 
