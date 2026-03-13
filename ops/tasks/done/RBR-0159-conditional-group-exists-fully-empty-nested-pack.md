@@ -1,8 +1,9 @@
 # RBR-0159: Publish a bounded nested fully-empty conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published correctness scorecard with one bounded nested fully-empty conditional manifest so the queue keeps accepted nested empty-arm composition explicit after the narrower nested empty-yes-arm slice lands.
@@ -28,3 +29,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0155` and `RBR-0158`.
 - This task exists so the queue keeps accepted nested fully-empty syntax explicit instead of jumping from the narrower nested empty-yes-arm slice to broader nested empty-arm or backtracking-heavy composition.
+
+## Completion
+- Added `conditional_group_exists_fully_empty_nested_workflows.json` with 8 bounded numbered/named nested fully-empty conditional cases covering compile metadata, present/absent success paths, and extra-suffix fullmatch failures for the exact `|(?(1)|)` / `|(?(word)|)` shape.
+- Registered the new manifest in `python/rebar_harness/correctness.py` and added a dedicated scorecard regression test in `tests/conformance/test_correctness_conditional_group_exists_fully_empty_nested_workflows.py`.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports 338 total cases across 47 manifests, with this new nested fully-empty suite published honestly as 8 `unimplemented` cases pending `RBR-0160`.
