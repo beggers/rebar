@@ -1382,6 +1382,14 @@ def sub(
             helper_name="sub",
             allow_native_template_passthrough=_allow_native_template_passthrough(pattern),
         )
+        if (
+            isinstance(pattern, str)
+            and isinstance(repl, str)
+            and "\\" in repl
+            and _supports_pattern_scaffold(pattern)
+            and _expand_literal_replacement_template(repl, "") is None
+        ):
+            return _raise_placeholder("sub")
         if len(pattern) == 0:
             return _raise_placeholder("sub")
         normalized_flags = _normalize_pattern_flags(pattern, int(flags))
@@ -1411,6 +1419,14 @@ def subn(
             helper_name="subn",
             allow_native_template_passthrough=_allow_native_template_passthrough(pattern),
         )
+        if (
+            isinstance(pattern, str)
+            and isinstance(repl, str)
+            and "\\" in repl
+            and _supports_pattern_scaffold(pattern)
+            and _expand_literal_replacement_template(repl, "") is None
+        ):
+            return _raise_placeholder("subn")
         if len(pattern) == 0:
             return _raise_placeholder("subn")
         normalized_flags = _normalize_pattern_flags(pattern, int(flags))

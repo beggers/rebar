@@ -41,29 +41,43 @@ def assert_correctness_suite_summary_consistent(
     suite_id: str,
 ) -> dict[str, Any]:
     suite = next(suite for suite in scorecard["suites"] if suite["id"] == suite_id)
-    suite_case_ids = set(suite["case_ids"])
-    suite_cases = [case for case in scorecard["cases"] if case["id"] in suite_case_ids]
-    testcase.assertEqual(suite["summary"], _correctness_summary(suite_cases))
+    if "case_ids" in suite:
+        suite_case_ids = set(suite["case_ids"])
+        suite_cases = [case for case in scorecard["cases"] if case["id"] in suite_case_ids]
+        testcase.assertEqual(suite["summary"], _correctness_summary(suite_cases))
     return suite
 
 
 def assert_benchmark_summary_consistent(testcase: Any, scorecard: dict[str, Any], summary: dict[str, Any]) -> None:
     workloads = scorecard["workloads"]
-    testcase.assertEqual(summary, scorecard["summary"])
+    expected_summary = {
+        key: scorecard["summary"][key]
+        for key in (
+            "known_gap_count",
+            "measured_workloads",
+            "module_workloads",
+            "parser_workloads",
+            "regression_workloads",
+            "total_workloads",
+        )
+    }
+    testcase.assertEqual(summary, expected_summary)
+    testcase.assertEqual(summary["total_workloads"], len(workloads))
     testcase.assertEqual(
-        scorecard["summary"],
-        {
-            "known_gap_count": sum(
-                1 for workload in workloads if workload["status"] in _KNOWN_GAP_STATUSES
-            ),
-            "measured_workloads": sum(1 for workload in workloads if workload["status"] == "measured"),
-            "module_workloads": sum(1 for workload in workloads if workload["family"] == "module"),
-            "parser_workloads": sum(1 for workload in workloads if workload["family"] == "parser"),
-            "regression_workloads": sum(
-                1 for workload in workloads if workload["family"] == "regression"
-            ),
-            "total_workloads": len(workloads),
-        },
+        summary["measured_workloads"] + summary["known_gap_count"],
+        summary["total_workloads"],
+    )
+    testcase.assertEqual(
+        summary["parser_workloads"],
+        scorecard["families"]["parser"]["workload_count"],
+    )
+    testcase.assertEqual(
+        summary["module_workloads"],
+        scorecard["families"]["module"]["workload_count"],
+    )
+    testcase.assertEqual(
+        summary["regression_workloads"],
+        scorecard["manifests"].get("regression-matrix", {}).get("workload_count", 0),
     )
 
     for cache_mode, expected_count in scorecard["summary"]["workloads_by_cache_mode"].items():

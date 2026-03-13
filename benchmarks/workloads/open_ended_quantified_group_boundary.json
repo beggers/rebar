@@ -7,7 +7,7 @@
   ],
   "notes": [
     "Open-ended quantified-group boundary workloads keep captures, one grouped `bc|de` alternation site, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded `{1,}` slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(bc|de){1,}d`, `a(?P<word>bc|de){1,}d`, `a((bc|de){1,})?(?(1)d|e)`, and `a(?P<outer>(bc|de){1,})?(?(outer)d|e)` compile/search/fullmatch paths directly at representative lower-bound, mixed-branch, and fourth-repetition haystacks, while broader counted-repeat grouped families and broader grouped backtracking-heavy shapes stay as explicit known-gap rows until queued follow-on slices land."
+    "Measured rows cover the bounded `a(bc|de){1,}d`, `a(?P<word>bc|de){1,}d`, `a((bc|de){1,})?(?(1)d|e)`, `a(?P<outer>(bc|de){1,})?(?(outer)d|e)`, `a((bc|b)c){1,}d`, and `a(?P<word>(bc|b)c){1,}d` compile/search/fullmatch paths directly at representative lower-bound, mixed-branch, third-repetition, and fourth-repetition haystacks, while broader counted-repeat grouped families stay as explicit known-gap rows until queued follow-on slices land."
   ],
   "defaults": {
     "warmup_iterations": 2,
