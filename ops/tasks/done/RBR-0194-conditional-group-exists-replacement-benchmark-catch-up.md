@@ -1,6 +1,6 @@
 # RBR-0194: Catch bounded two-arm conditional replacement benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 - Build on `RBR-0193`.
 - Keep this slice in the existing `conditional_group_exists_boundary` manifest rather than inventing a second benchmark family for the same bounded two-arm conditional surface.
 - This task exists so the queue does not reach bounded two-arm conditional replacement parity and then leave that newly supported slice absent from benchmark reporting.
+- Completed 2026-03-13: added eight measured `sub()`/`subn()` benchmark rows for the bounded numbered/named two-arm conditional replacement slice, seeded five explicit gap anchors for template/callable plus alternation-heavy/nested/quantified replacement follow-ons, refreshed the combined boundary benchmark regression, and republished `reports/benchmarks/latest.json` at 335 total workloads with 285 measured and 50 explicit gaps.
