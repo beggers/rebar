@@ -499,6 +499,7 @@ struct ConditionalGroupExistsPattern<'a> {
     middle: &'a str,
     yes_branch: &'a str,
     yes_branch_alternation: Option<Vec<&'a str>>,
+    nested_yes_branch: Option<&'a str>,
     no_branch: Option<&'a str>,
 }
 
@@ -2021,6 +2022,31 @@ fn parse_grouped_literal_alternation_branch(branch: &str) -> Option<Vec<&str>> {
     Some(branches)
 }
 
+fn parse_nested_conditional_group_exists_no_else_yes_branch<'a>(
+    branch: &'a str,
+    capture_name: Option<&str>,
+) -> Option<&'a str> {
+    let conditional = branch.strip_prefix("(?(")?.strip_suffix(')')?;
+    let reference_end = conditional.find(')')?;
+    let reference = &conditional[..reference_end];
+    match capture_name {
+        Some(name) if reference == name => {}
+        None if reference == "1" => {}
+        _ => return None,
+    }
+
+    let inner_branches = &conditional[reference_end + 1..];
+    let (inner_yes_branch, inner_no_branch) = split_first_top_level_pipe(inner_branches)?;
+    if inner_yes_branch.is_empty()
+        || inner_yes_branch.chars().any(is_meta_character)
+        || inner_no_branch != ""
+    {
+        return None;
+    }
+
+    Some(inner_yes_branch)
+}
+
 fn parse_conditional_group_exists_pattern_str(
     pattern: &str,
 ) -> Option<ConditionalGroupExistsPattern<'_>> {
@@ -2080,18 +2106,25 @@ fn parse_conditional_group_exists_pattern_str(
         None => return None,
     };
 
-    let yes_branch_alternation = if yes_branch.is_empty() {
+    let nested_yes_branch = if yes_branch.is_empty() {
         None
-    } else if yes_branch.chars().any(is_meta_character) {
+    } else {
+        parse_nested_conditional_group_exists_no_else_yes_branch(yes_branch, capture_name)
+    };
+
+    let normalized_yes_branch = nested_yes_branch.unwrap_or(yes_branch);
+    let yes_branch_alternation = if normalized_yes_branch.is_empty() {
+        None
+    } else if nested_yes_branch.is_none() && normalized_yes_branch.chars().any(is_meta_character) {
         if !matches!(no_branch, None | Some("")) {
             return None;
         }
-        parse_grouped_literal_alternation_branch(yes_branch)
+        parse_grouped_literal_alternation_branch(normalized_yes_branch)
     } else {
         None
     };
 
-    if yes_branch_alternation.is_none() && yes_branch.chars().any(is_meta_character) {
+    if yes_branch_alternation.is_none() && normalized_yes_branch.chars().any(is_meta_character) {
         return None;
     }
 
@@ -2099,7 +2132,7 @@ fn parse_conditional_group_exists_pattern_str(
         if no_branch.chars().any(is_meta_character) {
             return None;
         }
-    } else if yes_branch.is_empty() {
+    } else if normalized_yes_branch.is_empty() {
         return None;
     }
 
@@ -2110,8 +2143,9 @@ fn parse_conditional_group_exists_pattern_str(
             name: capture_name,
         },
         middle,
-        yes_branch,
+        yes_branch: normalized_yes_branch,
         yes_branch_alternation,
+        nested_yes_branch,
         no_branch,
     })
 }
@@ -3053,6 +3087,7 @@ pub fn conditional_group_exists_no_else_find_spans_str(
     if flags != FLAG_UNICODE
         || grouped_pattern.no_branch.is_some()
         || grouped_pattern.yes_branch_alternation.is_some()
+        || grouped_pattern.nested_yes_branch.is_some()
     {
         return CapturedFindSpansOutcome {
             status: MatchStatus::Unsupported,
@@ -4693,6 +4728,30 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_bounded_nested_conditional_group_exists_no_else_cases() {
+        let outcome = compile(PatternRef::Str("a(b)?c(?(1)(?(1)d))"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.group_count, 1);
+        assert!(outcome.named_groups.is_empty());
+
+        let named_outcome =
+            compile(PatternRef::Str("a(?P<word>b)?c(?(word)(?(word)d))"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!named_outcome.supports_literal);
+        assert_eq!(named_outcome.group_count, 1);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "word".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
     fn compile_accepts_bounded_conditional_group_exists_empty_else_cases() {
         let outcome = compile(PatternRef::Str("a(b)?c(?(1)d|)"), 0).unwrap();
         assert_eq!(outcome.status, CompileStatus::Compiled);
@@ -5313,6 +5372,42 @@ mod tests {
     fn named_conditional_group_exists_no_else_fullmatch_reports_absent_capture_as_none() {
         let outcome = literal_match(
             PatternRef::Str("a(?P<word>b)?c(?(word)d)"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("ac"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 2)));
+        assert_eq!(outcome.group_spans, vec![None]);
+        assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
+    fn conditional_group_exists_no_else_nested_search_reports_present_capture_span() {
+        let outcome = literal_match(
+            PatternRef::Str("a(b)?c(?(1)(?(1)d))"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabcdzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 6)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 4))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn named_conditional_group_exists_no_else_nested_fullmatch_reports_absent_capture_as_none() {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<word>b)?c(?(word)(?(word)d))"),
             FLAG_UNICODE,
             MatchMode::Fullmatch,
             PatternRef::Str("ac"),
@@ -5998,6 +6093,15 @@ mod tests {
             None,
         );
         assert_eq!(alternation.status, MatchStatus::Unsupported);
+
+        let nested = conditional_group_exists_no_else_find_spans_str(
+            "a(b)?c(?(1)(?(1)d))",
+            FLAG_UNICODE,
+            "zzabcdzz",
+            0,
+            None,
+        );
+        assert_eq!(nested.status, MatchStatus::Unsupported);
     }
 
     #[test]

@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is widening a real Rust-backed subset, but the project is still early relative to the drop-in `re` target. |
-| Delivery estimate | Foundation work is complete, the published slice is internally caught up, and overall stdlib-parity progress is still in the early implementation stage. |
+| Delivery estimate | Foundation work is complete, the published slice is expanding with explicit honest gaps and catch-up tasks, and overall stdlib-parity progress is still in the early implementation stage. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `9` ready, `0` in progress, `152` done, `0` blocked |
+| Work queue | `8` ready, `0` in progress, `153` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -22,13 +22,13 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Metric | Value |
 | --- | --- |
 | Published cases | `288` |
-| Passing in published slice | `280` |
+| Passing in published slice | `288` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `8` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `42` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, the published slice is internally caught up, and overall stdlib-parity progress is still in the early implementation stage._
+_These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, the published slice is expanding with explicit honest gaps and catch-up tasks, and overall stdlib-parity progress is still in the early implementation stage._
 
 ### Benchmark Snapshot
 
@@ -47,8 +47,8 @@ _README speedup rollups stay omitted while only `229` of `286` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0145` so the queue reopens with one bounded nested omitted-no-arm conditional slice.
-- Then land the bounded quantified-conditional and nested explicit-empty-else follow-ons, with a queued systematic test-harness expansion task behind them.
+- Land `RBR-0146` so the published nested omitted-no-arm conditional pack catches up behind `rebar._rebar`.
+- Then land the nested benchmark catch-up, quantified-conditional follow-ons, and the queued systematic correctness-harness expansion task.
 
 ### Current Risks
 
@@ -58,7 +58,7 @@ _README speedup rollups stay omitted while only `229` of `286` published workloa
 
 ## Implementation Snapshot
 
-`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The published slice is caught up at `280/280`, yet that green score only covers a bounded frontier rather than anything close to full stdlib `re` parity.
+`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The published slice currently reports `280` passes with `8` honest gaps across `288` cases, and that bounded frontier is still far from full stdlib `re` parity.
 
 The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. Near-term work is still about widening conditionals and adjacent grouped execution, while broader regex coverage, broader backtracking, and full built-native benchmark publication remain ahead.
 
@@ -66,7 +66,7 @@ Benchmark publication is still partial by design. The generated status block abo
 
 ## What The Numbers Mean
 
-The correctness report is a slice-health signal, not an end-state signal. `280/280` means the currently published frontier is internally caught up; it does not mean the project is close to replacing stdlib `re` across the board.
+The correctness report is a slice-health signal, not an end-state signal. `280` passes with `8` honest gaps across `288` published cases means the currently tracked frontier is widening in explicit bounded slices; it still does not mean the project is close to replacing stdlib `re` across the board.
 
 The benchmark report is still a coverage-first artifact too. It already exercises a wide workload set, but 57 rows are still explicit gaps and the main published run still measures the source-tree shim rather than the fully built-native path. That is enough to guide the queue, but not enough to make broad speed claims yet.
 

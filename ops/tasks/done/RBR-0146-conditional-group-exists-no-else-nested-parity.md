@@ -1,6 +1,6 @@
 # RBR-0146: Add bounded nested omitted-no-arm conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0108`, `RBR-0131`, and `RBR-0145`.
 - This task exists so the queue converts one exact accepted nested-conditional spelling into real Rust-backed behavior instead of leaving it as publication-only syntax coverage.
+
+## Completion
+- Landed bounded nested omitted-no-arm conditional parity in `rebar-core` by accepting only `a(b)?c(?(1)(?(1)d))` and `a(?P<word>b)?c(?(word)(?(word)d))`-shaped yes-arm nesting, while keeping nested replacement discovery unsupported.
+- Added direct parity coverage in `tests/python/test_conditional_group_exists_no_else_nested_parity.py` and updated the nested correctness-harness assertions to expect 288 passes and 0 `unimplemented` cases in the published report.
+- Rebuilt `reports/correctness/latest.json`; the combined published scorecard now reports 288 executed, 288 passed, 0 failed, and 0 unimplemented cases.
