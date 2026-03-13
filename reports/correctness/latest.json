@@ -19515,6 +19515,998 @@
     {
       "categories": [
         "grouped",
+        "alternation",
+        "overlapping-branches",
+        "quantifier",
+        "ranged-repeat",
+        "wider-range",
+        "counted-repeat",
+        "compile",
+        "metadata",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_compile_metadata",
+      "id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+      "notes": [
+        "Publishes the numbered compile frontier for one wider `{1,3}` grouped alternation whose overlapping `(bc|b)c` branches force CPython-compatible backtracking choices without widening into open-ended repeats, conditionals, replacement workflows, nested grouped alternation, or branch-local backreferences."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 2,
+            "pattern": "a((bc|b)c){1,3}d",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "compile",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a((bc|b)c){1,3}d",
+      "suite_id": "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a((bc|b)c){1,3}d",
+        "zzabcdzz"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "overlapping-branches",
+        "quantifier",
+        "ranged-repeat",
+        "wider-range",
+        "counted-repeat",
+        "search",
+        "module",
+        "lower-bound",
+        "short-branch",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_module_lower_bound_short_branch_workflow",
+      "helper": "search",
+      "id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-short-branch-str",
+      "layer": "match_behavior",
+      "manifest_id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+      "notes": [
+        "Documents the numbered lower-bound success path on `abcd` so the scorecard keeps the one-repetition shorter `bc` branch explicit."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 8,
+            "group0": "abcd",
+            "group1": "bc",
+            "group_spans": [
+              [
+                3,
+                5
+              ],
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "bc",
+              "b"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              6
+            ],
+            "span1": [
+              3,
+              5
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abccd"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "overlapping-branches",
+        "quantifier",
+        "ranged-repeat",
+        "wider-range",
+        "counted-repeat",
+        "fullmatch",
+        "pattern",
+        "lower-bound",
+        "long-branch",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_lower_bound_long_branch_workflow",
+      "helper": "fullmatch",
+      "id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-lower-bound-long-branch-str",
+      "layer": "match_behavior",
+      "manifest_id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+      "notes": [
+        "Documents the numbered lower-bound success path on `abccd` so the longer overlapping `bcc` branch is published alongside the shorter `bc` branch."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 5,
+            "group0": "abccd",
+            "group1": "bcc",
+            "group_spans": [
+              [
+                1,
+                4
+              ],
+              [
+                1,
+                3
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "bcc",
+              "bc"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              5
+            ],
+            "span1": [
+              1,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a((bc|b)c){1,3}d",
+      "suite_id": "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abcbcd"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "overlapping-branches",
+        "quantifier",
+        "ranged-repeat",
+        "wider-range",
+        "counted-repeat",
+        "fullmatch",
+        "pattern",
+        "second-repetition",
+        "short-then-short",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_second_repetition_short_then_short_workflow",
+      "helper": "fullmatch",
+      "id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-short-then-short-str",
+      "layer": "match_behavior",
+      "manifest_id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+      "notes": [
+        "Documents the numbered second-repetition success path on `abcbcd` so the wider counted-repeat frontier includes the two-short-branch case."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 6,
+            "group0": "abcbcd",
+            "group1": "bc",
+            "group_spans": [
+              [
+                3,
+                5
+              ],
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "bc",
+              "b"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              6
+            ],
+            "span1": [
+              3,
+              5
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a((bc|b)c){1,3}d",
+      "suite_id": "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abcbccd"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "overlapping-branches",
+        "quantifier",
+        "ranged-repeat",
+        "wider-range",
+        "counted-repeat",
+        "fullmatch",
+        "pattern",
+        "second-repetition",
+        "short-then-long",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_second_repetition_short_then_long_workflow",
+      "helper": "fullmatch",
+      "id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-short-then-long-str",
+      "layer": "match_behavior",
+      "manifest_id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+      "notes": [
+        "Documents the numbered mixed-order second-repetition success path on `abcbccd` so the publication records one shorter branch followed by the longer overlapping branch."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abcbccd",
+            "group1": "bcc",
+            "group_spans": [
+              [
+                3,
+                6
+              ],
+              [
+                3,
+                5
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "bcc",
+              "bc"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              7
+            ],
+            "span1": [
+              3,
+              6
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a((bc|b)c){1,3}d",
+      "suite_id": "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abcccd"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "overlapping-branches",
+        "quantifier",
+        "ranged-repeat",
+        "wider-range",
+        "counted-repeat",
+        "fullmatch",
+        "pattern",
+        "no-match",
+        "overlap-tail",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_no_match_overlap_tail_workflow",
+      "helper": "fullmatch",
+      "id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-no-match-overlap-tail-str",
+      "layer": "match_behavior",
+      "manifest_id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+      "notes": [
+        "Documents the numbered no-match path on `abcccd` so the scorecard stays explicit that a partial overlapping branch tail cannot satisfy the widened grouped alternation before the trailing `d`."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a((bc|b)c){1,3}d",
+      "suite_id": "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "grouped",
+        "alternation",
+        "overlapping-branches",
+        "quantifier",
+        "ranged-repeat",
+        "wider-range",
+        "counted-repeat",
+        "named-group",
+        "compile",
+        "metadata",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_compile_metadata",
+      "id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+      "notes": [
+        "Publishes the matching named compile frontier for the same wider `{1,3}` grouped backtracking-heavy slice under one visible `word` capture."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {
+              "word": 1
+            },
+            "groups": 2,
+            "pattern": "a(?P<word>(bc|b)c){1,3}d",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "compile",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a(?P<word>(bc|b)c){1,3}d",
+      "suite_id": "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<word>(bc|b)c){1,3}d",
+        "zzabccdzz"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "overlapping-branches",
+        "quantifier",
+        "ranged-repeat",
+        "wider-range",
+        "counted-repeat",
+        "named-group",
+        "search",
+        "module",
+        "lower-bound",
+        "long-branch",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_lower_bound_long_branch_workflow",
+      "helper": "search",
+      "id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-module-search-lower-bound-long-branch-str",
+      "layer": "match_behavior",
+      "manifest_id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+      "notes": [
+        "Documents the named lower-bound success path on `abccd` so the visible `word` capture stays explicit when the longer overlapping branch wins."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 9,
+            "group0": "abccd",
+            "group1": "bcc",
+            "group_spans": [
+              [
+                3,
+                6
+              ],
+              [
+                3,
+                5
+              ]
+            ],
+            "groupdict": {
+              "word": "bcc"
+            },
+            "groups": [
+              "bcc",
+              "bc"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                3,
+                6
+              ]
+            },
+            "named_groups": {
+              "word": "bcc"
+            },
+            "pos": 0,
+            "span": [
+              2,
+              7
+            ],
+            "span1": [
+              3,
+              6
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<word>(bc|b)c){1,3}d",
+        "zzabcbccbccdzz"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "overlapping-branches",
+        "quantifier",
+        "ranged-repeat",
+        "wider-range",
+        "counted-repeat",
+        "named-group",
+        "search",
+        "module",
+        "third-repetition",
+        "mixed",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_third_repetition_mixed_workflow",
+      "helper": "search",
+      "id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-module-search-third-repetition-mixed-str",
+      "layer": "match_behavior",
+      "manifest_id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+      "notes": [
+        "Documents the named module-level third-repetition success path on `abcbccbccd` so the widened frontier records one bounded three-repetition mixed branch order."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 14,
+            "group0": "abcbccbccd",
+            "group1": "bcc",
+            "group_spans": [
+              [
+                8,
+                11
+              ],
+              [
+                8,
+                10
+              ]
+            ],
+            "groupdict": {
+              "word": "bcc"
+            },
+            "groups": [
+              "bcc",
+              "bc"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                8,
+                11
+              ]
+            },
+            "named_groups": {
+              "word": "bcc"
+            },
+            "pos": 0,
+            "span": [
+              2,
+              12
+            ],
+            "span1": [
+              8,
+              11
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abccbcd"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "overlapping-branches",
+        "quantifier",
+        "ranged-repeat",
+        "wider-range",
+        "counted-repeat",
+        "named-group",
+        "fullmatch",
+        "pattern",
+        "second-repetition",
+        "long-then-short",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_pattern_second_repetition_long_then_short_workflow",
+      "helper": "fullmatch",
+      "id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-second-repetition-long-then-short-str",
+      "layer": "match_behavior",
+      "manifest_id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+      "notes": [
+        "Documents the named mixed-order second-repetition success path on `abccbcd` so the visible capture comes from the final shorter branch after an earlier longer branch."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abccbcd",
+            "group1": "bc",
+            "group_spans": [
+              [
+                4,
+                6
+              ],
+              [
+                4,
+                5
+              ]
+            ],
+            "groupdict": {
+              "word": "bc"
+            },
+            "groups": [
+              "bc",
+              "b"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                4,
+                6
+              ]
+            },
+            "named_groups": {
+              "word": "bc"
+            },
+            "pos": 0,
+            "span": [
+              0,
+              7
+            ],
+            "span1": [
+              4,
+              6
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<word>(bc|b)c){1,3}d",
+      "suite_id": "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abcbcbccd"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "overlapping-branches",
+        "quantifier",
+        "ranged-repeat",
+        "wider-range",
+        "counted-repeat",
+        "named-group",
+        "fullmatch",
+        "pattern",
+        "third-repetition",
+        "short-short-long",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_pattern_third_repetition_short_short_long_workflow",
+      "helper": "fullmatch",
+      "id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-third-repetition-short-short-long-str",
+      "layer": "match_behavior",
+      "manifest_id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+      "notes": [
+        "Documents the named third-repetition success path on `abcbcbccd` so the pack includes one bounded upper-edge success where the longer overlapping branch lands last."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 9,
+            "group0": "abcbcbccd",
+            "group1": "bcc",
+            "group_spans": [
+              [
+                5,
+                8
+              ],
+              [
+                5,
+                7
+              ]
+            ],
+            "groupdict": {
+              "word": "bcc"
+            },
+            "groups": [
+              "bcc",
+              "bc"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                5,
+                8
+              ]
+            },
+            "named_groups": {
+              "word": "bcc"
+            },
+            "pos": 0,
+            "span": [
+              0,
+              9
+            ],
+            "span1": [
+              5,
+              8
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<word>(bc|b)c){1,3}d",
+      "suite_id": "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<word>(bc|b)c){1,3}d",
+        "zzabcccezz"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "overlapping-branches",
+        "quantifier",
+        "ranged-repeat",
+        "wider-range",
+        "counted-repeat",
+        "named-group",
+        "search",
+        "module",
+        "no-match",
+        "invalid-tail",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_no_match_invalid_tail_workflow",
+      "helper": "search",
+      "id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-module-search-no-match-invalid-tail-str",
+      "layer": "match_behavior",
+      "manifest_id": "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+      "notes": [
+        "Documents the named no-match search path on `abccce` so the scorecard records a haystack whose overlapping branch choices fail before the trailing `d`."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "grouped",
         "optional-group",
         "alternation",
         "quantifier",
@@ -50409,7 +51401,7 @@
         },
         "outcomes": {
           "exception": 10,
-          "success": 586
+          "success": 598
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -50417,14 +51409,16 @@
         }
       },
       "rebar": {
-        "exception_case_count": 10,
+        "exception_case_count": 22,
         "exception_types": {
+          "NotImplementedError": 12,
           "TypeError": 2,
           "error": 8
         },
         "outcomes": {
           "exception": 10,
-          "success": 586
+          "success": 586,
+          "unimplemented": 12
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -60410,6 +61404,258 @@
     },
     {
       "case_count": 1,
+      "id": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_lower_bound_long_branch_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_no_match_invalid_tail_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_third_repetition_mixed_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_pattern_second_repetition_long_then_short_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_pattern_third_repetition_short_short_long_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_module_lower_bound_short_branch_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_lower_bound_long_branch_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_no_match_overlap_tail_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_second_repetition_short_then_long_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_second_repetition_short_then_short_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
       "id": "wider_ranged_repeat_quantified_group_alternation_conditional_named_compile_metadata",
       "layers": [
         "match_behavior"
@@ -60872,8 +62118,8 @@
     }
   ],
   "fixtures": {
-    "case_count": 596,
-    "manifest_count": 73,
+    "case_count": 608,
+    "manifest_count": 74,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
@@ -60908,6 +62154,7 @@
       "wider-ranged-repeat-quantified-group-alternation-workflows",
       "open-ended-quantified-group-alternation-workflows",
       "wider-ranged-repeat-quantified-group-alternation-conditional-workflows",
+      "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
       "optional-group-alternation-workflows",
       "optional-group-alternation-branch-local-backreference-workflows",
       "conditional-group-exists-workflows",
@@ -60983,6 +62230,7 @@
       "tests/conformance/fixtures/wider_ranged_repeat_quantified_group_alternation_workflows.json",
       "tests/conformance/fixtures/open_ended_quantified_group_alternation_workflows.json",
       "tests/conformance/fixtures/wider_ranged_repeat_quantified_group_alternation_conditional_workflows.json",
+      "tests/conformance/fixtures/wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.json",
       "tests/conformance/fixtures/optional_group_alternation_workflows.json",
       "tests/conformance/fixtures/optional_group_alternation_branch_local_backreference_workflows.json",
       "tests/conformance/fixtures/conditional_group_exists_workflows.json",
@@ -61025,27 +62273,30 @@
       "tests/conformance/fixtures/systematic_feature_corpus.json"
     ]
   },
-  "generated_at": "2026-03-13T16:11:17Z",
+  "generated_at": "2026-03-13T16:26:37Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
-      "case_count": 420,
+      "case_count": 432,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
             "exception_case_count": 0,
             "exception_types": {},
             "outcomes": {
-              "success": 420
+              "success": 432
             },
             "warning_case_count": 0,
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 0,
-            "exception_types": {},
+            "exception_case_count": 12,
+            "exception_types": {
+              "NotImplementedError": 12
+            },
             "outcomes": {
-              "success": 420
+              "success": 420,
+              "unimplemented": 12
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -61445,6 +62696,18 @@
         "wider_ranged_repeat_numbered_group_compile_metadata",
         "wider_ranged_repeat_numbered_group_module_search_lower_bound_workflow",
         "wider_ranged_repeat_numbered_group_pattern_fullmatch_upper_bound_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_compile_metadata",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_lower_bound_long_branch_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_no_match_invalid_tail_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_third_repetition_mixed_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_pattern_second_repetition_long_then_short_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_pattern_third_repetition_short_short_long_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_compile_metadata",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_module_lower_bound_short_branch_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_lower_bound_long_branch_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_no_match_overlap_tail_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_second_repetition_short_then_long_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_second_repetition_short_then_short_workflow",
         "wider_ranged_repeat_quantified_group_alternation_conditional_named_compile_metadata",
         "wider_ranged_repeat_quantified_group_alternation_conditional_named_module_absent_workflow",
         "wider_ranged_repeat_quantified_group_alternation_conditional_named_module_lower_bound_de_workflow",
@@ -61518,6 +62781,7 @@
         "quantified-branch-local-backreference-workflows",
         "ranged-repeat-quantified-group-workflows",
         "systematic-feature-corpus",
+        "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
         "wider-ranged-repeat-quantified-group-alternation-conditional-workflows",
         "wider-ranged-repeat-quantified-group-alternation-workflows",
         "wider-ranged-repeat-quantified-group-workflows"
@@ -61579,15 +62843,16 @@
         "match.systematic_feature_corpus",
         "match.wider_ranged_repeat_quantified_group",
         "match.wider_ranged_repeat_quantified_group_alternation",
+        "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy",
         "match.wider_ranged_repeat_quantified_group_alternation_conditional"
       ],
       "summary": {
-        "executed_cases": 420,
+        "executed_cases": 432,
         "failed_cases": 0,
         "passed_cases": 420,
         "skipped_cases": 0,
-        "total_cases": 420,
-        "unimplemented_cases": 0
+        "total_cases": 432,
+        "unimplemented_cases": 12
       },
       "text_models": [
         "bytes",
@@ -69842,6 +71107,286 @@
         "skipped_cases": 0,
         "total_cases": 4,
         "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 12,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 12
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 12,
+            "exception_types": {
+              "NotImplementedError": 12
+            },
+            "outcomes": {
+              "unimplemented": 12
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_compile_metadata",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_lower_bound_long_branch_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_no_match_invalid_tail_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_third_repetition_mixed_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_pattern_second_repetition_long_then_short_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_pattern_third_repetition_short_short_long_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_compile_metadata",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_module_lower_bound_short_branch_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_lower_bound_long_branch_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_no_match_overlap_tail_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_second_repetition_short_then_long_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_second_repetition_short_then_short_workflow"
+      ],
+      "id": "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 12,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 12,
+        "unimplemented_cases": 12
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 12,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 12
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 12,
+            "exception_types": {
+              "NotImplementedError": 12
+            },
+            "outcomes": {
+              "unimplemented": 12
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_compile_metadata",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_lower_bound_long_branch_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_no_match_invalid_tail_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_third_repetition_mixed_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_pattern_second_repetition_long_then_short_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_pattern_third_repetition_short_short_long_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_compile_metadata",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_module_lower_bound_short_branch_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_lower_bound_long_branch_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_no_match_overlap_tail_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_second_repetition_short_then_long_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_second_repetition_short_then_short_workflow"
+      ],
+      "id": "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy.str",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 12,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 12,
+        "unimplemented_cases": 12
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_compile_metadata",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_compile_metadata"
+      ],
+      "id": "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy.compile",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 4,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 4,
+            "exception_types": {
+              "NotImplementedError": 4
+            },
+            "outcomes": {
+              "unimplemented": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_lower_bound_long_branch_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_no_match_invalid_tail_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_third_repetition_mixed_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_module_lower_bound_short_branch_workflow"
+      ],
+      "id": "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy.module_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 4
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 6,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 6,
+            "exception_types": {
+              "NotImplementedError": 6
+            },
+            "outcomes": {
+              "unimplemented": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_pattern_second_repetition_long_then_short_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_pattern_third_repetition_short_short_long_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_lower_bound_long_branch_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_no_match_overlap_tail_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_second_repetition_short_then_long_workflow",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_second_repetition_short_then_short_workflow"
+      ],
+      "id": "match.wider_ranged_repeat_quantified_group_alternation_backtracking_heavy.pattern_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 6
       },
       "text_models": [
         "str"
@@ -79669,11 +81214,11 @@
     }
   ],
   "summary": {
-    "executed_cases": 596,
+    "executed_cases": 608,
     "failed_cases": 0,
     "passed_cases": 596,
     "skipped_cases": 0,
-    "total_cases": 596,
-    "unimplemented_cases": 0
+    "total_cases": 608,
+    "unimplemented_cases": 12
   }
 }

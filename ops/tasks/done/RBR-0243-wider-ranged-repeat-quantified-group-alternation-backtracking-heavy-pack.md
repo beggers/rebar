@@ -1,6 +1,6 @@
 # RBR-0243: Publish a bounded wider ranged-repeat quantified-group alternation backtracking-heavy correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,7 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0242`.
 - This task exists so the queue reuses the already-published wider-ranged-repeat grouped backtracking-heavy benchmark anchor instead of pausing after the first grouped-alternation-plus-conditional trio or jumping directly to open-ended grouped-conditionals.
+
+## Completion Notes
+- Completed 2026-03-13 by adding `wider_ranged_repeat_quantified_group_alternation_backtracking_heavy` harness coverage in `python/rebar_harness/correctness.py`, a new 12-case grouped backtracking-heavy fixture, and a matching conformance test.
+- Republished `reports/correctness/latest.json`; the combined scorecard now covers 608 cases across 74 manifests with 596 passes, 0 explicit failures, and 12 honest `unimplemented` outcomes, all from this newly published `{1,3}` grouped backtracking-heavy slice pending `RBR-0244`.
