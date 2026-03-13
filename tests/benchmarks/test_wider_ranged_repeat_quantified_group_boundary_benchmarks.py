@@ -167,12 +167,12 @@ class WiderRangedRepeatQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCa
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 40,
-                    "measured_workloads": 309,
-                    "module_workloads": 341,
+                    "known_gap_count": 36,
+                    "measured_workloads": 323,
+                    "module_workloads": 351,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
-                    "total_workloads": 349,
+                    "total_workloads": 359,
                 },
             )
 
@@ -191,24 +191,24 @@ class WiderRangedRepeatQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCa
         self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase3")
-        self.assertEqual(scorecard["summary"]["total_workloads"], 349)
+        self.assertEqual(scorecard["summary"]["total_workloads"], 359)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
-        self.assertEqual(scorecard["summary"]["module_workloads"], 341)
+        self.assertEqual(scorecard["summary"]["module_workloads"], 351)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 309)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 40)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 53)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 146)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 150)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 323)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 36)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 55)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 151)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 153)
         self.assertEqual(scorecard["families"]["parser"]["workload_count"], 8)
         self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 3)
         self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["workload_count"], 341)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 37)
+        self.assertEqual(scorecard["families"]["module"]["workload_count"], 351)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 33)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 49)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 144)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 148)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 51)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 149)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 151)
         self.assertEqual(scorecard["artifacts"]["manifest"], None)
         self.assertEqual(scorecard["artifacts"]["manifest_id"], "combined-benchmark-suite")
         self.assertEqual(scorecard["artifacts"]["manifest_schema_version"], 1)
@@ -219,8 +219,8 @@ class WiderRangedRepeatQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCa
         manifest_summary = scorecard["manifests"]["wider-ranged-repeat-quantified-group-boundary"]
         self.assertEqual(manifest_summary["workload_count"], 11)
         self.assertEqual(manifest_summary["selected_workload_count"], 11)
-        self.assertEqual(manifest_summary["measured_workloads"], 6)
-        self.assertEqual(manifest_summary["known_gap_count"], 5)
+        self.assertEqual(manifest_summary["measured_workloads"], 7)
+        self.assertEqual(manifest_summary["known_gap_count"], 4)
         self.assertEqual(manifest_summary["readiness"], "partial")
         self.assertEqual(manifest_summary["selection_mode"], "full")
         self.assertEqual(manifest_summary["available_smoke_workload_count"], 2)
@@ -332,10 +332,10 @@ class WiderRangedRepeatQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCa
             for workload in scorecard["workloads"]
             if workload["id"] == "pattern-fullmatch-named-wider-ranged-repeat-group-alternation-purged-gap"
         )
-        self.assertEqual(alternation_gap["status"], "unimplemented")
-        self.assertEqual(alternation_gap["implementation_timing"]["status"], "unimplemented")
-        self.assertIsNone(alternation_gap["implementation_ns"])
-        self.assertIsNone(alternation_gap["speedup_vs_cpython"])
+        self.assertEqual(alternation_gap["status"], "measured")
+        self.assertIn("alternation", alternation_gap["syntax_features"])
+        self.assertEqual(alternation_gap["implementation_timing"]["status"], "measured")
+        self.assertGreater(alternation_gap["implementation_ns"], 0)
 
         conditional_gap = next(
             workload

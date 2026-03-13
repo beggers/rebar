@@ -1,6 +1,6 @@
 # RBR-0227: Catch bounded broader-range quantified-alternation benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 - Build on `RBR-0226`.
 - Keep this slice in the existing `quantified_alternation_boundary` manifest rather than inventing a second benchmark family for the same bounded broader-range quantified-alternation surface.
 - This task exists so the queue does not reach bounded broader-range quantified-alternation parity and then leave that newly supported slice absent from benchmark reporting.
+- Completed 2026-03-13: converted the `{1,3}` broader-range benchmark anchor into real numbered and named compile/search/fullmatch rows inside `quantified_alternation_boundary`, refreshed the combined benchmark report to 396 workloads with 359 measured timings and 37 explicit gaps, and updated the benchmark regression tests to match the current published totals.
