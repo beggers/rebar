@@ -1,6 +1,6 @@
 # RBR-0183: Catch bounded nested two-arm conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -27,3 +27,8 @@ Created: 2026-03-13
 - Build on `RBR-0182`.
 - Use the existing `module-search-numbered-nested-conditional-group-exists-cold-gap` row in `benchmarks/workloads/conditional_group_exists_boundary.json` as the benchmark anchor for this slice.
 - This task exists so the last currently queued `conditional_group_exists_boundary` gap reaches the published benchmark surface before the queue moves on to broader backtracking-heavy conditional execution.
+
+## Completion
+- Replaced the lingering nested two-arm gap row in `conditional_group_exists_boundary.json` with four measured numbered/named nested search and `Pattern.fullmatch()` workloads matching the bounded `RBR-0182` slice.
+- Regenerated `reports/benchmarks/latest.json`; the combined benchmark report now publishes 318 workloads with 273 real `rebar` timings and 45 explicit known gaps, and `conditional-group-exists-boundary` is now fully measured at 12 of 12 workloads.
+- Verified with `PYTHONPATH=python python3 -m unittest tests.benchmarks.test_conditional_group_exists_boundary_benchmarks`.

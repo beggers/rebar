@@ -7,7 +7,7 @@
   ],
   "notes": [
     "Conditional group-exists boundary workloads keep one optional capture, one conditional site, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported bounded two-arm conditional slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch paths directly plus one bounded quantified `{2}` Pattern.fullmatch companion for each numbered and named spelling, while nested conditional composition stays as the remaining explicit gap in this manifest."
+    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch paths directly, the bounded nested two-arm `a(b)?c(?(1)(?(1)d|e)|f)` / `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` module-search and Pattern.fullmatch probes, and one bounded quantified `{2}` Pattern.fullmatch companion for each numbered and named spelling, while broader replacement-conditioned and backtracking-heavier conditional shapes stay explicit gaps in their own manifests instead of being silently omitted here."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -208,7 +208,7 @@
       ]
     },
     {
-      "id": "module-search-numbered-nested-conditional-group-exists-cold-gap",
+      "id": "module-search-numbered-nested-conditional-group-exists-present-cold-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
@@ -226,7 +226,7 @@
         "nested-conditional",
         "search",
         "module",
-        "unsupported",
+        "present",
         "cold-cache"
       ],
       "syntax_features": [
@@ -236,7 +236,109 @@
         "conditionals"
       ],
       "notes": [
-        "Explicit nested-conditional gap row so broader conditional composition stays visible now that the first bounded two-arm group-exists slice has real timings."
+        "Cold module.search helper path for the bounded numbered nested two-arm conditional workflow when the optional capture is present and both outer and inner yes arms select the trailing `d` suffix."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-nested-conditional-group-exists-absent-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "acf",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "fullmatch",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered nested two-arm conditional workflow when the optional capture is absent and the outer else arm contributes the accepted trailing `f`."
+      ]
+    },
+    {
+      "id": "module-search-named-nested-conditional-group-exists-present-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzabcdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "named-group",
+        "search",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded named nested two-arm conditional workflow when the optional named capture is present and the nested yes arm still requires the trailing `d`."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-nested-conditional-group-exists-absent-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "acf",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "named-group",
+        "fullmatch",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded named nested two-arm conditional workflow when the optional named capture is absent and the outer else arm keeps the accepted trailing `f` explicit."
       ]
     },
     {
