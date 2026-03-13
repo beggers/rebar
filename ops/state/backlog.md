@@ -4,13 +4,12 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0162` to publish one bounded quantified empty-yes-arm conditional correctness pack for `(a(b)?c(?(1)|e)){2}` and `(a(?P<word>b)?c(?(word)|e)){2}` so repeated empty-yes-arm conditional composition reaches the scorecard through an exact CPython-supported slice before alternation-heavy empty-arm work reopens the frontier.
-2. Land `RBR-0163` to convert that bounded quantified empty-yes-arm conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-3. Land `RBR-0164` to catch bounded quantified empty-yes-arm conditional benchmarks up so that repeated empty-yes-arm composition reaches the published benchmark surface before alternation-heavy or broader backtracking-heavy empty-arm work reopens the frontier.
-4. Land `RBR-0165` to publish one bounded quantified fully-empty conditional correctness pack for `(a(b)?c(?(1)|)){2}` and `(a(?P<word>b)?c(?(word)|)){2}` so repeated fully-empty conditional composition reaches the scorecard through an exact CPython-supported slice before alternation-heavy empty-arm work reopens the frontier.
-5. Land `RBR-0166` to convert that bounded quantified fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-6. Land `RBR-0167` to catch bounded quantified fully-empty conditional benchmarks up so that repeated fully-empty composition reaches the published benchmark surface before alternation-heavy or broader backtracking-heavy empty-arm work reopens the frontier.
-7. Land `RBR-0168` to reconcile the alternation-heavy empty-arm benchmark anchors so the empty-yes-arm and fully-empty manifests stop collapsing to the same stored pattern before those broader follow-ons are queued.
+1. Land `RBR-0163` to convert the published bounded quantified empty-yes-arm conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+2. Land `RBR-0164` to catch bounded quantified empty-yes-arm conditional benchmarks up so that repeated empty-yes-arm composition reaches the published benchmark surface before alternation-heavy or broader backtracking-heavy empty-arm work reopens the frontier.
+3. Land `RBR-0165` to publish one bounded quantified fully-empty conditional correctness pack for `(a(b)?c(?(1)|)){2}` and `(a(?P<word>b)?c(?(word)|)){2}` so repeated fully-empty conditional composition reaches the scorecard through an exact CPython-supported slice before alternation-heavy empty-arm work reopens the frontier.
+4. Land `RBR-0166` to convert that bounded quantified fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+5. Land `RBR-0167` to catch bounded quantified fully-empty conditional benchmarks up so that repeated fully-empty composition reaches the published benchmark surface before alternation-heavy or broader backtracking-heavy empty-arm work reopens the frontier.
+6. Land `RBR-0168` to reconcile the alternation-heavy empty-arm benchmark anchors so the empty-yes-arm and fully-empty manifests stop collapsing to the same stored pattern before those broader follow-ons are queued.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

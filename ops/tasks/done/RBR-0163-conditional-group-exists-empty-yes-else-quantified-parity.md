@@ -1,6 +1,6 @@
 # RBR-0163: Add bounded quantified empty-yes-arm conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,7 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0162`.
 - This task exists so the queue converts one exact repeated empty-yes-arm spelling into real Rust-backed behavior instead of leaving it as publication-only coverage.
+
+## Completion
+- Landed Rust-backed compile and match parity for the bounded `(?:a(b)?c(?(1)|e)){2}` and `(?:a(?P<word>b)?c(?(word)|e)){2}` slice, including repeated present, repeated absent, absent-then-present, and present-then-absent failure behavior through module and compiled-pattern entrypoints.
+- Added focused Rust and Python parity coverage for the quantified empty-yes-arm wrapper semantics and republished `reports/correctness/latest.json` at 346 passes, 0 failures, and 0 unimplemented cases.
