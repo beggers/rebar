@@ -7,7 +7,7 @@
   ],
   "notes": [
     "Open-ended quantified-group boundary workloads keep captures, one grouped `bc|de` alternation site, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded `{1,}` slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(bc|de){1,}d`, `a(?P<word>bc|de){1,}d`, `a((bc|de){1,})?(?(1)d|e)`, `a(?P<outer>(bc|de){1,})?(?(outer)d|e)`, `a((bc|b)c){1,}d`, and `a(?P<word>(bc|b)c){1,}d` compile/search/fullmatch paths directly at representative lower-bound, mixed-branch, third-repetition, and fourth-repetition haystacks, while broader counted-repeat grouped families stay as explicit known-gap rows until queued follow-on slices land."
+    "Measured rows cover the bounded `a(bc|de){1,}d`, `a(?P<word>bc|de){1,}d`, `a(bc|de){2,}d`, `a(?P<word>bc|de){2,}d`, `a((bc|de){1,})?(?(1)d|e)`, `a(?P<outer>(bc|de){1,})?(?(outer)d|e)`, `a((bc|b)c){1,}d`, and `a(?P<word>(bc|b)c){1,}d` compile/search/fullmatch paths directly at representative lower-bound, mixed-branch, third-repetition, and bounded higher-repetition haystacks, while broader grouped `{2,}` conditional and backtracking follow-ons stay queued separately."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -257,6 +257,37 @@
       ]
     },
     {
+      "id": "module-compile-numbered-open-ended-group-broader-range-cold-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(bc|de){2,}d",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation"
+      ],
+      "notes": [
+        "Cold module.compile benchmark for the broader-range numbered open-ended grouped-alternation slice so `{2,}` compile metadata joins the published benchmark report."
+      ]
+    },
+    {
       "id": "module-search-numbered-open-ended-group-broader-range-cold-gap",
       "bucket": "module-search",
       "family": "module",
@@ -276,7 +307,8 @@
         "search",
         "module",
         "broader-range",
-        "unsupported",
+        "lower-bound",
+        "bc-bc",
         "cold-cache"
       ],
       "syntax_features": [
@@ -287,7 +319,151 @@
         "alternation"
       ],
       "notes": [
-        "Explicit broader open-ended counted-repeat known-gap row so grouped alternation families that shift the lower bound beyond the landed `{1,}` slice stay visible in the benchmark report."
+        "Former broader-range gap anchor now benchmarks the bounded numbered open-ended grouped-alternation workflow at the two-repetition `bc` lower bound."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-open-ended-group-broader-range-third-repetition-mixed-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(bc|de){2,}d",
+      "haystack": "abcbcded",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "fullmatch",
+        "third-repetition",
+        "mixed",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the broader-range numbered open-ended grouped-alternation workflow on a mixed third-repetition branch order."
+      ]
+    },
+    {
+      "id": "module-compile-named-open-ended-group-broader-range-warm-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<word>bc|de){2,}d",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "named-group",
+        "broader-range",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.compile benchmark for the broader-range named open-ended grouped-alternation slice so named `{2,}` compile metadata joins the published benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-named-open-ended-group-broader-range-lower-bound-de-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>bc|de){2,}d",
+      "haystack": "zzadededzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "named-group",
+        "broader-range",
+        "search",
+        "module",
+        "lower-bound",
+        "de-de",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.search helper path for the broader-range named open-ended grouped-alternation workflow at the two-repetition `de` lower bound."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-open-ended-group-broader-range-third-repetition-de-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>bc|de){2,}d",
+      "haystack": "adededed",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "named-group",
+        "broader-range",
+        "fullmatch",
+        "third-repetition",
+        "de-de-de",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the broader-range named open-ended grouped-alternation workflow after three `de` branch repetitions."
       ]
     },
     {

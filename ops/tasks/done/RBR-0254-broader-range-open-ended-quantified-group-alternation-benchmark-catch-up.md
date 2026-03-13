@@ -1,6 +1,6 @@
 # RBR-0254: Catch broader-range open-ended quantified-group alternation benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 - Build on `RBR-0253`.
 - Reuse the existing `module-search-numbered-open-ended-group-broader-range-cold-gap` row as the benchmark anchor instead of forking another manifest.
 - This task exists so the queue does not reach broader-range open-ended grouped-alternation parity and then leave that newly supported slice absent from benchmark reporting.
+- Completed 2026-03-13: promoted the existing broader-range anchor into a measured workload, added the adjacent numbered and named `{2,}` compile/search/fullmatch rows in `open_ended_quantified_group_boundary.json`, added focused benchmark coverage in `tests/benchmarks/test_open_ended_quantified_group_boundary_benchmarks.py`, updated combined-suite gap expectations, and regenerated `reports/benchmarks/latest.json` so the broader-range open-ended grouped-alternation slice now publishes real `rebar` timings.
