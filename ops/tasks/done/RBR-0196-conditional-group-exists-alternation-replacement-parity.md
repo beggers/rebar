@@ -1,6 +1,6 @@
 # RBR-0196: Add bounded alternation-heavy two-arm conditional replacement parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0195`.
 - This task exists so the queue converts the smallest remaining alternation-heavy replacement-conditioned workflow into real Rust-backed behavior instead of leaving it as publication-only coverage.
+
+## Completion Notes
+- Added a dedicated Rust replacement-span collector for the bounded alternation-heavy two-arm conditional slice and wired the native `sub()`/`subn()` boundary to use it for numbered and named patterns.
+- Added Python parity coverage for module and compiled-`Pattern` `sub()`/`subn()` flows across both present-capture and absent-capture alternation branches.
+- Regenerated `reports/correctness/latest.json`; the combined published scorecard now reports 432 passes, 0 failures, and 0 unimplemented cases.

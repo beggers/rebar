@@ -3480,6 +3480,76 @@ pub fn conditional_group_exists_find_spans_str(
     }
 }
 
+/// Discover repeated spans for the bounded alternation-heavy two-arm
+/// conditional replacement slice while preserving capture spans for result
+/// marshalling.
+#[must_use]
+pub fn conditional_group_exists_alternation_find_spans_str(
+    pattern: &str,
+    flags: i32,
+    string: &str,
+    pos: isize,
+    endpos: Option<isize>,
+) -> CapturedFindSpansOutcome {
+    let string_chars: Vec<char> = string.chars().collect();
+    let (normalized_pos, normalized_endpos) = normalize_bounds(string_chars.len(), pos, endpos);
+    let Some(grouped_pattern) = parse_conditional_group_exists_pattern_str(pattern) else {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    };
+    if flags != FLAG_UNICODE
+        || grouped_pattern.yes_branch_alternation.is_none()
+        || grouped_pattern.no_branch_alternation.is_none()
+        || grouped_pattern.nested_yes_branch.is_some()
+        || grouped_pattern.nested_no_branch.is_some()
+    {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    }
+
+    let mut matches = Vec::new();
+    let mut next_start = normalized_pos;
+    while let Some((match_start, capture_present, match_end, matched_branch)) =
+        (next_start..=normalized_endpos).find_map(|candidate_start| {
+            conditional_group_exists_matches_at_str(
+                &grouped_pattern,
+                flags,
+                &string_chars,
+                candidate_start,
+                normalized_endpos,
+            )
+            .map(|(capture_present, match_end, matched_branch)| {
+                (candidate_start, capture_present, match_end, matched_branch)
+            })
+        })
+    {
+        matches.push(CapturedMatchSpan {
+            span: (match_start, match_end),
+            group_spans: grouped_pattern.group_spans(match_start, capture_present, matched_branch),
+        });
+        next_start = match_end;
+    }
+
+    CapturedFindSpansOutcome {
+        status: if matches.is_empty() {
+            MatchStatus::NoMatch
+        } else {
+            MatchStatus::Matched
+        },
+        pos: normalized_pos,
+        endpos: normalized_endpos,
+        matches,
+    }
+}
+
 /// Discover repeated spans for the bounded omitted-no-arm conditional
 /// replacement slice while preserving capture spans for result marshalling.
 #[must_use]
@@ -5055,7 +5125,8 @@ fn push_escaped_byte(output: &mut Vec<u8>, byte: u8) {
 #[cfg(test)]
 mod tests {
     use super::{
-        compile, conditional_group_exists_empty_else_find_spans_str,
+        compile, conditional_group_exists_alternation_find_spans_str,
+        conditional_group_exists_empty_else_find_spans_str,
         conditional_group_exists_empty_yes_else_find_spans_str,
         conditional_group_exists_find_spans_str, conditional_group_exists_no_else_find_spans_str,
         escape_bytes, escape_str, expand_literal_replacement_template_str,
@@ -7687,6 +7758,64 @@ mod tests {
         assert_eq!(alternation.status, MatchStatus::Unsupported);
 
         let nested = conditional_group_exists_find_spans_str(
+            "a(b)?c(?(1)(?(1)d|e)|f)",
+            FLAG_UNICODE,
+            "zzabcdzz",
+            0,
+            None,
+        );
+        assert_eq!(nested.status, MatchStatus::Unsupported);
+    }
+
+    #[test]
+    fn conditional_group_exists_alternation_find_spans_reports_repeated_matches_and_capture_spans()
+    {
+        let outcome = conditional_group_exists_alternation_find_spans_str(
+            "a(b)?c(?(1)(de|df)|(eg|eh))",
+            FLAG_UNICODE,
+            "zabcdeacehx",
+            1,
+            Some(10),
+        );
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.pos, 1);
+        assert_eq!(outcome.endpos, 10);
+        assert_eq!(
+            outcome.matches,
+            vec![
+                CapturedMatchSpan {
+                    span: (1, 6),
+                    group_spans: vec![Some((2, 3)), Some((4, 6)), None],
+                },
+                CapturedMatchSpan {
+                    span: (6, 10),
+                    group_spans: vec![None, None, Some((8, 10))],
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn conditional_group_exists_alternation_find_spans_rejects_other_conditional_shapes() {
+        let plain_two_arm = conditional_group_exists_alternation_find_spans_str(
+            "a(b)?c(?(1)d|e)",
+            FLAG_UNICODE,
+            "zzabcdzz",
+            0,
+            None,
+        );
+        assert_eq!(plain_two_arm.status, MatchStatus::Unsupported);
+
+        let no_else = conditional_group_exists_alternation_find_spans_str(
+            "a(b)?c(?(1)(de|df))",
+            FLAG_UNICODE,
+            "zzabcdezz",
+            0,
+            None,
+        );
+        assert_eq!(no_else.status, MatchStatus::Unsupported);
+
+        let nested = conditional_group_exists_alternation_find_spans_str(
             "a(b)?c(?(1)(?(1)d|e)|f)",
             FLAG_UNICODE,
             "zzabcdzz",

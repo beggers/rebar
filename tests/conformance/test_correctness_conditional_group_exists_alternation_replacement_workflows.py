@@ -88,10 +88,10 @@ class CorrectnessHarnessConditionalGroupExistsAlternationReplacementWorkflowTest
             {
                 "executed_cases": 432,
                 "failed_cases": 0,
-                "passed_cases": 424,
+                "passed_cases": 432,
                 "skipped_cases": 0,
                 "total_cases": 432,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(len(scorecard["cases"]), 432)
@@ -102,10 +102,10 @@ class CorrectnessHarnessConditionalGroupExistsAlternationReplacementWorkflowTest
             {
                 "executed_cases": 120,
                 "failed_cases": 0,
-                "passed_cases": 112,
+                "passed_cases": 120,
                 "skipped_cases": 0,
                 "total_cases": 120,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertIn(
@@ -153,10 +153,10 @@ class CorrectnessHarnessConditionalGroupExistsAlternationReplacementWorkflowTest
             {
                 "executed_cases": 8,
                 "failed_cases": 0,
-                "passed_cases": 0,
+                "passed_cases": 8,
                 "skipped_cases": 0,
                 "total_cases": 8,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(
@@ -178,7 +178,7 @@ class CorrectnessHarnessConditionalGroupExistsAlternationReplacementWorkflowTest
         module_present_first_case = cases_by_id[
             "module-sub-conditional-group-exists-alternation-replacement-present-first-arm-str"
         ]
-        self.assertEqual(module_present_first_case["comparison"], "unimplemented")
+        self.assertEqual(module_present_first_case["comparison"], "pass")
         self.assertEqual(module_present_first_case["helper"], "sub")
         self.assertEqual(
             module_present_first_case["args"],
@@ -191,13 +191,15 @@ class CorrectnessHarnessConditionalGroupExistsAlternationReplacementWorkflowTest
         self.assertEqual(module_present_first_case["observations"]["cpython"]["result"], "zzXzz")
         self.assertEqual(
             module_present_first_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            "success",
         )
+        self.assertEqual(module_present_first_case["observations"]["rebar"]["result"], "zzXzz")
+        self.assertIsNone(module_present_first_case["observations"]["rebar"]["exception"])
 
         module_present_second_case = cases_by_id[
             "module-subn-conditional-group-exists-alternation-replacement-present-second-arm-str"
         ]
-        self.assertEqual(module_present_second_case["comparison"], "unimplemented")
+        self.assertEqual(module_present_second_case["comparison"], "pass")
         self.assertEqual(module_present_second_case["helper"], "subn")
         self.assertEqual(
             module_present_second_case["args"],
@@ -213,13 +215,18 @@ class CorrectnessHarnessConditionalGroupExistsAlternationReplacementWorkflowTest
         )
         self.assertEqual(
             module_present_second_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            "success",
         )
+        self.assertEqual(
+            module_present_second_case["observations"]["rebar"]["result"],
+            ["zzXzz", 1],
+        )
+        self.assertIsNone(module_present_second_case["observations"]["rebar"]["exception"])
 
         pattern_absent_first_case = cases_by_id[
             "pattern-sub-conditional-group-exists-alternation-replacement-absent-first-arm-str"
         ]
-        self.assertEqual(pattern_absent_first_case["comparison"], "unimplemented")
+        self.assertEqual(pattern_absent_first_case["comparison"], "pass")
         self.assertEqual(pattern_absent_first_case["helper"], "sub")
         self.assertEqual(pattern_absent_first_case["args"], ["X", "zzacegzz"])
         self.assertEqual(
@@ -229,13 +236,15 @@ class CorrectnessHarnessConditionalGroupExistsAlternationReplacementWorkflowTest
         self.assertEqual(pattern_absent_first_case["observations"]["cpython"]["result"], "zzXzz")
         self.assertEqual(
             pattern_absent_first_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            "success",
         )
+        self.assertEqual(pattern_absent_first_case["observations"]["rebar"]["result"], "zzXzz")
+        self.assertIsNone(pattern_absent_first_case["observations"]["rebar"]["exception"])
 
         named_pattern_absent_second_case = cases_by_id[
             "pattern-subn-named-conditional-group-exists-alternation-replacement-absent-second-arm-str"
         ]
-        self.assertEqual(named_pattern_absent_second_case["comparison"], "unimplemented")
+        self.assertEqual(named_pattern_absent_second_case["comparison"], "pass")
         self.assertEqual(named_pattern_absent_second_case["helper"], "subn")
         self.assertEqual(named_pattern_absent_second_case["args"], ["X", "zzacehzz", 1])
         self.assertEqual(
@@ -248,7 +257,14 @@ class CorrectnessHarnessConditionalGroupExistsAlternationReplacementWorkflowTest
         )
         self.assertEqual(
             named_pattern_absent_second_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            "success",
+        )
+        self.assertEqual(
+            named_pattern_absent_second_case["observations"]["rebar"]["result"],
+            ["zzXzz", 1],
+        )
+        self.assertIsNone(
+            named_pattern_absent_second_case["observations"]["rebar"]["exception"]
         )
 
 
