@@ -1,6 +1,6 @@
 # RBR-0230: Catch bounded open-ended quantified-alternation benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 - Build on `RBR-0229`.
 - Keep this slice in the existing `quantified_alternation_boundary` manifest rather than inventing a second benchmark family for the same bounded open-ended quantified-alternation surface.
 - This task exists so the queue does not reach bounded open-ended quantified-alternation parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Replaced the old open-ended quantified-alternation known-gap row in `benchmarks/workloads/quantified_alternation_boundary.json` with numbered and named compile/search/fullmatch workloads for the exact `a(b|c){1,}d` and `a(?P<word>b|c){1,}d` slice already supported by `RBR-0229`, including lower-bound and fourth-repetition probes without widening semantics.
+- Regenerated `reports/benchmarks/latest.json`; the published combined benchmark scorecard now reports `401` workloads with `365` real `rebar` timings and `36` explicit known gaps, and the quantified-alternation manifest is now fully measured at `42/42`.
+- Updated `tests/benchmarks/test_quantified_alternation_boundary_benchmarks.py` to assert the republished totals and the new open-ended measured rows, then verified with `PYTHONPATH=python python3 -m unittest tests.benchmarks.test_quantified_alternation_boundary_benchmarks` and a narrow rerun via `PYTHONPATH=python python3 -m rebar_harness.benchmarks --manifest benchmarks/workloads/quantified_alternation_boundary.json --report /tmp/rebar_quantified_alt_open_ended.json`.
