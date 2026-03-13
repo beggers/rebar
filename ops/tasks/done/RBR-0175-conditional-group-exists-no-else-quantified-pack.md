@@ -1,6 +1,6 @@
 # RBR-0175: Publish a bounded quantified omitted-no-arm conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,7 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0174`, `RBR-0147`, and `RBR-0150`.
 - This task exists so the queue reopens quantified omitted-no-arm composition through one exact accepted slice instead of leaving it as a benchmark-only gap row.
+
+## Completion
+- Added `conditional_group_exists_no_else_quantified_workflows.json` as a dedicated eight-case manifest covering numbered and named `{2}` omitted-no-arm conditional compile, module-call, and pattern-call observations.
+- Wired the new manifest into the default correctness harness, added a focused regression test, and republished `reports/correctness/latest.json`; the combined published scorecard now reports 380 cases across 52 manifests with 372 passes and 8 explicit `unimplemented` outcomes for this newly published slice.
