@@ -12,8 +12,8 @@ Phase 3 is widening a real Rust-backed subset, but the project is still early re
 Foundation work is complete, the published slice is expanding through benchmark catch-up and exact follow-on tasks, and overall stdlib-parity progress is still in the early implementation stage.
 
 ## README Next Steps
-- Land `RBR-0252` so the broader-range open-ended `{2,}` grouped-alternation slice reaches published correctness.
-- Keep `RBR-0253` through `RBR-0261` queued so parity, benchmark catch-up, anchor-cleanup, and broader-range grouped-conditional/backtracking follow-ons stay contiguous, with `RBR-0262` held immediately behind them for benchmark-wrapper consolidation.
+- Land `RBR-0258` so the broader-range open-ended `{2,}` grouped-alternation-plus-conditional slice reaches published benchmark coverage.
+- Keep `RBR-0259` through `RBR-0261` queued so the matching broader-range grouped-backtracking publication/parity/benchmark trio stays contiguous, with `RBR-0262` held immediately behind it for benchmark-wrapper consolidation.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.

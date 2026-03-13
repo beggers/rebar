@@ -6,8 +6,7 @@
   "cycle_order": 70,
   "prompt_path": "ops/agents/reporting.md",
   "dispatch": {
-    "mode": "interval",
-    "interval_seconds": 1800,
+    "mode": "every_cycle",
     "timeout_seconds": 1800
   },
   "codex": {

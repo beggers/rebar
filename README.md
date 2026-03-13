@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is widening a real Rust-backed subset, but the project is still early relative to the drop-in `re` target. |
 | Delivery estimate | Foundation work is complete, the published slice is expanding through benchmark catch-up and exact follow-on tasks, and overall stdlib-parity progress is still in the early implementation stage. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `6` ready, `0` in progress, `259` done, `0` blocked |
+| Work queue | `5` ready, `0` in progress, `260` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -22,9 +22,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Metric | Value |
 | --- | --- |
 | Published cases | `663` |
-| Passing in published slice | `649` |
+| Passing in published slice | `663` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `14` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `78` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
@@ -47,8 +47,8 @@ _README speedup rollups stay omitted while only `407` of `442` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0252` so the broader-range open-ended `{2,}` grouped-alternation slice reaches published correctness.
-- Keep `RBR-0253` through `RBR-0261` queued so parity, benchmark catch-up, anchor-cleanup, and broader-range grouped-conditional/backtracking follow-ons stay contiguous, with `RBR-0262` held immediately behind them for benchmark-wrapper consolidation.
+- Land `RBR-0258` so the broader-range open-ended `{2,}` grouped-alternation-plus-conditional slice reaches published benchmark coverage.
+- Keep `RBR-0259` through `RBR-0261` queued so the matching broader-range grouped-backtracking publication/parity/benchmark trio stays contiguous, with `RBR-0262` held immediately behind it for benchmark-wrapper consolidation.
 
 ### Current Risks
 
@@ -58,17 +58,15 @@ _README speedup rollups stay omitted while only `407` of `442` published workloa
 
 ## Implementation Snapshot
 
-`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The exact published counts live in the generated status block above; the short version is that the first bounded two-arm, alternation-heavy two-arm, nested two-arm, and quantified two-arm conditional replacement slices reach the Rust-backed correctness baseline, the repo carries a strict built-native full-suite benchmark sidecar, the conditional-plus-branch-local-backreference and quantified-alternation-plus-conditional slices already reach both Rust-backed correctness and published benchmark coverage, the quantified-alternation nested-branch, backtracking-heavy, broader-range `{1,3}`, and open-ended `{1,}` slices now reach both Rust-backed correctness parity and published benchmark coverage, the exact-repeat quantified-group alternation `{2}` slice now reaches both Rust-backed parity and published benchmark coverage, the wider ranged-repeat quantified-group alternation `{1,3}` slice now reaches both correctness and benchmark publication, the wider ranged-repeat grouped-alternation-plus-conditional `{1,3}` slice now reaches both Rust-backed correctness and benchmark publication, the wider ranged-repeat grouped backtracking-heavy `{1,3}` slice now reaches both Rust-backed correctness parity and published benchmark coverage, and the open-ended grouped alternation, grouped-alternation-plus-conditional, and grouped backtracking-heavy `{1,}` slices now reach both correctness and benchmark publication. The active queue now leads with `RBR-0252` through `RBR-0262` so the broader-range open-ended grouped-alternation follow-on, its parity and benchmark catch-up, the anchor cleanup, and the broader-range grouped trios stay contiguous.
+`rebar` is past the pure-harness stage. The repo now has a Rust core, a CPython-facing extension boundary, canonical correctness and benchmark publications, and a specialist-agent loop that keeps widening one bounded regex slice at a time.
 
-The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. The tracked frontier already includes deterministic corpus coverage, multiple bounded conditional execution and replacement slices, quantified branch-local-backreference work, quantified-alternation combinations through the open-ended `{1,}` frontier, the exact-repeat quantified-group alternation `{2}` slice through both correctness and benchmark publication, the wider ranged-repeat grouped alternation `{1,3}` slice through both correctness and benchmark publication, the wider ranged-repeat grouped-alternation-plus-conditional `{1,3}` slice through both correctness and benchmark publication, the wider ranged-repeat grouped backtracking-heavy `{1,3}` slice through both correctness and benchmark publication, and the open-ended grouped alternation, grouped-alternation-plus-conditional, and grouped backtracking-heavy `{1,}` slices through both correctness and benchmark publication. The immediate follow-ons are `RBR-0252` through `RBR-0262` so the broader-range open-ended grouped-alternation publication/parity/benchmark trio, the anchor cleanup, and the broader-range grouped-conditional/backtracking trios all stay in one contiguous queue.
-
-Benchmark publication is still partial by design. The generated status block above carries the current workload and known-gap totals, while the primary full-suite report still times the source-tree shim, `reports/benchmarks/native_full.json` records the latest checked-in strict built-native full-suite sidecar, and `reports/benchmarks/native_smoke.json` remains the quick six-workload native check.
+The implementation frontier is real but still narrow. The published correctness slice is currently fully passing, but that slice is much smaller than the full stdlib `re` surface; the immediate queue is benchmark catch-up for the broader-range open-ended grouped-conditional `{2,}` slice, followed by the matching grouped-backtracking publication/parity/benchmark trio. Benchmarking is still coverage-first: the main report remains source-tree-shim based, while built-native full-suite and smoke runs live in separate sidecars so performance claims stay explicitly qualified.
 
 ## What The Numbers Mean
 
-The correctness report is a slice-health signal, not an end-state signal. The current publication covers 633 cases across 76 manifests, with 633 passes and 0 honest `unimplemented` outcomes in the published slice, and that still does not mean the project is close to replacing stdlib `re` across the board. The immediate queue is `RBR-0252` through `RBR-0262` so the broader-range open-ended grouped-alternation publication/parity/benchmark trio, the anchor-cleanup pass, and the next broader-range grouped trios land in order.
+The counts in the status block are progress signals, not a claim of general drop-in parity. A clean published correctness slice means the currently documented frontier is internally consistent; it does not mean most accepted `re` syntax or behavior is implemented yet.
 
-The benchmark report is still a coverage-first artifact too. It already exercises a wide workload set, but dozens of workloads are still explicit gaps and the main published run still measures the source-tree shim rather than the fully built-native path. That is enough to guide the queue, but not enough to make broad speed claims yet.
+The benchmark totals are coverage signals too. The main suite still has known gaps and still measures the source-tree shim, so broad speed claims stay out of the README; the built-native sidecars exist to keep that distinction visible until benchmark publication is unified.
 
 ## Operating Model
 
