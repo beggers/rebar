@@ -1,8 +1,9 @@
 # RBR-0234: Publish a bounded wider ranged-repeat quantified-group alternation correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published correctness scorecard with one bounded manifest for grouped alternation inside a wider `{1,3}` counted repeat so the queue widens the already-supported ranged-repeat envelope before open-ended repeats, conditional combinations, or broader backtracking-heavy grouped execution resume.
@@ -28,3 +29,6 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0123` and `RBR-0233`.
 - This task exists so the queue reuses the already-published wider-ranged-repeat grouped-alternation benchmark anchor instead of stopping after the exact-repeat counted-repeat alternation slice.
+- Added `wider-ranged-repeat-quantified-group-alternation-workflows` to the default correctness manifest set with 10 numbered and named compile/module/pattern observations covering `abcd`, `aded`, `abcded`, `abcbcded`, `adededed`, `ad`, and `abcbcbcbcd`.
+- Republished `reports/correctness/latest.json`; the combined scorecard now covers 71 manifests / 568 cases, and this `{1,3}` grouped-alternation slice currently passes end to end with no explicit failures or `unimplemented` cases.
+- Added `tests/conformance/test_correctness_wider_ranged_repeat_quantified_group_alternation_workflows.py` to pin the combined-scorecard suite, family list, and CPython-visible observations for the new manifest.

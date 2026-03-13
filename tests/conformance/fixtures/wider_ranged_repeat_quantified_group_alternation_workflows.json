@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "manifest_id": "wider-ranged-repeat-quantified-group-alternation-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.wider_ranged_repeat_quantified_group_alternation",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "wider-ranged-repeat-quantified-group-alternation-numbered-compile-metadata-str",
+      "operation": "compile",
+      "family": "wider_ranged_repeat_quantified_group_alternation_numbered_compile_metadata",
+      "pattern": "a(bc|de){1,3}d",
+      "categories": ["grouped", "alternation", "quantifier", "ranged-repeat", "wider-range", "counted-repeat", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the numbered compile frontier for one wider `{1,3}` grouped alternation without widening into open-ended repeats, conditionals, nested grouped alternation, replacement workflows, or branch-local backreferences."
+      ]
+    },
+    {
+      "id": "wider-ranged-repeat-quantified-group-alternation-numbered-module-search-lower-bound-bc-str",
+      "operation": "module_call",
+      "family": "wider_ranged_repeat_quantified_group_alternation_numbered_module_lower_bound_bc_workflow",
+      "helper": "search",
+      "args": ["a(bc|de){1,3}d", "zzabcdzz"],
+      "categories": ["grouped", "alternation", "quantifier", "ranged-repeat", "wider-range", "counted-repeat", "search", "module", "lower-bound", "bc", "str", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound success path on `abcd` so the scorecard records that one `bc` branch satisfies the widened `{1,3}` envelope."
+      ]
+    },
+    {
+      "id": "wider-ranged-repeat-quantified-group-alternation-numbered-module-search-lower-bound-de-str",
+      "operation": "module_call",
+      "family": "wider_ranged_repeat_quantified_group_alternation_numbered_module_lower_bound_de_workflow",
+      "helper": "search",
+      "args": ["a(bc|de){1,3}d", "zzadedzz"],
+      "categories": ["grouped", "alternation", "quantifier", "ranged-repeat", "wider-range", "counted-repeat", "search", "module", "lower-bound", "de", "str", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound success path on `aded` so the scorecard also records the single `de` branch variant at the same widened counted-repeat frontier."
+      ]
+    },
+    {
+      "id": "wider-ranged-repeat-quantified-group-alternation-numbered-pattern-fullmatch-mixed-str",
+      "operation": "pattern_call",
+      "family": "wider_ranged_repeat_quantified_group_alternation_numbered_pattern_mixed_workflow",
+      "pattern": "a(bc|de){1,3}d",
+      "helper": "fullmatch",
+      "args": ["abcded"],
+      "categories": ["grouped", "alternation", "quantifier", "ranged-repeat", "wider-range", "counted-repeat", "fullmatch", "pattern", "mixed", "str", "gap"],
+      "notes": [
+        "Documents the numbered compiled-pattern mixed-branch success path on `abcded` so the publication includes one two-repetition `bc` then `de` observation."
+      ]
+    },
+    {
+      "id": "wider-ranged-repeat-quantified-group-alternation-numbered-pattern-fullmatch-no-match-short-str",
+      "operation": "pattern_call",
+      "family": "wider_ranged_repeat_quantified_group_alternation_numbered_pattern_no_match_short_workflow",
+      "pattern": "a(bc|de){1,3}d",
+      "helper": "fullmatch",
+      "args": ["ad"],
+      "categories": ["grouped", "alternation", "quantifier", "ranged-repeat", "wider-range", "counted-repeat", "fullmatch", "pattern", "no-match", "below-repeat-count", "str", "gap"],
+      "notes": [
+        "Documents the numbered no-match path on `ad` so the scorecard stays explicit that the widened `{1,3}` envelope still requires at least one grouped-alternation repetition."
+      ]
+    },
+    {
+      "id": "wider-ranged-repeat-quantified-group-alternation-named-compile-metadata-str",
+      "operation": "compile",
+      "family": "wider_ranged_repeat_quantified_group_alternation_named_compile_metadata",
+      "pattern": "a(?P<word>bc|de){1,3}d",
+      "categories": ["grouped", "alternation", "quantifier", "ranged-repeat", "wider-range", "counted-repeat", "named-group", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the named compile frontier for the same wider `{1,3}` grouped alternation under one visible `word` capture."
+      ]
+    },
+    {
+      "id": "wider-ranged-repeat-quantified-group-alternation-named-module-search-mixed-str",
+      "operation": "module_call",
+      "family": "wider_ranged_repeat_quantified_group_alternation_named_module_mixed_workflow",
+      "helper": "search",
+      "args": ["a(?P<word>bc|de){1,3}d", "zzabcdedzz"],
+      "categories": ["grouped", "alternation", "quantifier", "ranged-repeat", "wider-range", "counted-repeat", "named-group", "search", "module", "mixed", "str", "gap"],
+      "notes": [
+        "Documents the named module-level mixed-branch success path on `abcded` so the final visible `word` capture stays explicit under one widened counted-repeat alternation."
+      ]
+    },
+    {
+      "id": "wider-ranged-repeat-quantified-group-alternation-named-module-search-upper-bound-mixed-str",
+      "operation": "module_call",
+      "family": "wider_ranged_repeat_quantified_group_alternation_named_module_upper_bound_mixed_workflow",
+      "helper": "search",
+      "args": ["a(?P<word>bc|de){1,3}d", "zzabcbcdedzz"],
+      "categories": ["grouped", "alternation", "quantifier", "ranged-repeat", "wider-range", "counted-repeat", "named-group", "search", "module", "upper-bound", "mixed", "str", "gap"],
+      "notes": [
+        "Documents the named module-level upper-bound success path on `abcbcded` so the scorecard records one three-repetition grouped alternation with a mixed branch order."
+      ]
+    },
+    {
+      "id": "wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-upper-bound-de-str",
+      "operation": "pattern_call",
+      "family": "wider_ranged_repeat_quantified_group_alternation_named_pattern_upper_bound_de_workflow",
+      "pattern": "a(?P<word>bc|de){1,3}d",
+      "helper": "fullmatch",
+      "args": ["adededed"],
+      "categories": ["grouped", "alternation", "quantifier", "ranged-repeat", "wider-range", "counted-repeat", "named-group", "fullmatch", "pattern", "upper-bound", "de", "str", "gap"],
+      "notes": [
+        "Documents the named compiled-pattern upper-bound success path on `adededed` so the widened frontier includes the all-`de` third-repetition case as well."
+      ]
+    },
+    {
+      "id": "wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-overflow-str",
+      "operation": "pattern_call",
+      "family": "wider_ranged_repeat_quantified_group_alternation_named_pattern_no_match_overflow_workflow",
+      "pattern": "a(?P<word>bc|de){1,3}d",
+      "helper": "fullmatch",
+      "args": ["abcbcbcbcd"],
+      "categories": ["grouped", "alternation", "quantifier", "ranged-repeat", "wider-range", "counted-repeat", "named-group", "fullmatch", "pattern", "no-match", "overflow", "str", "gap"],
+      "notes": [
+        "Documents the named no-match path on `abcbcbcbcd` so the scorecard records that the wider `{1,3}` envelope still rejects a fourth grouped-alternation repetition."
+      ]
+    }
+  ]
+}

@@ -12,8 +12,8 @@ Phase 3 is widening a real Rust-backed subset, but the project is still early re
 Foundation work is complete, the published slice is expanding through benchmark catch-up and exact follow-on tasks, and overall stdlib-parity progress is still in the early implementation stage.
 
 ## README Next Steps
-- Land `RBR-0233` so the exact-repeat `{2}` quantified-group alternation slice reaches the published benchmark surface now that Rust-backed parity has landed.
-- Then land `RBR-0234` through `RBR-0239` so the wider `{1,3}` and open-ended `{1,}` grouped-alternation counted-repeat follow-ons stay contiguous.
+- Land `RBR-0234` through `RBR-0236` so grouped alternation inside the already-supported wider `{1,3}` counted-repeat envelope reaches the published benchmark surface end to end.
+- Then land `RBR-0237` through `RBR-0239` so grouped alternation reaches the bounded open-ended `{1,}` counted-repeat follow-on with its dedicated benchmark manifest.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -272,8 +272,9 @@ Early subset, not near drop-in feature parity yet: literals, captures, bounded r
 - A two-hundred-thirtieth completed implementation task, `RBR-0230`, with refreshed `python/rebar_harness/benchmarks.py`, promoted numbered and named open-ended quantified-alternation benchmark rows in `benchmarks/workloads/quantified_alternation_boundary.json`, matching benchmark-suite assertion updates in `tests/benchmarks/test_quantified_alternation_boundary_benchmarks.py`, and a regenerated `reports/benchmarks/latest.json`, moving the published benchmark scorecard to 401 workloads across 29 manifests with 365 real `rebar` timings and 36 explicit known gaps while catching the bounded open-ended quantified-alternation slice up on the benchmark surface.
 - A two-hundred-thirty-first completed implementation task, `RBR-0231`, with `python/rebar_harness/correctness.py`, `tests/conformance/fixtures/exact_repeat_quantified_group_alternation_workflows.json`, `tests/conformance/test_correctness_exact_repeat_quantified_group_alternation_workflows.py`, and a regenerated `reports/correctness/latest.json`, adding a seventieth manifest that publishes ten bounded numbered and named compile/module/pattern cases for `a(bc|de){2}d` and `a(?P<word>bc|de){2}d` while widening the combined scorecard to 558 total cases across 70 manifests with 548 passes, 0 explicit failures, and 10 honest `unimplemented` outcomes pending `RBR-0232`.
 - A two-hundred-thirty-second completed implementation task, `RBR-0232`, with bounded exact-repeat quantified-group alternation parser/executor expansion in `crates/rebar-core/src/lib.rs`, matching native bridge support in `crates/rebar-cpython/src/lib.rs`, focused parity coverage in `tests/python/test_exact_repeat_quantified_group_alternation_parity.py`, refreshed manifest expectations in `tests/conformance/test_correctness_exact_repeat_quantified_group_alternation_workflows.py`, and a regenerated `reports/correctness/latest.json`, converting the bounded `a(bc|de){2}d` and `a(?P<word>bc|de){2}d` slice to real Rust-backed behavior and moving the combined 70-manifest scorecard to 558 passes, 0 explicit failures, and 0 honest `unimplemented` outcomes.
+- A two-hundred-thirty-third completed implementation task, `RBR-0233`, with refreshed `python/rebar_harness/benchmarks.py`, added numbered and named exact-repeat quantified-group alternation benchmark rows in `benchmarks/workloads/exact_repeat_quantified_group_boundary.json`, matching benchmark-suite assertion updates in `tests/benchmarks/test_exact_repeat_quantified_group_boundary_benchmarks.py`, and a regenerated `reports/benchmarks/latest.json`, moving the published benchmark scorecard to 406 workloads across 29 manifests with 371 real `rebar` timings and 35 explicit known gaps while catching the bounded exact-repeat quantified-group alternation slice up on the benchmark surface.
 - A supervisor-retuned ready queue that now inserts Rust-boundary migration tasks ahead of the remaining parser and module-workflow follow-ons, so new compatibility work stops deepening the Python shim and instead lands behind the `rebar._rebar` extension boundary.
-- The ready queue now starts with `RBR-0233`, keeps `RBR-0233` through `RBR-0236` at the front so the exact-repeat benchmark catch-up and wider ranged-repeat grouped-alternation follow-on can land contiguously, and already seeds `RBR-0237` through `RBR-0239` for the bounded open-ended quantified-group alternation follow-on.
+- The ready queue now starts with `RBR-0234`, keeps `RBR-0234` through `RBR-0236` at the front so the wider ranged-repeat grouped-alternation publish/parity/benchmark trio can land contiguously, and already seeds `RBR-0237` through `RBR-0239` for the bounded open-ended quantified-group alternation follow-on.
 - Report rendering that recomputes last-cycle environment issues from run artifacts so dashboard anomalies do not stay stale after a detection fix.
 - A fetch-before-push git sync path that measures ahead/behind state against fresh upstream refs and reports diverged branches explicitly instead of pushing against stale remote-tracking data.
 - README capability reporting that now keys scaffold and scorecard tracks to concrete artifact paths and distinguishes the benchmark harness from the published benchmark report.
@@ -285,9 +286,9 @@ Early subset, not near drop-in feature parity yet: literals, captures, bounded r
 
 ## What Does Not Exist Yet
 - Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.json` now covers 70 manifests and 558 cases with 558 passes and 0 honest `unimplemented` outcomes in the published slice, and that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
-- The next combined frontiers remain concrete after `RBR-0232` landed: `RBR-0233` catches the exact-repeat quantified-group alternation slice up on the benchmark surface, `RBR-0234` through `RBR-0236` widen counted-repeat grouped alternation through the `{1,3}` follow-on already anchored in the wider-ranged-repeat benchmark manifest, and `RBR-0237` through `RBR-0239` then take grouped alternation through the bounded open-ended `{1,}` follow-on.
+- The next combined frontiers remain concrete after `RBR-0233` landed: `RBR-0234` through `RBR-0236` widen counted-repeat grouped alternation through the `{1,3}` follow-on already anchored in the wider-ranged-repeat benchmark manifest, and `RBR-0237` through `RBR-0239` then take grouped alternation through the bounded open-ended `{1,}` follow-on.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.json` still reflects the source-tree shim while `reports/benchmarks/native_full.json` and `reports/benchmarks/native_smoke.json` remain separate native-path checkpoints.
-- Full benchmark coverage for every published slice: the main benchmark scorecard now covers 401 workloads across 29 manifests with 365 measured rows and 36 explicit known gaps, and the queued exact-repeat benchmark catch-up plus the wider and open-ended quantified-group alternation follow-ons are not benchmark-complete yet.
+- Full benchmark coverage for every published slice: the main benchmark scorecard now covers 406 workloads across 29 manifests with 371 measured rows and 35 explicit known gaps, and the queued wider and open-ended quantified-group alternation follow-ons are not benchmark-complete yet.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.
@@ -303,8 +304,7 @@ Early subset, not near drop-in feature parity yet: literals, captures, bounded r
 - Implementation agents are expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Land `RBR-0233` so the exact-repeat `{2}` quantified-group alternation slice reaches the published benchmark surface using the existing benchmark anchor.
-- Then land `RBR-0234` through `RBR-0236` so grouped alternation inside the already-supported wider `{1,3}` counted-repeat envelope reaches the same frontier.
+- Land `RBR-0234` through `RBR-0236` so grouped alternation inside the already-supported wider `{1,3}` counted-repeat envelope reaches the same publish/parity/benchmark frontier.
 - Then land `RBR-0237` through `RBR-0239` so grouped alternation reaches the bounded open-ended `{1,}` counted-repeat follow-on with a dedicated benchmark manifest instead of staying trapped behind a placeholder gap row.
 
 ## Risks
