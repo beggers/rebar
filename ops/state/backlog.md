@@ -4,20 +4,20 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0167` to catch bounded quantified fully-empty conditional benchmarks up so that repeated fully-empty composition reaches the published benchmark surface before alternation-heavy or broader backtracking-heavy empty-arm work reopens the frontier.
-2. Land `RBR-0168` to reconcile the alternation-heavy empty-arm benchmark anchors so the empty-yes-arm and fully-empty manifests stop collapsing to the same stored pattern before those broader follow-ons are widened.
-3. Land `RBR-0169` to publish one bounded alternation-heavy empty-yes-arm conditional correctness pack for `a(b)?c(?(1)|(e|f))` and `a(?P<word>b)?c(?(word)|(e|f))` once the benchmark contracts are distinct.
-4. Land `RBR-0170` to convert that bounded alternation-heavy empty-yes-arm conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
-5. Land `RBR-0171` to catch bounded alternation-heavy empty-yes-arm conditional benchmarks up so that the first broader empty-yes-arm composition reaches the published benchmark surface.
-6. Land `RBR-0172` to publish one bounded alternation-bearing fully-empty conditional correctness pack for `a(b)?c(?(1)|(?:|))` and `a(?P<word>b)?c(?(word)|(?:|))` so the accepted fully-empty spelling stays explicit after the anchors are fixed.
-7. Land `RBR-0173` to convert that bounded alternation-bearing fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a syntax-only publication island.
-8. Land `RBR-0174` to catch bounded alternation-bearing fully-empty conditional benchmarks up so that the accepted fully-empty follow-on reaches the published benchmark surface with distinct manifest contracts.
+1. Land `RBR-0168` to reconcile the alternation-heavy empty-arm benchmark anchors so the empty-yes-arm and fully-empty manifests stop collapsing to the same stored pattern before those broader follow-ons are widened.
+2. Land `RBR-0169` to publish one bounded alternation-heavy empty-yes-arm conditional correctness pack for `a(b)?c(?(1)|(e|f))` and `a(?P<word>b)?c(?(word)|(e|f))` once the benchmark contracts are distinct.
+3. Land `RBR-0170` to convert that bounded alternation-heavy empty-yes-arm conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
+4. Land `RBR-0171` to catch bounded alternation-heavy empty-yes-arm conditional benchmarks up so that the first broader empty-yes-arm composition reaches the published benchmark surface.
+5. Land `RBR-0172` to publish one bounded alternation-bearing fully-empty conditional correctness pack for `a(b)?c(?(1)|(?:|))` and `a(?P<word>b)?c(?(word)|(?:|))` so the accepted fully-empty spelling stays explicit after the anchors are fixed.
+6. Land `RBR-0173` to convert that bounded alternation-bearing fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a syntax-only publication island.
+7. Land `RBR-0174` to catch bounded alternation-bearing fully-empty conditional benchmarks up so that the accepted fully-empty follow-on reaches the published benchmark surface with distinct manifest contracts.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
 - Prefer replacing vague items with concrete task files instead of growing this document indefinitely.
 - Keep scaffold tickets small enough that one implementation-agent run can finish them without needing another synthesis pass first.
 - Seed dependent follow-on tasks early when lexical ordering is enough to keep prerequisites ahead of them in the ready queue.
+- Keep `RBR-0169` through `RBR-0174` pre-seeded behind `RBR-0168`; the task contracts are now explicit enough that lexical queue order is sufficient and the worker should not wait on another supervisor-only reseed pass.
 - Keep README landing-page summaries short, and keep published-slice pass counts clearly separate from any claim about overall stdlib `re` feature completeness.
 - Translate remote-only user requests into concrete local queue items when git history is diverged, so the working queue can keep moving before a later merge or rebase reconciles `origin/main`.
 - Once exact baseline provenance lands, keep the next milestone focused on native import validation and broader harness coverage instead of reopening metadata-only work.

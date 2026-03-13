@@ -426,9 +426,13 @@ class ConditionalGroupExistsEmptyYesElseBoundaryBenchmarkSuiteTest(unittest.Test
             if workload["id"]
             == "module-search-numbered-conditional-group-exists-empty-yes-else-alternation-heavy-warm-gap"
         )
+        self.assertEqual(backtracking_gap["pattern"], "a(b)?c(?(1)|(e|f))")
+        self.assertEqual(backtracking_gap["haystack"], "zzacezz")
         self.assertEqual(backtracking_gap["status"], "unimplemented")
         self.assertEqual(backtracking_gap["implementation_timing"]["status"], "unimplemented")
         self.assertIsNone(backtracking_gap["implementation_ns"])
+        self.assertIn("empty-yes-arm", backtracking_gap["notes"][0])
+        self.assertIn("a(b)?c(?(1)|(e|f))", backtracking_gap["notes"][0])
         self.assertIn("not implemented", backtracking_gap["implementation_timing"]["reason"].lower())
 
         nested_gap = next(

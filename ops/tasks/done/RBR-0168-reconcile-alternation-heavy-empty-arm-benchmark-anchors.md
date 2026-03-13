@@ -1,6 +1,6 @@
 # RBR-0168: Reconcile the alternation-heavy empty-arm benchmark anchors
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0167` and `RBR-0155`.
 - This task exists so the queue can reopen broader alternation-heavy empty-yes-arm and fully-empty slices with distinct worker contracts instead of two ambiguous gap rows.
+- Completed 2026-03-13: kept the empty-yes-arm benchmark anchor pinned to `a(b)?c(?(1)|(e|f))`, corrected the fully-empty alternation-heavy benchmark anchor to `a(b)?c(?(1)|(?:|))`, tightened the two benchmark tests to assert the exact patterns and explanatory notes, and republished `reports/benchmarks/latest.json` with stable 303-workload / 253-measured / 50-gap totals.

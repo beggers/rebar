@@ -429,9 +429,13 @@ class ConditionalGroupExistsFullyEmptyBoundaryBenchmarkSuiteTest(unittest.TestCa
             if workload["id"]
             == "module-search-numbered-conditional-group-exists-fully-empty-alternation-heavy-warm-gap"
         )
+        self.assertEqual(backtracking_gap["pattern"], "a(b)?c(?(1)|(?:|))")
+        self.assertEqual(backtracking_gap["haystack"], "zzaczz")
         self.assertEqual(backtracking_gap["status"], "unimplemented")
         self.assertEqual(backtracking_gap["implementation_timing"]["status"], "unimplemented")
         self.assertIsNone(backtracking_gap["implementation_ns"])
+        self.assertIn("fully-empty", backtracking_gap["notes"][0])
+        self.assertIn("a(b)?c(?(1)|(?:|))", backtracking_gap["notes"][0])
         self.assertIn("not implemented", backtracking_gap["implementation_timing"]["reason"].lower())
 
 
