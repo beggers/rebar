@@ -1,8 +1,9 @@
 # RBR-0161: Catch bounded nested fully-empty conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published benchmark surface so the bounded nested fully-empty conditional workflows supported by `RBR-0160` produce real `rebar` timings before broader nested empty-arm or backtracking-heavy conditionals reopen the frontier.
@@ -28,3 +29,5 @@ Created: 2026-03-13
 - Build on `RBR-0160`.
 - Use the corrected `module-search-numbered-nested-conditional-group-exists-fully-empty-cold-gap` row in `benchmarks/workloads/conditional_group_exists_fully_empty_boundary.json` as the benchmark anchor for this slice.
 - This task exists so the queue does not reach bounded nested fully-empty parity and then leave that newly supported slice absent from benchmark reporting.
+- Completed with four measured nested fully-empty workloads: numbered and named `module.search` plus `Pattern.fullmatch` entrypoints for present/absent haystacks, while the quantified and alternation-heavy fully-empty follow-ons remain explicit benchmark gaps.
+- Republished `reports/benchmarks/latest.json`; the combined benchmark surface now reports 299 workloads with 247 measured rows and 52 known gaps.

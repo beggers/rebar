@@ -4,15 +4,14 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0160` to convert the published bounded nested fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-2. Land `RBR-0161` to catch bounded nested fully-empty conditional benchmarks up so that accepted nested fully-empty composition reaches the published benchmark surface before broader nested empty-arm or backtracking-heavy conditionals reopen the frontier further.
-3. Land `RBR-0162` to publish one bounded quantified empty-yes-arm conditional correctness pack for `(a(b)?c(?(1)|e)){2}` and `(a(?P<word>b)?c(?(word)|e)){2}` so repeated empty-yes-arm conditional composition reaches the scorecard through an exact CPython-supported slice before alternation-heavy empty-arm work reopens the frontier.
-4. Land `RBR-0163` to convert that bounded quantified empty-yes-arm conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-5. Land `RBR-0164` to catch bounded quantified empty-yes-arm conditional benchmarks up so that repeated empty-yes-arm composition reaches the published benchmark surface before alternation-heavy or broader backtracking-heavy empty-arm work reopens the frontier.
-6. Land `RBR-0165` to publish one bounded quantified fully-empty conditional correctness pack for `(a(b)?c(?(1)|)){2}` and `(a(?P<word>b)?c(?(word)|)){2}` so repeated fully-empty conditional composition reaches the scorecard through an exact CPython-supported slice before alternation-heavy empty-arm work reopens the frontier.
-7. Land `RBR-0166` to convert that bounded quantified fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-8. Land `RBR-0167` to catch bounded quantified fully-empty conditional benchmarks up so that repeated fully-empty composition reaches the published benchmark surface before alternation-heavy or broader backtracking-heavy empty-arm work reopens the frontier.
-9. Land `RBR-0168` to reconcile the alternation-heavy empty-arm benchmark anchors so the empty-yes-arm and fully-empty manifests stop collapsing to the same stored pattern before those broader follow-ons are queued.
+1. Land `RBR-0161` to catch bounded nested fully-empty conditional benchmarks up so that accepted nested fully-empty composition reaches the published benchmark surface before broader nested empty-arm or backtracking-heavy conditionals reopen the frontier further.
+2. Land `RBR-0162` to publish one bounded quantified empty-yes-arm conditional correctness pack for `(a(b)?c(?(1)|e)){2}` and `(a(?P<word>b)?c(?(word)|e)){2}` so repeated empty-yes-arm conditional composition reaches the scorecard through an exact CPython-supported slice before alternation-heavy empty-arm work reopens the frontier.
+3. Land `RBR-0163` to convert that bounded quantified empty-yes-arm conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+4. Land `RBR-0164` to catch bounded quantified empty-yes-arm conditional benchmarks up so that repeated empty-yes-arm composition reaches the published benchmark surface before alternation-heavy or broader backtracking-heavy empty-arm work reopens the frontier.
+5. Land `RBR-0165` to publish one bounded quantified fully-empty conditional correctness pack for `(a(b)?c(?(1)|)){2}` and `(a(?P<word>b)?c(?(word)|)){2}` so repeated fully-empty conditional composition reaches the scorecard through an exact CPython-supported slice before alternation-heavy empty-arm work reopens the frontier.
+6. Land `RBR-0166` to convert that bounded quantified fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+7. Land `RBR-0167` to catch bounded quantified fully-empty conditional benchmarks up so that repeated fully-empty composition reaches the published benchmark surface before alternation-heavy or broader backtracking-heavy empty-arm work reopens the frontier.
+8. Land `RBR-0168` to reconcile the alternation-heavy empty-arm benchmark anchors so the empty-yes-arm and fully-empty manifests stop collapsing to the same stored pattern before those broader follow-ons are queued.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
@@ -119,7 +118,7 @@ Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier,
 - If a ready task is already satisfied as a side effect of earlier landed work, retire it directly in the queue and advance the milestone front instead of burning a no-op worker cycle.
 - Keep `reports/benchmarks/native_smoke.json` as the bounded native-path check-in while the main full-suite report remains source-tree-shim-backed; README and status surfaces should preserve that distinction explicitly.
 - Use `RBR-0155` to reconcile the nested empty-arm benchmark anchors before the next feature slice lands; keep the empty-yes-arm anchor pinned to `a(b)?c(?(1)|(?(1)e|f))` and correct the nested fully-empty follow-on anchor to `a(b)?c(?(1)|(?(1)|))` instead of letting both manifests carry the same stored pattern.
-- With `RBR-0159` landed, keep the active queue front on `RBR-0160` and `RBR-0161` so the published bounded nested fully-empty slice reaches Rust-backed parity and benchmark coverage before quantified empty-arm follow-ons advance further.
+- With `RBR-0160` landed, keep the active queue front on `RBR-0161` so the newly Rust-backed bounded nested fully-empty slice reaches published benchmark coverage before quantified empty-arm follow-ons advance further.
 - After `RBR-0161`, keep the next exact frontier on quantified empty-arm conditionals as `RBR-0162` through `RBR-0167`; those benchmark anchors are already distinct, so they stay ahead of the broader alternation-heavy empty-arm rows.
 - After `RBR-0167`, use `RBR-0168` to reconcile the alternation-heavy empty-arm benchmark anchors before seeding any broader empty-yes-arm or fully-empty alternation follow-ons.
 - Do not queue alternation-heavy empty-yes-arm or fully-empty follow-ons until `RBR-0168` lands and exposes distinct manifest contracts for those broader slices.
