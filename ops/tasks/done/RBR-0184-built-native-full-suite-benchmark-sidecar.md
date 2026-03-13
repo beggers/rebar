@@ -1,6 +1,6 @@
 # RBR-0184: Publish a strict built-native full-suite benchmark sidecar
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -26,3 +26,9 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0049`, `RBR-0174`, and the existing built-native provisioning path in `python/rebar_harness/benchmarks.py`.
 - This task exists so the persistent shim-only full-suite publication risk gets a bounded follow-on without changing the landing-page contract prematurely.
+
+## Completion
+- Added a strict built-native full-suite benchmark entry point and CLI mode in `python/rebar_harness/benchmarks.py`, pinned to the existing combined manifest set with no shim fallback allowed.
+- Added `tests/benchmarks/test_built_native_full_suite_benchmarks.py` to cover both the loud failure contract when native provisioning is unavailable and the built-native scorecard shape/provenance when the wheel builds successfully.
+- Generated `reports/benchmarks/native_full.json` from a real built-native run; the sidecar now records 318 full-suite workloads with 273 measured `rebar` timings, 45 explicit `unimplemented` gaps, and built-native provenance fields resolved to `built-native`.
+- Verified with `python3 -m unittest tests.benchmarks.test_built_native_full_suite_benchmarks tests.benchmarks.test_built_native_benchmark_smoke tests.benchmarks.test_benchmark_adapter_provenance` while `maturin` was present on `PATH` via a repo-local virtualenv.

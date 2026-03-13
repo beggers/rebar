@@ -71,6 +71,7 @@ DEFAULT_NATIVE_SMOKE_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "literal_flag_boundary.json",
 )
 DEFAULT_NATIVE_SMOKE_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "native_smoke.json"
+DEFAULT_NATIVE_FULL_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "native_full.json"
 SOURCE_TREE_SHIM_MODE = "source-tree-shim"
 BUILT_NATIVE_MODE = "built-native"
 NATIVE_MODULE_NAME = "rebar._rebar"
@@ -1493,6 +1494,18 @@ def run_built_native_smoke_benchmarks(
     )
 
 
+def run_built_native_full_benchmarks(
+    report_path: pathlib.Path = DEFAULT_NATIVE_FULL_REPORT_PATH,
+) -> dict[str, Any]:
+    return run_benchmarks(
+        manifest_paths=list(DEFAULT_MANIFEST_PATHS),
+        report_path=report_path,
+        smoke_only=False,
+        adapter_mode=BUILT_NATIVE_MODE,
+        allow_fallback=False,
+    )
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -1528,6 +1541,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help=(
             "Run the dedicated built-native smoke slice against the tracked smoke manifests. "
             "This mode requires a real built native wheel and writes to the native smoke report by default."
+        ),
+    )
+    parser.add_argument(
+        "--native-full",
+        action="store_true",
+        help=(
+            "Run the full combined benchmark suite against a real built native wheel. "
+            "This mode requires a real built native wheel and writes to the native full report by default."
         ),
     )
     parser.add_argument(
@@ -1571,6 +1592,8 @@ def main(argv: list[str] | None = None) -> int:
             )
         )
         return 0
+    if args.native_smoke and args.native_full:
+        raise SystemExit("--native-smoke and --native-full are mutually exclusive")
     if args.native_smoke:
         if args.manifest is not None:
             raise SystemExit("--native-smoke cannot be combined with --manifest")
@@ -1584,6 +1607,19 @@ def main(argv: list[str] | None = None) -> int:
             else args.report
         )
         scorecard = run_built_native_smoke_benchmarks(report_path=report_path)
+    elif args.native_full:
+        if args.manifest is not None:
+            raise SystemExit("--native-full cannot be combined with --manifest")
+        if args.smoke:
+            raise SystemExit("--native-full runs the full suite and cannot be combined with --smoke")
+        if args.adapter_mode != SOURCE_TREE_SHIM_MODE:
+            raise SystemExit("--native-full manages adapter selection itself")
+        report_path = (
+            DEFAULT_NATIVE_FULL_REPORT_PATH
+            if args.report == DEFAULT_REPORT_PATH
+            else args.report
+        )
+        scorecard = run_built_native_full_benchmarks(report_path=report_path)
     else:
         scorecard = run_benchmarks(
             manifest_paths=args.manifest,
