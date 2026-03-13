@@ -16,7 +16,7 @@ MANIFEST_PATH = (
 
 
 class WiderRangedRepeatQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
-    def test_nested_open_ended_grouped_alternation_rows_are_measured(self) -> None:
+    def test_broader_range_and_nested_open_ended_grouped_alternation_rows_are_measured(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             report_path = pathlib.Path(temp_dir) / "benchmarks.json"
             subprocess.run(
@@ -39,6 +39,12 @@ class WiderRangedRepeatQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCa
             scorecard = json.loads(report_path.read_text(encoding="utf-8"))
 
         measured_ids = {
+            "module-compile-numbered-wider-ranged-repeat-group-broader-range-cold-str",
+            "module-search-numbered-wider-ranged-repeat-group-broader-range-cold-gap",
+            "pattern-fullmatch-numbered-wider-ranged-repeat-group-broader-range-third-repetition-mixed-purged-str",
+            "module-compile-named-wider-ranged-repeat-group-broader-range-warm-str",
+            "module-search-named-wider-ranged-repeat-group-broader-range-upper-bound-all-de-warm-str",
+            "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-upper-bound-mixed-purged-str",
             "module-compile-numbered-wider-ranged-repeat-group-open-ended-cold-str",
             "module-search-numbered-wider-ranged-repeat-group-open-ended-lower-bound-bc-warm-str",
             "pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-gap",
@@ -55,19 +61,10 @@ class WiderRangedRepeatQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCa
                 self.assertEqual(workload["implementation_timing"]["status"], "measured")
                 self.assertGreater(workload["implementation_ns"], 0)
 
-        broader_range_gap = next(
-            item
-            for item in scorecard["workloads"]
-            if item["id"] == "module-search-numbered-wider-ranged-repeat-group-broader-range-cold-gap"
-        )
-        self.assertEqual(broader_range_gap["status"], "unimplemented")
-        self.assertEqual(broader_range_gap["implementation_timing"]["status"], "unimplemented")
-        self.assertIsNone(broader_range_gap["implementation_ns"])
-
         manifest_summary = scorecard["manifests"]["wider-ranged-repeat-quantified-group-boundary"]
-        self.assertEqual(manifest_summary["known_gap_count"], 1)
-        self.assertEqual(manifest_summary["measured_workloads"], 24)
-        self.assertEqual(manifest_summary["workload_count"], 25)
+        self.assertEqual(manifest_summary["known_gap_count"], 0)
+        self.assertEqual(manifest_summary["measured_workloads"], 30)
+        self.assertEqual(manifest_summary["workload_count"], 30)
 
 
 if __name__ == "__main__":

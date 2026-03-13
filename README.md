@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening a bounded Rust-backed subset one regex slice at a time; the published frontier now includes the broader `{1,4}` grouped-alternation slice with zero published correctness gaps, and the project remains far from drop-in `re` parity. |
-| Delivery estimate | Foundation work is complete, benchmark reporting is live, and most published workloads now have real `rebar` timings; the newest `{1,4}` grouped-alternation slice is now behind the Rust boundary, but its Python-path benchmark catch-up is still missing. |
-| Current milestone | Milestone 2 now has the broader `{1,4}` grouped-alternation slice behind the Rust boundary; the next planning pass should seed its Python-path benchmark catch-up so benchmark coverage stops lagging correctness. |
-| Work queue | `0` ready, `0` in progress, `271` done, `0` blocked |
+| Delivery estimate | Foundation work is complete, benchmark reporting is live, and the published Python-path benchmark surface has now caught up through the broader `{1,4}` grouped-alternation slice; overall parity is still narrow and performance claims are still qualification-only. |
+| Current milestone | Milestone 2 now has the broader `{1,4}` grouped-alternation slice published on both the correctness and Python-path benchmark surfaces; the next planning pass should seed the next bounded frontier without reopening shim-only drift. |
+| Work queue | `0` ready, `0` in progress, `272` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,26 +28,26 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `81` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, benchmark reporting is live, and most published workloads now have real `rebar` timings; the newest `{1,4}` grouped-alternation slice is now behind the Rust boundary, but its Python-path benchmark catch-up is still missing._
+_These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, benchmark reporting is live, and the published Python-path benchmark surface has now caught up through the broader `{1,4}` grouped-alternation slice; overall parity is still narrow and performance claims are still qualification-only._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/usr/bin/python3`) |
-| Published workloads | `456` |
-| Workloads with real `rebar` timings | `424` |
-| Known-gap workloads | `32` |
+| Published workloads | `461` |
+| Workloads with real `rebar` timings | `430` |
+| Known-gap workloads | `31` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native sidecars are checked in separately at [`reports/benchmarks/native_full.json`](reports/benchmarks/native_full.json) for the latest built-native full-suite run and [`reports/benchmarks/native_smoke.json`](reports/benchmarks/native_smoke.json) for the smoke slice._
 
-_README speedup rollups stay omitted while only `424` of `456` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `430` of `461` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- Seed and land the Python-path benchmark catch-up for the broader `{1,4}` grouped-alternation slice so benchmark coverage catches up with the now-zero-gap correctness frontier.
+- Seed the next bounded Rust-backed slice while keeping correctness publication, Rust-boundary parity, and Python-path benchmark catch-up on the same cadence.
 
 ### Current Risks
 
