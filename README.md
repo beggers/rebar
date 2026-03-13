@@ -1,8 +1,8 @@
 # rebar
 
-`rebar` is an agent-operated Rust regex project with a simple goal: build a bug-for-bug compatible replacement for Python's `re` module that can eventually beat CPython across compile, match, and other common `re` workflows without giving up syntax compatibility, public API behavior, parse-tree correctness, or useful diagnostics.
+`rebar` is a Rust-backed attempt at a bug-for-bug compatible replacement for Python's `re` module. The target is simple: match CPython's accepted syntax, public API behavior, parse trees, and diagnostics first, then compete on compile and match speed through a CPython-facing extension.
 
-This repository is run autonomously, but it is meant to be legible to humans first. If you want the short version of what `rebar` is, what exists today, and how far along it is, start with the generated status block below.
+The repo runs through an agent loop, but the landing page stays human-first. Start with the status block for the current published slice, how much of it is measured, and what still blocks broader claims.
 
 <!-- REBAR:STATUS_START -->
 ## Current State
@@ -11,24 +11,24 @@ _This block reports the implemented slice and measurement coverage, not estimate
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 3 is still widening a bounded Rust-backed subset one regex slice at a time; the published frontier now includes the broader `{1,4}` grouped-alternation slice with zero published correctness gaps, and the project remains far from drop-in `re` parity. |
-| Delivery estimate | Foundation work is complete, benchmark reporting is live, and the published Python-path benchmark surface has now caught up through the broader `{1,4}` grouped-alternation slice; overall parity is still narrow and performance claims are still qualification-only. |
-| Current milestone | Milestone 2 now has the broader `{1,4}` grouped-alternation slice published on both the correctness and Python-path benchmark surfaces; the next planning pass should seed the next bounded frontier without reopening shim-only drift. |
-| Work queue | `0` ready, `0` in progress, `272` done, `0` blocked |
+| Phase | Phase 3 is widening a bounded Rust-backed `re` slice; the published frontier reaches grouped alternation through `{1,4}`, but overall parity is still narrow. |
+| Delivery estimate | Foundation and reporting are in place. The published correctness and Python-path benchmark surfaces are aligned for the current slice, but the project is still far from drop-in parity and not ready for speed claims. |
+| Current milestone | Milestone 2 now has the broader `{1,4}` grouped-alternation slice published on both the correctness and Python-path benchmark surfaces; the active frontier now reopens grouped-conditionals through that same broader counted-repeat envelope with `RBR-0270`. |
+| Work queue | `0` ready, `0` in progress, `273` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `701` |
+| Published cases | `715` |
 | Passing in published slice | `701` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `81` |
+| Honest gaps (`unimplemented`) | `14` |
+| Covered manifests | `82` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, benchmark reporting is live, and the published Python-path benchmark surface has now caught up through the broader `{1,4}` grouped-alternation slice; overall parity is still narrow and performance claims are still qualification-only._
+_These correctness counts cover only the published slice. Overall delivery estimate: Foundation and reporting are in place. The published correctness and Python-path benchmark surfaces are aligned for the current slice, but the project is still far from drop-in parity and not ready for speed claims._
 
 ### Benchmark Snapshot
 
@@ -47,27 +47,27 @@ _README speedup rollups stay omitted while only `430` of `461` published workloa
 
 ### Immediate Next Steps
 
-- Seed the next bounded Rust-backed slice while keeping correctness publication, Rust-boundary parity, and Python-path benchmark catch-up on the same cadence.
+- Publish the next bounded Rust-backed slice and keep correctness, parity, and Python-path benchmark coverage moving together.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- Built-native benchmark results still live in separate sidecars with narrower coverage than the main published suite.
+- Built-native benchmark sidecars still cover less of the suite than the main published report.
 <!-- REBAR:STATUS_END -->
 
-## Implementation Snapshot
+## What Exists Today
 
-`rebar` is no longer just a harness scaffold. There is a real Rust core, a CPython-facing extension boundary, published correctness and benchmark reports, and a repeatable workflow for widening one bounded regex slice at a time.
+`rebar` already has a real Rust core, a CPython-facing extension boundary, and published correctness and benchmark reports. What it does not have yet is broad `re` coverage: the current slice is coherent and fully published, but still small relative to stdlib `re`.
 
-The important caveat is still project shape, not raw counts: the published frontier is honest and coherent, but it remains small relative to stdlib `re`. Benchmarking is also still in the qualification phase. The main published suite measures the source-tree shim, while built-native runs are published separately so the repo can distinguish "measured" from "ready to claim faster than CPython."
+Benchmarking is useful as a coverage signal, not a performance victory lap yet. The main published suite still runs through the source-tree shim, and the built-native numbers live in separate sidecars, so the README avoids headline speedups.
 
-## Reading The Status Block
+## How To Read It
 
-Treat the correctness numbers as "the current documented frontier is coherent," not as a claim of broad drop-in compatibility. Treat the benchmark numbers as coverage signals first; until the built-native path is the main published path, the README deliberately avoids headline speed claims.
+Treat the correctness counts as "the documented frontier matches CPython on this slice," not as a claim of broad drop-in compatibility. Treat the benchmark counts as "this much of that slice is measured through the public Python path," not as proof that `rebar` is already faster than stdlib `re`.
 
 ## Where To Look
 
-If you want the detailed project state, start with `ops/state/current_status.md` and `ops/state/backlog.md`. If you want the published scorecards, use `reports/correctness/latest.json`, `reports/benchmarks/latest.json`, `reports/benchmarks/native_full.json`, and `reports/benchmarks/native_smoke.json`. For the operating model and queue layout, `ops/README.md` is the canonical reference.
+For detailed project state, start with `ops/state/current_status.md` and `ops/state/backlog.md`. For the published scorecards, use `reports/correctness/latest.json`, `reports/benchmarks/latest.json`, `reports/benchmarks/native_full.json`, and `reports/benchmarks/native_smoke.json`. For the operating model and queue layout, `ops/README.md` is the canonical reference.
 
 ## Useful Commands
 

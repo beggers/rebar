@@ -6,17 +6,17 @@ Updated: 2026-03-13
 Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while keeping the correctness and benchmark publications caught up with each newly supported slice.
 
 ## README Phase Summary
-Phase 3 is still widening a bounded Rust-backed subset one regex slice at a time; the published frontier now includes the broader `{1,4}` grouped-alternation slice with zero published correctness gaps, and the project remains far from drop-in `re` parity.
+Phase 3 is widening a bounded Rust-backed `re` slice; the published frontier reaches grouped alternation through `{1,4}`, but overall parity is still narrow.
 
 ## README Delivery Estimate
-Foundation work is complete, benchmark reporting is live, and the published Python-path benchmark surface has now caught up through the broader `{1,4}` grouped-alternation slice; overall parity is still narrow and performance claims are still qualification-only.
+Foundation and reporting are in place. The published correctness and Python-path benchmark surfaces are aligned for the current slice, but the project is still far from drop-in parity and not ready for speed claims.
 
 ## README Next Steps
-- Seed the next bounded Rust-backed slice while keeping correctness publication, Rust-boundary parity, and Python-path benchmark catch-up on the same cadence.
+- Publish the next bounded Rust-backed slice and keep correctness, parity, and Python-path benchmark coverage moving together.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- Built-native benchmark results still live in separate sidecars with narrower coverage than the main published suite.
+- Built-native benchmark sidecars still cover less of the suite than the main published report.
 
 ## Compatibility Heuristic
 Early subset, still far from drop-in parity: the Rust boundary covers literals, captures, several bounded conditional and replacement workflows, quantified branch-local backreferences, and grouped alternation through bounded `{1,4}` plus open-ended `{1,}` and `{2,}` counted-repeat slices. Benchmark publication is now caught up with that broader grouped-alternation frontier.
