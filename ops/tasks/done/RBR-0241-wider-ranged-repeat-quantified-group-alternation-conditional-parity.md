@@ -1,6 +1,6 @@
 # RBR-0241: Add bounded wider ranged-repeat quantified-group alternation plus conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0240`.
 - This task exists so the queue turns one exact grouped-alternation-plus-conditional frontier into real Rust-backed behavior instead of leaving it as publication-only coverage.
+- Completed 2026-03-13: extended the Rust compile/match path for the bounded `a((bc|de){1,3})?(?(1)d|e)` and `a(?P<outer>(bc|de){1,3})?(?(outer)d|e)` slice, added focused Rust and Python parity coverage, and republished `reports/correctness/latest.json` to 596 passes / 0 unimplemented.

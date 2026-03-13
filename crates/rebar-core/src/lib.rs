@@ -3163,7 +3163,17 @@ fn parse_quantified_alternation_conditional_pattern_str(
         return None;
     }
 
-    let outer_suffix = inner_remainder[inner_close_offset + 1..].strip_prefix("{1,2})?")?;
+    let (max_repeat, outer_suffix) =
+        if let Some(outer_suffix) = inner_remainder[inner_close_offset + 1..].strip_prefix("{1,2})?")
+        {
+            (2, outer_suffix)
+        } else if branches.as_slice() == ["bc", "de"] {
+            let outer_suffix =
+                inner_remainder[inner_close_offset + 1..].strip_prefix("{1,3})?")?;
+            (3, outer_suffix)
+        } else {
+            return None;
+        };
     let conditional = outer_suffix.strip_prefix("(?(")?.strip_suffix(')')?;
     let reference_end = conditional.find(')')?;
     let reference = &conditional[..reference_end];
@@ -3188,7 +3198,7 @@ fn parse_quantified_alternation_conditional_pattern_str(
         branches,
         yes_branch,
         no_branch,
-        max_repeat: 2,
+        max_repeat,
     })
 }
 
@@ -6882,46 +6892,16 @@ fn quantified_alternation_conditional_matches_at_str<'a>(
     }
 
     let branch_start = start + prefix_chars.len();
-    for first_branch in &pattern.branches {
-        let first_branch_chars: Vec<char> = first_branch.chars().collect();
-        let first_branch_end = branch_start + first_branch_chars.len();
-        if !literal_matches_at_str(
-            first_branch_chars.as_slice(),
+    for candidate_count in (1..=pattern.max_repeat).rev() {
+        if let Some((last_branch_span, repeated_end)) = quantified_alternation_matches_exact_repeats(
+            pattern.branches.as_slice(),
             flags,
             string,
             branch_start,
             endpos,
+            candidate_count,
+            &[],
         ) {
-            continue;
-        }
-
-        for candidate_count in (1..=pattern.max_repeat).rev() {
-            let (last_branch, last_branch_start, repeated_end) = if candidate_count == 1 {
-                (*first_branch, branch_start, first_branch_end)
-            } else {
-                let mut matched_second = None;
-                for second_branch in &pattern.branches {
-                    let second_branch_chars: Vec<char> = second_branch.chars().collect();
-                    let second_branch_end = first_branch_end + second_branch_chars.len();
-                    if literal_matches_at_str(
-                        second_branch_chars.as_slice(),
-                        flags,
-                        string,
-                        first_branch_end,
-                        endpos,
-                    ) {
-                        matched_second =
-                            Some((*second_branch, first_branch_end, second_branch_end));
-                        break;
-                    }
-                }
-                let Some((second_branch, second_branch_start, second_branch_end)) = matched_second
-                else {
-                    continue;
-                };
-                (second_branch, second_branch_start, second_branch_end)
-            };
-
             if literal_matches_at_str(
                 yes_branch_chars.as_slice(),
                 flags,
@@ -6929,10 +6909,9 @@ fn quantified_alternation_conditional_matches_at_str<'a>(
                 repeated_end,
                 endpos,
             ) {
-                let last_branch_end = last_branch_start + last_branch.chars().count();
                 return Some((
                     Some((branch_start, repeated_end)),
-                    Some((last_branch_start, last_branch_end)),
+                    Some(last_branch_span),
                     repeated_end + yes_branch_chars.len(),
                 ));
             }
@@ -8633,6 +8612,30 @@ mod tests {
 
         let named_outcome =
             compile(PatternRef::Str("a(?P<outer>(b|c){1,2})?(?(outer)d|e)"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!named_outcome.supports_literal);
+        assert_eq!(named_outcome.group_count, 2);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "outer".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
+    fn compile_accepts_wider_ranged_repeat_grouped_alternation_conditional_cases() {
+        let outcome = compile(PatternRef::Str("a((bc|de){1,3})?(?(1)d|e)"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.group_count, 2);
+        assert!(outcome.named_groups.is_empty());
+
+        let named_outcome =
+            compile(PatternRef::Str("a(?P<outer>(bc|de){1,3})?(?(outer)d|e)"), 0).unwrap();
         assert_eq!(named_outcome.status, CompileStatus::Compiled);
         assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
         assert!(!named_outcome.supports_literal);
@@ -10515,6 +10518,62 @@ mod tests {
         assert_eq!(outcome.status, MatchStatus::Matched);
         assert_eq!(outcome.span, Some((2, 6)));
         assert_eq!(outcome.group_spans, vec![Some((3, 5)), Some((4, 5))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn wider_ranged_repeat_grouped_alternation_conditional_search_reports_absent_groups() {
+        let outcome = literal_match(
+            PatternRef::Str("a((bc|de){1,3})?(?(1)d|e)"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzaezz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 4)));
+        assert_eq!(outcome.group_spans, vec![None, None]);
+        assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
+    fn wider_ranged_repeat_grouped_alternation_conditional_fullmatch_reports_outer_and_inner_spans()
+    {
+        let outcome = literal_match(
+            PatternRef::Str("a((bc|de){1,3})?(?(1)d|e)"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abcded"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 6)));
+        assert_eq!(outcome.group_spans, vec![Some((1, 5)), Some((3, 5))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn named_wider_ranged_repeat_grouped_alternation_conditional_search_reports_named_outer_lastindex()
+    {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<outer>(bc|de){1,3})?(?(outer)d|e)"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabcbcdedzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 10)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 9)), Some((7, 9))]);
         assert_eq!(outcome.lastindex, Some(1));
     }
 
