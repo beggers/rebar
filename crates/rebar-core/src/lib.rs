@@ -2974,7 +2974,7 @@ fn parse_quantified_alternation_pattern_str(
             (Some(2), suffix)
         } else if let Some(suffix) = remainder[close_offset + 1..].strip_prefix("{1,3}") {
             (Some(3), suffix)
-        } else if branches.as_slice() == ["b", "c"] {
+        } else if matches!(branches.as_slice(), ["b", "c"] | ["bc", "de"]) {
             let suffix = remainder[close_offset + 1..].strip_prefix("{1,}")?;
             (None, suffix)
         } else {
@@ -10227,6 +10227,27 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_open_ended_quantified_group_alternation_cases() {
+        let numbered_outcome = compile(PatternRef::Str("a(bc|de){1,}d"), 0).unwrap();
+        assert_eq!(numbered_outcome.status, CompileStatus::Compiled);
+        assert_eq!(numbered_outcome.normalized_flags, FLAG_UNICODE);
+        assert_eq!(numbered_outcome.group_count, 1);
+        assert!(numbered_outcome.named_groups.is_empty());
+
+        let named_outcome = compile(PatternRef::Str("a(?P<word>bc|de){1,}d"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert_eq!(named_outcome.group_count, 1);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "word".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
     fn quantified_alternation_fullmatch_reports_third_repetition_capture_span() {
         let outcome = literal_match(
             PatternRef::Str("a(b|c){1,3}d"),
@@ -10278,6 +10299,61 @@ mod tests {
         assert_eq!(outcome.span, Some((2, 5)));
         assert_eq!(outcome.group_spans, vec![Some((3, 4))]);
         assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn quantified_group_alternation_open_ended_search_reports_lower_bound_capture_span() {
+        let outcome = literal_match(
+            PatternRef::Str("a(bc|de){1,}d"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabcdzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 6)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 5))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn named_quantified_group_alternation_open_ended_fullmatch_reports_fourth_repetition_capture_span(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<word>bc|de){1,}d"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("adededed"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 8)));
+        assert_eq!(outcome.group_spans, vec![Some((5, 7))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn quantified_group_alternation_open_ended_fullmatch_reports_invalid_branch_as_no_match() {
+        let outcome = literal_match(
+            PatternRef::Str("a(bc|de){1,}d"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abed"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::NoMatch);
+        assert_eq!(outcome.span, None);
+        assert!(outcome.group_spans.is_empty());
+        assert_eq!(outcome.lastindex, None);
     }
 
     #[test]

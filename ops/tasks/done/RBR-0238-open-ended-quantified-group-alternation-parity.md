@@ -1,6 +1,6 @@
 # RBR-0238: Add bounded open-ended quantified-group alternation parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0237`.
 - This task exists so the queue turns the first bounded open-ended quantified-group alternation workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+
+## Completion
+- Extended the Rust-backed open-ended quantified-alternation parser path so the bounded `a(bc|de){1,}d` and `a(?P<word>bc|de){1,}d` grouped-alternation slice now compiles and executes through the existing native `compile`/`search`/`fullmatch` boundary without widening into other open-ended families.
+- Added focused Rust assertions in `crates/rebar-core/src/lib.rs` plus a new Python parity suite in `tests/python/test_open_ended_quantified_group_alternation_parity.py` covering lower-bound matches, bounded second/third/fourth repetition paths, and explicit no-match observations.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports 584 executed cases with 584 passes, 0 failures, and 0 remaining `unimplemented` outcomes.
