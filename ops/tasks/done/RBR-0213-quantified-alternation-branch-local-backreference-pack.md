@@ -1,6 +1,6 @@
 # RBR-0213: Publish a bounded quantified-alternation-plus-branch-local-backreference correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0125`, `RBR-0126`, and `RBR-0212`.
 - This task exists so the queue continues past the optional `?` branch-local slice through one exact `{1,2}` quantified-alternation follow-on instead of jumping directly to broader counted-repeat backtracking.
+- Completed 2026-03-13: added `quantified_alternation_branch_local_backreference_workflows.json`, registered it in the default correctness harness, added the matching regression test, and republished `reports/correctness/latest.json` to 482 total cases across 64 manifests with 472 passes and 10 honest `unimplemented` outcomes for this new slice.
