@@ -1,6 +1,6 @@
 # RBR-0255: Reconcile the broader-range open-ended grouped follow-on benchmark anchors
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-13
 
@@ -27,3 +27,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0254`.
 - This task exists because the manifest already carries the `{2,}` grouped-alternation anchor, but it does not yet make the next broader-range grouped-conditional and grouped-backtracking follow-ons explicit enough to seed without another supervisor discovery pass.
+
+## Completion Note
+- Added the explicit `{2,}` grouped-conditional anchor `module-search-numbered-open-ended-group-broader-range-conditional-warm-gap` and the explicit `{2,}` grouped-backtracking anchor `pattern-fullmatch-named-open-ended-group-broader-range-backtracking-heavy-purged-gap` to `benchmarks/workloads/open_ended_quantified_group_boundary.json` without retargeting the existing broader-range grouped-alternation anchor.
+- Extended the targeted benchmark test to assert the stored ids, patterns, and representative haystacks for all three broader-range open-ended follow-on anchors, and updated the shared benchmark expectation table so combined-suite assertions expect this manifest to stay partial with two known gaps.
+- Regenerated `reports/benchmarks/latest.json`; the published combined benchmark report now rises from 440 to 442 workloads solely because these two explicit anchor rows are now published as known gaps, while measured workloads stay at 407.

@@ -109,8 +109,10 @@ SOURCE_TREE_BOUNDARY_GAP_EXPECTATIONS = {
         ),
     },
     "open-ended-quantified-group-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_id": None,
+        "known_gap_count": 2,
+        "representative_known_gap_workload_id": (
+            "module-search-numbered-open-ended-group-broader-range-conditional-warm-gap"
+        ),
     },
     "optional-group-alternation-boundary": {
         "known_gap_count": 0,

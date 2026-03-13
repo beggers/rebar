@@ -2020,6 +2020,12 @@ def update_loop_state(
     agent_state = state.get("agents")
     if not isinstance(agent_state, dict):
         agent_state = {}
+    live_agent_names = {agent.name for agent in agents}
+    agent_state = {
+        name: payload
+        for name, payload in agent_state.items()
+        if name in live_agent_names and isinstance(payload, dict)
+    }
     for result in results:
         agent_state[result.agent_name] = {
             "agent_kind": result.agent_kind,

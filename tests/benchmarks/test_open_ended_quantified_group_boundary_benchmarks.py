@@ -17,6 +17,28 @@ TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
 
 class OpenEndedQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_runner_regenerates_open_ended_group_boundary_scorecard(self) -> None:
+        manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+        anchor_expectations = {
+            "module-search-numbered-open-ended-group-broader-range-cold-gap": {
+                "pattern": "a(bc|de){2,}d",
+                "haystack": "zzabcbcdzz",
+            },
+            "module-search-numbered-open-ended-group-broader-range-conditional-warm-gap": {
+                "pattern": "a((bc|de){2,})?(?(1)d|e)",
+                "haystack": "zzabcbcdzz",
+            },
+            "pattern-fullmatch-named-open-ended-group-broader-range-backtracking-heavy-purged-gap": {
+                "pattern": "a(?P<word>(bc|b)c){2,}d",
+                "haystack": "abcbcbcbcd",
+            },
+        }
+        manifest_workloads = {item["id"]: item for item in manifest["workloads"]}
+        for workload_id, expected in anchor_expectations.items():
+            with self.subTest(anchor_workload_id=workload_id):
+                workload = manifest_workloads[workload_id]
+                self.assertEqual(workload["pattern"], expected["pattern"])
+                self.assertEqual(workload["haystack"], expected["haystack"])
+
         with tempfile.TemporaryDirectory() as temp_dir:
             report_path = pathlib.Path(temp_dir) / "benchmarks.json"
             result = subprocess.run(
@@ -40,12 +62,12 @@ class OpenEndedQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 0,
+                    "known_gap_count": 2,
                     "measured_workloads": 24,
-                    "module_workloads": 24,
+                    "module_workloads": 26,
                     "parser_workloads": 0,
                     "regression_workloads": 0,
-                    "total_workloads": 24,
+                    "total_workloads": 26,
                 },
             )
 
@@ -63,27 +85,27 @@ class OpenEndedQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(scorecard["implementation"]["timing_path"], "source-tree-shim")
         self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
-        self.assertEqual(scorecard["summary"]["total_workloads"], 24)
+        self.assertEqual(scorecard["summary"]["total_workloads"], 26)
         self.assertEqual(scorecard["summary"]["measured_workloads"], 24)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 0)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 2)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 5)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 11)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 8)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 12)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 9)
         self.assertEqual(scorecard["environment"]["runner_version"], "phase2")
-        self.assertEqual(scorecard["families"]["module"]["workload_count"], 24)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 0)
-        self.assertEqual(scorecard["families"]["module"]["readiness"], "measured")
+        self.assertEqual(scorecard["families"]["module"]["workload_count"], 26)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 2)
+        self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
         self.assertEqual(scorecard["artifacts"]["manifest"], "benchmarks/workloads/open_ended_quantified_group_boundary.json")
         self.assertEqual(scorecard["artifacts"]["manifest_id"], "open-ended-quantified-group-boundary")
         self.assertEqual(scorecard["artifacts"]["manifest_schema_version"], 1)
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 
         manifest_summary = scorecard["manifests"]["open-ended-quantified-group-boundary"]
-        self.assertEqual(manifest_summary["workload_count"], 24)
-        self.assertEqual(manifest_summary["selected_workload_count"], 24)
+        self.assertEqual(manifest_summary["workload_count"], 26)
+        self.assertEqual(manifest_summary["selected_workload_count"], 26)
         self.assertEqual(manifest_summary["measured_workloads"], 24)
-        self.assertEqual(manifest_summary["known_gap_count"], 0)
-        self.assertEqual(manifest_summary["readiness"], "measured")
+        self.assertEqual(manifest_summary["known_gap_count"], 2)
+        self.assertEqual(manifest_summary["readiness"], "partial")
         self.assertEqual(
             manifest_summary["operations"],
             ["module.compile", "module.search", "pattern.fullmatch"],
@@ -105,6 +127,17 @@ class OpenEndedQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertGreater(workload["baseline_ns"], 0)
                 self.assertGreater(workload["implementation_ns"], 0)
                 self.assertIsInstance(workload["speedup_vs_cpython"], float)
+
+        gap_ids = {
+            "module-search-numbered-open-ended-group-broader-range-conditional-warm-gap",
+            "pattern-fullmatch-named-open-ended-group-broader-range-backtracking-heavy-purged-gap",
+        }
+        for workload_id in gap_ids:
+            with self.subTest(gap_workload_id=workload_id):
+                workload = next(item for item in scorecard["workloads"] if item["id"] == workload_id)
+                self.assertEqual(workload["status"], "unimplemented")
+                self.assertEqual(workload["implementation_timing"]["status"], "unimplemented")
+                self.assertGreater(workload["baseline_ns"], 0)
 
 
 if __name__ == "__main__":
