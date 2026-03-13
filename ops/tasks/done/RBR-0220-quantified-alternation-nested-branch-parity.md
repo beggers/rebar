@@ -1,8 +1,9 @@
 # RBR-0220: Add bounded quantified-alternation nested-branch parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Convert the first quantified-alternation nested-branch cases from the published correctness pack into real Rust-backed behavior without claiming wider counted ranges, open-ended repeats, branch-local backreferences, or broader backtracking-heavy grouped execution.
@@ -28,3 +29,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0219`.
 - This task exists so the queue turns the first bounded quantified-alternation nested-branch workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+- Landed a narrow Rust-backed parser/matcher for `a((b|c)|de){1,2}d` and `a(?P<word>(b|c)|de){1,2}d`, added Python parity coverage, and republished `reports/correctness/latest.json` at 504 passing cases with 0 `unimplemented` gaps.
