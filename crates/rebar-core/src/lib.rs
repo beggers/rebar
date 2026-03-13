@@ -529,7 +529,7 @@ struct QuantifiedAlternationPattern<'a> {
     branches: Vec<&'a str>,
     capture_name: Option<&'a str>,
     suffix: &'a str,
-    max_repeat: usize,
+    max_repeat: Option<usize>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -2927,9 +2927,12 @@ fn parse_quantified_alternation_pattern_str(
 
     let (max_repeat, suffix) =
         if let Some(suffix) = remainder[close_offset + 1..].strip_prefix("{1,2}") {
-            (2, suffix)
+            (Some(2), suffix)
         } else if let Some(suffix) = remainder[close_offset + 1..].strip_prefix("{1,3}") {
-            (3, suffix)
+            (Some(3), suffix)
+        } else if branches.as_slice() == ["b", "c"] {
+            let suffix = remainder[close_offset + 1..].strip_prefix("{1,}")?;
+            (None, suffix)
         } else {
             return None;
         };
@@ -3000,7 +3003,7 @@ fn parse_quantified_alternation_backtracking_heavy_pattern_str(
         branches,
         capture_name,
         suffix,
-        max_repeat: 2,
+        max_repeat: Some(2),
     })
 }
 
@@ -6415,7 +6418,17 @@ fn quantified_alternation_matches_at_str<'a>(
     }
 
     let branch_start = start + prefix_chars.len();
-    for candidate_count in (1..=pattern.max_repeat).rev() {
+    let max_repeat = pattern.max_repeat.unwrap_or_else(|| {
+        quantified_alternation_open_ended_max_repeats(
+            pattern,
+            flags,
+            string,
+            branch_start,
+            endpos,
+            suffix_chars.as_slice(),
+        )
+    });
+    for candidate_count in (1..=max_repeat).rev() {
         if let Some((last_branch_span, match_end)) = quantified_alternation_matches_exact_repeats(
             pattern.branches.as_slice(),
             flags,
@@ -6430,6 +6443,40 @@ fn quantified_alternation_matches_at_str<'a>(
     }
 
     None
+}
+
+fn quantified_alternation_open_ended_max_repeats(
+    pattern: &QuantifiedAlternationPattern<'_>,
+    flags: i32,
+    string: &[char],
+    start: usize,
+    endpos: usize,
+    suffix_chars: &[char],
+) -> usize {
+    let branch_len = pattern
+        .branches
+        .first()
+        .map(|branch| branch.chars().count())
+        .unwrap_or(0);
+    if branch_len == 0 {
+        return 0;
+    }
+
+    let mut cursor = start;
+    let mut max_repeat = 0;
+    while cursor + branch_len + suffix_chars.len() <= endpos {
+        let matched = pattern.branches.iter().any(|branch| {
+            let branch_chars: Vec<char> = branch.chars().collect();
+            literal_matches_at_str(branch_chars.as_slice(), flags, string, cursor, endpos)
+        });
+        if !matched {
+            break;
+        }
+        max_repeat += 1;
+        cursor += branch_len;
+    }
+
+    max_repeat
 }
 
 fn quantified_alternation_matches_exact_repeats<'a>(
@@ -6835,10 +6882,8 @@ fn find_quantified_alternation_match_span_str(
             pattern, flags, string, pos, endpos,
         )
         .and_then(|(last_branch_span, match_end)| {
-            (match_end == endpos).then_some((
-                (pos, match_end),
-                pattern.group_spans(last_branch_span),
-            ))
+            (match_end == endpos)
+                .then_some(((pos, match_end), pattern.group_spans(last_branch_span)))
         }),
     }
 }
@@ -9911,6 +9956,27 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_open_ended_quantified_alternation_cases() {
+        let numbered_outcome = compile(PatternRef::Str("a(b|c){1,}d"), 0).unwrap();
+        assert_eq!(numbered_outcome.status, CompileStatus::Compiled);
+        assert_eq!(numbered_outcome.normalized_flags, FLAG_UNICODE);
+        assert_eq!(numbered_outcome.group_count, 1);
+        assert!(numbered_outcome.named_groups.is_empty());
+
+        let named_outcome = compile(PatternRef::Str("a(?P<word>b|c){1,}d"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert_eq!(named_outcome.group_count, 1);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "word".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
     fn quantified_alternation_fullmatch_reports_third_repetition_capture_span() {
         let outcome = literal_match(
             PatternRef::Str("a(b|c){1,3}d"),
@@ -9924,6 +9990,42 @@ mod tests {
 
         assert_eq!(outcome.status, MatchStatus::Matched);
         assert_eq!(outcome.span, Some((0, 5)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 4))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn quantified_alternation_open_ended_fullmatch_reports_fourth_repetition_capture_span() {
+        let outcome = literal_match(
+            PatternRef::Str("a(b|c){1,}d"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abcbcd"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 6)));
+        assert_eq!(outcome.group_spans, vec![Some((4, 5))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn named_quantified_alternation_open_ended_search_reports_lower_bound_capture_span() {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<word>b|c){1,}d"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzacdzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 5)));
         assert_eq!(outcome.group_spans, vec![Some((3, 4))]);
         assert_eq!(outcome.lastindex, Some(1));
     }

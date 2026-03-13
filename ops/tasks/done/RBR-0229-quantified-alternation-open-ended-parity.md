@@ -1,6 +1,6 @@
 # RBR-0229: Add bounded open-ended quantified-alternation parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0228`.
 - This task exists so the queue turns the first bounded open-ended quantified-alternation workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+
+## Completion
+- Landed narrow Rust-backed `{1,}` quantified-alternation support for the published `a(b|c){1,}d` and `a(?P<word>b|c){1,}d` compile/search/fullmatch workflows, including bounded longer repetitions and the published no-match cases.
+- Added focused parity coverage in `tests/python/test_quantified_alternation_open_ended_parity.py` and regenerated `reports/correctness/latest.json`, which now reports the full 548-case published slice as passing with 0 `unimplemented` cases.
+- No changes were required in `crates/rebar-cpython/src/lib.rs` or `python/rebar/__init__.py`; the existing generic native compile/match boundary already marshaled the new Rust outcome shape correctly.
