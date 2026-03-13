@@ -69,7 +69,7 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseQuantifiedWorkflowTest(
         self.assertEqual(scorecard["summary"], summary)
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 
-        self.assertEqual(scorecard["fixtures"]["manifest_count"], 57)
+        self.assertEqual(scorecard["fixtures"]["manifest_count"], 58)
         self.assertIn(
             "conditional-group-exists-empty-else-quantified-workflows",
             scorecard["fixtures"]["manifest_ids"],
@@ -78,15 +78,15 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseQuantifiedWorkflowTest(
         self.assertEqual(
             scorecard["summary"],
             {
-                "executed_cases": 424,
+                "executed_cases": 432,
                 "failed_cases": 0,
                 "passed_cases": 424,
                 "skipped_cases": 0,
-                "total_cases": 424,
-                "unimplemented_cases": 0,
+                "total_cases": 432,
+                "unimplemented_cases": 8,
             },
         )
-        self.assertEqual(len(scorecard["cases"]), 424)
+        self.assertEqual(len(scorecard["cases"]), 432)
 
         match_layer = scorecard["layers"]["match_behavior"]
         self.assertEqual(

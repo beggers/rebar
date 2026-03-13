@@ -1,6 +1,6 @@
 # RBR-0195: Publish a bounded alternation-heavy two-arm conditional replacement correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0188`, `RBR-0194`, and the existing conditional replacement helper surface.
 - This task exists so the queue reopens after `RBR-0194` with the smallest remaining alternation-heavy replacement-conditioned gap instead of jumping directly to nested replacement-conditioned flows, quantified replacement-conditioned conditionals, or a vague broader-backtracking bucket.
+
+## Completion
+- Added `conditional-group-exists-alternation-replacement-workflows` to the default correctness manifest set with eight bounded `sub()`/`subn()` module and compiled-pattern cases for `a(b)?c(?(1)(de|df)|(eg|eh))` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))`.
+- Regenerated `reports/correctness/latest.json`; the published combined scorecard now reports 58 manifests and 432 total cases, with the new alternation-heavy conditional replacement suite recorded honestly as 8 `unimplemented` outcomes pending `RBR-0196`.
+- Added a focused regression test for the new manifest and refreshed the existing full-suite conditional workflow regressions so they track the new combined report totals and module-workflow summary.
