@@ -1,8 +1,9 @@
 # RBR-0177: Catch bounded quantified omitted-no-arm conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published benchmark surface so the bounded quantified omitted-no-arm conditional workflows supported by `RBR-0176` produce real `rebar` timings before quantified explicit-empty-else follow-ons or broader backtracking-heavy conditional execution reopen the frontier.
@@ -28,3 +29,9 @@ Created: 2026-03-13
 - Build on `RBR-0176`.
 - Use the existing `pattern-fullmatch-numbered-quantified-conditional-group-exists-no-else-purged-gap` row in `benchmarks/workloads/conditional_group_exists_no_else_boundary.json` as the benchmark anchor for this slice.
 - This task exists so the queue does not reach quantified omitted-no-arm parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion Notes
+- Completed 2026-03-13.
+- Extended `benchmarks/workloads/conditional_group_exists_no_else_boundary.json` so the existing numbered quantified anchor now measures real timings and the manifest also covers numbered and named module-search plus named `Pattern.fullmatch()` companion rows for the bounded `{2}` omitted-no-arm slice.
+- Updated `tests/benchmarks/test_conditional_group_exists_no_else_boundary_benchmarks.py` to validate the published 29-manifest combined-suite totals and the now-measured quantified omitted-no-arm workloads.
+- Republished `reports/benchmarks/latest.json`; the combined scorecard now reports 312 workloads with 265 real `rebar` timings and 47 explicit known gaps, while the `conditional-group-exists-no-else-boundary` manifest now reports 27 workloads with 27 measured rows and 0 remaining known gaps.
