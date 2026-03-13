@@ -13,3 +13,4 @@ Completed: 2026-03-13
 - Added explicit renderer caps for README next-step and risk bullets, so richer internal state no longer expands the landing page automatically.
 - Updated `ops/agents/supervisor.md`, `ops/README.md`, `ops/state/backlog.md`, and `ops/state/decision_log.md` so the operating model now requires those README summary sections to stay short and high-level.
 - Shortened the hand-written README overview sections so the landing page gives a rough delivery estimate and near-term direction instead of another growing feature list.
+- Tightened `ops/agents/reporting.md` so future reporting passes treat growing feature inventories in hand-written README prose as drift, and default to deleting detail instead of appending more capability lists.

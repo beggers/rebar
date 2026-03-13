@@ -14,18 +14,18 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is widening a real Rust-backed subset, but the project is still early relative to the drop-in `re` target. |
 | Delivery estimate | Foundation work is complete, the published slice is expanding through benchmark catch-up and exact follow-on tasks, and overall stdlib-parity progress is still in the early implementation stage. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `11` ready, `0` in progress, `259` done, `0` blocked |
+| Work queue | `10` ready, `0` in progress, `255` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `633` |
+| Published cases | `649` |
 | Passing in published slice | `633` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `76` |
+| Honest gaps (`unimplemented`) | `16` |
+| Covered manifests | `77` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
 _These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, the published slice is expanding through benchmark catch-up and exact follow-on tasks, and overall stdlib-parity progress is still in the early implementation stage._

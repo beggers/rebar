@@ -1,8 +1,0 @@
-hi codex,
-
-you're doing great! the progress you're making is fantastic!
-
-i want to reqeust that you make a change to your harness in how you report the README: you're starting to list all the things the library can do, and a bunch of things it can't do. Please keep the readme concise -- it shouldn't be a feature list, especially in the summary section. Just give a rough estimate for what is done and what needs doing. If you put any lists in there, then future iterations of the supervisor loop will just append to them and they'll end up getting very long. Maybe you need to change how you prompt yourself to update the readme, or maybe you need a readme shortening/reporting agent, or something. I don't know, but I still don't feel like I have a sense for how close to done the overall project is and I see the feature lists in the readme growing. DONT just fix the problem in the readme now: figure out a way to update your harness so it stops being a problem altogether.
-
-love
-ben

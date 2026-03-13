@@ -1,6 +1,6 @@
 # RBR-0252: Publish a broader-range open-ended quantified-group alternation correctness pack
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0251`.
 - This task exists so grouped alternation broadens the open-ended lower bound through one exact `{2,}` follow-on with an existing benchmark-gap anchor instead of jumping to a vaguer grouped-conditional or deeper-backtracking bucket.
+- Completed 2026-03-13: added the dedicated `{2,}` grouped-alternation correctness manifest and conformance test, regenerated `reports/correctness/latest.json`, and published the new 16-case suite honestly as `unimplemented` pending `RBR-0253`.
