@@ -16,13 +16,13 @@
 ## Roles
 
 ### Supervisor
-- Owns the outcome of the project making progress indefinitely.
-- Owns the harness, prompts, loop config, backlog shape, and project direction.
+- Owns the outcome of the project making progress indefinitely through the harness.
+- Owns the harness, prompts, loop config, active agent set, and `USER-ASK` intake.
 - May edit any file when it improves the operating system or unblocks the roadmap.
 - May add, remove, enable, disable, or retune non-supervisor agents by editing `ops/agents/*.json` and their prompt files.
-- Must keep `ops/state/` and `ops/tasks/` accurate enough that the next agent does not need to rediscover context.
+- Must keep the harness and `ops/user_asks/` flow accurate enough that the next agent does not need to rediscover context.
 - Should treat stalled progress, harness failures, or workflow bottlenecks as problems it is expected to fix directly.
-- Should prefer slicing work into concrete implementation tasks instead of doing large feature work directly.
+- Should route harness-oriented `USER-ASK`s itself instead of pushing them into the implementation task queue.
 
 ### Implementation Agent
 - Owns exactly one concrete task at a time.
@@ -34,12 +34,15 @@
 - The forever loop loads enabled agent specs from `ops/agents/*.json`.
 - Exactly one enabled agent with `kind: supervisor` must exist; that agent runs first every cycle.
 - Other agents are optional and are entirely under supervisor control.
+- The current intended order is: supervisor, architecture, feature planning, feature implementation, QA/testing, implementation faithfulness, cleanup, then reporting.
 
 ## Task Lifecycle
 - `ops/tasks/ready/`: actionable tasks that an implementation agent can pick up.
 - `ops/tasks/in_progress/`: tasks currently being executed or awaiting supervisor triage.
 - `ops/tasks/done/`: completed tasks with a short completion note.
 - `ops/tasks/blocked/`: tasks that hit a concrete blocker and need supervisor attention.
+- `ops/user_asks/inbox/`: supervisor-owned user notes and harness asks that must not enter `ops/tasks/ready/`.
+- `ops/user_asks/done/`: archived `USER-ASK` notes after the supervisor has handled them.
 
 When you finish work, move the task file to `done/` or `blocked/` and update its notes. Do not leave durable status only in runtime logs.
 
@@ -48,6 +51,7 @@ When you finish work, move the task file to `done/` or `blocked/` and update its
 - Ephemeral execution artifacts live under ignored `.rebar/`.
 - Add meaningful architectural or workflow decisions to `ops/state/decision_log.md`.
 - Update `ops/state/current_status.md` whenever the active phase, key risks, or next steps materially change.
+- Feature Planning owns keeping `ops/state/backlog.md` and the queue/frontier portions of `ops/state/current_status.md` aligned with the actual ready queue.
 - Runtime health for the forever loop lives in `.rebar/runtime/loop_state.json`, `.rebar/runtime/dashboard.md`, `.rebar/runtime/task_state.json`, `.rebar/runtime/loop.log`, and per-run directories under `.rebar/runtime/runs/`.
 
 ## Project Priorities

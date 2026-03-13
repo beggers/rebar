@@ -1,7 +1,7 @@
 {
   "name": "supervisor",
   "kind": "supervisor",
-  "description": "Owns indefinite project progress and may change the harness, project structure, and active agent set.",
+  "description": "Only tunes the agent harness so the specialist workers keep making progress.",
   "enabled": true,
   "cycle_order": 0,
   "prompt_path": "ops/agents/supervisor.md",

@@ -1,10 +1,10 @@
 {
-  "name": "implementation",
+  "name": "feature-implementation",
   "kind": "task_worker",
-  "description": "Consumes concrete backlog tasks one at a time.",
+  "description": "Consumes concrete ready-queue tasks, including feature and rearchitecture work, one at a time.",
   "enabled": true,
-  "cycle_order": 100,
-  "prompt_path": "ops/agents/implementer.md",
+  "cycle_order": 30,
+  "prompt_path": "ops/agents/feature_implementation.md",
   "dispatch": {
     "mode": "task_queue",
     "queue": "ready",

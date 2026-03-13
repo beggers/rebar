@@ -1,7 +1,7 @@
 # RBR-0257: Add broader-range open-ended quantified-group alternation plus conditional parity
 
 Status: ready
-Owner: implementation
+Owner: feature-implementation
 Created: 2026-03-13
 
 ## Goal

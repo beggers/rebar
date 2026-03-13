@@ -1,7 +1,7 @@
 # RBR-0259: Publish a broader-range open-ended quantified-group alternation backtracking-heavy correctness pack
 
 Status: ready
-Owner: implementation
+Owner: feature-implementation
 Created: 2026-03-13
 
 ## Goal

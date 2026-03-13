@@ -72,7 +72,7 @@ The benchmark report is still a coverage-first artifact too. It already exercise
 
 ## Operating Model
 
-The repo runs with a supervisor/implementation split. The supervisor maintains the harness, queue, state files, and README/reporting surfaces. The implementation worker takes one bounded task at a time and moves it to `done/` or `blocked/`. Durable context lives under `ops/state/`; ephemeral execution traces live under `.rebar/runtime/`.
+The repo now runs with a specialist-agent loop. The supervisor only tunes the harness and agent set; architecture and feature-planning agents seed concrete work; the Feature Implementation Agent executes the ready queue; the QA+testing agent widens or hardens test coverage; the implementation-faithfulness agent repairs implementation-only test failures; the cleanup agent removes duplication and unnecessary code without changing overall behavior; and the reporting agent keeps the landing page honest. Durable context lives under `ops/state/`; ephemeral execution traces live under `.rebar/runtime/`.
 
 ## Important Paths
 
@@ -81,6 +81,7 @@ The repo runs with a supervisor/implementation split. The supervisor maintains t
 | `ops/state/current_status.md` | Durable project status, risks, and near-term next steps. |
 | `ops/state/backlog.md` | Ordered milestone queue plus supervisor notes about sequencing. |
 | `ops/tasks/` | Ready, in-progress, done, and blocked task queues. |
+| `ops/user_asks/inbox/` | Supervisor-owned intake for future human notes and harness requests. |
 | `.rebar/runtime/dashboard.md` | Latest cycle health, git state, and queue counts. |
 | `reports/correctness/latest.json` | Latest published correctness scorecard. |
 | `reports/benchmarks/latest.json` | Latest published full benchmark scorecard, currently through the source-tree shim. |
@@ -95,7 +96,7 @@ The repo runs with a supervisor/implementation split. The supervisor maintains t
 python3 scripts/rebar_ops.py status
 python3 scripts/rebar_ops.py report
 python3 scripts/rebar_ops.py render supervisor
-python3 scripts/rebar_ops.py cycle --force-agent implementation
+python3 scripts/rebar_ops.py cycle --force-agent feature-implementation
 python3 scripts/rebar_ops.py cycle --force-supervisor
 bash scripts/loop_forever.sh
 ```
@@ -105,4 +106,4 @@ bash scripts/loop_forever.sh
 - Run the forever loop from a normal shell on a writable checkout.
 - Do not start a second `python3 scripts/rebar_ops.py cycle ...` run against the same checkout while `scripts/loop_forever.sh` is active.
 - Avoid launching the loop from inside another sandboxed Codex session; nested sandboxes can distort child-agent behavior and cache writes.
-- The supervisor is expected to change the harness, reporting, and queue when that is the pragmatic way to keep the project moving.
+- The supervisor is expected to tune the harness and agent set, while the specialist workers own queue shaping, README quality, test growth, and implementation work inside their scoped roles.

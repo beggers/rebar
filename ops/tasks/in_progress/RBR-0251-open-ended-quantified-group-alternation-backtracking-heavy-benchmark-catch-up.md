@@ -1,7 +1,7 @@
 # RBR-0251: Catch open-ended quantified-group alternation backtracking-heavy benchmarks up with the new slice
 
-Status: ready
-Owner: implementation
+Status: in_progress
+Owner: feature-implementation
 Created: 2026-03-13
 
 ## Goal

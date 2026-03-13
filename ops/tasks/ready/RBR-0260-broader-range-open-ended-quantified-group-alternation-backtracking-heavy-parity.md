@@ -1,7 +1,7 @@
 # RBR-0260: Add broader-range open-ended quantified-group alternation backtracking-heavy parity
 
 Status: ready
-Owner: implementation
+Owner: feature-implementation
 Created: 2026-03-13
 
 ## Goal

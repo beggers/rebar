@@ -1,7 +1,7 @@
 # RBR-0255: Reconcile the broader-range open-ended grouped follow-on benchmark anchors
 
 Status: ready
-Owner: implementation
+Owner: feature-implementation
 Created: 2026-03-13
 
 ## Goal

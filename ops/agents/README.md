@@ -16,4 +16,9 @@ Each enabled `*.json` file in this directory defines one agent that the forever 
 ## Conventions
 - Exactly one enabled agent with `kind: supervisor` must exist.
 - The supervisor may add, remove, enable, disable, or retune non-supervisor agents by editing this directory.
-- Task workers should usually use `dispatch.mode = "task_queue"` and claim from `ready` into `in_progress`.
+- The supervisor is the only agent that may touch the harness or agent operating model.
+- `USER-ASK` items that concern the harness should be treated as supervisor-owned work.
+- `USER-ASK` notes belong in `ops/user_asks/inbox/`, not in `ops/tasks/ready/`.
+- The current harness has one shared tracked task lane: `ready -> in_progress -> done|blocked`.
+- Until the loop learns routed queues, only the Feature Implementation Agent should use `dispatch.mode = "task_queue"` against `ready/`.
+- Specialist agents that plan, review, report, or repair outside the queue should usually use `every_cycle` or `interval`.

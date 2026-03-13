@@ -23,7 +23,7 @@ Foundation work is complete, the published slice is expanding through benchmark 
 Early subset, not near drop-in feature parity yet: literals, captures, bounded replacement/backreference workflows, multiple bounded conditional execution and replacement slices, quantified branch-local-backreference work, quantified-alternation combinations through the open-ended `{1,}` frontier, and grouped alternation inside counted repeats through the wider `{1,3}` grouped-conditional and grouped-backtracking slices plus the open-ended grouped alternation, open-ended grouped-alternation-plus-conditional `{1,}` slice, and first open-ended grouped-backtracking `{1,}` slice now pass through the Rust boundary. Benchmark publication is still caught up only through the open-ended grouped-alternation-plus-conditional `{1,}` slice, and `RBR-0251` through `RBR-0261` now lead the grouped follow-on queue.
 
 ## What Exists
-- A repo-local `AGENTS.md` that separates supervisor and implementation roles.
+- A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/planning/implementation/QA/faithfulness/cleanup/reporting loop, and a single ready-queue implementation worker.
 - A config-driven, supervisor-first loop runner in `scripts/rebar_ops.py`.
 - A dynamic agent registry under `ops/agents/*.json` that the supervisor can edit.
 - A tiny outer shell loop in `scripts/loop_forever.sh` that re-runs bounded cycles so supervisor changes apply on the next iteration.
@@ -315,10 +315,10 @@ Early subset, not near drop-in feature parity yet: literals, captures, bounded r
 - The harness now ignores the child stdout/stderr transcript when inferring sandbox mismatches and trusts only the explicit sandbox banner plus the child last message, because both streams can include echoed prompts and tool traces that mention `read-only` for unrelated reasons.
 - Dashboard/report rendering now recomputes last-cycle environment issues from the saved run artifacts, so fixing detection logic immediately fixes the reporting surface even before another full cycle overwrites `loop_state.json`.
 - Worker environment backoff is now five minutes instead of thirty so a false-positive probe or transient VM issue does not stall the ready queue for half an hour.
-- Supervisors can now run `python3 scripts/rebar_ops.py cycle --force-agent implementation` to validate a fixed worker path immediately instead of waiting for environment backoff to expire.
+- Operators can now run `python3 scripts/rebar_ops.py cycle --force-agent feature-implementation` to validate the ready-queue worker path immediately instead of waiting for environment backoff to expire.
 - Supervisors should only force a manual `cycle` when no other cycle is already running in the checkout; the harness now rejects overlapping cycle attempts with a runtime lock instead of letting them race.
 - The harness now fetches upstream before auto-push and records ahead/behind divergence in the dashboard; if local and remote history have both advanced, that still requires a supervisor merge or rebase decision instead of blind automation.
-- Implementation agents are expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
+- The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
 - Land `RBR-0251` so the first open-ended grouped-backtracking `{1,}` slice reaches benchmark coverage.

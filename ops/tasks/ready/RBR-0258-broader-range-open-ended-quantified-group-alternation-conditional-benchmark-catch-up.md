@@ -1,7 +1,7 @@
 # RBR-0258: Catch broader-range open-ended quantified-group alternation plus conditional benchmarks up with the new slice
 
 Status: ready
-Owner: implementation
+Owner: feature-implementation
 Created: 2026-03-13
 
 ## Goal

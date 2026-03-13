@@ -18,6 +18,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 OPS_ROOT = REPO_ROOT / "ops"
 CONFIG_PATH = OPS_ROOT / "config" / "loop.json"
 TASK_ROOT = OPS_ROOT / "tasks"
+USER_ASK_ROOT = OPS_ROOT / "user_asks"
 STATE_ROOT = OPS_ROOT / "state"
 README_REPORTING_CONFIG_PATH = OPS_ROOT / "reporting" / "readme.json"
 README_STATUS_START = "<!-- REBAR:STATUS_START -->"
@@ -32,6 +33,7 @@ DEFAULT_CONTEXT_FILES = [
     STATE_ROOT / "decision_log.md",
 ]
 TASK_STATUSES = ("ready", "in_progress", "done", "blocked")
+USER_ASK_STATUSES = ("inbox", "done")
 TRAILER = "Co-authored-by: Codex <noreply@openai.com>"
 PYTHON_SOURCE_ROOT = REPO_ROOT / "python"
 
@@ -327,6 +329,24 @@ def recent_tasks(status: str, limit: int) -> list[dict[str, str]]:
 
 def queue_counts() -> dict[str, int]:
     return {status: len(list_task_files(status)) for status in TASK_STATUSES}
+
+
+def list_user_ask_files(status: str) -> list[Path]:
+    queue_dir = USER_ASK_ROOT / status
+    if not queue_dir.exists():
+        return []
+    return sorted(
+        [
+            path
+            for path in queue_dir.iterdir()
+            if path.is_file() and path.name not in {".gitkeep", "README.md"}
+        ],
+        key=lambda path: path.name,
+    )
+
+
+def user_ask_counts() -> dict[str, int]:
+    return {status: len(list_user_ask_files(status)) for status in USER_ASK_STATUSES}
 
 
 def claim_tasks(queue: str, claim_to: str, limit: int) -> list[Path]:
@@ -1020,6 +1040,10 @@ def render_prompt(agent: AgentSpec, config: dict[str, Any], task_path: Path | No
             f"- in_progress: {relpath(TASK_ROOT / 'in_progress')}",
             f"- done: {relpath(TASK_ROOT / 'done')}",
             f"- blocked: {relpath(TASK_ROOT / 'blocked')}",
+            "",
+            "USER-ASK directories:",
+            f"- inbox: {relpath(USER_ASK_ROOT / 'inbox')}",
+            f"- done: {relpath(USER_ASK_ROOT / 'done')}",
             "",
             body,
             "",
@@ -2062,6 +2086,7 @@ def build_report(config: dict[str, Any]) -> dict[str, Any]:
         ),
         "dirty_worktree": git_worktree_dirty(),
         "queue_counts": queue_counts(),
+        "user_ask_counts": user_ask_counts(),
         "totals": state.get("totals", {}),
         "agents": [
             {
@@ -2292,6 +2317,7 @@ def cmd_status(config: dict[str, Any]) -> int:
         "repo_root": report["repo_root"],
         "runtime_dir": str(runtime_paths(config)["artifact_root"]),
         "queue_counts": report["queue_counts"],
+        "user_ask_counts": report["user_ask_counts"],
         "agents": report["agents"],
         "ahead_of_upstream": report["ahead_of_upstream"],
         "behind_of_upstream": report["behind_of_upstream"],

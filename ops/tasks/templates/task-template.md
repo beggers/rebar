@@ -1,7 +1,7 @@
 # TASK_ID: Short Title
 
 Status: ready
-Owner: implementation
+Owner: feature-implementation
 Created: YYYY-MM-DD
 
 ## Goal
