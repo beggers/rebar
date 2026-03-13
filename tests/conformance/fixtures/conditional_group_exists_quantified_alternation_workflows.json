@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "manifest_id": "conditional-group-exists-quantified-alternation-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.conditional_group_exists_quantified_alternation",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "conditional-group-exists-quantified-alternation-compile-metadata-str",
+      "operation": "compile",
+      "family": "conditional_group_exists_quantified_alternation_compile_metadata",
+      "pattern": "a(b)?c(?(1)(de|df)|(eg|eh)){2}",
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "alternation", "quantified", "exact-repeat", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes one bounded numbered quantified two-arm conditional compile path whose repeated `{2}` site keeps one small literal alternation in both the yes and else arms."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-quantified-alternation-module-search-present-first-arm-str",
+      "operation": "module_call",
+      "family": "conditional_group_exists_quantified_alternation_module_present_first_arm_workflow",
+      "helper": "search",
+      "args": ["a(b)?c(?(1)(de|df)|(eg|eh)){2}", "zzabcdedezz"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "alternation", "quantified", "exact-repeat", "search", "module", "present", "first-arm", "str", "gap"],
+      "notes": [
+        "Documents the numbered module-level quantified conditional search path when the optional capture is present and both repeated yes-arm evaluations take the first literal alternation branch."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
+      "operation": "pattern_call",
+      "family": "conditional_group_exists_quantified_alternation_pattern_present_second_arm_workflow",
+      "pattern": "a(b)?c(?(1)(de|df)|(eg|eh)){2}",
+      "helper": "fullmatch",
+      "args": ["abcdfdf"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "alternation", "quantified", "exact-repeat", "fullmatch", "pattern", "present", "second-arm", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch numbered quantified conditional path when the optional capture is present and both repeated yes-arm evaluations take the second literal alternation branch."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-quantified-alternation-module-search-absent-first-arm-str",
+      "operation": "module_call",
+      "family": "conditional_group_exists_quantified_alternation_module_absent_first_arm_workflow",
+      "helper": "search",
+      "args": ["a(b)?c(?(1)(de|df)|(eg|eh)){2}", "zzacegegzz"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "alternation", "quantified", "exact-repeat", "search", "module", "absent", "first-arm", "str", "gap"],
+      "notes": [
+        "Documents the numbered module-level quantified conditional search path when the optional capture is absent and both repeated else-arm evaluations take the first literal alternation branch."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
+      "operation": "pattern_call",
+      "family": "conditional_group_exists_quantified_alternation_pattern_absent_second_arm_workflow",
+      "pattern": "a(b)?c(?(1)(de|df)|(eg|eh)){2}",
+      "helper": "fullmatch",
+      "args": ["aceheh"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "alternation", "quantified", "exact-repeat", "fullmatch", "pattern", "absent", "second-arm", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch numbered quantified conditional path when the optional capture is absent and both repeated else-arm evaluations take the second literal alternation branch."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-quantified-alternation-compile-metadata-str",
+      "operation": "compile",
+      "family": "named_conditional_group_exists_quantified_alternation_compile_metadata",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}",
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "alternation", "quantified", "exact-repeat", "named-group", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the matching named quantified two-arm conditional compile frontier for the same bounded `{2}` alternation-heavy repeated site."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-quantified-alternation-module-search-present-first-arm-str",
+      "operation": "module_call",
+      "family": "named_conditional_group_exists_quantified_alternation_module_present_first_arm_workflow",
+      "helper": "search",
+      "args": ["a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}", "zzabcdedezz"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "alternation", "quantified", "exact-repeat", "named-group", "search", "module", "present", "first-arm", "str", "gap"],
+      "notes": [
+        "Documents the named module-level quantified conditional search path when the optional named capture is present and both repeated yes-arm evaluations take the first literal alternation branch."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
+      "operation": "pattern_call",
+      "family": "named_conditional_group_exists_quantified_alternation_pattern_present_second_arm_workflow",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}",
+      "helper": "fullmatch",
+      "args": ["abcdfdf"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "alternation", "quantified", "exact-repeat", "named-group", "fullmatch", "pattern", "present", "second-arm", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch named quantified conditional path when the optional named capture is present and both repeated yes-arm evaluations take the second literal alternation branch."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-quantified-alternation-module-search-absent-first-arm-str",
+      "operation": "module_call",
+      "family": "named_conditional_group_exists_quantified_alternation_module_absent_first_arm_workflow",
+      "helper": "search",
+      "args": ["a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}", "zzacegegzz"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "alternation", "quantified", "exact-repeat", "named-group", "search", "module", "absent", "first-arm", "str", "gap"],
+      "notes": [
+        "Documents the named module-level quantified conditional search path when the optional named capture is absent and both repeated else-arm evaluations take the first literal alternation branch."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
+      "operation": "pattern_call",
+      "family": "named_conditional_group_exists_quantified_alternation_pattern_absent_second_arm_workflow",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}",
+      "helper": "fullmatch",
+      "args": ["aceheh"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "alternation", "quantified", "exact-repeat", "named-group", "fullmatch", "pattern", "absent", "second-arm", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch named quantified conditional path when the optional named capture is absent and both repeated else-arm evaluations take the second literal alternation branch."
+      ]
+    }
+  ]
+}

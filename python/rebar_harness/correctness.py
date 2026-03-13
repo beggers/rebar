@@ -221,6 +221,11 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
+    / "conditional_group_exists_quantified_alternation_workflows.json",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
     / "quantified_alternation_workflows.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "systematic_feature_corpus.json",
 )

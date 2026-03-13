@@ -14,49 +14,6 @@ MODULE_PATH = REPO_ROOT / "scripts" / "rebar_ops.py"
 CORRECTNESS_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.json"
 PYTHON_SOURCE = REPO_ROOT / "python"
-EXPECTED_MANIFEST_IDS = [
-    "parser-matrix",
-    "public-api-surface",
-    "match-behavior-smoke",
-    "exported-symbol-surface",
-    "pattern-object-surface",
-    "module-workflow-surface",
-    "collection-replacement-workflows",
-    "literal-flag-workflows",
-    "grouped-match-workflows",
-    "named-group-workflows",
-    "named-group-replacement-workflows",
-    "named-backreference-workflows",
-    "numbered-backreference-workflows",
-    "grouped-segment-workflows",
-    "nested-group-workflows",
-    "nested-group-alternation-workflows",
-    "nested-group-replacement-workflows",
-    "nested-group-callable-replacement-workflows",
-    "literal-alternation-workflows",
-    "grouped-alternation-workflows",
-    "grouped-alternation-replacement-workflows",
-    "grouped-alternation-callable-replacement-workflows",
-    "branch-local-backreference-workflows",
-    "optional-group-workflows",
-    "exact-repeat-quantified-group-workflows",
-    "ranged-repeat-quantified-group-workflows",
-    "wider-ranged-repeat-quantified-group-workflows",
-    "optional-group-alternation-workflows",
-    "conditional-group-exists-workflows",
-    "conditional-group-exists-no-else-workflows",
-    "conditional-group-exists-no-else-replacement-workflows",
-    "conditional-group-exists-empty-else-workflows",
-    "conditional-group-exists-empty-else-replacement-workflows",
-    "conditional-group-exists-empty-else-alternation-workflows",
-    "conditional-group-exists-empty-yes-else-workflows",
-    "conditional-group-exists-empty-yes-else-replacement-workflows",
-    "conditional-group-exists-fully-empty-workflows",
-    "conditional-group-exists-assertion-diagnostics",
-    "quantified-alternation-workflows",
-]
-
-
 def load_rebar_ops_module():
     spec = importlib.util.spec_from_file_location("rebar_ops_for_tests", MODULE_PATH)
     if spec is None or spec.loader is None:
@@ -101,8 +58,13 @@ class ReadmeReportingTest(unittest.TestCase):
                 self.assertIsInstance(refreshed, dict)
 
                 repaired_payload = json.loads(CORRECTNESS_REPORT_PATH.read_text(encoding="utf-8"))
-                self.assertEqual(repaired_payload["fixtures"]["manifest_count"], len(EXPECTED_MANIFEST_IDS))
-                self.assertEqual(repaired_payload["fixtures"]["manifest_ids"], EXPECTED_MANIFEST_IDS)
+                expected_manifest_ids = rebar_ops.expected_correctness_manifest_ids(
+                    rebar_ops.load_correctness_harness_module()
+                )
+                self.assertEqual(
+                    repaired_payload["fixtures"]["manifest_count"], len(expected_manifest_ids)
+                )
+                self.assertEqual(repaired_payload["fixtures"]["manifest_ids"], expected_manifest_ids)
                 self.assertEqual(repaired_payload["summary"], refreshed["summary"])
         finally:
             CORRECTNESS_REPORT_PATH.write_text(original_payload, encoding="utf-8")
@@ -136,7 +98,7 @@ class ReadmeReportingTest(unittest.TestCase):
             summary.get("unimplemented_cases", summary.get("unimplemented")),
         )
         self.assertIn(f"| Honest gaps (`unimplemented`) | `{expected_unimplemented}` |", rendered)
-        self.assertIn("| Compatibility outlook |", rendered)
+        self.assertIn("Overall delivery estimate:", rendered)
         self.assertIn("These correctness counts cover only the published slice.", rendered)
 
 

@@ -884,9 +884,9 @@ def render_readme_status(config: dict[str, Any]) -> str:
                 [
                     "",
                     (
-                        "_Full-suite benchmark publication still runs through the source-tree shim; strict built-native sidecars live at "
+                        "_Full-suite benchmark publication still runs through the source-tree shim; strict built-native sidecars are checked in separately at "
                         + markdown_link("reports/benchmarks/native_full.json")
-                        + " for the full suite and "
+                        + " for the latest built-native full-suite run and "
                         + markdown_link("reports/benchmarks/native_smoke.json")
                         + " for the smoke slice._"
                         if native_full_exists

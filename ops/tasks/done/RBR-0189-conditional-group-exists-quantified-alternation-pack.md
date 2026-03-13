@@ -1,6 +1,6 @@
 # RBR-0189: Publish a bounded quantified alternation-heavy two-arm conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0188`, `RBR-0150`, and `RBR-0129`.
 - This task exists so quantified composition resumes through one exact alternation-heavy two-arm follow-on instead of an underspecified broader-backtracking frontier.
+- Completed 2026-03-13: added `conditional-group-exists-quantified-alternation-workflows` to the default correctness fixture set, published the new 10-case numbered/named `{2}` alternation-heavy two-arm conditional manifest, added a focused harness regression test, and republished `reports/correctness/latest.json` at 416 total cases with 10 honest `unimplemented` outcomes pending `RBR-0190`.
