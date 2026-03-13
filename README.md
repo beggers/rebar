@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is widening a bounded Rust-backed `re` slice; the published frontier reaches grouped alternation through `{1,4}`, but overall parity is still narrow. |
 | Delivery estimate | Foundation and reporting are in place. The published correctness and Python-path benchmark surfaces are aligned for the current slice, but the project is still far from drop-in parity and not ready for speed claims. |
 | Current milestone | Milestone 2 now has the broader `{1,4}` grouped-alternation slice benchmark-caught-up and the adjacent broader grouped-conditional pack published; the active frontier is now converting that `{1,4}` grouped-conditional slice behind `rebar._rebar` with `RBR-0271`. |
-| Work queue | `2` ready, `0` in progress, `273` done, `0` blocked |
+| Work queue | `1` ready, `0` in progress, `273` done, `1` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot

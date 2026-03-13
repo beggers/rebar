@@ -1,6 +1,6 @@
 # RBR-0272: Consolidate the wider-ranged-repeat quantified-group parity frontier into one backend-parameterized pytest suite
 
-Status: ready
+Status: blocked
 Owner: architecture-implementation
 Created: 2026-03-13
 
@@ -35,3 +35,6 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0271`.
 - `RBR-0263` already established the intended pattern for grouped counted-repeat parity work with `tests/python/test_open_ended_quantified_group_parity_suite.py`; this task applies the same simplification to the still-duplicated `{1,3}` and `{1,4}` wider-ranged-repeat grouped frontier.
+
+## Blocker Note
+- Blocked on `RBR-0271`. In this checkout, `.venv/bin/python` still raises `NotImplementedError` from `rebar.compile()` for `a((bc|de){1,4})?(?(1)d|e)` and `a(?P<outer>(bc|de){1,4})?(?(outer)d|e)`, so the required broader-range grouped-conditional coverage cannot be absorbed into the consolidated parity suite without masking an unmet feature dependency.
