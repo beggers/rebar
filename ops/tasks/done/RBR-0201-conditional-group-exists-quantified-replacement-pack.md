@@ -1,6 +1,6 @@
 # RBR-0201: Publish a bounded quantified two-arm conditional replacement correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0149`, `RBR-0193`, and the existing conditional replacement helper surface.
 - This task exists so the queue reopens quantified replacement composition through one exact accepted slice before branch-local-backreference arms or broader backtracking reopen the frontier.
+
+## Completion
+- Added `conditional-group-exists-quantified-replacement-workflows` to the default correctness harness, publishing eight bounded numbered and named `sub()`/`subn()` quantified two-arm conditional replacement cases for `a(b)?c(?(1)d|e){2}` and `a(?P<word>b)?c(?(word)d|e){2}`.
+- Regenerated `reports/correctness/latest.json`; the combined scorecard now publishes 60 manifests / 448 cases with the new quantified replacement suite reported honestly as 8 `unimplemented` cases pending `RBR-0202`.
+- Added the dedicated conformance test for the new manifest and refreshed the affected conditional-group-exists cumulative tests to the new combined report totals.
