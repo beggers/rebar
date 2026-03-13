@@ -5,9 +5,12 @@ conversation.
 
 Redactions and compression remove:
 - personal identity details
+- secrets such as API keys or tokens
 - employer-specific references
 - local machine paths and config locations
+- machine-specific operational details
 - SSH key names and account-routing details
+- tool-availability and low-level execution-environment details
 - cache and other low-level execution debugging
 
 The goal is to preserve how the project started and how its direction evolved
