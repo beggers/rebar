@@ -170,12 +170,12 @@ class QuantifiedAlternationBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 41,
-                    "measured_workloads": 345,
-                    "module_workloads": 378,
+                    "known_gap_count": 40,
+                    "measured_workloads": 351,
+                    "module_workloads": 383,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
-                    "total_workloads": 386,
+                    "total_workloads": 391,
                 },
             )
 
@@ -194,24 +194,24 @@ class QuantifiedAlternationBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase3")
-        self.assertEqual(scorecard["summary"]["total_workloads"], 386)
+        self.assertEqual(scorecard["summary"]["total_workloads"], 391)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
-        self.assertEqual(scorecard["summary"]["module_workloads"], 378)
+        self.assertEqual(scorecard["summary"]["module_workloads"], 383)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 345)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 41)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 61)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 162)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 163)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 351)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 40)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 62)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 165)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 164)
         self.assertEqual(scorecard["families"]["parser"]["workload_count"], 8)
         self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 3)
         self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["workload_count"], 378)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 38)
+        self.assertEqual(scorecard["families"]["module"]["workload_count"], 383)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 37)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 57)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 160)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 161)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 58)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 163)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 162)
         self.assertEqual(scorecard["artifacts"]["manifest"], None)
         self.assertEqual(scorecard["artifacts"]["manifest_id"], "combined-benchmark-suite")
         self.assertEqual(scorecard["artifacts"]["manifest_schema_version"], 1)
@@ -220,10 +220,10 @@ class QuantifiedAlternationBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 
         manifest_summary = scorecard["manifests"]["quantified-alternation-boundary"]
-        self.assertEqual(manifest_summary["workload_count"], 27)
-        self.assertEqual(manifest_summary["selected_workload_count"], 27)
-        self.assertEqual(manifest_summary["measured_workloads"], 24)
-        self.assertEqual(manifest_summary["known_gap_count"], 3)
+        self.assertEqual(manifest_summary["workload_count"], 32)
+        self.assertEqual(manifest_summary["selected_workload_count"], 32)
+        self.assertEqual(manifest_summary["measured_workloads"], 30)
+        self.assertEqual(manifest_summary["known_gap_count"], 2)
         self.assertEqual(manifest_summary["readiness"], "partial")
         self.assertEqual(manifest_summary["selection_mode"], "full")
         self.assertEqual(manifest_summary["available_smoke_workload_count"], 3)
@@ -251,7 +251,7 @@ class QuantifiedAlternationBoundaryBenchmarkSuiteTest(unittest.TestCase):
             ],
         )
         self.assertIn("helper-call overhead", manifest_summary["notes"][0])
-        self.assertIn("bounded nested branches, conditionals, and branch-local backreferences", manifest_summary["notes"][1])
+        self.assertIn("overlapping quantified alternation branches", manifest_summary["notes"][1])
 
         manifest_record = next(
             manifest
@@ -329,6 +329,105 @@ class QuantifiedAlternationBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(open_ended_gap["implementation_timing"]["status"], "unimplemented")
         self.assertIsNone(open_ended_gap["implementation_ns"])
         self.assertIsNone(open_ended_gap["speedup_vs_cpython"])
+
+        numbered_backtracking_compile = next(
+            workload
+            for workload in scorecard["workloads"]
+            if workload["id"] == "module-compile-numbered-quantified-alternation-backtracking-heavy-cold-str"
+        )
+        self.assertEqual(numbered_backtracking_compile["operation"], "module.compile")
+        self.assertEqual(numbered_backtracking_compile["cache_mode"], "cold")
+        self.assertIn("alternation", numbered_backtracking_compile["syntax_features"])
+        self.assertEqual(numbered_backtracking_compile["status"], "measured")
+        self.assertEqual(
+            numbered_backtracking_compile["implementation_timing"]["status"],
+            "measured",
+        )
+        self.assertGreater(numbered_backtracking_compile["implementation_ns"], 0)
+
+        numbered_backtracking_search = next(
+            workload
+            for workload in scorecard["workloads"]
+            if workload["id"]
+            == "module-search-numbered-quantified-alternation-backtracking-heavy-lower-bound-b-branch-warm-str"
+        )
+        self.assertEqual(numbered_backtracking_search["operation"], "module.search")
+        self.assertEqual(numbered_backtracking_search["pattern"], "a(b|bc){1,2}d")
+        self.assertEqual(numbered_backtracking_search["haystack"], "zzabdzz")
+        self.assertEqual(numbered_backtracking_search["status"], "measured")
+        self.assertEqual(
+            numbered_backtracking_search["implementation_timing"]["status"],
+            "measured",
+        )
+        self.assertGreater(numbered_backtracking_search["baseline_ns"], 0)
+        self.assertGreater(numbered_backtracking_search["implementation_ns"], 0)
+
+        numbered_backtracking_pattern = next(
+            workload
+            for workload in scorecard["workloads"]
+            if workload["id"]
+            == "pattern-fullmatch-numbered-quantified-alternation-backtracking-heavy-lower-bound-bc-branch-purged-str"
+        )
+        self.assertEqual(numbered_backtracking_pattern["operation"], "pattern.fullmatch")
+        self.assertEqual(numbered_backtracking_pattern["cache_mode"], "purged")
+        self.assertIn("alternation", numbered_backtracking_pattern["syntax_features"])
+        self.assertEqual(numbered_backtracking_pattern["status"], "measured")
+        self.assertEqual(
+            numbered_backtracking_pattern["implementation_timing"]["status"],
+            "measured",
+        )
+        self.assertGreater(numbered_backtracking_pattern["implementation_ns"], 0)
+
+        named_backtracking_compile = next(
+            workload
+            for workload in scorecard["workloads"]
+            if workload["id"] == "module-compile-named-quantified-alternation-backtracking-heavy-warm-str"
+        )
+        self.assertEqual(named_backtracking_compile["operation"], "module.compile")
+        self.assertEqual(named_backtracking_compile["cache_mode"], "warm")
+        self.assertIn("named-groups", named_backtracking_compile["syntax_features"])
+        self.assertEqual(named_backtracking_compile["status"], "measured")
+        self.assertEqual(
+            named_backtracking_compile["implementation_timing"]["status"],
+            "measured",
+        )
+        self.assertGreater(named_backtracking_compile["implementation_ns"], 0)
+
+        named_backtracking_search = next(
+            workload
+            for workload in scorecard["workloads"]
+            if workload["id"]
+            == "module-search-named-quantified-alternation-backtracking-heavy-lower-bound-bc-branch-warm-str"
+        )
+        self.assertEqual(named_backtracking_search["operation"], "module.search")
+        self.assertEqual(
+            named_backtracking_search["pattern"],
+            "a(?P<word>b|bc){1,2}d",
+        )
+        self.assertEqual(named_backtracking_search["haystack"], "zzabcdzz")
+        self.assertEqual(named_backtracking_search["status"], "measured")
+        self.assertEqual(
+            named_backtracking_search["implementation_timing"]["status"],
+            "measured",
+        )
+        self.assertGreater(named_backtracking_search["baseline_ns"], 0)
+        self.assertGreater(named_backtracking_search["implementation_ns"], 0)
+
+        named_backtracking_pattern = next(
+            workload
+            for workload in scorecard["workloads"]
+            if workload["id"]
+            == "pattern-fullmatch-named-quantified-alternation-backtracking-heavy-second-repetition-bc-then-b-purged-str"
+        )
+        self.assertEqual(named_backtracking_pattern["operation"], "pattern.fullmatch")
+        self.assertEqual(named_backtracking_pattern["cache_mode"], "purged")
+        self.assertIn("named-groups", named_backtracking_pattern["syntax_features"])
+        self.assertEqual(named_backtracking_pattern["status"], "measured")
+        self.assertEqual(
+            named_backtracking_pattern["implementation_timing"]["status"],
+            "measured",
+        )
+        self.assertGreater(named_backtracking_pattern["implementation_ns"], 0)
 
         numbered_nested_branch_compile = next(
             workload
@@ -578,17 +677,6 @@ class QuantifiedAlternationBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(named_conditional_pattern["status"], "measured")
         self.assertEqual(named_conditional_pattern["implementation_timing"]["status"], "measured")
         self.assertGreater(named_conditional_pattern["implementation_ns"], 0)
-
-        backtracking_gap = next(
-            workload
-            for workload in scorecard["workloads"]
-            if workload["id"] == "pattern-fullmatch-numbered-quantified-alternation-backtracking-heavy-purged-gap"
-        )
-        self.assertEqual(backtracking_gap["status"], "unimplemented")
-        self.assertIn("alternation", backtracking_gap["syntax_features"])
-        self.assertEqual(backtracking_gap["implementation_timing"]["status"], "unimplemented")
-        self.assertIsNone(backtracking_gap["implementation_ns"])
-        self.assertIsNone(backtracking_gap["speedup_vs_cpython"])
 
 
 if __name__ == "__main__":

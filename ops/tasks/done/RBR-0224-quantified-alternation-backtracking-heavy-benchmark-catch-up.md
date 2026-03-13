@@ -1,8 +1,9 @@
 # RBR-0224: Catch bounded quantified-alternation backtracking-heavy benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published benchmark surface so the bounded quantified-alternation backtracking-heavy workflows supported by `RBR-0223` produce real `rebar` timings before wider counted ranges, open-ended repeats, or broader repeated-backtracking execution reopen the frontier.
@@ -28,3 +29,8 @@ Created: 2026-03-13
 - Build on `RBR-0223`.
 - Keep this slice in the existing `quantified_alternation_boundary` manifest rather than inventing a second benchmark family for the same bounded quantified-alternation backtracking-heavy surface.
 - This task exists so the queue does not reach bounded quantified-alternation backtracking-heavy parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Added six real benchmark workloads for the bounded quantified-alternation backtracking-heavy numbered and named `compile`/`search`/`pattern.fullmatch` slice in `benchmarks/workloads/quantified_alternation_boundary.json`, keeping only the broader-range `{1,3}` and open-ended `{1,}` follow-ons as explicit known gaps.
+- Regenerated `reports/benchmarks/latest.json`; the combined benchmark publication now reports 391 workloads, 351 measured `rebar` timings, and 40 explicit known gaps, with the quantified-alternation manifest at 32 workloads, 30 measured rows, and 2 remaining gaps.
+- Verified with `PYTHONPATH=python python3 -m rebar_harness.benchmarks --report reports/benchmarks/latest.json` and `python3 -m unittest tests.benchmarks.test_quantified_alternation_boundary_benchmarks`.
