@@ -1,6 +1,6 @@
 # RBR-0137: Add bounded empty-yes-arm conditional replacement parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,15 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0114` and `RBR-0136`.
 - This task exists so the queue converts the next accepted conditional replacement workflow into real Rust-backed behavior instead of leaving it as publication-only coverage.
+
+## Completion
+- Added a bounded Rust-core repeated-span collector for `a(b)?c(?(1)|e)` / `a(?P<word>b)?c(?(word)|e)` replacement workflows and wired the CPython boundary `boundary_literal_subn()` fallback chain through it.
+- Added focused Python parity coverage for module and compiled-`Pattern` `sub()` / `subn()` flows, plus Rust-core span-discovery tests for the new empty-yes-arm replacement slice.
+- Regenerated `reports/correctness/latest.json`; the published combined scorecard now reports `264` passed cases and `0` unimplemented cases.
+
+## Verification
+- `cargo test -p rebar-core conditional_group_exists_empty_yes_else`
+- `cargo build -p rebar-cpython`
+- `PYTHONPATH=python python3 -m unittest tests.python.test_conditional_group_exists_empty_yes_else_replacement_parity`
+- `PYTHONPATH=python python3 -m unittest tests.conformance.test_correctness_conditional_group_exists_empty_yes_else_replacement_workflows tests.conformance.test_correctness_conditional_group_exists_no_else_replacement_workflows tests.conformance.test_correctness_conditional_group_exists_empty_else_replacement_workflows tests.conformance.test_correctness_conditional_group_exists_empty_else_alternation_workflows`
+- `PYTHONPATH=python python3 -m rebar_harness.correctness --report reports/correctness/latest.json`

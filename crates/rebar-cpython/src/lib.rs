@@ -7,6 +7,7 @@ use pyo3::types::{PyBytes, PyList, PyString};
 use rebar_core::{
     compile as core_compile,
     conditional_group_exists_empty_else_find_spans_str as core_conditional_group_exists_empty_else_find_spans_str,
+    conditional_group_exists_empty_yes_else_find_spans_str as core_conditional_group_exists_empty_yes_else_find_spans_str,
     conditional_group_exists_no_else_find_spans_str as core_conditional_group_exists_no_else_find_spans_str,
     escape_bytes as core_escape_bytes,
     escape_str as core_escape_str,
@@ -449,10 +450,21 @@ fn boundary_literal_subn(
                         0,
                         None,
                     );
-                    if outcome.status == MatchStatus::Unsupported {
-                        return Ok(("unsupported", py.None(), 0));
+                    if outcome.status != MatchStatus::Unsupported {
+                        ("supported", outcome.matches)
+                    } else {
+                        let outcome = core_conditional_group_exists_empty_yes_else_find_spans_str(
+                            pattern_value,
+                            flags,
+                            string_value,
+                            0,
+                            None,
+                        );
+                        if outcome.status == MatchStatus::Unsupported {
+                            return Ok(("unsupported", py.None(), 0));
+                        }
+                        ("supported", outcome.matches)
                     }
-                    ("supported", outcome.matches)
                 }
             } else {
                 return Ok(("unsupported", py.None(), 0));

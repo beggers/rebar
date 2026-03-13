@@ -18407,10 +18407,8 @@
         "str",
         "gap"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "conditional_group_exists_empty_yes_else_replacement_present_workflow",
       "helper": "sub",
       "id": "module-sub-conditional-group-exists-empty-yes-else-replacement-present-str",
@@ -18430,13 +18428,10 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.sub() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "module_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": "zzXzz",
           "warnings": []
         }
       },
@@ -18468,10 +18463,8 @@
         "count",
         "gap"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
       "helper": "subn",
       "id": "module-subn-conditional-group-exists-empty-yes-else-replacement-absent-str",
@@ -18494,13 +18487,13 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.subn() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "module_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": [
+            "zzXzz",
+            1
+          ],
           "warnings": []
         }
       },
@@ -18529,10 +18522,8 @@
         "str",
         "gap"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "conditional_group_exists_empty_yes_else_replacement_present_workflow",
       "helper": "sub",
       "id": "pattern-sub-conditional-group-exists-empty-yes-else-replacement-present-str",
@@ -18552,13 +18543,10 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.Pattern.sub() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "pattern_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": "zzXzz",
           "warnings": []
         }
       },
@@ -18590,10 +18578,8 @@
         "count",
         "gap"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
       "helper": "subn",
       "id": "pattern-subn-conditional-group-exists-empty-yes-else-replacement-absent-str",
@@ -18616,13 +18602,13 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.Pattern.subn() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "pattern_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": [
+            "zzXzz",
+            1
+          ],
           "warnings": []
         }
       },
@@ -18654,10 +18640,8 @@
         "str",
         "gap"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "named_conditional_group_exists_empty_yes_else_replacement_present_workflow",
       "helper": "sub",
       "id": "module-sub-named-conditional-group-exists-empty-yes-else-replacement-present-str",
@@ -18677,13 +18661,10 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.sub() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "module_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": "zzXzz",
           "warnings": []
         }
       },
@@ -18716,10 +18697,8 @@
         "count",
         "gap"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "named_conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
       "helper": "subn",
       "id": "module-subn-named-conditional-group-exists-empty-yes-else-replacement-absent-str",
@@ -18742,13 +18721,13 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.subn() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "module_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": [
+            "zzXzz",
+            1
+          ],
           "warnings": []
         }
       },
@@ -18778,10 +18757,8 @@
         "str",
         "gap"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "named_conditional_group_exists_empty_yes_else_replacement_present_workflow",
       "helper": "sub",
       "id": "pattern-sub-named-conditional-group-exists-empty-yes-else-replacement-present-str",
@@ -18801,13 +18778,10 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.Pattern.sub() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "pattern_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": "zzXzz",
           "warnings": []
         }
       },
@@ -18840,10 +18814,8 @@
         "count",
         "gap"
       ],
-      "comparison": "unimplemented",
-      "comparison_notes": [
-        "rebar adapter reports support as unimplemented"
-      ],
+      "comparison": "pass",
+      "comparison_notes": [],
       "family": "named_conditional_group_exists_empty_yes_else_replacement_absent_count_workflow",
       "helper": "subn",
       "id": "pattern-subn-named-conditional-group-exists-empty-yes-else-replacement-absent-str",
@@ -18866,13 +18838,13 @@
         },
         "rebar": {
           "adapter": "rebar",
-          "exception": {
-            "message": "rebar.Pattern.subn() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
-            "type": "NotImplementedError"
-          },
+          "exception": null,
           "operation": "pattern_call",
-          "outcome": "unimplemented",
-          "result": null,
+          "outcome": "success",
+          "result": [
+            "zzXzz",
+            1
+          ],
           "warnings": []
         }
       },
@@ -20158,16 +20130,14 @@
         }
       },
       "rebar": {
-        "exception_case_count": 18,
+        "exception_case_count": 10,
         "exception_types": {
-          "NotImplementedError": 8,
           "TypeError": 2,
           "error": 8
         },
         "outcomes": {
           "exception": 10,
-          "success": 246,
-          "unimplemented": 8
+          "success": 254
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -20866,10 +20836,10 @@
       "summary": {
         "executed_cases": 2,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 2,
         "skipped_cases": 0,
         "total_cases": 2,
-        "unimplemented_cases": 2
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -20888,10 +20858,10 @@
       "summary": {
         "executed_cases": 2,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 2,
         "skipped_cases": 0,
         "total_cases": 2,
-        "unimplemented_cases": 2
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -22194,10 +22164,10 @@
       "summary": {
         "executed_cases": 2,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 2,
         "skipped_cases": 0,
         "total_cases": 2,
-        "unimplemented_cases": 2
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -22216,10 +22186,10 @@
       "summary": {
         "executed_cases": 2,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 2,
         "skipped_cases": 0,
         "total_cases": 2,
-        "unimplemented_cases": 2
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -24048,7 +24018,7 @@
       "tests/conformance/fixtures/quantified_alternation_workflows.json"
     ]
   },
-  "generated_at": "2026-03-13T02:09:30Z",
+  "generated_at": "2026-03-13T02:20:34Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -24346,13 +24316,10 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 8,
-            "exception_types": {
-              "NotImplementedError": 8
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "success": 88,
-              "unimplemented": 8
+              "success": 96
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -24436,10 +24403,10 @@
       "summary": {
         "executed_cases": 96,
         "failed_cases": 0,
-        "passed_cases": 88,
+        "passed_cases": 96,
         "skipped_cases": 0,
         "total_cases": 96,
-        "unimplemented_cases": 8
+        "unimplemented_cases": 0
       },
       "text_models": [
         "bytes",
@@ -32835,12 +32802,10 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 8,
-            "exception_types": {
-              "NotImplementedError": 8
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "unimplemented": 8
+              "success": 8
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -32865,10 +32830,10 @@
       "summary": {
         "executed_cases": 8,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 8,
         "skipped_cases": 0,
         "total_cases": 8,
-        "unimplemented_cases": 8
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -32888,12 +32853,10 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 8,
-            "exception_types": {
-              "NotImplementedError": 8
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "unimplemented": 8
+              "success": 8
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -32918,10 +32881,10 @@
       "summary": {
         "executed_cases": 8,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 8,
         "skipped_cases": 0,
         "total_cases": 8,
-        "unimplemented_cases": 8
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -32941,12 +32904,10 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 4,
-            "exception_types": {
-              "NotImplementedError": 4
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "unimplemented": 4
+              "success": 4
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -32970,10 +32931,10 @@
       "summary": {
         "executed_cases": 4,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 4,
         "skipped_cases": 0,
         "total_cases": 4,
-        "unimplemented_cases": 4
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -32993,12 +32954,10 @@
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 4,
-            "exception_types": {
-              "NotImplementedError": 4
-            },
+            "exception_case_count": 0,
+            "exception_types": {},
             "outcomes": {
-              "unimplemented": 4
+              "success": 4
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -33022,10 +32981,10 @@
       "summary": {
         "executed_cases": 4,
         "failed_cases": 0,
-        "passed_cases": 0,
+        "passed_cases": 4,
         "skipped_cases": 0,
         "total_cases": 4,
-        "unimplemented_cases": 4
+        "unimplemented_cases": 0
       },
       "text_models": [
         "str"
@@ -33641,9 +33600,9 @@
   "summary": {
     "executed_cases": 264,
     "failed_cases": 0,
-    "passed_cases": 256,
+    "passed_cases": 264,
     "skipped_cases": 0,
     "total_cases": 264,
-    "unimplemented_cases": 8
+    "unimplemented_cases": 0
   }
 }

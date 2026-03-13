@@ -87,10 +87,10 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseAlternationWorkflowTest(u
             {
                 "executed_cases": 264,
                 "failed_cases": 0,
-                "passed_cases": 256,
+                "passed_cases": 264,
                 "skipped_cases": 0,
                 "total_cases": 264,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(len(scorecard["cases"]), 264)

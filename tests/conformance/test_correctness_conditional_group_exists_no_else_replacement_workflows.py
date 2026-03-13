@@ -83,10 +83,10 @@ class CorrectnessHarnessConditionalGroupExistsNoElseReplacementWorkflowTest(unit
             {
                 "executed_cases": 264,
                 "failed_cases": 0,
-                "passed_cases": 256,
+                "passed_cases": 264,
                 "skipped_cases": 0,
                 "total_cases": 264,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(len(scorecard["cases"]), 264)
@@ -97,10 +97,10 @@ class CorrectnessHarnessConditionalGroupExistsNoElseReplacementWorkflowTest(unit
             {
                 "executed_cases": 96,
                 "failed_cases": 0,
-                "passed_cases": 88,
+                "passed_cases": 96,
                 "skipped_cases": 0,
                 "total_cases": 96,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertIn(
