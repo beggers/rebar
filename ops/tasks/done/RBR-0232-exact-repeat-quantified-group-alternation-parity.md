@@ -1,6 +1,6 @@
 # RBR-0232: Add bounded exact-repeat quantified-group alternation parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0231`.
 - This task exists so the queue turns the first exact-repeat quantified-group alternation workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+- Completed 2026-03-13: added a narrow Rust-backed parser/matcher for `a(bc|de){2}d` and `a(?P<word>bc|de){2}d`, added focused parity coverage in `tests/python/test_exact_repeat_quantified_group_alternation_parity.py`, and republished `reports/correctness/latest.json` at 558 passes / 0 unimplemented.

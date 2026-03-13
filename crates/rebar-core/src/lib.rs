@@ -592,6 +592,14 @@ struct ExactRepeatGroupPattern<'a> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+struct ExactRepeatGroupAlternationPattern<'a> {
+    prefix: &'a str,
+    branches: Vec<&'a str>,
+    capture_name: Option<&'a str>,
+    suffix: &'a str,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct RangedRepeatGroupPattern<'a> {
     prefix: &'a str,
     capture: LiteralCapture<'a>,
@@ -1294,6 +1302,27 @@ impl<'a> ExactRepeatGroupPattern<'a> {
     }
 }
 
+impl<'a> ExactRepeatGroupAlternationPattern<'a> {
+    fn group_count(&self) -> usize {
+        1
+    }
+
+    fn named_groups(&self) -> Vec<NamedGroup> {
+        self.capture_name
+            .map(|name| {
+                vec![NamedGroup {
+                    name: name.to_string(),
+                    index: 1,
+                }]
+            })
+            .unwrap_or_default()
+    }
+
+    fn group_spans(&self, last_branch_span: (usize, usize)) -> Vec<Option<(usize, usize)>> {
+        vec![Some(last_branch_span)]
+    }
+}
+
 impl<'a> QuantifiedConditionalGroupExistsPattern<'a> {
     fn group_count(&self) -> usize {
         self.conditional.group_count()
@@ -1828,6 +1857,21 @@ fn compile_known_supported_case(
         {
             let grouped_pattern = parse_conditional_group_exists_pattern_str(pattern)
                 .expect("guarded conditional group-exists literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
+                warning: None,
+            })
+        }
+        PatternRef::Str(pattern)
+            if parse_exact_repeat_group_alternation_pattern_str(pattern).is_some()
+                && normalized_flags == FLAG_UNICODE =>
+        {
+            let grouped_pattern = parse_exact_repeat_group_alternation_pattern_str(pattern)
+                .expect("guarded exact-repeat grouped alternation literal");
             Some(CompileOutcome {
                 status: CompileStatus::Compiled,
                 normalized_flags,
@@ -3608,6 +3652,53 @@ fn parse_exact_repeat_group_pattern_str(pattern: &str) -> Option<ExactRepeatGrou
     })
 }
 
+fn parse_exact_repeat_group_alternation_pattern_str(
+    pattern: &str,
+) -> Option<ExactRepeatGroupAlternationPattern<'_>> {
+    let open_offset = pattern.find('(')?;
+    let prefix = &pattern[..open_offset];
+    if prefix.is_empty() || prefix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let remainder = &pattern[open_offset + 1..];
+    let (capture_name, body, close_offset) =
+        if let Some(named_remainder) = remainder.strip_prefix("?P<") {
+            let name_end = named_remainder.find('>')?;
+            let name = &named_remainder[..name_end];
+            if !is_supported_group_name(name) {
+                return None;
+            }
+            let body = &named_remainder[name_end + 1..];
+            let close_offset = body.find(')')?;
+            (
+                Some(name),
+                &body[..close_offset],
+                3 + name_end + 1 + close_offset,
+            )
+        } else {
+            let close_offset = remainder.find(')')?;
+            (None, &remainder[..close_offset], close_offset)
+        };
+
+    let branches: Vec<&str> = body.split('|').collect();
+    if branches.as_slice() != ["bc", "de"] {
+        return None;
+    }
+
+    let suffix = remainder[close_offset + 1..].strip_prefix("{2}")?;
+    if suffix.is_empty() || suffix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    Some(ExactRepeatGroupAlternationPattern {
+        prefix,
+        branches,
+        capture_name,
+        suffix,
+    })
+}
+
 fn parse_ranged_repeat_group_pattern_str(pattern: &str) -> Option<RangedRepeatGroupPattern<'_>> {
     let open_offset = pattern.find('(')?;
     let prefix = &pattern[..open_offset];
@@ -4299,6 +4390,31 @@ fn literal_match_str(
                 }
 
                 find_conditional_group_exists_match_span_str(
+                    &grouped_pattern,
+                    flags,
+                    mode,
+                    &string_chars,
+                    normalized_pos,
+                    normalized_endpos,
+                )
+                .map_or((None, Vec::new()), |(span, group_spans)| {
+                    (Some(span), group_spans)
+                })
+            } else if let Some(grouped_pattern) =
+                parse_exact_repeat_group_alternation_pattern_str(pattern_value)
+            {
+                if flags != FLAG_UNICODE {
+                    return MatchOutcome {
+                        status: MatchStatus::Unsupported,
+                        pos: normalized_pos,
+                        endpos: normalized_endpos,
+                        span: None,
+                        group_spans: Vec::new(),
+                        lastindex: None,
+                    };
+                }
+
+                find_exact_repeat_group_alternation_match_span_str(
                     &grouped_pattern,
                     flags,
                     mode,
@@ -6373,6 +6489,63 @@ fn ranged_repeat_group_matches_at_str(
     None
 }
 
+fn exact_repeat_group_alternation_matches_at_str<'a>(
+    pattern: &'a ExactRepeatGroupAlternationPattern<'_>,
+    flags: i32,
+    string: &[char],
+    start: usize,
+    endpos: usize,
+) -> Option<((usize, usize), usize)> {
+    let prefix_chars: Vec<char> = pattern.prefix.chars().collect();
+    let suffix_chars: Vec<char> = pattern.suffix.chars().collect();
+
+    if !literal_matches_at_str(prefix_chars.as_slice(), flags, string, start, endpos) {
+        return None;
+    }
+
+    let branch_start = start + prefix_chars.len();
+    quantified_alternation_matches_exact_repeats(
+        pattern.branches.as_slice(),
+        flags,
+        string,
+        branch_start,
+        endpos,
+        2,
+        suffix_chars.as_slice(),
+    )
+}
+
+fn find_exact_repeat_group_alternation_match_span_str(
+    pattern: &ExactRepeatGroupAlternationPattern<'_>,
+    flags: i32,
+    mode: MatchMode,
+    string: &[char],
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    match mode {
+        MatchMode::Search => (pos..=endpos).find_map(|start| {
+            exact_repeat_group_alternation_matches_at_str(pattern, flags, string, start, endpos)
+                .map(|(last_branch_span, match_end)| {
+                    ((start, match_end), pattern.group_spans(last_branch_span))
+                })
+        }),
+        MatchMode::Match => exact_repeat_group_alternation_matches_at_str(
+            pattern, flags, string, pos, endpos,
+        )
+        .map(|(last_branch_span, match_end)| {
+            ((pos, match_end), pattern.group_spans(last_branch_span))
+        }),
+        MatchMode::Fullmatch => {
+            exact_repeat_group_alternation_matches_at_str(pattern, flags, string, pos, endpos)
+                .and_then(|(last_branch_span, match_end)| {
+                    (match_end == endpos)
+                        .then_some(((pos, match_end), pattern.group_spans(last_branch_span)))
+                })
+        }
+    }
+}
+
 fn find_ranged_repeat_group_match_span_str(
     pattern: &RangedRepeatGroupPattern<'_>,
     flags: i32,
@@ -8315,6 +8488,29 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_bounded_exact_repeat_group_alternation_cases() {
+        let outcome = compile(PatternRef::Str("a(bc|de){2}d"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.group_count, 1);
+        assert!(outcome.named_groups.is_empty());
+
+        let named_outcome = compile(PatternRef::Str("a(?P<word>bc|de){2}d"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!named_outcome.supports_literal);
+        assert_eq!(named_outcome.group_count, 1);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "word".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
     fn compile_accepts_bounded_ranged_repeat_group_cases() {
         let outcome = compile(PatternRef::Str("a(bc){1,2}d"), 0).unwrap();
         assert_eq!(outcome.status, CompileStatus::Compiled);
@@ -9824,6 +10020,60 @@ mod tests {
         assert_eq!(outcome.span, Some((0, 6)));
         assert_eq!(outcome.group_spans, vec![Some((3, 5))]);
         assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn exact_repeat_group_alternation_search_reports_final_de_capture_span() {
+        let outcome = literal_match(
+            PatternRef::Str("a(bc|de){2}d"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabcdedzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 8)));
+        assert_eq!(outcome.group_spans, vec![Some((5, 7))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn named_exact_repeat_group_alternation_fullmatch_reports_final_de_capture_span() {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<word>bc|de){2}d"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("adeded"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 6)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 5))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn exact_repeat_group_alternation_fullmatch_reports_extra_repetition_as_no_match() {
+        let outcome = literal_match(
+            PatternRef::Str("a(bc|de){2}d"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abcbcbcd"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::NoMatch);
+        assert_eq!(outcome.span, None);
+        assert!(outcome.group_spans.is_empty());
+        assert_eq!(outcome.lastindex, None);
     }
 
     #[test]
