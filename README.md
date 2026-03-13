@@ -11,10 +11,10 @@ _This block reports the implemented slice and measurement coverage, not estimate
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 3 is widening a real Rust-backed subset one bounded regex slice at a time, and the project is still far from drop-in `re` parity. |
-| Delivery estimate | Foundation work is complete, with published correctness and benchmark reporting in place, but the real Rust-backed slice is still narrow and still far from broad `re` parity. |
-| Current milestone | Milestone 2 keeps the current Rust-backed compatibility frontier honest while reopening the regex surface with one bounded nested open-ended grouped-alternation slice now that the adjacent Python parity harness is consolidated. |
-| Work queue | `0` ready, `0` in progress, `267` done, `0` blocked |
+| Phase | Phase 3 is widening a real Rust-backed subset one bounded regex slice at a time; the published slice is coherent, but the project is still far from drop-in `re` parity. |
+| Delivery estimate | Foundation work is complete, the published slice is currently fully passing, and benchmark reporting is live, but the Rust-backed surface is still narrow and not ready for broad speed claims. |
+| Current milestone | Milestone 2 has closed the nested open-ended grouped-alternation parity gap; the next planning pass needs to seed the next bounded frontier and matching benchmark catch-up before broader counted ranges reopen the surface. |
+| Work queue | `0` ready, `0` in progress, `268` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -22,13 +22,13 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Metric | Value |
 | --- | --- |
 | Published cases | `691` |
-| Passing in published slice | `677` |
+| Passing in published slice | `691` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `14` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `80` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, with published correctness and benchmark reporting in place, but the real Rust-backed slice is still narrow and still far from broad `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, the published slice is currently fully passing, and benchmark reporting is live, but the Rust-backed surface is still narrow and not ready for broad speed claims._
 
 ### Benchmark Snapshot
 
@@ -47,12 +47,12 @@ _README speedup rollups stay omitted while only `419` of `452` published workloa
 
 ### Immediate Next Steps
 
-- Convert the newly published nested grouped-alternation slice from documented gaps to real Rust-backed parity before widening again.
+- Seed the next bounded regex frontier now that the nested open-ended grouped-alternation slice is passing end to end.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- Built-native benchmark results still live in separate sidecars with narrower workload coverage than the main published suite.
+- Built-native benchmark results still live in separate sidecars with narrower coverage than the main published suite.
 <!-- REBAR:STATUS_END -->
 
 ## Implementation Snapshot

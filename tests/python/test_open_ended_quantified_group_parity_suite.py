@@ -124,6 +124,23 @@ CASES = (
         fullmatch_matches=("abcbccd",),
         fullmatch_misses=("abcd",),
     ),
+    ParityCase(
+        id="nested-open-ended-alternation-numbered",
+        pattern=r"a((bc|de){1,})d",
+        max_group=2,
+        search_matches=("zzabcdzz", "zzadedzz"),
+        fullmatch_matches=("abcbcded", "adededed"),
+        fullmatch_misses=("ae", "abcbcdede"),
+    ),
+    ParityCase(
+        id="nested-open-ended-alternation-named",
+        pattern=r"a(?P<outer>(bc|de){1,})d",
+        max_group=2,
+        group_names=("outer",),
+        search_matches=("zzabcdzz", "zzadedzz"),
+        fullmatch_matches=("abcbcded", "adededed"),
+        fullmatch_misses=("ae", "abcbcdede"),
+    ),
 )
 
 
