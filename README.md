@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is widening a real Rust-backed subset, but the project is still early relative to the drop-in `re` target. |
 | Delivery estimate | Foundation work is complete, the published slice is expanding with explicit honest gaps and catch-up tasks, and overall stdlib-parity progress is still in the early implementation stage. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `7` ready, `0` in progress, `189` done, `0` blocked |
+| Work queue | `6` ready, `0` in progress, `190` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -22,9 +22,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Metric | Value |
 | --- | --- |
 | Published cases | `396` |
-| Passing in published slice | `388` |
+| Passing in published slice | `396` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `8` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `54` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `269` of `315` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0181` through `RBR-0185` for one bounded nested two-arm conditional slice, the strict built-native full-suite benchmark sidecar, and the remaining numbered conditional-replacement benchmark cleanup.
+- Land `RBR-0182` through `RBR-0185` for Rust-backed parity and benchmark catch-up on the newly published bounded nested two-arm conditional slice, plus the strict built-native full-suite benchmark sidecar and remaining numbered conditional-replacement benchmark cleanup.
 - Then land `RBR-0186` through `RBR-0188` for one bounded alternation-heavy two-arm conditional slice so broader backtracking-heavy conditional execution reopens through an explicit correctness/parity/benchmark pack instead of a vague frontier jump.
 
 ### Current Risks
@@ -58,15 +58,15 @@ _README speedup rollups stay omitted while only `269` of `315` published workloa
 
 ## Implementation Snapshot
 
-`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The exact published counts live in the generated status block above; the short version is that the current published correctness slice is fully passing again, benchmark publication is still coverage-first, and the main full-suite report still runs through the source-tree shim.
+`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The exact published counts live in the generated status block above; the short version is that the current published correctness slice now includes one newly published bounded nested two-arm conditional manifest that is still an honest-gap-only layer pending `RBR-0182`, benchmark publication is still coverage-first, and the main full-suite report still runs through the source-tree shim.
 
-The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. The deterministic systematic corpus, the bounded nested empty-yes-arm and fully-empty conditional slices, both bounded quantified empty-arm conditional slices, the alternation-heavy empty-yes-arm conditional slice, the alternation-bearing fully-empty conditional slice, and both bounded quantified no-else and explicit-empty-else conditional slices are already part of the tracked Rust-backed baseline. The first bounded nested two-arm conditional composition slice, the strict built-native full-suite benchmark sidecar, the numbered conditional-replacement benchmark cleanup, and then one bounded alternation-heavy two-arm conditional slice are the next queued steps.
+The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. The deterministic systematic corpus, the bounded nested empty-yes-arm and fully-empty conditional slices, both bounded quantified empty-arm conditional slices, the alternation-heavy empty-yes-arm conditional slice, the alternation-bearing fully-empty conditional slice, and both bounded quantified no-else and explicit-empty-else conditional slices are already part of the tracked Rust-backed baseline. The first bounded nested two-arm conditional composition slice is now published in the correctness report and queued for Rust-backed parity plus benchmark catch-up; the strict built-native full-suite benchmark sidecar, the numbered conditional-replacement benchmark cleanup, and then one bounded alternation-heavy two-arm conditional slice remain the immediate follow-ons.
 
 Benchmark publication is still partial by design. The generated status block above carries the current workload and known-gap totals, while the full suite still times the source-tree shim and the built-native path remains a separate six-workload smoke artifact in `reports/benchmarks/native_smoke.json`.
 
 ## What The Numbers Mean
 
-The correctness report is a slice-health signal, not an end-state signal. Even a fully passing published slice would only mean the currently published manifests are green, not that the project is close to replacing stdlib `re` across the board. The immediate queue is `RBR-0181` through `RBR-0188` for one bounded nested two-arm conditional composition slice, the built-native full-suite sidecar, one numbered conditional-replacement benchmark cleanup pass, and then one bounded alternation-heavy two-arm conditional slice.
+The correctness report is a slice-health signal, not an end-state signal. Even a fully passing published slice would only mean the currently published manifests are green, not that the project is close to replacing stdlib `re` across the board. The current slice is not fully green because the newly published nested two-arm conditional manifest is still eight honest gaps pending `RBR-0182`. The immediate queue is `RBR-0182` through `RBR-0188` for Rust-backed parity and benchmark catch-up on that slice, the built-native full-suite sidecar, one numbered conditional-replacement benchmark cleanup pass, and then one bounded alternation-heavy two-arm conditional slice.
 
 The benchmark report is still a coverage-first artifact too. It already exercises a wide workload set, but dozens of workloads are still explicit gaps and the main published run still measures the source-tree shim rather than the fully built-native path. That is enough to guide the queue, but not enough to make broad speed claims yet.
 

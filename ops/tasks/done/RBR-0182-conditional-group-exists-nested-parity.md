@@ -1,8 +1,9 @@
 # RBR-0182: Add bounded nested two-arm conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Convert the bounded nested two-arm conditional cases from the published correctness pack into real Rust-backed behavior without reopening broader nested/backtracking-heavy conditional execution.
@@ -26,3 +27,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0181`.
 - This task exists so accepted nested two-arm conditional syntax reaches the Rust-backed baseline before broader backtracking-heavy composition is attempted.
+
+## Completion
+- Added bounded nested two-arm conditional compile/match parity in `rebar-core` by recognizing the single-site nested yes-arm shape and collapsing execution to the reachable inner yes branch when the outer capture is present.
+- Added focused native parity coverage in `tests/python/test_conditional_group_exists_nested_parity.py` and updated the correctness harness assertion file for the now-green nested manifest.
+- Regenerated `reports/correctness/latest.json`; the published combined scorecard now reports `396` passes, `0` failures, and `0` unimplemented cases.
