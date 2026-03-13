@@ -175,12 +175,12 @@ class OpenEndedQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 36,
-                    "measured_workloads": 384,
-                    "module_workloads": 412,
+                    "known_gap_count": 35,
+                    "measured_workloads": 390,
+                    "module_workloads": 417,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
-                    "total_workloads": 420,
+                    "total_workloads": 425,
                 },
             )
 
@@ -199,24 +199,24 @@ class OpenEndedQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase3")
-        self.assertEqual(scorecard["summary"]["total_workloads"], 420)
+        self.assertEqual(scorecard["summary"]["total_workloads"], 425)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
-        self.assertEqual(scorecard["summary"]["module_workloads"], 412)
+        self.assertEqual(scorecard["summary"]["module_workloads"], 417)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 384)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 36)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 68)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 179)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 173)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 390)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 35)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 69)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 182)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 174)
         self.assertEqual(scorecard["families"]["parser"]["workload_count"], 8)
         self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 3)
         self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["workload_count"], 412)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 33)
+        self.assertEqual(scorecard["families"]["module"]["workload_count"], 417)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 32)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 64)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 177)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 171)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 65)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 180)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 172)
         self.assertEqual(scorecard["artifacts"]["manifest"], None)
         self.assertEqual(scorecard["artifacts"]["manifest_id"], "combined-benchmark-suite")
         self.assertEqual(scorecard["artifacts"]["manifest_schema_version"], 1)
@@ -345,7 +345,7 @@ class OpenEndedQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
             if workload["id"] == "pattern-fullmatch-named-open-ended-group-backtracking-heavy-purged-gap"
         )
         self.assertEqual(backtracking_gap["status"], "unimplemented")
-        self.assertEqual(backtracking_gap["pattern"], "a(?P<word>(bc|b)c){1,3}d")
+        self.assertEqual(backtracking_gap["pattern"], "a(?P<word>(bc|b)c){1,}d")
         self.assertIn("named-groups", backtracking_gap["syntax_features"])
         self.assertEqual(backtracking_gap["implementation_timing"]["status"], "unimplemented")
         self.assertIsNone(backtracking_gap["implementation_ns"])

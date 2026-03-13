@@ -1,8 +1,9 @@
 # RBR-0245: Catch bounded wider ranged-repeat quantified-group alternation backtracking-heavy benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published benchmark surface so the bounded grouped backtracking-heavy `{1,3}` workflows supported by `RBR-0244` produce real `rebar` timings before open-ended grouped-conditionals reopen the frontier.
@@ -28,3 +29,5 @@ Created: 2026-03-13
 - Build on `RBR-0244`.
 - Reuse the existing `pattern-fullmatch-numbered-wider-ranged-repeat-group-backtracking-heavy-purged-gap` row as the benchmark anchor instead of forking another manifest.
 - This task exists so the queue does not reach grouped backtracking-heavy parity and then leave that newly supported slice absent from benchmark reporting.
+- Completed with six measured bounded `{1,3}` grouped backtracking-heavy rows: numbered and named `module.compile`, `module.search`, and `pattern.fullmatch` coverage now publishes real `rebar` timings in `reports/benchmarks/latest.json`.
+- Corrected the future `pattern-fullmatch-named-open-ended-group-backtracking-heavy-purged-gap` placeholder to the real `{1,}` pattern so the open-ended follow-on stays an honest known gap for `RBR-0251`.
