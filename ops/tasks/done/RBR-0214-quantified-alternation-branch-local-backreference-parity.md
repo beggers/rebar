@@ -1,6 +1,6 @@
 # RBR-0214: Add bounded quantified-alternation-plus-branch-local-backreference parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,7 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0213`.
 - This task exists so the queue turns the first bounded quantified-alternation-plus-branch-local-backreference workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+
+## Completion
+- Added narrow Rust-backed compile and match support for `a((b|c)\\2){1,2}d` and `a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d`, including lower-bound, second-repetition, mixed-branch, and no-match paths without widening into broader backtracking or replacement work.
+- Added focused parity coverage in `tests/python/test_quantified_alternation_branch_local_backreference_parity.py` and republished `reports/correctness/latest.json` with the combined 482-case scorecard now fully passing.
