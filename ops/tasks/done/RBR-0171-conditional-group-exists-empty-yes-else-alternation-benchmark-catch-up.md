@@ -1,6 +1,6 @@
 # RBR-0171: Catch bounded alternation-heavy empty-yes-arm conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,7 @@ Created: 2026-03-13
 - Build on `RBR-0170`.
 - Use the existing `module-search-numbered-conditional-group-exists-empty-yes-else-alternation-heavy-warm-gap` row in `benchmarks/workloads/conditional_group_exists_empty_yes_else_boundary.json` as the benchmark anchor for this slice.
 - This task exists so the queue does not reach bounded empty-yes-arm alternation parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Converted the anchored alternation-heavy empty-yes-arm gap row into four measured module-search and `Pattern.fullmatch()` workloads covering numbered and named forms across representative present-arm and absent-arm haystacks.
+- Updated the manifest regression test and regenerated `reports/benchmarks/latest.json`; the combined benchmark report now publishes 306 workloads with 257 measured `rebar` timings and 49 explicit known gaps, while `conditional-group-exists-empty-yes-else-boundary` is fully measured at 27/27 workloads.
