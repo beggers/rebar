@@ -2358,6 +2358,22 @@ def run_cycle(
 def sleep_seconds_for_exit(config: dict[str, Any], exit_code: int) -> int:
     runtime_cfg = config.get("runtime", {})
     if exit_code == 0:
+        paths = runtime_paths(config)
+        loop_state = read_json(paths["loop_state"], default={})
+        if isinstance(loop_state, dict):
+            queue = loop_state.get("queue_counts")
+            last_runs = loop_state.get("last_cycle_runs")
+            if isinstance(queue, dict) and isinstance(last_runs, list):
+                ready = int(queue.get("ready", 0))
+                in_progress = int(queue.get("in_progress", 0))
+                needs_refill = any(
+                    isinstance(item, dict)
+                    and item.get("agent_kind") == "task_worker"
+                    and item.get("task_final_status") == "done"
+                    for item in last_runs
+                )
+                if needs_refill and ready == 0 and in_progress == 0:
+                    return int(runtime_cfg.get("queue_refill_sleep_seconds", 5))
         return int(runtime_cfg.get("sleep_seconds", 300))
     return int(runtime_cfg.get("failure_backoff_seconds", 30))
 

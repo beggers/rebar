@@ -9,17 +9,17 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is widening a real Rust-backed subset one bounded regex slice at a time, and the project is still far from drop-in `re` parity.
 
 ## README Delivery Estimate
-Foundation work is complete, but the published Rust-backed slice is still narrow; the grouped `{1,}` and `{2,}` parity frontier is now consolidated, and the next milestone still needs to be re-seeded before widening the regex surface again.
+Foundation work is complete, with published correctness and benchmark reporting in place, but the real Rust-backed slice is still narrow and still far from broad `re` parity.
 
 ## README Next Steps
-- Seed the next bounded milestone now that `RBR-0263` has consolidated the current open-ended quantified-group parity frontier into one backend-parameterized pytest suite.
+- Convert the newly published nested grouped-alternation slice from documented gaps to real Rust-backed parity before widening again.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
 - Built-native benchmark results still live in separate sidecars with narrower workload coverage than the main published suite.
 
 ## Compatibility Heuristic
-Early subset, not near drop-in feature parity yet: literals, captures, bounded replacement/backreference workflows, multiple bounded conditional execution and replacement slices, quantified branch-local-backreference work, quantified-alternation combinations through the open-ended `{1,}` frontier, and grouped alternation inside counted repeats through the wider `{1,3}` grouped-conditional and grouped-backtracking slices plus the open-ended grouped alternation, open-ended grouped-alternation-plus-conditional `{1,}` slice, open-ended grouped-backtracking `{1,}` slice, broader-range open-ended grouped alternation `{2,}`, broader-range open-ended grouped-alternation-plus-conditional `{2,}` slice, and broader-range open-ended grouped-backtracking `{2,}` slice now pass through the Rust boundary. Benchmark publication is caught up through that grouped `{2,}` frontier, and `RBR-0263` now leads the next milestone by consolidating the adjacent Python parity surface before another regex slice is queued.
+Early subset, not near drop-in feature parity yet: literals, captures, bounded replacement/backreference workflows, multiple bounded conditional execution and replacement slices, quantified branch-local-backreference work, quantified-alternation combinations through the open-ended `{1,}` frontier, and grouped alternation inside counted repeats through the wider `{1,3}` grouped-conditional and grouped-backtracking slices plus the open-ended grouped alternation, open-ended grouped-alternation-plus-conditional `{1,}` slice, open-ended grouped-backtracking `{1,}` slice, broader-range open-ended grouped alternation `{2,}`, broader-range open-ended grouped-alternation-plus-conditional `{2,}` slice, and broader-range open-ended grouped-backtracking `{2,}` slice now pass through the Rust boundary. Benchmark publication is caught up through that grouped `{2,}` frontier, and `RBR-0264` now reopens the regex surface with a nested open-ended grouped-alternation follow-on behind the consolidated pytest parity suite.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/planning/implementation/QA/faithfulness/cleanup/reporting loop, and a single ready-queue implementation worker.
@@ -290,7 +290,7 @@ Early subset, not near drop-in feature parity yet: literals, captures, bounded r
 - A two-hundred-forty-eighth completed implementation task, `RBR-0249`, with `python/rebar_harness/correctness.py`, `tests/conformance/fixtures/open_ended_quantified_group_alternation_backtracking_heavy_workflows.json`, `tests/conformance/test_correctness_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py`, and a regenerated `reports/correctness/latest.json`, adding a seventy-sixth manifest that publishes twelve bounded numbered and named compile/module/pattern cases for `a((bc|b)c){1,}d` and `a(?P<word>(bc|b)c){1,}d` while widening the combined scorecard to 633 total cases across 76 manifests with 621 passes, 0 explicit failures, and 12 honest `unimplemented` outcomes pending `RBR-0250`.
 - A two-hundred-forty-ninth completed implementation task, `RBR-0250`, with open-ended grouped backtracking-heavy parser and executor expansion in `crates/rebar-core/src/lib.rs`, matching native bridge support in `crates/rebar-cpython/src/lib.rs`, focused parity coverage in `tests/python/test_open_ended_quantified_group_alternation_backtracking_heavy_parity.py`, refreshed harness expectations in `tests/conformance/test_correctness_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py`, and a regenerated `reports/correctness/latest.json`, converting the bounded `a((bc|b)c){1,}d` and `a(?P<word>(bc|b)c){1,}d` slice to real Rust-backed behavior and moving the combined 76-manifest scorecard to 633 passes, 0 explicit failures, and 0 honest `unimplemented` outcomes.
 - A supervisor-retuned ready queue that now inserts Rust-boundary migration tasks ahead of the remaining parser and module-workflow follow-ons, so new compatibility work stops deepening the Python shim and instead lands behind the `rebar._rebar` extension boundary.
-- The ready queue now starts with `RBR-0263`, a parity-harness consolidation task that targets the six adjacent open-ended quantified-group parity modules immediately after `RBR-0262` collapsed the benchmark wrapper surface for the same frontier.
+- The ready queue now starts with `RBR-0264`, a correctness-pack task that publishes the nested open-ended grouped-alternation slice `a((bc|de){1,})d` / `a(?P<outer>(bc|de){1,})d` immediately after `RBR-0263` consolidated the adjacent pytest parity surface.
 - Report rendering that recomputes last-cycle environment issues from run artifacts so dashboard anomalies do not stay stale after a detection fix.
 - A fetch-before-push git sync path that measures ahead/behind state against fresh upstream refs and reports diverged branches explicitly instead of pushing against stale remote-tracking data.
 - README capability reporting that now keys scaffold and scorecard tracks to concrete artifact paths and distinguishes the benchmark harness from the published benchmark report.
@@ -302,7 +302,7 @@ Early subset, not near drop-in feature parity yet: literals, captures, bounded r
 
 ## What Does Not Exist Yet
 - Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.json` now covers 79 manifests and 677 cases with 677 passes and 0 honest `unimplemented` outcomes in the published slice, and that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
-- A backend-parameterized pytest parity harness centered on the current grouped `{1,}` and `{2,}` frontier; today that Python-path coverage still lives in six standalone `unittest` modules, and `RBR-0263` is queued to collapse them into one data-driven suite before another regex-surface expansion is seeded.
+- A repo-centered backend-parameterized pytest parity harness beyond the current grouped `{1,}` and `{2,}` frontier; `RBR-0263` consolidated that adjacent Python-path slice into one data-driven suite, but earlier parity coverage still lives in many standalone modules while `RBR-0264` reopens syntax from that stabilized base.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.json` still reflects the source-tree shim while `reports/benchmarks/native_full.json` and `reports/benchmarks/native_smoke.json` remain separate native-path checkpoints.
 - Full benchmark coverage for every published slice: the main benchmark scorecard now covers 452 workloads across 30 manifests with 419 measured rows and 33 explicit known gaps, so unsupported adjacent feature families are still published honestly as gaps rather than disappearing from the report.
 
@@ -320,8 +320,8 @@ Early subset, not near drop-in feature parity yet: literals, captures, bounded r
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Land `RBR-0263` so the current open-ended quantified-group parity frontier moves into one backend-parameterized pytest suite instead of six adjacent `unittest` modules.
-- After that consolidation lands, seed the next bounded regex slice from the now-stabilized grouped `{1,}` and `{2,}` frontier instead of reopening another bespoke parity-test cluster first.
+- Land `RBR-0264` so the next bounded regex milestone publishes the nested open-ended grouped-alternation slice `a((bc|de){1,})d` / `a(?P<outer>(bc|de){1,})d`.
+- After that pack lands, queue the matching parity follow-on against the existing `pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-gap` benchmark anchor instead of reopening broader counted ranges or another bespoke parity cleanup first.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

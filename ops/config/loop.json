@@ -1,6 +1,7 @@
 {
   "runtime": {
     "artifact_dir": ".rebar/runtime",
+    "queue_refill_sleep_seconds": 5,
     "sleep_seconds": 300,
     "failure_backoff_seconds": 30,
     "default_timeout_seconds": 1800,
