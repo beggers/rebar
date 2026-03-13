@@ -11,24 +11,24 @@ _This block reports the implemented slice and measurement coverage, not estimate
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 3 is widening a real Rust-backed subset one bounded regex slice at a time; the published slice is coherent, but the project is still far from drop-in `re` parity. |
-| Delivery estimate | Foundation work is complete, the published slice is currently fully passing, and benchmark reporting is live, but the Rust-backed surface is still narrow and not ready for broad speed claims. |
-| Current milestone | Milestone 2 has closed the nested open-ended grouped-alternation parity gap; the immediate follow-on is `RBR-0266`, which catches that newly landed slice up on the Python-path benchmark surface before broader counted ranges reopen. |
-| Work queue | `0` ready, `0` in progress, `269` done, `0` blocked |
+| Phase | Phase 3 is widening a real Rust-backed subset one bounded regex slice at a time; the published frontier now includes a broader `{1,4}` grouped-alternation correctness pack with honest gaps, and the project is still far from drop-in `re` parity. |
+| Delivery estimate | Foundation work is complete, benchmark reporting is live, and most published workloads now have real `rebar` timings, but the Rust-backed surface is still narrow and the newest `{1,4}` grouped-alternation slice is not yet behind the Rust boundary. |
+| Current milestone | Milestone 2 has now published the broader `{1,4}` grouped-alternation correctness frontier; the next queue work should convert that slice behind the Rust boundary and catch it up on the Python-path benchmark surface. |
+| Work queue | `0` ready, `0` in progress, `270` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `691` |
+| Published cases | `701` |
 | Passing in published slice | `691` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `80` |
+| Honest gaps (`unimplemented`) | `10` |
+| Covered manifests | `81` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, the published slice is currently fully passing, and benchmark reporting is live, but the Rust-backed surface is still narrow and not ready for broad speed claims._
+_These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, benchmark reporting is live, and most published workloads now have real `rebar` timings, but the Rust-backed surface is still narrow and the newest `{1,4}` grouped-alternation slice is not yet behind the Rust boundary._
 
 ### Benchmark Snapshot
 
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `424` of `456` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0266` so the newly supported nested open-ended grouped-alternation slice reaches Python-path benchmark coverage before broader counted ranges reopen.
+- Seed and land the parity and Python-path benchmark catch-up follow-ons for the broader `{1,4}` grouped-alternation slice so the newly published correctness pack does not remain stranded as 10 explicit `unimplemented` cases.
 
 ### Current Risks
 
@@ -59,7 +59,7 @@ _README speedup rollups stay omitted while only `424` of `456` published workloa
 
 `rebar` is no longer just a harness scaffold. There is a real Rust core, a CPython-facing extension boundary, published correctness and benchmark reports, and a repeatable workflow for widening one bounded regex slice at a time.
 
-The important caveat is still project shape, not raw counts: the published slice is internally clean, but it remains small relative to stdlib `re`. Benchmarking is also still in the qualification phase. The main published suite measures the source-tree shim, while built-native runs are published separately so the repo can distinguish "measured" from "ready to claim faster than CPython."
+The important caveat is still project shape, not raw counts: the published frontier is honest and coherent, but it remains small relative to stdlib `re`. Benchmarking is also still in the qualification phase. The main published suite measures the source-tree shim, while built-native runs are published separately so the repo can distinguish "measured" from "ready to claim faster than CPython."
 
 ## Reading The Status Block
 
