@@ -1,6 +1,6 @@
 # RBR-0134: Add bounded explicit-empty-else conditional replacement parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0111` and `RBR-0133`.
 - This task exists so the queue converts the next accepted conditional replacement workflow into real Rust-backed behavior instead of leaving it as publication-only coverage.
+
+## Completion
+- Added a dedicated Rust span-discovery helper for bounded explicit-empty-else conditional replacements and wired the native `sub()`/`subn()` boundary to use it after the existing omitted-no-arm replacement path.
+- Added focused Python parity coverage for module and compiled-pattern numbered/named `a(b)?c(?(1)d|)` / `a(?P<word>b)?c(?(word)d|)` replacement flows.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports 256 passed cases and 0 unimplemented cases, with the eight explicit-empty-else replacement cases flipped from `unimplemented` to `pass`.
