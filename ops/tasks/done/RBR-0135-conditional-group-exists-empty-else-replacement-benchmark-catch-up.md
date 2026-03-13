@@ -1,6 +1,6 @@
 # RBR-0135: Catch bounded explicit-empty-else conditional replacement benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,6 @@ Created: 2026-03-12
 - Build on `RBR-0112` and `RBR-0134`.
 - Use the existing `module-sub-numbered-conditional-group-exists-empty-else-replacement-warm-gap` row in `benchmarks/workloads/conditional_group_exists_empty_else_boundary.json` as the benchmark anchor for this slice.
 - This task exists so the queue does not reach bounded explicit-empty-else conditional replacement parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- 2026-03-13: Expanded `benchmarks/workloads/conditional_group_exists_empty_else_boundary.json` to publish the bounded numbered and named explicit-empty-else replacement `sub()`/`subn()` workflows through module and compiled-`Pattern` entrypoints, updated the benchmark regression test expectations, and republished `reports/benchmarks/latest.json` with `269` total workloads, `210` measured `rebar` timings, and `59` known gaps.

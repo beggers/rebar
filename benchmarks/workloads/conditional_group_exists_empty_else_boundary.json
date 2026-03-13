@@ -7,7 +7,7 @@
   ],
   "notes": [
     "Conditional group-exists explicit-empty-else boundary workloads keep one optional capture, one conditional site, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported bounded explicit-empty-else conditional slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b)?c(?(1)d|)` and `a(?P<word>b)?c(?(word)d|)` compile/search/fullmatch paths directly, the carry-forward empty-yes-arm search row now also measures real timings, and the bounded alternation-heavy explicit-empty-else `a(b)?c(?(1)(de|df)|)` / `a(?P<word>b)?c(?(word)(de|df)|)` module-search and Pattern.fullmatch probes now publish real timings; wider conditional-arm alternation, nested conditionals, quantified conditionals, and conditional replacement helpers stay as explicit known-gap rows until later follow-ons land.",
+    "Measured rows cover the bounded `a(b)?c(?(1)d|)` and `a(?P<word>b)?c(?(word)d|)` compile/search/fullmatch plus constant-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the carry-forward empty-yes-arm search row now also measures real timings, and the bounded alternation-heavy explicit-empty-else `a(b)?c(?(1)(de|df)|)` / `a(?P<word>b)?c(?(word)(de|df)|)` module-search and Pattern.fullmatch probes now publish real timings; nested conditionals and quantified conditionals stay as explicit known-gap rows until later follow-ons land.",
     "Assertion-conditioned branches remain outside this benchmark manifest because CPython rejects them and the current benchmark harness only publishes timing rows for accepted syntax."
   ],
   "defaults": {
@@ -345,7 +345,257 @@
         "conditionals"
       ],
       "notes": [
-        "Explicit conditional replacement gap row so explicit-empty-else `sub()` helper behavior stays visible instead of being mistaken for the already-supported search/fullmatch slice."
+        "Warm module.sub helper path for the bounded numbered explicit-empty-else conditional replacement workflow when the yes-arm participates in the matched span."
+      ]
+    },
+    {
+      "id": "module-subn-numbered-conditional-group-exists-empty-else-replacement-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(b)?c(?(1)d|)",
+      "haystack": "zzaczz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "replacement",
+        "subn",
+        "module",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded numbered explicit-empty-else conditional replacement count workflow when the optional capture is absent."
+      ]
+    },
+    {
+      "id": "pattern-sub-numbered-conditional-group-exists-empty-else-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)d|)",
+      "haystack": "zzabcdzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "replacement",
+        "sub",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded numbered explicit-empty-else conditional replacement workflow when the yes-arm participates in the matched span."
+      ]
+    },
+    {
+      "id": "pattern-subn-numbered-conditional-group-exists-empty-else-replacement-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(b)?c(?(1)d|)",
+      "haystack": "zzaczz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "replacement",
+        "subn",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded numbered explicit-empty-else conditional replacement count workflow when the optional capture is absent."
+      ]
+    },
+    {
+      "id": "module-sub-named-conditional-group-exists-empty-else-replacement-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(?P<word>b)?c(?(word)d|)",
+      "haystack": "zzabcdzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "replacement",
+        "named-group",
+        "sub",
+        "module",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded named explicit-empty-else conditional replacement workflow."
+      ]
+    },
+    {
+      "id": "module-subn-named-conditional-group-exists-empty-else-replacement-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|)",
+      "haystack": "zzaczz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "replacement",
+        "named-group",
+        "subn",
+        "module",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded named explicit-empty-else conditional replacement count workflow when the optional capture is absent."
+      ]
+    },
+    {
+      "id": "pattern-sub-named-conditional-group-exists-empty-else-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(?P<word>b)?c(?(word)d|)",
+      "haystack": "zzabcdzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "replacement",
+        "named-group",
+        "sub",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded named explicit-empty-else conditional replacement workflow."
+      ]
+    },
+    {
+      "id": "pattern-subn-named-conditional-group-exists-empty-else-replacement-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|)",
+      "haystack": "zzaczz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "replacement",
+        "named-group",
+        "subn",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded named explicit-empty-else conditional replacement count workflow when the optional capture is absent."
       ]
     },
     {
