@@ -1,6 +1,6 @@
 # RBR-0246: Publish an open-ended quantified-group alternation plus conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0245`.
 - This task exists so grouped alternation reopens the already-anchored open-ended grouped-conditional frontier through one exact `{1,}` slice instead of another vague follow-on bucket.
+- Completed 2026-03-13: added a dedicated 13-case open-ended grouped-alternation-plus-conditional correctness manifest, wired it into the combined harness, regenerated `reports/correctness/latest.json` to 621 total cases across 75 manifests with 608 passes and 13 honest `unimplemented` outcomes, and covered the new suite with a focused conformance test.
