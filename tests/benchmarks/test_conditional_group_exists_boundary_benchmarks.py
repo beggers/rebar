@@ -252,7 +252,7 @@ class ConditionalGroupExistsBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertIn("helper-call overhead", manifest_summary["notes"][0])
         self.assertIn("bounded nested two-arm", manifest_summary["notes"][1])
         self.assertIn("bounded quantified `{2}` Pattern.fullmatch companion", manifest_summary["notes"][1])
-        self.assertIn("bounded alternation-heavy", manifest_summary["notes"][1])
+        self.assertIn("bounded quantified alternation-heavy", manifest_summary["notes"][1])
 
         manifest_record = next(
             manifest
@@ -407,31 +407,32 @@ class ConditionalGroupExistsBoundaryBenchmarkSuiteTest(unittest.TestCase):
             workload
             for workload in scorecard["workloads"]
             if workload["id"]
-            == "module-search-numbered-conditional-group-exists-alternation-heavy-present-warm-gap"
+            == "module-search-numbered-conditional-group-exists-quantified-alternation-heavy-present-warm-str"
         )
         self.assertEqual(
             alternation_numbered_search["pattern"],
-            "a(b)?c(?(1)(de|df)|(eg|eh))",
+            "a(b)?c(?(1)(de|df)|(eg|eh)){2}",
         )
-        self.assertEqual(alternation_numbered_search["haystack"], "zzabcdezz")
+        self.assertEqual(alternation_numbered_search["haystack"], "zzabcdedezz")
         self.assertEqual(alternation_numbered_search["status"], "measured")
         self.assertEqual(
             alternation_numbered_search["implementation_timing"]["status"],
             "measured",
         )
         self.assertGreater(alternation_numbered_search["implementation_ns"], 0)
+        self.assertIn("quantifiers", alternation_numbered_search["syntax_features"])
 
         alternation_named_search = next(
             workload
             for workload in scorecard["workloads"]
             if workload["id"]
-            == "module-search-named-conditional-group-exists-alternation-heavy-absent-warm-str"
+            == "module-search-named-conditional-group-exists-quantified-alternation-heavy-absent-warm-str"
         )
         self.assertEqual(
             alternation_named_search["pattern"],
-            "a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+            "a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}",
         )
-        self.assertEqual(alternation_named_search["haystack"], "zzacegzz")
+        self.assertEqual(alternation_named_search["haystack"], "zzacegegzz")
         self.assertEqual(alternation_named_search["status"], "measured")
         self.assertEqual(
             alternation_named_search["implementation_timing"]["status"],
@@ -444,13 +445,13 @@ class ConditionalGroupExistsBoundaryBenchmarkSuiteTest(unittest.TestCase):
             workload
             for workload in scorecard["workloads"]
             if workload["id"]
-            == "pattern-fullmatch-numbered-conditional-group-exists-alternation-heavy-absent-purged-str"
+            == "pattern-fullmatch-numbered-conditional-group-exists-quantified-alternation-heavy-absent-purged-str"
         )
         self.assertEqual(
             alternation_numbered_pattern["pattern"],
-            "a(b)?c(?(1)(de|df)|(eg|eh))",
+            "a(b)?c(?(1)(de|df)|(eg|eh)){2}",
         )
-        self.assertEqual(alternation_numbered_pattern["haystack"], "aceh")
+        self.assertEqual(alternation_numbered_pattern["haystack"], "aceheh")
         self.assertEqual(alternation_numbered_pattern["status"], "measured")
         self.assertEqual(
             alternation_numbered_pattern["implementation_timing"]["status"],
@@ -463,13 +464,13 @@ class ConditionalGroupExistsBoundaryBenchmarkSuiteTest(unittest.TestCase):
             workload
             for workload in scorecard["workloads"]
             if workload["id"]
-            == "pattern-fullmatch-named-conditional-group-exists-alternation-heavy-present-purged-str"
+            == "pattern-fullmatch-named-conditional-group-exists-quantified-alternation-heavy-present-purged-str"
         )
         self.assertEqual(
             alternation_named_pattern["pattern"],
-            "a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+            "a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}",
         )
-        self.assertEqual(alternation_named_pattern["haystack"], "abcdf")
+        self.assertEqual(alternation_named_pattern["haystack"], "abcdfdf")
         self.assertEqual(alternation_named_pattern["status"], "measured")
         self.assertEqual(
             alternation_named_pattern["implementation_timing"]["status"],

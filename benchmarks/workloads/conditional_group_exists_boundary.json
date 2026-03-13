@@ -7,7 +7,7 @@
   ],
   "notes": [
     "Conditional group-exists boundary workloads keep one optional capture, one conditional site, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported bounded two-arm conditional slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch paths directly, the bounded nested two-arm `a(b)?c(?(1)(?(1)d|e)|f)` / `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` module-search and Pattern.fullmatch probes, one bounded quantified `{2}` Pattern.fullmatch companion for each numbered and named spelling, and the bounded alternation-heavy `a(b)?c(?(1)(de|df)|(eg|eh))` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` module-search and Pattern.fullmatch probes, while broader replacement-conditioned, repeated alternation-heavy, deeper nested, and branch-local-backreference conditional shapes stay explicit gaps in their own manifests instead of being silently omitted here."
+    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch paths directly, the bounded nested two-arm `a(b)?c(?(1)(?(1)d|e)|f)` / `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` module-search and Pattern.fullmatch probes, one bounded quantified `{2}` Pattern.fullmatch companion for each numbered and named spelling, and the bounded quantified alternation-heavy `a(b)?c(?(1)(de|df)|(eg|eh)){2}` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` module-search and Pattern.fullmatch probes, while broader replacement-conditioned, deeper nested quantified, branch-local-backreference-bearing alternation, ranged/open-ended repeats, and broader backtracking-heavy conditional shapes stay explicit gaps in their own manifests instead of being silently omitted here."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -410,12 +410,12 @@
       ]
     },
     {
-      "id": "module-search-numbered-conditional-group-exists-alternation-heavy-present-warm-gap",
+      "id": "module-search-numbered-conditional-group-exists-quantified-alternation-heavy-present-warm-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(b)?c(?(1)(de|df)|(eg|eh))",
-      "haystack": "zzabcdezz",
+      "pattern": "a(b)?c(?(1)(de|df)|(eg|eh)){2}",
+      "haystack": "zzabcdedezz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
@@ -436,19 +436,20 @@
         "grouping-forms",
         "optional-groups",
         "conditionals",
-        "alternation"
+        "alternation",
+        "quantifiers"
       ],
       "notes": [
-        "Warm module.search helper path for the bounded numbered alternation-heavy two-arm conditional workflow when the optional capture is present and the yes arm selects its first literal branch."
+        "Warm module.search helper path for the bounded numbered quantified alternation-heavy two-arm conditional workflow when the optional capture is present and the repeated yes arm selects its first literal branch twice."
       ]
     },
     {
-      "id": "module-search-named-conditional-group-exists-alternation-heavy-absent-warm-str",
+      "id": "module-search-named-conditional-group-exists-quantified-alternation-heavy-absent-warm-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
-      "haystack": "zzacegzz",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}",
+      "haystack": "zzacegegzz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
@@ -471,19 +472,20 @@
         "optional-groups",
         "conditionals",
         "named-groups",
-        "alternation"
+        "alternation",
+        "quantifiers"
       ],
       "notes": [
-        "Warm module.search helper path for the bounded named alternation-heavy two-arm conditional workflow when the optional named capture is absent and the else arm selects its first literal branch."
+        "Warm module.search helper path for the bounded named quantified alternation-heavy two-arm conditional workflow when the optional named capture is absent and the repeated else arm selects its first literal branch twice."
       ]
     },
     {
-      "id": "pattern-fullmatch-numbered-conditional-group-exists-alternation-heavy-absent-purged-str",
+      "id": "pattern-fullmatch-numbered-conditional-group-exists-quantified-alternation-heavy-absent-purged-str",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(b)?c(?(1)(de|df)|(eg|eh))",
-      "haystack": "aceh",
+      "pattern": "a(b)?c(?(1)(de|df)|(eg|eh)){2}",
+      "haystack": "aceheh",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "purged",
@@ -505,19 +507,20 @@
         "optional-groups",
         "conditionals",
         "alternation",
+        "quantifiers",
         "cache-purge"
       ],
       "notes": [
-        "Purged-cache Pattern.fullmatch probe for the bounded numbered alternation-heavy two-arm conditional workflow when the optional capture is absent and the else arm backtracks to its second literal branch."
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered quantified alternation-heavy two-arm conditional workflow when the optional capture is absent and the repeated else arm backtracks to its second literal branch twice."
       ]
     },
     {
-      "id": "pattern-fullmatch-named-conditional-group-exists-alternation-heavy-present-purged-str",
+      "id": "pattern-fullmatch-named-conditional-group-exists-quantified-alternation-heavy-present-purged-str",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
-      "haystack": "abcdf",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}",
+      "haystack": "abcdfdf",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "purged",
@@ -541,10 +544,11 @@
         "conditionals",
         "named-groups",
         "alternation",
+        "quantifiers",
         "cache-purge"
       ],
       "notes": [
-        "Purged-cache Pattern.fullmatch probe for the bounded named alternation-heavy two-arm conditional workflow when the optional named capture is present and the yes arm backtracks to its second literal branch."
+        "Purged-cache Pattern.fullmatch probe for the bounded named quantified alternation-heavy two-arm conditional workflow when the optional named capture is present and the repeated yes arm backtracks to its second literal branch twice."
       ]
     }
   ]

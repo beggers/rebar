@@ -1,8 +1,9 @@
 # RBR-0191: Catch bounded quantified alternation-heavy two-arm conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published benchmark surface so the bounded quantified alternation-heavy two-arm conditional workflows supported by `RBR-0190` produce real `rebar` timings as soon as that exact quantified follow-on lands.
@@ -27,3 +28,6 @@ Created: 2026-03-13
 - Build on `RBR-0190`.
 - Keep this slice in the existing `conditional_group_exists_boundary` manifest rather than inventing a second benchmark family for the same bounded two-arm conditional surface.
 - This task exists so the queue does not widen into the quantified follow-on and then leave that newly supported behavior missing from benchmark reporting.
+
+## Completion Note
+- Repointed the four alternation-heavy measured rows in `conditional_group_exists_boundary.json` to the bounded quantified alternation-heavy two-arm conditional slice from `RBR-0190`, regenerated `reports/benchmarks/latest.json` with the same `322` total / `277` measured / `45` known-gap contract, and updated the benchmark assertion coverage to the new quantified patterns and haystacks.
