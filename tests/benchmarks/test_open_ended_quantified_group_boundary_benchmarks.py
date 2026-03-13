@@ -62,12 +62,12 @@ class OpenEndedQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 2,
-                    "measured_workloads": 24,
-                    "module_workloads": 26,
+                    "known_gap_count": 1,
+                    "measured_workloads": 30,
+                    "module_workloads": 31,
                     "parser_workloads": 0,
                     "regression_workloads": 0,
-                    "total_workloads": 26,
+                    "total_workloads": 31,
                 },
             )
 
@@ -85,15 +85,15 @@ class OpenEndedQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(scorecard["implementation"]["timing_path"], "source-tree-shim")
         self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
-        self.assertEqual(scorecard["summary"]["total_workloads"], 26)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 24)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 2)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 5)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 12)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 9)
+        self.assertEqual(scorecard["summary"]["total_workloads"], 31)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 30)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 1)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 6)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 14)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 11)
         self.assertEqual(scorecard["environment"]["runner_version"], "phase2")
-        self.assertEqual(scorecard["families"]["module"]["workload_count"], 26)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 2)
+        self.assertEqual(scorecard["families"]["module"]["workload_count"], 31)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 1)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
         self.assertEqual(scorecard["artifacts"]["manifest"], "benchmarks/workloads/open_ended_quantified_group_boundary.json")
         self.assertEqual(scorecard["artifacts"]["manifest_id"], "open-ended-quantified-group-boundary")
@@ -101,10 +101,10 @@ class OpenEndedQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 
         manifest_summary = scorecard["manifests"]["open-ended-quantified-group-boundary"]
-        self.assertEqual(manifest_summary["workload_count"], 26)
-        self.assertEqual(manifest_summary["selected_workload_count"], 26)
-        self.assertEqual(manifest_summary["measured_workloads"], 24)
-        self.assertEqual(manifest_summary["known_gap_count"], 2)
+        self.assertEqual(manifest_summary["workload_count"], 31)
+        self.assertEqual(manifest_summary["selected_workload_count"], 31)
+        self.assertEqual(manifest_summary["measured_workloads"], 30)
+        self.assertEqual(manifest_summary["known_gap_count"], 1)
         self.assertEqual(manifest_summary["readiness"], "partial")
         self.assertEqual(
             manifest_summary["operations"],
@@ -118,6 +118,12 @@ class OpenEndedQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
             "module-compile-named-open-ended-group-broader-range-warm-str",
             "module-search-named-open-ended-group-broader-range-lower-bound-de-warm-str",
             "pattern-fullmatch-named-open-ended-group-broader-range-third-repetition-de-purged-str",
+            "module-compile-numbered-open-ended-group-broader-range-conditional-cold-str",
+            "module-search-numbered-open-ended-group-broader-range-conditional-warm-gap",
+            "pattern-fullmatch-numbered-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-str",
+            "module-compile-named-open-ended-group-broader-range-conditional-warm-str",
+            "module-search-named-open-ended-group-broader-range-conditional-fourth-repetition-de-warm-str",
+            "pattern-fullmatch-named-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-str",
         }
         for workload_id in measured_ids:
             with self.subTest(workload_id=workload_id):
@@ -129,7 +135,6 @@ class OpenEndedQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertIsInstance(workload["speedup_vs_cpython"], float)
 
         gap_ids = {
-            "module-search-numbered-open-ended-group-broader-range-conditional-warm-gap",
             "pattern-fullmatch-named-open-ended-group-broader-range-backtracking-heavy-purged-gap",
         }
         for workload_id in gap_ids:

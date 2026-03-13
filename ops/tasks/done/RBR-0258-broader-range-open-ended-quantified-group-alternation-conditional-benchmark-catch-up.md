@@ -1,8 +1,9 @@
 # RBR-0258: Catch broader-range open-ended quantified-group alternation plus conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published benchmark surface so the broader-range open-ended grouped-alternation-plus-conditional `{2,}` workflows supported by `RBR-0257` produce real `rebar` timings before the grouped frontier rolls into the broader-range backtracking-heavy follow-on.
@@ -28,3 +29,4 @@ Created: 2026-03-13
 - Build on `RBR-0257`.
 - Reuse the broader-range grouped-conditional anchor added by `RBR-0255` instead of forking another manifest.
 - This task exists so the queue does not reach broader-range open-ended grouped-conditional parity and then leave that newly supported slice absent from benchmark reporting.
+- Completed 2026-03-13: promoted `module-search-numbered-open-ended-group-broader-range-conditional-warm-gap` into measured coverage, added the adjacent numbered and named `{2,}` grouped-conditional compile/search/fullmatch rows in `benchmarks/workloads/open_ended_quantified_group_boundary.json`, updated benchmark expectation coverage, and republished `reports/benchmarks/latest.json` at 447 workloads with 413 measured timings and 34 explicit known gaps.
