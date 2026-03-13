@@ -1,6 +1,6 @@
 # RBR-0130: Publish a bounded omitted-no-arm conditional replacement correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,10 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0108` and `RBR-0109`.
 - This task exists so the queue reopens after `RBR-0129` with the smallest existing conditional-replacement gap instead of jumping straight to nested conditionals, quantified conditionals, or a vague broader-backtracking bucket.
+
+## Completion
+- Added `tests/conformance/fixtures/conditional_group_exists_no_else_replacement_workflows.json` with eight bounded `sub()`/`subn()` module and compiled-`Pattern` cases for numbered and named omitted-no-arm conditional replacements.
+- Wired the manifest into `python/rebar_harness/correctness.py` so the default combined publication now includes the new conditional replacement pack.
+- Added `tests/conformance/test_correctness_conditional_group_exists_no_else_replacement_workflows.py` and refreshed default-report assertions in `tests/conformance/test_correctness_conditional_group_exists_empty_else_alternation_workflows.py` plus `tests/python/test_readme_reporting.py`.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports 248 total cases across 37 manifests with 240 passes and 8 honest `unimplemented` outcomes for the newly published conditional replacement slice.
+- Verified with `python3 -m unittest tests.conformance.test_correctness_conditional_group_exists_no_else_replacement_workflows tests.conformance.test_correctness_conditional_group_exists_empty_else_alternation_workflows tests.python.test_readme_reporting`.

@@ -41,10 +41,17 @@ EXPECTED_MANIFEST_IDS = [
     "optional-group-workflows",
     "exact-repeat-quantified-group-workflows",
     "ranged-repeat-quantified-group-workflows",
+    "wider-ranged-repeat-quantified-group-workflows",
     "optional-group-alternation-workflows",
     "conditional-group-exists-workflows",
     "conditional-group-exists-no-else-workflows",
+    "conditional-group-exists-no-else-replacement-workflows",
     "conditional-group-exists-empty-else-workflows",
+    "conditional-group-exists-empty-else-alternation-workflows",
+    "conditional-group-exists-empty-yes-else-workflows",
+    "conditional-group-exists-fully-empty-workflows",
+    "conditional-group-exists-assertion-diagnostics",
+    "quantified-alternation-workflows",
 ]
 
 
