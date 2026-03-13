@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is widening a real Rust-backed subset one bounded regex slice at a time; the published slice is coherent, but the project is still far from drop-in `re` parity. |
 | Delivery estimate | Foundation work is complete, the published slice is currently fully passing, and benchmark reporting is live, but the Rust-backed surface is still narrow and not ready for broad speed claims. |
-| Current milestone | Milestone 2 has closed the nested open-ended grouped-alternation parity gap; the next planning pass needs to seed the next bounded frontier and matching benchmark catch-up before broader counted ranges reopen the surface. |
-| Work queue | `0` ready, `0` in progress, `268` done, `0` blocked |
+| Current milestone | Milestone 2 has closed the nested open-ended grouped-alternation parity gap; the immediate follow-on is `RBR-0266`, which catches that newly landed slice up on the Python-path benchmark surface before broader counted ranges reopen. |
+| Work queue | `0` ready, `0` in progress, `269` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -35,19 +35,19 @@ _These correctness counts cover only the published slice. Overall delivery estim
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/usr/bin/python3`) |
-| Published workloads | `452` |
-| Workloads with real `rebar` timings | `419` |
-| Known-gap workloads | `33` |
+| Published workloads | `456` |
+| Workloads with real `rebar` timings | `424` |
+| Known-gap workloads | `32` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native sidecars are checked in separately at [`reports/benchmarks/native_full.json`](reports/benchmarks/native_full.json) for the latest built-native full-suite run and [`reports/benchmarks/native_smoke.json`](reports/benchmarks/native_smoke.json) for the smoke slice._
 
-_README speedup rollups stay omitted while only `419` of `452` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `424` of `456` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- Seed the next bounded regex frontier now that the nested open-ended grouped-alternation slice is passing end to end.
+- Land `RBR-0266` so the newly supported nested open-ended grouped-alternation slice reaches Python-path benchmark coverage before broader counted ranges reopen.
 
 ### Current Risks
 

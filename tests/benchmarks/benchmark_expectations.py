@@ -152,11 +152,15 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "wider-ranged-repeat-quantified-group-boundary": {
-        "known_gap_count": 2,
+        "known_gap_count": 1,
         "representative_known_gap_workload_ids": (
             "module-search-numbered-wider-ranged-repeat-group-broader-range-cold-gap",
         ),
-        "representative_measured_workload_ids": (),
+        "representative_measured_workload_ids": (
+            "module-search-numbered-wider-ranged-repeat-group-open-ended-lower-bound-bc-warm-str",
+            "pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-gap",
+            "pattern-fullmatch-named-wider-ranged-repeat-group-open-ended-fourth-repetition-de-purged-str",
+        ),
     },
     "open-ended-quantified-group-boundary": {
         "known_gap_count": 0,
