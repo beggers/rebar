@@ -13,13 +13,11 @@
     "block_on_clean_exit_without_terminal_state": true
   },
   "git_policy": {
-    "auto_commit": true,
     "auto_push": true,
     "push_remote": "origin",
     "push_branch": "main",
     "command_timeout_seconds": 30,
-    "push_timeout_seconds": 120,
-    "commit_message_prefix": "rebar: autonomous progress update"
+    "push_timeout_seconds": 120
   },
   "reporting": {
     "status_json_path": ".rebar/runtime/dashboard.json",

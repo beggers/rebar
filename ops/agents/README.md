@@ -20,5 +20,6 @@ Each enabled `*.json` file in this directory defines one agent that the forever 
 - `USER-ASK` items that concern the harness should be treated as supervisor-owned work.
 - `USER-ASK` notes belong in `ops/user_asks/inbox/`, not in `ops/tasks/ready/`.
 - The current harness has one shared tracked task lane: `ready -> in_progress -> done|blocked`.
-- Until the loop learns routed queues, only the Feature Implementation Agent should use `dispatch.mode = "task_queue"` against `ready/`.
+- Task workers may share `ready/` when they route claims by task `Owner:` instead of by separate directories.
+- The current owner-routed task workers are `feature-implementation` for feature/parity work and `architecture-implementation` for refactor/architecture work.
 - Specialist agents that plan, review, report, or repair outside the queue should usually use `every_cycle` or `interval`.

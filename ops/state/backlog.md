@@ -1,19 +1,19 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now has the broader `{1,4}` grouped-alternation slice published on both the correctness and Python-path benchmark surfaces; the active frontier now reopens grouped-conditionals through that same broader counted-repeat envelope with `RBR-0270`.
+Milestone 2 now has the broader `{1,4}` grouped-alternation slice benchmark-caught-up and the adjacent broader grouped-conditional pack published; the active frontier is now converting that `{1,4}` grouped-conditional slice behind `rebar._rebar` with `RBR-0271`.
 
 ## Ordered Work
-1. Land `RBR-0270` to publish the broader `{1,4}` wider-ranged-repeat grouped-alternation-plus-conditional slice `a((bc|de){1,4})?(?(1)d|e)` / `a(?P<outer>(bc|de){1,4})?(?(outer)d|e)`, then keep parity and Python-path benchmark catch-up sequenced directly behind it.
+1. Land `RBR-0271` to convert the broader `{1,4}` wider-ranged-repeat grouped-alternation-plus-conditional slice `a((bc|de){1,4})?(?(1)d|e)` / `a(?P<outer>(bc|de){1,4})?(?(outer)d|e)` into Rust-backed parity, then keep Python-path benchmark catch-up sequenced directly behind it.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
 - Prefer replacing vague items with concrete task files instead of growing this document indefinitely.
 - Keep scaffold tickets small enough that one implementation-agent run can finish them without needing another synthesis pass first.
 - Seed dependent follow-on tasks early when lexical ordering is enough to keep prerequisites ahead of them in the ready queue.
-- With `RBR-0269` landed, treat the broader `{1,4}` wider-ranged-repeat grouped-alternation slice as part of both the tracked Rust-backed and Python-path benchmark baselines, keep the broadened 701-case, 81-manifest correctness surface with zero published gaps plus the 461-workload, 30-manifest, 430-measured, 31-gap benchmark surface explicit, and let `RBR-0270` reopen grouped-conditionals through that broader counted-repeat envelope.
+- With `RBR-0269` and `RBR-0270` landed, treat the broader `{1,4}` wider-ranged-repeat grouped-alternation slice as part of both the tracked Rust-backed and Python-path benchmark baselines, keep the adjacent broader grouped-conditional pack explicit as an 82-manifest, 715-case correctness surface with 701 passes and 14 honest `unimplemented` outcomes plus the 461-workload, 30-manifest, 430-measured, 31-gap benchmark surface, and let `RBR-0271` convert that broader grouped-conditional slice behind `rebar._rebar`.
 - Keep harness-standardization work ahead of another bespoke harness rewrite here: with `RBR-0262` and `RBR-0263` landed, reopen syntax through the already-anchored wider-ranged-repeat benchmark manifest before inventing another cleanup-only pass.
-- Keep the broader `{1,4}` grouped-conditional follow-on on the existing `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.json` path; do not fork a second benchmark family when parity and Python-path benchmark catch-up are queued behind `RBR-0270`.
+- Keep the broader `{1,4}` grouped-conditional follow-on on the existing `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.json` path; do not fork a second benchmark family when parity and Python-path benchmark catch-up are queued behind `RBR-0271`.
 - After `RBR-0188`, extend the queue through one bounded quantified alternation-heavy two-arm conditional slice as `RBR-0189` through `RBR-0191`, pinned to `a(b)?c(?(1)(de|df)|(eg|eh)){2}` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}`, so quantified composition follows the newly reopened two-arm alternation frontier through one exact numbered/named pair instead of another vague backtracking bucket.
 - After `RBR-0194`, extend the queue through one bounded alternation-heavy two-arm conditional replacement slice as `RBR-0195` through `RBR-0197`, pinned to `a(b)?c(?(1)(de|df)|(eg|eh))` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` through `sub()` and `subn()`, so replacement-conditioned work reopens through one exact alternation-heavy follow-on before nested replacement-conditioned flows, quantified replacement-conditioned conditionals, branch-local-backreference arms, or broader backtracking reopen the frontier.
 - After `RBR-0197`, extend the queue through one bounded nested two-arm conditional replacement slice as `RBR-0198` through `RBR-0200`, pinned to `a(b)?c(?(1)(?(1)d|e)|f)` and `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` through `sub()` and `subn()`, so replacement-conditioned work reopens through one exact nested follow-on before quantified replacement-conditioned conditionals, branch-local-backreference arms, or broader backtracking reopen the frontier.

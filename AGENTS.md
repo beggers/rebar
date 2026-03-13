@@ -3,6 +3,8 @@
 ## Mission
 - Build `rebar` into a Rust-backed, CPython-facing, bug-for-bug compatible replacement for Python's `re` module that can eventually beat CPython across compile, match, and other common `re` workflows without regressing accepted syntax, public API behavior, parse trees, or diagnostics.
 - The current phase is infrastructure-first: harness, spec, correctness corpus, and benchmarks come before serious optimization work.
+- The target repository shape is a standard-looking Python library codebase with Rust implementation underneath, a huge differential pytest suite that runs the same assertions against `re` and `rebar`, and a huge Python-based benchmark suite that runs the same workloads against both.
+- Prefer plain Python and Rust source files over JSON blobs, bespoke intermediate data layers, or Rust-only test scaffolding. We do not need Rust tests in this repo.
 
 ## Mandatory Read Order
 1. `README.md`
@@ -23,6 +25,7 @@
 - Must keep the harness and `ops/user_asks/` flow accurate enough that the next agent does not need to rediscover context.
 - Should treat stalled progress, harness failures, or workflow bottlenecks as problems it is expected to fix directly.
 - Should route harness-oriented `USER-ASK`s itself instead of pushing them into the implementation task queue.
+- Should inspect the quality of recent sub-agent work every cycle and retune weak prompts or dispatch policy immediately, preferably by deleting confusing prompt text before adding more.
 
 ### Implementation Agent
 - Owns exactly one concrete task at a time.
@@ -34,10 +37,10 @@
 - The forever loop loads enabled agent specs from `ops/agents/*.json`.
 - Exactly one enabled agent with `kind: supervisor` must exist; that agent runs first every cycle.
 - Other agents are optional and are entirely under supervisor control.
-- The current intended order is: supervisor, architecture, feature planning, feature implementation, QA/testing, implementation faithfulness, cleanup, then reporting.
+- The current intended order is: supervisor, architecture, architecture implementation, feature planning, feature implementation, QA/testing, implementation faithfulness, cleanup, then reporting.
 
 ## Task Lifecycle
-- `ops/tasks/ready/`: actionable tasks that an implementation agent can pick up.
+- `ops/tasks/ready/`: actionable tasks that an implementation agent can pick up, routed by the task `Owner:` field when multiple implementation agents share the queue.
 - `ops/tasks/in_progress/`: tasks currently being executed or awaiting supervisor triage.
 - `ops/tasks/done/`: completed tasks with a short completion note.
 - `ops/tasks/blocked/`: tasks that hit a concrete blocker and need supervisor attention.
@@ -46,6 +49,12 @@
 
 When you finish work, move the task file to `done/` or `blocked/` and update its notes. Do not leave durable status only in runtime logs.
 
+## Commit Policy
+- The harness commits tracked changes immediately after each agent run.
+- Commit subjects should read as `<agent-name>: <brief description>`.
+- Commit bodies should capture more detail about what changed and what was verified.
+- End every run with a concise final summary that makes those generated commits accurate and readable.
+
 ## State Rules
 - Durable project context lives in tracked files under `ops/state/`.
 - Ephemeral execution artifacts live under ignored `.rebar/`.
@@ -53,9 +62,11 @@ When you finish work, move the task file to `done/` or `blocked/` and update its
 - Update `ops/state/current_status.md` whenever the active phase, key risks, or next steps materially change.
 - Feature Planning owns keeping `ops/state/backlog.md` and the queue/frontier portions of `ops/state/current_status.md` aligned with the actual ready queue.
 - Runtime health for the forever loop lives in `.rebar/runtime/loop_state.json`, `.rebar/runtime/dashboard.md`, `.rebar/runtime/task_state.json`, `.rebar/runtime/loop.log`, and per-run directories under `.rebar/runtime/runs/`.
+- The supervisor should watch the tracked JSON-blob count in runtime reporting and retune the harness if architecture-oriented agents are not burning it down.
 
 ## Project Priorities
 1. Nail the drop-in `re` compatibility target and parser scope against CPython.
-2. Build correctness infrastructure before optimization claims.
-3. Add benchmarks that measure parser and module-level performance against CPython.
-4. Only then push hard on Rust implementation speed.
+2. Build a huge backend-parameterized differential pytest suite that runs against both `re` and `rebar` and confirms they behave the same through the public Python surface.
+3. Build a huge Python-based benchmark suite that runs equivalent workloads against both `re` and `rebar`.
+4. Remove JSON blobs and other non-standard data-storage intermediaries so the repo looks as close as possible to a standard Python library codebase.
+5. Only then push hard on Rust implementation speed.

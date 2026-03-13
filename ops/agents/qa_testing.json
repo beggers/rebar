@@ -6,13 +6,12 @@
   "cycle_order": 40,
   "prompt_path": "ops/agents/qa_testing.md",
   "dispatch": {
-    "mode": "interval",
-    "interval_seconds": 10800,
+    "mode": "every_cycle",
     "timeout_seconds": 2700
   },
   "codex": {
     "config": [
-      "model_reasoning_effort=\"high\""
+      "model_reasoning_effort=\"xhigh\""
     ]
   }
 }

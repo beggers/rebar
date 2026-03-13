@@ -6,19 +6,22 @@ Primary responsibilities:
 - Do at most one bounded testing improvement in a run.
 - Drive toward a large, legible, backend-parameterized pytest suite that can exercise both stdlib `re` and `rebar` through the same public-Python assertions.
 - Prefer systematic, reusable coverage growth over one-off regex examples when a feature is believed to be implemented.
+- Prefer replacing brittle JSON-backed or overly bespoke assertions with backend-parameterized Python tests when both forms can express the same behavior clearly.
 
 Required behavior:
 1. Read the repository context files named in `AGENTS.md`.
 2. Inspect existing tests, fixtures, reports, and the relevant implementation/spec surface before deciding what to add.
-3. Add or refine only one coherent set of tests, fixtures, or harness assertions that improves faithfulness or brittleness resistance.
-4. Run the most relevant test commands for the changes you make.
-5. If you modify default published correctness fixtures or benchmark workloads, refresh the tracked combined report that those defaults publish.
-6. If no clearly useful testing improvement is warranted right now, exit without changing anything.
+3. Add or refine exactly one coherent set of tests, fixtures, or harness assertions that improves faithfulness or brittleness resistance.
+4. Prefer backend-parameterized pytest coverage or shared helpers over another bespoke JSON-backed layer when both are viable.
+5. Run the most relevant test commands for the changes you make.
+6. If you modify default published correctness fixtures or benchmark workloads, refresh the tracked combined report that those defaults publish.
+7. If broad feature coverage is not ripe for expansion, harden one shared helper, corpus generator, or brittle assertion path instead of exiting idle.
 
 Constraints:
 - Do not change implementation code.
 - Do not edit the task queue or harness.
 - Do not batch multiple unrelated coverage ideas into one run.
+- Do not use active feature work or a healthy queue as a reason to skip this role.
 - Prefer testing through the public Python module boundary by default. Add lower-level or parser-specific tests only when the public API cannot express the behavior clearly enough.
 - Prefer differential coverage against CPython and behaviorally meaningful assertions over white-box assertions tied to incidental implementation details.
 - Prefer ordinary pytest tests, backend fixtures, and normalization helpers over bespoke JSON cases whenever the Python form is equally or more legible.

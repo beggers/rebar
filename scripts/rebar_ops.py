@@ -5,6 +5,7 @@ import argparse
 import atexit
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -254,7 +255,7 @@ def git_head() -> str:
 def git_upstream_ref(config: dict[str, Any]) -> str:
     policy = config.get("git_policy", {})
     remote = str(policy.get("push_remote", "origin"))
-    branch = str(policy.get("push_branch", git_branch() or "main"))
+    branch = str(policy.get("push_branch") or git_branch() or "main")
     return f"{remote}/{branch}"
 
 
@@ -280,6 +281,15 @@ def git_ahead_behind_counts(config: dict[str, Any]) -> tuple[int | None, int | N
         return int(parts[0]), int(parts[1])
     except ValueError:
         return None, None
+
+
+def tracked_json_blob_paths() -> list[str]:
+    output = git_stdout("ls-files", "*.json")
+    return [line for line in output.splitlines() if line]
+
+
+def tracked_json_blob_count() -> int:
+    return len(tracked_json_blob_paths())
 
 
 def recent_git_commits(limit: int) -> list[dict[str, str]]:
@@ -392,11 +402,43 @@ def reroute_misplaced_user_asks() -> list[dict[str, Any]]:
     return actions
 
 
-def claim_tasks(queue: str, claim_to: str, limit: int) -> list[Path]:
+def task_metadata_value(path: Path, key: str) -> str | None:
+    prefix = f"{key}:"
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return None
+    for line in lines:
+        if line.startswith(prefix):
+            value = line.partition(":")[2].strip()
+            return value or None
+        if line.startswith("## "):
+            break
+    return None
+
+
+def claimable_task_files(queue: str, accepted_owners: set[str] | None = None) -> list[Path]:
+    owners = None if accepted_owners is None else {owner.strip() for owner in accepted_owners}
+    claimable: list[Path] = []
+    for path in list_task_files(queue):
+        if owners is not None:
+            owner = task_metadata_value(path, "Owner") or ""
+            if owner not in owners:
+                continue
+        claimable.append(path)
+    return claimable
+
+
+def claim_tasks(
+    queue: str,
+    claim_to: str,
+    limit: int,
+    accepted_owners: set[str] | None = None,
+) -> list[Path]:
     claimed: list[Path] = []
     dest_dir = TASK_ROOT / claim_to
     dest_dir.mkdir(parents=True, exist_ok=True)
-    for src in list_task_files(queue)[:limit]:
+    for src in claimable_task_files(queue, accepted_owners)[:limit]:
         dest = dest_dir / src.name
         src.rename(dest)
         claimed.append(dest)
@@ -1090,6 +1132,11 @@ def render_prompt(agent: AgentSpec, config: dict[str, Any], task_path: Path | No
             "",
             body,
             "",
+            "Commit policy:",
+            "- End your run with a concise final summary of what changed and what you verified.",
+            "- If tracked files changed, the harness will commit them immediately after your run.",
+            "- Generated commit subjects use the format `<agent-name>: <brief description>` and the body is derived from your final message plus the changed-file list.",
+            "",
             "Leave durable state in tracked files under ops/ when it matters.",
         ]
     )
@@ -1269,6 +1316,7 @@ def normalize_report_run(paths: dict[str, Path], raw_run: dict[str, Any]) -> dic
 def build_report_anomalies(
     last_cycle_runs: list[dict[str, Any]],
     recovery_actions: list[dict[str, Any]],
+    commit_actions: list[dict[str, Any]],
     git_action: dict[str, Any],
     *,
     ahead_of_upstream: int | None = None,
@@ -1311,6 +1359,16 @@ def build_report_anomalies(
         }
         for action in recovery_actions
     )
+    for action in commit_actions:
+        for message in action.get("errors", []):
+            anomalies.append(
+                {
+                    "type": "agent_commit_error",
+                    "severity": "error",
+                    "agent_name": action.get("agent_name"),
+                    "message": message,
+                }
+            )
     for message in git_action.get("errors", []):
         if (
             isinstance(message, str)
@@ -1583,6 +1641,17 @@ def agent_last_state(loop_state: dict[str, Any], agent_name: str) -> dict[str, A
     return agent_state if isinstance(agent_state, dict) else {}
 
 
+def accepted_task_owners(agent: AgentSpec) -> set[str] | None:
+    owners = agent.dispatch.get("accepted_owners")
+    if owners is None:
+        return None
+    if isinstance(owners, str):
+        return {owners}
+    if isinstance(owners, list):
+        return {str(owner) for owner in owners}
+    return None
+
+
 def agent_is_due(agent: AgentSpec, loop_state: dict[str, Any], *, force: bool = False) -> bool:
     if not force and agent_in_environment_backoff(agent, loop_state):
         return False
@@ -1601,7 +1670,7 @@ def agent_is_due(agent: AgentSpec, loop_state: dict[str, Any], *, force: bool = 
         return delta.total_seconds() >= interval_seconds
     if mode == "task_queue":
         queue = str(agent.dispatch.get("queue", "ready"))
-        return bool(list_task_files(queue))
+        return bool(claimable_task_files(queue, accepted_task_owners(agent)))
     raise RuntimeError(f"Unsupported dispatch mode for {agent.name}: {mode}")
 
 
@@ -1622,11 +1691,13 @@ def dispatch_agent(
         queue = str(agent.dispatch.get("queue", "ready"))
         claim_to = str(agent.dispatch.get("claim_to", "in_progress"))
         max_runs = int(agent.dispatch.get("max_runs_per_cycle", 1))
-        if bool(agent.dispatch.get("require_write_probe", False)) and list_task_files(queue):
+        task_owners = accepted_task_owners(agent)
+        claimable = claimable_task_files(queue, task_owners)
+        if bool(agent.dispatch.get("require_write_probe", False)) and claimable:
             probe_result = run_write_probe(agent, config)
             if probe_result.environment_issue is not None or probe_result.exit_code != 0:
                 return [probe_result]
-        claimed = claim_tasks(queue, claim_to, max_runs)
+        claimed = claim_tasks(queue, claim_to, max_runs, task_owners)
         return [run_agent(agent, config, task_path=task_path) for task_path in claimed]
     raise RuntimeError(f"Unsupported dispatch mode for {agent.name}: {mode}")
 
@@ -1790,108 +1861,162 @@ def prune_run_dirs(config: dict[str, Any], paths: dict[str, Path]) -> dict[str, 
     return {"keep_run_dirs": keep, "pruned_count": len(pruned), "pruned_paths": pruned}
 
 
-def compose_commit_message(
-    config: dict[str, Any],
-    results: list[RunResult],
+def result_last_message_text(result: RunResult) -> str:
+    return read_text_if_exists(result.run_dir / "last_message.md").strip()
+
+
+def commit_summary_text(text: str) -> str | None:
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("```"):
+            continue
+        if line.startswith("- ") or line.startswith("* "):
+            line = line[2:].strip()
+        line = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", line)
+        line = line.replace("`", "").strip().rstrip(".")
+        if line:
+            return line
+    return None
+
+
+def truncate_commit_subject(text: str, limit: int = 72) -> str:
+    cleaned = " ".join(text.split())
+    if len(cleaned) <= limit:
+        return cleaned
+    return cleaned[: max(0, limit - 3)].rstrip() + "..."
+
+
+def compose_agent_commit_message(
+    agent_name: str,
+    agent_results: list[RunResult],
     recovery_actions: list[dict[str, Any]],
+    changed_files: list[str],
 ) -> str:
-    prefix = str(
-        config.get("git_policy", {}).get(
-            "commit_message_prefix", "rebar: autonomous progress update"
-        )
-    )
-    completed = sorted(
-        {
-            result.task_final_path.name
-            for result in results
-            if result.task_final_path is not None and result.task_final_status == "done"
-        }
-    )
-    blocked = sorted(
-        {
-            result.task_final_path.name
-            for result in results
-            if result.task_final_path is not None and result.task_final_status == "blocked"
-        }
-    )
+    summaries = [
+        summary
+        for summary in (commit_summary_text(result_last_message_text(result)) for result in agent_results)
+        if summary
+    ]
+    task_names = [
+        result.task_initial_path.name
+        for result in agent_results
+        if result.task_initial_path is not None
+    ]
+    fallback = task_names[0] if task_names else "update tracked files"
+    summary = summaries[0] if summaries else fallback
+    subject = truncate_commit_subject(f"{agent_name}: {summary}")
 
-    lines = [prefix, "", f"Cycle completed at {utcnow()}.", "", "Agent runs:"]
-    for result in results:
-        task_label = (
-            result.task_initial_path.name if result.task_initial_path is not None else "none"
-        )
-        lines.append(
-            f"- {result.agent_name}: exit={result.exit_code} timed_out={str(result.timed_out).lower()} task={task_label}"
-        )
-    if completed:
-        lines.extend(["", "Completed tasks:"])
-        for name in completed:
-            lines.append(f"- {name}")
-    if blocked:
-        lines.extend(["", "Blocked tasks:"])
-        for name in blocked:
-            lines.append(f"- {name}")
+    lines = [subject, "", f"Agent: {agent_name}", f"Committed at: {utcnow()}"]
+    if task_names:
+        lines.extend(["", "Tasks:"])
+        for task_name in task_names:
+            lines.append(f"- {task_name}")
+    if changed_files:
+        lines.extend(["", "Changed files:"])
+        for path in changed_files:
+            lines.append(f"- {path}")
     if recovery_actions:
-        lines.extend(["", "Recovery actions:"])
+        lines.extend(["", "Task actions:"])
         for action in recovery_actions:
-            lines.append(
-                f"- {action['task_name']}: {action['action']} -> {action['final_status']}"
-            )
-    lines.extend(["", TRAILER])
-    return "\n".join(lines) + "\n"
+            task_name = action.get("task_name", "unknown")
+            action_name = action.get("action", "unknown")
+            final_status = action.get("final_status", "unknown")
+            lines.append(f"- {task_name}: {action_name} -> {final_status}")
+    detail_blocks = [
+        (result.run_id, result_last_message_text(result))
+        for result in agent_results
+        if result_last_message_text(result)
+    ]
+    if detail_blocks:
+        lines.extend(["", "Details:"])
+        for run_id, block in detail_blocks:
+            lines.append(f"Run `{run_id}`:")
+            lines.append("")
+            lines.extend(block.splitlines())
+            lines.append("")
+    lines.append(TRAILER)
+    return "\n".join(lines).rstrip() + "\n"
 
 
-def maybe_commit_and_push(
+def maybe_commit_agent_changes(
     config: dict[str, Any],
-    results: list[RunResult],
+    agent: AgentSpec,
+    agent_results: list[RunResult],
     recovery_actions: list[dict[str, Any]],
-) -> dict[str, Any]:
+) -> dict[str, Any] | None:
+    if not agent_results or not git_worktree_dirty():
+        return None
+
+    command_timeout = int(config.get("git_policy", {}).get("command_timeout_seconds", 30))
+    action: dict[str, Any] = {
+        "agent_name": agent.name,
+        "commit_attempted": False,
+        "commit_created": False,
+        "commit_sha": None,
+        "subject": None,
+        "changed_files": [],
+        "errors": [],
+    }
+
+    try:
+        git_run("add", "-A", capture_output=True, timeout_seconds=command_timeout)
+    except subprocess.TimeoutExpired:
+        action["errors"].append(f"git add timed out after {command_timeout}s.")
+        return action
+
+    changed_files = [
+        line for line in git_stdout("diff", "--cached", "--name-only", "--").splitlines() if line
+    ]
+    if not changed_files:
+        return None
+
+    message = compose_agent_commit_message(agent.name, agent_results, recovery_actions, changed_files)
+    action["subject"] = message.splitlines()[0]
+    action["changed_files"] = changed_files
+    action["commit_attempted"] = True
+    try:
+        commit = git_run(
+            "commit",
+            "-F",
+            "-",
+            input_text=message,
+            timeout_seconds=command_timeout,
+        )
+    except subprocess.TimeoutExpired:
+        action["errors"].append(f"git commit timed out after {command_timeout}s.")
+        return action
+
+    if commit.returncode == 0:
+        action["commit_created"] = True
+        action["commit_sha"] = git_head()
+    else:
+        action["errors"].append((commit.stderr or commit.stdout or "git commit failed").strip())
+    return action
+
+
+def maybe_commit_and_push(config: dict[str, Any]) -> dict[str, Any]:
     policy = config.get("git_policy", {})
     remote = str(policy.get("push_remote", "origin"))
-    branch = str(policy.get("push_branch", git_branch() or "main"))
+    branch = str(policy.get("push_branch") or git_branch() or "main")
+    upstream = git_upstream_ref(config)
     command_timeout = int(policy.get("command_timeout_seconds", 30))
     push_timeout = int(policy.get("push_timeout_seconds", 120))
     action: dict[str, Any] = {
         "dirty_before": git_worktree_dirty(),
-        "commit_created": False,
-        "commit_sha": None,
         "fetch_attempted": False,
         "fetch_succeeded": False,
+        "merge_attempted": False,
+        "merge_succeeded": False,
         "push_attempted": False,
         "push_succeeded": False,
         "ahead_before_push": None,
         "behind_before_push": None,
+        "ahead_after_merge": None,
+        "behind_after_merge": None,
         "command_timeout_seconds": command_timeout,
         "push_timeout_seconds": push_timeout,
         "errors": [],
     }
-
-    if bool(policy.get("auto_commit", True)) and action["dirty_before"]:
-        try:
-            git_run("add", "-A", capture_output=True, timeout_seconds=command_timeout)
-        except subprocess.TimeoutExpired:
-            action["errors"].append(f"git add timed out after {command_timeout}s.")
-        else:
-            if git_worktree_dirty():
-                message = compose_commit_message(config, results, recovery_actions)
-                try:
-                    commit = git_run(
-                        "commit",
-                        "-F",
-                        "-",
-                        input_text=message,
-                        timeout_seconds=command_timeout,
-                    )
-                except subprocess.TimeoutExpired:
-                    action["errors"].append(f"git commit timed out after {command_timeout}s.")
-                else:
-                    if commit.returncode == 0:
-                        action["commit_created"] = True
-                        action["commit_sha"] = git_head()
-                    else:
-                        action["errors"].append(
-                            (commit.stderr or commit.stdout or "git commit failed").strip()
-                        )
 
     if bool(policy.get("auto_push", True)):
         action["fetch_attempted"] = True
@@ -1921,29 +2046,53 @@ def maybe_commit_and_push(
             action["errors"].append(
                 f"Unable to determine ahead/behind state for {remote}/{branch}."
             )
-        elif behind > 0:
-            if ahead > 0:
-                action["errors"].append(
-                    f"Local branch diverged from {remote}/{branch} after fetch "
-                    f"(ahead {ahead}, behind {behind}); skipped push."
-                )
-            else:
-                action["errors"].append(
-                    f"Local branch is behind {remote}/{branch} by {behind} commit(s) after fetch; skipped push."
-                )
-        elif ahead > 0:
-            action["push_attempted"] = True
-            try:
-                push = git_run("push", remote, branch, timeout_seconds=push_timeout)
-            except subprocess.TimeoutExpired:
-                action["errors"].append(f"git push timed out after {push_timeout}s.")
-            else:
-                if push.returncode == 0:
-                    action["push_succeeded"] = True
-                else:
-                    action["errors"].append(
-                        (push.stderr or push.stdout or "git push failed").strip()
+        else:
+            if behind > 0:
+                action["merge_attempted"] = True
+                try:
+                    merge = git_run(
+                        "merge",
+                        "--no-edit",
+                        upstream,
+                        timeout_seconds=command_timeout,
                     )
+                except subprocess.TimeoutExpired:
+                    action["errors"].append(
+                        f"git merge {upstream} timed out after {command_timeout}s."
+                    )
+                else:
+                    if merge.returncode == 0:
+                        action["merge_succeeded"] = True
+                        ahead, behind = git_ahead_behind_counts(config)
+                        action["ahead_after_merge"] = ahead
+                        action["behind_after_merge"] = behind
+                    else:
+                        action["errors"].append(
+                            (merge.stderr or merge.stdout or f"git merge {upstream} failed").strip()
+                        )
+            if action["merge_attempted"] and not action["merge_succeeded"]:
+                pass
+            elif ahead is None or behind is None:
+                action["errors"].append(
+                    f"Unable to determine ahead/behind state for {remote}/{branch} after merge."
+                )
+            elif behind > 0:
+                action["errors"].append(
+                    f"Local branch is still behind {remote}/{branch} by {behind} commit(s) after merge; skipped push."
+                )
+            elif ahead > 0:
+                action["push_attempted"] = True
+                try:
+                    push = git_run("push", remote, branch, timeout_seconds=push_timeout)
+                except subprocess.TimeoutExpired:
+                    action["errors"].append(f"git push timed out after {push_timeout}s.")
+                else:
+                    if push.returncode == 0:
+                        action["push_succeeded"] = True
+                    else:
+                        action["errors"].append(
+                            (push.stderr or push.stdout or "git push failed").strip()
+                        )
 
     action["dirty_after"] = git_worktree_dirty()
     action["head_after"] = git_head()
@@ -1953,6 +2102,7 @@ def maybe_commit_and_push(
 def build_anomalies(
     results: list[RunResult],
     recovery_actions: list[dict[str, Any]],
+    commit_actions: list[dict[str, Any]],
     git_action: dict[str, Any],
 ) -> list[dict[str, Any]]:
     anomalies: list[dict[str, Any]] = []
@@ -1989,6 +2139,16 @@ def build_anomalies(
         }
         for action in recovery_actions
     )
+    for action in commit_actions:
+        for message in action.get("errors", []):
+            anomalies.append(
+                {
+                    "type": "agent_commit_error",
+                    "severity": "error",
+                    "agent_name": action.get("agent_name"),
+                    "message": message,
+                }
+            )
     for message in git_action.get("errors", []):
         anomalies.append({"type": "git_sync_error", "severity": "error", "message": message})
     return anomalies
@@ -1999,6 +2159,7 @@ def update_loop_state(
     agents: list[AgentSpec],
     results: list[RunResult],
     recovery_actions: list[dict[str, Any]],
+    commit_actions: list[dict[str, Any]],
     git_action: dict[str, Any],
     prune_action: dict[str, Any],
 ) -> dict[str, Any]:
@@ -2011,11 +2172,15 @@ def update_loop_state(
     if not isinstance(totals, dict):
         totals = {}
 
-    anomalies = build_anomalies(results, recovery_actions, git_action)
+    anomalies = build_anomalies(results, recovery_actions, commit_actions, git_action)
     error_count = sum(1 for item in anomalies if item.get("severity") == "error")
     warning_count = sum(1 for item in anomalies if item.get("severity") == "warning")
     cycle_completed = sum(1 for result in results if result.task_final_status == "done")
     cycle_blocked = sum(1 for result in results if result.task_final_status == "blocked")
+    current_json_blob_count = tracked_json_blob_count()
+    previous_json_blob_count = state.get("tracked_json_blob_count")
+    if not isinstance(previous_json_blob_count, int):
+        previous_json_blob_count = current_json_blob_count
 
     agent_state = state.get("agents")
     if not isinstance(agent_state, dict):
@@ -2052,6 +2217,8 @@ def update_loop_state(
                 for agent in agents
             ],
             "queue_counts": queue_counts(),
+            "tracked_json_blob_count": current_json_blob_count,
+            "previous_tracked_json_blob_count": previous_json_blob_count,
             "last_cycle_runs": [
                 {
                     "agent_name": result.agent_name,
@@ -2070,6 +2237,7 @@ def update_loop_state(
                 }
                 for result in results
             ],
+            "last_agent_commits": commit_actions,
             "last_cycle_recovery_actions": recovery_actions,
             "last_cycle_anomalies": anomalies,
             "last_git_action": git_action,
@@ -2082,7 +2250,7 @@ def update_loop_state(
                 "tasks_completed": int(totals.get("tasks_completed", 0)) + cycle_completed,
                 "tasks_blocked": int(totals.get("tasks_blocked", 0)) + cycle_blocked,
                 "auto_commits": int(totals.get("auto_commits", 0))
-                + int(bool(git_action.get("commit_created"))),
+                + sum(1 for action in commit_actions if action.get("commit_created")),
                 "auto_pushes": int(totals.get("auto_pushes", 0))
                 + int(bool(git_action.get("push_succeeded"))),
                 "pruned_run_dirs": int(totals.get("pruned_run_dirs", 0))
@@ -2112,6 +2280,9 @@ def build_report(config: dict[str, Any]) -> dict[str, Any]:
     git_action = state.get("last_git_action", {})
     if not isinstance(git_action, dict):
         git_action = {}
+    commit_actions = state.get("last_agent_commits", [])
+    if not isinstance(commit_actions, list):
+        commit_actions = []
     raw_last_cycle_runs = state.get("last_cycle_runs", [])
     if not isinstance(raw_last_cycle_runs, list):
         raw_last_cycle_runs = []
@@ -2121,6 +2292,10 @@ def build_report(config: dict[str, Any]) -> dict[str, Any]:
         if isinstance(item, dict)
     ]
     ahead_of_upstream, behind_of_upstream = git_ahead_behind_counts(config)
+    current_json_blob_count = tracked_json_blob_count()
+    previous_json_blob_count = state.get("previous_tracked_json_blob_count")
+    if not isinstance(previous_json_blob_count, int):
+        previous_json_blob_count = current_json_blob_count
 
     report = {
         "generated_at": utcnow(),
@@ -2135,6 +2310,9 @@ def build_report(config: dict[str, Any]) -> dict[str, Any]:
         ),
         "dirty_worktree": git_worktree_dirty(),
         "queue_counts": queue_counts(),
+        "tracked_json_blob_count": current_json_blob_count,
+        "tracked_json_blob_previous": previous_json_blob_count,
+        "tracked_json_blob_delta": current_json_blob_count - previous_json_blob_count,
         "user_ask_counts": user_ask_counts(),
         "totals": state.get("totals", {}),
         "agents": [
@@ -2151,11 +2329,13 @@ def build_report(config: dict[str, Any]) -> dict[str, Any]:
         "last_cycle_anomalies": build_report_anomalies(
             last_cycle_runs,
             recovery_actions,
+            commit_actions,
             git_action,
             ahead_of_upstream=ahead_of_upstream,
             behind_of_upstream=behind_of_upstream,
         ),
         "last_cycle_recovery_actions": recovery_actions,
+        "last_agent_commits": commit_actions,
         "last_git_action": git_action,
         "last_prune_action": state.get("last_prune_action", {}),
         "recent_done_tasks": recent_tasks("done", recent_tasks_limit),
@@ -2193,6 +2373,8 @@ def render_markdown_report(report: dict[str, Any]) -> str:
     lines.extend(["", "## Queue Counts"])
     for key, value in report.get("queue_counts", {}).items():
         lines.append(f"- {key}: `{value}`")
+    lines.append(f"- tracked_json_blob_count: `{report.get('tracked_json_blob_count')}`")
+    lines.append(f"- tracked_json_blob_delta: `{report.get('tracked_json_blob_delta')}`")
 
     lines.extend(["", "## Active Agents"])
     agents = report.get("agents", [])
@@ -2222,11 +2404,33 @@ def render_markdown_report(report: dict[str, Any]) -> str:
     lines.extend(["", "## Last Git Action"])
     last_git = report.get("last_git_action", {})
     if isinstance(last_git, dict):
-        for key in ("commit_created", "commit_sha", "push_attempted", "push_succeeded", "dirty_after"):
+        for key in (
+            "merge_attempted",
+            "merge_succeeded",
+            "ahead_before_push",
+            "behind_before_push",
+            "ahead_after_merge",
+            "behind_after_merge",
+            "push_attempted",
+            "push_succeeded",
+            "dirty_after",
+        ):
             if key in last_git:
                 lines.append(f"- {key}: `{last_git[key]}`")
         for message in last_git.get("errors", []):
             lines.append(f"- git_error: `{message}`")
+
+    lines.extend(["", "## Last Agent Commits"])
+    commit_actions = report.get("last_agent_commits", [])
+    if commit_actions:
+        for action in commit_actions:
+            lines.append(
+                f"- `{action.get('agent_name')}` sha=`{action.get('commit_sha')}` subject=`{action.get('subject')}`"
+            )
+            for message in action.get("errors", []):
+                lines.append(f"- commit_error: `{message}`")
+    else:
+        lines.append("- none")
 
     lines.extend(["", "## Last Cycle Anomalies"])
     anomalies = report.get("last_cycle_anomalies", [])
@@ -2331,23 +2535,46 @@ def run_cycle(
     if not isinstance(loop_state, dict):
         loop_state = {}
 
+    recovery_actions = list(user_ask_actions)
+    recovery_actions.extend(stale_actions)
     results: list[RunResult] = []
+    commit_actions: list[dict[str, Any]] = []
     forced = force_agents or set()
     for agent in agents:
         force = agent.name in forced or (force_supervisor and agent.kind == "supervisor")
-        results.extend(dispatch_agent(agent, config, loop_state, force=force))
-
-    recovery_actions = list(user_ask_actions)
-    recovery_actions.extend(stale_actions)
-    for result in results:
-        recovery_actions.extend(finalize_task_result(config, result, task_state))
+        agent_results = dispatch_agent(agent, config, loop_state, force=force)
+        if not agent_results:
+            continue
+        results.extend(agent_results)
+        agent_recovery_actions: list[dict[str, Any]] = []
+        for result in agent_results:
+            agent_recovery_actions.extend(finalize_task_result(config, result, task_state))
+        recovery_actions.extend(agent_recovery_actions)
+        write_json(paths["task_state"], task_state)
+        if git_worktree_dirty():
+            refresh_published_correctness_scorecard()
+            sync_readme_status(config)
+            commit_action = maybe_commit_agent_changes(
+                config,
+                agent,
+                agent_results,
+                agent_recovery_actions,
+            )
+            if commit_action is not None:
+                commit_actions.append(commit_action)
 
     write_json(paths["task_state"], task_state)
-    refresh_published_correctness_scorecard()
-    sync_readme_status(config)
     prune_action = prune_run_dirs(config, paths)
-    git_action = maybe_commit_and_push(config, results, recovery_actions)
-    state = update_loop_state(config, agents, results, recovery_actions, git_action, prune_action)
+    git_action = maybe_commit_and_push(config)
+    state = update_loop_state(
+        config,
+        agents,
+        results,
+        recovery_actions,
+        commit_actions,
+        git_action,
+        prune_action,
+    )
     refresh_reports(config)
 
     anomalies = state.get("last_cycle_anomalies", [])
@@ -2384,6 +2611,8 @@ def cmd_status(config: dict[str, Any]) -> int:
         "repo_root": report["repo_root"],
         "runtime_dir": str(runtime_paths(config)["artifact_root"]),
         "queue_counts": report["queue_counts"],
+        "tracked_json_blob_count": report["tracked_json_blob_count"],
+        "tracked_json_blob_delta": report["tracked_json_blob_delta"],
         "user_ask_counts": report["user_ask_counts"],
         "agents": report["agents"],
         "ahead_of_upstream": report["ahead_of_upstream"],

@@ -6,13 +6,12 @@
   "cycle_order": 20,
   "prompt_path": "ops/agents/architecture.md",
   "dispatch": {
-    "mode": "interval",
-    "interval_seconds": 21600,
+    "mode": "every_cycle",
     "timeout_seconds": 2700
   },
   "codex": {
     "config": [
-      "model_reasoning_effort=\"high\""
+      "model_reasoning_effort=\"xhigh\""
     ]
   }
 }
