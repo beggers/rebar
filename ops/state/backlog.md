@@ -4,23 +4,22 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0179` to convert the bounded quantified explicit-empty-else conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
-2. Land `RBR-0180` to catch bounded quantified explicit-empty-else conditional benchmarks up so that the accepted repeated explicit-empty-else slice reaches the published benchmark surface.
-3. Land `RBR-0181` to publish one bounded nested two-arm conditional correctness pack for `a(b)?c(?(1)(?(1)d|e)|f)` and `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` so the remaining `conditional_group_exists_boundary` gap turns into explicit published behavior rather than a lingering benchmark-only hole.
-4. Land `RBR-0182` to convert that bounded nested two-arm conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
-5. Land `RBR-0183` to catch bounded nested two-arm conditional benchmarks up so that the last currently queued `conditional_group_exists_boundary` gap reaches the published benchmark surface.
-6. Land `RBR-0184` to publish one strict built-native full-suite benchmark sidecar report for the existing combined workload set so native-path measurement no longer stops at the six-workload smoke artifact.
-7. Land `RBR-0185` to retire the three remaining numbered `module.sub()` conditional-replacement benchmark-only gaps across the no-else, explicit-empty-else, and fully-empty manifests before reopening broader backtracking-heavy conditional execution.
-8. Land `RBR-0186` to publish one bounded alternation-heavy two-arm conditional correctness pack for `a(b)?c(?(1)(de|df)|(eg|eh))` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` so broader backtracking-heavy conditional execution reopens through an explicit published slice instead of a vague frontier jump.
-9. Land `RBR-0187` to convert that bounded alternation-heavy two-arm conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
-10. Land `RBR-0188` to catch bounded alternation-heavy two-arm conditional benchmarks up so the new backtracking-heavier slice reaches the published benchmark surface immediately after parity lands.
+1. Land `RBR-0180` to catch bounded quantified explicit-empty-else conditional benchmarks up so that the accepted repeated explicit-empty-else slice reaches the published benchmark surface.
+2. Land `RBR-0181` to publish one bounded nested two-arm conditional correctness pack for `a(b)?c(?(1)(?(1)d|e)|f)` and `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` so the remaining `conditional_group_exists_boundary` gap turns into explicit published behavior rather than a lingering benchmark-only hole.
+3. Land `RBR-0182` to convert that bounded nested two-arm conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
+4. Land `RBR-0183` to catch bounded nested two-arm conditional benchmarks up so that the last currently queued `conditional_group_exists_boundary` gap reaches the published benchmark surface.
+5. Land `RBR-0184` to publish one strict built-native full-suite benchmark sidecar report for the existing combined workload set so native-path measurement no longer stops at the six-workload smoke artifact.
+6. Land `RBR-0185` to retire the three remaining numbered `module.sub()` conditional-replacement benchmark-only gaps across the no-else, explicit-empty-else, and fully-empty manifests before reopening broader backtracking-heavy conditional execution.
+7. Land `RBR-0186` to publish one bounded alternation-heavy two-arm conditional correctness pack for `a(b)?c(?(1)(de|df)|(eg|eh))` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` so broader backtracking-heavy conditional execution reopens through an explicit published slice instead of a vague frontier jump.
+8. Land `RBR-0187` to convert that bounded alternation-heavy two-arm conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
+9. Land `RBR-0188` to catch bounded alternation-heavy two-arm conditional benchmarks up so the new backtracking-heavier slice reaches the published benchmark surface immediately after parity lands.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
 - Prefer replacing vague items with concrete task files instead of growing this document indefinitely.
 - Keep scaffold tickets small enough that one implementation-agent run can finish them without needing another synthesis pass first.
 - Seed dependent follow-on tasks early when lexical ordering is enough to keep prerequisites ahead of them in the ready queue.
-- Keep `RBR-0179` through `RBR-0188` pre-seeded in lexical order; the task contracts are explicit enough that the worker should not need another supervisor-only reseed pass between the quantified explicit-empty-else parity/benchmark follow-ons, the first bounded nested two-arm conditional composition slice, the built-native full-suite sidecar, the numbered conditional-replacement benchmark cleanup, and the first broader backtracking-heavy conditional slice.
+- Keep `RBR-0180` through `RBR-0188` pre-seeded in lexical order; the task contracts are explicit enough that the worker should not need another supervisor-only reseed pass between quantified explicit-empty-else benchmark catch-up, the first bounded nested two-arm conditional composition slice, the built-native full-suite sidecar, the numbered conditional-replacement benchmark cleanup, and the first broader backtracking-heavy conditional slice.
 - After `RBR-0183`, keep one bounded built-native full-suite sidecar task queued before broader backtracking-heavy conditional execution reopens, then spend one bounded benchmark-only cleanup task on the remaining numbered conditional-replacement rows so the published benchmark surface sheds obvious debt before the feature frontier widens again.
 - After `RBR-0185`, reopen the frontier with one bounded alternation-heavy two-arm conditional slice as `RBR-0186` through `RBR-0188`, pinned to `a(b)?c(?(1)(de|df)|(eg|eh))` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))`, so backtracking-heavy conditional execution resumes through one exact numbered/named pair before deeper nesting or broader quantified composition is reconsidered.
 - Keep README landing-page summaries short, and keep published-slice pass counts clearly separate from any claim about overall stdlib `re` feature completeness.

@@ -1,6 +1,6 @@
 # RBR-0180: Catch bounded quantified explicit-empty-else conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 - Build on `RBR-0179`.
 - Use the existing `pattern-fullmatch-numbered-quantified-conditional-group-exists-empty-else-purged-gap` row in `benchmarks/workloads/conditional_group_exists_empty_else_boundary.json` as the benchmark anchor for this slice.
 - This task exists so the queue does not reach quantified explicit-empty-else parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Added representative numbered and named quantified explicit-empty-else benchmark rows around the existing anchor so the manifest now publishes real `rebar` timings for `a(b)?c(?(1)d|){2}` and `a(?P<word>b)?c(?(word)d|){2}` through module-search and Pattern.fullmatch probes.
+- Regenerated `reports/benchmarks/latest.json`; the combined benchmark scorecard now reports 315 workloads, 269 measured `rebar` timings, and 46 known gaps.
+- Verified with `PYTHONPATH=python python3 -m unittest tests.benchmarks.test_conditional_group_exists_boundary_benchmarks tests.benchmarks.test_conditional_group_exists_empty_else_boundary_benchmarks tests.benchmarks.test_conditional_group_exists_no_else_boundary_benchmarks tests.benchmarks.test_conditional_group_exists_empty_yes_else_boundary_benchmarks tests.benchmarks.test_conditional_group_exists_fully_empty_boundary_benchmarks tests.benchmarks.test_quantified_alternation_boundary_benchmarks tests.benchmarks.test_wider_ranged_repeat_quantified_group_boundary_benchmarks`.
