@@ -1,6 +1,6 @@
 # RBR-0166: Add bounded quantified fully-empty conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0165`.
 - This task exists so the queue converts one exact repeated fully-empty spelling into real Rust-backed behavior instead of leaving it as publication-only coverage.
+
+## Completion
+- Landed narrow Rust-backed support for `(?:a(b)?c(?(1)|)){2}` and `(?:a(?P<word>b)?c(?(word)|)){2}` by opening the existing quantified whole-conditional parser gate to the fully-empty no-branch spelling without broadening nested or alternation-heavy cases.
+- Added Rust and Python parity coverage for compile metadata plus present, absent, mixed, and extra-suffix fullmatch workflows.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports `356/356` passing cases with `0` `unimplemented`.

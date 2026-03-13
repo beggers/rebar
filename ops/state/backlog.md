@@ -4,16 +4,15 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0165` to publish one bounded quantified fully-empty conditional correctness pack for `(a(b)?c(?(1)|)){2}` and `(a(?P<word>b)?c(?(word)|)){2}` so repeated fully-empty conditional composition reaches the scorecard through an exact CPython-supported slice before alternation-heavy empty-arm work reopens the frontier.
-2. Land `RBR-0166` to convert that bounded quantified fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-3. Land `RBR-0167` to catch bounded quantified fully-empty conditional benchmarks up so that repeated fully-empty composition reaches the published benchmark surface before alternation-heavy or broader backtracking-heavy empty-arm work reopens the frontier.
-4. Land `RBR-0168` to reconcile the alternation-heavy empty-arm benchmark anchors so the empty-yes-arm and fully-empty manifests stop collapsing to the same stored pattern before those broader follow-ons are widened.
-5. Land `RBR-0169` to publish one bounded alternation-heavy empty-yes-arm conditional correctness pack for `a(b)?c(?(1)|(e|f))` and `a(?P<word>b)?c(?(word)|(e|f))` once the benchmark contracts are distinct.
-6. Land `RBR-0170` to convert that bounded alternation-heavy empty-yes-arm conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
-7. Land `RBR-0171` to catch bounded alternation-heavy empty-yes-arm conditional benchmarks up so that the first broader empty-yes-arm composition reaches the published benchmark surface.
-8. Land `RBR-0172` to publish one bounded alternation-bearing fully-empty conditional correctness pack for `a(b)?c(?(1)|(?:|))` and `a(?P<word>b)?c(?(word)|(?:|))` so the accepted fully-empty spelling stays explicit after the anchors are fixed.
-9. Land `RBR-0173` to convert that bounded alternation-bearing fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a syntax-only publication island.
-10. Land `RBR-0174` to catch bounded alternation-bearing fully-empty conditional benchmarks up so that the accepted fully-empty follow-on reaches the published benchmark surface with distinct manifest contracts.
+1. Land `RBR-0166` to convert the published bounded quantified fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+2. Land `RBR-0167` to catch bounded quantified fully-empty conditional benchmarks up so that repeated fully-empty composition reaches the published benchmark surface before alternation-heavy or broader backtracking-heavy empty-arm work reopens the frontier.
+3. Land `RBR-0168` to reconcile the alternation-heavy empty-arm benchmark anchors so the empty-yes-arm and fully-empty manifests stop collapsing to the same stored pattern before those broader follow-ons are widened.
+4. Land `RBR-0169` to publish one bounded alternation-heavy empty-yes-arm conditional correctness pack for `a(b)?c(?(1)|(e|f))` and `a(?P<word>b)?c(?(word)|(e|f))` once the benchmark contracts are distinct.
+5. Land `RBR-0170` to convert that bounded alternation-heavy empty-yes-arm conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
+6. Land `RBR-0171` to catch bounded alternation-heavy empty-yes-arm conditional benchmarks up so that the first broader empty-yes-arm composition reaches the published benchmark surface.
+7. Land `RBR-0172` to publish one bounded alternation-bearing fully-empty conditional correctness pack for `a(b)?c(?(1)|(?:|))` and `a(?P<word>b)?c(?(word)|(?:|))` so the accepted fully-empty spelling stays explicit after the anchors are fixed.
+8. Land `RBR-0173` to convert that bounded alternation-bearing fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a syntax-only publication island.
+9. Land `RBR-0174` to catch bounded alternation-bearing fully-empty conditional benchmarks up so that the accepted fully-empty follow-on reaches the published benchmark surface with distinct manifest contracts.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

@@ -84,10 +84,10 @@ class CorrectnessHarnessConditionalGroupExistsEmptyYesElseQuantifiedWorkflowTest
             {
                 "executed_cases": 356,
                 "failed_cases": 0,
-                "passed_cases": 346,
+                "passed_cases": 356,
                 "skipped_cases": 0,
                 "total_cases": 356,
-                "unimplemented_cases": 10,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(len(scorecard["cases"]), 356)
@@ -98,10 +98,10 @@ class CorrectnessHarnessConditionalGroupExistsEmptyYesElseQuantifiedWorkflowTest
             {
                 "executed_cases": 212,
                 "failed_cases": 0,
-                "passed_cases": 202,
+                "passed_cases": 212,
                 "skipped_cases": 0,
                 "total_cases": 212,
-                "unimplemented_cases": 10,
+                "unimplemented_cases": 0,
             },
         )
         self.assertIn(
