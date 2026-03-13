@@ -1,8 +1,9 @@
 # RBR-0129: Catch bounded alternation-heavy explicit-empty-else conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published benchmark surface so the bounded alternation-heavy explicit-empty-else conditional workflows supported by `RBR-0128` produce real `rebar` timings before replacement-conditioned work or broader backtracking reopen the frontier.
@@ -27,3 +28,6 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0128`.
 - This task exists so the first bounded backtracking-heavy conditional slice is measured on the same benchmark surface that previously carried it only as an explicit gap row.
+- Expanded `benchmarks/workloads/conditional_group_exists_empty_else_boundary.json` so the bounded alternation-heavy explicit-empty-else slice now publishes measured numbered and named `module.search()` and `Pattern.fullmatch()` workloads instead of a single remaining alternation-heavy gap row.
+- Updated `tests/benchmarks/test_conditional_group_exists_empty_else_boundary_benchmarks.py` to the current 29-manifest combined-suite baseline and to assert the newly measured alternation-heavy rows while keeping nested, quantified, and replacement follow-ons explicit as known gaps.
+- Regenerated `reports/benchmarks/latest.json`; the published combined benchmark report now covers 255 workloads with 193 real `rebar` timings and 62 explicit known gaps, and the empty-else conditional boundary manifest now reports 14 workloads with 11 measured rows and 3 honest gaps.
