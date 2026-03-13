@@ -1,8 +1,9 @@
 # RBR-0127: Publish a bounded alternation-heavy explicit-empty-else conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published correctness scorecard with one bounded explicit-empty-else conditional manifest that introduces the first alternation-heavy conditional execution slice through an exact CPython-supported workflow instead of reopening a vague broader-backtracking bucket.
@@ -28,3 +29,5 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0126`.
 - This task exists so the queue reopens backtracking through one already-described explicit-empty-else conditional shape instead of jumping straight to broader conditional execution or replacement-conditioned work.
+- Added `conditional_group_exists_empty_else_alternation_workflows.json`, registered it in the default correctness fixture set, added a combined-scorecard regression, and republished `reports/correctness/latest.json`.
+- The published combined scorecard now covers 240 cases across 36 manifests; the new 8-case alternation-heavy conditional suite is recorded honestly as `unimplemented` for `rebar` while preserving full CPython observations for later parity work in `RBR-0128`.

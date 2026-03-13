@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "manifest_id": "conditional-group-exists-empty-else-alternation-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.conditional_group_exists_empty_else_alternation",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "conditional-group-exists-empty-else-alternation-compile-metadata-str",
+      "operation": "compile",
+      "family": "conditional_group_exists_empty_else_alternation_compile_metadata",
+      "pattern": "a(b)?c(?(1)(de|df)|)",
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-else", "alternation", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes one bounded numbered explicit-empty-else conditional compile path whose yes arm contains a single literal alternation site and therefore introduces the first alternation-heavy conditional execution shape in the scorecard."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-empty-else-alternation-module-search-first-arm-str",
+      "operation": "module_call",
+      "family": "conditional_group_exists_empty_else_alternation_module_first_arm_workflow",
+      "helper": "search",
+      "args": ["a(b)?c(?(1)(de|df)|)", "zzabcdezz"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-else", "alternation", "search", "module", "present", "first-arm", "str", "gap"],
+      "notes": [
+        "Documents the numbered module-level conditional search path when the optional capture is present and the yes-arm alternation selects its first literal branch."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-empty-else-alternation-module-search-second-arm-str",
+      "operation": "module_call",
+      "family": "conditional_group_exists_empty_else_alternation_module_second_arm_workflow",
+      "helper": "search",
+      "args": ["a(b)?c(?(1)(de|df)|)", "zzabcdfzz"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-else", "alternation", "search", "module", "present", "second-arm", "str", "gap"],
+      "notes": [
+        "Documents the numbered module-level conditional search path when the optional capture is present and the same bounded yes-arm alternation backtracks to its second literal branch."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-empty-else-alternation-pattern-fullmatch-absent-str",
+      "operation": "pattern_call",
+      "family": "conditional_group_exists_empty_else_alternation_pattern_absent_workflow",
+      "pattern": "a(b)?c(?(1)(de|df)|)",
+      "helper": "fullmatch",
+      "args": ["ac"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-else", "alternation", "fullmatch", "pattern", "absent", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch numbered conditional path when the optional capture is omitted so the scorecard keeps the explicit empty else branch visible even though the yes-arm contains alternation."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-empty-else-alternation-compile-metadata-str",
+      "operation": "compile",
+      "family": "named_conditional_group_exists_empty_else_alternation_compile_metadata",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df)|)",
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-else", "alternation", "named-group", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the matching named explicit-empty-else conditional compile frontier for the same single-site alternation shape."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-empty-else-alternation-module-search-first-arm-str",
+      "operation": "module_call",
+      "family": "named_conditional_group_exists_empty_else_alternation_module_first_arm_workflow",
+      "helper": "search",
+      "args": ["a(?P<word>b)?c(?(word)(de|df)|)", "zzabcdezz"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-else", "alternation", "named-group", "search", "module", "present", "first-arm", "str", "gap"],
+      "notes": [
+        "Documents the named module-level conditional search path when the optional named capture is present and the yes-arm alternation takes its first literal branch."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-empty-else-alternation-module-search-second-arm-str",
+      "operation": "module_call",
+      "family": "named_conditional_group_exists_empty_else_alternation_module_second_arm_workflow",
+      "helper": "search",
+      "args": ["a(?P<word>b)?c(?(word)(de|df)|)", "zzabcdfzz"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-else", "alternation", "named-group", "search", "module", "present", "second-arm", "str", "gap"],
+      "notes": [
+        "Documents the named module-level conditional search path when the optional named capture is present and the same bounded alternation takes its second literal branch."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-empty-else-alternation-pattern-fullmatch-absent-str",
+      "operation": "pattern_call",
+      "family": "named_conditional_group_exists_empty_else_alternation_pattern_absent_workflow",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df)|)",
+      "helper": "fullmatch",
+      "args": ["ac"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-else", "alternation", "named-group", "fullmatch", "pattern", "absent", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch named conditional path when the optional named capture is omitted so the named-group None payload remains explicit for the explicit-empty-else alternation spelling CPython accepts."
+      ]
+    }
+  ]
+}
