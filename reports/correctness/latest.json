@@ -23498,6 +23498,1740 @@
       "pattern": "a(?P<word>b|c){1,2}d",
       "suite_id": "match.quantified_alternation",
       "text_model": "str"
+    },
+    {
+      "categories": [
+        "systematic",
+        "grouped",
+        "optional-group",
+        "capture-oriented",
+        "landed-slice",
+        "numbered-capture",
+        "compile",
+        "metadata"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_optional_group_numbered_compile_metadata",
+      "id": "systematic-optional-group-numbered-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
+        "Uses the bounded numbered optional-group slice that already passes through the Rust boundary.",
+        "Publishes the compile metadata observation for the compact optional-group feature spec."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 1,
+            "pattern": "a(b)?d",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 1,
+            "pattern": "a(b)?d",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a(b)?d",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(b)?d",
+        "zzabdzz"
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "optional-group",
+        "capture-oriented",
+        "landed-slice",
+        "numbered-capture",
+        "module",
+        "search",
+        "present"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_optional_group_numbered_module_present_workflow",
+      "helper": "search",
+      "id": "systematic-optional-group-numbered-module-search-present-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
+        "Uses the bounded numbered optional-group slice that already passes through the Rust boundary.",
+        "Exercises the module-level path where the optional capture participates in the match."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abd",
+            "group1": "b",
+            "group_spans": [
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "b"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "span1": [
+              3,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abd",
+            "group1": "b",
+            "group_spans": [
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "b"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "span1": [
+              3,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(b)?d",
+        "zzadzz"
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "optional-group",
+        "capture-oriented",
+        "landed-slice",
+        "numbered-capture",
+        "module",
+        "search",
+        "absent"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_optional_group_numbered_module_absent_workflow",
+      "helper": "search",
+      "id": "systematic-optional-group-numbered-module-search-absent-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
+        "Uses the bounded numbered optional-group slice that already passes through the Rust boundary.",
+        "Exercises the module-level path where the optional capture is skipped and the observed group payload must stay aligned with CPython."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 6,
+            "group0": "ad",
+            "group1": null,
+            "group_spans": [
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              null
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              4
+            ],
+            "span1": [
+              -1,
+              -1
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 6,
+            "group0": "ad",
+            "group1": null,
+            "group_spans": [
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              null
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              4
+            ],
+            "span1": [
+              -1,
+              -1
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abd"
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "optional-group",
+        "capture-oriented",
+        "landed-slice",
+        "numbered-capture",
+        "pattern",
+        "fullmatch",
+        "present"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_optional_group_numbered_pattern_present_workflow",
+      "helper": "fullmatch",
+      "id": "systematic-optional-group-numbered-pattern-fullmatch-present-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
+        "Uses the bounded numbered optional-group slice that already passes through the Rust boundary.",
+        "Exercises the compiled Pattern path where the optional capture is present."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "abd",
+            "group1": "b",
+            "group_spans": [
+              [
+                1,
+                2
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "b"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "span1": [
+              1,
+              2
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "abd",
+            "group1": "b",
+            "group_spans": [
+              [
+                1,
+                2
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "b"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "span1": [
+              1,
+              2
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(b)?d",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "ad"
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "optional-group",
+        "capture-oriented",
+        "landed-slice",
+        "numbered-capture",
+        "pattern",
+        "fullmatch",
+        "absent"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_optional_group_numbered_pattern_absent_workflow",
+      "helper": "fullmatch",
+      "id": "systematic-optional-group-numbered-pattern-fullmatch-absent-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
+        "Uses the bounded numbered optional-group slice that already passes through the Rust boundary.",
+        "Exercises the compiled Pattern path where the optional capture is omitted."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 2,
+            "group0": "ad",
+            "group1": null,
+            "group_spans": [
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              null
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              2
+            ],
+            "span1": [
+              -1,
+              -1
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 2,
+            "group0": "ad",
+            "group1": null,
+            "group_spans": [
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              null
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              2
+            ],
+            "span1": [
+              -1,
+              -1
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(b)?d",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "systematic",
+        "grouped",
+        "optional-group",
+        "capture-oriented",
+        "landed-slice",
+        "named-group",
+        "compile",
+        "metadata"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_optional_group_named_compile_metadata",
+      "id": "systematic-optional-group-named-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
+        "Uses the matching named optional-group slice so the generated corpus covers both capture addressing modes.",
+        "Publishes the compile metadata observation for the compact optional-group feature spec."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {
+              "word": 1
+            },
+            "groups": 1,
+            "pattern": "a(?P<word>b)?d",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {
+              "word": 1
+            },
+            "groups": 1,
+            "pattern": "a(?P<word>b)?d",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a(?P<word>b)?d",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<word>b)?d",
+        "zzabdzz"
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "optional-group",
+        "capture-oriented",
+        "landed-slice",
+        "named-group",
+        "module",
+        "search",
+        "present"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_optional_group_named_module_present_workflow",
+      "helper": "search",
+      "id": "systematic-optional-group-named-module-search-present-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
+        "Uses the matching named optional-group slice so the generated corpus covers both capture addressing modes.",
+        "Exercises the module-level path where the optional capture participates in the match."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abd",
+            "group1": "b",
+            "group_spans": [
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {
+              "word": "b"
+            },
+            "groups": [
+              "b"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                3,
+                4
+              ]
+            },
+            "named_groups": {
+              "word": "b"
+            },
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "span1": [
+              3,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abd",
+            "group1": "b",
+            "group_spans": [
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {
+              "word": "b"
+            },
+            "groups": [
+              "b"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                3,
+                4
+              ]
+            },
+            "named_groups": {
+              "word": "b"
+            },
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "span1": [
+              3,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<word>b)?d",
+        "zzadzz"
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "optional-group",
+        "capture-oriented",
+        "landed-slice",
+        "named-group",
+        "module",
+        "search",
+        "absent"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_optional_group_named_module_absent_workflow",
+      "helper": "search",
+      "id": "systematic-optional-group-named-module-search-absent-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
+        "Uses the matching named optional-group slice so the generated corpus covers both capture addressing modes.",
+        "Exercises the module-level path where the optional capture is skipped and the observed group payload must stay aligned with CPython."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 6,
+            "group0": "ad",
+            "group1": null,
+            "group_spans": [
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {
+              "word": null
+            },
+            "groups": [
+              null
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                -1,
+                -1
+              ]
+            },
+            "named_groups": {
+              "word": null
+            },
+            "pos": 0,
+            "span": [
+              2,
+              4
+            ],
+            "span1": [
+              -1,
+              -1
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 6,
+            "group0": "ad",
+            "group1": null,
+            "group_spans": [
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {
+              "word": null
+            },
+            "groups": [
+              null
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                -1,
+                -1
+              ]
+            },
+            "named_groups": {
+              "word": null
+            },
+            "pos": 0,
+            "span": [
+              2,
+              4
+            ],
+            "span1": [
+              -1,
+              -1
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abd"
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "optional-group",
+        "capture-oriented",
+        "landed-slice",
+        "named-group",
+        "pattern",
+        "fullmatch",
+        "present"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_optional_group_named_pattern_present_workflow",
+      "helper": "fullmatch",
+      "id": "systematic-optional-group-named-pattern-fullmatch-present-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
+        "Uses the matching named optional-group slice so the generated corpus covers both capture addressing modes.",
+        "Exercises the compiled Pattern path where the optional capture is present."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "abd",
+            "group1": "b",
+            "group_spans": [
+              [
+                1,
+                2
+              ]
+            ],
+            "groupdict": {
+              "word": "b"
+            },
+            "groups": [
+              "b"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                1,
+                2
+              ]
+            },
+            "named_groups": {
+              "word": "b"
+            },
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "span1": [
+              1,
+              2
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "abd",
+            "group1": "b",
+            "group_spans": [
+              [
+                1,
+                2
+              ]
+            ],
+            "groupdict": {
+              "word": "b"
+            },
+            "groups": [
+              "b"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                1,
+                2
+              ]
+            },
+            "named_groups": {
+              "word": "b"
+            },
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "span1": [
+              1,
+              2
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<word>b)?d",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "ad"
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "optional-group",
+        "capture-oriented",
+        "landed-slice",
+        "named-group",
+        "pattern",
+        "fullmatch",
+        "absent"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_optional_group_named_pattern_absent_workflow",
+      "helper": "fullmatch",
+      "id": "systematic-optional-group-named-pattern-fullmatch-absent-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
+        "Uses the matching named optional-group slice so the generated corpus covers both capture addressing modes.",
+        "Exercises the compiled Pattern path where the optional capture is omitted."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 2,
+            "group0": "ad",
+            "group1": null,
+            "group_spans": [
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {
+              "word": null
+            },
+            "groups": [
+              null
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                -1,
+                -1
+              ]
+            },
+            "named_groups": {
+              "word": null
+            },
+            "pos": 0,
+            "span": [
+              0,
+              2
+            ],
+            "span1": [
+              -1,
+              -1
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 2,
+            "group0": "ad",
+            "group1": null,
+            "group_spans": [
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {
+              "word": null
+            },
+            "groups": [
+              null
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                -1,
+                -1
+              ]
+            },
+            "named_groups": {
+              "word": null
+            },
+            "pos": 0,
+            "span": [
+              0,
+              2
+            ],
+            "span1": [
+              -1,
+              -1
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<word>b)?d",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "systematic",
+        "grouped",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "nested",
+        "landed-slice",
+        "numbered-capture",
+        "compile",
+        "metadata"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_conditional_group_exists_empty_else_nested_numbered_compile_metadata",
+      "id": "systematic-conditional-group-exists-empty-else-nested-numbered-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact nested conditional spec into deterministic numbered and named compile, module, and Pattern observations so a landed conditional slice gets broader evidence without another hand-written manifest.",
+        "Uses the bounded numbered nested explicit-empty-else conditional slice.",
+        "Publishes the compile metadata observation for the compact nested conditional feature spec."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 1,
+            "pattern": "a(b)?c(?(1)(?(1)d)|)",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 1,
+            "pattern": "a(b)?c(?(1)(?(1)d)|)",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a(b)?c(?(1)(?(1)d)|)",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(b)?c(?(1)(?(1)d)|)",
+        "zzabcdzz"
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "nested",
+        "landed-slice",
+        "numbered-capture",
+        "module",
+        "search",
+        "present"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_conditional_group_exists_empty_else_nested_numbered_module_present_workflow",
+      "helper": "search",
+      "id": "systematic-conditional-group-exists-empty-else-nested-numbered-module-search-present-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact nested conditional spec into deterministic numbered and named compile, module, and Pattern observations so a landed conditional slice gets broader evidence without another hand-written manifest.",
+        "Uses the bounded numbered nested explicit-empty-else conditional slice.",
+        "Exercises the module-level path where the outer and nested yes-arms both activate."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 8,
+            "group0": "abcd",
+            "group1": "b",
+            "group_spans": [
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "b"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              6
+            ],
+            "span1": [
+              3,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 8,
+            "group0": "abcd",
+            "group1": "b",
+            "group_spans": [
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "b"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              6
+            ],
+            "span1": [
+              3,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(b)?c(?(1)(?(1)d)|)",
+        "abc"
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "nested",
+        "landed-slice",
+        "numbered-capture",
+        "module",
+        "fullmatch",
+        "failure",
+        "present"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_conditional_group_exists_empty_else_nested_numbered_module_missing_suffix_workflow",
+      "helper": "fullmatch",
+      "id": "systematic-conditional-group-exists-empty-else-nested-numbered-module-fullmatch-missing-suffix-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact nested conditional spec into deterministic numbered and named compile, module, and Pattern observations so a landed conditional slice gets broader evidence without another hand-written manifest.",
+        "Uses the bounded numbered nested explicit-empty-else conditional slice.",
+        "Exercises the module-level path where the capture is present but the nested yes-arm suffix is missing."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "ac"
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "nested",
+        "landed-slice",
+        "numbered-capture",
+        "pattern",
+        "fullmatch",
+        "absent"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_conditional_group_exists_empty_else_nested_numbered_pattern_absent_workflow",
+      "helper": "fullmatch",
+      "id": "systematic-conditional-group-exists-empty-else-nested-numbered-pattern-fullmatch-absent-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact nested conditional spec into deterministic numbered and named compile, module, and Pattern observations so a landed conditional slice gets broader evidence without another hand-written manifest.",
+        "Uses the bounded numbered nested explicit-empty-else conditional slice.",
+        "Exercises the compiled Pattern path where both nested conditionals take the empty else-arm."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 2,
+            "group0": "ac",
+            "group1": null,
+            "group_spans": [
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              null
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              2
+            ],
+            "span1": [
+              -1,
+              -1
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 2,
+            "group0": "ac",
+            "group1": null,
+            "group_spans": [
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              null
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              2
+            ],
+            "span1": [
+              -1,
+              -1
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(b)?c(?(1)(?(1)d)|)",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "systematic",
+        "grouped",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "nested",
+        "landed-slice",
+        "named-group",
+        "compile",
+        "metadata"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_conditional_group_exists_empty_else_nested_named_compile_metadata",
+      "id": "systematic-conditional-group-exists-empty-else-nested-named-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact nested conditional spec into deterministic numbered and named compile, module, and Pattern observations so a landed conditional slice gets broader evidence without another hand-written manifest.",
+        "Uses the matching named nested explicit-empty-else conditional slice.",
+        "Publishes the compile metadata observation for the compact nested conditional feature spec."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {
+              "word": 1
+            },
+            "groups": 1,
+            "pattern": "a(?P<word>b)?c(?(word)(?(word)d)|)",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {
+              "word": 1
+            },
+            "groups": 1,
+            "pattern": "a(?P<word>b)?c(?(word)(?(word)d)|)",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d)|)",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<word>b)?c(?(word)(?(word)d)|)",
+        "zzabcdzz"
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "nested",
+        "landed-slice",
+        "named-group",
+        "module",
+        "search",
+        "present"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_conditional_group_exists_empty_else_nested_named_module_present_workflow",
+      "helper": "search",
+      "id": "systematic-conditional-group-exists-empty-else-nested-named-module-search-present-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact nested conditional spec into deterministic numbered and named compile, module, and Pattern observations so a landed conditional slice gets broader evidence without another hand-written manifest.",
+        "Uses the matching named nested explicit-empty-else conditional slice.",
+        "Exercises the module-level path where the outer and nested yes-arms both activate."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 8,
+            "group0": "abcd",
+            "group1": "b",
+            "group_spans": [
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {
+              "word": "b"
+            },
+            "groups": [
+              "b"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                3,
+                4
+              ]
+            },
+            "named_groups": {
+              "word": "b"
+            },
+            "pos": 0,
+            "span": [
+              2,
+              6
+            ],
+            "span1": [
+              3,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 8,
+            "group0": "abcd",
+            "group1": "b",
+            "group_spans": [
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {
+              "word": "b"
+            },
+            "groups": [
+              "b"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                3,
+                4
+              ]
+            },
+            "named_groups": {
+              "word": "b"
+            },
+            "pos": 0,
+            "span": [
+              2,
+              6
+            ],
+            "span1": [
+              3,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<word>b)?c(?(word)(?(word)d)|)",
+        "abc"
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "nested",
+        "landed-slice",
+        "named-group",
+        "module",
+        "fullmatch",
+        "failure",
+        "present"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_conditional_group_exists_empty_else_nested_named_module_missing_suffix_workflow",
+      "helper": "fullmatch",
+      "id": "systematic-conditional-group-exists-empty-else-nested-named-module-fullmatch-missing-suffix-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact nested conditional spec into deterministic numbered and named compile, module, and Pattern observations so a landed conditional slice gets broader evidence without another hand-written manifest.",
+        "Uses the matching named nested explicit-empty-else conditional slice.",
+        "Exercises the module-level path where the capture is present but the nested yes-arm suffix is missing."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "ac"
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "nested",
+        "landed-slice",
+        "named-group",
+        "pattern",
+        "fullmatch",
+        "absent"
+      ],
+      "comparison": "pass",
+      "comparison_notes": [],
+      "family": "systematic_conditional_group_exists_empty_else_nested_named_pattern_absent_workflow",
+      "helper": "fullmatch",
+      "id": "systematic-conditional-group-exists-empty-else-nested-named-pattern-fullmatch-absent-str",
+      "layer": "match_behavior",
+      "manifest_id": "systematic-feature-corpus",
+      "notes": [
+        "Expands a compact nested conditional spec into deterministic numbered and named compile, module, and Pattern observations so a landed conditional slice gets broader evidence without another hand-written manifest.",
+        "Uses the matching named nested explicit-empty-else conditional slice.",
+        "Exercises the compiled Pattern path where both nested conditionals take the empty else-arm."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 2,
+            "group0": "ac",
+            "group1": null,
+            "group_spans": [
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {
+              "word": null
+            },
+            "groups": [
+              null
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                -1,
+                -1
+              ]
+            },
+            "named_groups": {
+              "word": null
+            },
+            "pos": 0,
+            "span": [
+              0,
+              2
+            ],
+            "span1": [
+              -1,
+              -1
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 2,
+            "group0": "ac",
+            "group1": null,
+            "group_spans": [
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {
+              "word": null
+            },
+            "groups": [
+              null
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                -1,
+                -1
+              ]
+            },
+            "named_groups": {
+              "word": null
+            },
+            "pos": 0,
+            "span": [
+              0,
+              2
+            ],
+            "span1": [
+              -1,
+              -1
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d)|)",
+      "suite_id": "match.systematic_feature_corpus",
+      "text_model": "str"
     }
   ],
   "diagnostics": {
@@ -23510,7 +25244,7 @@
         },
         "outcomes": {
           "exception": 10,
-          "success": 294
+          "success": 312
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -23525,7 +25259,7 @@
         },
         "outcomes": {
           "exception": 10,
-          "success": 294
+          "success": 312
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -27932,6 +29666,384 @@
       ]
     },
     {
+      "case_count": 1,
+      "id": "systematic_conditional_group_exists_empty_else_nested_named_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "systematic_conditional_group_exists_empty_else_nested_named_module_missing_suffix_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "systematic_conditional_group_exists_empty_else_nested_named_module_present_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "systematic_conditional_group_exists_empty_else_nested_named_pattern_absent_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "systematic_conditional_group_exists_empty_else_nested_numbered_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "systematic_conditional_group_exists_empty_else_nested_numbered_module_missing_suffix_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "systematic_conditional_group_exists_empty_else_nested_numbered_module_present_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "systematic_conditional_group_exists_empty_else_nested_numbered_pattern_absent_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "systematic_optional_group_named_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "systematic_optional_group_named_module_absent_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "systematic_optional_group_named_module_present_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "systematic_optional_group_named_pattern_absent_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "systematic_optional_group_named_pattern_present_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "systematic_optional_group_numbered_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "systematic_optional_group_numbered_module_absent_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "systematic_optional_group_numbered_module_present_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "systematic_optional_group_numbered_pattern_absent_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "systematic_optional_group_numbered_pattern_present_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
       "case_count": 2,
       "id": "unsupported_flag_workflow",
       "layers": [
@@ -28081,8 +30193,8 @@
     }
   ],
   "fixtures": {
-    "case_count": 304,
-    "manifest_count": 44,
+    "case_count": 322,
+    "manifest_count": 45,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
@@ -28127,7 +30239,8 @@
       "conditional-group-exists-fully-empty-workflows",
       "conditional-group-exists-assertion-diagnostics",
       "conditional-group-exists-quantified-workflows",
-      "quantified-alternation-workflows"
+      "quantified-alternation-workflows",
+      "systematic-feature-corpus"
     ],
     "paths": [
       "tests/conformance/fixtures/parser_matrix.json",
@@ -28173,21 +30286,22 @@
       "tests/conformance/fixtures/conditional_group_exists_fully_empty_workflows.json",
       "tests/conformance/fixtures/conditional_group_exists_assertion_diagnostics.json",
       "tests/conformance/fixtures/conditional_group_exists_quantified_workflows.json",
-      "tests/conformance/fixtures/quantified_alternation_workflows.json"
+      "tests/conformance/fixtures/quantified_alternation_workflows.json",
+      "tests/conformance/fixtures/systematic_feature_corpus.json"
     ]
   },
-  "generated_at": "2026-03-13T04:29:19Z",
+  "generated_at": "2026-03-13T04:45:15Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
-      "case_count": 160,
+      "case_count": 178,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
             "exception_case_count": 0,
             "exception_types": {},
             "outcomes": {
-              "success": 160
+              "success": 178
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -28196,7 +30310,7 @@
             "exception_case_count": 0,
             "exception_types": {},
             "outcomes": {
-              "success": 160
+              "success": 178
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -28352,6 +30466,24 @@
         "search_result_shape",
         "single_capture_module_workflow",
         "single_capture_pattern_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_named_compile_metadata",
+        "systematic_conditional_group_exists_empty_else_nested_named_module_missing_suffix_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_named_module_present_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_named_pattern_absent_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_numbered_compile_metadata",
+        "systematic_conditional_group_exists_empty_else_nested_numbered_module_missing_suffix_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_numbered_module_present_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_numbered_pattern_absent_workflow",
+        "systematic_optional_group_named_compile_metadata",
+        "systematic_optional_group_named_module_absent_workflow",
+        "systematic_optional_group_named_module_present_workflow",
+        "systematic_optional_group_named_pattern_absent_workflow",
+        "systematic_optional_group_named_pattern_present_workflow",
+        "systematic_optional_group_numbered_compile_metadata",
+        "systematic_optional_group_numbered_module_absent_workflow",
+        "systematic_optional_group_numbered_module_present_workflow",
+        "systematic_optional_group_numbered_pattern_absent_workflow",
+        "systematic_optional_group_numbered_pattern_present_workflow",
         "wider_ranged_repeat_named_group_compile_metadata",
         "wider_ranged_repeat_named_group_module_search_upper_bound_workflow",
         "wider_ranged_repeat_named_group_pattern_fullmatch_lower_bound_workflow",
@@ -28386,6 +30518,7 @@
         "optional-group-workflows",
         "quantified-alternation-workflows",
         "ranged-repeat-quantified-group-workflows",
+        "systematic-feature-corpus",
         "wider-ranged-repeat-quantified-group-workflows"
       ],
       "operations": [
@@ -28420,14 +30553,15 @@
         "match.optional_group_alternation",
         "match.quantified_alternation",
         "match.ranged_repeat_quantified_group",
+        "match.systematic_feature_corpus",
         "match.wider_ranged_repeat_quantified_group"
       ],
       "summary": {
-        "executed_cases": 160,
+        "executed_cases": 178,
         "failed_cases": 0,
-        "passed_cases": 160,
+        "passed_cases": 178,
         "skipped_cases": 0,
-        "total_cases": 160,
+        "total_cases": 178,
         "unimplemented_cases": 0
       },
       "text_models": [
@@ -39033,14 +41167,302 @@
       "text_models": [
         "str"
       ]
+    },
+    {
+      "case_count": 18,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 18
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 18
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "systematic_conditional_group_exists_empty_else_nested_named_compile_metadata",
+        "systematic_conditional_group_exists_empty_else_nested_named_module_missing_suffix_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_named_module_present_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_named_pattern_absent_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_numbered_compile_metadata",
+        "systematic_conditional_group_exists_empty_else_nested_numbered_module_missing_suffix_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_numbered_module_present_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_numbered_pattern_absent_workflow",
+        "systematic_optional_group_named_compile_metadata",
+        "systematic_optional_group_named_module_absent_workflow",
+        "systematic_optional_group_named_module_present_workflow",
+        "systematic_optional_group_named_pattern_absent_workflow",
+        "systematic_optional_group_named_pattern_present_workflow",
+        "systematic_optional_group_numbered_compile_metadata",
+        "systematic_optional_group_numbered_module_absent_workflow",
+        "systematic_optional_group_numbered_module_present_workflow",
+        "systematic_optional_group_numbered_pattern_absent_workflow",
+        "systematic_optional_group_numbered_pattern_present_workflow"
+      ],
+      "id": "match.systematic_feature_corpus",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "systematic-feature-corpus"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 18,
+        "failed_cases": 0,
+        "passed_cases": 18,
+        "skipped_cases": 0,
+        "total_cases": 18,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 18,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 18
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 18
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "systematic_conditional_group_exists_empty_else_nested_named_compile_metadata",
+        "systematic_conditional_group_exists_empty_else_nested_named_module_missing_suffix_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_named_module_present_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_named_pattern_absent_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_numbered_compile_metadata",
+        "systematic_conditional_group_exists_empty_else_nested_numbered_module_missing_suffix_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_numbered_module_present_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_numbered_pattern_absent_workflow",
+        "systematic_optional_group_named_compile_metadata",
+        "systematic_optional_group_named_module_absent_workflow",
+        "systematic_optional_group_named_module_present_workflow",
+        "systematic_optional_group_named_pattern_absent_workflow",
+        "systematic_optional_group_named_pattern_present_workflow",
+        "systematic_optional_group_numbered_compile_metadata",
+        "systematic_optional_group_numbered_module_absent_workflow",
+        "systematic_optional_group_numbered_module_present_workflow",
+        "systematic_optional_group_numbered_pattern_absent_workflow",
+        "systematic_optional_group_numbered_pattern_present_workflow"
+      ],
+      "id": "match.systematic_feature_corpus.str",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "systematic-feature-corpus"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 18,
+        "failed_cases": 0,
+        "passed_cases": 18,
+        "skipped_cases": 0,
+        "total_cases": 18,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 4,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "systematic_conditional_group_exists_empty_else_nested_named_compile_metadata",
+        "systematic_conditional_group_exists_empty_else_nested_numbered_compile_metadata",
+        "systematic_optional_group_named_compile_metadata",
+        "systematic_optional_group_numbered_compile_metadata"
+      ],
+      "id": "match.systematic_feature_corpus.compile",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "systematic-feature-corpus"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 4,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 8,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "systematic_conditional_group_exists_empty_else_nested_named_module_missing_suffix_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_named_module_present_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_numbered_module_missing_suffix_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_numbered_module_present_workflow",
+        "systematic_optional_group_named_module_absent_workflow",
+        "systematic_optional_group_named_module_present_workflow",
+        "systematic_optional_group_numbered_module_absent_workflow",
+        "systematic_optional_group_numbered_module_present_workflow"
+      ],
+      "id": "match.systematic_feature_corpus.module_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "systematic-feature-corpus"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 8,
+        "failed_cases": 0,
+        "passed_cases": 8,
+        "skipped_cases": 0,
+        "total_cases": 8,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 6,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "systematic_conditional_group_exists_empty_else_nested_named_pattern_absent_workflow",
+        "systematic_conditional_group_exists_empty_else_nested_numbered_pattern_absent_workflow",
+        "systematic_optional_group_named_pattern_absent_workflow",
+        "systematic_optional_group_named_pattern_present_workflow",
+        "systematic_optional_group_numbered_pattern_absent_workflow",
+        "systematic_optional_group_numbered_pattern_present_workflow"
+      ],
+      "id": "match.systematic_feature_corpus.pattern_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "systematic-feature-corpus"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 0,
+        "passed_cases": 6,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
     }
   ],
   "summary": {
-    "executed_cases": 304,
+    "executed_cases": 322,
     "failed_cases": 0,
-    "passed_cases": 304,
+    "passed_cases": 322,
     "skipped_cases": 0,
-    "total_cases": 304,
+    "total_cases": 322,
     "unimplemented_cases": 0
   }
 }

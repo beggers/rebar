@@ -4,15 +4,14 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0153` to catch bounded nested explicit-empty-else conditional benchmarks up so that the already-live accepted nested explicit-empty-else composition reaches the published benchmark surface before broader nested conditional expansion reopens the frontier further.
-2. Land `RBR-0154` to add a deterministic systematic correctness-corpus harness for already-landed slices so stronger evidence can accumulate alongside feature work instead of relying only on hand-written per-slice fixture growth.
-3. Land `RBR-0155` to reconcile the nested empty-arm benchmark anchors so the empty-yes-arm and fully-empty manifests stop collapsing to the same stored pattern before the next feature slice is queued against them.
-4. Land `RBR-0156` to publish one bounded nested empty-yes-arm conditional correctness pack for `a(b)?c(?(1)|(?(1)e|f))` and `a(?P<word>b)?c(?(word)|(?(word)e|f))` so the queue keeps accepted nested empty-arm syntax explicit before nested fully-empty conditionals or broader backtracking reopen the frontier.
-5. Land `RBR-0157` to convert that bounded nested empty-yes-arm conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-6. Land `RBR-0158` to catch bounded nested empty-yes-arm conditional benchmarks up so that accepted nested empty-yes-arm composition reaches the published benchmark surface before nested fully-empty conditionals or broader backtracking reopen the frontier further.
-7. Land `RBR-0159` to publish one bounded nested fully-empty conditional correctness pack for `a(b)?c(?(1)|(?(1)|))` and `a(?P<word>b)?c(?(word)|(?(word)|))` so the queue keeps accepted nested fully-empty syntax explicit before broader nested empty-arm or backtracking-heavy shapes reopen the frontier.
-8. Land `RBR-0160` to convert that bounded nested fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-9. Land `RBR-0161` to catch bounded nested fully-empty conditional benchmarks up so that accepted nested fully-empty composition reaches the published benchmark surface before broader nested empty-arm or backtracking-heavy conditionals reopen the frontier further.
+1. Land `RBR-0154` to add a deterministic systematic correctness-corpus harness for already-landed slices so stronger evidence can accumulate alongside feature work instead of relying only on hand-written per-slice fixture growth.
+2. Land `RBR-0155` to reconcile the nested empty-arm benchmark anchors so the empty-yes-arm and fully-empty manifests stop collapsing to the same stored pattern before the next feature slice is queued against them.
+3. Land `RBR-0156` to publish one bounded nested empty-yes-arm conditional correctness pack for `a(b)?c(?(1)|(?(1)e|f))` and `a(?P<word>b)?c(?(word)|(?(word)e|f))` so the queue keeps accepted nested empty-arm syntax explicit before nested fully-empty conditionals or broader backtracking reopen the frontier.
+4. Land `RBR-0157` to convert that bounded nested empty-yes-arm conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+5. Land `RBR-0158` to catch bounded nested empty-yes-arm conditional benchmarks up so that accepted nested empty-yes-arm composition reaches the published benchmark surface before nested fully-empty conditionals or broader backtracking reopen the frontier further.
+6. Land `RBR-0159` to publish one bounded nested fully-empty conditional correctness pack for `a(b)?c(?(1)|(?(1)|))` and `a(?P<word>b)?c(?(word)|(?(word)|))` so the queue keeps accepted nested fully-empty syntax explicit before broader nested empty-arm or backtracking-heavy shapes reopen the frontier.
+7. Land `RBR-0160` to convert that bounded nested fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+8. Land `RBR-0161` to catch bounded nested fully-empty conditional benchmarks up so that accepted nested fully-empty composition reaches the published benchmark surface before broader nested empty-arm or backtracking-heavy conditionals reopen the frontier further.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

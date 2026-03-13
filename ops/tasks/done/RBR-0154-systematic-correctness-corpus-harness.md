@@ -1,8 +1,9 @@
 # RBR-0154: Add a deterministic systematic correctness-corpus harness
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Strengthen confidence in already-landed regex slices by adding a reusable, deterministic correctness-harness path that can expand compact feature specs into broader CPython-vs-`rebar` test matrices instead of relying only on hand-written fixture growth.
@@ -29,3 +30,4 @@ Created: 2026-03-13
 ## Notes
 - This task is the local queue translation of the remote-only `USER-ASK-5` request while git history is still diverged from `origin/main`.
 - Prefer deterministic corpus amplification for already-landed slices before considering property-based or fuzz follow-ons.
+- Completed by adding a versioned `systematic_feature_corpus` generator path in `python/rebar_harness/systematic_corpus.py`, wiring that expansion into `python/rebar_harness/correctness.py`, publishing a first compact manifest that expands optional-group and nested explicit-empty-else conditional slices into 18 deterministic cases, adding `tests/conformance/test_systematic_feature_corpus.py`, updating the correctness plan, refreshing the affected combined-report tests, and republishing `reports/correctness/latest.json` at 45 manifests / 322 passing cases in this checkout.

@@ -21,6 +21,7 @@ if str(PYTHON_SOURCE) not in sys.path:
 
 import rebar
 from rebar_harness.metadata import build_cpython_baseline
+from rebar_harness.systematic_corpus import expand_systematic_manifest
 
 
 TARGET_CPYTHON_SERIES = "3.12.x"
@@ -171,6 +172,7 @@ DEFAULT_FIXTURE_PATHS = (
     / "conformance"
     / "fixtures"
     / "quantified_alternation_workflows.json",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "systematic_feature_corpus.json",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 PHASE_BY_LAYER = {
@@ -311,7 +313,7 @@ def _materialize_fixture_value(value: Any) -> Any:
 
 
 def load_fixture_manifest(path: pathlib.Path) -> tuple[FixtureManifest, list[FixtureCase]]:
-    raw_manifest = json.loads(path.read_text(encoding="utf-8"))
+    raw_manifest = expand_systematic_manifest(json.loads(path.read_text(encoding="utf-8")))
     schema_version = raw_manifest.get("schema_version")
     if schema_version != FIXTURE_SCHEMA_VERSION:
         raise ValueError(

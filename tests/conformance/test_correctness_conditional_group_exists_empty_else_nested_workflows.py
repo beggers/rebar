@@ -64,7 +64,7 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseNestedWorkflowTest(unitte
         self.assertEqual(scorecard["summary"], summary)
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 
-        self.assertEqual(scorecard["fixtures"]["manifest_count"], 44)
+        self.assertEqual(scorecard["fixtures"]["manifest_count"], 45)
         self.assertIn(
             "conditional-group-exists-empty-else-nested-workflows",
             scorecard["fixtures"]["manifest_ids"],
@@ -73,25 +73,25 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseNestedWorkflowTest(unitte
         self.assertEqual(
             scorecard["summary"],
             {
-                "executed_cases": 304,
+                "executed_cases": 322,
                 "failed_cases": 0,
-                "passed_cases": 304,
+                "passed_cases": 322,
                 "skipped_cases": 0,
-                "total_cases": 304,
+                "total_cases": 322,
                 "unimplemented_cases": 0,
             },
         )
-        self.assertEqual(len(scorecard["cases"]), 304)
+        self.assertEqual(len(scorecard["cases"]), 322)
 
         match_layer = scorecard["layers"]["match_behavior"]
         self.assertEqual(
             match_layer["summary"],
             {
-                "executed_cases": 160,
+                "executed_cases": 178,
                 "failed_cases": 0,
-                "passed_cases": 160,
+                "passed_cases": 178,
                 "skipped_cases": 0,
-                "total_cases": 160,
+                "total_cases": 178,
                 "unimplemented_cases": 0,
             },
         )

@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "manifest_id": "systematic-feature-corpus",
+  "layer": "match_behavior",
+  "suite_id": "match.systematic_feature_corpus",
+  "defaults": {
+    "text_model": "str"
+  },
+  "generator": {
+    "id": "systematic_feature_corpus",
+    "version": 1
+  },
+  "feature_specs": [
+    {
+      "id": "optional-group",
+      "family_prefix": "systematic_optional_group",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "capture-oriented",
+        "landed-slice"
+      ],
+      "notes": [
+        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures."
+      ],
+      "variants": [
+        {
+          "id": "numbered",
+          "pattern": "a(b)?d",
+          "categories": [
+            "numbered-capture"
+          ],
+          "notes": [
+            "Uses the bounded numbered optional-group slice that already passes through the Rust boundary."
+          ]
+        },
+        {
+          "id": "named",
+          "pattern": "a(?P<word>b)?d",
+          "group_name": "word",
+          "categories": [
+            "named-group"
+          ],
+          "notes": [
+            "Uses the matching named optional-group slice so the generated corpus covers both capture addressing modes."
+          ]
+        }
+      ],
+      "expansions": [
+        {
+          "id": "compile-metadata",
+          "operation": "compile",
+          "family_suffix": "compile_metadata",
+          "categories": [
+            "compile",
+            "metadata"
+          ],
+          "notes": [
+            "Publishes the compile metadata observation for the compact optional-group feature spec."
+          ]
+        },
+        {
+          "id": "module-search-present",
+          "operation": "module_call",
+          "family_suffix": "module_present_workflow",
+          "helper": "search",
+          "args": [
+            "{pattern}",
+            "zzabdzz"
+          ],
+          "categories": [
+            "module",
+            "search",
+            "present"
+          ],
+          "notes": [
+            "Exercises the module-level path where the optional capture participates in the match."
+          ]
+        },
+        {
+          "id": "module-search-absent",
+          "operation": "module_call",
+          "family_suffix": "module_absent_workflow",
+          "helper": "search",
+          "args": [
+            "{pattern}",
+            "zzadzz"
+          ],
+          "categories": [
+            "module",
+            "search",
+            "absent"
+          ],
+          "notes": [
+            "Exercises the module-level path where the optional capture is skipped and the observed group payload must stay aligned with CPython."
+          ]
+        },
+        {
+          "id": "pattern-fullmatch-present",
+          "operation": "pattern_call",
+          "family_suffix": "pattern_present_workflow",
+          "helper": "fullmatch",
+          "args": [
+            "abd"
+          ],
+          "categories": [
+            "pattern",
+            "fullmatch",
+            "present"
+          ],
+          "notes": [
+            "Exercises the compiled Pattern path where the optional capture is present."
+          ]
+        },
+        {
+          "id": "pattern-fullmatch-absent",
+          "operation": "pattern_call",
+          "family_suffix": "pattern_absent_workflow",
+          "helper": "fullmatch",
+          "args": [
+            "ad"
+          ],
+          "categories": [
+            "pattern",
+            "fullmatch",
+            "absent"
+          ],
+          "notes": [
+            "Exercises the compiled Pattern path where the optional capture is omitted."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "conditional-group-exists-empty-else-nested",
+      "family_prefix": "systematic_conditional_group_exists_empty_else_nested",
+      "categories": [
+        "grouped",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "nested",
+        "landed-slice"
+      ],
+      "notes": [
+        "Expands a compact nested conditional spec into deterministic numbered and named compile, module, and Pattern observations so a landed conditional slice gets broader evidence without another hand-written manifest."
+      ],
+      "variants": [
+        {
+          "id": "numbered",
+          "pattern": "a(b)?c(?(1)(?(1)d)|)",
+          "categories": [
+            "numbered-capture"
+          ],
+          "notes": [
+            "Uses the bounded numbered nested explicit-empty-else conditional slice."
+          ]
+        },
+        {
+          "id": "named",
+          "pattern": "a(?P<word>b)?c(?(word)(?(word)d)|)",
+          "group_name": "word",
+          "categories": [
+            "named-group"
+          ],
+          "notes": [
+            "Uses the matching named nested explicit-empty-else conditional slice."
+          ]
+        }
+      ],
+      "expansions": [
+        {
+          "id": "compile-metadata",
+          "operation": "compile",
+          "family_suffix": "compile_metadata",
+          "categories": [
+            "compile",
+            "metadata"
+          ],
+          "notes": [
+            "Publishes the compile metadata observation for the compact nested conditional feature spec."
+          ]
+        },
+        {
+          "id": "module-search-present",
+          "operation": "module_call",
+          "family_suffix": "module_present_workflow",
+          "helper": "search",
+          "args": [
+            "{pattern}",
+            "zzabcdzz"
+          ],
+          "categories": [
+            "module",
+            "search",
+            "present"
+          ],
+          "notes": [
+            "Exercises the module-level path where the outer and nested yes-arms both activate."
+          ]
+        },
+        {
+          "id": "module-fullmatch-missing-suffix",
+          "operation": "module_call",
+          "family_suffix": "module_missing_suffix_workflow",
+          "helper": "fullmatch",
+          "args": [
+            "{pattern}",
+            "abc"
+          ],
+          "categories": [
+            "module",
+            "fullmatch",
+            "failure",
+            "present"
+          ],
+          "notes": [
+            "Exercises the module-level path where the capture is present but the nested yes-arm suffix is missing."
+          ]
+        },
+        {
+          "id": "pattern-fullmatch-absent",
+          "operation": "pattern_call",
+          "family_suffix": "pattern_absent_workflow",
+          "helper": "fullmatch",
+          "args": [
+            "ac"
+          ],
+          "categories": [
+            "pattern",
+            "fullmatch",
+            "absent"
+          ],
+          "notes": [
+            "Exercises the compiled Pattern path where both nested conditionals take the empty else-arm."
+          ]
+        }
+      ]
+    }
+  ]
+}
