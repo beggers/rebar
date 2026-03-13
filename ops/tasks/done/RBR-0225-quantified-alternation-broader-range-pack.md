@@ -1,6 +1,6 @@
 # RBR-0225: Publish a bounded broader-range quantified-alternation correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0224`.
 - This task exists so the queue broadens quantified alternation through one exact `{1,3}` follow-on with an existing benchmark-gap anchor instead of jumping directly to open-ended repeats.
+
+## Completion
+- Added `quantified_alternation_broader_range_workflows.json` to the default correctness fixture pack and published a dedicated 16-case `{1,3}` broader-range manifest covering numbered and named compile, lower-bound module search, third-repetition fullmatch, and explicit no-match workflows for `a(b|c){1,3}d` / `a(?P<word>b|c){1,3}d`.
+- Added a focused correctness regression test that locks the CPython observations for the new pack while allowing the current `rebar` outcome to remain either `unimplemented` or a future `pass`, so `RBR-0226` can flip the same cases without rewriting the publication test.
+- Regenerated `reports/correctness/latest.json`; the published combined scorecard now reports 532 cases total with 516 passes and 16 honest `unimplemented` broader-range quantified-alternation gaps.
