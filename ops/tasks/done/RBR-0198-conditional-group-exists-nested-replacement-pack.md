@@ -1,8 +1,9 @@
 # RBR-0198: Publish a bounded nested two-arm conditional replacement correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published correctness scorecard with a bounded nested two-arm conditional replacement manifest so replacement-conditioned work reopens through one explicit nested follow-on instead of a vague broader-composition bucket.
@@ -28,3 +29,5 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0183`, `RBR-0194`, and the existing conditional replacement helper surface.
 - This task exists so the queue reopens after `RBR-0197` with the smallest remaining nested replacement-conditioned gap instead of jumping directly to quantified replacement-conditioned conditionals, branch-local-backreference arms, or a vague broader-backtracking bucket.
+- Added `conditional_group_exists_nested_replacement_workflows.json`, registered it in the default combined harness fixture list, and published the new eight-case nested replacement suite in `reports/correctness/latest.json`.
+- Current runtime behavior remains honest-gap publication for this slice: the combined scorecard now reports 440 total cases with 8 `unimplemented` nested replacement cases, and `python3 -m unittest discover -s tests/conformance -p 'test_correctness_conditional_group_exists*.py'` passed after the baseline update.
