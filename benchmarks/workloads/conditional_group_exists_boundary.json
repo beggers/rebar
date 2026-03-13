@@ -7,7 +7,7 @@
   ],
   "notes": [
     "Conditional group-exists boundary workloads keep one optional capture, one conditional site, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported bounded two-arm conditional slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch paths directly, while nested conditionals and quantified conditional arms stay as explicit known-gap rows until later conditional follow-ons land."
+    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch paths directly plus one bounded quantified `{2}` Pattern.fullmatch companion for each numbered and named spelling, while nested conditional composition stays as the remaining explicit gap in this manifest."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -258,7 +258,6 @@
         "group-exists",
         "quantified",
         "fullmatch",
-        "unsupported",
         "purged-cache"
       ],
       "syntax_features": [
@@ -270,7 +269,42 @@
         "cache-purge"
       ],
       "notes": [
-        "Explicit quantified-conditional gap row so repeated conditional-arm behavior stays on the benchmark surface instead of disappearing."
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered quantified conditional workflow when the optional capture is present and the repeated yes arm must supply exactly two trailing `d` literals."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-quantified-conditional-group-exists-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>b)?c(?(word)d|e){2}",
+      "haystack": "abcdd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "named-group",
+        "fullmatch",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "quantifiers",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded named quantified conditional workflow when the optional named capture is present and the repeated yes arm must still supply exactly two trailing `d` literals."
       ]
     }
   ]

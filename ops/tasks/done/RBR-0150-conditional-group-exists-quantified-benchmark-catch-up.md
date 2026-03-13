@@ -1,6 +1,6 @@
 # RBR-0150: Catch bounded quantified-conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 - Build on `RBR-0149`.
 - Use the existing `pattern-fullmatch-numbered-quantified-conditional-group-exists-purged-gap` row in `benchmarks/workloads/conditional_group_exists_boundary.json` as the benchmark anchor for this slice.
 - This task exists so the queue does not reach quantified-conditional parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Updated `benchmarks/workloads/conditional_group_exists_boundary.json` so the anchored numbered quantified row now publishes as a measured workload and added the named quantified `Pattern.fullmatch` companion for `a(?P<word>b)?c(?(word)d|e){2}`.
+- Refreshed `tests/benchmarks/test_conditional_group_exists_boundary_benchmarks.py` to the current 29-manifest suite and asserted the new quantified conditional measured-row counts instead of the stale gap expectations.
+- Republished `reports/benchmarks/latest.json`; the combined scorecard now reports `290` workloads, `236` measured workloads, and `54` known gaps, while `conditional-group-exists-boundary` reports `9` workloads with `8` measured and `1` remaining nested-conditional gap.

@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is widening a real Rust-backed subset, but the project is still early relative to the drop-in `re` target. |
 | Delivery estimate | Foundation work is complete, the published slice is expanding with explicit honest gaps and catch-up tasks, and overall stdlib-parity progress is still in the early implementation stage. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `5` ready, `0` in progress, `156` done, `0` blocked |
+| Work queue | `4` ready, `0` in progress, `157` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -35,19 +35,19 @@ _These correctness counts cover only the published slice. Overall delivery estim
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/usr/bin/python3`) |
-| Published workloads | `289` |
-| Workloads with real `rebar` timings | `234` |
-| Known-gap workloads | `55` |
+| Published workloads | `290` |
+| Workloads with real `rebar` timings | `236` |
+| Known-gap workloads | `54` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; built-native timing remains limited to [`reports/benchmarks/native_smoke.json`](reports/benchmarks/native_smoke.json)._
 
-_README speedup rollups stay omitted while only `234` of `289` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `236` of `290` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- Land `RBR-0149` and `RBR-0150` so the newly published bounded quantified-conditional slice reaches Rust-backed parity and benchmark coverage.
+- Land `RBR-0150` so the newly landed bounded quantified-conditional slice reaches the published benchmark surface.
 - Then land `RBR-0151` through `RBR-0154` for the nested explicit-empty-else slice and the deterministic systematic correctness-corpus harness.
 
 ### Current Risks
@@ -58,15 +58,15 @@ _README speedup rollups stay omitted while only `234` of `289` published workloa
 
 ## Implementation Snapshot
 
-`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The published slice currently reports `288` passes with `8` honest gaps across `296` cases, and that bounded frontier is still far from full stdlib `re` parity.
+`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The published slice currently reports `296` passes with `0` honest gaps across `296` cases, and that bounded frontier is still far from full stdlib `re` parity.
 
-The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. Near-term work is now about converting the newly published quantified-conditional slice into Rust-backed behavior, then widening into nested explicit-empty-else conditionals while the systematic correctness corpus grows in parallel.
+The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. Near-term work is now about catching the newly landed quantified-conditional slice up on the benchmark surface, then widening into nested explicit-empty-else conditionals while the systematic correctness corpus grows in parallel.
 
 Benchmark publication is still partial by design. The generated status block above carries the current workload and known-gap totals, while the full suite still times the source-tree shim and the built-native path remains a separate six-workload smoke artifact in `reports/benchmarks/native_smoke.json`.
 
 ## What The Numbers Mean
 
-The correctness report is a slice-health signal, not an end-state signal. `288` passes with `8` honest gaps across `296` published cases means the currently tracked frontier is being widened honestly; the new quantified-conditional pack is published before Rust-backed parity lands. It still does not mean the project is close to replacing stdlib `re` across the board.
+The correctness report is a slice-health signal, not an end-state signal. `296` passes with `0` honest gaps across `296` published cases means the currently tracked frontier is fully green, but still deliberately narrow. It still does not mean the project is close to replacing stdlib `re` across the board.
 
 The benchmark report is still a coverage-first artifact too. It already exercises a wide workload set, but 55 rows are still explicit gaps and the main published run still measures the source-tree shim rather than the fully built-native path. That is enough to guide the queue, but not enough to make broad speed claims yet.
 
