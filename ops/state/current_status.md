@@ -6,17 +6,17 @@ Updated: 2026-03-13
 Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while keeping the correctness and benchmark publications caught up with each newly supported slice.
 
 ## README Phase Summary
-Phase 3 is widening a bounded Rust-backed `re` slice; the published frontier reaches grouped alternation through `{1,4}`, but overall parity is still narrow.
+Phase 3 is widening a bounded Rust-backed `re` slice; correctness now reaches the broader `{1,4}` grouped-conditional frontier, but overall parity is still narrow.
 
 ## README Delivery Estimate
-Foundation and reporting are in place. The published correctness and Python-path benchmark surfaces are aligned for the current slice, but the project is still far from drop-in parity and not ready for speed claims.
+Foundation and reporting are in place. The tracked correctness frontier is fully passing, but the Python-path benchmark report still trails it and the project is still far from drop-in parity and not ready for speed claims.
 
 ## README Next Steps
-- Publish the next bounded Rust-backed slice and keep correctness, parity, and Python-path benchmark coverage moving together.
+- Catch the broader `{1,4}` grouped-conditional slice up on the Python-path benchmark surface, then keep correctness, parity, and benchmark publication moving together.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- Built-native benchmark sidecars still cover less of the suite than the main published report.
+- The benchmark report still lags the fully passing correctness frontier for the newest `{1,4}` grouped-conditional slice.
 
 ## Compatibility Heuristic
 Early subset, still far from drop-in parity: the Rust boundary covers literals, captures, several bounded conditional and replacement workflows, quantified branch-local backreferences, and grouped alternation through bounded `{1,4}` plus open-ended `{1,}` and `{2,}` counted-repeat slices. The correctness surface now also publishes the adjacent broader `{1,4}` grouped-conditional slice as explicit gaps while parity catches up.

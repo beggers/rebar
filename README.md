@@ -11,9 +11,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 3 is widening a bounded Rust-backed `re` slice; the published frontier reaches grouped alternation through `{1,4}`, but overall parity is still narrow. |
-| Delivery estimate | Foundation and reporting are in place. The published correctness and Python-path benchmark surfaces are aligned for the current slice, but the project is still far from drop-in parity and not ready for speed claims. |
-| Current milestone | Milestone 2 now has the broader `{1,4}` grouped-alternation slice benchmark-caught-up and the adjacent broader grouped-conditional pack published; the active frontier is now converting that `{1,4}` grouped-conditional slice behind `rebar._rebar` with `RBR-0271`. |
+| Phase | Phase 3 is widening a bounded Rust-backed `re` slice; correctness now reaches the broader `{1,4}` grouped-conditional frontier, but overall parity is still narrow. |
+| Delivery estimate | Foundation and reporting are in place. The tracked correctness frontier is fully passing, but the Python-path benchmark report still trails it and the project is still far from drop-in parity and not ready for speed claims. |
+| Current milestone | Milestone 2 now has the broader `{1,4}` grouped-conditional slice converted behind `rebar._rebar`; the active frontier is catching that same slice up on the Python-path benchmark surface with `RBR-0273`. |
 | Work queue | `1` ready, `0` in progress, `274` done, `1` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
@@ -28,7 +28,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `82` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Foundation and reporting are in place. The published correctness and Python-path benchmark surfaces are aligned for the current slice, but the project is still far from drop-in parity and not ready for speed claims._
+_These correctness counts cover only the published slice. Overall delivery estimate: Foundation and reporting are in place. The tracked correctness frontier is fully passing, but the Python-path benchmark report still trails it and the project is still far from drop-in parity and not ready for speed claims._
 
 ### Benchmark Snapshot
 
@@ -47,19 +47,19 @@ _README speedup rollups stay omitted while only `430` of `461` published workloa
 
 ### Immediate Next Steps
 
-- Publish the next bounded Rust-backed slice and keep correctness, parity, and Python-path benchmark coverage moving together.
+- Catch the broader `{1,4}` grouped-conditional slice up on the Python-path benchmark surface, then keep correctness, parity, and benchmark publication moving together.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- Built-native benchmark sidecars still cover less of the suite than the main published report.
+- The benchmark report still lags the fully passing correctness frontier for the newest `{1,4}` grouped-conditional slice.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
 
-`rebar` already has a real Rust core, a CPython-facing extension boundary, and published correctness and benchmark reports. What it does not have yet is broad `re` coverage: the current slice is coherent and fully published, but still small relative to stdlib `re`.
+`rebar` already has a real Rust core, a CPython-facing extension boundary, and published correctness and benchmark reports. What it does not have yet is broad `re` coverage: the current correctness frontier is fully passing, the benchmark report still trails that frontier, and the supported slice is still small relative to stdlib `re`.
 
-Benchmarking is useful as a coverage signal, not a performance victory lap yet. The main published suite still runs through the source-tree shim, and the built-native numbers live in separate sidecars, so the README avoids headline speedups.
+Benchmarking is useful as a coverage signal, not a performance victory lap yet. The main published suite still runs through the source-tree shim, and the built-native numbers live in separate sidecars, so the README avoids headline speedups and treats benchmark counts as coverage, not proof of speed.
 
 ## How To Read It
 
