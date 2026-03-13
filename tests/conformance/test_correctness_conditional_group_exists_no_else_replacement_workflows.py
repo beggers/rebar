@@ -75,10 +75,10 @@ class CorrectnessHarnessConditionalGroupExistsNoElseReplacementWorkflowTest(unit
             {
                 "executed_cases": 248,
                 "failed_cases": 0,
-                "passed_cases": 240,
+                "passed_cases": 248,
                 "skipped_cases": 0,
                 "total_cases": 248,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(len(scorecard["cases"]), 248)
@@ -89,10 +89,10 @@ class CorrectnessHarnessConditionalGroupExistsNoElseReplacementWorkflowTest(unit
             {
                 "executed_cases": 80,
                 "failed_cases": 0,
-                "passed_cases": 72,
+                "passed_cases": 80,
                 "skipped_cases": 0,
                 "total_cases": 80,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertIn(
@@ -134,10 +134,10 @@ class CorrectnessHarnessConditionalGroupExistsNoElseReplacementWorkflowTest(unit
             {
                 "executed_cases": 8,
                 "failed_cases": 0,
-                "passed_cases": 0,
+                "passed_cases": 8,
                 "skipped_cases": 0,
                 "total_cases": 8,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(
@@ -155,52 +155,47 @@ class CorrectnessHarnessConditionalGroupExistsNoElseReplacementWorkflowTest(unit
         module_present_case = cases_by_id[
             "module-sub-conditional-group-exists-no-else-replacement-present-str"
         ]
-        self.assertEqual(module_present_case["comparison"], "unimplemented")
+        self.assertEqual(module_present_case["comparison"], "pass")
         self.assertEqual(module_present_case["helper"], "sub")
         self.assertEqual(module_present_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(module_present_case["observations"]["cpython"]["result"], "zzXzz")
-        self.assertEqual(module_present_case["observations"]["rebar"]["outcome"], "unimplemented")
-        self.assertEqual(
-            module_present_case["observations"]["rebar"]["exception"]["message"],
-            "rebar.sub() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
-        )
+        self.assertEqual(module_present_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(module_present_case["observations"]["rebar"]["result"], "zzXzz")
 
         module_absent_case = cases_by_id[
             "module-subn-conditional-group-exists-no-else-replacement-absent-str"
         ]
-        self.assertEqual(module_absent_case["comparison"], "unimplemented")
+        self.assertEqual(module_absent_case["comparison"], "pass")
         self.assertEqual(module_absent_case["helper"], "subn")
         self.assertEqual(module_absent_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(module_absent_case["observations"]["cpython"]["result"], ["zzXzz", 1])
-        self.assertEqual(module_absent_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(module_absent_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(module_absent_case["observations"]["rebar"]["result"], ["zzXzz", 1])
 
         pattern_present_case = cases_by_id[
             "pattern-sub-conditional-group-exists-no-else-replacement-present-str"
         ]
-        self.assertEqual(pattern_present_case["comparison"], "unimplemented")
+        self.assertEqual(pattern_present_case["comparison"], "pass")
         self.assertEqual(pattern_present_case["helper"], "sub")
         self.assertEqual(pattern_present_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(pattern_present_case["observations"]["cpython"]["result"], "zzXzz")
-        self.assertEqual(pattern_present_case["observations"]["rebar"]["outcome"], "unimplemented")
-        self.assertEqual(
-            pattern_present_case["observations"]["rebar"]["exception"]["message"],
-            "rebar.Pattern.sub() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
-        )
+        self.assertEqual(pattern_present_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(pattern_present_case["observations"]["rebar"]["result"], "zzXzz")
 
         named_pattern_absent_case = cases_by_id[
             "pattern-subn-named-conditional-group-exists-no-else-replacement-absent-str"
         ]
-        self.assertEqual(named_pattern_absent_case["comparison"], "unimplemented")
+        self.assertEqual(named_pattern_absent_case["comparison"], "pass")
         self.assertEqual(named_pattern_absent_case["helper"], "subn")
         self.assertEqual(named_pattern_absent_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(
             named_pattern_absent_case["observations"]["cpython"]["result"],
             ["zzXzz", 1],
         )
-        self.assertEqual(named_pattern_absent_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_pattern_absent_case["observations"]["rebar"]["outcome"], "success")
         self.assertEqual(
-            named_pattern_absent_case["observations"]["rebar"]["exception"]["message"],
-            "rebar.Pattern.subn() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
+            named_pattern_absent_case["observations"]["rebar"]["result"],
+            ["zzXzz", 1],
         )
 
 

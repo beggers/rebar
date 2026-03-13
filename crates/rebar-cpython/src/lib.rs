@@ -5,13 +5,17 @@ use pyo3::ffi::c_str;
 use pyo3::prelude::*;
 use pyo3::types::{PyBytes, PyList, PyString};
 use rebar_core::{
-    compile as core_compile, escape_bytes as core_escape_bytes, escape_str as core_escape_str,
+    compile as core_compile,
+    conditional_group_exists_no_else_find_spans_str as core_conditional_group_exists_no_else_find_spans_str,
+    escape_bytes as core_escape_bytes,
+    escape_str as core_escape_str,
     expand_literal_replacement_template_str as core_expand_literal_replacement_template_str,
     grouped_alternation_find_spans_str as core_grouped_alternation_find_spans_str,
     grouped_literal_find_spans_str as core_grouped_literal_find_spans_str,
-    literal_find_spans as core_literal_find_spans, literal_match as core_literal_match,
-    nested_capture_find_spans_str as core_nested_capture_find_spans_str, CapturedMatchSpan,
-    CompileStatus, MatchMode, MatchStatus, PatternRef, TARGET_CPYTHON_SERIES,
+    literal_find_spans as core_literal_find_spans,
+    literal_match as core_literal_match,
+    nested_capture_find_spans_str as core_nested_capture_find_spans_str,
+    CapturedMatchSpan, CompileStatus, MatchMode, MatchStatus, PatternRef, TARGET_CPYTHON_SERIES,
 };
 
 const SCAFFOLD_STATUS: &str = "scaffold-only";
@@ -396,14 +400,10 @@ fn boundary_literal_subn(
     let pattern_ref = py_pattern_ref(pattern)?;
     let string_ref = py_pattern_ref(string)?;
     let repl_ref = py_pattern_ref(repl)?;
-    let outcome = match core_literal_find_spans(pattern_ref, flags, string_ref, 0, None) {
+    let literal_outcome = match core_literal_find_spans(pattern_ref, flags, string_ref, 0, None) {
         Ok(outcome) => outcome,
         Err(error) => return Err(PyTypeError::new_err(error.message())),
     };
-
-    if outcome.status == MatchStatus::Unsupported {
-        return Ok(("unsupported", py.None(), 0));
-    }
 
     if count < 0 {
         return match string_ref {
@@ -416,17 +416,44 @@ fn boundary_literal_subn(
         };
     }
 
-    let replacement_limit = if count == 0 {
-        outcome.spans.len()
-    } else {
-        replacement_limit(count, outcome.spans.len())
-    };
-
     match (string_ref, repl_ref) {
         (PatternRef::Str(string_value), PatternRef::Str(repl_value)) => {
+            let (status, spans) = if literal_outcome.status != MatchStatus::Unsupported {
+                (
+                    "supported",
+                    literal_outcome
+                        .spans
+                        .into_iter()
+                        .map(|span| CapturedMatchSpan {
+                            span,
+                            group_spans: Vec::new(),
+                        })
+                        .collect::<Vec<_>>(),
+                )
+            } else if let PatternRef::Str(pattern_value) = pattern_ref {
+                let outcome = core_conditional_group_exists_no_else_find_spans_str(
+                    pattern_value,
+                    flags,
+                    string_value,
+                    0,
+                    None,
+                );
+                if outcome.status == MatchStatus::Unsupported {
+                    return Ok(("unsupported", py.None(), 0));
+                }
+                ("supported", outcome.matches)
+            } else {
+                return Ok(("unsupported", py.None(), 0));
+            };
+
+            let replacement_limit = if count == 0 {
+                spans.len()
+            } else {
+                replacement_limit(count, spans.len())
+            };
             if replacement_limit == 0 {
                 return Ok((
-                    "supported",
+                    status,
                     PyString::new(py, string_value).unbind().into_any(),
                     0,
                 ));
@@ -435,7 +462,8 @@ fn boundary_literal_subn(
             let boundaries = build_str_boundaries(string_value);
             let mut output = String::new();
             let mut last_end = 0;
-            for &(start, end) in outcome.spans.iter().take(replacement_limit) {
+            for matched in spans.iter().take(replacement_limit) {
+                let (start, end) = matched.span;
                 output.push_str(str_slice(string_value, &boundaries, last_end, start));
                 output.push_str(repl_value);
                 last_end = end;
@@ -447,12 +475,20 @@ fn boundary_literal_subn(
                 boundaries.len() - 1,
             ));
             Ok((
-                "supported",
+                status,
                 PyString::new(py, &output).unbind().into_any(),
                 replacement_limit,
             ))
         }
         (PatternRef::Bytes(string_value), PatternRef::Bytes(repl_value)) => {
+            if literal_outcome.status == MatchStatus::Unsupported {
+                return Ok(("unsupported", py.None(), 0));
+            }
+            let replacement_limit = if count == 0 {
+                literal_outcome.spans.len()
+            } else {
+                replacement_limit(count, literal_outcome.spans.len())
+            };
             if replacement_limit == 0 {
                 return Ok((
                     "supported",
@@ -463,7 +499,7 @@ fn boundary_literal_subn(
 
             let mut output = Vec::new();
             let mut last_end = 0;
-            for &(start, end) in outcome.spans.iter().take(replacement_limit) {
+            for &(start, end) in literal_outcome.spans.iter().take(replacement_limit) {
                 output.extend_from_slice(&string_value[last_end..start]);
                 output.extend_from_slice(repl_value);
                 last_end = end;

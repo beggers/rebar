@@ -1,6 +1,6 @@
 # RBR-0131: Add bounded omitted-no-arm conditional replacement parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0108`, `RBR-0130`, and the already-landed literal replacement helper boundary.
 - This task exists so the queue converts the first bounded conditional replacement workflow into real Rust-backed behavior instead of leaving it as publication-only coverage.
+
+## Completion
+- Added a Rust-backed repeated-match finder for the bounded omitted-no-arm conditional `str` replacement slice and wired `rebar._rebar` `sub()`/`subn()` through it for constant replacement text.
+- Added module and compiled-pattern parity tests for numbered and named omitted-no-arm conditional replacement workflows.
+- Republished `reports/correctness/latest.json`; the published correctness scorecard is now `248` passes, `0` failures, and `0` unimplemented cases across the current default fixture set.
