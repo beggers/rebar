@@ -106,6 +106,11 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
+    / "optional_group_alternation_branch_local_backreference_workflows.json",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
     / "conditional_group_exists_workflows.json",
     REPO_ROOT
     / "tests"

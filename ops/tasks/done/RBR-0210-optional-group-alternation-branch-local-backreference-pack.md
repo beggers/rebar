@@ -1,6 +1,6 @@
 # RBR-0210: Publish a bounded optional-group-alternation-plus-branch-local-backreference correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0090`, `RBR-0091`, `RBR-0101`, `RBR-0102`, `RBR-0103`, and `RBR-0209`.
 - This task exists so the queue continues from the quantified branch-local frontier into the smallest remaining optional quantified follow-on with an existing benchmark anchor instead of jumping directly to broader counted-repeat quantified-alternation-plus-backreference work.
+
+## Completion Notes
+- Added `tests/conformance/fixtures/optional_group_alternation_branch_local_backreference_workflows.json` and registered it in the default correctness fixture set so the combined publication now carries a dedicated manifest for `a((b|c)\2)?d` and `a(?P<outer>(?P<inner>b|c)(?P=inner))?d`.
+- Added `tests/conformance/test_correctness_optional_group_alternation_branch_local_backreference_workflows.py` to verify the new suite is present in the combined scorecard and to pin the CPython observations for absent-group success, both present-branch successes, and explicit no-match behavior while allowing `rebar` to remain honestly `unimplemented` until `RBR-0211`.
+- Regenerated `reports/correctness/latest.json`; the tracked combined scorecard now reports 472 total cases across 63 manifests with 462 passes, 0 explicit failures, and 10 `unimplemented` cases from this newly published pack.
