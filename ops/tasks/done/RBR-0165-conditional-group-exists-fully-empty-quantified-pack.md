@@ -1,6 +1,6 @@
 # RBR-0165: Publish a bounded quantified fully-empty conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0164`, `RBR-0161`, and `RBR-0149`.
 - This task exists so the queue reopens repeated fully-empty conditional composition through one exact accepted slice before the alternation-heavy empty-arm follow-ons are even eligible to queue.
+
+## Completion
+- Added `conditional_group_exists_fully_empty_quantified_workflows.json` to the default combined correctness fixture list and published a new 10-case quantified fully-empty manifest covering numbered and named compile, present, absent, mixed, and extra-suffix failure observations for `(?:a(b)?c(?(1)|)){2}` and `(?:a(?P<word>b)?c(?(word)|)){2}`.
+- Regenerated `reports/correctness/latest.json`; the combined report now publishes 356 total cases across 49 manifests with 346 passes and 10 honest `unimplemented` outcomes from this new bounded slice.
+- Added a focused regression test for the new manifest and refreshed the adjacent quantified empty-yes-arm combined-scorecard assertions to the new totals.

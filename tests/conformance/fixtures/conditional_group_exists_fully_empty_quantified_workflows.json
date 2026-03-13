@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "manifest_id": "conditional-group-exists-fully-empty-quantified-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.conditional_group_exists_fully_empty_quantified",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "conditional-group-exists-fully-empty-quantified-compile-metadata-str",
+      "operation": "compile",
+      "family": "conditional_group_exists_fully_empty_quantified_compile_metadata",
+      "pattern": "(?:a(b)?c(?(1)|)){2}",
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "fully-empty", "quantified", "exact-repeat", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes one bounded numbered quantified fully-empty conditional compile path where a non-capturing repeated wrapper keeps the optional capture at group 1 while the accepted fully-empty site is repeated exactly twice."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-fully-empty-quantified-module-fullmatch-present-str",
+      "operation": "module_call",
+      "family": "conditional_group_exists_fully_empty_quantified_module_present_workflow",
+      "helper": "fullmatch",
+      "args": ["(?:a(b)?c(?(1)|)){2}", "abcabc"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "fully-empty", "quantified", "exact-repeat", "fullmatch", "module", "present", "str", "gap"],
+      "notes": [
+        "Documents the numbered module-level quantified fully-empty fullmatch path when both repetitions populate the optional capture, so the repeated conditional contributes no else-arm suffix in either iteration."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-fully-empty-quantified-module-fullmatch-absent-str",
+      "operation": "module_call",
+      "family": "conditional_group_exists_fully_empty_quantified_module_absent_workflow",
+      "helper": "fullmatch",
+      "args": ["(?:a(b)?c(?(1)|)){2}", "acac"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "fully-empty", "quantified", "exact-repeat", "fullmatch", "module", "absent", "str", "gap"],
+      "notes": [
+        "Documents the numbered module-level quantified fully-empty fullmatch path when both repetitions omit the optional capture, keeping the doubled fully-empty else-arm contribution at zero width."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-fully-empty-quantified-pattern-fullmatch-mixed-str",
+      "operation": "pattern_call",
+      "family": "conditional_group_exists_fully_empty_quantified_pattern_mixed_workflow",
+      "pattern": "(?:a(b)?c(?(1)|)){2}",
+      "helper": "fullmatch",
+      "args": ["acabc"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "fully-empty", "quantified", "exact-repeat", "fullmatch", "pattern", "mixed", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch numbered mixed absent-then-present quantified path so the scorecard proves the repeated fully-empty conditional is re-evaluated at each repetition instead of freezing to the first iteration."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-fully-empty-quantified-pattern-fullmatch-extra-suffix-failure-str",
+      "operation": "pattern_call",
+      "family": "conditional_group_exists_fully_empty_quantified_pattern_extra_suffix_failure_workflow",
+      "pattern": "(?:a(b)?c(?(1)|)){2}",
+      "helper": "fullmatch",
+      "args": ["acace"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "fully-empty", "quantified", "exact-repeat", "fullmatch", "pattern", "failure", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch numbered extra-suffix failure path when the first repetition omits the optional capture so the scorecard proves this slice does not silently broaden into the quantified empty-yes-arm spelling."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-fully-empty-quantified-compile-metadata-str",
+      "operation": "compile",
+      "family": "named_conditional_group_exists_fully_empty_quantified_compile_metadata",
+      "pattern": "(?:a(?P<word>b)?c(?(word)|)){2}",
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "fully-empty", "quantified", "exact-repeat", "named-group", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the matching named quantified fully-empty conditional compile frontier for the same exact `{2}` repeated site."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-fully-empty-quantified-module-fullmatch-present-str",
+      "operation": "module_call",
+      "family": "named_conditional_group_exists_fully_empty_quantified_module_present_workflow",
+      "helper": "fullmatch",
+      "args": ["(?:a(?P<word>b)?c(?(word)|)){2}", "abcabc"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "fully-empty", "quantified", "exact-repeat", "named-group", "fullmatch", "module", "present", "str", "gap"],
+      "notes": [
+        "Documents the named module-level quantified fully-empty fullmatch path when both repetitions populate the named optional capture and both conditional sites therefore take the explicit zero-width yes arm."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-fully-empty-quantified-module-fullmatch-absent-str",
+      "operation": "module_call",
+      "family": "named_conditional_group_exists_fully_empty_quantified_module_absent_workflow",
+      "helper": "fullmatch",
+      "args": ["(?:a(?P<word>b)?c(?(word)|)){2}", "acac"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "fully-empty", "quantified", "exact-repeat", "named-group", "fullmatch", "module", "absent", "str", "gap"],
+      "notes": [
+        "Documents the named module-level quantified fully-empty fullmatch path when both repetitions omit the named capture so the accepted doubled zero-width else arm stays explicit in the scorecard."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-fully-empty-quantified-pattern-fullmatch-mixed-str",
+      "operation": "pattern_call",
+      "family": "named_conditional_group_exists_fully_empty_quantified_pattern_mixed_workflow",
+      "pattern": "(?:a(?P<word>b)?c(?(word)|)){2}",
+      "helper": "fullmatch",
+      "args": ["acabc"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "fully-empty", "quantified", "exact-repeat", "named-group", "fullmatch", "pattern", "mixed", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch named mixed absent-then-present quantified path so the repeated fully-empty site is recorded as a per-repetition decision for the named capture too."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-fully-empty-quantified-pattern-fullmatch-extra-suffix-failure-str",
+      "operation": "pattern_call",
+      "family": "named_conditional_group_exists_fully_empty_quantified_pattern_extra_suffix_failure_workflow",
+      "pattern": "(?:a(?P<word>b)?c(?(word)|)){2}",
+      "helper": "fullmatch",
+      "args": ["acace"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "fully-empty", "quantified", "exact-repeat", "named-group", "fullmatch", "pattern", "failure", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch named extra-suffix failure path when the repeated site omits the named capture so the rejected extra-suffix variant stays distinct from quantified empty-yes-arm behavior."
+      ]
+    }
+  ]
+}
