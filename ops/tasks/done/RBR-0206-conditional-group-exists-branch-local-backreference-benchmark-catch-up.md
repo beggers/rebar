@@ -1,6 +1,6 @@
 # RBR-0206: Catch bounded conditional-plus-branch-local-backreference benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 - Build on `RBR-0205`.
 - Keep this slice in the existing `branch_local_backreference_boundary` manifest rather than inventing a second benchmark family for the same combined branch-local/conditional surface.
 - This task exists so the queue does not reach bounded conditional-plus-branch-local-backreference parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Added six measured conditional-plus-branch-local benchmark rows to `branch_local_backreference_boundary`, preserving the quantified branch-local row as the remaining explicit known gap in that manifest.
+- Regenerated `reports/benchmarks/latest.json`; the published benchmark scorecard now reports 361 workloads, 315 measured `rebar` timings, and 46 known gaps.
+- Updated the branch-local benchmark test plus downstream cumulative benchmark assertions that include this manifest so the checked-in benchmark suite matches the regenerated report.

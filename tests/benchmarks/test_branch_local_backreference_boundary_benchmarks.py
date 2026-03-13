@@ -115,12 +115,12 @@ class BranchLocalBackreferenceBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 28,
-                    "measured_workloads": 119,
-                    "module_workloads": 139,
+                    "known_gap_count": 27,
+                    "measured_workloads": 125,
+                    "module_workloads": 144,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
-                    "total_workloads": 147,
+                    "total_workloads": 152,
                 },
             )
 
@@ -139,24 +139,24 @@ class BranchLocalBackreferenceBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase3")
-        self.assertEqual(scorecard["summary"]["total_workloads"], 147)
+        self.assertEqual(scorecard["summary"]["total_workloads"], 152)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
-        self.assertEqual(scorecard["summary"]["module_workloads"], 139)
+        self.assertEqual(scorecard["summary"]["module_workloads"], 144)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 119)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 28)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 29)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 58)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 60)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 125)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 27)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 30)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 61)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 61)
         self.assertEqual(scorecard["families"]["parser"]["workload_count"], 8)
         self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 3)
         self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["workload_count"], 139)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 25)
+        self.assertEqual(scorecard["families"]["module"]["workload_count"], 144)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 24)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 25)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 56)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 58)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 26)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 59)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 59)
         self.assertEqual(scorecard["artifacts"]["manifest"], None)
         self.assertEqual(scorecard["artifacts"]["manifest_id"], "combined-benchmark-suite")
         self.assertEqual(scorecard["artifacts"]["manifest_schema_version"], 1)
@@ -165,10 +165,10 @@ class BranchLocalBackreferenceBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
 
         manifest_summary = scorecard["manifests"]["branch-local-backreference-boundary"]
-        self.assertEqual(manifest_summary["workload_count"], 8)
-        self.assertEqual(manifest_summary["selected_workload_count"], 8)
-        self.assertEqual(manifest_summary["measured_workloads"], 6)
-        self.assertEqual(manifest_summary["known_gap_count"], 2)
+        self.assertEqual(manifest_summary["workload_count"], 13)
+        self.assertEqual(manifest_summary["selected_workload_count"], 13)
+        self.assertEqual(manifest_summary["measured_workloads"], 12)
+        self.assertEqual(manifest_summary["known_gap_count"], 1)
         self.assertEqual(manifest_summary["readiness"], "partial")
         self.assertEqual(manifest_summary["selection_mode"], "full")
         self.assertEqual(manifest_summary["available_smoke_workload_count"], 2)
@@ -195,7 +195,7 @@ class BranchLocalBackreferenceBoundaryBenchmarkSuiteTest(unittest.TestCase):
             ],
         )
         self.assertIn("helper-call overhead", manifest_summary["notes"][0])
-        self.assertIn("known-gap rows", manifest_summary["notes"][1])
+        self.assertIn("quantified-branch follow-ons stay as explicit known-gap rows", manifest_summary["notes"][1])
 
         manifest_record = next(
             manifest
@@ -260,15 +260,42 @@ class BranchLocalBackreferenceBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertIsNone(quantified_gap["implementation_ns"])
         self.assertIsNone(quantified_gap["speedup_vs_cpython"])
 
-        conditional_gap = next(
+        conditional_compile = next(
             workload
             for workload in scorecard["workloads"]
-            if workload["id"] == "pattern-fullmatch-named-conditional-branch-local-backreference-purged-gap"
+            if workload["id"] == "module-compile-numbered-conditional-branch-local-backreference-cold-str"
         )
-        self.assertEqual(conditional_gap["status"], "unimplemented")
-        self.assertEqual(conditional_gap["implementation_timing"]["status"], "unimplemented")
-        self.assertIsNone(conditional_gap["implementation_ns"])
-        self.assertIsNone(conditional_gap["speedup_vs_cpython"])
+        self.assertEqual(conditional_compile["operation"], "module.compile")
+        self.assertEqual(conditional_compile["cache_mode"], "cold")
+        self.assertIn("conditionals", conditional_compile["syntax_features"])
+        self.assertEqual(conditional_compile["status"], "measured")
+        self.assertEqual(conditional_compile["implementation_timing"]["status"], "measured")
+        self.assertGreater(conditional_compile["implementation_ns"], 0)
+
+        conditional_search = next(
+            workload
+            for workload in scorecard["workloads"]
+            if workload["id"] == "module-search-named-conditional-branch-local-backreference-warm-str"
+        )
+        self.assertEqual(conditional_search["operation"], "module.search")
+        self.assertEqual(
+            conditional_search["pattern"],
+            "a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)",
+        )
+        self.assertEqual(conditional_search["status"], "measured")
+        self.assertEqual(conditional_search["implementation_timing"]["status"], "measured")
+        self.assertGreater(conditional_search["baseline_ns"], 0)
+        self.assertGreater(conditional_search["implementation_ns"], 0)
+
+        conditional_fullmatch = next(
+            workload
+            for workload in scorecard["workloads"]
+            if workload["id"] == "pattern-fullmatch-named-conditional-branch-local-backreference-purged-str"
+        )
+        self.assertEqual(conditional_fullmatch["status"], "measured")
+        self.assertEqual(conditional_fullmatch["implementation_timing"]["status"], "measured")
+        self.assertGreater(conditional_fullmatch["implementation_ns"], 0)
+        self.assertIsNotNone(conditional_fullmatch["speedup_vs_cpython"])
 
 
 if __name__ == "__main__":

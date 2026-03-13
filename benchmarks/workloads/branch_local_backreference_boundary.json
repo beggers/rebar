@@ -7,7 +7,7 @@
   ],
   "notes": [
     "Branch-local backreference boundary workloads keep captures, alternation sites, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded branch-local reference slice rather than regex throughput.",
-    "Measured rows cover the bounded `a((b)|c)\\\\2d` and `a(?P<outer>(?P<inner>b)|c)(?P=inner)d` compile/search/fullmatch paths directly, while quantified-branch and conditional combinations stay as explicit known-gap rows until the queued quantifier and conditional follow-ons land."
+    "Measured rows cover the bounded `a((b)|c)\\\\2d`, `a(?P<outer>(?P<inner>b)|c)(?P=inner)d`, `a((b)|c)\\\\2(?(2)d|e)`, and `a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)` compile/search/fullmatch paths directly, while quantified-branch follow-ons stay as explicit known-gap rows until the queued quantifier work lands."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -244,7 +244,173 @@
       ]
     },
     {
-      "id": "pattern-fullmatch-named-conditional-branch-local-backreference-purged-gap",
+      "id": "module-compile-numbered-conditional-branch-local-backreference-cold-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a((b)|c)\\2(?(2)d|e)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "numbered-backreference",
+        "branch-local",
+        "conditional",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "alternation",
+        "numbered-backreferences",
+        "branch-local-backreferences",
+        "conditionals"
+      ],
+      "notes": [
+        "Cold module.compile benchmark for the bounded numbered branch-local backreference plus conditional slice so the newly supported compile metadata path reaches the published report."
+      ]
+    },
+    {
+      "id": "module-search-numbered-conditional-branch-local-backreference-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a((b)|c)\\2(?(2)d|e)",
+      "haystack": "zzabbdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "numbered-backreference",
+        "branch-local",
+        "conditional",
+        "search",
+        "module",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "alternation",
+        "numbered-backreferences",
+        "branch-local-backreferences",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded numbered branch-local backreference plus conditional success case on a tiny haystack."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-conditional-branch-local-backreference-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a((b)|c)\\2(?(2)d|e)",
+      "haystack": "abbd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "numbered-backreference",
+        "branch-local",
+        "conditional",
+        "fullmatch",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "alternation",
+        "numbered-backreferences",
+        "branch-local-backreferences",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the numbered conditional-plus-branch-local backreference success path."
+      ]
+    },
+    {
+      "id": "module-compile-named-conditional-branch-local-backreference-warm-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "conditional",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "alternation",
+        "named-groups",
+        "named-backreferences",
+        "branch-local-backreferences",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm module.compile path for the bounded named branch-local backreference plus conditional slice so named compile metadata joins the benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-named-conditional-branch-local-backreference-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)",
+      "haystack": "zzabbdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "conditional",
+        "search",
+        "module",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "alternation",
+        "named-groups",
+        "named-backreferences",
+        "branch-local-backreferences",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded named branch-local backreference plus conditional success case."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-conditional-branch-local-backreference-purged-str",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
@@ -263,7 +429,6 @@
         "branch-local",
         "conditional",
         "fullmatch",
-        "unsupported",
         "purged-cache"
       ],
       "syntax_features": [
@@ -277,7 +442,7 @@
         "cache-purge"
       ],
       "notes": [
-        "Explicit conditional known-gap row so branch-local backreference workflows combined with group-exists conditionals stay on the benchmark surface instead of disappearing."
+        "Purged-cache Pattern.fullmatch probe for the bounded named conditional-plus-branch-local backreference success path, reusing the existing conditional anchor row now that `RBR-0205` landed parity."
       ]
     }
   ]
