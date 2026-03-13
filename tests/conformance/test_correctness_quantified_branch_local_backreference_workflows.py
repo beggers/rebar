@@ -81,10 +81,10 @@ class CorrectnessHarnessQuantifiedBranchLocalBackreferenceWorkflowTest(unittest.
             {
                 "executed_cases": 462,
                 "failed_cases": 0,
-                "passed_cases": 454,
+                "passed_cases": 462,
                 "skipped_cases": 0,
                 "total_cases": 462,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(len(scorecard["cases"]), 462)
@@ -99,10 +99,10 @@ class CorrectnessHarnessQuantifiedBranchLocalBackreferenceWorkflowTest(unittest.
             {
                 "executed_cases": 286,
                 "failed_cases": 0,
-                "passed_cases": 278,
+                "passed_cases": 286,
                 "skipped_cases": 0,
                 "total_cases": 286,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
 
@@ -132,10 +132,10 @@ class CorrectnessHarnessQuantifiedBranchLocalBackreferenceWorkflowTest(unittest.
             {
                 "executed_cases": 8,
                 "failed_cases": 0,
-                "passed_cases": 0,
+                "passed_cases": 8,
                 "skipped_cases": 0,
                 "total_cases": 8,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(
@@ -157,25 +157,23 @@ class CorrectnessHarnessQuantifiedBranchLocalBackreferenceWorkflowTest(unittest.
         numbered_compile_case = cases_by_id[
             "quantified-branch-local-numbered-backreference-compile-metadata-str"
         ]
-        self.assertEqual(numbered_compile_case["comparison"], "unimplemented")
+        self.assertEqual(numbered_compile_case["comparison"], "pass")
         self.assertEqual(numbered_compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(
             numbered_compile_case["observations"]["cpython"]["result"]["groups"],
             2,
         )
         self.assertEqual(
-            numbered_compile_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            numbered_compile_case["observations"]["rebar"]["outcome"], "success"
         )
         self.assertEqual(
-            numbered_compile_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
+            numbered_compile_case["observations"]["rebar"]["result"]["groupindex"], {}
         )
 
         numbered_lower_bound_case = cases_by_id[
             "quantified-branch-local-numbered-backreference-module-search-lower-bound-str"
         ]
-        self.assertEqual(numbered_lower_bound_case["comparison"], "unimplemented")
+        self.assertEqual(numbered_lower_bound_case["comparison"], "pass")
         self.assertEqual(numbered_lower_bound_case["helper"], "search")
         self.assertEqual(
             numbered_lower_bound_case["observations"]["cpython"]["result"]["group0"],
@@ -190,14 +188,17 @@ class CorrectnessHarnessQuantifiedBranchLocalBackreferenceWorkflowTest(unittest.
             [2, 6],
         )
         self.assertEqual(
-            numbered_lower_bound_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            numbered_lower_bound_case["observations"]["rebar"]["outcome"], "success"
+        )
+        self.assertEqual(
+            numbered_lower_bound_case["observations"]["rebar"]["result"]["group_spans"],
+            [[3, 4], [3, 4]],
         )
 
         numbered_second_iteration_case = cases_by_id[
             "quantified-branch-local-numbered-backreference-pattern-fullmatch-second-iteration-str"
         ]
-        self.assertEqual(numbered_second_iteration_case["comparison"], "unimplemented")
+        self.assertEqual(numbered_second_iteration_case["comparison"], "pass")
         self.assertEqual(numbered_second_iteration_case["helper"], "fullmatch")
         self.assertEqual(
             numbered_second_iteration_case["observations"]["cpython"]["result"]["group0"],
@@ -212,53 +213,50 @@ class CorrectnessHarnessQuantifiedBranchLocalBackreferenceWorkflowTest(unittest.
             [[1, 3], [2, 3]],
         )
         self.assertEqual(
-            numbered_second_iteration_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            numbered_second_iteration_case["observations"]["rebar"]["outcome"], "success"
         )
 
         numbered_absent_case = cases_by_id[
             "quantified-branch-local-numbered-backreference-pattern-fullmatch-absent-branch-str"
         ]
-        self.assertEqual(numbered_absent_case["comparison"], "unimplemented")
+        self.assertEqual(numbered_absent_case["comparison"], "pass")
         self.assertEqual(numbered_absent_case["helper"], "fullmatch")
         self.assertIsNone(numbered_absent_case["observations"]["cpython"]["result"])
         self.assertEqual(
-            numbered_absent_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            numbered_absent_case["observations"]["rebar"]["outcome"], "success"
         )
+        self.assertIsNone(numbered_absent_case["observations"]["rebar"]["result"])
 
         named_compile_case = cases_by_id[
             "quantified-branch-local-named-backreference-compile-metadata-str"
         ]
-        self.assertEqual(named_compile_case["comparison"], "unimplemented")
+        self.assertEqual(named_compile_case["comparison"], "pass")
         self.assertEqual(named_compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(
             named_compile_case["observations"]["cpython"]["result"]["groupindex"],
             {"inner": 2, "outer": 1},
         )
         self.assertEqual(
-            named_compile_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            named_compile_case["observations"]["rebar"]["outcome"], "success"
         )
 
         named_lower_bound_case = cases_by_id[
             "quantified-branch-local-named-backreference-module-search-lower-bound-str"
         ]
-        self.assertEqual(named_lower_bound_case["comparison"], "unimplemented")
+        self.assertEqual(named_lower_bound_case["comparison"], "pass")
         self.assertEqual(named_lower_bound_case["helper"], "search")
         self.assertEqual(
             named_lower_bound_case["observations"]["cpython"]["result"]["named_groups"],
             {"inner": "b", "outer": "b"},
         )
         self.assertEqual(
-            named_lower_bound_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            named_lower_bound_case["observations"]["rebar"]["outcome"], "success"
         )
 
         named_second_iteration_case = cases_by_id[
             "quantified-branch-local-named-backreference-pattern-fullmatch-second-iteration-str"
         ]
-        self.assertEqual(named_second_iteration_case["comparison"], "unimplemented")
+        self.assertEqual(named_second_iteration_case["comparison"], "pass")
         self.assertEqual(named_second_iteration_case["helper"], "fullmatch")
         self.assertEqual(
             named_second_iteration_case["observations"]["cpython"]["result"]["named_groups"],
@@ -269,20 +267,19 @@ class CorrectnessHarnessQuantifiedBranchLocalBackreferenceWorkflowTest(unittest.
             "outer",
         )
         self.assertEqual(
-            named_second_iteration_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            named_second_iteration_case["observations"]["rebar"]["outcome"], "success"
         )
 
         named_absent_case = cases_by_id[
             "quantified-branch-local-named-backreference-pattern-fullmatch-absent-branch-str"
         ]
-        self.assertEqual(named_absent_case["comparison"], "unimplemented")
+        self.assertEqual(named_absent_case["comparison"], "pass")
         self.assertEqual(named_absent_case["helper"], "fullmatch")
         self.assertIsNone(named_absent_case["observations"]["cpython"]["result"])
         self.assertEqual(
-            named_absent_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            named_absent_case["observations"]["rebar"]["outcome"], "success"
         )
+        self.assertIsNone(named_absent_case["observations"]["rebar"]["result"])
 
 
 if __name__ == "__main__":

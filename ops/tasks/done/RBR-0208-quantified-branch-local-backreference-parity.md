@@ -1,6 +1,6 @@
 # RBR-0208: Add bounded quantified branch-local-backreference parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0207`.
 - This task exists so the queue turns the first bounded quantified branch-local-backreference workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+
+## Completion Notes
+- Added bounded Rust-core compile and match support for `a((b)+|c)\2d` and `a(?P<outer>(?P<inner>b)+|c)(?P=inner)d`, including the `abbd`, `abbbd`, and `acd` observations published by `RBR-0207`.
+- Added Python parity coverage for numbered and named module `search()` plus compiled `Pattern.fullmatch()` workflows.
+- Regenerated `reports/correctness/latest.json`; the tracked combined scorecard now reports 462 passing cases with 0 `unimplemented` gaps.
