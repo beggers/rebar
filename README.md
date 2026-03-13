@@ -12,7 +12,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is widening a real Rust-backed subset one bounded regex slice at a time, and the project is still far from drop-in `re` parity. |
-| Delivery estimate | Foundation work is complete, but the published Rust-backed slice is still narrow and benchmark coverage is catching up immediately behind each newly landed parity slice. |
+| Delivery estimate | Foundation work is complete, but the published Rust-backed slice is still narrow and the next milestone needs to be re-seeded now that the current grouped `{2,}` frontier and its benchmark-wrapper cleanup are landed. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
 | Work queue | `0` ready, `0` in progress, `265` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
@@ -28,7 +28,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `79` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, but the published Rust-backed slice is still narrow and benchmark coverage is catching up immediately behind each newly landed parity slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, but the published Rust-backed slice is still narrow and the next milestone needs to be re-seeded now that the current grouped `{2,}` frontier and its benchmark-wrapper cleanup are landed._
 
 ### Benchmark Snapshot
 
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `419` of `452` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0262` so the repeated source-tree benchmark wrapper coverage collapses into one data-driven suite now that the current `{2,}` grouped frontier is benchmark-complete.
+- Seed the next bounded milestone; the implementation queue is empty now that `RBR-0262` and the current grouped `{2,}` benchmark catch-up work landed on 2026-03-13.
 
 ### Current Risks
 

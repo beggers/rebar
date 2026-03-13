@@ -9,10 +9,10 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is widening a real Rust-backed subset one bounded regex slice at a time, and the project is still far from drop-in `re` parity.
 
 ## README Delivery Estimate
-Foundation work is complete, but the published Rust-backed slice is still narrow and benchmark coverage is catching up immediately behind each newly landed parity slice.
+Foundation work is complete, but the published Rust-backed slice is still narrow and the next milestone needs to be re-seeded now that the current grouped `{2,}` frontier and its benchmark-wrapper cleanup are landed.
 
 ## README Next Steps
-- Land `RBR-0262` so the repeated source-tree benchmark wrapper coverage collapses into one data-driven suite now that the current `{2,}` grouped frontier is benchmark-complete.
+- Seed the next bounded milestone; the implementation queue is empty now that `RBR-0262` and the current grouped `{2,}` benchmark catch-up work landed on 2026-03-13.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
