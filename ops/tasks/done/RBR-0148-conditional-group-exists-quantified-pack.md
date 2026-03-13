@@ -1,6 +1,6 @@
 # RBR-0148: Publish a bounded quantified-conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0105`, `RBR-0096`, and `RBR-0147`.
 - This task exists so the queue reopens quantified conditional composition through one exact accepted slice before broader backtracking-heavy conditional execution is queued.
+
+## Completion
+- Added `conditional_group_exists_quantified_workflows.json` and wired it into the default correctness manifest list.
+- Added a conformance test that locks the combined scorecard to 43 manifests / 296 cases and records the new quantified-conditional slice as 8 honest `unimplemented` outcomes pending `RBR-0149`.
+- Regenerated `reports/correctness/latest.json` so the tracked combined publication now includes the bounded `{2}` quantified conditional pack.

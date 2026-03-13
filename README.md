@@ -14,18 +14,18 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is widening a real Rust-backed subset, but the project is still early relative to the drop-in `re` target. |
 | Delivery estimate | Foundation work is complete, the published slice is expanding with explicit honest gaps and catch-up tasks, and overall stdlib-parity progress is still in the early implementation stage. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `7` ready, `0` in progress, `154` done, `0` blocked |
+| Work queue | `6` ready, `0` in progress, `155` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `288` |
+| Published cases | `296` |
 | Passing in published slice | `288` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `42` |
+| Honest gaps (`unimplemented`) | `8` |
+| Covered manifests | `43` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
 _These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, the published slice is expanding with explicit honest gaps and catch-up tasks, and overall stdlib-parity progress is still in the early implementation stage._
@@ -47,8 +47,8 @@ _README speedup rollups stay omitted while only `234` of `289` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0147` so the newly Rust-backed nested omitted-no-arm conditional slice reaches the published benchmark surface.
-- Then land the bounded quantified-conditional follow-ons, the nested explicit-empty-else slice, and the queued systematic correctness-corpus harness task.
+- Land `RBR-0148` through `RBR-0150` so one bounded quantified-conditional slice reaches published correctness, Rust-backed parity, and benchmark coverage.
+- Then land `RBR-0151` through `RBR-0154` for the nested explicit-empty-else slice and the deterministic systematic correctness-corpus harness.
 
 ### Current Risks
 
@@ -60,7 +60,7 @@ _README speedup rollups stay omitted while only `234` of `289` published workloa
 
 `rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The published slice currently reports `288` passes with `0` honest gaps across `288` cases, and that bounded frontier is still far from full stdlib `re` parity.
 
-The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. Near-term work is now about catching the new nested omitted-no-arm conditional slice up on the published benchmark surface, then widening quantified and nested explicit-empty-else conditionals while the systematic correctness corpus grows in parallel.
+The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. Near-term work is now about widening into quantified and nested explicit-empty-else conditionals while the systematic correctness corpus grows in parallel.
 
 Benchmark publication is still partial by design. The generated status block above carries the current workload and known-gap totals, while the full suite still times the source-tree shim and the built-native path remains a separate six-workload smoke artifact in `reports/benchmarks/native_smoke.json`.
 
@@ -68,7 +68,7 @@ Benchmark publication is still partial by design. The generated status block abo
 
 The correctness report is a slice-health signal, not an end-state signal. `288` passes with `0` honest gaps across `288` published cases means the currently tracked frontier is internally caught up for the published slice; it still does not mean the project is close to replacing stdlib `re` across the board.
 
-The benchmark report is still a coverage-first artifact too. It already exercises a wide workload set, but 57 rows are still explicit gaps and the main published run still measures the source-tree shim rather than the fully built-native path. That is enough to guide the queue, but not enough to make broad speed claims yet.
+The benchmark report is still a coverage-first artifact too. It already exercises a wide workload set, but 55 rows are still explicit gaps and the main published run still measures the source-tree shim rather than the fully built-native path. That is enough to guide the queue, but not enough to make broad speed claims yet.
 
 ## Operating Model
 
