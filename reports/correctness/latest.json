@@ -11954,6 +11954,617 @@
     {
       "categories": [
         "grouped",
+        "alternation",
+        "numbered-backreference",
+        "branch-local",
+        "quantified",
+        "plus-quantifier",
+        "compile",
+        "metadata",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_branch_local_numbered_backreference_compile_metadata",
+      "id": "quantified-branch-local-numbered-backreference-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-branch-local-backreference-workflows",
+      "notes": [
+        "Publishes one bounded numbered compile frontier where a branch-local inner capture is repeated with `+` before a later numbered backreference resolves against its final iteration."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 2,
+            "pattern": "a((b)+|c)\\2d",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "compile",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a((b)+|c)\\2d",
+      "suite_id": "match.quantified_branch_local_backreference",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a((b)+|c)\\2d",
+        "zzabbdzz"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "numbered-backreference",
+        "branch-local",
+        "quantified",
+        "plus-quantifier",
+        "search",
+        "module",
+        "lower-bound",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_branch_local_numbered_backreference_module_lower_bound_workflow",
+      "helper": "search",
+      "id": "quantified-branch-local-numbered-backreference-module-search-lower-bound-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-branch-local-backreference-workflows",
+      "notes": [
+        "Documents the numbered module-level quantified branch-local success path on `abbd` where the repeated inner capture resolves once and the later backreference matches that final capture."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 8,
+            "group0": "abbd",
+            "group1": "b",
+            "group_spans": [
+              [
+                3,
+                4
+              ],
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "b",
+              "b"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              6
+            ],
+            "span1": [
+              3,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.quantified_branch_local_backreference",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abbbd"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "numbered-backreference",
+        "branch-local",
+        "quantified",
+        "plus-quantifier",
+        "fullmatch",
+        "pattern",
+        "second-iteration",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_branch_local_numbered_backreference_pattern_second_iteration_workflow",
+      "helper": "fullmatch",
+      "id": "quantified-branch-local-numbered-backreference-pattern-fullmatch-second-iteration-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-branch-local-backreference-workflows",
+      "notes": [
+        "Documents the bounded Pattern.fullmatch numbered quantified branch-local path on `abbbd` so the scorecard records that the outer capture keeps `bb` while the branch-local inner capture and later backreference still resolve to the final `b`."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 5,
+            "group0": "abbbd",
+            "group1": "bb",
+            "group_spans": [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "bb",
+              "b"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              5
+            ],
+            "span1": [
+              1,
+              3
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a((b)+|c)\\2d",
+      "suite_id": "match.quantified_branch_local_backreference",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "acd"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "numbered-backreference",
+        "branch-local",
+        "quantified",
+        "plus-quantifier",
+        "fullmatch",
+        "pattern",
+        "absent-branch",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_branch_local_numbered_backreference_pattern_absent_branch_workflow",
+      "helper": "fullmatch",
+      "id": "quantified-branch-local-numbered-backreference-pattern-fullmatch-absent-branch-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-branch-local-backreference-workflows",
+      "notes": [
+        "Documents the numbered no-match path on the `c` branch so the published frontier makes it explicit that the unresolved branch-local backreference still fails after the alternation chooses the noncapturing branch."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a((b)+|c)\\2d",
+      "suite_id": "match.quantified_branch_local_backreference",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "grouped",
+        "alternation",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "quantified",
+        "plus-quantifier",
+        "compile",
+        "metadata",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_branch_local_named_backreference_compile_metadata",
+      "id": "quantified-branch-local-named-backreference-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-branch-local-backreference-workflows",
+      "notes": [
+        "Publishes the matching named compile frontier where the repeated branch-local `inner` capture later feeds a named backreference while the outer capture spans the quantified branch."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {
+              "inner": 2,
+              "outer": 1
+            },
+            "groups": 2,
+            "pattern": "a(?P<outer>(?P<inner>b)+|c)(?P=inner)d",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "compile",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a(?P<outer>(?P<inner>b)+|c)(?P=inner)d",
+      "suite_id": "match.quantified_branch_local_backreference",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<outer>(?P<inner>b)+|c)(?P=inner)d",
+        "zzabbdzz"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "quantified",
+        "plus-quantifier",
+        "search",
+        "module",
+        "lower-bound",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_branch_local_named_backreference_module_lower_bound_workflow",
+      "helper": "search",
+      "id": "quantified-branch-local-named-backreference-module-search-lower-bound-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-branch-local-backreference-workflows",
+      "notes": [
+        "Documents the named module-level quantified branch-local success path on `abbd` where the repeated `inner` capture resolves once and the named backreference still matches."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 8,
+            "group0": "abbd",
+            "group1": "b",
+            "group_spans": [
+              [
+                3,
+                4
+              ],
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {
+              "inner": "b",
+              "outer": "b"
+            },
+            "groups": [
+              "b",
+              "b"
+            ],
+            "lastgroup": "outer",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "inner": [
+                3,
+                4
+              ],
+              "outer": [
+                3,
+                4
+              ]
+            },
+            "named_groups": {
+              "inner": "b",
+              "outer": "b"
+            },
+            "pos": 0,
+            "span": [
+              2,
+              6
+            ],
+            "span1": [
+              3,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.quantified_branch_local_backreference",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abbbd"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "quantified",
+        "plus-quantifier",
+        "fullmatch",
+        "pattern",
+        "second-iteration",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_branch_local_named_backreference_pattern_second_iteration_workflow",
+      "helper": "fullmatch",
+      "id": "quantified-branch-local-named-backreference-pattern-fullmatch-second-iteration-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-branch-local-backreference-workflows",
+      "notes": [
+        "Documents the bounded Pattern.fullmatch named quantified branch-local path on `abbbd` so the scorecard records the final `inner` capture and wider `outer` capture after the `+` repetition settles."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 5,
+            "group0": "abbbd",
+            "group1": "bb",
+            "group_spans": [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            "groupdict": {
+              "inner": "b",
+              "outer": "bb"
+            },
+            "groups": [
+              "bb",
+              "b"
+            ],
+            "lastgroup": "outer",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "inner": [
+                2,
+                3
+              ],
+              "outer": [
+                1,
+                3
+              ]
+            },
+            "named_groups": {
+              "inner": "b",
+              "outer": "bb"
+            },
+            "pos": 0,
+            "span": [
+              0,
+              5
+            ],
+            "span1": [
+              1,
+              3
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<outer>(?P<inner>b)+|c)(?P=inner)d",
+      "suite_id": "match.quantified_branch_local_backreference",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "acd"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "quantified",
+        "plus-quantifier",
+        "fullmatch",
+        "pattern",
+        "absent-branch",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_branch_local_named_backreference_pattern_absent_branch_workflow",
+      "helper": "fullmatch",
+      "id": "quantified-branch-local-named-backreference-pattern-fullmatch-absent-branch-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-branch-local-backreference-workflows",
+      "notes": [
+        "Documents the named no-match path on the `c` branch so the scorecard records that the unresolved named branch-local backreference still prevents a match."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<outer>(?P<inner>b)+|c)(?P=inner)d",
+      "suite_id": "match.quantified_branch_local_backreference",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "grouped",
         "optional-group",
         "quantifier",
         "compile",
@@ -36814,7 +37425,7 @@
         },
         "outcomes": {
           "exception": 10,
-          "success": 444
+          "success": 452
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -36822,14 +37433,16 @@
         }
       },
       "rebar": {
-        "exception_case_count": 10,
+        "exception_case_count": 18,
         "exception_types": {
+          "NotImplementedError": 8,
           "TypeError": 2,
           "error": 8
         },
         "outcomes": {
           "exception": 10,
-          "success": 444
+          "success": 444,
+          "unimplemented": 8
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -43512,6 +44125,174 @@
       ]
     },
     {
+      "case_count": 1,
+      "id": "quantified_branch_local_named_backreference_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "quantified_branch_local_named_backreference_module_lower_bound_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "quantified_branch_local_named_backreference_pattern_absent_branch_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "quantified_branch_local_named_backreference_pattern_second_iteration_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "quantified_branch_local_numbered_backreference_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "quantified_branch_local_numbered_backreference_module_lower_bound_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "quantified_branch_local_numbered_backreference_pattern_absent_branch_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "quantified_branch_local_numbered_backreference_pattern_second_iteration_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
       "case_count": 2,
       "id": "quantifiers",
       "layers": [
@@ -44295,8 +45076,8 @@
     }
   ],
   "fixtures": {
-    "case_count": 454,
-    "manifest_count": 61,
+    "case_count": 462,
+    "manifest_count": 62,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
@@ -44322,6 +45103,7 @@
       "grouped-alternation-callable-replacement-workflows",
       "branch-local-backreference-workflows",
       "conditional-group-exists-branch-local-backreference-workflows",
+      "quantified-branch-local-backreference-workflows",
       "optional-group-workflows",
       "exact-repeat-quantified-group-workflows",
       "ranged-repeat-quantified-group-workflows",
@@ -44385,6 +45167,7 @@
       "tests/conformance/fixtures/grouped_alternation_callable_replacement_workflows.json",
       "tests/conformance/fixtures/branch_local_backreference_workflows.json",
       "tests/conformance/fixtures/conditional_group_exists_branch_local_backreference_workflows.json",
+      "tests/conformance/fixtures/quantified_branch_local_backreference_workflows.json",
       "tests/conformance/fixtures/optional_group_workflows.json",
       "tests/conformance/fixtures/exact_repeat_quantified_group_workflows.json",
       "tests/conformance/fixtures/ranged_repeat_quantified_group_workflows.json",
@@ -44424,27 +45207,30 @@
       "tests/conformance/fixtures/systematic_feature_corpus.json"
     ]
   },
-  "generated_at": "2026-03-13T11:22:45Z",
+  "generated_at": "2026-03-13T11:41:36Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
-      "case_count": 278,
+      "case_count": 286,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
             "exception_case_count": 0,
             "exception_types": {},
             "outcomes": {
-              "success": 278
+              "success": 286
             },
             "warning_case_count": 0,
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 0,
-            "exception_types": {},
+            "exception_case_count": 8,
+            "exception_types": {
+              "NotImplementedError": 8
+            },
             "outcomes": {
-              "success": 278
+              "success": 278,
+              "unimplemented": 8
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -44691,6 +45477,14 @@
         "quantified_alternation_numbered_compile_metadata",
         "quantified_alternation_numbered_module_search_lower_bound_workflow",
         "quantified_alternation_numbered_pattern_fullmatch_second_repetition_workflow",
+        "quantified_branch_local_named_backreference_compile_metadata",
+        "quantified_branch_local_named_backreference_module_lower_bound_workflow",
+        "quantified_branch_local_named_backreference_pattern_absent_branch_workflow",
+        "quantified_branch_local_named_backreference_pattern_second_iteration_workflow",
+        "quantified_branch_local_numbered_backreference_compile_metadata",
+        "quantified_branch_local_numbered_backreference_module_lower_bound_workflow",
+        "quantified_branch_local_numbered_backreference_pattern_absent_branch_workflow",
+        "quantified_branch_local_numbered_backreference_pattern_second_iteration_workflow",
         "ranged_repeat_named_group_compile_metadata",
         "ranged_repeat_named_group_module_search_upper_bound_workflow",
         "ranged_repeat_named_group_pattern_fullmatch_lower_bound_workflow",
@@ -44763,6 +45557,7 @@
         "optional-group-alternation-workflows",
         "optional-group-workflows",
         "quantified-alternation-workflows",
+        "quantified-branch-local-backreference-workflows",
         "ranged-repeat-quantified-group-workflows",
         "systematic-feature-corpus",
         "wider-ranged-repeat-quantified-group-workflows"
@@ -44810,17 +45605,18 @@
         "match.optional_group",
         "match.optional_group_alternation",
         "match.quantified_alternation",
+        "match.quantified_branch_local_backreference",
         "match.ranged_repeat_quantified_group",
         "match.systematic_feature_corpus",
         "match.wider_ranged_repeat_quantified_group"
       ],
       "summary": {
-        "executed_cases": 278,
+        "executed_cases": 286,
         "failed_cases": 0,
         "passed_cases": 278,
         "skipped_cases": 0,
-        "total_cases": 278,
-        "unimplemented_cases": 0
+        "total_cases": 286,
+        "unimplemented_cases": 8
       },
       "text_models": [
         "bytes",
@@ -50729,6 +51525,274 @@
         "skipped_cases": 0,
         "total_cases": 2,
         "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 8,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 8,
+            "exception_types": {
+              "NotImplementedError": 8
+            },
+            "outcomes": {
+              "unimplemented": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "quantified_branch_local_named_backreference_compile_metadata",
+        "quantified_branch_local_named_backreference_module_lower_bound_workflow",
+        "quantified_branch_local_named_backreference_pattern_absent_branch_workflow",
+        "quantified_branch_local_named_backreference_pattern_second_iteration_workflow",
+        "quantified_branch_local_numbered_backreference_compile_metadata",
+        "quantified_branch_local_numbered_backreference_module_lower_bound_workflow",
+        "quantified_branch_local_numbered_backreference_pattern_absent_branch_workflow",
+        "quantified_branch_local_numbered_backreference_pattern_second_iteration_workflow"
+      ],
+      "id": "match.quantified_branch_local_backreference",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "quantified-branch-local-backreference-workflows"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 8,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 8,
+        "unimplemented_cases": 8
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 8,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 8,
+            "exception_types": {
+              "NotImplementedError": 8
+            },
+            "outcomes": {
+              "unimplemented": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "quantified_branch_local_named_backreference_compile_metadata",
+        "quantified_branch_local_named_backreference_module_lower_bound_workflow",
+        "quantified_branch_local_named_backreference_pattern_absent_branch_workflow",
+        "quantified_branch_local_named_backreference_pattern_second_iteration_workflow",
+        "quantified_branch_local_numbered_backreference_compile_metadata",
+        "quantified_branch_local_numbered_backreference_module_lower_bound_workflow",
+        "quantified_branch_local_numbered_backreference_pattern_absent_branch_workflow",
+        "quantified_branch_local_numbered_backreference_pattern_second_iteration_workflow"
+      ],
+      "id": "match.quantified_branch_local_backreference.str",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "quantified-branch-local-backreference-workflows"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 8,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 8,
+        "unimplemented_cases": 8
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "quantified_branch_local_named_backreference_compile_metadata",
+        "quantified_branch_local_numbered_backreference_compile_metadata"
+      ],
+      "id": "match.quantified_branch_local_backreference.compile",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "quantified-branch-local-backreference-workflows"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "quantified_branch_local_named_backreference_module_lower_bound_workflow",
+        "quantified_branch_local_numbered_backreference_module_lower_bound_workflow"
+      ],
+      "id": "match.quantified_branch_local_backreference.module_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "quantified-branch-local-backreference-workflows"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 4,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 4,
+            "exception_types": {
+              "NotImplementedError": 4
+            },
+            "outcomes": {
+              "unimplemented": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "quantified_branch_local_named_backreference_pattern_absent_branch_workflow",
+        "quantified_branch_local_named_backreference_pattern_second_iteration_workflow",
+        "quantified_branch_local_numbered_backreference_pattern_absent_branch_workflow",
+        "quantified_branch_local_numbered_backreference_pattern_second_iteration_workflow"
+      ],
+      "id": "match.quantified_branch_local_backreference.pattern_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "quantified-branch-local-backreference-workflows"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 4
       },
       "text_models": [
         "str"
@@ -59668,11 +60732,11 @@
     }
   ],
   "summary": {
-    "executed_cases": 454,
+    "executed_cases": 462,
     "failed_cases": 0,
     "passed_cases": 454,
     "skipped_cases": 0,
-    "total_cases": 454,
-    "unimplemented_cases": 0
+    "total_cases": 462,
+    "unimplemented_cases": 8
   }
 }

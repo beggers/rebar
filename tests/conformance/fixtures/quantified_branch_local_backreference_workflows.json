@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "manifest_id": "quantified-branch-local-backreference-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.quantified_branch_local_backreference",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "quantified-branch-local-numbered-backreference-compile-metadata-str",
+      "operation": "compile",
+      "family": "quantified_branch_local_numbered_backreference_compile_metadata",
+      "pattern": "a((b)+|c)\\2d",
+      "categories": ["grouped", "alternation", "numbered-backreference", "branch-local", "quantified", "plus-quantifier", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes one bounded numbered compile frontier where a branch-local inner capture is repeated with `+` before a later numbered backreference resolves against its final iteration."
+      ]
+    },
+    {
+      "id": "quantified-branch-local-numbered-backreference-module-search-lower-bound-str",
+      "operation": "module_call",
+      "family": "quantified_branch_local_numbered_backreference_module_lower_bound_workflow",
+      "helper": "search",
+      "args": ["a((b)+|c)\\2d", "zzabbdzz"],
+      "categories": ["grouped", "alternation", "numbered-backreference", "branch-local", "quantified", "plus-quantifier", "search", "module", "lower-bound", "str", "gap"],
+      "notes": [
+        "Documents the numbered module-level quantified branch-local success path on `abbd` where the repeated inner capture resolves once and the later backreference matches that final capture."
+      ]
+    },
+    {
+      "id": "quantified-branch-local-numbered-backreference-pattern-fullmatch-second-iteration-str",
+      "operation": "pattern_call",
+      "family": "quantified_branch_local_numbered_backreference_pattern_second_iteration_workflow",
+      "pattern": "a((b)+|c)\\2d",
+      "helper": "fullmatch",
+      "args": ["abbbd"],
+      "categories": ["grouped", "alternation", "numbered-backreference", "branch-local", "quantified", "plus-quantifier", "fullmatch", "pattern", "second-iteration", "str", "gap"],
+      "notes": [
+        "Documents the bounded Pattern.fullmatch numbered quantified branch-local path on `abbbd` so the scorecard records that the outer capture keeps `bb` while the branch-local inner capture and later backreference still resolve to the final `b`."
+      ]
+    },
+    {
+      "id": "quantified-branch-local-numbered-backreference-pattern-fullmatch-absent-branch-str",
+      "operation": "pattern_call",
+      "family": "quantified_branch_local_numbered_backreference_pattern_absent_branch_workflow",
+      "pattern": "a((b)+|c)\\2d",
+      "helper": "fullmatch",
+      "args": ["acd"],
+      "categories": ["grouped", "alternation", "numbered-backreference", "branch-local", "quantified", "plus-quantifier", "fullmatch", "pattern", "absent-branch", "str", "gap"],
+      "notes": [
+        "Documents the numbered no-match path on the `c` branch so the published frontier makes it explicit that the unresolved branch-local backreference still fails after the alternation chooses the noncapturing branch."
+      ]
+    },
+    {
+      "id": "quantified-branch-local-named-backreference-compile-metadata-str",
+      "operation": "compile",
+      "family": "quantified_branch_local_named_backreference_compile_metadata",
+      "pattern": "a(?P<outer>(?P<inner>b)+|c)(?P=inner)d",
+      "categories": ["grouped", "alternation", "named-group", "named-backreference", "branch-local", "quantified", "plus-quantifier", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the matching named compile frontier where the repeated branch-local `inner` capture later feeds a named backreference while the outer capture spans the quantified branch."
+      ]
+    },
+    {
+      "id": "quantified-branch-local-named-backreference-module-search-lower-bound-str",
+      "operation": "module_call",
+      "family": "quantified_branch_local_named_backreference_module_lower_bound_workflow",
+      "helper": "search",
+      "args": ["a(?P<outer>(?P<inner>b)+|c)(?P=inner)d", "zzabbdzz"],
+      "categories": ["grouped", "alternation", "named-group", "named-backreference", "branch-local", "quantified", "plus-quantifier", "search", "module", "lower-bound", "str", "gap"],
+      "notes": [
+        "Documents the named module-level quantified branch-local success path on `abbd` where the repeated `inner` capture resolves once and the named backreference still matches."
+      ]
+    },
+    {
+      "id": "quantified-branch-local-named-backreference-pattern-fullmatch-second-iteration-str",
+      "operation": "pattern_call",
+      "family": "quantified_branch_local_named_backreference_pattern_second_iteration_workflow",
+      "pattern": "a(?P<outer>(?P<inner>b)+|c)(?P=inner)d",
+      "helper": "fullmatch",
+      "args": ["abbbd"],
+      "categories": ["grouped", "alternation", "named-group", "named-backreference", "branch-local", "quantified", "plus-quantifier", "fullmatch", "pattern", "second-iteration", "str", "gap"],
+      "notes": [
+        "Documents the bounded Pattern.fullmatch named quantified branch-local path on `abbbd` so the scorecard records the final `inner` capture and wider `outer` capture after the `+` repetition settles."
+      ]
+    },
+    {
+      "id": "quantified-branch-local-named-backreference-pattern-fullmatch-absent-branch-str",
+      "operation": "pattern_call",
+      "family": "quantified_branch_local_named_backreference_pattern_absent_branch_workflow",
+      "pattern": "a(?P<outer>(?P<inner>b)+|c)(?P=inner)d",
+      "helper": "fullmatch",
+      "args": ["acd"],
+      "categories": ["grouped", "alternation", "named-group", "named-backreference", "branch-local", "quantified", "plus-quantifier", "fullmatch", "pattern", "absent-branch", "str", "gap"],
+      "notes": [
+        "Documents the named no-match path on the `c` branch so the scorecard records that the unresolved named branch-local backreference still prevents a match."
+      ]
+    }
+  ]
+}

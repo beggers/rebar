@@ -1,8 +1,9 @@
 # RBR-0207: Publish a bounded quantified branch-local-backreference correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published correctness scorecard with one bounded manifest for workflows that combine a quantified branch-local capture with a later backreference so branch-local work reopens quantified composition through one exact follow-on before broader backtracking resumes.
@@ -28,3 +29,5 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0090`, `RBR-0091`, and `RBR-0206`.
 - This task exists so the queue reopens after `RBR-0206` through one exact quantified branch-local follow-on instead of jumping directly to a vague broader-backtracking bucket.
+- Added `quantified-branch-local-backreference-workflows` to the default correctness fixture set with eight bounded compile/module/pattern cases covering numbered and named `a((b)+|c)\\2d` and `a(?P<outer>(?P<inner>b)+|c)(?P=inner)d` observations on `abbd`, `abbbd`, and the failing `acd` branch.
+- Regenerated `reports/correctness/latest.json`; the combined published scorecard is now 462 total cases across 62 manifests with 454 passes, 0 explicit failures, and 8 honest `unimplemented` outcomes queued for `RBR-0208`.
