@@ -1,6 +1,6 @@
 # RBR-0133: Publish a bounded explicit-empty-else conditional replacement correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -28,3 +28,10 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0111`, `RBR-0112`, and `RBR-0132`.
 - This task exists so the queue reopens after `RBR-0132` with the next exact accepted conditional-replacement gap instead of jumping straight to empty-yes-arm replacement, nested conditionals, quantified conditionals, or a vague broader-backtracking bucket.
+
+## Completion
+- Added `tests/conformance/fixtures/conditional_group_exists_empty_else_replacement_workflows.json` with eight bounded `sub()`/`subn()` module and compiled-`Pattern` cases for numbered and named explicit-empty-else conditional replacements.
+- Wired the manifest into `python/rebar_harness/correctness.py` so the default combined publication now includes the new explicit-empty-else conditional replacement pack.
+- Added `tests/conformance/test_correctness_conditional_group_exists_empty_else_replacement_workflows.py` and refreshed adjacent default-report assertions in `tests/conformance/test_correctness_conditional_group_exists_no_else_replacement_workflows.py`, `tests/conformance/test_correctness_conditional_group_exists_empty_else_alternation_workflows.py`, and `tests/python/test_readme_reporting.py`.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports 256 total cases across 38 manifests with 248 passes, 0 explicit failures, and 8 honest `unimplemented` outcomes for the newly published explicit-empty-else conditional replacement slice.
+- Verified with `python3 -m unittest tests.conformance.test_correctness_conditional_group_exists_no_else_replacement_workflows tests.conformance.test_correctness_conditional_group_exists_empty_else_alternation_workflows tests.conformance.test_correctness_conditional_group_exists_empty_else_replacement_workflows tests.python.test_readme_reporting -v` under `PYTHONPATH=python`.

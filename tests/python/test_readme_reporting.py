@@ -47,6 +47,7 @@ EXPECTED_MANIFEST_IDS = [
     "conditional-group-exists-no-else-workflows",
     "conditional-group-exists-no-else-replacement-workflows",
     "conditional-group-exists-empty-else-workflows",
+    "conditional-group-exists-empty-else-replacement-workflows",
     "conditional-group-exists-empty-else-alternation-workflows",
     "conditional-group-exists-empty-yes-else-workflows",
     "conditional-group-exists-fully-empty-workflows",
