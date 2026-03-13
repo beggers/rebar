@@ -7,7 +7,7 @@
   ],
   "notes": [
     "Optional-group alternation boundary workloads keep captures, one literal alternation site, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded quantified-alternation slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b|c)?d` and `a(?P<word>b|c)?d` compile/search/fullmatch paths directly, while exact-repeat or broader quantified alternation plus quantified alternation with inner branch-local backreferences stay as explicit known-gap rows until later counted-repeat and broader backtracking follow-ons land."
+    "Measured rows cover the bounded `a(b|c)?d` and `a(?P<word>b|c)?d` compile/search/fullmatch paths directly, while broader counted quantified alternation plus quantified alternation with inner branch-local backreferences stay as explicit known-gap rows until later counted-repeat and broader backtracking follow-ons land."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -214,12 +214,12 @@
       ]
     },
     {
-      "id": "module-search-numbered-exact-repeat-alternation-cold-gap",
+      "id": "module-search-numbered-broader-range-alternation-cold-gap",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(b|c){2}d",
-      "haystack": "zzabbdzz",
+      "pattern": "a(b|c){1,3}d",
+      "haystack": "zzabccdzz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "cold",
@@ -229,8 +229,8 @@
         "optional-group",
         "quantifier",
         "alternation",
-        "exact-repeat",
         "counted-repeat",
+        "wider-range",
         "search",
         "module",
         "unsupported",
@@ -244,7 +244,7 @@
         "counted-repeats"
       ],
       "notes": [
-        "Explicit exact-repeat quantified-alternation gap row so broader counted alternation stays visible now that the bounded optional-group alternation slice has real timings."
+        "Explicit broader-range quantified-alternation gap row so counted alternation beyond the bounded `{1,2}` frontier stays visible now that the optional-group alternation slice has real timings."
       ]
     },
     {

@@ -1,0 +1,422 @@
+{
+  "schema_version": 1,
+  "manifest_id": "quantified-alternation-boundary",
+  "spec_refs": [
+    "docs/benchmarks/plan.md",
+    "docs/spec/drop-in-re-compatibility.md"
+  ],
+  "notes": [
+    "Quantified-alternation boundary workloads keep captures, one literal alternation site repeated across a bounded `{1,2}` envelope, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported quantified-alternation slice rather than regex throughput.",
+    "Measured rows cover the bounded `a(b|c){1,2}d` and `a(?P<word>b|c){1,2}d` compile/search/fullmatch paths directly at representative lower-bound and second-repetition haystacks, while wider counted ranges, open-ended repeats, nested alternation inside quantified branches, branch-local backreferences inside quantified alternation, conditional combinations, and broader backtracking-heavy shapes stay as explicit known-gap rows until queued follow-ons land."
+  ],
+  "defaults": {
+    "warmup_iterations": 2,
+    "sample_iterations": 5,
+    "timed_samples": 7
+  },
+  "workloads": [
+    {
+      "id": "module-compile-numbered-quantified-alternation-cold-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(b|c){1,2}d",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats"
+      ],
+      "notes": [
+        "Cold module.compile benchmark for the bounded numbered quantified-alternation slice so compile metadata timing reaches the published benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-numbered-quantified-alternation-lower-bound-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(b|c){1,2}d",
+      "haystack": "zzacdz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "smoke": true,
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "search",
+        "module",
+        "lower-bound",
+        "warm-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded numbered quantified-alternation workflow at the lower bound after one alternation repetition completes."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-quantified-alternation-second-repetition-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(b|c){1,2}d",
+      "haystack": "abcd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "fullmatch",
+        "second-repetition",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered quantified-alternation workflow when the repeated alternation consumes a second branch occurrence."
+      ]
+    },
+    {
+      "id": "module-compile-named-quantified-alternation-warm-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<word>b|c){1,2}d",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.compile path for the bounded named quantified-alternation slice so named metadata timing reaches the benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-named-quantified-alternation-second-repetition-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>b|c){1,2}d",
+      "haystack": "zzacbdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "search",
+        "module",
+        "second-repetition",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded named quantified-alternation workflow after a two-branch repetition so named runtime timing reaches the published report."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-quantified-alternation-lower-bound-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>b|c){1,2}d",
+      "haystack": "abd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "smoke": true,
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "fullmatch",
+        "lower-bound",
+        "purged-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Smoke-sized Pattern.fullmatch probe for the bounded named quantified-alternation workflow at the lower bound with compile cost kept outside the timed loop."
+      ]
+    },
+    {
+      "id": "module-search-numbered-quantified-alternation-broader-range-cold-gap",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(b|c){1,3}d",
+      "haystack": "zzabccdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "wider-range",
+        "search",
+        "module",
+        "unsupported",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats"
+      ],
+      "notes": [
+        "Explicit broader-range known-gap row so counted quantified alternation beyond the bounded `{1,2}` frontier stays visible in the benchmark report."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-quantified-alternation-open-ended-purged-gap",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(b|c){1,}d",
+      "haystack": "abcd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "fullmatch",
+        "unsupported",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "cache-purge"
+      ],
+      "notes": [
+        "Explicit open-ended-repeat known-gap row so unbounded quantified alternation stays visible after the bounded `{1,2}` slice reaches real timings."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-quantified-alternation-nested-branch-purged-gap",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>(b|c)|de){1,2}d",
+      "haystack": "abded",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "nested-alternation",
+        "fullmatch",
+        "unsupported",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Explicit nested-alternation known-gap row so alternation nested inside quantified branches stays visible instead of disappearing after the bounded deterministic slice reaches the benchmark surface."
+      ]
+    },
+    {
+      "id": "module-search-numbered-quantified-alternation-branch-backref-cold-gap",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a((b|c)\\2){1,2}d",
+      "haystack": "zzabbdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "branch-local-backreference",
+        "search",
+        "module",
+        "unsupported",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "backreferences"
+      ],
+      "notes": [
+        "Explicit branch-local-backreference known-gap row so backreferences inside quantified alternation stay on the benchmark surface instead of disappearing."
+      ]
+    },
+    {
+      "id": "module-search-numbered-quantified-alternation-conditional-warm-gap",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a((b|c){1,2})?(?(1)d|e)",
+      "haystack": "zzabcdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "conditional",
+        "search",
+        "module",
+        "unsupported",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals"
+      ],
+      "notes": [
+        "Explicit conditional-combination known-gap row so bounded conditionals composed with quantified alternation stay visible before broader backtracking work is queued."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-quantified-alternation-backtracking-heavy-purged-gap",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(b|bc){1,2}d",
+      "haystack": "abcd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "backtracking-heavy",
+        "fullmatch",
+        "unsupported",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "cache-purge"
+      ],
+      "notes": [
+        "Explicit broader backtracking-heavy known-gap row so overlapping quantified alternation branches stay visible after the small deterministic `{1,2}` slice reaches benchmark publication."
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # RBR-0126: Catch bounded quantified-alternation benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
 
@@ -27,3 +27,8 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0125`.
 - This task exists so the queue does not leave the first quantified-alternation slice measured only in correctness reporting.
+
+## Completion
+- Added `benchmarks/workloads/quantified_alternation_boundary.json` and wired it into the default benchmark manifest set so the bounded `a(b|c){1,2}d` / `a(?P<word>b|c){1,2}d` compile/search/fullmatch workflows now publish real `rebar` timings through module and compiled-`Pattern` entrypoints.
+- Regenerated `reports/benchmarks/latest.json`; the published combined benchmark scorecard now reports 252 workloads with 189 measured `rebar` timings and 63 explicit known gaps, including new quantified-alternation gap rows for wider counted ranges, open-ended repeats, nested alternation, branch-local backreferences, conditional composition, and broader backtracking-heavy shapes.
+- Added `tests/benchmarks/test_quantified_alternation_boundary_benchmarks.py` and updated the adjacent optional-group alternation benchmark manifest/test so the combined suite no longer publishes the now-supported `{2}` quantified-alternation shape as an unsupported gap.
