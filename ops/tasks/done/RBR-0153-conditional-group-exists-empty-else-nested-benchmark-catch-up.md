@@ -1,8 +1,9 @@
 # RBR-0153: Catch bounded nested explicit-empty-else conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published benchmark surface so the bounded nested explicit-empty-else conditional workflows supported by `RBR-0152` produce real `rebar` timings before broader nested conditional expansion reopens the frontier.
@@ -28,3 +29,4 @@ Created: 2026-03-13
 - Build on `RBR-0152`.
 - Use the existing `module-search-numbered-nested-conditional-group-exists-empty-else-cold-gap` row in `benchmarks/workloads/conditional_group_exists_empty_else_boundary.json` as the benchmark anchor for this slice.
 - This task exists so the queue does not reach bounded nested explicit-empty-else parity and then leave that newly supported slice absent from benchmark reporting.
+- Completed by replacing the single nested explicit-empty-else gap anchor with four measured numbered/named module-search and `Pattern.fullmatch()` workloads for `a(b)?c(?(1)(?(1)d)|)` and `a(?P<word>b)?c(?(word)(?(word)d)|)`, updating the benchmark assertions, and republishing `reports/benchmarks/latest.json` at 293 total workloads with 239 real `rebar` timings and 54 explicit known gaps in this checkout.

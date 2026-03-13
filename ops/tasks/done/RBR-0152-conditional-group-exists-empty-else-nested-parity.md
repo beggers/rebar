@@ -1,8 +1,9 @@
 # RBR-0152: Add bounded nested explicit-empty-else conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Convert the first nested explicit-empty-else conditional cases from the published correctness pack into real Rust-backed behavior without claiming broader nested conditional or backtracking-heavy execution.
@@ -28,3 +29,7 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0111`, `RBR-0146`, and `RBR-0151`.
 - This task exists so the queue converts one exact accepted nested explicit-empty-else spelling into real Rust-backed behavior instead of leaving it as publication-only syntax coverage.
+
+## Completion
+- Verified with `PYTHONPATH=python python3 -m unittest tests.conformance.test_correctness_conditional_group_exists_empty_else_nested_workflows -q` that the bounded nested explicit-empty-else correctness pack already passes through the Rust-backed module and compiled-`Pattern` paths.
+- Retired this task without code changes because `RBR-0151` surfaced a slice that was already live behind the existing conditional implementation; the next remaining work on that frontier is benchmark catch-up in `RBR-0153`.
