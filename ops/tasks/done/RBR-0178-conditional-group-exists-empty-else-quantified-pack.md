@@ -1,6 +1,6 @@
 # RBR-0178: Publish a bounded quantified explicit-empty-else conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0177`, `RBR-0153`, and `RBR-0150`.
 - This task exists so the queue records the accepted quantified explicit-empty-else spelling explicitly instead of leaving it as a benchmark-only gap row.
+
+## Completion
+- Added `conditional_group_exists_empty_else_quantified_workflows.json` to the default correctness fixture set and covered the numbered/named compile, present, absent, and missing-repeat observations for `a(b)?c(?(1)d|){2}` plus `a(?P<word>b)?c(?(word)d|){2}`.
+- Added a focused correctness regression test for the new manifest and refreshed neighboring quantified conditional scorecard tests whose aggregate counters changed when the combined report grew.
+- Republished `reports/correctness/latest.json`; the combined scorecard is now `388` total/executed cases with `380` passes and `8` honest `unimplemented` outcomes, all from this new explicit-empty-else quantified slice ahead of `RBR-0179`.
