@@ -1,6 +1,6 @@
 # RBR-0200: Catch bounded nested two-arm conditional replacement benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 - Build on `RBR-0199`.
 - Keep this slice in the existing `conditional_group_exists_boundary` manifest rather than inventing a second benchmark family for the same bounded two-arm conditional surface.
 - This task exists so the queue does not reach bounded nested two-arm conditional replacement parity and then leave that newly supported slice absent from benchmark reporting.
+- Completed 2026-03-13: added the seven missing numbered/named nested conditional replacement `sub()`/`subn()` benchmark rows alongside the existing numbered `module.sub()` anchor, republished `reports/benchmarks/latest.json` at 349 total / 301 measured / 48 gaps, and kept replacement-template, callable, and quantified replacement follow-ons explicit as known gaps.
