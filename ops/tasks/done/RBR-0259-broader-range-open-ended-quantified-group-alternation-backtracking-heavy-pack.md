@@ -1,6 +1,6 @@
 # RBR-0259: Publish a broader-range open-ended quantified-group alternation backtracking-heavy correctness pack
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0258`.
 - This task exists so the queue widens the overlapping-branch grouped frontier through one exact broader-range open-ended slice instead of pausing after the grouped-conditional trio.
+
+## Completion Notes
+- Added the new broader-range open-ended grouped backtracking-heavy manifest to `python/rebar_harness/correctness.py`.
+- Published 14 numbered and named compile/module/pattern observations for `a((bc|b)c){2,}d` and `a(?P<word>(bc|b)c){2,}d`, including `abcbcd`, `abcbccd`, `abccbcd`, one bounded fourth-repetition success, and explicit no-match cases.
+- Regenerated `reports/correctness/latest.json`; the combined scorecard now reports 677 total cases across 79 manifests with 663 passes and 14 honest `unimplemented` outcomes.

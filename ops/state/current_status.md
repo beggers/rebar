@@ -6,18 +6,18 @@ Updated: 2026-03-13
 Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while keeping the correctness and benchmark publications caught up with each newly supported slice.
 
 ## README Phase Summary
-Phase 3 is widening a real Rust-backed subset, but the project is still early relative to the drop-in `re` target.
+Phase 3 is widening a real Rust-backed subset one bounded regex slice at a time, and the project is still far from drop-in `re` parity.
 
 ## README Delivery Estimate
-Foundation work is complete, the published slice is expanding through benchmark catch-up and exact follow-on tasks, and overall stdlib-parity progress is still in the early implementation stage.
+Foundation work is complete, but the published Rust-backed slice is still narrow and benchmark coverage is catching up immediately behind each newly landed parity slice.
 
 ## README Next Steps
-- Land `RBR-0259` so the broader-range open-ended `{2,}` grouped-backtracking slice reaches published correctness coverage.
-- Keep `RBR-0260` through `RBR-0261` queued so the matching parity and benchmark catch-up stay contiguous, with `RBR-0262` held immediately behind them for benchmark-wrapper consolidation.
+- Land `RBR-0260` through `RBR-0261` so the broader-range open-ended `{2,}` grouped-backtracking slice reaches Rust-backed parity and benchmark publication.
+- Keep `RBR-0262` immediately behind that frontier so source-tree benchmark wrapper coverage can be consolidated without interrupting the active regex slice.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- Built-native full-suite benchmark coverage still lives in separate sidecars, so performance claims need explicit artifact attribution.
+- Built-native benchmark results still live in separate sidecars with narrower workload coverage than the main published suite.
 
 ## Compatibility Heuristic
 Early subset, not near drop-in feature parity yet: literals, captures, bounded replacement/backreference workflows, multiple bounded conditional execution and replacement slices, quantified branch-local-backreference work, quantified-alternation combinations through the open-ended `{1,}` frontier, and grouped alternation inside counted repeats through the wider `{1,3}` grouped-conditional and grouped-backtracking slices plus the open-ended grouped alternation, open-ended grouped-alternation-plus-conditional `{1,}` slice, open-ended grouped-backtracking `{1,}` slice, broader-range open-ended grouped alternation `{2,}`, and broader-range open-ended grouped-alternation-plus-conditional `{2,}` slice now pass through the Rust boundary. Benchmark publication is still caught up only through the broader-range open-ended grouped alternation `{2,}` slice, `RBR-0258` through `RBR-0261` lead the grouped follow-on queue, and `RBR-0262` is already queued immediately behind that frontier as the next benchmark-suite simplification follow-on.
