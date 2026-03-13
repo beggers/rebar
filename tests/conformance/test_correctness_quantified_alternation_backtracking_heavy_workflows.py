@@ -310,10 +310,9 @@ class CorrectnessHarnessQuantifiedAlternationBacktrackingHeavyWorkflowTest(
             "success",
         )
         self.assertIsNone(numbered_no_match_case["observations"]["cpython"]["result"])
-        self.assertEqual(numbered_no_match_case["comparison"], "unimplemented")
-        self.assertEqual(
-            numbered_no_match_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+        self.assert_rebar_pass_or_unimplemented(
+            numbered_no_match_case,
+            expected_result=None,
         )
 
         named_compile_case = cases_by_id[
@@ -372,6 +371,8 @@ class CorrectnessHarnessQuantifiedAlternationBacktrackingHeavyWorkflowTest(
                 "lastgroup": "word",
                 "lastindex": 1,
                 "matched": True,
+                "named_group_spans": {"word": [3, 5]},
+                "named_groups": {"word": "bc"},
                 "pos": 0,
                 "span": [2, 6],
                 "span1": [3, 5],
@@ -422,8 +423,7 @@ class CorrectnessHarnessQuantifiedAlternationBacktrackingHeavyWorkflowTest(
             "success",
         )
         self.assertIsNone(named_no_match_case["observations"]["cpython"]["result"])
-        self.assertEqual(named_no_match_case["comparison"], "unimplemented")
-        self.assertEqual(
-            named_no_match_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+        self.assert_rebar_pass_or_unimplemented(
+            named_no_match_case,
+            expected_result=None,
         )

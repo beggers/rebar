@@ -1,6 +1,6 @@
 # RBR-0223: Add bounded quantified-alternation backtracking-heavy parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,7 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0222`.
 - This task exists so the queue turns the first bounded quantified-alternation backtracking-heavy workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+
+## Completion
+- Landed a dedicated Rust-backed parser/matcher path for the bounded overlapping-branch `a(b|bc){1,2}d` and `a(?P<word>b|bc){1,2}d` slice, including real backtracking across `{1,2}` repetitions and correct final-capture span reporting for lower-bound, mixed-order, and no-match cases.
+- Added focused parity coverage in `tests/python/test_quantified_alternation_backtracking_heavy_parity.py`, refreshed the manifest-level correctness assertion for the now-passing no-match rows, and republished `reports/correctness/latest.json` to 516 passes with 0 unimplemented cases.

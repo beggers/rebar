@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is widening a real Rust-backed subset, but the project is still early relative to the drop-in `re` target. |
 | Delivery estimate | Foundation work is complete, the published slice is expanding through benchmark catch-up and exact follow-on tasks, and overall stdlib-parity progress is still in the early implementation stage. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `8` ready, `0` in progress, `230` done, `0` blocked |
+| Work queue | `7` ready, `0` in progress, `231` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -22,9 +22,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Metric | Value |
 | --- | --- |
 | Published cases | `516` |
-| Passing in published slice | `504` |
+| Passing in published slice | `516` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `12` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `67` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
@@ -47,8 +47,8 @@ _README speedup rollups stay omitted while only `345` of `386` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0222` through `RBR-0224` so the quantified-alternation backtracking-heavy slice reaches publication, Rust-backed parity, and benchmark coverage next.
-- Keep `RBR-0225` through `RBR-0230` queued so the broader `{1,3}` and open-ended `{1,}` quantified-alternation follow-ons stay pre-seeded behind it.
+- Land `RBR-0223` and `RBR-0224` so the now-published quantified-alternation backtracking-heavy slice reaches Rust-backed parity and benchmark coverage next.
+- Keep `RBR-0225` through `RBR-0230` queued so the broader `{1,3}` and open-ended `{1,}` quantified-alternation follow-ons stay pre-seeded behind that catch-up.
 
 ### Current Risks
 
@@ -58,15 +58,15 @@ _README speedup rollups stay omitted while only `345` of `386` published workloa
 
 ## Implementation Snapshot
 
-`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The exact published counts live in the generated status block above; the short version is that the first bounded two-arm, alternation-heavy two-arm, nested two-arm, and quantified two-arm conditional replacement slices reach the Rust-backed correctness baseline, the repo carries a strict built-native full-suite benchmark sidecar, the conditional-plus-branch-local-backreference and quantified-alternation-plus-conditional slices already reach both Rust-backed correctness and published benchmark coverage, and the quantified-alternation nested-branch slice now reaches both Rust-backed correctness and published benchmark coverage. The active queue now leads with `RBR-0222`, with `RBR-0222` through `RBR-0224` covering the backtracking-heavy follow-on, `RBR-0225` through `RBR-0227` covering one broader `{1,3}` quantified-alternation step, and `RBR-0228` through `RBR-0230` already seeded for one exact open-ended `{1,}` quantified-alternation follow-on.
+`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The exact published counts live in the generated status block above; the short version is that the first bounded two-arm, alternation-heavy two-arm, nested two-arm, and quantified two-arm conditional replacement slices reach the Rust-backed correctness baseline, the repo carries a strict built-native full-suite benchmark sidecar, the conditional-plus-branch-local-backreference and quantified-alternation-plus-conditional slices already reach both Rust-backed correctness and published benchmark coverage, and the quantified-alternation nested-branch slice now reaches both Rust-backed correctness and published benchmark coverage. The bounded quantified-alternation backtracking-heavy pack is now published as an honest-gap correctness slice, and the active queue now leads with `RBR-0223` and `RBR-0224` to convert that slice to Rust-backed parity and benchmark coverage before the broader `{1,3}` and open-ended `{1,}` follow-ons in `RBR-0225` through `RBR-0230`.
 
-The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. The tracked frontier already includes deterministic corpus coverage, multiple bounded conditional execution and replacement slices, quantified branch-local-backreference work, and quantified-alternation combinations through the nested-branch frontier. The immediate follow-ons are `RBR-0222` through `RBR-0224` for one bounded quantified-alternation backtracking-heavy follow-on, `RBR-0225` through `RBR-0227` for one broader `{1,3}` quantified-alternation follow-on, and `RBR-0228` through `RBR-0230` for one exact open-ended `{1,}` quantified-alternation follow-on.
+The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. The tracked frontier already includes deterministic corpus coverage, multiple bounded conditional execution and replacement slices, quantified branch-local-backreference work, and quantified-alternation combinations through the nested-branch frontier. The immediate follow-ons are `RBR-0223` and `RBR-0224` for the published bounded quantified-alternation backtracking-heavy slice, `RBR-0225` through `RBR-0227` for one broader `{1,3}` quantified-alternation follow-on, and `RBR-0228` through `RBR-0230` for one exact open-ended `{1,}` quantified-alternation follow-on.
 
 Benchmark publication is still partial by design. The generated status block above carries the current workload and known-gap totals, while the primary full-suite report still times the source-tree shim, `reports/benchmarks/native_full.json` records the latest checked-in strict built-native full-suite sidecar, and `reports/benchmarks/native_smoke.json` remains the quick six-workload native check.
 
 ## What The Numbers Mean
 
-The correctness report is a slice-health signal, not an end-state signal. The current publication covers 504 cases across 66 manifests, with all 504 passing and 0 honest `unimplemented` gaps in the published slice, and that still does not mean the project is close to replacing stdlib `re` across the board. The immediate queue is `RBR-0222` through `RBR-0230` to take one bounded quantified-alternation backtracking-heavy follow-on, one broader `{1,3}` follow-on, and one exact open-ended `{1,}` follow-on through the same publish/parity/benchmark sequence.
+The correctness report is a slice-health signal, not an end-state signal. The current publication covers 516 cases across 67 manifests, with 504 passing and 12 honest `unimplemented` gaps in the published slice, and that still does not mean the project is close to replacing stdlib `re` across the board. The immediate queue is `RBR-0223` through `RBR-0230` to take the published bounded quantified-alternation backtracking-heavy slice through parity and benchmark catch-up, then take one broader `{1,3}` follow-on and one exact open-ended `{1,}` follow-on through the same publish/parity/benchmark sequence.
 
 The benchmark report is still a coverage-first artifact too. It already exercises a wide workload set, but dozens of workloads are still explicit gaps and the main published run still measures the source-tree shim rather than the fully built-native path. That is enough to guide the queue, but not enough to make broad speed claims yet.
 
