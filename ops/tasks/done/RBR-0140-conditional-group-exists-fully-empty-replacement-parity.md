@@ -1,6 +1,6 @@
 # RBR-0140: Add bounded fully-empty conditional replacement parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0117` and `RBR-0139`.
 - This task exists so the queue converts the next accepted conditional replacement workflow into real Rust-backed behavior instead of leaving it as publication-only coverage.
+
+## Completion
+- Verified the existing Rust-backed native path already matches CPython for the bounded fully-empty conditional `sub()` and `subn()` workflows on both module and compiled-`Pattern` entrypoints.
+- Added `tests/python/test_conditional_group_exists_fully_empty_replacement_parity.py` to lock the numbered and named fully-empty replacement slice behind a dedicated parity regression test.
+- Re-ran the targeted parity and correctness-harness coverage, then republished `reports/correctness/latest.json` at 272/272 passing with 0 unimplemented cases.
