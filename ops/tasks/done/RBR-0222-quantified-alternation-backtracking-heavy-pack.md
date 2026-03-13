@@ -1,6 +1,6 @@
 # RBR-0222: Publish a bounded quantified-alternation backtracking-heavy correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0125`, `RBR-0126`, and `RBR-0221`.
 - This task exists so the queue reopens after the quantified-alternation nested-branch trio with one exact overlapping-branch follow-on that is already represented by an explicit benchmark-gap anchor.
+
+## Completion
+- Added `tests/conformance/fixtures/quantified_alternation_backtracking_heavy_workflows.json` with 12 numbered and named compile/module/pattern cases for `a(b|bc){1,2}d` and `a(?P<word>b|bc){1,2}d`, covering lower-bound `b` and `bc` successes, second-repetition branch-order variations, and explicit `abccd` no-match observations.
+- Registered the new manifest in `python/rebar_harness/correctness.py`, added focused scorecard assertions in `tests/conformance/test_correctness_quantified_alternation_backtracking_heavy_workflows.py`, and republished `reports/correctness/latest.json`.
+- Published correctness frontier now stands at 516 total cases across 67 manifests with 504 passes and 12 honest `unimplemented` outcomes, leaving Rust-backed runtime parity for this slice to `RBR-0223`.

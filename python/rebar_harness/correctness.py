@@ -277,6 +277,11 @@ DEFAULT_FIXTURE_PATHS = (
     / "conformance"
     / "fixtures"
     / "quantified_alternation_nested_branch_workflows.json",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
+    / "quantified_alternation_backtracking_heavy_workflows.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "systematic_feature_corpus.json",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
