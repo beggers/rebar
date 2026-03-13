@@ -1,6 +1,6 @@
 # RBR-0185: Retire the remaining numbered conditional replacement benchmark-only gaps
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -34,3 +34,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0184`, `RBR-0132`, `RBR-0135`, and `RBR-0141`.
 - This task exists because the current benchmark report still carries three obvious numbered replacement gap rows even though the corresponding conditional replacement behavior already exists behind the Rust boundary.
+- 2026-03-13: Confirmed the three numbered `module.sub()` replacement rows now publish real `rebar` timings in `reports/benchmarks/latest.json`; updated the three conditional benchmark suite tests to the current 318-workload, 273-measured, 45-gap full-suite totals so the queue state matches the landed publication.
