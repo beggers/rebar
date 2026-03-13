@@ -75,10 +75,10 @@ class CorrectnessHarnessConditionalGroupExistsEmptyYesElseNestedWorkflowTest(uni
             {
                 "executed_cases": 330,
                 "failed_cases": 0,
-                "passed_cases": 322,
+                "passed_cases": 330,
                 "skipped_cases": 0,
                 "total_cases": 330,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(len(scorecard["cases"]), 330)
@@ -89,10 +89,10 @@ class CorrectnessHarnessConditionalGroupExistsEmptyYesElseNestedWorkflowTest(uni
             {
                 "executed_cases": 186,
                 "failed_cases": 0,
-                "passed_cases": 178,
+                "passed_cases": 186,
                 "skipped_cases": 0,
                 "total_cases": 186,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertIn(
@@ -119,10 +119,10 @@ class CorrectnessHarnessConditionalGroupExistsEmptyYesElseNestedWorkflowTest(uni
             {
                 "executed_cases": 8,
                 "failed_cases": 0,
-                "passed_cases": 0,
+                "passed_cases": 8,
                 "skipped_cases": 0,
                 "total_cases": 8,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(
@@ -144,65 +144,78 @@ class CorrectnessHarnessConditionalGroupExistsEmptyYesElseNestedWorkflowTest(uni
         compile_case = cases_by_id[
             "conditional-group-exists-empty-yes-else-nested-compile-metadata-str"
         ]
-        self.assertEqual(compile_case["comparison"], "unimplemented")
+        self.assertEqual(compile_case["comparison"], "pass")
         self.assertEqual(compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groupindex"], {})
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groups"], 1)
-        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "success")
         self.assertEqual(
-            compile_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
+            compile_case["observations"]["rebar"]["result"],
+            compile_case["observations"]["cpython"]["result"],
         )
 
         present_case = cases_by_id[
             "conditional-group-exists-empty-yes-else-nested-module-search-present-str"
         ]
-        self.assertEqual(present_case["comparison"], "unimplemented")
+        self.assertEqual(present_case["comparison"], "pass")
         self.assertEqual(present_case["helper"], "search")
         self.assertEqual(present_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(present_case["observations"]["cpython"]["result"]["group0"], "abc")
         self.assertEqual(present_case["observations"]["cpython"]["result"]["groups"], ["b"])
         self.assertEqual(present_case["observations"]["cpython"]["result"]["lastindex"], 1)
         self.assertEqual(present_case["observations"]["cpython"]["result"]["span1"], [3, 4])
-        self.assertEqual(present_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(present_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            present_case["observations"]["rebar"]["result"],
+            present_case["observations"]["cpython"]["result"],
+        )
 
         absent_case = cases_by_id[
             "conditional-group-exists-empty-yes-else-nested-module-fullmatch-absent-str"
         ]
-        self.assertEqual(absent_case["comparison"], "unimplemented")
+        self.assertEqual(absent_case["comparison"], "pass")
         self.assertEqual(absent_case["helper"], "fullmatch")
         self.assertEqual(absent_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(absent_case["observations"]["cpython"]["result"]["group0"], "acf")
         self.assertEqual(absent_case["observations"]["cpython"]["result"]["groups"], [None])
         self.assertEqual(absent_case["observations"]["cpython"]["result"]["lastindex"], None)
         self.assertEqual(absent_case["observations"]["cpython"]["result"]["span1"], [-1, -1])
-        self.assertEqual(absent_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(absent_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            absent_case["observations"]["rebar"]["result"],
+            absent_case["observations"]["cpython"]["result"],
+        )
 
         absent_failure_case = cases_by_id[
             "conditional-group-exists-empty-yes-else-nested-pattern-fullmatch-absent-failure-str"
         ]
-        self.assertEqual(absent_failure_case["comparison"], "unimplemented")
+        self.assertEqual(absent_failure_case["comparison"], "pass")
         self.assertEqual(absent_failure_case["helper"], "fullmatch")
         self.assertEqual(absent_failure_case["observations"]["cpython"]["outcome"], "success")
         self.assertIsNone(absent_failure_case["observations"]["cpython"]["result"])
-        self.assertEqual(absent_failure_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(absent_failure_case["observations"]["rebar"]["outcome"], "success")
+        self.assertIsNone(absent_failure_case["observations"]["rebar"]["result"])
 
         named_compile_case = cases_by_id[
             "named-conditional-group-exists-empty-yes-else-nested-compile-metadata-str"
         ]
-        self.assertEqual(named_compile_case["comparison"], "unimplemented")
+        self.assertEqual(named_compile_case["comparison"], "pass")
         self.assertEqual(named_compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(
             named_compile_case["observations"]["cpython"]["result"]["groupindex"],
             {"word": 1},
         )
         self.assertEqual(named_compile_case["observations"]["cpython"]["result"]["groups"], 1)
-        self.assertEqual(named_compile_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_compile_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            named_compile_case["observations"]["rebar"]["result"],
+            named_compile_case["observations"]["cpython"]["result"],
+        )
 
         named_present_case = cases_by_id[
             "named-conditional-group-exists-empty-yes-else-nested-module-search-present-str"
         ]
-        self.assertEqual(named_present_case["comparison"], "unimplemented")
+        self.assertEqual(named_present_case["comparison"], "pass")
         self.assertEqual(named_present_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(named_present_case["observations"]["cpython"]["result"]["group0"], "abc")
         self.assertEqual(named_present_case["observations"]["cpython"]["result"]["groups"], ["b"])
@@ -210,14 +223,22 @@ class CorrectnessHarnessConditionalGroupExistsEmptyYesElseNestedWorkflowTest(uni
             named_present_case["observations"]["cpython"]["result"]["groupdict"],
             {"word": "b"},
         )
+        self.assertEqual(
+            named_present_case["observations"]["cpython"]["result"]["named_group_spans"],
+            {"word": [3, 4]},
+        )
         self.assertEqual(named_present_case["observations"]["cpython"]["result"]["lastindex"], 1)
         self.assertEqual(named_present_case["observations"]["cpython"]["result"]["span1"], [3, 4])
-        self.assertEqual(named_present_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_present_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            named_present_case["observations"]["rebar"]["result"],
+            named_present_case["observations"]["cpython"]["result"],
+        )
 
         named_absent_case = cases_by_id[
             "named-conditional-group-exists-empty-yes-else-nested-module-fullmatch-absent-str"
         ]
-        self.assertEqual(named_absent_case["comparison"], "unimplemented")
+        self.assertEqual(named_absent_case["comparison"], "pass")
         self.assertEqual(named_absent_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(named_absent_case["observations"]["cpython"]["result"]["group0"], "acf")
         self.assertEqual(named_absent_case["observations"]["cpython"]["result"]["groups"], [None])
@@ -225,17 +246,26 @@ class CorrectnessHarnessConditionalGroupExistsEmptyYesElseNestedWorkflowTest(uni
             named_absent_case["observations"]["cpython"]["result"]["groupdict"],
             {"word": None},
         )
+        self.assertEqual(
+            named_absent_case["observations"]["cpython"]["result"]["named_group_spans"],
+            {"word": [-1, -1]},
+        )
         self.assertEqual(named_absent_case["observations"]["cpython"]["result"]["lastindex"], None)
         self.assertEqual(named_absent_case["observations"]["cpython"]["result"]["span1"], [-1, -1])
-        self.assertEqual(named_absent_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_absent_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            named_absent_case["observations"]["rebar"]["result"],
+            named_absent_case["observations"]["cpython"]["result"],
+        )
 
         named_absent_failure_case = cases_by_id[
             "named-conditional-group-exists-empty-yes-else-nested-pattern-fullmatch-absent-failure-str"
         ]
-        self.assertEqual(named_absent_failure_case["comparison"], "unimplemented")
+        self.assertEqual(named_absent_failure_case["comparison"], "pass")
         self.assertEqual(named_absent_failure_case["observations"]["cpython"]["outcome"], "success")
         self.assertIsNone(named_absent_failure_case["observations"]["cpython"]["result"])
-        self.assertEqual(named_absent_failure_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_absent_failure_case["observations"]["rebar"]["outcome"], "success")
+        self.assertIsNone(named_absent_failure_case["observations"]["rebar"]["result"])
 
 
 if __name__ == "__main__":

@@ -1,8 +1,9 @@
 # RBR-0157: Add bounded nested empty-yes-arm conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Convert the first nested empty-yes-arm conditional cases from the published correctness pack into real Rust-backed behavior without claiming broader nested empty-arm or backtracking-heavy execution.
@@ -28,3 +29,5 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0156`.
 - This task exists so the queue converts one exact accepted nested empty-yes-arm spelling into real Rust-backed behavior instead of leaving it as publication-only syntax coverage.
+- Implemented the bounded outer-empty-yes / nested-else-arm Rust execution path for `a(b)?c(?(1)|(?(1)e|f))` and `a(?P<word>b)?c(?(word)|(?(word)e|f))` only.
+- Added Python parity coverage for numbered and named compile/search/fullmatch flows, kept replacement helpers unsupported for this nested shape, and republished `reports/correctness/latest.json` to `330` passes with `0` honest gaps.
