@@ -1,8 +1,9 @@
 # RBR-0128: Add bounded alternation-heavy explicit-empty-else conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-12
+Completed: 2026-03-13
 
 ## Goal
 - Convert the first alternation-heavy explicit-empty-else conditional cases from the published correctness pack into real CPython-shaped behavior without claiming replacement-conditioned workflows, quantified conditionals, or broad backtracking support.
@@ -28,3 +29,6 @@ Created: 2026-03-12
 ## Notes
 - Build on `RBR-0127`.
 - This task exists so the queue turns the first bounded backtracking-heavy explicit-empty-else conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
+- Extended the Rust conditional parser/matcher in `crates/rebar-core/src/lib.rs` so `a(b)?c(?(1)(de|df)|)` and `a(?P<word>b)?c(?(word)(de|df)|)` compile and execute through the native boundary while preserving the narrow existing conditional slice.
+- Added direct Rust coverage for compile metadata plus present/absent match spans, including the second capture introduced by the grouped alternation yes-arm, and added `tests/python/test_conditional_group_exists_empty_else_alternation_parity.py` for public API parity against CPython.
+- Updated `tests/conformance/test_correctness_conditional_group_exists_empty_else_alternation_workflows.py` and republished `reports/correctness/latest.json`; the combined correctness scorecard now reports 240 executed cases with 240 passes and 0 honest gaps.
