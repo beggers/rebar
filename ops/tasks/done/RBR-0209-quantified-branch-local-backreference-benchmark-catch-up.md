@@ -1,6 +1,6 @@
 # RBR-0209: Catch bounded quantified branch-local-backreference benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,7 @@ Created: 2026-03-13
 - Build on `RBR-0208`.
 - Keep this slice in the existing `branch_local_backreference_boundary` manifest rather than inventing a second benchmark family for the same quantified branch-local surface.
 - This task exists so the queue does not reach bounded quantified branch-local-backreference parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Added numbered and named quantified branch-local-backreference compile/search/fullmatch benchmark rows to the existing `branch_local_backreference_boundary` manifest, reusing the existing numbered `module.search` anchor row instead of introducing a new benchmark family.
+- Regenerated `reports/benchmarks/latest.json`, moving the published benchmark surface to 366 workloads with 321 measured `rebar` timings and 45 explicit known gaps.

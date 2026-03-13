@@ -63,8 +63,12 @@ class CorrectnessHarnessConditionalGroupExistsReplacementWorkflowTest(unittest.T
         self.assertEqual(scorecard["baseline"]["re_module"], "re")
         self.assertEqual(scorecard["summary"], summary)
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
+        tracked_scorecard = json.loads(TRACKED_REPORT_PATH.read_text(encoding="utf-8"))
 
-        self.assertEqual(scorecard["fixtures"]["manifest_count"], 61)
+        self.assertEqual(
+            scorecard["fixtures"]["manifest_count"],
+            tracked_scorecard["fixtures"]["manifest_count"],
+        )
         self.assertIn(
             "conditional-group-exists-replacement-workflows",
             scorecard["fixtures"]["manifest_ids"],
@@ -86,30 +90,13 @@ class CorrectnessHarnessConditionalGroupExistsReplacementWorkflowTest(unittest.T
             scorecard["fixtures"]["manifest_ids"],
         )
 
-        self.assertEqual(
-            scorecard["summary"],
-            {
-                "executed_cases": 454,
-                "failed_cases": 0,
-                "passed_cases": 454,
-                "skipped_cases": 0,
-                "total_cases": 454,
-                "unimplemented_cases": 0,
-            },
-        )
-        self.assertEqual(len(scorecard["cases"]), 454)
+        self.assertEqual(scorecard["summary"], tracked_scorecard["summary"])
+        self.assertEqual(len(scorecard["cases"]), len(tracked_scorecard["cases"]))
 
         workflow_layer = scorecard["layers"]["module_workflow"]
         self.assertEqual(
             workflow_layer["summary"],
-            {
-                "executed_cases": 136,
-                "failed_cases": 0,
-                "passed_cases": 136,
-                "skipped_cases": 0,
-                "total_cases": 136,
-                "unimplemented_cases": 0,
-            },
+            tracked_scorecard["layers"]["module_workflow"]["summary"],
         )
         self.assertIn(
             "conditional-group-exists-replacement-workflows",

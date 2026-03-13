@@ -7,7 +7,7 @@
   ],
   "notes": [
     "Branch-local backreference boundary workloads keep captures, alternation sites, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded branch-local reference slice rather than regex throughput.",
-    "Measured rows cover the bounded `a((b)|c)\\\\2d`, `a(?P<outer>(?P<inner>b)|c)(?P=inner)d`, `a((b)|c)\\\\2(?(2)d|e)`, and `a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)` compile/search/fullmatch paths directly, while quantified-branch follow-ons stay as explicit known-gap rows until the queued quantifier work lands."
+    "Measured rows cover the bounded `a((b)|c)\\\\2d`, `a(?P<outer>(?P<inner>b)|c)(?P=inner)d`, `a((b)+|c)\\\\2d`, `a(?P<outer>(?P<inner>b)+|c)(?P=inner)d`, `a((b)|c)\\\\2(?(2)d|e)`, and `a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)` compile/search/fullmatch paths directly, while replacement semantics, nested alternation-plus-backreference shapes, and broader backtracking-heavy grouped combinations stay explicit known-gap rows in adjacent manifests."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -210,12 +210,12 @@
       ]
     },
     {
-      "id": "module-search-numbered-quantified-branch-local-backreference-cold-gap",
+      "id": "module-search-numbered-quantified-branch-local-backreference-cold-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
       "pattern": "a((b)+|c)\\2d",
-      "haystack": "zzabbbdzz",
+      "haystack": "zzabbdzz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "cold",
@@ -228,7 +228,6 @@
         "quantified",
         "search",
         "module",
-        "unsupported",
         "cold-cache"
       ],
       "syntax_features": [
@@ -240,7 +239,176 @@
         "quantifiers"
       ],
       "notes": [
-        "Explicit quantified-branch known-gap row so repeated branch-local capture/backreference behavior stays visible now that the single-pass slice has real timings."
+        "Cold module.search helper path for the bounded numbered quantified branch-local backreference lower-bound success case so the new Rust-backed slice reaches the published benchmark report without reusing the single-pass workload IDs."
+      ]
+    },
+    {
+      "id": "module-compile-numbered-quantified-branch-local-backreference-cold-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a((b)+|c)\\2d",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "numbered-backreference",
+        "branch-local",
+        "quantified",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "alternation",
+        "numbered-backreferences",
+        "branch-local-backreferences",
+        "quantifiers"
+      ],
+      "notes": [
+        "Cold module.compile benchmark for the bounded numbered quantified branch-local backreference slice so compile metadata timing lands alongside the new runtime rows."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-quantified-branch-local-backreference-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a((b)+|c)\\2d",
+      "haystack": "abbbd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "numbered-backreference",
+        "branch-local",
+        "quantified",
+        "fullmatch",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "alternation",
+        "numbered-backreferences",
+        "branch-local-backreferences",
+        "quantifiers",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered quantified branch-local backreference second-iteration success path."
+      ]
+    },
+    {
+      "id": "module-compile-named-quantified-branch-local-backreference-warm-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<outer>(?P<inner>b)+|c)(?P=inner)d",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "quantified",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "alternation",
+        "named-groups",
+        "named-backreferences",
+        "branch-local-backreferences",
+        "quantifiers"
+      ],
+      "notes": [
+        "Warm module.compile path for the bounded named quantified branch-local backreference slice so named compile metadata joins the benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-named-quantified-branch-local-backreference-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<outer>(?P<inner>b)+|c)(?P=inner)d",
+      "haystack": "zzabbdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "quantified",
+        "search",
+        "module",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "alternation",
+        "named-groups",
+        "named-backreferences",
+        "branch-local-backreferences",
+        "quantifiers"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded named quantified branch-local backreference lower-bound success case."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-quantified-branch-local-backreference-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<outer>(?P<inner>b)+|c)(?P=inner)d",
+      "haystack": "abbbd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "quantified",
+        "fullmatch",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "alternation",
+        "named-groups",
+        "named-backreferences",
+        "branch-local-backreferences",
+        "quantifiers",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded named quantified branch-local backreference second-iteration success path."
       ]
     },
     {
