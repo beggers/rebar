@@ -1,6 +1,6 @@
 # RBR-0216: Publish a bounded quantified-alternation-plus-conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0125`, `RBR-0126`, and `RBR-0215`.
 - This task exists so the queue reopens after the branch-local sequence with one exact conditional follow-on that is already represented by an explicit benchmark-gap anchor.
+- Completed 2026-03-13: added the dedicated `quantified_alternation_conditional_workflows.json` manifest, wired it into the default correctness harness, added a conformance test that accepts either `pass` or honest `unimplemented` for the new slice, and regenerated `reports/correctness/latest.json` with the new published cases.
