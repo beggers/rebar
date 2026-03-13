@@ -1,8 +1,9 @@
 # RBR-0231: Publish a bounded exact-repeat quantified-group alternation correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published correctness scorecard with one bounded manifest for grouped alternation inside an exact-repeat quantified capture so the queue leaves the quantified-alternation `{1,}` follow-on and then widens one already-anchored counted-repeat alternation slice.
@@ -28,3 +29,6 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0230`.
 - This task exists so the queue reuses an already-published benchmark-gap anchor for grouped alternation inside a deterministic counted repeat instead of inventing a looser post-quantified-alternation bucket.
+- Added `exact-repeat-quantified-group-alternation-workflows` to the default correctness manifest set with 10 numbered and named compile/module/pattern observations covering `abcbcd`, `abcded`, `adeded`, `abcd`, and `abcbcbcd`.
+- Republished `reports/correctness/latest.json`; the combined scorecard now covers 70 manifests / 558 cases with the new slice recorded honestly as 10 `unimplemented` cases and no explicit failures.
+- Added `tests/conformance/test_correctness_exact_repeat_quantified_group_alternation_workflows.py` to pin the combined-scorecard suite, family list, and CPython-visible observations for the new manifest.

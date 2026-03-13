@@ -91,6 +91,11 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
+    / "exact_repeat_quantified_group_alternation_workflows.json",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
     / "ranged_repeat_quantified_group_workflows.json",
     REPO_ROOT
     / "tests"

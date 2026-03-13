@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "manifest_id": "exact-repeat-quantified-group-alternation-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.exact_repeat_quantified_group_alternation",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "exact-repeat-quantified-group-alternation-numbered-compile-metadata-str",
+      "operation": "compile",
+      "family": "exact_repeat_quantified_group_alternation_numbered_compile_metadata",
+      "pattern": "a(bc|de){2}d",
+      "categories": ["grouped", "alternation", "quantifier", "exact-repeat", "counted-repeat", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the numbered compile frontier for one exact `{2}` grouped alternation without widening into ranged repeats, open-ended repeats, nested grouped alternation, branch-local backreferences, conditionals, or replacement workflows."
+      ]
+    },
+    {
+      "id": "exact-repeat-quantified-group-alternation-numbered-module-search-bc-bc-str",
+      "operation": "module_call",
+      "family": "exact_repeat_quantified_group_alternation_numbered_module_bc_bc_workflow",
+      "helper": "search",
+      "args": ["a(bc|de){2}d", "zzabcbcdzz"],
+      "categories": ["grouped", "alternation", "quantifier", "exact-repeat", "counted-repeat", "search", "module", "bc-bc", "str", "gap"],
+      "notes": [
+        "Documents the numbered module-level success path on `abcbcd` so the scorecard keeps the exact two-repetition `bc`/`bc` branch pair explicit."
+      ]
+    },
+    {
+      "id": "exact-repeat-quantified-group-alternation-numbered-module-search-bc-de-str",
+      "operation": "module_call",
+      "family": "exact_repeat_quantified_group_alternation_numbered_module_bc_de_workflow",
+      "helper": "search",
+      "args": ["a(bc|de){2}d", "zzabcdedzz"],
+      "categories": ["grouped", "alternation", "quantifier", "exact-repeat", "counted-repeat", "search", "module", "bc-de", "str", "gap"],
+      "notes": [
+        "Documents the numbered module-level success path on `abcded` so the frontier shows one mixed-branch exact-repeat match instead of only the repeated `bc` branch."
+      ]
+    },
+    {
+      "id": "exact-repeat-quantified-group-alternation-numbered-pattern-fullmatch-de-de-str",
+      "operation": "pattern_call",
+      "family": "exact_repeat_quantified_group_alternation_numbered_pattern_de_de_workflow",
+      "pattern": "a(bc|de){2}d",
+      "helper": "fullmatch",
+      "args": ["adeded"],
+      "categories": ["grouped", "alternation", "quantifier", "exact-repeat", "counted-repeat", "fullmatch", "pattern", "de-de", "str", "gap"],
+      "notes": [
+        "Documents the numbered compiled-pattern success path on `adeded` so the exact-repeat frontier includes the all-`de` branch pair as well."
+      ]
+    },
+    {
+      "id": "exact-repeat-quantified-group-alternation-numbered-pattern-fullmatch-no-match-short-str",
+      "operation": "pattern_call",
+      "family": "exact_repeat_quantified_group_alternation_numbered_pattern_no_match_short_workflow",
+      "pattern": "a(bc|de){2}d",
+      "helper": "fullmatch",
+      "args": ["abcd"],
+      "categories": ["grouped", "alternation", "quantifier", "exact-repeat", "counted-repeat", "fullmatch", "pattern", "no-match", "below-repeat-count", "str", "gap"],
+      "notes": [
+        "Documents the numbered no-match path on `abcd` so the scorecard stays explicit that the grouped alternation still has to satisfy both repetitions in the exact `{2}` envelope."
+      ]
+    },
+    {
+      "id": "exact-repeat-quantified-group-alternation-named-compile-metadata-str",
+      "operation": "compile",
+      "family": "exact_repeat_quantified_group_alternation_named_compile_metadata",
+      "pattern": "a(?P<word>bc|de){2}d",
+      "categories": ["grouped", "alternation", "quantifier", "exact-repeat", "counted-repeat", "named-group", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the named compile frontier for the same exact `{2}` grouped alternation under one visible `word` capture."
+      ]
+    },
+    {
+      "id": "exact-repeat-quantified-group-alternation-named-module-search-bc-bc-str",
+      "operation": "module_call",
+      "family": "exact_repeat_quantified_group_alternation_named_module_bc_bc_workflow",
+      "helper": "search",
+      "args": ["a(?P<word>bc|de){2}d", "zzabcbcdzz"],
+      "categories": ["grouped", "alternation", "quantifier", "exact-repeat", "counted-repeat", "named-group", "search", "module", "bc-bc", "str", "gap"],
+      "notes": [
+        "Documents the named module-level success path on `abcbcd` so the final visible `word` capture remains explicit at the exact-repeat alternation frontier."
+      ]
+    },
+    {
+      "id": "exact-repeat-quantified-group-alternation-named-module-search-bc-de-str",
+      "operation": "module_call",
+      "family": "exact_repeat_quantified_group_alternation_named_module_bc_de_workflow",
+      "helper": "search",
+      "args": ["a(?P<word>bc|de){2}d", "zzabcdedzz"],
+      "categories": ["grouped", "alternation", "quantifier", "exact-repeat", "counted-repeat", "named-group", "search", "module", "bc-de", "str", "gap"],
+      "notes": [
+        "Documents the named module-level success path on `abcded` so one mixed-branch exact-repeat workflow stays visible under the `word` capture."
+      ]
+    },
+    {
+      "id": "exact-repeat-quantified-group-alternation-named-pattern-fullmatch-de-de-str",
+      "operation": "pattern_call",
+      "family": "exact_repeat_quantified_group_alternation_named_pattern_de_de_workflow",
+      "pattern": "a(?P<word>bc|de){2}d",
+      "helper": "fullmatch",
+      "args": ["adeded"],
+      "categories": ["grouped", "alternation", "quantifier", "exact-repeat", "counted-repeat", "named-group", "fullmatch", "pattern", "de-de", "str", "gap"],
+      "notes": [
+        "Documents the named compiled-pattern success path on `adeded` so the exact-repeat grouped alternation slice includes the all-`de` branch pair with a visible named capture."
+      ]
+    },
+    {
+      "id": "exact-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-extra-repetition-str",
+      "operation": "pattern_call",
+      "family": "exact_repeat_quantified_group_alternation_named_pattern_no_match_extra_repetition_workflow",
+      "pattern": "a(?P<word>bc|de){2}d",
+      "helper": "fullmatch",
+      "args": ["abcbcbcd"],
+      "categories": ["grouped", "alternation", "quantifier", "exact-repeat", "counted-repeat", "named-group", "fullmatch", "pattern", "no-match", "extra-repetition", "str", "gap"],
+      "notes": [
+        "Documents the named no-match path on `abcbcbcd` so the scorecard records that the exact `{2}` envelope rejects a third grouped-alternation repetition."
+      ]
+    }
+  ]
+}
