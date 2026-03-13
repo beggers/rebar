@@ -1,6 +1,6 @@
 # RBR-0190: Add bounded quantified alternation-heavy two-arm conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -27,3 +27,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0189`.
 - This task exists so the queue converts the first quantified follow-on to the reopened two-arm alternation frontier into real Rust-backed behavior instead of leaving it as publication-only coverage.
+- Completed 2026-03-13: extended `rebar-core`'s quantified conditional parser and matcher to cover the bounded two-arm alternation `{2}` slice behind `rebar._rebar`, added public parity coverage for numbered and named module/compiled-pattern workflows including mixed repeated branch selections, updated the quantified alternation correctness harness assertions, and republished `reports/correctness/latest.json` at 416 passing cases with 0 honest gaps.

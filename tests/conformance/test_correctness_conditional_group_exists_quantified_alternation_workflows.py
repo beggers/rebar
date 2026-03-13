@@ -80,10 +80,10 @@ class CorrectnessHarnessConditionalGroupExistsQuantifiedAlternationWorkflowTest(
             {
                 "executed_cases": 416,
                 "failed_cases": 0,
-                "passed_cases": 406,
+                "passed_cases": 416,
                 "skipped_cases": 0,
                 "total_cases": 416,
-                "unimplemented_cases": 10,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(len(scorecard["cases"]), 416)
@@ -94,10 +94,10 @@ class CorrectnessHarnessConditionalGroupExistsQuantifiedAlternationWorkflowTest(
             {
                 "executed_cases": 272,
                 "failed_cases": 0,
-                "passed_cases": 262,
+                "passed_cases": 272,
                 "skipped_cases": 0,
                 "total_cases": 272,
-                "unimplemented_cases": 10,
+                "unimplemented_cases": 0,
             },
         )
         self.assertIn(
@@ -133,10 +133,10 @@ class CorrectnessHarnessConditionalGroupExistsQuantifiedAlternationWorkflowTest(
             {
                 "executed_cases": 10,
                 "failed_cases": 0,
-                "passed_cases": 0,
+                "passed_cases": 10,
                 "skipped_cases": 0,
                 "total_cases": 10,
-                "unimplemented_cases": 10,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(
@@ -160,20 +160,20 @@ class CorrectnessHarnessConditionalGroupExistsQuantifiedAlternationWorkflowTest(
         compile_case = cases_by_id[
             "conditional-group-exists-quantified-alternation-compile-metadata-str"
         ]
-        self.assertEqual(compile_case["comparison"], "unimplemented")
+        self.assertEqual(compile_case["comparison"], "pass")
         self.assertEqual(compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groupindex"], {})
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groups"], 3)
-        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "success")
         self.assertEqual(
-            compile_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
+            compile_case["observations"]["rebar"]["result"],
+            compile_case["observations"]["cpython"]["result"],
         )
 
         present_first_arm_case = cases_by_id[
             "conditional-group-exists-quantified-alternation-module-search-present-first-arm-str"
         ]
-        self.assertEqual(present_first_arm_case["comparison"], "unimplemented")
+        self.assertEqual(present_first_arm_case["comparison"], "pass")
         self.assertEqual(present_first_arm_case["helper"], "search")
         self.assertEqual(
             present_first_arm_case["observations"]["cpython"]["outcome"],
@@ -193,13 +193,17 @@ class CorrectnessHarnessConditionalGroupExistsQuantifiedAlternationWorkflowTest(
         )
         self.assertEqual(
             present_first_arm_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            "success",
+        )
+        self.assertEqual(
+            present_first_arm_case["observations"]["rebar"]["result"],
+            present_first_arm_case["observations"]["cpython"]["result"],
         )
 
         present_second_arm_case = cases_by_id[
             "conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str"
         ]
-        self.assertEqual(present_second_arm_case["comparison"], "unimplemented")
+        self.assertEqual(present_second_arm_case["comparison"], "pass")
         self.assertEqual(present_second_arm_case["helper"], "fullmatch")
         self.assertEqual(
             present_second_arm_case["observations"]["cpython"]["outcome"],
@@ -219,13 +223,17 @@ class CorrectnessHarnessConditionalGroupExistsQuantifiedAlternationWorkflowTest(
         )
         self.assertEqual(
             present_second_arm_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            "success",
+        )
+        self.assertEqual(
+            present_second_arm_case["observations"]["rebar"]["result"],
+            present_second_arm_case["observations"]["cpython"]["result"],
         )
 
         absent_first_arm_case = cases_by_id[
             "conditional-group-exists-quantified-alternation-module-search-absent-first-arm-str"
         ]
-        self.assertEqual(absent_first_arm_case["comparison"], "unimplemented")
+        self.assertEqual(absent_first_arm_case["comparison"], "pass")
         self.assertEqual(absent_first_arm_case["helper"], "search")
         self.assertEqual(
             absent_first_arm_case["observations"]["cpython"]["outcome"],
@@ -245,13 +253,17 @@ class CorrectnessHarnessConditionalGroupExistsQuantifiedAlternationWorkflowTest(
         )
         self.assertEqual(
             absent_first_arm_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            "success",
+        )
+        self.assertEqual(
+            absent_first_arm_case["observations"]["rebar"]["result"],
+            absent_first_arm_case["observations"]["cpython"]["result"],
         )
 
         absent_second_arm_case = cases_by_id[
             "conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str"
         ]
-        self.assertEqual(absent_second_arm_case["comparison"], "unimplemented")
+        self.assertEqual(absent_second_arm_case["comparison"], "pass")
         self.assertEqual(absent_second_arm_case["helper"], "fullmatch")
         self.assertEqual(
             absent_second_arm_case["observations"]["cpython"]["outcome"],
@@ -271,25 +283,33 @@ class CorrectnessHarnessConditionalGroupExistsQuantifiedAlternationWorkflowTest(
         )
         self.assertEqual(
             absent_second_arm_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            "success",
+        )
+        self.assertEqual(
+            absent_second_arm_case["observations"]["rebar"]["result"],
+            absent_second_arm_case["observations"]["cpython"]["result"],
         )
 
         named_compile_case = cases_by_id[
             "named-conditional-group-exists-quantified-alternation-compile-metadata-str"
         ]
-        self.assertEqual(named_compile_case["comparison"], "unimplemented")
+        self.assertEqual(named_compile_case["comparison"], "pass")
         self.assertEqual(named_compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(
             named_compile_case["observations"]["cpython"]["result"]["groupindex"],
             {"word": 1},
         )
         self.assertEqual(named_compile_case["observations"]["cpython"]["result"]["groups"], 3)
-        self.assertEqual(named_compile_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_compile_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(
+            named_compile_case["observations"]["rebar"]["result"],
+            named_compile_case["observations"]["cpython"]["result"],
+        )
 
         named_present_first_arm_case = cases_by_id[
             "named-conditional-group-exists-quantified-alternation-module-search-present-first-arm-str"
         ]
-        self.assertEqual(named_present_first_arm_case["comparison"], "unimplemented")
+        self.assertEqual(named_present_first_arm_case["comparison"], "pass")
         self.assertEqual(
             named_present_first_arm_case["observations"]["cpython"]["outcome"],
             "success",
@@ -312,13 +332,17 @@ class CorrectnessHarnessConditionalGroupExistsQuantifiedAlternationWorkflowTest(
         )
         self.assertEqual(
             named_present_first_arm_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            "success",
+        )
+        self.assertEqual(
+            named_present_first_arm_case["observations"]["rebar"]["result"],
+            named_present_first_arm_case["observations"]["cpython"]["result"],
         )
 
         named_present_second_arm_case = cases_by_id[
             "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str"
         ]
-        self.assertEqual(named_present_second_arm_case["comparison"], "unimplemented")
+        self.assertEqual(named_present_second_arm_case["comparison"], "pass")
         self.assertEqual(
             named_present_second_arm_case["observations"]["cpython"]["outcome"],
             "success",
@@ -341,13 +365,17 @@ class CorrectnessHarnessConditionalGroupExistsQuantifiedAlternationWorkflowTest(
         )
         self.assertEqual(
             named_present_second_arm_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            "success",
+        )
+        self.assertEqual(
+            named_present_second_arm_case["observations"]["rebar"]["result"],
+            named_present_second_arm_case["observations"]["cpython"]["result"],
         )
 
         named_absent_first_arm_case = cases_by_id[
             "named-conditional-group-exists-quantified-alternation-module-search-absent-first-arm-str"
         ]
-        self.assertEqual(named_absent_first_arm_case["comparison"], "unimplemented")
+        self.assertEqual(named_absent_first_arm_case["comparison"], "pass")
         self.assertEqual(
             named_absent_first_arm_case["observations"]["cpython"]["outcome"],
             "success",
@@ -370,13 +398,17 @@ class CorrectnessHarnessConditionalGroupExistsQuantifiedAlternationWorkflowTest(
         )
         self.assertEqual(
             named_absent_first_arm_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            "success",
+        )
+        self.assertEqual(
+            named_absent_first_arm_case["observations"]["rebar"]["result"],
+            named_absent_first_arm_case["observations"]["cpython"]["result"],
         )
 
         named_absent_second_arm_case = cases_by_id[
             "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str"
         ]
-        self.assertEqual(named_absent_second_arm_case["comparison"], "unimplemented")
+        self.assertEqual(named_absent_second_arm_case["comparison"], "pass")
         self.assertEqual(
             named_absent_second_arm_case["observations"]["cpython"]["outcome"],
             "success",
@@ -399,5 +431,9 @@ class CorrectnessHarnessConditionalGroupExistsQuantifiedAlternationWorkflowTest(
         )
         self.assertEqual(
             named_absent_second_arm_case["observations"]["rebar"]["outcome"],
-            "unimplemented",
+            "success",
+        )
+        self.assertEqual(
+            named_absent_second_arm_case["observations"]["rebar"]["result"],
+            named_absent_second_arm_case["observations"]["cpython"]["result"],
         )

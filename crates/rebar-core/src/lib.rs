@@ -1027,9 +1027,56 @@ impl<'a> QuantifiedConditionalGroupExistsPattern<'a> {
         &self,
         match_start: usize,
         capture_present: bool,
+        repeated_alternation_branches: Option<(&str, &str)>,
     ) -> Vec<Option<(usize, usize)>> {
-        self.conditional
-            .group_spans(match_start, capture_present, None)
+        if repeated_alternation_branches.is_none() {
+            return self
+                .conditional
+                .group_spans(match_start, capture_present, None);
+        }
+
+        let conditional = &self.conditional;
+        let capture_start = match_start + conditional.prefix.chars().count();
+        let capture_end = capture_start + conditional.capture.body.chars().count();
+        let middle_start = if capture_present {
+            capture_end
+        } else {
+            capture_start
+        };
+        let branch_start = middle_start + conditional.middle.chars().count();
+        let (first_branch, last_branch) =
+            repeated_alternation_branches.expect("guarded quantified alternation branches");
+        let last_branch_start = branch_start + first_branch.chars().count();
+
+        let mut spans = vec![if capture_present {
+            Some((capture_start, capture_end))
+        } else {
+            None
+        }];
+
+        if conditional.yes_branch_alternation.is_some() {
+            spans.push(if capture_present {
+                Some((
+                    last_branch_start,
+                    last_branch_start + last_branch.chars().count(),
+                ))
+            } else {
+                None
+            });
+        }
+
+        if conditional.no_branch_alternation.is_some() {
+            spans.push(if capture_present {
+                None
+            } else {
+                Some((
+                    last_branch_start,
+                    last_branch_start + last_branch.chars().count(),
+                ))
+            });
+        }
+
+        spans
     }
 }
 
@@ -2351,11 +2398,15 @@ fn parse_quantified_conditional_group_exists_pattern_str(
     pattern: &str,
 ) -> Option<QuantifiedConditionalGroupExistsPattern<'_>> {
     let grouped_pattern = parse_conditional_group_exists_pattern_str(pattern.strip_suffix("{2}")?)?;
+    let supports_plain_two_repeat = grouped_pattern.yes_branch_alternation.is_none()
+        && grouped_pattern.no_branch_alternation.is_none();
+    let supports_two_arm_alternation_repeat = grouped_pattern.yes_branch_alternation.is_some()
+        && grouped_pattern.no_branch_alternation.is_some()
+        && grouped_pattern.no_branch.is_some();
     if grouped_pattern.yes_branch.is_empty()
-        || grouped_pattern.yes_branch_alternation.is_some()
-        || grouped_pattern.no_branch_alternation.is_some()
         || grouped_pattern.nested_yes_branch.is_some()
         || grouped_pattern.nested_no_branch.is_some()
+        || (!supports_plain_two_repeat && !supports_two_arm_alternation_repeat)
     {
         return None;
     }
@@ -4145,13 +4196,13 @@ fn find_conditional_group_exists_match_span_str(
     }
 }
 
-fn quantified_conditional_group_exists_matches_at_str(
-    pattern: &QuantifiedConditionalGroupExistsPattern<'_>,
+fn quantified_conditional_group_exists_matches_at_str<'a>(
+    pattern: &'a QuantifiedConditionalGroupExistsPattern<'a>,
     flags: i32,
     string: &[char],
     start: usize,
     endpos: usize,
-) -> Option<(bool, usize)> {
+) -> Option<(bool, usize, Option<(&'a str, &'a str)>)> {
     let conditional = &pattern.conditional;
     let prefix_chars: Vec<char> = conditional.prefix.chars().collect();
     let capture_chars: Vec<char> = conditional.capture.body.chars().collect();
@@ -4185,6 +4236,32 @@ fn quantified_conditional_group_exists_matches_at_str(
     };
 
     let first_branch_start = middle_start + middle_chars.len();
+    if capture_present {
+        if let Some(branches) = &conditional.yes_branch_alternation {
+            return match_repeated_conditional_alternation_branches_at_str(
+                branches.as_slice(),
+                flags,
+                string,
+                first_branch_start,
+                endpos,
+            )
+            .map(|(first_branch, last_branch, match_end)| {
+                (true, match_end, Some((first_branch, last_branch)))
+            });
+        }
+    } else if let Some(branches) = &conditional.no_branch_alternation {
+        return match_repeated_conditional_alternation_branches_at_str(
+            branches.as_slice(),
+            flags,
+            string,
+            first_branch_start,
+            endpos,
+        )
+        .map(|(first_branch, last_branch, match_end)| {
+            (false, match_end, Some((first_branch, last_branch)))
+        });
+    }
+
     if !literal_matches_at_str(
         branch_chars.as_slice(),
         flags,
@@ -4203,7 +4280,46 @@ fn quantified_conditional_group_exists_matches_at_str(
         second_branch_start,
         endpos,
     )
-    .then_some((capture_present, second_branch_start + branch_chars.len()))
+    .then_some((
+        capture_present,
+        second_branch_start + branch_chars.len(),
+        None,
+    ))
+}
+
+fn match_repeated_conditional_alternation_branches_at_str<'a>(
+    branches: &[&'a str],
+    flags: i32,
+    string: &[char],
+    start: usize,
+    endpos: usize,
+) -> Option<(&'a str, &'a str, usize)> {
+    for first_branch in branches {
+        let first_branch_chars: Vec<char> = first_branch.chars().collect();
+        if !literal_matches_at_str(first_branch_chars.as_slice(), flags, string, start, endpos) {
+            continue;
+        }
+
+        let second_start = start + first_branch_chars.len();
+        for second_branch in branches {
+            let second_branch_chars: Vec<char> = second_branch.chars().collect();
+            if literal_matches_at_str(
+                second_branch_chars.as_slice(),
+                flags,
+                string,
+                second_start,
+                endpos,
+            ) {
+                return Some((
+                    *first_branch,
+                    *second_branch,
+                    second_start + second_branch_chars.len(),
+                ));
+            }
+        }
+    }
+
+    None
 }
 
 fn quantified_conditional_group_exists_whole_matches_at_str(
@@ -4285,25 +4401,44 @@ fn find_quantified_conditional_group_exists_match_span_str(
             quantified_conditional_group_exists_matches_at_str(
                 pattern, flags, string, start, endpos,
             )
-            .map(|(capture_present, match_end)| {
-                (
-                    (start, match_end),
-                    pattern.group_spans(start, capture_present),
-                )
-            })
+            .map(
+                |(capture_present, match_end, repeated_alternation_branches)| {
+                    (
+                        (start, match_end),
+                        pattern.group_spans(start, capture_present, repeated_alternation_branches),
+                    )
+                },
+            )
         }),
         MatchMode::Match => {
             quantified_conditional_group_exists_matches_at_str(pattern, flags, string, pos, endpos)
-                .map(|(capture_present, match_end)| {
-                    ((pos, match_end), pattern.group_spans(pos, capture_present))
-                })
+                .map(
+                    |(capture_present, match_end, repeated_alternation_branches)| {
+                        (
+                            (pos, match_end),
+                            pattern.group_spans(
+                                pos,
+                                capture_present,
+                                repeated_alternation_branches,
+                            ),
+                        )
+                    },
+                )
         }
         MatchMode::Fullmatch => {
             quantified_conditional_group_exists_matches_at_str(pattern, flags, string, pos, endpos)
-                .and_then(|(capture_present, match_end)| {
-                    (match_end == endpos)
-                        .then_some(((pos, match_end), pattern.group_spans(pos, capture_present)))
-                })
+                .and_then(
+                    |(capture_present, match_end, repeated_alternation_branches)| {
+                        (match_end == endpos).then_some((
+                            (pos, match_end),
+                            pattern.group_spans(
+                                pos,
+                                capture_present,
+                                repeated_alternation_branches,
+                            ),
+                        ))
+                    },
+                )
         }
     }
 }
@@ -5504,6 +5639,33 @@ mod tests {
         assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
         assert!(!named_outcome.supports_literal);
         assert_eq!(named_outcome.group_count, 1);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "word".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
+    fn compile_accepts_bounded_quantified_conditional_group_exists_two_arm_alternation_cases() {
+        let outcome = compile(PatternRef::Str("a(b)?c(?(1)(de|df)|(eg|eh)){2}"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.group_count, 3);
+        assert!(outcome.named_groups.is_empty());
+
+        let named_outcome = compile(
+            PatternRef::Str("a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}"),
+            0,
+        )
+        .unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!named_outcome.supports_literal);
+        assert_eq!(named_outcome.group_count, 3);
         assert_eq!(
             named_outcome.named_groups,
             vec![NamedGroup {
@@ -6729,6 +6891,44 @@ mod tests {
         assert_eq!(outcome.span, None);
         assert!(outcome.group_spans.is_empty());
         assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
+    fn conditional_group_exists_two_arm_alternation_quantified_fullmatch_reports_last_yes_branch_span(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Str("a(b)?c(?(1)(de|df)|(eg|eh)){2}"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abcdedf"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 7)));
+        assert_eq!(outcome.group_spans, vec![Some((1, 2)), Some((5, 7)), None]);
+        assert_eq!(outcome.lastindex, Some(2));
+    }
+
+    #[test]
+    fn named_conditional_group_exists_two_arm_alternation_quantified_fullmatch_reports_last_no_branch_span(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("acegeh"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 6)));
+        assert_eq!(outcome.group_spans, vec![None, None, Some((4, 6))]);
+        assert_eq!(outcome.lastindex, Some(3));
     }
 
     #[test]
