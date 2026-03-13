@@ -1,6 +1,6 @@
 # RBR-0174: Catch bounded alternation-bearing fully-empty conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,7 @@ Created: 2026-03-13
 - Build on `RBR-0173`.
 - Use the corrected `module-search-numbered-conditional-group-exists-fully-empty-alternation-heavy-warm-gap` row in `benchmarks/workloads/conditional_group_exists_fully_empty_boundary.json` as the benchmark anchor for this slice.
 - This task exists so the queue does not reach bounded fully-empty alternation parity and then leave that accepted syntax slice absent from benchmark reporting.
+
+## Completion
+- Converted the anchored alternation-bearing fully-empty gap row into four measured module-search and `Pattern.fullmatch()` workloads covering numbered and named forms across representative capture-absent and capture-present haystacks.
+- Updated the focused manifest regression test and regenerated `reports/benchmarks/latest.json`; the combined benchmark report now publishes 309 workloads with 261 measured `rebar` timings and 48 explicit known gaps, while `conditional-group-exists-fully-empty-boundary` is fully measured at 24/24 workloads.
