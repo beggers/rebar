@@ -1,6 +1,6 @@
 # RBR-0167: Catch bounded quantified fully-empty conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 - Build on `RBR-0166`.
 - Use the existing `pattern-fullmatch-numbered-quantified-conditional-group-exists-fully-empty-purged-gap` row in `benchmarks/workloads/conditional_group_exists_fully_empty_boundary.json` as the benchmark anchor for this slice.
 - This task exists so the queue does not reach quantified fully-empty parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Repointed the quantified fully-empty benchmark anchor to the actual supported `(?:a(b)?c(?(1)|)){2}` slice, kept the existing workload id stable, and added a named `Pattern.fullmatch()` companion row for `(?:a(?P<word>b)?c(?(word)|)){2}`.
+- Updated the fully-empty boundary benchmark contract so the quantified rows measure real `rebar` timings while the broader alternation-heavy repeated-arm follow-on remains an explicit known gap.
+- Republished `reports/benchmarks/latest.json`; the combined scorecard now reports `303` workloads, `253` measured `rebar` timings, and `50` explicit known gaps.
