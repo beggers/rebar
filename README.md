@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is widening a real Rust-backed subset, but the project is still early relative to the drop-in `re` target. |
 | Delivery estimate | Foundation work is complete, the published slice is expanding with explicit honest gaps and catch-up tasks, and overall stdlib-parity progress is still in the early implementation stage. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `7` ready, `0` in progress, `161` done, `0` blocked |
+| Work queue | `12` ready, `0` in progress, `162` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -47,8 +47,8 @@ _README speedup rollups stay omitted while only `239` of `293` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0154` and `RBR-0155` for the deterministic correctness corpus and nested empty-arm anchor cleanup.
-- Then land `RBR-0156` through `RBR-0161` for the bounded nested empty-yes-arm slice followed by the bounded nested fully-empty slice.
+- Land `RBR-0155` through `RBR-0161` for nested empty-arm benchmark cleanup plus the bounded nested empty-yes-arm and nested fully-empty slices.
+- Then land `RBR-0162` through `RBR-0167` for quantified empty-yes-arm and quantified fully-empty follow-ons while alternation-heavy empty-arm work stays behind a later anchor cleanup.
 
 ### Current Risks
 
@@ -58,15 +58,15 @@ _README speedup rollups stay omitted while only `239` of `293` published workloa
 
 ## Implementation Snapshot
 
-`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The published slice currently reports `304` passes with `0` honest gaps across `304` cases, and that bounded frontier is still far from full stdlib `re` parity.
+`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The published slice currently reports `322` passes with `0` honest gaps across `322` cases in `45` manifests, and that bounded frontier is still far from full stdlib `re` parity.
 
-The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. Near-term work is now about landing the systematic correctness corpus and nested empty-arm benchmark-anchor cleanup, and then widening into bounded nested empty-yes-arm and fully-empty conditionals.
+The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. The deterministic systematic corpus has now joined the published correctness baseline, and near-term work is about landing nested empty-arm benchmark-anchor cleanup, bounded nested empty-yes-arm and fully-empty conditionals, and then their quantified empty-arm follow-ons.
 
 Benchmark publication is still partial by design. The generated status block above carries the current workload and known-gap totals, while the full suite still times the source-tree shim and the built-native path remains a separate six-workload smoke artifact in `reports/benchmarks/native_smoke.json`.
 
 ## What The Numbers Mean
 
-The correctness report is a slice-health signal, not an end-state signal. `304` passes with `0` honest gaps across `304` published cases means the currently tracked frontier is fully green, but still deliberately narrow. It still does not mean the project is close to replacing stdlib `re` across the board.
+The correctness report is a slice-health signal, not an end-state signal. `322` passes with `0` honest gaps across `322` published cases in `45` manifests means the currently tracked frontier is fully green, but still deliberately narrow. It still does not mean the project is close to replacing stdlib `re` across the board.
 
 The benchmark report is still a coverage-first artifact too. It already exercises a wide workload set, but 54 rows are still explicit gaps and the main published run still measures the source-tree shim rather than the fully built-native path. That is enough to guide the queue, but not enough to make broad speed claims yet.
 

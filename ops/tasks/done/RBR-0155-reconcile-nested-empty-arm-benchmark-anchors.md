@@ -1,8 +1,9 @@
 # RBR-0155: Reconcile the nested empty-arm benchmark anchors
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Correct the published benchmark manifest contracts so the nested empty-yes-arm and nested fully-empty known-gap rows point at distinct CPython-accepted patterns instead of collapsing to the same stored pattern.
@@ -28,3 +29,7 @@ Created: 2026-03-13
 ## Notes
 - This task unblocks post-`RBR-0154` queue growth by turning the ambiguous nested empty-arm gap rows into distinct worker contracts.
 - Build on `RBR-0150` and the current conditional benchmark manifests.
+
+## Completion Note
+- Corrected the nested fully-empty benchmark anchor to `a(b)?c(?(1)|(?(1)|))` with a matching `zzaczz` haystack, kept the nested empty-yes-arm anchor pinned to `a(b)?c(?(1)|(?(1)e|f))`, regenerated `reports/benchmarks/latest.json`, and tightened both targeted benchmark tests to assert the distinct anchor patterns explicitly.
+- Published workload counts stayed stable in the tracked benchmark report (`293` total / `239` measured / `54` known gaps). The two targeted benchmark tests also needed stale combined-suite totals refreshed to the current manifest sets; that was test maintenance only, not a benchmark-schema or workload-count change in the published report.

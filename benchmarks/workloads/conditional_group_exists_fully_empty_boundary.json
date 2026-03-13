@@ -219,8 +219,8 @@
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(b)?c(?(1)|(?(1)e|f))",
-      "haystack": "zzacezz",
+      "pattern": "a(b)?c(?(1)|(?(1)|))",
+      "haystack": "zzaczz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "cold",
@@ -244,7 +244,7 @@
         "conditionals"
       ],
       "notes": [
-        "Explicit nested-conditional gap row so broader fully-empty conditional composition stays visible now that the bounded accepted slice has real timings."
+        "Explicit nested-conditional gap row so the bounded nested fully-empty follow-on stays visible now that the simpler accepted fully-empty slice has real timings."
       ]
     },
     {

@@ -160,12 +160,12 @@ class ConditionalGroupExistsFullyEmptyBoundaryBenchmarkSuiteTest(unittest.TestCa
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 44,
-                    "measured_workloads": 222,
-                    "module_workloads": 258,
+                    "known_gap_count": 43,
+                    "measured_workloads": 227,
+                    "module_workloads": 262,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
-                    "total_workloads": 266,
+                    "total_workloads": 270,
                 },
             )
 
@@ -184,24 +184,24 @@ class ConditionalGroupExistsFullyEmptyBoundaryBenchmarkSuiteTest(unittest.TestCa
         self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase3")
-        self.assertEqual(scorecard["summary"]["total_workloads"], 266)
+        self.assertEqual(scorecard["summary"]["total_workloads"], 270)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
-        self.assertEqual(scorecard["summary"]["module_workloads"], 258)
+        self.assertEqual(scorecard["summary"]["module_workloads"], 262)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 222)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 44)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 227)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 43)
         self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 50)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 108)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 108)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 109)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 111)
         self.assertEqual(scorecard["families"]["parser"]["workload_count"], 8)
         self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 3)
         self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["workload_count"], 258)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 41)
+        self.assertEqual(scorecard["families"]["module"]["workload_count"], 262)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 40)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
         self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 46)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 106)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 106)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 107)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 109)
         self.assertEqual(scorecard["artifacts"]["manifest"], None)
         self.assertEqual(scorecard["artifacts"]["manifest_id"], "combined-benchmark-suite")
         self.assertEqual(scorecard["artifacts"]["manifest_schema_version"], 1)
@@ -307,6 +307,8 @@ class ConditionalGroupExistsFullyEmptyBoundaryBenchmarkSuiteTest(unittest.TestCa
             for workload in scorecard["workloads"]
             if workload["id"] == "module-search-numbered-nested-conditional-group-exists-fully-empty-cold-gap"
         )
+        self.assertEqual(nested_gap["pattern"], "a(b)?c(?(1)|(?(1)|))")
+        self.assertEqual(nested_gap["haystack"], "zzaczz")
         self.assertEqual(nested_gap["status"], "unimplemented")
         self.assertEqual(nested_gap["implementation_timing"]["status"], "unimplemented")
         self.assertIsNone(nested_gap["implementation_ns"])
