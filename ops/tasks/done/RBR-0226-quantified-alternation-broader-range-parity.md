@@ -1,6 +1,6 @@
 # RBR-0226: Add bounded broader-range quantified-alternation parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0225`.
 - This task exists so the queue turns the first broader-range quantified-alternation workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+- Completed 2026-03-13: widened the Rust quantified-alternation parser gate from the existing `{1,2}` slice to accept the exact bounded `{1,3}` broader-range workflows, added focused Rust and Python parity coverage for the numbered and named third-repetition and no-match cases, and republished `reports/correctness/latest.json` to the combined 532-pass / 0-unimplemented frontier.
