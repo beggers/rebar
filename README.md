@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is widening a real Rust-backed subset, but the project is still early relative to the drop-in `re` target. |
 | Delivery estimate | Foundation work is complete, the published slice is expanding through benchmark catch-up and exact follow-on tasks, and overall stdlib-parity progress is still in the early implementation stage. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `10` ready, `0` in progress, `204` done, `0` blocked |
+| Work queue | `9` ready, `0` in progress, `205` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -35,19 +35,19 @@ _These correctness counts cover only the published slice. Overall delivery estim
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/usr/bin/python3`) |
-| Published workloads | `335` |
-| Workloads with real `rebar` timings | `285` |
-| Known-gap workloads | `50` |
+| Published workloads | `342` |
+| Workloads with real `rebar` timings | `293` |
+| Known-gap workloads | `49` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native sidecars are checked in separately at [`reports/benchmarks/native_full.json`](reports/benchmarks/native_full.json) for the latest built-native full-suite run and [`reports/benchmarks/native_smoke.json`](reports/benchmarks/native_smoke.json) for the smoke slice._
 
-_README speedup rollups stay omitted while only `285` of `335` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `293` of `342` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- Land `RBR-0196` through `RBR-0200` to convert the alternation-heavy replacement slice and widen the nested two-arm replacement-conditioned follow-on behind the Rust boundary while keeping benchmark catch-up paired with each slice.
+- Land `RBR-0197` through `RBR-0200` to catch the alternation-heavy replacement slice up on benchmarks and widen the nested two-arm replacement-conditioned follow-on behind the Rust boundary while keeping benchmark catch-up paired with each slice.
 - Keep `RBR-0201` through `RBR-0206` queued for the quantified replacement follow-on and the first bounded conditional-plus-branch-local-backreference slice.
 
 ### Current Risks
@@ -58,15 +58,15 @@ _README speedup rollups stay omitted while only `285` of `335` published workloa
 
 ## Implementation Snapshot
 
-`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The exact published counts live in the generated status block above; the short version is that the first bounded two-arm conditional replacement slice now reaches the Rust-backed correctness and published benchmark baselines, the first bounded alternation-heavy two-arm conditional replacement pack is now published as an honest gap, the repo also carries a strict built-native full-suite benchmark sidecar, and the active queue now leads with `RBR-0196` through `RBR-0203` before reopening one bounded conditional-plus-branch-local-backreference slice.
+`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The exact published counts live in the generated status block above; the short version is that both the first bounded two-arm and alternation-heavy two-arm conditional replacement slices now reach the Rust-backed correctness baseline, the latter still needs benchmark catch-up in `RBR-0197`, the repo also carries a strict built-native full-suite benchmark sidecar, and the active queue now leads with `RBR-0197` through `RBR-0203` before reopening one bounded conditional-plus-branch-local-backreference slice.
 
-The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. The deterministic systematic corpus, the bounded nested empty-yes-arm and fully-empty conditional slices, both bounded quantified empty-arm conditional slices, the alternation-heavy empty-yes-arm conditional slice, the alternation-bearing fully-empty conditional slice, both bounded quantified no-else and explicit-empty-else conditional slices, the first bounded nested two-arm conditional composition slice, the numbered conditional-replacement benchmark cleanup, the bounded alternation-heavy two-arm conditional benchmark catch-up, the bounded quantified alternation-heavy two-arm conditional correctness/parity/benchmark slice, the first bounded two-arm conditional replacement parity slice, and the strict built-native full-suite benchmark sidecar are already part of the tracked baseline. The immediate follow-ons are `RBR-0196` through `RBR-0203` for the alternation-heavy, nested, and quantified replacement-conditioned slices, with `RBR-0204` through `RBR-0206` already queued behind them for the first bounded conditional-plus-branch-local-backreference follow-on.
+The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. The deterministic systematic corpus, the bounded nested empty-yes-arm and fully-empty conditional slices, both bounded quantified empty-arm conditional slices, the alternation-heavy empty-yes-arm conditional slice, the alternation-bearing fully-empty conditional slice, both bounded quantified no-else and explicit-empty-else conditional slices, the first bounded nested two-arm conditional composition slice, the numbered conditional-replacement benchmark cleanup, the bounded alternation-heavy two-arm conditional benchmark catch-up, the bounded quantified alternation-heavy two-arm conditional correctness/parity/benchmark slice, the first bounded two-arm conditional replacement parity slice, the bounded alternation-heavy two-arm conditional replacement parity slice, and the strict built-native full-suite benchmark sidecar are already part of the tracked baseline. The immediate follow-ons are `RBR-0197` through `RBR-0203` for the alternation-heavy benchmark catch-up plus the nested and quantified replacement-conditioned slices, with `RBR-0204` through `RBR-0206` already queued behind them for the first bounded conditional-plus-branch-local-backreference follow-on.
 
 Benchmark publication is still partial by design. The generated status block above carries the current workload and known-gap totals, while the primary full-suite report still times the source-tree shim, `reports/benchmarks/native_full.json` records the latest checked-in strict built-native full-suite sidecar, and `reports/benchmarks/native_smoke.json` remains the quick six-workload native check.
 
 ## What The Numbers Mean
 
-The correctness report is a slice-health signal, not an end-state signal. The current publication covers 432 cases across 58 manifests, with 424 passes and 8 honest gaps, and that still does not mean the project is close to replacing stdlib `re` across the board. The immediate queue is `RBR-0196` through `RBR-0206` for the alternation-heavy, nested, and quantified replacement follow-ons plus the first bounded conditional-plus-branch-local-backreference slice.
+The correctness report is a slice-health signal, not an end-state signal. The current publication covers 432 cases across 58 manifests, with 432 passes and no honest gaps, and that still does not mean the project is close to replacing stdlib `re` across the board. The immediate queue is `RBR-0197` through `RBR-0206` for the alternation-heavy benchmark catch-up, the nested and quantified replacement follow-ons, and the first bounded conditional-plus-branch-local-backreference slice.
 
 The benchmark report is still a coverage-first artifact too. It already exercises a wide workload set, but dozens of workloads are still explicit gaps and the main published run still measures the source-tree shim rather than the fully built-native path. That is enough to guide the queue, but not enough to make broad speed claims yet.
 

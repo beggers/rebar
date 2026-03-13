@@ -1,6 +1,6 @@
 # RBR-0197: Catch bounded alternation-heavy two-arm conditional replacement benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 - Build on `RBR-0196`.
 - Keep this slice in the existing `conditional_group_exists_boundary` manifest rather than inventing a second benchmark family for the same bounded two-arm conditional surface.
 - This task exists so the queue does not reach bounded alternation-heavy two-arm conditional replacement parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion Notes
+- Replaced the single alternation-heavy replacement gap anchor in `benchmarks/workloads/conditional_group_exists_boundary.json` with eight measured numbered and named `sub()`/`subn()` module and compiled-`Pattern` rows covering the bounded `a(b)?c(?(1)(de|df)|(eg|eh))` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` replacement slice.
+- Kept replacement-template, callable-replacement, nested replacement-conditioned, and quantified replacement-conditioned rows explicit as remaining known gaps in the same manifest.
+- Refreshed `tests/benchmarks/test_conditional_group_exists_boundary_benchmarks.py` and republished `reports/benchmarks/latest.json`; the combined benchmark scorecard now reports 342 workloads, 293 measured timings, and 49 explicit known gaps.
