@@ -14,8 +14,8 @@ PYTHON_SOURCE = REPO_ROOT / "python"
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 
 
-class CorrectnessHarnessConditionalGroupExistsEmptyElseAlternationWorkflowTest(unittest.TestCase):
-    def test_runner_regenerates_combined_conditional_group_exists_empty_else_alternation_scorecard(
+class CorrectnessHarnessConditionalGroupExistsNoElseAlternationWorkflowTest(unittest.TestCase):
+    def test_runner_regenerates_combined_conditional_group_exists_no_else_alternation_scorecard(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -66,23 +66,11 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseAlternationWorkflowTest(u
 
         self.assertEqual(scorecard["fixtures"]["manifest_count"], 41)
         self.assertIn(
+            "conditional-group-exists-no-else-alternation-workflows",
+            scorecard["fixtures"]["manifest_ids"],
+        )
+        self.assertIn(
             "conditional-group-exists-empty-else-alternation-workflows",
-            scorecard["fixtures"]["manifest_ids"],
-        )
-        self.assertIn(
-            "conditional-group-exists-no-else-replacement-workflows",
-            scorecard["fixtures"]["manifest_ids"],
-        )
-        self.assertIn(
-            "conditional-group-exists-empty-else-replacement-workflows",
-            scorecard["fixtures"]["manifest_ids"],
-        )
-        self.assertIn(
-            "conditional-group-exists-empty-yes-else-replacement-workflows",
-            scorecard["fixtures"]["manifest_ids"],
-        )
-        self.assertIn(
-            "conditional-group-exists-fully-empty-replacement-workflows",
             scorecard["fixtures"]["manifest_ids"],
         )
 
@@ -112,64 +100,62 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseAlternationWorkflowTest(u
             },
         )
         self.assertIn(
-            "conditional-group-exists-empty-else-alternation-workflows",
+            "conditional-group-exists-no-else-alternation-workflows",
             match_layer["manifest_ids"],
         )
         self.assertEqual(match_layer["operations"], ["compile", "module_call", "pattern_call"])
         self.assertEqual(match_layer["text_models"], ["bytes", "str"])
 
         suite_ids = [suite["id"] for suite in scorecard["suites"]]
-        self.assertIn("match.conditional_group_exists_empty_else_alternation", suite_ids)
-        self.assertIn("match.conditional_group_exists_empty_else_alternation.str", suite_ids)
-        self.assertIn("match.conditional_group_exists_empty_else_alternation.compile", suite_ids)
-        self.assertIn("match.conditional_group_exists_empty_else_alternation.module_call", suite_ids)
-        self.assertIn("match.conditional_group_exists_empty_else_alternation.pattern_call", suite_ids)
+        self.assertIn("match.conditional_group_exists_no_else_alternation", suite_ids)
+        self.assertIn("match.conditional_group_exists_no_else_alternation.str", suite_ids)
+        self.assertIn("match.conditional_group_exists_no_else_alternation.compile", suite_ids)
+        self.assertIn("match.conditional_group_exists_no_else_alternation.module_call", suite_ids)
+        self.assertIn("match.conditional_group_exists_no_else_alternation.pattern_call", suite_ids)
 
         alternation_suite = next(
             suite
             for suite in scorecard["suites"]
-            if suite["id"] == "match.conditional_group_exists_empty_else_alternation"
+            if suite["id"] == "match.conditional_group_exists_no_else_alternation"
         )
         self.assertEqual(
             alternation_suite["summary"],
             {
                 "executed_cases": 8,
                 "failed_cases": 0,
-                "passed_cases": 8,
+                "passed_cases": 0,
                 "skipped_cases": 0,
                 "total_cases": 8,
-                "unimplemented_cases": 0,
+                "unimplemented_cases": 8,
             },
         )
         self.assertEqual(
             alternation_suite["families"],
             [
-                "conditional_group_exists_empty_else_alternation_compile_metadata",
-                "conditional_group_exists_empty_else_alternation_module_first_arm_workflow",
-                "conditional_group_exists_empty_else_alternation_module_second_arm_workflow",
-                "conditional_group_exists_empty_else_alternation_pattern_absent_workflow",
-                "named_conditional_group_exists_empty_else_alternation_compile_metadata",
-                "named_conditional_group_exists_empty_else_alternation_module_first_arm_workflow",
-                "named_conditional_group_exists_empty_else_alternation_module_second_arm_workflow",
-                "named_conditional_group_exists_empty_else_alternation_pattern_absent_workflow",
+                "conditional_group_exists_no_else_alternation_compile_metadata",
+                "conditional_group_exists_no_else_alternation_module_first_arm_workflow",
+                "conditional_group_exists_no_else_alternation_module_second_arm_workflow",
+                "conditional_group_exists_no_else_alternation_pattern_absent_workflow",
+                "named_conditional_group_exists_no_else_alternation_compile_metadata",
+                "named_conditional_group_exists_no_else_alternation_module_first_arm_workflow",
+                "named_conditional_group_exists_no_else_alternation_module_second_arm_workflow",
+                "named_conditional_group_exists_no_else_alternation_pattern_absent_workflow",
             ],
         )
 
         cases_by_id = {case["id"]: case for case in scorecard["cases"]}
 
-        compile_case = cases_by_id[
-            "conditional-group-exists-empty-else-alternation-compile-metadata-str"
-        ]
-        self.assertEqual(compile_case["comparison"], "pass")
+        compile_case = cases_by_id["conditional-group-exists-no-else-alternation-compile-metadata-str"]
+        self.assertEqual(compile_case["comparison"], "unimplemented")
         self.assertEqual(compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groupindex"], {})
         self.assertEqual(compile_case["observations"]["cpython"]["result"]["groups"], 2)
-        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(compile_case["observations"]["rebar"]["outcome"], "unimplemented")
 
         first_arm_case = cases_by_id[
-            "conditional-group-exists-empty-else-alternation-module-search-first-arm-str"
+            "conditional-group-exists-no-else-alternation-module-search-first-arm-str"
         ]
-        self.assertEqual(first_arm_case["comparison"], "pass")
+        self.assertEqual(first_arm_case["comparison"], "unimplemented")
         self.assertEqual(first_arm_case["helper"], "search")
         self.assertEqual(first_arm_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(first_arm_case["observations"]["cpython"]["result"]["group0"], "abcde")
@@ -179,12 +165,12 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseAlternationWorkflowTest(u
             first_arm_case["observations"]["cpython"]["result"]["group_spans"],
             [[3, 4], [5, 7]],
         )
-        self.assertEqual(first_arm_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(first_arm_case["observations"]["rebar"]["outcome"], "unimplemented")
 
         second_arm_case = cases_by_id[
-            "conditional-group-exists-empty-else-alternation-module-search-second-arm-str"
+            "conditional-group-exists-no-else-alternation-module-search-second-arm-str"
         ]
-        self.assertEqual(second_arm_case["comparison"], "pass")
+        self.assertEqual(second_arm_case["comparison"], "unimplemented")
         self.assertEqual(second_arm_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(second_arm_case["observations"]["cpython"]["result"]["group0"], "abcdf")
         self.assertEqual(second_arm_case["observations"]["cpython"]["result"]["groups"], ["b", "df"])
@@ -193,12 +179,12 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseAlternationWorkflowTest(u
             second_arm_case["observations"]["cpython"]["result"]["group_spans"],
             [[3, 4], [5, 7]],
         )
-        self.assertEqual(second_arm_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(second_arm_case["observations"]["rebar"]["outcome"], "unimplemented")
 
         absent_case = cases_by_id[
-            "conditional-group-exists-empty-else-alternation-pattern-fullmatch-absent-str"
+            "conditional-group-exists-no-else-alternation-pattern-fullmatch-absent-str"
         ]
-        self.assertEqual(absent_case["comparison"], "pass")
+        self.assertEqual(absent_case["comparison"], "unimplemented")
         self.assertEqual(absent_case["helper"], "fullmatch")
         self.assertEqual(absent_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(absent_case["observations"]["cpython"]["result"]["group0"], "ac")
@@ -208,24 +194,24 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseAlternationWorkflowTest(u
             absent_case["observations"]["cpython"]["result"]["group_spans"],
             [[-1, -1], [-1, -1]],
         )
-        self.assertEqual(absent_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(absent_case["observations"]["rebar"]["outcome"], "unimplemented")
 
         named_compile_case = cases_by_id[
-            "named-conditional-group-exists-empty-else-alternation-compile-metadata-str"
+            "named-conditional-group-exists-no-else-alternation-compile-metadata-str"
         ]
-        self.assertEqual(named_compile_case["comparison"], "pass")
+        self.assertEqual(named_compile_case["comparison"], "unimplemented")
         self.assertEqual(named_compile_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(
             named_compile_case["observations"]["cpython"]["result"]["groupindex"],
             {"word": 1},
         )
         self.assertEqual(named_compile_case["observations"]["cpython"]["result"]["groups"], 2)
-        self.assertEqual(named_compile_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(named_compile_case["observations"]["rebar"]["outcome"], "unimplemented")
 
         named_first_arm_case = cases_by_id[
-            "named-conditional-group-exists-empty-else-alternation-module-search-first-arm-str"
+            "named-conditional-group-exists-no-else-alternation-module-search-first-arm-str"
         ]
-        self.assertEqual(named_first_arm_case["comparison"], "pass")
+        self.assertEqual(named_first_arm_case["comparison"], "unimplemented")
         self.assertEqual(named_first_arm_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(named_first_arm_case["observations"]["cpython"]["result"]["group0"], "abcde")
         self.assertEqual(named_first_arm_case["observations"]["cpython"]["result"]["groups"], ["b", "de"])
@@ -237,12 +223,12 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseAlternationWorkflowTest(u
             named_first_arm_case["observations"]["cpython"]["result"]["named_group_spans"],
             {"word": [3, 4]},
         )
-        self.assertEqual(named_first_arm_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(named_first_arm_case["observations"]["rebar"]["outcome"], "unimplemented")
 
         named_second_arm_case = cases_by_id[
-            "named-conditional-group-exists-empty-else-alternation-module-search-second-arm-str"
+            "named-conditional-group-exists-no-else-alternation-module-search-second-arm-str"
         ]
-        self.assertEqual(named_second_arm_case["comparison"], "pass")
+        self.assertEqual(named_second_arm_case["comparison"], "unimplemented")
         self.assertEqual(named_second_arm_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(named_second_arm_case["observations"]["cpython"]["result"]["group0"], "abcdf")
         self.assertEqual(named_second_arm_case["observations"]["cpython"]["result"]["groups"], ["b", "df"])
@@ -254,12 +240,12 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseAlternationWorkflowTest(u
             named_second_arm_case["observations"]["cpython"]["result"]["named_group_spans"],
             {"word": [3, 4]},
         )
-        self.assertEqual(named_second_arm_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(named_second_arm_case["observations"]["rebar"]["outcome"], "unimplemented")
 
         named_absent_case = cases_by_id[
-            "named-conditional-group-exists-empty-else-alternation-pattern-fullmatch-absent-str"
+            "named-conditional-group-exists-no-else-alternation-pattern-fullmatch-absent-str"
         ]
-        self.assertEqual(named_absent_case["comparison"], "pass")
+        self.assertEqual(named_absent_case["comparison"], "unimplemented")
         self.assertEqual(named_absent_case["observations"]["cpython"]["outcome"], "success")
         self.assertEqual(named_absent_case["observations"]["cpython"]["result"]["group0"], "ac")
         self.assertEqual(named_absent_case["observations"]["cpython"]["result"]["groups"], [None, None])
@@ -271,7 +257,7 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseAlternationWorkflowTest(u
             named_absent_case["observations"]["cpython"]["result"]["named_group_spans"],
             {"word": [-1, -1]},
         )
-        self.assertEqual(named_absent_case["observations"]["rebar"]["outcome"], "success")
+        self.assertEqual(named_absent_case["observations"]["rebar"]["outcome"], "unimplemented")
 
 
 if __name__ == "__main__":

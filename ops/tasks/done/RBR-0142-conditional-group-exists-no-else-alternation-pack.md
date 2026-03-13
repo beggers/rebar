@@ -1,8 +1,9 @@
 # RBR-0142: Publish a bounded alternation-heavy omitted-no-arm conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published correctness scorecard with one bounded omitted-no-arm conditional manifest that introduces the accepted alternation-heavy no-else spelling through an exact CPython-supported workflow instead of reopening a vague broader-backtracking bucket.
@@ -28,3 +29,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0141` and the already-landed `RBR-0128` explicit-empty-else alternation slice.
 - This task exists so the queue keeps accepted conditional syntax coverage explicit instead of treating omitted-no-arm and explicit-empty-else alternation spellings as interchangeable.
+
+## Completion
+- Added `conditional_group_exists_no_else_alternation_workflows.json` and a dedicated regression test so the combined correctness publication now includes the bounded omitted-no-arm alternation-heavy conditional slice explicitly.
+- Regenerated `reports/correctness/latest.json`; the combined scorecard now covers 41 manifests / 280 cases, with these new eight cases reported honestly as `unimplemented` pending `RBR-0143` runtime parity.
+- Updated combined-scorecard regression tests whose aggregate manifest and case totals changed when this manifest entered the default publication set.
