@@ -1,6 +1,6 @@
 # RBR-0271: Add broader-range wider ranged-repeat quantified-group alternation plus conditional parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-13
 
@@ -28,3 +28,6 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0270`.
 - Leave Python-path benchmark catch-up to the follow-on task on the existing `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.json` path instead of forking another benchmark family for this broader `{1,4}` grouped-conditional slice.
+
+## Completion
+- 2026-03-13: Extended the existing Rust quantified-alternation conditional parser/executor path to accept the bounded `a((bc|de){1,4})?(?(1)d|e)` / `a(?P<outer>(bc|de){1,4})?(?(outer)d|e)` slice, added focused Rust and Python parity coverage, and republished `reports/correctness/latest.json` so the fourteen broader `{1,4}` grouped-conditional cases now pass instead of reporting `unimplemented`.

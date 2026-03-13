@@ -3364,6 +3364,10 @@ fn parse_quantified_alternation_conditional_pattern_str(
         {
             (1, Some(3), outer_suffix)
         } else if let Some(outer_suffix) =
+            inner_remainder[inner_close_offset + 1..].strip_prefix("{1,4})?")
+        {
+            (1, Some(4), outer_suffix)
+        } else if let Some(outer_suffix) =
             inner_remainder[inner_close_offset + 1..].strip_prefix("{2,})?")
         {
             (2, None, outer_suffix)
@@ -9480,6 +9484,30 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_broader_range_wider_ranged_repeat_grouped_alternation_conditional_cases() {
+        let outcome = compile(PatternRef::Str("a((bc|de){1,4})?(?(1)d|e)"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.group_count, 2);
+        assert!(outcome.named_groups.is_empty());
+
+        let named_outcome =
+            compile(PatternRef::Str("a(?P<outer>(bc|de){1,4})?(?(outer)d|e)"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!named_outcome.supports_literal);
+        assert_eq!(named_outcome.group_count, 2);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "outer".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
     fn compile_accepts_open_ended_quantified_group_alternation_conditional_cases() {
         let outcome = compile(PatternRef::Str("a((bc|de){1,})?(?(1)d|e)"), 0).unwrap();
         assert_eq!(outcome.status, CompileStatus::Compiled);
@@ -11970,6 +11998,82 @@ mod tests {
         assert_eq!(outcome.span, Some((2, 10)));
         assert_eq!(outcome.group_spans, vec![Some((3, 9)), Some((7, 9))]);
         assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn broader_range_wider_ranged_repeat_grouped_alternation_conditional_search_reports_absent_groups(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Str("a((bc|de){1,4})?(?(1)d|e)"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzaezz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 4)));
+        assert_eq!(outcome.group_spans, vec![None, None]);
+        assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
+    fn broader_range_wider_ranged_repeat_grouped_alternation_conditional_fullmatch_reports_upper_bound_outer_and_inner_spans(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Str("a((bc|de){1,4})?(?(1)d|e)"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abcdededed"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 10)));
+        assert_eq!(outcome.group_spans, vec![Some((1, 9)), Some((7, 9))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn named_broader_range_wider_ranged_repeat_grouped_alternation_conditional_search_reports_named_outer_lastindex(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<outer>(bc|de){1,4})?(?(outer)d|e)"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabcdedededzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 12)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 11)), Some((9, 11))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn broader_range_wider_ranged_repeat_grouped_alternation_conditional_fullmatch_rejects_overflow(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Str("a((bc|de){1,4})?(?(1)d|e)"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abcbcbcbcbcd"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::NoMatch);
+        assert_eq!(outcome.span, None);
+        assert!(outcome.group_spans.is_empty());
+        assert_eq!(outcome.lastindex, None);
     }
 
     #[test]
