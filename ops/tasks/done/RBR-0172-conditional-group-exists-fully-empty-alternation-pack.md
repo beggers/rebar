@@ -1,6 +1,6 @@
 # RBR-0172: Publish a bounded alternation-bearing fully-empty conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,6 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0168`, `RBR-0161`, and `RBR-0141`.
 - This task exists so the queue records the accepted alternation-bearing fully-empty spelling explicitly even though its bounded runtime overlaps the already-landed fully-empty slice.
+
+## Completion Note
+- Added `conditional_group_exists_fully_empty_alternation_workflows.json`, wired it into the default correctness manifest set, added a focused scorecard test, and republished `reports/correctness/latest.json` with 372 total cases and 8 honest `unimplemented` outcomes for this new alternation-bearing fully-empty slice.

@@ -23040,6 +23040,586 @@
         "conditional",
         "group-exists",
         "fully-empty",
+        "alternation",
+        "compile",
+        "metadata",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "conditional_group_exists_fully_empty_alternation_compile_metadata",
+      "id": "conditional-group-exists-fully-empty-alternation-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "conditional-group-exists-fully-empty-alternation-workflows",
+      "notes": [
+        "Publishes one bounded numbered group-exists conditional compile path whose else arm contains an explicit zero-width alternation site so the accepted `|(?:|)` spelling stays distinct from the earlier fully empty and empty-yes-arm slices."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 1,
+            "pattern": "a(b)?c(?(1)|(?:|))",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "compile",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a(b)?c(?(1)|(?:|))",
+      "suite_id": "match.conditional_group_exists_fully_empty_alternation",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(b)?c(?(1)|(?:|))",
+        "zzabczz"
+      ],
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "alternation",
+        "search",
+        "module",
+        "present",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "conditional_group_exists_fully_empty_alternation_module_present_workflow",
+      "helper": "search",
+      "id": "conditional-group-exists-fully-empty-alternation-module-search-present-str",
+      "layer": "match_behavior",
+      "manifest_id": "conditional-group-exists-fully-empty-alternation-workflows",
+      "notes": [
+        "Documents the numbered module-level search path when the optional capture is present so the scorecard records the zero-width yes-arm success while keeping the explicit zero-width else-arm alternation spelling visible."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abc",
+            "group1": "b",
+            "group_spans": [
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "b"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "span1": [
+              3,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.conditional_group_exists_fully_empty_alternation",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(b)?c(?(1)|(?:|))",
+        "ac"
+      ],
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "alternation",
+        "fullmatch",
+        "module",
+        "absent",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "conditional_group_exists_fully_empty_alternation_module_absent_workflow",
+      "helper": "fullmatch",
+      "id": "conditional-group-exists-fully-empty-alternation-module-fullmatch-absent-str",
+      "layer": "match_behavior",
+      "manifest_id": "conditional-group-exists-fully-empty-alternation-workflows",
+      "notes": [
+        "Documents the numbered module-level fullmatch path when the optional capture is omitted so the explicit zero-width alternation site in the else arm contributes no suffix and the absent capture remains visible."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 2,
+            "group0": "ac",
+            "group1": null,
+            "group_spans": [
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              null
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              2
+            ],
+            "span1": [
+              -1,
+              -1
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.conditional_group_exists_fully_empty_alternation",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "ace"
+      ],
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "alternation",
+        "fullmatch",
+        "pattern",
+        "absent",
+        "failure",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "conditional_group_exists_fully_empty_alternation_pattern_extra_suffix_failure_workflow",
+      "helper": "fullmatch",
+      "id": "conditional-group-exists-fully-empty-alternation-pattern-fullmatch-extra-suffix-failure-str",
+      "layer": "match_behavior",
+      "manifest_id": "conditional-group-exists-fully-empty-alternation-workflows",
+      "notes": [
+        "Documents the bound Pattern.fullmatch numbered failure path when the optional capture is absent so the scorecard proves this slice does not silently broaden into the earlier empty-yes-arm alternation spelling."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(b)?c(?(1)|(?:|))",
+      "suite_id": "match.conditional_group_exists_fully_empty_alternation",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "alternation",
+        "named-group",
+        "compile",
+        "metadata",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_conditional_group_exists_fully_empty_alternation_compile_metadata",
+      "id": "named-conditional-group-exists-fully-empty-alternation-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "conditional-group-exists-fully-empty-alternation-workflows",
+      "notes": [
+        "Publishes the matching named fully-empty conditional compile frontier for the same bounded explicit zero-width else-arm alternation shape."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {
+              "word": 1
+            },
+            "groups": 1,
+            "pattern": "a(?P<word>b)?c(?(word)|(?:|))",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "compile",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a(?P<word>b)?c(?(word)|(?:|))",
+      "suite_id": "match.conditional_group_exists_fully_empty_alternation",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<word>b)?c(?(word)|(?:|))",
+        "zzabczz"
+      ],
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "alternation",
+        "named-group",
+        "search",
+        "module",
+        "present",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_conditional_group_exists_fully_empty_alternation_module_present_workflow",
+      "helper": "search",
+      "id": "named-conditional-group-exists-fully-empty-alternation-module-search-present-str",
+      "layer": "match_behavior",
+      "manifest_id": "conditional-group-exists-fully-empty-alternation-workflows",
+      "notes": [
+        "Documents the named module-level search path when the optional named capture is present so the accepted zero-width yes arm remains explicit for the alternation-bearing fully-empty spelling."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abc",
+            "group1": "b",
+            "group_spans": [
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {
+              "word": "b"
+            },
+            "groups": [
+              "b"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                3,
+                4
+              ]
+            },
+            "named_groups": {
+              "word": "b"
+            },
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "span1": [
+              3,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.conditional_group_exists_fully_empty_alternation",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<word>b)?c(?(word)|(?:|))",
+        "ac"
+      ],
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "alternation",
+        "named-group",
+        "fullmatch",
+        "module",
+        "absent",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_conditional_group_exists_fully_empty_alternation_module_absent_workflow",
+      "helper": "fullmatch",
+      "id": "named-conditional-group-exists-fully-empty-alternation-module-fullmatch-absent-str",
+      "layer": "match_behavior",
+      "manifest_id": "conditional-group-exists-fully-empty-alternation-workflows",
+      "notes": [
+        "Documents the named module-level fullmatch path when the optional named capture is absent so the explicit zero-width alternation site contributes no suffix and the named-group None payload stays explicit."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 2,
+            "group0": "ac",
+            "group1": null,
+            "group_spans": [
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {
+              "word": null
+            },
+            "groups": [
+              null
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                -1,
+                -1
+              ]
+            },
+            "named_groups": {
+              "word": null
+            },
+            "pos": 0,
+            "span": [
+              0,
+              2
+            ],
+            "span1": [
+              -1,
+              -1
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.conditional_group_exists_fully_empty_alternation",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "acf"
+      ],
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "alternation",
+        "named-group",
+        "fullmatch",
+        "pattern",
+        "absent",
+        "failure",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_conditional_group_exists_fully_empty_alternation_pattern_extra_suffix_failure_workflow",
+      "helper": "fullmatch",
+      "id": "named-conditional-group-exists-fully-empty-alternation-pattern-fullmatch-extra-suffix-failure-str",
+      "layer": "match_behavior",
+      "manifest_id": "conditional-group-exists-fully-empty-alternation-workflows",
+      "notes": [
+        "Documents the bound Pattern.fullmatch named failure path when the optional named capture is omitted so the scorecard keeps the rejected extra-suffix variant separate from empty-yes-arm alternation behavior."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<word>b)?c(?(word)|(?:|))",
+      "suite_id": "match.conditional_group_exists_fully_empty_alternation",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
         "quantified",
         "exact-repeat",
         "compile",
@@ -29255,7 +29835,7 @@
         },
         "outcomes": {
           "exception": 10,
-          "success": 354
+          "success": 362
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -29263,14 +29843,16 @@
         }
       },
       "rebar": {
-        "exception_case_count": 10,
+        "exception_case_count": 18,
         "exception_types": {
+          "NotImplementedError": 8,
           "TypeError": 2,
           "error": 8
         },
         "outcomes": {
           "exception": 10,
-          "success": 354
+          "success": 354,
+          "unimplemented": 8
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -30331,6 +30913,90 @@
         "skipped_cases": 0,
         "total_cases": 2,
         "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "conditional_group_exists_fully_empty_alternation_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "conditional_group_exists_fully_empty_alternation_module_absent_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "conditional_group_exists_fully_empty_alternation_module_present_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "conditional_group_exists_fully_empty_alternation_pattern_extra_suffix_failure_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
       },
       "text_models": [
         "str"
@@ -32480,6 +33146,90 @@
         "skipped_cases": 0,
         "total_cases": 2,
         "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "named_conditional_group_exists_fully_empty_alternation_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "named_conditional_group_exists_fully_empty_alternation_module_absent_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "named_conditional_group_exists_fully_empty_alternation_module_present_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "named_conditional_group_exists_fully_empty_alternation_pattern_extra_suffix_failure_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
       },
       "text_models": [
         "str"
@@ -35086,8 +35836,8 @@
     }
   ],
   "fixtures": {
-    "case_count": 364,
-    "manifest_count": 50,
+    "case_count": 372,
+    "manifest_count": 51,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
@@ -35130,6 +35880,7 @@
       "conditional-group-exists-empty-yes-else-alternation-workflows",
       "conditional-group-exists-empty-yes-else-nested-workflows",
       "conditional-group-exists-empty-yes-else-quantified-workflows",
+      "conditional-group-exists-fully-empty-alternation-workflows",
       "conditional-group-exists-fully-empty-quantified-workflows",
       "conditional-group-exists-fully-empty-nested-workflows",
       "conditional-group-exists-empty-yes-else-replacement-workflows",
@@ -35182,6 +35933,7 @@
       "tests/conformance/fixtures/conditional_group_exists_empty_yes_else_alternation_workflows.json",
       "tests/conformance/fixtures/conditional_group_exists_empty_yes_else_nested_workflows.json",
       "tests/conformance/fixtures/conditional_group_exists_empty_yes_else_quantified_workflows.json",
+      "tests/conformance/fixtures/conditional_group_exists_fully_empty_alternation_workflows.json",
       "tests/conformance/fixtures/conditional_group_exists_fully_empty_quantified_workflows.json",
       "tests/conformance/fixtures/conditional_group_exists_fully_empty_nested_workflows.json",
       "tests/conformance/fixtures/conditional_group_exists_empty_yes_else_replacement_workflows.json",
@@ -35193,27 +35945,30 @@
       "tests/conformance/fixtures/systematic_feature_corpus.json"
     ]
   },
-  "generated_at": "2026-03-13T06:41:02Z",
+  "generated_at": "2026-03-13T06:54:14Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
-      "case_count": 220,
+      "case_count": 228,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
             "exception_case_count": 0,
             "exception_types": {},
             "outcomes": {
-              "success": 220
+              "success": 228
             },
             "warning_case_count": 0,
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 0,
-            "exception_types": {},
+            "exception_case_count": 8,
+            "exception_types": {
+              "NotImplementedError": 8
+            },
             "outcomes": {
-              "success": 220
+              "success": 220,
+              "unimplemented": 8
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -35254,6 +36009,10 @@
         "conditional_group_exists_empty_yes_else_quantified_module_absent_workflow",
         "conditional_group_exists_empty_yes_else_quantified_module_present_workflow",
         "conditional_group_exists_empty_yes_else_quantified_pattern_mixed_workflow",
+        "conditional_group_exists_fully_empty_alternation_compile_metadata",
+        "conditional_group_exists_fully_empty_alternation_module_absent_workflow",
+        "conditional_group_exists_fully_empty_alternation_module_present_workflow",
+        "conditional_group_exists_fully_empty_alternation_pattern_extra_suffix_failure_workflow",
         "conditional_group_exists_fully_empty_compile_metadata",
         "conditional_group_exists_fully_empty_module_present_workflow",
         "conditional_group_exists_fully_empty_nested_compile_metadata",
@@ -35330,6 +36089,10 @@
         "named_conditional_group_exists_empty_yes_else_quantified_module_absent_workflow",
         "named_conditional_group_exists_empty_yes_else_quantified_module_present_workflow",
         "named_conditional_group_exists_empty_yes_else_quantified_pattern_mixed_workflow",
+        "named_conditional_group_exists_fully_empty_alternation_compile_metadata",
+        "named_conditional_group_exists_fully_empty_alternation_module_absent_workflow",
+        "named_conditional_group_exists_fully_empty_alternation_module_present_workflow",
+        "named_conditional_group_exists_fully_empty_alternation_pattern_extra_suffix_failure_workflow",
         "named_conditional_group_exists_fully_empty_compile_metadata",
         "named_conditional_group_exists_fully_empty_module_present_workflow",
         "named_conditional_group_exists_fully_empty_nested_compile_metadata",
@@ -35445,6 +36208,7 @@
         "conditional-group-exists-empty-yes-else-nested-workflows",
         "conditional-group-exists-empty-yes-else-quantified-workflows",
         "conditional-group-exists-empty-yes-else-workflows",
+        "conditional-group-exists-fully-empty-alternation-workflows",
         "conditional-group-exists-fully-empty-nested-workflows",
         "conditional-group-exists-fully-empty-quantified-workflows",
         "conditional-group-exists-fully-empty-workflows",
@@ -35488,6 +36252,7 @@
         "match.conditional_group_exists_empty_yes_else_nested",
         "match.conditional_group_exists_empty_yes_else_quantified",
         "match.conditional_group_exists_fully_empty",
+        "match.conditional_group_exists_fully_empty_alternation",
         "match.conditional_group_exists_fully_empty_nested",
         "match.conditional_group_exists_fully_empty_quantified",
         "match.conditional_group_exists_no_else",
@@ -35512,12 +36277,12 @@
         "match.wider_ranged_repeat_quantified_group"
       ],
       "summary": {
-        "executed_cases": 220,
+        "executed_cases": 228,
         "failed_cases": 0,
         "passed_cases": 220,
         "skipped_cases": 0,
-        "total_cases": 220,
-        "unimplemented_cases": 0
+        "total_cases": 228,
+        "unimplemented_cases": 8
       },
       "text_models": [
         "bytes",
@@ -45630,6 +46395,274 @@
       ]
     },
     {
+      "case_count": 8,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 8,
+            "exception_types": {
+              "NotImplementedError": 8
+            },
+            "outcomes": {
+              "unimplemented": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "conditional_group_exists_fully_empty_alternation_compile_metadata",
+        "conditional_group_exists_fully_empty_alternation_module_absent_workflow",
+        "conditional_group_exists_fully_empty_alternation_module_present_workflow",
+        "conditional_group_exists_fully_empty_alternation_pattern_extra_suffix_failure_workflow",
+        "named_conditional_group_exists_fully_empty_alternation_compile_metadata",
+        "named_conditional_group_exists_fully_empty_alternation_module_absent_workflow",
+        "named_conditional_group_exists_fully_empty_alternation_module_present_workflow",
+        "named_conditional_group_exists_fully_empty_alternation_pattern_extra_suffix_failure_workflow"
+      ],
+      "id": "match.conditional_group_exists_fully_empty_alternation",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "conditional-group-exists-fully-empty-alternation-workflows"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 8,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 8,
+        "unimplemented_cases": 8
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 8,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 8,
+            "exception_types": {
+              "NotImplementedError": 8
+            },
+            "outcomes": {
+              "unimplemented": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "conditional_group_exists_fully_empty_alternation_compile_metadata",
+        "conditional_group_exists_fully_empty_alternation_module_absent_workflow",
+        "conditional_group_exists_fully_empty_alternation_module_present_workflow",
+        "conditional_group_exists_fully_empty_alternation_pattern_extra_suffix_failure_workflow",
+        "named_conditional_group_exists_fully_empty_alternation_compile_metadata",
+        "named_conditional_group_exists_fully_empty_alternation_module_absent_workflow",
+        "named_conditional_group_exists_fully_empty_alternation_module_present_workflow",
+        "named_conditional_group_exists_fully_empty_alternation_pattern_extra_suffix_failure_workflow"
+      ],
+      "id": "match.conditional_group_exists_fully_empty_alternation.str",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "conditional-group-exists-fully-empty-alternation-workflows"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 8,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 8,
+        "unimplemented_cases": 8
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "conditional_group_exists_fully_empty_alternation_compile_metadata",
+        "named_conditional_group_exists_fully_empty_alternation_compile_metadata"
+      ],
+      "id": "match.conditional_group_exists_fully_empty_alternation.compile",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "conditional-group-exists-fully-empty-alternation-workflows"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 4,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 4,
+            "exception_types": {
+              "NotImplementedError": 4
+            },
+            "outcomes": {
+              "unimplemented": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "conditional_group_exists_fully_empty_alternation_module_absent_workflow",
+        "conditional_group_exists_fully_empty_alternation_module_present_workflow",
+        "named_conditional_group_exists_fully_empty_alternation_module_absent_workflow",
+        "named_conditional_group_exists_fully_empty_alternation_module_present_workflow"
+      ],
+      "id": "match.conditional_group_exists_fully_empty_alternation.module_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "conditional-group-exists-fully-empty-alternation-workflows"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 4
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "conditional_group_exists_fully_empty_alternation_pattern_extra_suffix_failure_workflow",
+        "named_conditional_group_exists_fully_empty_alternation_pattern_extra_suffix_failure_workflow"
+      ],
+      "id": "match.conditional_group_exists_fully_empty_alternation.pattern_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "conditional-group-exists-fully-empty-alternation-workflows"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
       "case_count": 10,
       "diagnostics": {
         "by_adapter": {
@@ -47709,11 +48742,11 @@
     }
   ],
   "summary": {
-    "executed_cases": 364,
+    "executed_cases": 372,
     "failed_cases": 0,
     "passed_cases": 364,
     "skipped_cases": 0,
-    "total_cases": 364,
-    "unimplemented_cases": 0
+    "total_cases": 372,
+    "unimplemented_cases": 8
   }
 }
