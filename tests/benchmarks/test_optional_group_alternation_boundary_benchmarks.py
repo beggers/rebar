@@ -135,12 +135,12 @@ class OptionalGroupAlternationBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 31,
-                    "measured_workloads": 162,
-                    "module_workloads": 185,
+                    "known_gap_count": 29,
+                    "measured_workloads": 169,
+                    "module_workloads": 190,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
-                    "total_workloads": 193,
+                    "total_workloads": 198,
                 },
             )
 
@@ -159,24 +159,24 @@ class OptionalGroupAlternationBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase3")
-        self.assertEqual(scorecard["summary"]["total_workloads"], 193)
+        self.assertEqual(scorecard["summary"]["total_workloads"], 198)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
-        self.assertEqual(scorecard["summary"]["module_workloads"], 185)
+        self.assertEqual(scorecard["summary"]["module_workloads"], 190)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 162)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 31)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 40)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 78)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 75)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 169)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 29)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 41)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 81)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 76)
         self.assertEqual(scorecard["families"]["parser"]["workload_count"], 8)
         self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 3)
         self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["workload_count"], 185)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 28)
+        self.assertEqual(scorecard["families"]["module"]["workload_count"], 190)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 26)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 36)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 76)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 73)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 37)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 79)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 74)
         self.assertEqual(scorecard["artifacts"]["manifest"], None)
         self.assertEqual(scorecard["artifacts"]["manifest_id"], "combined-benchmark-suite")
         self.assertEqual(scorecard["artifacts"]["manifest_schema_version"], 1)
@@ -187,9 +187,9 @@ class OptionalGroupAlternationBoundaryBenchmarkSuiteTest(unittest.TestCase):
         manifest_summary = scorecard["manifests"]["optional-group-alternation-boundary"]
         self.assertEqual(manifest_summary["workload_count"], 13)
         self.assertEqual(manifest_summary["selected_workload_count"], 13)
-        self.assertEqual(manifest_summary["measured_workloads"], 12)
-        self.assertEqual(manifest_summary["known_gap_count"], 1)
-        self.assertEqual(manifest_summary["readiness"], "partial")
+        self.assertEqual(manifest_summary["measured_workloads"], 13)
+        self.assertEqual(manifest_summary["known_gap_count"], 0)
+        self.assertEqual(manifest_summary["readiness"], "measured")
         self.assertEqual(manifest_summary["selection_mode"], "full")
         self.assertEqual(manifest_summary["available_smoke_workload_count"], 3)
         self.assertEqual(
@@ -277,11 +277,11 @@ class OptionalGroupAlternationBoundaryBenchmarkSuiteTest(unittest.TestCase):
             for workload in scorecard["workloads"]
             if workload["id"] == "module-search-numbered-broader-range-alternation-cold-gap"
         )
-        self.assertEqual(broader_range_gap["status"], "unimplemented")
+        self.assertEqual(broader_range_gap["status"], "measured")
         self.assertEqual(broader_range_gap["pattern"], "a(b|c){1,3}d")
-        self.assertEqual(broader_range_gap["implementation_timing"]["status"], "unimplemented")
-        self.assertIsNone(broader_range_gap["implementation_ns"])
-        self.assertIsNone(broader_range_gap["speedup_vs_cpython"])
+        self.assertEqual(broader_range_gap["implementation_timing"]["status"], "measured")
+        self.assertGreater(broader_range_gap["implementation_ns"], 0)
+        self.assertGreater(broader_range_gap["speedup_vs_cpython"], 0)
 
         numbered_branch_compile = next(
             workload

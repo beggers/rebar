@@ -170,12 +170,12 @@ class QuantifiedAlternationBoundaryBenchmarkSuiteTest(unittest.TestCase):
             self.assertEqual(
                 summary,
                 {
-                    "known_gap_count": 36,
-                    "measured_workloads": 365,
-                    "module_workloads": 393,
+                    "known_gap_count": 35,
+                    "measured_workloads": 371,
+                    "module_workloads": 398,
                     "parser_workloads": 8,
                     "regression_workloads": 5,
-                    "total_workloads": 401,
+                    "total_workloads": 406,
                 },
             )
 
@@ -194,24 +194,24 @@ class QuantifiedAlternationBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
         self.assertIn("not requested", scorecard["implementation"]["native_unavailable_reason"])
         self.assertEqual(scorecard["environment"]["runner_version"], "phase3")
-        self.assertEqual(scorecard["summary"]["total_workloads"], 401)
+        self.assertEqual(scorecard["summary"]["total_workloads"], 406)
         self.assertEqual(scorecard["summary"]["parser_workloads"], 8)
-        self.assertEqual(scorecard["summary"]["module_workloads"], 393)
+        self.assertEqual(scorecard["summary"]["module_workloads"], 398)
         self.assertEqual(scorecard["summary"]["regression_workloads"], 5)
-        self.assertEqual(scorecard["summary"]["measured_workloads"], 365)
-        self.assertEqual(scorecard["summary"]["known_gap_count"], 36)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 64)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 170)
-        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 167)
+        self.assertEqual(scorecard["summary"]["measured_workloads"], 371)
+        self.assertEqual(scorecard["summary"]["known_gap_count"], 35)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["cold"], 65)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["warm"], 173)
+        self.assertEqual(scorecard["summary"]["workloads_by_cache_mode"]["purged"], 168)
         self.assertEqual(scorecard["families"]["parser"]["workload_count"], 8)
         self.assertEqual(scorecard["families"]["parser"]["known_gap_count"], 3)
         self.assertEqual(scorecard["families"]["parser"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["workload_count"], 393)
-        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 33)
+        self.assertEqual(scorecard["families"]["module"]["workload_count"], 398)
+        self.assertEqual(scorecard["families"]["module"]["known_gap_count"], 32)
         self.assertEqual(scorecard["families"]["module"]["readiness"], "partial")
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 60)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 168)
-        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 165)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["cold"]["workload_count"], 61)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["warm"]["workload_count"], 171)
+        self.assertEqual(scorecard["families"]["module"]["cache_modes"]["purged"]["workload_count"], 166)
         self.assertEqual(scorecard["artifacts"]["manifest"], None)
         self.assertEqual(scorecard["artifacts"]["manifest_id"], "combined-benchmark-suite")
         self.assertEqual(scorecard["artifacts"]["manifest_schema_version"], 1)

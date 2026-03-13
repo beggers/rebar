@@ -11,6 +11,8 @@
 - Keep the outer forever-loop extremely small and re-invoke bounded `cycle` runs each iteration so supervisor edits to the harness take effect immediately on the next pass.
 
 ## 2026-03-13
+- Once `RBR-0232` lands, treat the exact-repeat quantified-group alternation slice as part of the tracked Rust-backed baseline, refresh status surfaces in the next supervisor pass, and move the active queue front to `RBR-0233` through `RBR-0239` so benchmark catch-up leads into wider `{1,3}` and open-ended `{1,}` grouped-alternation follow-ons without another supervisor-only reseed.
+- After `RBR-0236`, continue grouped alternation through bounded open-ended `{1,}` repeats as `RBR-0237` through `RBR-0239`, pinned to `a(bc|de){1,}d` and `a(?P<word>bc|de){1,}d`, and give that slice a dedicated `open_ended_quantified_group_boundary.json` benchmark manifest instead of overloading the wider-ranged-repeat workload file, because the existing open-ended placeholder there only covers non-alternation grouped repeats.
 - Add first-class harness policies for stale-task recovery, automatic commit/push, runtime pruning, and dashboard reporting so forever-mode progress is inspectable and less likely to stall silently.
 - If an agent is launched with requested `workspace-write` sandboxing but reports `sandbox: read-only`, treat it as an environment mismatch: surface it in runtime reporting and return the task to `ready` instead of blocking it.
 - Bound `git add`, `git commit`, and especially `git push` with explicit timeouts so a slow or wedged sync step cannot stall the forever loop indefinitely.

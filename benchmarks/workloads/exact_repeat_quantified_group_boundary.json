@@ -7,7 +7,7 @@
   ],
   "notes": [
     "Exact-repeat quantified-group boundary workloads keep captures, counted repeats, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded exact-repeat slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(bc){2}d` and `a(?P<word>bc){2}d` compile/search/fullmatch paths directly, while broader counted ranges and quantified-alternation combinations stay as explicit known-gap rows until the queued follow-on slices land."
+    "Measured rows cover the bounded `a(bc){2}d`, `a(?P<word>bc){2}d`, `a(bc|de){2}d`, and `a(?P<word>bc|de){2}d` compile/search/fullmatch paths directly, while broader counted ranges stay as explicit known-gap rows until the queued follow-on slices land."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -236,12 +236,176 @@
       ]
     },
     {
+      "id": "module-compile-numbered-exact-repeat-group-alternation-cold-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(bc|de){2}d",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "quantifier",
+        "exact-repeat",
+        "counted-repeat",
+        "alternation",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation"
+      ],
+      "notes": [
+        "Cold module.compile benchmark for the bounded numbered exact-repeat grouped-alternation slice so compile metadata timing reaches the published benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-numbered-exact-repeat-group-alternation-bc-bc-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(bc|de){2}d",
+      "haystack": "zzabcbcdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "quantifier",
+        "exact-repeat",
+        "counted-repeat",
+        "alternation",
+        "search",
+        "module",
+        "bc-bc",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded numbered exact-repeat grouped-alternation workflow on the repeated `bc`/`bc` branch pair."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-exact-repeat-group-alternation-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(bc|de){2}d",
+      "haystack": "adeded",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "quantifier",
+        "exact-repeat",
+        "counted-repeat",
+        "alternation",
+        "fullmatch",
+        "de-de",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered exact-repeat grouped-alternation workflow on the all-`de` branch pair."
+      ]
+    },
+    {
+      "id": "module-compile-named-exact-repeat-group-alternation-warm-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<word>bc|de){2}d",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "quantifier",
+        "exact-repeat",
+        "counted-repeat",
+        "alternation",
+        "named-group",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.compile path for the bounded named exact-repeat grouped-alternation slice so named metadata timing reaches the benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-named-exact-repeat-group-alternation-bc-de-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>bc|de){2}d",
+      "haystack": "zzabcdedzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "quantifier",
+        "exact-repeat",
+        "counted-repeat",
+        "alternation",
+        "named-group",
+        "search",
+        "module",
+        "bc-de",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.search helper path for a tiny named exact-repeat grouped-alternation capture on the mixed `bc`/`de` branch pair so named runtime workflows produce real timings."
+      ]
+    },
+    {
       "id": "pattern-fullmatch-named-exact-repeat-group-alternation-purged-gap",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
       "pattern": "a(?P<word>bc|de){2}d",
-      "haystack": "abcbcd",
+      "haystack": "adeded",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "purged",
@@ -255,7 +419,7 @@
         "alternation",
         "named-group",
         "fullmatch",
-        "unsupported",
+        "de-de",
         "purged-cache"
       ],
       "syntax_features": [
@@ -268,7 +432,7 @@
         "cache-purge"
       ],
       "notes": [
-        "Explicit quantified-alternation known-gap row so grouped alternation inside counted repeats stays on the benchmark surface instead of disappearing."
+        "Purged-cache Pattern.fullmatch anchor for the bounded named exact-repeat grouped-alternation workflow on the all-`de` branch pair with compile cost kept outside the timed loop."
       ]
     }
   ]
