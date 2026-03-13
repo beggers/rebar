@@ -429,6 +429,8 @@ def load_readme_reporting_config(config: dict[str, Any]) -> dict[str, Any]:
     payload.setdefault("readme_path", "README.md")
     payload.setdefault("capability_tracks", [])
     payload.setdefault("benchmark_scorecard", {})
+    payload.setdefault("status_sections", {})
+    payload.setdefault("readme_limits", {})
     return payload
 
 
@@ -462,6 +464,36 @@ def bullet_lines(lines: list[str]) -> list[str]:
         if stripped.startswith("- "):
             bullets.append(stripped[2:].strip())
     return bullets
+
+
+def configured_section_lines(
+    sections: dict[str, list[str]],
+    reporting_cfg: dict[str, Any],
+    key: str,
+    default_name: str,
+) -> list[str]:
+    configured_name = ""
+    raw_sections = reporting_cfg.get("status_sections", {})
+    if isinstance(raw_sections, dict):
+        raw_name = raw_sections.get(key)
+        if isinstance(raw_name, str):
+            configured_name = raw_name.strip()
+
+    names = [name for name in (configured_name, default_name) if name]
+    for name in names:
+        lines = sections.get(name, [])
+        if first_nonempty_line(lines):
+            return lines
+    return []
+
+
+def limited_items(items: list[str], raw_limit: Any) -> list[str]:
+    if not isinstance(raw_limit, (int, float)):
+        return items
+    limit = int(raw_limit)
+    if limit <= 0:
+        return []
+    return items[:limit]
 
 
 def task_queue_index() -> dict[str, dict[str, Any]]:
@@ -682,19 +714,42 @@ def scorecard_from_config(config: dict[str, Any], key: str, default_title: str, 
 def tracked_project_snapshot(config: dict[str, Any]) -> dict[str, Any]:
     status_sections = markdown_sections(STATE_ROOT / "current_status.md")
     backlog_sections = markdown_sections(STATE_ROOT / "backlog.md")
+    reporting_cfg = load_readme_reporting_config(config)
+    readme_limits = reporting_cfg.get("readme_limits", {})
+    if not isinstance(readme_limits, dict):
+        readme_limits = {}
     tracks = capability_track_rows(config)
     total_tracks = len(tracks)
     total_score = sum(float(item.get("score", 0.0)) for item in tracks)
     completion_ratio = 0.0 if total_tracks == 0 else total_score / total_tracks
 
+    phase = first_nonempty_line(
+        configured_section_lines(status_sections, reporting_cfg, "phase", "Phase")
+    )
+    delivery_estimate = first_nonempty_line(
+        configured_section_lines(
+            status_sections,
+            reporting_cfg,
+            "delivery_estimate",
+            "Compatibility Heuristic",
+        )
+    )
+    next_steps = bullet_lines(
+        configured_section_lines(status_sections, reporting_cfg, "next_steps", "Immediate Next Steps")
+    )
+    risks = bullet_lines(
+        configured_section_lines(status_sections, reporting_cfg, "risks", "Risks")
+    )
+
     return {
-        "phase": first_nonempty_line(status_sections.get("Phase", [])),
+        "phase": phase,
+        "delivery_estimate": delivery_estimate,
         "compatibility_heuristic": first_nonempty_line(
             status_sections.get("Compatibility Heuristic", [])
         ),
         "milestone": first_nonempty_line(backlog_sections.get("Current Milestone", [])),
-        "next_steps": bullet_lines(status_sections.get("Immediate Next Steps", [])),
-        "risks": bullet_lines(status_sections.get("Risks", [])),
+        "next_steps": limited_items(next_steps, readme_limits.get("next_steps")),
+        "risks": limited_items(risks, readme_limits.get("risks")),
         "queue_counts": queue_counts(),
         "capability_tracks": tracks,
         "completion_ratio": completion_ratio,
@@ -765,7 +820,7 @@ def render_readme_status(config: dict[str, Any]) -> str:
     benchmark = snapshot["benchmark_scorecard"]
     total_tracks = len(tracks)
     completion_ratio = float(snapshot["completion_ratio"])
-    compatibility = snapshot.get("compatibility_heuristic") or "Unknown"
+    delivery_estimate = snapshot.get("delivery_estimate") or "Unknown"
     lines = [
         "## Current State",
         "",
@@ -774,7 +829,7 @@ def render_readme_status(config: dict[str, Any]) -> str:
         "| Signal | Value |",
         "| --- | --- |",
         f"| Phase | {snapshot['phase'] or 'Unknown'} |",
-        f"| Compatibility outlook | {compatibility} |",
+        f"| Delivery estimate | {delivery_estimate} |",
         f"| Current milestone | {snapshot['milestone'] or 'Unknown'} |",
         f"| Work queue | `{queue['ready']}` ready, `{queue['in_progress']}` in progress, `{queue['done']}` done, `{queue['blocked']}` blocked |",
         f"| Foundation tracks | `{snapshot['complete_tracks']}/{total_tracks}` landed (`{ascii_progress_bar(completion_ratio)} {int(round(completion_ratio * 100))}%`) |",
@@ -801,7 +856,7 @@ def render_readme_status(config: dict[str, Any]) -> str:
         lines.extend(
             [
                 "",
-                f"_These correctness counts cover only the published slice. Overall feature status: {compatibility}_",
+                f"_These correctness counts cover only the published slice. Overall delivery estimate: {delivery_estimate}_",
             ]
         )
 

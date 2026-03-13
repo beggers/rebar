@@ -7,7 +7,7 @@
   ],
   "notes": [
     "Conditional group-exists no-else boundary workloads keep one optional capture, one conditional site, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported bounded omitted-no-arm conditional slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b)?c(?(1)d)` and `a(?P<word>b)?c(?(word)d)` compile/search/fullmatch plus constant-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, and the carry-forward explicit-empty-else search row now also measures real timings, while nested conditionals, quantified conditionals, explicit-empty-else replacement helpers, and broader alternation-heavy conditional arms stay as explicit known-gap rows until later follow-ons land.",
+    "Measured rows cover the bounded `a(b)?c(?(1)d)` and `a(?P<word>b)?c(?(word)d)` compile/search/fullmatch plus constant-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the carry-forward explicit-empty-else search row now also measures real timings, and the bounded omitted-no-arm alternation-heavy slice now times module and compiled-`Pattern` helpers across representative first-arm, second-arm, and absent no-match haystacks, while nested conditionals, quantified conditionals, and explicit-empty-else replacement helpers stay as explicit known-gap rows until later follow-ons land.",
     "Assertion-conditioned branches remain outside this benchmark manifest because CPython rejects them and the current benchmark harness only publishes timing rows for accepted syntax."
   ],
   "defaults": {
@@ -619,7 +619,6 @@
         "backtracking-heavy",
         "search",
         "module",
-        "unsupported",
         "warm-cache"
       ],
       "syntax_features": [
@@ -630,7 +629,118 @@
         "alternation"
       ],
       "notes": [
-        "Explicit broader backtracking-heavy gap row so alternation inside an omitted-no-arm conditional arm stays on the benchmark surface until the engine supports that wider execution shape."
+        "Warm module.search helper path for the bounded numbered omitted-no-arm alternation workflow when the optional capture is present and the yes arm backtracks to its second literal branch."
+      ]
+    },
+    {
+      "id": "module-search-named-conditional-group-exists-no-else-alternation-heavy-present-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df))",
+      "haystack": "zzabcdezz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "no-else",
+        "alternation",
+        "backtracking-heavy",
+        "named-group",
+        "search",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "alternation"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded named omitted-no-arm alternation workflow when the optional named capture is present and the yes arm selects its first literal branch."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-conditional-group-exists-no-else-alternation-heavy-absent-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(b)?c(?(1)(de|df))",
+      "haystack": "acde",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "no-else",
+        "alternation",
+        "backtracking-heavy",
+        "fullmatch",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "alternation",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered omitted-no-arm alternation workflow when the optional capture is omitted and a first-arm suffix remains unmatched because no else arm exists."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-conditional-group-exists-no-else-alternation-heavy-absent-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df))",
+      "haystack": "acdf",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "no-else",
+        "alternation",
+        "backtracking-heavy",
+        "named-group",
+        "fullmatch",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "alternation",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded named omitted-no-arm alternation workflow when the optional named capture is omitted and a second-arm suffix remains unmatched because no else arm exists."
       ]
     }
   ]

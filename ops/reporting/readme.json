@@ -93,5 +93,15 @@
   "benchmark_scorecard": {
     "title": "Benchmark Snapshot",
     "path": "reports/benchmarks/latest.json"
+  },
+  "status_sections": {
+    "phase": "README Phase Summary",
+    "delivery_estimate": "README Delivery Estimate",
+    "next_steps": "README Next Steps",
+    "risks": "README Risks"
+  },
+  "readme_limits": {
+    "next_steps": 2,
+    "risks": 2
   }
 }

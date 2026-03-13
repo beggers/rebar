@@ -1,6 +1,6 @@
 # RBR-0144: Catch bounded alternation-heavy omitted-no-arm conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,9 @@ Created: 2026-03-13
 - Build on `RBR-0143`.
 - Use the existing `module-search-numbered-conditional-group-exists-no-else-alternation-heavy-warm-gap` row in `benchmarks/workloads/conditional_group_exists_no_else_boundary.json` as the benchmark anchor for this slice.
 - This task exists so the queue does not reach bounded omitted-no-arm alternation-heavy parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion Notes
+- Completed 2026-03-13.
+- Extended `benchmarks/workloads/conditional_group_exists_no_else_boundary.json` so the existing numbered alternation-heavy anchor row now measures real timings and the manifest also covers the named first-arm module path plus numbered and named compiled-`Pattern` absent no-match probes.
+- Updated `tests/benchmarks/test_conditional_group_exists_no_else_boundary_benchmarks.py` to validate the current 29-manifest combined suite totals and the new measured alternation-heavy omitted-no-arm workloads.
+- Republished `reports/benchmarks/latest.json`; the combined scorecard now reports 286 workloads with 229 real `rebar` timings and 57 explicit known gaps, while the `conditional-group-exists-no-else-boundary` manifest now reports 21 workloads with 19 measured rows and 2 remaining known gaps.

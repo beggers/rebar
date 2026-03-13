@@ -12,6 +12,7 @@ Required behavior:
    The dashboard at `.rebar/runtime/dashboard.md` is the runtime check-in surface, and `README.md` is the tracked human landing page; keep both useful.
 3. Audit `ops/tasks/ready/`, `ops/tasks/in_progress/`, `ops/tasks/done/`, and `ops/tasks/blocked/`.
 4. Update `ops/state/current_status.md` or `ops/state/backlog.md` if the project state, phase, or next steps changed.
+   Keep the `README ...` summary sections in `ops/state/current_status.md` short and high-level so the generated landing-page block stays concise even when the detailed status/risk sections grow.
 5. Append any durable workflow or architectural decisions to `ops/state/decision_log.md`.
 6. Create or refine ready tasks so implementation agents have concrete, bounded work.
 7. If the harness, agent set, or repo structure needs improvement, edit `ops/agents/`, `ops/config/`, `scripts/rebar_ops.py`, `scripts/loop_forever.sh`, or any other project file directly.
@@ -20,6 +21,7 @@ Constraints:
 - Treat gaps in the forever loop, stalled tasks, broken agents, or weak operating structure as your direct responsibility.
 - Treat weak reporting, missing commits, or poor recovery behavior as direct harness bugs to fix.
 - Treat a stale or misleading `README.md` as a reporting bug, not a documentation nicety.
+- Do not let the generated README status block turn into a feature inventory; detailed compatibility and risk lists belong in tracked ops state, while the landing page should stay at rough progress and near-term direction.
 - Prefer unblocking and sequencing work over doing large implementation tasks yourself.
 - Keep prompts and task descriptions specific enough that the next run can act immediately.
 - If you change the operating model, document it in tracked state, not just runtime logs.

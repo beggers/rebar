@@ -14,8 +14,8 @@ This directory is the tracked operating system for the project.
 3. Other enabled agents run afterward according to their dispatch policy.
 4. Task workers consume ready tasks one at a time and should move them to `done/` or `blocked`.
 5. `scripts/loop_forever.sh` re-invokes one bounded `cycle` at a time, so repo changes take effect on the next pass.
-6. The harness auto-recovers stale `in_progress` tasks, syncs the tracked README status block, auto-commits and auto-pushes repo changes, and writes a dashboard after each cycle.
-7. `python3 scripts/rebar_ops.py report` also refreshes the published combined correctness scorecard when needed, the runtime dashboard files, and the README status block on demand, so a supervisor can resync human-facing status without waiting for another full cycle.
+6. The harness auto-recovers stale `in_progress` tasks, syncs the tracked README status block from dedicated short summary sections in `ops/state/current_status.md`, auto-commits and auto-pushes repo changes, and writes a dashboard after each cycle.
+7. `python3 scripts/rebar_ops.py report` also refreshes the published combined correctness scorecard when needed, the runtime dashboard files, and the README status block on demand, so a supervisor can resync human-facing status without waiting for another full cycle; the renderer caps README next-step and risk bullets so the landing page stays concise even as detailed ops state grows.
 8. Runtime prompts, logs, metadata, task state, and anomaly summaries are written to ignored `.rebar/runtime/`.
 9. Supervisors can force a specific agent through environment backoff with `python3 scripts/rebar_ops.py cycle --force-agent <agent>` when validating a harness fix.
 10. `scripts/rebar_ops.py cycle` runs are serialized with a runtime lock so a manual cycle cannot overlap the forever loop in the same checkout.
