@@ -1,6 +1,6 @@
 # RBR-0179: Add bounded quantified explicit-empty-else conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,7 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0178`.
 - This task exists so the queue converts the first quantified explicit-empty-else workflow into real Rust-backed behavior instead of leaving it as publication-only coverage.
+
+## Completion
+- Enabled the bounded quantified explicit-empty-else parser gate for `a(b)?c(?(1)d|){2}` and `a(?P<word>b)?c(?(word)d|){2}` so the existing Rust matcher now services compile/search/fullmatch parity for the published slice.
+- Added Rust unit coverage, Python parity tests, and refreshed `reports/correctness/latest.json`; the combined scorecard now reports `388/388` passing with `0` unimplemented cases.
