@@ -1,6 +1,6 @@
 # RBR-0139: Publish a bounded fully-empty conditional replacement correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0117`, `RBR-0118`, and `RBR-0138`.
 - This task exists so the queue reopens after `RBR-0138` with the next exact accepted conditional-replacement gap instead of jumping straight to nested conditionals, quantified conditionals, or a vague broader-backtracking bucket.
+- Completed 2026-03-13: added the fully-empty conditional replacement manifest and scorecard test, refreshed adjacent combined-scorecard assertions for the new default manifest count, and republished `reports/correctness/latest.json` at 272 passes across 40 manifests.

@@ -14,8 +14,10 @@ PYTHON_SOURCE = REPO_ROOT / "python"
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 
 
-class CorrectnessHarnessConditionalGroupExistsEmptyElseReplacementWorkflowTest(unittest.TestCase):
-    def test_runner_regenerates_combined_conditional_group_exists_empty_else_replacement_scorecard(
+class CorrectnessHarnessConditionalGroupExistsFullyEmptyReplacementWorkflowTest(
+    unittest.TestCase
+):
+    def test_runner_regenerates_combined_conditional_group_exists_fully_empty_replacement_scorecard(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -66,14 +68,6 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseReplacementWorkflowTest(u
 
         self.assertEqual(scorecard["fixtures"]["manifest_count"], 40)
         self.assertIn(
-            "conditional-group-exists-empty-else-replacement-workflows",
-            scorecard["fixtures"]["manifest_ids"],
-        )
-        self.assertIn(
-            "conditional-group-exists-empty-yes-else-replacement-workflows",
-            scorecard["fixtures"]["manifest_ids"],
-        )
-        self.assertIn(
             "conditional-group-exists-fully-empty-replacement-workflows",
             scorecard["fixtures"]["manifest_ids"],
         )
@@ -104,7 +98,7 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseReplacementWorkflowTest(u
             },
         )
         self.assertIn(
-            "conditional-group-exists-empty-else-replacement-workflows",
+            "conditional-group-exists-fully-empty-replacement-workflows",
             workflow_layer["manifest_ids"],
         )
         self.assertEqual(
@@ -121,21 +115,24 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseReplacementWorkflowTest(u
         self.assertEqual(workflow_layer["text_models"], ["bytes", "str"])
 
         suite_ids = [suite["id"] for suite in scorecard["suites"]]
-        self.assertIn("collection.replacement.conditional_group_exists_empty_else", suite_ids)
-        self.assertIn("collection.replacement.conditional_group_exists_empty_else.str", suite_ids)
+        self.assertIn("collection.replacement.conditional_group_exists_fully_empty", suite_ids)
         self.assertIn(
-            "collection.replacement.conditional_group_exists_empty_else.module_call",
+            "collection.replacement.conditional_group_exists_fully_empty.str",
             suite_ids,
         )
         self.assertIn(
-            "collection.replacement.conditional_group_exists_empty_else.pattern_call",
+            "collection.replacement.conditional_group_exists_fully_empty.module_call",
+            suite_ids,
+        )
+        self.assertIn(
+            "collection.replacement.conditional_group_exists_fully_empty.pattern_call",
             suite_ids,
         )
 
         replacement_suite = next(
             suite
             for suite in scorecard["suites"]
-            if suite["id"] == "collection.replacement.conditional_group_exists_empty_else"
+            if suite["id"] == "collection.replacement.conditional_group_exists_fully_empty"
         )
         self.assertEqual(
             replacement_suite["summary"],
@@ -151,17 +148,17 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseReplacementWorkflowTest(u
         self.assertEqual(
             replacement_suite["families"],
             [
-                "conditional_group_exists_empty_else_replacement_absent_count_workflow",
-                "conditional_group_exists_empty_else_replacement_present_workflow",
-                "named_conditional_group_exists_empty_else_replacement_absent_count_workflow",
-                "named_conditional_group_exists_empty_else_replacement_present_workflow",
+                "conditional_group_exists_fully_empty_replacement_absent_count_workflow",
+                "conditional_group_exists_fully_empty_replacement_present_workflow",
+                "named_conditional_group_exists_fully_empty_replacement_absent_count_workflow",
+                "named_conditional_group_exists_fully_empty_replacement_present_workflow",
             ],
         )
 
         cases_by_id = {case["id"]: case for case in scorecard["cases"]}
 
         module_present_case = cases_by_id[
-            "module-sub-conditional-group-exists-empty-else-replacement-present-str"
+            "module-sub-conditional-group-exists-fully-empty-replacement-present-str"
         ]
         self.assertEqual(module_present_case["comparison"], "pass")
         self.assertEqual(module_present_case["helper"], "sub")
@@ -172,7 +169,7 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseReplacementWorkflowTest(u
         self.assertIsNone(module_present_case["observations"]["rebar"]["exception"])
 
         module_absent_case = cases_by_id[
-            "module-subn-conditional-group-exists-empty-else-replacement-absent-str"
+            "module-subn-conditional-group-exists-fully-empty-replacement-absent-str"
         ]
         self.assertEqual(module_absent_case["comparison"], "pass")
         self.assertEqual(module_absent_case["helper"], "subn")
@@ -183,7 +180,7 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseReplacementWorkflowTest(u
         self.assertIsNone(module_absent_case["observations"]["rebar"]["exception"])
 
         pattern_present_case = cases_by_id[
-            "pattern-sub-conditional-group-exists-empty-else-replacement-present-str"
+            "pattern-sub-conditional-group-exists-fully-empty-replacement-present-str"
         ]
         self.assertEqual(pattern_present_case["comparison"], "pass")
         self.assertEqual(pattern_present_case["helper"], "sub")
@@ -194,7 +191,7 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseReplacementWorkflowTest(u
         self.assertIsNone(pattern_present_case["observations"]["rebar"]["exception"])
 
         named_pattern_absent_case = cases_by_id[
-            "pattern-subn-named-conditional-group-exists-empty-else-replacement-absent-str"
+            "pattern-subn-named-conditional-group-exists-fully-empty-replacement-absent-str"
         ]
         self.assertEqual(named_pattern_absent_case["comparison"], "pass")
         self.assertEqual(named_pattern_absent_case["helper"], "subn")
