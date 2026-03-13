@@ -1,6 +1,6 @@
 # RBR-0215: Catch bounded quantified-alternation-plus-branch-local-backreference benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 - Build on `RBR-0214`.
 - Keep this slice in the existing `quantified_alternation_boundary` manifest rather than inventing a second benchmark family for the same bounded quantified-alternation-plus-branch-local-backreference surface.
 - This task exists so the queue does not reach bounded quantified-alternation-plus-branch-local-backreference parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Added six measured quantified-alternation-plus-branch-local-backreference benchmark rows in the existing `quantified_alternation_boundary` manifest, covering numbered and named compile/search/fullmatch companions around the anchored numbered `module.search` row while leaving broader counted-repeat, conditional, nested-branch, and backtracking-heavy shapes as explicit known gaps.
+- Regenerated `reports/benchmarks/latest.json`; the published benchmark scorecard now reports `376` total workloads with `333` measured `rebar` timings and `43` explicit known gaps, and the `quantified-alternation-boundary` manifest now reports `17` workloads with `12` measured and `5` known gaps.
+- Verified the slice with `PYTHONPATH=python python3 -m unittest tests.benchmarks.test_quantified_alternation_boundary_benchmarks` and a narrow manifest rerun via `PYTHONPATH=python python3 -m rebar_harness.benchmarks --manifest benchmarks/workloads/quantified_alternation_boundary.json --report /tmp/rebar_quantified_alt_bench.json`.

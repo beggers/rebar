@@ -7,7 +7,7 @@
   ],
   "notes": [
     "Quantified-alternation boundary workloads keep captures, one literal alternation site repeated across a bounded `{1,2}` envelope, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported quantified-alternation slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b|c){1,2}d` and `a(?P<word>b|c){1,2}d` compile/search/fullmatch paths directly at representative lower-bound and second-repetition haystacks, while wider counted ranges, open-ended repeats, nested alternation inside quantified branches, branch-local backreferences inside quantified alternation, conditional combinations, and broader backtracking-heavy shapes stay as explicit known-gap rows until queued follow-ons land."
+    "Measured rows cover the bounded `a(b|c){1,2}d`, `a(?P<word>b|c){1,2}d`, `a((b|c)\\2){1,2}d`, and `a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d` compile/search/fullmatch paths directly at representative lower-bound and second-repetition haystacks, so branch-local backreferences inside quantified alternation now reach the published benchmark surface while wider counted ranges, open-ended repeats, nested alternation inside quantified branches, conditional combinations, and broader backtracking-heavy shapes stay as explicit known-gap rows until queued follow-ons land."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -317,7 +317,7 @@
       ]
     },
     {
-      "id": "module-search-numbered-quantified-alternation-branch-backref-cold-gap",
+      "id": "module-search-numbered-quantified-alternation-branch-backref-cold-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
@@ -335,7 +335,6 @@
         "branch-local-backreference",
         "search",
         "module",
-        "unsupported",
         "cold-cache"
       ],
       "syntax_features": [
@@ -347,7 +346,192 @@
         "backreferences"
       ],
       "notes": [
-        "Explicit branch-local-backreference known-gap row so backreferences inside quantified alternation stay on the benchmark surface instead of disappearing."
+        "Cold module.search helper path for the bounded numbered quantified-alternation branch-local-backreference slice on the lower-bound success case so the newly supported branch-local workflow reaches the published benchmark report."
+      ]
+    },
+    {
+      "id": "module-compile-numbered-quantified-alternation-branch-backref-cold-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a((b|c)\\2){1,2}d",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "numbered-backreference",
+        "branch-local",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "numbered-backreferences",
+        "branch-local-backreferences"
+      ],
+      "notes": [
+        "Cold module.compile benchmark for the bounded numbered quantified-alternation branch-local-backreference slice so compile metadata timing lands alongside the new runtime rows."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-quantified-alternation-branch-backref-second-repetition-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a((b|c)\\2){1,2}d",
+      "haystack": "abbbbd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "numbered-backreference",
+        "branch-local-backreference",
+        "fullmatch",
+        "second-repetition",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "numbered-backreferences",
+        "branch-local-backreferences",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered quantified-alternation branch-local-backreference workflow when the counted repeat takes the supported second `b`-branch iteration."
+      ]
+    },
+    {
+      "id": "module-compile-named-quantified-alternation-branch-backref-warm-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups",
+        "named-backreferences",
+        "branch-local-backreferences"
+      ],
+      "notes": [
+        "Warm module.compile path for the bounded named quantified-alternation branch-local-backreference slice so named compile metadata joins the benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-named-quantified-alternation-branch-backref-lower-bound-c-branch-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d",
+      "haystack": "zzaccdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "search",
+        "module",
+        "lower-bound",
+        "c-branch",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups",
+        "named-backreferences",
+        "branch-local-backreferences"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded named quantified-alternation branch-local-backreference workflow on the lower-bound `c`-branch success case."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-quantified-alternation-branch-backref-second-repetition-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d",
+      "haystack": "accccd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "smoke": true,
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "fullmatch",
+        "second-repetition",
+        "purged-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups",
+        "named-backreferences",
+        "branch-local-backreferences",
+        "cache-purge"
+      ],
+      "notes": [
+        "Smoke-sized Pattern.fullmatch probe for the bounded named quantified-alternation branch-local-backreference workflow when the counted repeat takes the supported second `c`-branch iteration."
       ]
     },
     {
