@@ -39091,6 +39091,786 @@
     },
     {
       "categories": [
+        "grouped",
+        "alternation",
+        "nested-alternation",
+        "quantified",
+        "bounded-repeat",
+        "compile",
+        "metadata",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_alternation_nested_branch_numbered_compile_metadata",
+      "id": "quantified-alternation-nested-branch-numbered-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-alternation-nested-branch-workflows",
+      "notes": [
+        "Publishes the bounded numbered compile frontier for one outer {1,2} quantified alternation whose first branch nests one inner `b|c` site beside one literal `de` sibling branch."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 2,
+            "pattern": "a((b|c)|de){1,2}d",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "compile",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a((b|c)|de){1,2}d",
+      "suite_id": "match.quantified_alternation_nested_branch",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a((b|c)|de){1,2}d",
+        "zzabdzz"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "nested-alternation",
+        "quantified",
+        "bounded-repeat",
+        "search",
+        "module",
+        "lower-bound",
+        "inner-branch",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_alternation_nested_branch_numbered_module_lower_bound_inner_branch_workflow",
+      "helper": "search",
+      "id": "quantified-alternation-nested-branch-numbered-module-search-lower-bound-inner-branch-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-alternation-nested-branch-workflows",
+      "notes": [
+        "Documents the numbered lower-bound module success path on `abd` so the scorecard records that one inner `b|c` branch repetition still feeds the outer capture before the trailing literal `d` matches."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 7,
+            "group0": "abd",
+            "group1": "b",
+            "group_spans": [
+              [
+                3,
+                4
+              ],
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "b",
+              "b"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              2,
+              5
+            ],
+            "span1": [
+              3,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.quantified_alternation_nested_branch",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "aded"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "nested-alternation",
+        "quantified",
+        "bounded-repeat",
+        "fullmatch",
+        "pattern",
+        "lower-bound",
+        "literal-branch",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_alternation_nested_branch_numbered_pattern_lower_bound_literal_branch_workflow",
+      "helper": "fullmatch",
+      "id": "quantified-alternation-nested-branch-numbered-pattern-fullmatch-lower-bound-literal-branch-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-alternation-nested-branch-workflows",
+      "notes": [
+        "Documents the numbered lower-bound Pattern.fullmatch success path on `aded` so the frontier keeps the sibling `de` branch explicit without widening beyond the exact `{1,2}` envelope."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 4,
+            "group0": "aded",
+            "group1": "de",
+            "group_spans": [
+              [
+                1,
+                3
+              ],
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "de",
+              null
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              4
+            ],
+            "span1": [
+              1,
+              3
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a((b|c)|de){1,2}d",
+      "suite_id": "match.quantified_alternation_nested_branch",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abded"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "nested-alternation",
+        "quantified",
+        "bounded-repeat",
+        "fullmatch",
+        "pattern",
+        "second-repetition",
+        "mixed-branches",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_alternation_nested_branch_numbered_pattern_second_repetition_mixed_branches_workflow",
+      "helper": "fullmatch",
+      "id": "quantified-alternation-nested-branch-numbered-pattern-fullmatch-second-repetition-mixed-branches-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-alternation-nested-branch-workflows",
+      "notes": [
+        "Documents the numbered mixed-branch second-repetition success path on `abded` so the published frontier captures one inner-branch repetition followed by one sibling `de` branch within the same bounded repeat."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 5,
+            "group0": "abded",
+            "group1": "de",
+            "group_spans": [
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "groupdict": {},
+            "groups": [
+              "de",
+              "b"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "matched": true,
+            "pos": 0,
+            "span": [
+              0,
+              5
+            ],
+            "span1": [
+              2,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a((b|c)|de){1,2}d",
+      "suite_id": "match.quantified_alternation_nested_branch",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "abde"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "nested-alternation",
+        "quantified",
+        "bounded-repeat",
+        "fullmatch",
+        "pattern",
+        "no-match",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_alternation_nested_branch_numbered_pattern_no_match_workflow",
+      "helper": "fullmatch",
+      "id": "quantified-alternation-nested-branch-numbered-pattern-fullmatch-no-match-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-alternation-nested-branch-workflows",
+      "notes": [
+        "Documents the numbered no-match path on `abde` so the scorecard stays explicit that the trailing literal `d` sits outside the quantified group even after mixed branch selections consume `b` then `de`."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a((b|c)|de){1,2}d",
+      "suite_id": "match.quantified_alternation_nested_branch",
+      "text_model": "str"
+    },
+    {
+      "categories": [
+        "grouped",
+        "alternation",
+        "nested-alternation",
+        "quantified",
+        "bounded-repeat",
+        "named-group",
+        "compile",
+        "metadata",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_alternation_nested_branch_named_compile_metadata",
+      "id": "quantified-alternation-nested-branch-named-compile-metadata-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-alternation-nested-branch-workflows",
+      "notes": [
+        "Publishes the matching named compile frontier for the same bounded quantified outer alternation with one nested `b|c` branch and one sibling literal branch."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "compile",
+          "outcome": "success",
+          "result": {
+            "flags": 32,
+            "groupindex": {
+              "word": 1
+            },
+            "groups": 2,
+            "pattern": "a(?P<word>(b|c)|de){1,2}d",
+            "pattern_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "compile",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "compile",
+      "pattern": "a(?P<word>(b|c)|de){1,2}d",
+      "suite_id": "match.quantified_alternation_nested_branch",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<word>(b|c)|de){1,2}d",
+        "zzadedzz"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "nested-alternation",
+        "quantified",
+        "bounded-repeat",
+        "named-group",
+        "search",
+        "module",
+        "lower-bound",
+        "literal-branch",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_alternation_nested_branch_named_module_lower_bound_literal_branch_workflow",
+      "helper": "search",
+      "id": "quantified-alternation-nested-branch-named-module-search-lower-bound-literal-branch-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-alternation-nested-branch-workflows",
+      "notes": [
+        "Documents the named lower-bound module success path on `aded` so the scorecard records the named outer capture when the sibling `de` branch is the only quantified repetition."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 8,
+            "group0": "aded",
+            "group1": "de",
+            "group_spans": [
+              [
+                3,
+                5
+              ],
+              [
+                -1,
+                -1
+              ]
+            ],
+            "groupdict": {
+              "word": "de"
+            },
+            "groups": [
+              "de",
+              null
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                3,
+                5
+              ]
+            },
+            "named_groups": {
+              "word": "de"
+            },
+            "pos": 0,
+            "span": [
+              2,
+              6
+            ],
+            "span1": [
+              3,
+              5
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "match.quantified_alternation_nested_branch",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "acd"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "nested-alternation",
+        "quantified",
+        "bounded-repeat",
+        "named-group",
+        "fullmatch",
+        "pattern",
+        "lower-bound",
+        "inner-branch",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_alternation_nested_branch_named_pattern_lower_bound_inner_branch_workflow",
+      "helper": "fullmatch",
+      "id": "quantified-alternation-nested-branch-named-pattern-fullmatch-lower-bound-inner-branch-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-alternation-nested-branch-workflows",
+      "notes": [
+        "Documents the named lower-bound Pattern.fullmatch success path on `acd` so the frontier keeps one inner `b|c` branch success explicit on the compiled-pattern path."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 3,
+            "group0": "acd",
+            "group1": "c",
+            "group_spans": [
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "groupdict": {
+              "word": "c"
+            },
+            "groups": [
+              "c",
+              "c"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                1,
+                2
+              ]
+            },
+            "named_groups": {
+              "word": "c"
+            },
+            "pos": 0,
+            "span": [
+              0,
+              3
+            ],
+            "span1": [
+              1,
+              2
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<word>(b|c)|de){1,2}d",
+      "suite_id": "match.quantified_alternation_nested_branch",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "adebd"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "nested-alternation",
+        "quantified",
+        "bounded-repeat",
+        "named-group",
+        "fullmatch",
+        "pattern",
+        "second-repetition",
+        "mixed-branches",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_alternation_nested_branch_named_pattern_second_repetition_mixed_branches_workflow",
+      "helper": "fullmatch",
+      "id": "quantified-alternation-nested-branch-named-pattern-fullmatch-second-repetition-mixed-branches-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-alternation-nested-branch-workflows",
+      "notes": [
+        "Documents the named mixed-branch second-repetition success path on `adebd` so the visible named capture comes from the last inner-branch repetition after one earlier `de` branch."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": {
+            "endpos": 5,
+            "group0": "adebd",
+            "group1": "b",
+            "group_spans": [
+              [
+                3,
+                4
+              ],
+              [
+                3,
+                4
+              ]
+            ],
+            "groupdict": {
+              "word": "b"
+            },
+            "groups": [
+              "b",
+              "b"
+            ],
+            "lastgroup": "word",
+            "lastindex": 1,
+            "matched": true,
+            "named_group_spans": {
+              "word": [
+                3,
+                4
+              ]
+            },
+            "named_groups": {
+              "word": "b"
+            },
+            "pos": 0,
+            "span": [
+              0,
+              5
+            ],
+            "span1": [
+              3,
+              4
+            ],
+            "string_type": "str"
+          },
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<word>(b|c)|de){1,2}d",
+      "suite_id": "match.quantified_alternation_nested_branch",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "adeb"
+      ],
+      "categories": [
+        "grouped",
+        "alternation",
+        "nested-alternation",
+        "quantified",
+        "bounded-repeat",
+        "named-group",
+        "fullmatch",
+        "pattern",
+        "no-match",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_alternation_nested_branch_named_pattern_no_match_workflow",
+      "helper": "fullmatch",
+      "id": "quantified-alternation-nested-branch-named-pattern-fullmatch-no-match-str",
+      "layer": "match_behavior",
+      "manifest_id": "quantified-alternation-nested-branch-workflows",
+      "notes": [
+        "Documents the named no-match path on `adeb` so the scorecard stays explicit that consuming `de` then `b` still leaves the required trailing literal `d` outside the quantified group."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": null,
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<word>(b|c)|de){1,2}d",
+      "suite_id": "match.quantified_alternation_nested_branch",
+      "text_model": "str"
+    },
+    {
+      "categories": [
         "systematic",
         "grouped",
         "optional-group",
@@ -40834,7 +41614,7 @@
         },
         "outcomes": {
           "exception": 10,
-          "success": 484
+          "success": 494
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -40842,14 +41622,16 @@
         }
       },
       "rebar": {
-        "exception_case_count": 10,
+        "exception_case_count": 20,
         "exception_types": {
+          "NotImplementedError": 10,
           "TypeError": 2,
           "error": 8
         },
         "outcomes": {
           "exception": 10,
-          "success": 484
+          "success": 484,
+          "unimplemented": 10
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -48142,6 +48924,216 @@
     },
     {
       "case_count": 1,
+      "id": "quantified_alternation_nested_branch_named_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "quantified_alternation_nested_branch_named_module_lower_bound_literal_branch_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "quantified_alternation_nested_branch_named_pattern_lower_bound_inner_branch_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "quantified_alternation_nested_branch_named_pattern_no_match_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "quantified_alternation_nested_branch_named_pattern_second_repetition_mixed_branches_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "quantified_alternation_nested_branch_numbered_compile_metadata",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "quantified_alternation_nested_branch_numbered_module_lower_bound_inner_branch_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "quantified_alternation_nested_branch_numbered_pattern_lower_bound_literal_branch_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "quantified_alternation_nested_branch_numbered_pattern_no_match_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
+      "id": "quantified_alternation_nested_branch_numbered_pattern_second_repetition_mixed_branches_workflow",
+      "layers": [
+        "match_behavior"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 1,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 1,
+        "unimplemented_cases": 1
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 1,
       "id": "quantified_alternation_numbered_compile_metadata",
       "layers": [
         "match_behavior"
@@ -49155,8 +50147,8 @@
     }
   ],
   "fixtures": {
-    "case_count": 494,
-    "manifest_count": 65,
+    "case_count": 504,
+    "manifest_count": 66,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
@@ -49222,6 +50214,7 @@
       "quantified-alternation-conditional-workflows",
       "quantified-alternation-workflows",
       "quantified-alternation-branch-local-backreference-workflows",
+      "quantified-alternation-nested-branch-workflows",
       "systematic-feature-corpus"
     ],
     "paths": [
@@ -49289,30 +50282,34 @@
       "tests/conformance/fixtures/quantified_alternation_conditional_workflows.json",
       "tests/conformance/fixtures/quantified_alternation_workflows.json",
       "tests/conformance/fixtures/quantified_alternation_branch_local_backreference_workflows.json",
+      "tests/conformance/fixtures/quantified_alternation_nested_branch_workflows.json",
       "tests/conformance/fixtures/systematic_feature_corpus.json"
     ]
   },
-  "generated_at": "2026-03-13T13:05:45Z",
+  "generated_at": "2026-03-13T13:18:33Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
-      "case_count": 318,
+      "case_count": 328,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
             "exception_case_count": 0,
             "exception_types": {},
             "outcomes": {
-              "success": 318
+              "success": 328
             },
             "warning_case_count": 0,
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 0,
-            "exception_types": {},
+            "exception_case_count": 10,
+            "exception_types": {
+              "NotImplementedError": 10
+            },
             "outcomes": {
-              "success": 318
+              "success": 318,
+              "unimplemented": 10
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -49588,6 +50585,16 @@
         "quantified_alternation_named_compile_metadata",
         "quantified_alternation_named_module_search_second_repetition_workflow",
         "quantified_alternation_named_pattern_fullmatch_lower_bound_workflow",
+        "quantified_alternation_nested_branch_named_compile_metadata",
+        "quantified_alternation_nested_branch_named_module_lower_bound_literal_branch_workflow",
+        "quantified_alternation_nested_branch_named_pattern_lower_bound_inner_branch_workflow",
+        "quantified_alternation_nested_branch_named_pattern_no_match_workflow",
+        "quantified_alternation_nested_branch_named_pattern_second_repetition_mixed_branches_workflow",
+        "quantified_alternation_nested_branch_numbered_compile_metadata",
+        "quantified_alternation_nested_branch_numbered_module_lower_bound_inner_branch_workflow",
+        "quantified_alternation_nested_branch_numbered_pattern_lower_bound_literal_branch_workflow",
+        "quantified_alternation_nested_branch_numbered_pattern_no_match_workflow",
+        "quantified_alternation_nested_branch_numbered_pattern_second_repetition_mixed_branches_workflow",
         "quantified_alternation_numbered_compile_metadata",
         "quantified_alternation_numbered_module_search_lower_bound_workflow",
         "quantified_alternation_numbered_pattern_fullmatch_second_repetition_workflow",
@@ -49673,6 +50680,7 @@
         "optional-group-workflows",
         "quantified-alternation-branch-local-backreference-workflows",
         "quantified-alternation-conditional-workflows",
+        "quantified-alternation-nested-branch-workflows",
         "quantified-alternation-workflows",
         "quantified-branch-local-backreference-workflows",
         "ranged-repeat-quantified-group-workflows",
@@ -49725,18 +50733,19 @@
         "match.quantified_alternation",
         "match.quantified_alternation_branch_local_backreference",
         "match.quantified_alternation_conditional",
+        "match.quantified_alternation_nested_branch",
         "match.quantified_branch_local_backreference",
         "match.ranged_repeat_quantified_group",
         "match.systematic_feature_corpus",
         "match.wider_ranged_repeat_quantified_group"
       ],
       "summary": {
-        "executed_cases": 318,
+        "executed_cases": 328,
         "failed_cases": 0,
         "passed_cases": 318,
         "skipped_cases": 0,
-        "total_cases": 318,
-        "unimplemented_cases": 0
+        "total_cases": 328,
+        "unimplemented_cases": 10
       },
       "text_models": [
         "bytes",
@@ -65351,6 +66360,280 @@
       ]
     },
     {
+      "case_count": 10,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 10
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 10,
+            "exception_types": {
+              "NotImplementedError": 10
+            },
+            "outcomes": {
+              "unimplemented": 10
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "quantified_alternation_nested_branch_named_compile_metadata",
+        "quantified_alternation_nested_branch_named_module_lower_bound_literal_branch_workflow",
+        "quantified_alternation_nested_branch_named_pattern_lower_bound_inner_branch_workflow",
+        "quantified_alternation_nested_branch_named_pattern_no_match_workflow",
+        "quantified_alternation_nested_branch_named_pattern_second_repetition_mixed_branches_workflow",
+        "quantified_alternation_nested_branch_numbered_compile_metadata",
+        "quantified_alternation_nested_branch_numbered_module_lower_bound_inner_branch_workflow",
+        "quantified_alternation_nested_branch_numbered_pattern_lower_bound_literal_branch_workflow",
+        "quantified_alternation_nested_branch_numbered_pattern_no_match_workflow",
+        "quantified_alternation_nested_branch_numbered_pattern_second_repetition_mixed_branches_workflow"
+      ],
+      "id": "match.quantified_alternation_nested_branch",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "quantified-alternation-nested-branch-workflows"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 10,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 10,
+        "unimplemented_cases": 10
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 10,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 10
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 10,
+            "exception_types": {
+              "NotImplementedError": 10
+            },
+            "outcomes": {
+              "unimplemented": 10
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "quantified_alternation_nested_branch_named_compile_metadata",
+        "quantified_alternation_nested_branch_named_module_lower_bound_literal_branch_workflow",
+        "quantified_alternation_nested_branch_named_pattern_lower_bound_inner_branch_workflow",
+        "quantified_alternation_nested_branch_named_pattern_no_match_workflow",
+        "quantified_alternation_nested_branch_named_pattern_second_repetition_mixed_branches_workflow",
+        "quantified_alternation_nested_branch_numbered_compile_metadata",
+        "quantified_alternation_nested_branch_numbered_module_lower_bound_inner_branch_workflow",
+        "quantified_alternation_nested_branch_numbered_pattern_lower_bound_literal_branch_workflow",
+        "quantified_alternation_nested_branch_numbered_pattern_no_match_workflow",
+        "quantified_alternation_nested_branch_numbered_pattern_second_repetition_mixed_branches_workflow"
+      ],
+      "id": "match.quantified_alternation_nested_branch.str",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "quantified-alternation-nested-branch-workflows"
+      ],
+      "operations": [
+        "compile",
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 10,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 10,
+        "unimplemented_cases": 10
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "quantified_alternation_nested_branch_named_compile_metadata",
+        "quantified_alternation_nested_branch_numbered_compile_metadata"
+      ],
+      "id": "match.quantified_alternation_nested_branch.compile",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "quantified-alternation-nested-branch-workflows"
+      ],
+      "operations": [
+        "compile"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 2,
+            "exception_types": {
+              "NotImplementedError": 2
+            },
+            "outcomes": {
+              "unimplemented": 2
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "quantified_alternation_nested_branch_named_module_lower_bound_literal_branch_workflow",
+        "quantified_alternation_nested_branch_numbered_module_lower_bound_inner_branch_workflow"
+      ],
+      "id": "match.quantified_alternation_nested_branch.module_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "quantified-alternation-nested-branch-workflows"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 6,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 6,
+            "exception_types": {
+              "NotImplementedError": 6
+            },
+            "outcomes": {
+              "unimplemented": 6
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "quantified_alternation_nested_branch_named_pattern_lower_bound_inner_branch_workflow",
+        "quantified_alternation_nested_branch_named_pattern_no_match_workflow",
+        "quantified_alternation_nested_branch_named_pattern_second_repetition_mixed_branches_workflow",
+        "quantified_alternation_nested_branch_numbered_pattern_lower_bound_literal_branch_workflow",
+        "quantified_alternation_nested_branch_numbered_pattern_no_match_workflow",
+        "quantified_alternation_nested_branch_numbered_pattern_second_repetition_mixed_branches_workflow"
+      ],
+      "id": "match.quantified_alternation_nested_branch.pattern_call",
+      "layer": "match_behavior",
+      "manifest_ids": [
+        "quantified-alternation-nested-branch-workflows"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 6,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 6,
+        "unimplemented_cases": 6
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
       "case_count": 18,
       "diagnostics": {
         "by_adapter": {
@@ -65640,11 +66923,11 @@
     }
   ],
   "summary": {
-    "executed_cases": 494,
+    "executed_cases": 504,
     "failed_cases": 0,
     "passed_cases": 494,
     "skipped_cases": 0,
-    "total_cases": 494,
-    "unimplemented_cases": 0
+    "total_cases": 504,
+    "unimplemented_cases": 10
   }
 }

@@ -1,6 +1,6 @@
 # RBR-0219: Publish a bounded quantified-alternation nested-branch correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0125`, `RBR-0126`, and `RBR-0218`.
 - This task exists so the queue keeps widening quantified alternation through one exact nested-branch follow-on with an existing benchmark anchor instead of jumping directly to wider counted ranges, open-ended repeats, or vague broader backtracking.
+
+## Completion
+- Added `tests/conformance/fixtures/quantified_alternation_nested_branch_workflows.json` with 10 numbered and named compile/module/pattern cases for `a((b|c)|de){1,2}d` and `a(?P<word>(b|c)|de){1,2}d`, covering lower-bound inner and sibling branches, mixed second repetitions, and trailing-`d` no-match observations.
+- Registered the new manifest in `python/rebar_harness/correctness.py`, added focused scorecard assertions in `tests/conformance/test_correctness_quantified_alternation_nested_branch_workflows.py`, and republished `reports/correctness/latest.json`.
+- Published correctness frontier now stands at 504 total cases across 66 manifests with 494 passes and 10 honest `unimplemented` outcomes, leaving runtime parity for this slice to `RBR-0220`.
