@@ -549,7 +549,7 @@ struct QuantifiedAlternationConditionalPattern<'a> {
     branches: Vec<&'a str>,
     yes_branch: &'a str,
     no_branch: &'a str,
-    max_repeat: usize,
+    max_repeat: Option<usize>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -3226,10 +3226,16 @@ fn parse_quantified_alternation_conditional_pattern_str(
     let (max_repeat, outer_suffix) = if let Some(outer_suffix) =
         inner_remainder[inner_close_offset + 1..].strip_prefix("{1,2})?")
     {
-        (2, outer_suffix)
+        (Some(2), outer_suffix)
     } else if branches.as_slice() == ["bc", "de"] {
-        let outer_suffix = inner_remainder[inner_close_offset + 1..].strip_prefix("{1,3})?")?;
-        (3, outer_suffix)
+        if let Some(outer_suffix) =
+            inner_remainder[inner_close_offset + 1..].strip_prefix("{1,3})?")
+        {
+            (Some(3), outer_suffix)
+        } else {
+            let outer_suffix = inner_remainder[inner_close_offset + 1..].strip_prefix("{1,})?")?;
+            (None, outer_suffix)
+        }
     } else {
         return None;
     };
@@ -6915,8 +6921,25 @@ fn quantified_alternation_open_ended_max_repeats(
     endpos: usize,
     suffix_chars: &[char],
 ) -> usize {
-    let branch_len = pattern
-        .branches
+    quantified_alternation_open_ended_max_repeats_for_branches(
+        pattern.branches.as_slice(),
+        flags,
+        string,
+        start,
+        endpos,
+        suffix_chars,
+    )
+}
+
+fn quantified_alternation_open_ended_max_repeats_for_branches(
+    branches: &[&str],
+    flags: i32,
+    string: &[char],
+    start: usize,
+    endpos: usize,
+    suffix_chars: &[char],
+) -> usize {
+    let branch_len = branches
         .first()
         .map(|branch| branch.chars().count())
         .unwrap_or(0);
@@ -6927,7 +6950,7 @@ fn quantified_alternation_open_ended_max_repeats(
     let mut cursor = start;
     let mut max_repeat = 0;
     while cursor + branch_len + suffix_chars.len() <= endpos {
-        let matched = pattern.branches.iter().any(|branch| {
+        let matched = branches.iter().any(|branch| {
             let branch_chars: Vec<char> = branch.chars().collect();
             literal_matches_at_str(branch_chars.as_slice(), flags, string, cursor, endpos)
         });
@@ -7171,7 +7194,17 @@ fn quantified_alternation_conditional_matches_at_str<'a>(
     }
 
     let branch_start = start + prefix_chars.len();
-    for candidate_count in (1..=pattern.max_repeat).rev() {
+    let max_repeat = pattern.max_repeat.unwrap_or_else(|| {
+        quantified_alternation_open_ended_max_repeats_for_branches(
+            pattern.branches.as_slice(),
+            flags,
+            string,
+            branch_start,
+            endpos,
+            &[],
+        )
+    });
+    for candidate_count in (1..=max_repeat).rev() {
         if let Some((last_branch_span, repeated_end)) = quantified_alternation_matches_exact_repeats(
             pattern.branches.as_slice(),
             flags,
@@ -8915,6 +8948,30 @@ mod tests {
 
         let named_outcome =
             compile(PatternRef::Str("a(?P<outer>(bc|de){1,3})?(?(outer)d|e)"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!named_outcome.supports_literal);
+        assert_eq!(named_outcome.group_count, 2);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "outer".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
+    fn compile_accepts_open_ended_quantified_group_alternation_conditional_cases() {
+        let outcome = compile(PatternRef::Str("a((bc|de){1,})?(?(1)d|e)"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.group_count, 2);
+        assert!(outcome.named_groups.is_empty());
+
+        let named_outcome =
+            compile(PatternRef::Str("a(?P<outer>(bc|de){1,})?(?(outer)d|e)"), 0).unwrap();
         assert_eq!(named_outcome.status, CompileStatus::Compiled);
         assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
         assert!(!named_outcome.supports_literal);
@@ -10938,6 +10995,62 @@ mod tests {
             FLAG_UNICODE,
             MatchMode::Search,
             PatternRef::Str("zzabcbcdedzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 10)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 9)), Some((7, 9))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn open_ended_quantified_group_alternation_conditional_search_reports_absent_groups() {
+        let outcome = literal_match(
+            PatternRef::Str("a((bc|de){1,})?(?(1)d|e)"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzaezz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 4)));
+        assert_eq!(outcome.group_spans, vec![None, None]);
+        assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
+    fn open_ended_quantified_group_alternation_conditional_fullmatch_reports_outer_and_inner_spans()
+    {
+        let outcome = literal_match(
+            PatternRef::Str("a((bc|de){1,})?(?(1)d|e)"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abcbcded"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 8)));
+        assert_eq!(outcome.group_spans, vec![Some((1, 7)), Some((5, 7))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn named_open_ended_quantified_group_alternation_conditional_search_reports_named_outer_lastindex(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<outer>(bc|de){1,})?(?(outer)d|e)"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzadedededzz"),
             0,
             None,
         )

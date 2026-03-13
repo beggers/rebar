@@ -1,8 +1,9 @@
 # RBR-0247: Add open-ended quantified-group alternation plus conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Convert the first open-ended grouped-alternation-plus-conditional `{1,}` cases from the published correctness pack into real Rust-backed behavior without claiming broader grouped backtracking, replacement workflows, or wider counted-range support.
@@ -28,3 +29,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0246`.
 - This task exists so the queue turns one exact open-ended grouped-conditional frontier into real Rust-backed behavior instead of leaving it as publication-only coverage.
+- Completed with a Rust-side parser/matcher extension for `a((bc|de){1,})?(?(1)d|e)` and `a(?P<outer>(bc|de){1,})?(?(outer)d|e)`, focused public parity coverage in `tests/python/test_open_ended_quantified_group_alternation_conditional_parity.py`, and a republished `reports/correctness/latest.json` showing the combined published scorecard at 621 passes and 0 unimplemented cases.
