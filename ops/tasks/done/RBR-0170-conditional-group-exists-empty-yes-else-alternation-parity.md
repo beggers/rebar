@@ -1,8 +1,9 @@
 # RBR-0170: Add bounded alternation-heavy empty-yes-arm conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Convert the first alternation-heavy empty-yes-arm conditional cases from the published correctness pack into real Rust-backed behavior without claiming quantified, replacement-conditioned, or broader backtracking-heavy empty-arm execution.
@@ -28,3 +29,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0169`.
 - This task exists so the queue turns the first broader empty-yes-arm alternation spelling into real Rust-backed behavior instead of leaving it as publication-only syntax coverage.
+- Landed bounded Rust-backed compile/match parity for `a(b)?c(?(1)|(e|f))` and `a(?P<word>b)?c(?(word)|(e|f))`, added direct Python parity coverage, and republished `reports/correctness/latest.json` at 364 passed / 0 unimplemented cases.
