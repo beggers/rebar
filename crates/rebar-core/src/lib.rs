@@ -469,6 +469,17 @@ struct BranchLocalBackreferencePattern<'a> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+struct ConditionalBranchLocalBackreferencePattern<'a> {
+    prefix: &'a str,
+    outer_name: Option<&'a str>,
+    inner_name: Option<&'a str>,
+    inner_body: &'a str,
+    _alternate_branch: &'a str,
+    yes_branch: &'a str,
+    _no_branch: &'a str,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct OptionalGroupPattern<'a> {
     prefix: &'a str,
     capture: LiteralCapture<'a>,
@@ -808,6 +819,48 @@ impl<'a> BranchLocalBackreferencePattern<'a> {
             .chain(self.inner_body.chars())
             .chain(self.inner_body.chars())
             .chain(self.suffix.chars())
+            .collect()
+    }
+
+    fn group_spans(&self, match_start: usize) -> Vec<Option<(usize, usize)>> {
+        let start = match_start + self.prefix.chars().count();
+        let end = start + self.inner_body.chars().count();
+        vec![Some((start, end)), Some((start, end))]
+    }
+
+    fn lastindex(&self) -> usize {
+        1
+    }
+}
+
+impl<'a> ConditionalBranchLocalBackreferencePattern<'a> {
+    fn group_count(&self) -> usize {
+        2
+    }
+
+    fn named_groups(&self) -> Vec<NamedGroup> {
+        let mut groups = Vec::new();
+        if let Some(name) = self.outer_name {
+            groups.push(NamedGroup {
+                name: name.to_string(),
+                index: 1,
+            });
+        }
+        if let Some(name) = self.inner_name {
+            groups.push(NamedGroup {
+                name: name.to_string(),
+                index: 2,
+            });
+        }
+        groups
+    }
+
+    fn pattern_chars(&self) -> Vec<char> {
+        self.prefix
+            .chars()
+            .chain(self.inner_body.chars())
+            .chain(self.inner_body.chars())
+            .chain(self.yes_branch.chars())
             .collect()
     }
 
@@ -1370,6 +1423,40 @@ fn compile_known_supported_case(
             })
         }
         PatternRef::Str(pattern)
+            if parse_conditional_branch_local_numbered_backreference_pattern_str(pattern)
+                .is_some()
+                && normalized_flags == FLAG_UNICODE =>
+        {
+            let grouped_pattern =
+                parse_conditional_branch_local_numbered_backreference_pattern_str(pattern)
+                    .expect("guarded conditional branch-local numbered backreference literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: Vec::new(),
+                warning: None,
+            })
+        }
+        PatternRef::Str(pattern)
+            if parse_conditional_branch_local_named_backreference_pattern_str(pattern)
+                .is_some()
+                && normalized_flags == FLAG_UNICODE =>
+        {
+            let grouped_pattern =
+                parse_conditional_branch_local_named_backreference_pattern_str(pattern)
+                    .expect("guarded conditional branch-local named backreference literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
+                warning: None,
+            })
+        }
+        PatternRef::Str(pattern)
             if parse_optional_group_pattern_str(pattern).is_some()
                 && normalized_flags == FLAG_UNICODE =>
         {
@@ -1913,6 +2000,126 @@ fn parse_branch_local_named_backreference_pattern_str(
         inner_body,
         _alternate_branch: alternate_branch,
         suffix,
+    })
+}
+
+fn parse_conditional_branch_local_numbered_backreference_pattern_str(
+    pattern: &str,
+) -> Option<ConditionalBranchLocalBackreferencePattern<'_>> {
+    let open_offset = pattern.find('(')?;
+    let prefix = &pattern[..open_offset];
+    if prefix.is_empty() || prefix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let remainder = &pattern[open_offset + 1..];
+    let inner_remainder = remainder.strip_prefix('(')?;
+    if inner_remainder.starts_with("?P<") {
+        return None;
+    }
+
+    let inner_close_offset = inner_remainder.find(')')?;
+    let inner_body = &inner_remainder[..inner_close_offset];
+    if inner_body.is_empty() || inner_body.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let alternate_and_outer = inner_remainder[inner_close_offset + 1..].strip_prefix('|')?;
+    let outer_close_offset = alternate_and_outer.find(')')?;
+    let alternate_branch = &alternate_and_outer[..outer_close_offset];
+    if alternate_branch.is_empty() || alternate_branch.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let conditional = alternate_and_outer[outer_close_offset + 1..]
+        .strip_prefix(r"\2(?(2)")?
+        .strip_suffix(')')?;
+    let (yes_branch, no_branch) = split_first_top_level_pipe(conditional)?;
+    if yes_branch.is_empty()
+        || no_branch.is_empty()
+        || yes_branch.chars().any(is_meta_character)
+        || no_branch.chars().any(is_meta_character)
+    {
+        return None;
+    }
+
+    Some(ConditionalBranchLocalBackreferencePattern {
+        prefix,
+        outer_name: None,
+        inner_name: None,
+        inner_body,
+        _alternate_branch: alternate_branch,
+        yes_branch,
+        _no_branch: no_branch,
+    })
+}
+
+fn parse_conditional_branch_local_named_backreference_pattern_str(
+    pattern: &str,
+) -> Option<ConditionalBranchLocalBackreferencePattern<'_>> {
+    let open_offset = pattern.find('(')?;
+    let prefix = &pattern[..open_offset];
+    if prefix.is_empty() || prefix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let remainder = &pattern[open_offset + 1..];
+    let outer_remainder = remainder.strip_prefix("?P<")?;
+    let outer_name_end = outer_remainder.find('>')?;
+    let outer_name = &outer_remainder[..outer_name_end];
+    if !is_supported_group_name(outer_name) {
+        return None;
+    }
+
+    let outer_body = &outer_remainder[outer_name_end + 1..];
+    let inner_remainder = outer_body.strip_prefix("(?P<")?;
+    let inner_name_end = inner_remainder.find('>')?;
+    let inner_name = &inner_remainder[..inner_name_end];
+    if !is_supported_group_name(inner_name) {
+        return None;
+    }
+
+    let inner_body_and_remainder = &inner_remainder[inner_name_end + 1..];
+    let inner_close_offset = inner_body_and_remainder.find(')')?;
+    let inner_body = &inner_body_and_remainder[..inner_close_offset];
+    if inner_body.is_empty() || inner_body.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let alternate_and_outer =
+        inner_body_and_remainder[inner_close_offset + 1..].strip_prefix('|')?;
+    let outer_close_offset = alternate_and_outer.find(')')?;
+    let alternate_branch = &alternate_and_outer[..outer_close_offset];
+    if alternate_branch.is_empty() || alternate_branch.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let after_backreference = alternate_and_outer[outer_close_offset + 1..]
+        .strip_prefix("(?P=")?
+        .strip_prefix(inner_name)?
+        .strip_prefix(")(?(")?;
+    let reference_end = after_backreference.find(')')?;
+    if &after_backreference[..reference_end] != inner_name {
+        return None;
+    }
+    let branches = after_backreference[reference_end + 1..].strip_suffix(')')?;
+    let (yes_branch, no_branch) = split_first_top_level_pipe(branches)?;
+    if yes_branch.is_empty()
+        || no_branch.is_empty()
+        || yes_branch.chars().any(is_meta_character)
+        || no_branch.chars().any(is_meta_character)
+    {
+        return None;
+    }
+
+    Some(ConditionalBranchLocalBackreferencePattern {
+        prefix,
+        outer_name: Some(outer_name),
+        inner_name: Some(inner_name),
+        inner_body,
+        _alternate_branch: alternate_branch,
+        yes_branch,
+        _no_branch: no_branch,
     })
 }
 
@@ -2877,6 +3084,58 @@ fn literal_match_str(
                     .map(|(start, _)| grouped_pattern.group_spans(start))
                     .unwrap_or_default();
                 (span, group_spans)
+            } else if let Some(grouped_pattern) =
+                parse_conditional_branch_local_numbered_backreference_pattern_str(pattern_value)
+            {
+                if flags != FLAG_UNICODE {
+                    return MatchOutcome {
+                        status: MatchStatus::Unsupported,
+                        pos: normalized_pos,
+                        endpos: normalized_endpos,
+                        span: None,
+                        group_spans: Vec::new(),
+                        lastindex: None,
+                    };
+                }
+                let pattern_chars = grouped_pattern.pattern_chars();
+                let span = find_match_span_str(
+                    pattern_chars.as_slice(),
+                    flags,
+                    mode,
+                    &string_chars,
+                    normalized_pos,
+                    normalized_endpos,
+                );
+                let group_spans = span
+                    .map(|(start, _)| grouped_pattern.group_spans(start))
+                    .unwrap_or_default();
+                (span, group_spans)
+            } else if let Some(grouped_pattern) =
+                parse_conditional_branch_local_named_backreference_pattern_str(pattern_value)
+            {
+                if flags != FLAG_UNICODE {
+                    return MatchOutcome {
+                        status: MatchStatus::Unsupported,
+                        pos: normalized_pos,
+                        endpos: normalized_endpos,
+                        span: None,
+                        group_spans: Vec::new(),
+                        lastindex: None,
+                    };
+                }
+                let pattern_chars = grouped_pattern.pattern_chars();
+                let span = find_match_span_str(
+                    pattern_chars.as_slice(),
+                    flags,
+                    mode,
+                    &string_chars,
+                    normalized_pos,
+                    normalized_endpos,
+                );
+                let group_spans = span
+                    .map(|(start, _)| grouped_pattern.group_spans(start))
+                    .unwrap_or_default();
+                (span, group_spans)
             } else if let Some(grouped_pattern) = parse_optional_group_pattern_str(pattern_value) {
                 if flags != FLAG_UNICODE {
                     return MatchOutcome {
@@ -3113,6 +3372,18 @@ fn literal_match_str(
                     .or_else(|| {
                         parse_branch_local_named_backreference_pattern_str(pattern_value)
                             .map(|grouped_pattern| grouped_pattern.lastindex())
+                    })
+                    .or_else(|| {
+                        parse_conditional_branch_local_numbered_backreference_pattern_str(
+                            pattern_value,
+                        )
+                        .map(|grouped_pattern| grouped_pattern.lastindex())
+                    })
+                    .or_else(|| {
+                        parse_conditional_branch_local_named_backreference_pattern_str(
+                            pattern_value,
+                        )
+                        .map(|grouped_pattern| grouped_pattern.lastindex())
                     })
                     .or_else(|| lastindex_from_group_spans(&group_spans))
             }
@@ -5597,6 +5868,39 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_bounded_conditional_branch_local_backreference_cases() {
+        let outcome = compile(PatternRef::Str(r"a((b)|c)\2(?(2)d|e)"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.group_count, 2);
+        assert!(outcome.named_groups.is_empty());
+
+        let named_outcome = compile(
+            PatternRef::Str("a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)"),
+            0,
+        )
+        .unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!named_outcome.supports_literal);
+        assert_eq!(named_outcome.group_count, 2);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![
+                NamedGroup {
+                    name: "outer".to_string(),
+                    index: 1,
+                },
+                NamedGroup {
+                    name: "inner".to_string(),
+                    index: 2,
+                },
+            ]
+        );
+    }
+
+    #[test]
     fn compile_accepts_bounded_optional_group_cases() {
         let outcome = compile(PatternRef::Str("a(b)?d"), 0).unwrap();
         assert_eq!(outcome.status, CompileStatus::Compiled);
@@ -6439,6 +6743,42 @@ mod tests {
         assert_eq!(outcome.span, Some((0, 4)));
         assert_eq!(outcome.group_spans, vec![Some((1, 2)), Some((1, 2))]);
         assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn conditional_branch_local_numbered_backreference_search_reports_outer_lastindex() {
+        let outcome = literal_match(
+            PatternRef::Str(r"a((b)|c)\2(?(2)d|e)"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabbdzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 6)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 4)), Some((3, 4))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn conditional_branch_local_named_backreference_reports_c_branch_as_no_match() {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("ace"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::NoMatch);
+        assert_eq!(outcome.span, None);
+        assert!(outcome.group_spans.is_empty());
+        assert_eq!(outcome.lastindex, None);
     }
 
     #[test]

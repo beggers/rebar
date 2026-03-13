@@ -1,6 +1,6 @@
 # RBR-0205: Add bounded conditional-plus-branch-local-backreference parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0204`.
 - This task exists so the queue turns the first bounded conditional-plus-branch-local-backreference workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+- Completed 2026-03-13: added a narrow Rust-side parser/executor for `a((b)|c)\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)`, added focused Python parity coverage, refreshed combined conformance expectations that assert the tracked scorecard, and republished `reports/correctness/latest.json` at 454 passes / 0 unimplemented.

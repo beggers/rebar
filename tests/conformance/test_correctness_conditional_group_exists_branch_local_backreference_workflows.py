@@ -74,10 +74,10 @@ class CorrectnessHarnessConditionalGroupExistsBranchLocalBackreferenceWorkflowTe
             {
                 "executed_cases": 454,
                 "failed_cases": 0,
-                "passed_cases": 448,
+                "passed_cases": 454,
                 "skipped_cases": 0,
                 "total_cases": 454,
-                "unimplemented_cases": 6,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(len(scorecard["cases"]), 454)
@@ -92,10 +92,10 @@ class CorrectnessHarnessConditionalGroupExistsBranchLocalBackreferenceWorkflowTe
             {
                 "executed_cases": 278,
                 "failed_cases": 0,
-                "passed_cases": 272,
+                "passed_cases": 278,
                 "skipped_cases": 0,
                 "total_cases": 278,
-                "unimplemented_cases": 6,
+                "unimplemented_cases": 0,
             },
         )
 
@@ -125,10 +125,10 @@ class CorrectnessHarnessConditionalGroupExistsBranchLocalBackreferenceWorkflowTe
             {
                 "executed_cases": 6,
                 "failed_cases": 0,
-                "passed_cases": 0,
+                "passed_cases": 6,
                 "skipped_cases": 0,
                 "total_cases": 6,
-                "unimplemented_cases": 6,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(
@@ -148,87 +148,81 @@ class CorrectnessHarnessConditionalGroupExistsBranchLocalBackreferenceWorkflowTe
         numbered_compile_case = cases_by_id[
             "conditional-group-exists-branch-local-numbered-backreference-compile-metadata-str"
         ]
-        self.assertEqual(numbered_compile_case["comparison"], "unimplemented")
+        self.assertEqual(numbered_compile_case["comparison"], "pass")
         self.assertEqual(numbered_compile_case["observations"]["cpython"]["outcome"], "success")
-        self.assertEqual(numbered_compile_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(numbered_compile_case["observations"]["rebar"]["outcome"], "success")
         self.assertEqual(numbered_compile_case["observations"]["cpython"]["result"]["groups"], 2)
         self.assertEqual(
-            numbered_compile_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
+            numbered_compile_case["observations"]["rebar"]["result"]["groupindex"],
+            {},
         )
 
         numbered_present_case = cases_by_id[
             "conditional-group-exists-branch-local-numbered-backreference-module-search-present-str"
         ]
-        self.assertEqual(numbered_present_case["comparison"], "unimplemented")
+        self.assertEqual(numbered_present_case["comparison"], "pass")
         self.assertEqual(numbered_present_case["helper"], "search")
         self.assertEqual(numbered_present_case["observations"]["cpython"]["outcome"], "success")
-        self.assertEqual(numbered_present_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(numbered_present_case["observations"]["rebar"]["outcome"], "success")
         self.assertEqual(numbered_present_case["observations"]["cpython"]["result"]["group0"], "abbd")
         self.assertEqual(numbered_present_case["observations"]["cpython"]["result"]["groups"], ["b", "b"])
         self.assertEqual(numbered_present_case["observations"]["cpython"]["result"]["lastindex"], 1)
         self.assertEqual(
-            numbered_present_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
+            numbered_present_case["observations"]["rebar"]["result"]["span"],
+            [2, 6],
         )
 
         numbered_absent_case = cases_by_id[
             "conditional-group-exists-branch-local-numbered-backreference-pattern-fullmatch-absent-str"
         ]
-        self.assertEqual(numbered_absent_case["comparison"], "unimplemented")
+        self.assertEqual(numbered_absent_case["comparison"], "pass")
         self.assertEqual(numbered_absent_case["helper"], "fullmatch")
         self.assertEqual(numbered_absent_case["observations"]["cpython"]["outcome"], "success")
-        self.assertEqual(numbered_absent_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(numbered_absent_case["observations"]["rebar"]["outcome"], "success")
         self.assertIsNone(numbered_absent_case["observations"]["cpython"]["result"])
-        self.assertEqual(
-            numbered_absent_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
-        )
+        self.assertIsNone(numbered_absent_case["observations"]["rebar"]["result"])
 
         named_compile_case = cases_by_id[
             "conditional-group-exists-branch-local-named-backreference-compile-metadata-str"
         ]
-        self.assertEqual(named_compile_case["comparison"], "unimplemented")
+        self.assertEqual(named_compile_case["comparison"], "pass")
         self.assertEqual(named_compile_case["observations"]["cpython"]["outcome"], "success")
-        self.assertEqual(named_compile_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_compile_case["observations"]["rebar"]["outcome"], "success")
         self.assertEqual(
             named_compile_case["observations"]["cpython"]["result"]["groupindex"],
             {"inner": 2, "outer": 1},
         )
         self.assertEqual(
-            named_compile_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
+            named_compile_case["observations"]["rebar"]["result"]["groupindex"],
+            {"inner": 2, "outer": 1},
         )
 
         named_present_case = cases_by_id[
             "conditional-group-exists-branch-local-named-backreference-module-search-present-str"
         ]
-        self.assertEqual(named_present_case["comparison"], "unimplemented")
+        self.assertEqual(named_present_case["comparison"], "pass")
         self.assertEqual(named_present_case["helper"], "search")
         self.assertEqual(named_present_case["observations"]["cpython"]["outcome"], "success")
-        self.assertEqual(named_present_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_present_case["observations"]["rebar"]["outcome"], "success")
         self.assertEqual(named_present_case["observations"]["cpython"]["result"]["group0"], "abbd")
         self.assertEqual(
             named_present_case["observations"]["cpython"]["result"]["named_groups"],
             {"inner": "b", "outer": "b"},
         )
         self.assertEqual(
-            named_present_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
+            named_present_case["observations"]["rebar"]["result"]["lastgroup"],
+            "outer",
         )
 
         named_absent_case = cases_by_id[
             "conditional-group-exists-branch-local-named-backreference-pattern-fullmatch-absent-str"
         ]
-        self.assertEqual(named_absent_case["comparison"], "unimplemented")
+        self.assertEqual(named_absent_case["comparison"], "pass")
         self.assertEqual(named_absent_case["helper"], "fullmatch")
         self.assertEqual(named_absent_case["observations"]["cpython"]["outcome"], "success")
-        self.assertEqual(named_absent_case["observations"]["rebar"]["outcome"], "unimplemented")
+        self.assertEqual(named_absent_case["observations"]["rebar"]["outcome"], "success")
         self.assertIsNone(named_absent_case["observations"]["cpython"]["result"])
-        self.assertEqual(
-            named_absent_case["observations"]["rebar"]["exception"]["type"],
-            "NotImplementedError",
-        )
+        self.assertIsNone(named_absent_case["observations"]["rebar"]["result"])
 
 
 if __name__ == "__main__":
