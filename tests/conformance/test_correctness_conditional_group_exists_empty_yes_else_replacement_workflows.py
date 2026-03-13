@@ -79,10 +79,10 @@ class CorrectnessHarnessConditionalGroupExistsEmptyYesElseReplacementWorkflowTes
             {
                 "executed_cases": 448,
                 "failed_cases": 0,
-                "passed_cases": 440,
+                "passed_cases": 448,
                 "skipped_cases": 0,
                 "total_cases": 448,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertEqual(len(scorecard["cases"]), 448)
@@ -93,10 +93,10 @@ class CorrectnessHarnessConditionalGroupExistsEmptyYesElseReplacementWorkflowTes
             {
                 "executed_cases": 136,
                 "failed_cases": 0,
-                "passed_cases": 128,
+                "passed_cases": 136,
                 "skipped_cases": 0,
                 "total_cases": 136,
-                "unimplemented_cases": 8,
+                "unimplemented_cases": 0,
             },
         )
         self.assertIn(

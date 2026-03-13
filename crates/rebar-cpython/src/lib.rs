@@ -12,6 +12,7 @@ use rebar_core::{
     conditional_group_exists_find_spans_str as core_conditional_group_exists_find_spans_str,
     conditional_group_exists_nested_find_spans_str as core_conditional_group_exists_nested_find_spans_str,
     conditional_group_exists_no_else_find_spans_str as core_conditional_group_exists_no_else_find_spans_str,
+    conditional_group_exists_quantified_find_spans_str as core_conditional_group_exists_quantified_find_spans_str,
     escape_bytes as core_escape_bytes, escape_str as core_escape_str,
     expand_literal_replacement_template_str as core_expand_literal_replacement_template_str,
     grouped_alternation_find_spans_str as core_grouped_alternation_find_spans_str,
@@ -454,7 +455,7 @@ fn boundary_literal_subn(
                     if outcome.status != MatchStatus::Unsupported {
                         ("supported", outcome.matches)
                     } else {
-                        let outcome = core_conditional_group_exists_alternation_find_spans_str(
+                        let outcome = core_conditional_group_exists_quantified_find_spans_str(
                             pattern_value,
                             flags,
                             string_value,
@@ -464,7 +465,7 @@ fn boundary_literal_subn(
                         if outcome.status != MatchStatus::Unsupported {
                             ("supported", outcome.matches)
                         } else {
-                            let outcome = core_conditional_group_exists_no_else_find_spans_str(
+                            let outcome = core_conditional_group_exists_alternation_find_spans_str(
                                 pattern_value,
                                 flags,
                                 string_value,
@@ -474,29 +475,40 @@ fn boundary_literal_subn(
                             if outcome.status != MatchStatus::Unsupported {
                                 ("supported", outcome.matches)
                             } else {
-                                let outcome =
-                                    core_conditional_group_exists_empty_else_find_spans_str(
-                                        pattern_value,
-                                        flags,
-                                        string_value,
-                                        0,
-                                        None,
-                                    );
+                                let outcome = core_conditional_group_exists_no_else_find_spans_str(
+                                    pattern_value,
+                                    flags,
+                                    string_value,
+                                    0,
+                                    None,
+                                );
                                 if outcome.status != MatchStatus::Unsupported {
                                     ("supported", outcome.matches)
                                 } else {
                                     let outcome =
-                                        core_conditional_group_exists_empty_yes_else_find_spans_str(
+                                        core_conditional_group_exists_empty_else_find_spans_str(
                                             pattern_value,
                                             flags,
                                             string_value,
                                             0,
                                             None,
                                         );
-                                    if outcome.status == MatchStatus::Unsupported {
-                                        return Ok(("unsupported", py.None(), 0));
+                                    if outcome.status != MatchStatus::Unsupported {
+                                        ("supported", outcome.matches)
+                                    } else {
+                                        let outcome =
+                                            core_conditional_group_exists_empty_yes_else_find_spans_str(
+                                                pattern_value,
+                                                flags,
+                                                string_value,
+                                                0,
+                                                None,
+                                            );
+                                        if outcome.status == MatchStatus::Unsupported {
+                                            return Ok(("unsupported", py.None(), 0));
+                                        }
+                                        ("supported", outcome.matches)
                                     }
-                                    ("supported", outcome.matches)
                                 }
                             }
                         }

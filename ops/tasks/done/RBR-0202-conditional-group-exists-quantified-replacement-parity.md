@@ -1,6 +1,6 @@
 # RBR-0202: Add bounded quantified two-arm conditional replacement parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0201`, `RBR-0149`, and `RBR-0193`.
 - This task exists so the queue converts the first quantified conditional replacement workflow into real Rust-backed behavior instead of leaving it as publication-only coverage.
+
+## Completion
+- Added a bounded quantified two-arm conditional replacement span collector in `rebar-core` and routed `rebar._rebar` constant `sub()` / `subn()` calls through it, keeping the supported slice pinned to `a(b)?c(?(1)d|e){2}` and `a(?P<word>b)?c(?(word)d|e){2}`.
+- Added direct Python parity coverage in `tests/python/test_conditional_group_exists_quantified_replacement_parity.py` and refreshed the quantified-replacement correctness harness expectations for the now fully passing combined scorecard.
+- Republished `reports/correctness/latest.json` with the combined 448-case / 60-manifest scorecard now at 448 passes, 0 failures, and 0 honest gaps.
