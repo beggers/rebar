@@ -1,8 +1,9 @@
 # RBR-0173: Add bounded alternation-bearing fully-empty conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Convert the first alternation-bearing fully-empty conditional cases from the published correctness pack into real Rust-backed behavior without claiming broader alternation-heavy empty-arm execution or more general backtracking support.
@@ -28,3 +29,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0172`.
 - This task exists so the queue converts the accepted alternation-bearing fully-empty spelling into real Rust-backed behavior instead of leaving it as publication-only syntax coverage.
+- Landed bounded Rust-backed compile/match parity for `a(b)?c(?(1)|(?:|))` and `a(?P<word>b)?c(?(word)|(?:|))`, added direct Python parity coverage, aligned the correctness harness expectation, and republished `reports/correctness/latest.json` at 372 passed / 0 unimplemented cases.
