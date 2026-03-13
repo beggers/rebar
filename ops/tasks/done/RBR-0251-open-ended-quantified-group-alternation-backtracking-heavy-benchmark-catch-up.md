@@ -1,6 +1,6 @@
 # RBR-0251: Catch open-ended quantified-group alternation backtracking-heavy benchmarks up with the new slice
 
-Status: in_progress
+Status: done
 Owner: feature-implementation
 Created: 2026-03-13
 
@@ -28,3 +28,5 @@ Created: 2026-03-13
 - Build on `RBR-0250`.
 - Reuse the existing `pattern-fullmatch-named-open-ended-group-backtracking-heavy-purged-gap` row as the benchmark anchor instead of forking another manifest.
 - This task exists so the queue does not reach open-ended grouped backtracking-heavy parity and then leave that newly supported slice absent from benchmark reporting.
+- 2026-03-13T18:34:00+00:00: harness requeued stale in progress because the task was still in `ops/tasks/in_progress/` at the start of a new bounded cycle.
+- 2026-03-13T18:43:00+00:00: Promoted the named `pattern-fullmatch` backtracking-heavy gap anchor into a measured row, added the minimal numbered/named compile and search companions plus one numbered `pattern-fullmatch` companion in `open_ended_quantified_group_boundary.json`, regenerated `reports/benchmarks/latest.json` to 435 workloads / 401 measured / 34 known gaps, and validated the manifest with `PYTHONPATH=python python3 -m unittest tests.benchmarks.test_open_ended_quantified_group_boundary_benchmarks`.

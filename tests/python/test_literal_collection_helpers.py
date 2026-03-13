@@ -23,6 +23,30 @@ class RebarLiteralCollectionHelpersTest(unittest.TestCase):
     def tearDown(self) -> None:
         rebar.purge()
 
+    def _normalize_match(self, match: object) -> dict[str, object]:
+        return {
+            "group0": match.group(0),
+            "groups": match.groups(),
+            "groupdict": match.groupdict(),
+            "span": match.span(),
+            "pos": match.pos,
+            "endpos": match.endpos,
+            "lastindex": match.lastindex,
+            "lastgroup": match.lastgroup,
+        }
+
+    def _assert_finditer_parity(self, observed_iter: object, expected_iter: object) -> None:
+        observed_matches = list(observed_iter)
+        expected_matches = list(expected_iter)
+
+        self.assertEqual([type(match) for match in observed_matches], [rebar.Match] * len(observed_matches))
+        self.assertEqual(
+            [self._normalize_match(match) for match in observed_matches],
+            [self._normalize_match(match) for match in expected_matches],
+        )
+        self.assertIsNone(next(observed_iter, None))
+        self.assertIsNone(next(expected_iter, None))
+
     def test_module_split_matches_cpython_for_supported_literal_cases(self) -> None:
         cases = [
             ("abc", "zzz", 0),
@@ -43,41 +67,75 @@ class RebarLiteralCollectionHelpersTest(unittest.TestCase):
                 )
 
     def test_pattern_split_supports_supported_subset(self) -> None:
-        pattern = rebar.compile("abc")
+        cases = [
+            ("abc", "zzabczz", 0),
+            ("abc", "abcabc", 0),
+            ("abc", "abcabc", 1),
+            ("abc", "abcabc", -1),
+            (b"abc", b"zzabczz", 0),
+            (b"abc", b"zzabczzabc", 1),
+        ]
 
-        self.assertEqual(pattern.split("zzabczz"), ["zz", "zz"])
-        self.assertEqual(pattern.split("abcabc"), ["", "", ""])
-        self.assertEqual(pattern.split("abcabc", 1), ["", "abc"])
-        self.assertEqual(pattern.split("abcabc", -1), ["abcabc"])
-
-        bytes_pattern = rebar.compile(b"abc")
-        self.assertEqual(bytes_pattern.split(b"zzabczz"), [b"zz", b"zz"])
+        for pattern, string, maxsplit in cases:
+            with self.subTest(pattern=pattern, string=string, maxsplit=maxsplit):
+                observed_pattern = rebar.compile(pattern)
+                expected_pattern = re.compile(pattern)
+                self.assertEqual(
+                    observed_pattern.split(string, maxsplit),
+                    expected_pattern.split(string, maxsplit),
+                )
 
     def test_findall_returns_whole_match_results_for_supported_cases(self) -> None:
-        self.assertEqual(rebar.findall("abc", "abcabc"), ["abc", "abc"])
-        self.assertEqual(rebar.findall(b"abc", b"zabcabc"), [b"abc", b"abc"])
+        module_cases = [
+            ("abc", "abcabc"),
+            (b"abc", b"zabcabc"),
+        ]
+        pattern_cases = [
+            ("abc", "zabcabcz", 1, 7),
+            (b"abc", b"zabcabcz", 1, 7),
+        ]
 
-        pattern = rebar.compile("abc")
-        self.assertEqual(pattern.findall("zabcabcz", 1, 7), ["abc", "abc"])
+        for pattern, string in module_cases:
+            with self.subTest(pattern=pattern, string=string, helper="module"):
+                self.assertEqual(
+                    rebar.findall(pattern, string),
+                    re.findall(pattern, string),
+                )
 
-        bytes_pattern = rebar.compile(b"abc")
-        self.assertEqual(bytes_pattern.findall(b"zabcabcz", 1, 7), [b"abc", b"abc"])
+        for pattern, string, pos, endpos in pattern_cases:
+            with self.subTest(pattern=pattern, string=string, pos=pos, endpos=endpos, helper="pattern"):
+                observed_pattern = rebar.compile(pattern)
+                expected_pattern = re.compile(pattern)
+                self.assertEqual(
+                    observed_pattern.findall(string, pos, endpos),
+                    expected_pattern.findall(string, pos, endpos),
+                )
 
     def test_finditer_yields_ordered_match_objects_and_exhausts_normally(self) -> None:
-        iterator = rebar.finditer("abc", "zabcabc")
-        matches = list(iterator)
+        module_cases = [
+            ("abc", "zabcabc"),
+            (b"abc", b"zabcabc"),
+        ]
+        pattern_cases = [
+            ("abc", "zabcabcx", 1, 7),
+            (b"abc", b"zabcabcx", 1, 7),
+        ]
 
-        self.assertEqual([type(match) for match in matches], [rebar.Match, rebar.Match])
-        self.assertEqual([match.group(0) for match in matches], ["abc", "abc"])
-        self.assertEqual([match.span() for match in matches], [(1, 4), (4, 7)])
-        self.assertEqual(next(iterator, None), None)
+        for pattern, string in module_cases:
+            with self.subTest(pattern=pattern, string=string, helper="module"):
+                self._assert_finditer_parity(
+                    rebar.finditer(pattern, string),
+                    re.finditer(pattern, string),
+                )
 
-        pattern = rebar.compile(b"abc")
-        bounded = pattern.finditer(b"zabcabcx", 1, 7)
-        bounded_matches = list(bounded)
-        self.assertEqual([match.group(0) for match in bounded_matches], [b"abc", b"abc"])
-        self.assertEqual([match.span() for match in bounded_matches], [(1, 4), (4, 7)])
-        self.assertEqual(next(bounded, None), None)
+        for pattern, string, pos, endpos in pattern_cases:
+            with self.subTest(pattern=pattern, string=string, pos=pos, endpos=endpos, helper="pattern"):
+                observed_pattern = rebar.compile(pattern)
+                expected_pattern = re.compile(pattern)
+                self._assert_finditer_parity(
+                    observed_pattern.finditer(string, pos, endpos),
+                    expected_pattern.finditer(string, pos, endpos),
+                )
 
     def test_collection_helpers_reject_type_mismatch(self) -> None:
         with self.assertRaisesRegex(TypeError, "cannot use a string pattern on a bytes-like object"):

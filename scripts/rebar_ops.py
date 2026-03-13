@@ -349,6 +349,49 @@ def user_ask_counts() -> dict[str, int]:
     return {status: len(list_user_ask_files(status)) for status in USER_ASK_STATUSES}
 
 
+def is_user_ask_name(name: str) -> bool:
+    return name.startswith("USER-ASK")
+
+
+def reroute_misplaced_user_asks() -> list[dict[str, Any]]:
+    actions: list[dict[str, Any]] = []
+    for status in TASK_STATUSES:
+        queue_dir = TASK_ROOT / status
+        if not queue_dir.exists():
+            continue
+        for path in sorted(
+            [
+                candidate
+                for candidate in queue_dir.iterdir()
+                if candidate.is_file() and is_user_ask_name(candidate.name)
+            ],
+            key=lambda candidate: candidate.name,
+        ):
+            dest_status = "done" if status in {"done", "blocked"} else "inbox"
+            dest_dir = USER_ASK_ROOT / dest_status
+            dest_dir.mkdir(parents=True, exist_ok=True)
+            dest = dest_dir / path.name
+            if dest.exists():
+                suffix = f".from-{status}"
+                deduped = dest_dir / f"{path.name}{suffix}"
+                counter = 2
+                while deduped.exists():
+                    deduped = dest_dir / f"{path.name}{suffix}-{counter}"
+                    counter += 1
+                dest = deduped
+            path.replace(dest)
+            actions.append(
+                {
+                    "task_name": path.name,
+                    "action": "rerouted_misplaced_user_ask",
+                    "severity": "warning",
+                    "final_status": dest_status,
+                    "path": relpath(dest),
+                }
+            )
+    return actions
+
+
 def claim_tasks(queue: str, claim_to: str, limit: int) -> list[Path]:
     claimed: list[Path] = []
     dest_dir = TASK_ROOT / claim_to
@@ -2274,6 +2317,7 @@ def run_cycle(
     paths = runtime_paths(config)
     ensure_runtime_dirs(paths)
     task_state = load_task_state(paths)
+    user_ask_actions = reroute_misplaced_user_asks()
     stale_actions = recover_stale_in_progress_tasks(config, task_state)
 
     agents = load_agent_specs(config)
@@ -2287,7 +2331,8 @@ def run_cycle(
         force = agent.name in forced or (force_supervisor and agent.kind == "supervisor")
         results.extend(dispatch_agent(agent, config, loop_state, force=force))
 
-    recovery_actions = list(stale_actions)
+    recovery_actions = list(user_ask_actions)
+    recovery_actions.extend(stale_actions)
     for result in results:
         recovery_actions.extend(finalize_task_result(config, result, task_state))
 
