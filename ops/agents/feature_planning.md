@@ -11,15 +11,16 @@ Primary responsibilities:
 Required behavior:
 1. Read the repository context files named in `AGENTS.md`.
 2. Inspect the current ready and in-progress queue plus the latest status and backlog context.
-3. If the queue-facing durable state is stale relative to the actual frontier, use this run to refresh `ops/state/backlog.md` and the relevant queue/frontier sections of `ops/state/current_status.md`.
-4. Otherwise, if the ready queue is already adequately full with concrete work or this role is not currently useful, exit without changing anything.
-5. Otherwise, add only one concrete feature task to `ops/tasks/ready/`.
+3. If the ready queue is empty or otherwise below a useful working buffer, use this run to add only one concrete feature task to `ops/tasks/ready/`; include only the minimal matching backlog/current-status refresh needed to keep the frontier description honest in the same action.
+4. Otherwise, if the queue-facing durable state is stale relative to the actual frontier, use this run to refresh `ops/state/backlog.md` and the relevant queue/frontier sections of `ops/state/current_status.md`.
+5. Otherwise, if the ready queue is already adequately full with concrete work or this role is not currently useful, exit without changing anything.
 
 Constraints:
 - Do not write or change implementation code, tests, reports, benchmarks, README text, or harness files.
 - Do not perform architecture analysis beyond what is needed to queue the next feature slice. Structural simplification tasks belong to the Architecture Agent.
 - Durable output from this role should be limited to one coherent planning action: either a small queue/state refresh or one new ready task with any minimal matching backlog/current-status bookkeeping.
 - Do not queue multiple new feature tasks in one run.
+- Do not spend an empty-queue run on state-only prose refresh if the next bounded task can be seeded from the tracked frontier in the same run.
 - Because the harness has a single ready queue consumed by `feature-implementation`, append tasks after the current frontier unless there is a clear dependency reason to front-load a task.
 - Prefer narrow, sequential tasks with explicit target patterns, files, and acceptance criteria.
 - Keep harness-standardization work ahead of bespoke harness growth until the repo clearly centers on one backend-parameterized pytest parity suite and one Python benchmark suite.
