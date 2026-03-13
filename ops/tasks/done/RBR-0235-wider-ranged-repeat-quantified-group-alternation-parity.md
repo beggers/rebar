@@ -1,8 +1,9 @@
 # RBR-0235: Add bounded wider ranged-repeat quantified-group alternation parity
 
-Status: ready
-Owner: implementation
+Status: done
+Owner: supervisor
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Convert the first wider ranged-repeat quantified-group alternation cases from the published correctness pack into real Rust-backed behavior without claiming broader counted ranges, open-ended repeats, conditional combinations, replacement workflows, or broader backtracking support.
@@ -27,4 +28,5 @@ Created: 2026-03-13
 
 ## Notes
 - Build on `RBR-0234`.
-- This task exists so the queue turns the first wider ranged-repeat quantified-group alternation workflows into real Rust-backed behavior instead of leaving them as publication-only coverage.
+- Retired by the supervisor on 2026-03-13 because `RBR-0234` widened `reports/correctness/latest.json` to 71 manifests / 568 cases and the new `{1,3}` grouped-alternation slice already passed end to end through the Rust-backed path.
+- The queue advances directly to `RBR-0236` so benchmark publication catches the already-supported slice up instead of spending a worker cycle on redundant parity work.

@@ -7,7 +7,7 @@
   ],
   "notes": [
     "Wider ranged-repeat quantified-group boundary workloads keep captures, counted ranges, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded `{1,3}` slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(bc){1,3}d` and `a(?P<word>bc){1,3}d` compile/search/fullmatch paths directly at representative lower-bound and third-repetition haystacks, while still-wider counted ranges, open-ended repeats, quantified alternation inside repeated groups, conditional combinations, and broader backtracking-heavy shapes stay as explicit known-gap rows until queued follow-on slices land."
+    "Measured rows cover the bounded `a(bc|de){1,3}d` and `a(?P<word>bc|de){1,3}d` compile/search/fullmatch paths directly at representative lower-bound, mixed-branch, and third-repetition haystacks, while still-wider counted ranges, open-ended repeats, conditional combinations, and broader backtracking-heavy grouped shapes stay as explicit known-gap rows until queued follow-on slices land."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -16,11 +16,11 @@
   },
   "workloads": [
     {
-      "id": "module-compile-numbered-wider-ranged-repeat-group-cold-str",
+      "id": "module-compile-numbered-wider-ranged-repeat-group-alternation-cold-str",
       "bucket": "module-compile",
       "family": "module",
       "operation": "module.compile",
-      "pattern": "a(bc){1,3}d",
+      "pattern": "a(bc|de){1,3}d",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "cold",
@@ -28,6 +28,7 @@
       "categories": [
         "compile",
         "grouped",
+        "alternation",
         "quantifier",
         "ranged-repeat",
         "counted-repeat",
@@ -39,18 +40,19 @@
         "grouping-forms",
         "quantifiers",
         "counted-repeats",
-        "ranged-repeats"
+        "ranged-repeats",
+        "alternation"
       ],
       "notes": [
-        "Cold module.compile benchmark for the bounded numbered wider ranged-repeat quantified-group slice so compile metadata timing reaches the published benchmark report."
+        "Cold module.compile benchmark for the bounded numbered wider ranged-repeat grouped-alternation slice so compile metadata timing reaches the published benchmark report."
       ]
     },
     {
-      "id": "module-search-numbered-wider-ranged-repeat-group-lower-bound-warm-str",
+      "id": "module-search-numbered-wider-ranged-repeat-group-alternation-lower-bound-bc-warm-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(bc){1,3}d",
+      "pattern": "a(bc|de){1,3}d",
       "haystack": "zzabcdzz",
       "flags": 0,
       "text_model": "str",
@@ -59,6 +61,7 @@
       "smoke": true,
       "categories": [
         "grouped",
+        "alternation",
         "quantifier",
         "ranged-repeat",
         "counted-repeat",
@@ -74,19 +77,20 @@
         "grouping-forms",
         "quantifiers",
         "counted-repeats",
-        "ranged-repeats"
+        "ranged-repeats",
+        "alternation"
       ],
       "notes": [
-        "Warm module.search helper path for the bounded numbered wider ranged-repeat workflow on a tiny lower-bound haystack."
+        "Warm module.search helper path for the bounded numbered wider ranged-repeat grouped-alternation workflow on the lower-bound `bc` branch."
       ]
     },
     {
-      "id": "pattern-fullmatch-numbered-wider-ranged-repeat-group-upper-bound-purged-str",
+      "id": "pattern-fullmatch-numbered-wider-ranged-repeat-group-alternation-mixed-purged-str",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(bc){1,3}d",
-      "haystack": "abcbcbcd",
+      "pattern": "a(bc|de){1,3}d",
+      "haystack": "abcded",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "purged",
@@ -94,12 +98,13 @@
       "categories": [
         "pattern",
         "grouped",
+        "alternation",
         "quantifier",
         "ranged-repeat",
         "counted-repeat",
         "wider-range",
         "fullmatch",
-        "upper-bound",
+        "mixed",
         "purged-cache"
       ],
       "syntax_features": [
@@ -108,18 +113,19 @@
         "quantifiers",
         "counted-repeats",
         "ranged-repeats",
+        "alternation",
         "cache-purge"
       ],
       "notes": [
-        "Purged-cache Pattern.fullmatch probe for the bounded numbered wider ranged-repeat workflow at the supported third-repetition upper bound."
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered wider ranged-repeat grouped-alternation workflow on a mixed `bc` then `de` branch order."
       ]
     },
     {
-      "id": "module-compile-named-wider-ranged-repeat-group-warm-str",
+      "id": "module-compile-named-wider-ranged-repeat-group-alternation-warm-str",
       "bucket": "module-compile",
       "family": "module",
       "operation": "module.compile",
-      "pattern": "a(?P<word>bc){1,3}d",
+      "pattern": "a(?P<word>bc|de){1,3}d",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
@@ -127,6 +133,7 @@
       "categories": [
         "compile",
         "grouped",
+        "alternation",
         "quantifier",
         "ranged-repeat",
         "counted-repeat",
@@ -140,25 +147,27 @@
         "quantifiers",
         "counted-repeats",
         "ranged-repeats",
+        "alternation",
         "named-groups"
       ],
       "notes": [
-        "Warm module.compile path for the bounded named wider ranged-repeat slice so named metadata timing reaches the benchmark report."
+        "Warm module.compile path for the bounded named wider ranged-repeat grouped-alternation slice so named metadata timing reaches the benchmark report."
       ]
     },
     {
-      "id": "module-search-named-wider-ranged-repeat-group-upper-bound-warm-str",
+      "id": "module-search-named-wider-ranged-repeat-group-alternation-upper-bound-mixed-warm-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(?P<word>bc){1,3}d",
-      "haystack": "zzabcbcbcdzz",
+      "pattern": "a(?P<word>bc|de){1,3}d",
+      "haystack": "zzabcbcdedzz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
       "timing_scope": "module-helper-call",
       "categories": [
         "grouped",
+        "alternation",
         "quantifier",
         "ranged-repeat",
         "counted-repeat",
@@ -167,6 +176,7 @@
         "search",
         "module",
         "upper-bound",
+        "mixed",
         "warm-cache"
       ],
       "syntax_features": [
@@ -175,18 +185,19 @@
         "quantifiers",
         "counted-repeats",
         "ranged-repeats",
+        "alternation",
         "named-groups"
       ],
       "notes": [
-        "Warm module.search helper path for a tiny named wider ranged-repeat capture at the supported third-repetition upper bound so named runtime workflows produce real timings."
+        "Warm module.search helper path for a tiny named wider ranged-repeat grouped-alternation capture at the supported third-repetition upper bound with a mixed branch order."
       ]
     },
     {
-      "id": "pattern-fullmatch-named-wider-ranged-repeat-group-lower-bound-purged-str",
+      "id": "pattern-fullmatch-named-wider-ranged-repeat-group-alternation-lower-bound-bc-purged-str",
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(?P<word>bc){1,3}d",
+      "pattern": "a(?P<word>bc|de){1,3}d",
       "haystack": "abcd",
       "flags": 0,
       "text_model": "str",
@@ -196,6 +207,7 @@
       "categories": [
         "pattern",
         "grouped",
+        "alternation",
         "quantifier",
         "ranged-repeat",
         "counted-repeat",
@@ -212,11 +224,12 @@
         "quantifiers",
         "counted-repeats",
         "ranged-repeats",
+        "alternation",
         "named-groups",
         "cache-purge"
       ],
       "notes": [
-        "Smoke-sized Pattern.fullmatch probe for the bounded named wider ranged-repeat workflow at the lower bound with compile cost kept outside the timed loop."
+        "Smoke-sized Pattern.fullmatch probe for the bounded named wider ranged-repeat grouped-alternation workflow at the `bc` lower bound with compile cost kept outside the timed loop."
       ]
     },
     {
@@ -224,14 +237,15 @@
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a(bc){1,4}d",
-      "haystack": "zzabcbcbcbcdzz",
+      "pattern": "a(bc|de){1,4}d",
+      "haystack": "zzadededededzz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "cold",
       "timing_scope": "module-helper-call",
       "categories": [
         "grouped",
+        "alternation",
         "quantifier",
         "ranged-repeat",
         "counted-repeat",
@@ -246,10 +260,11 @@
         "grouping-forms",
         "quantifiers",
         "counted-repeats",
-        "ranged-repeats"
+        "ranged-repeats",
+        "alternation"
       ],
       "notes": [
-        "Explicit broader-range known-gap row so counted repeats wider than the bounded `{1,3}` frontier stay visible in the benchmark report."
+        "Explicit broader-range grouped-alternation known-gap row so counted repeats wider than the bounded `{1,3}` frontier stay visible in the benchmark report."
       ]
     },
     {
@@ -257,8 +272,8 @@
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a(bc){1,}d",
-      "haystack": "abcbcbcd",
+      "pattern": "a(bc|de){1,}d",
+      "haystack": "abcbcd",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "purged",
@@ -266,6 +281,7 @@
       "categories": [
         "pattern",
         "grouped",
+        "alternation",
         "quantifier",
         "ranged-repeat",
         "counted-repeat",
@@ -280,10 +296,11 @@
         "quantifiers",
         "counted-repeats",
         "ranged-repeats",
+        "alternation",
         "cache-purge"
       ],
       "notes": [
-        "Explicit open-ended-repeat known-gap row so unbounded counted repeats stay visible after the bounded `{1,3}` slice reaches real timings."
+        "Explicit open-ended grouped-alternation known-gap row so unbounded counted repeats stay visible after the bounded `{1,3}` slice reaches real timings."
       ]
     },
     {
@@ -292,7 +309,7 @@
       "family": "module",
       "operation": "pattern.fullmatch",
       "pattern": "a(?P<word>bc|de){1,3}d",
-      "haystack": "abcbcbcd",
+      "haystack": "adededed",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "purged",
@@ -306,7 +323,8 @@
         "alternation",
         "named-group",
         "fullmatch",
-        "unsupported",
+        "upper-bound",
+        "de",
         "purged-cache"
       ],
       "syntax_features": [
@@ -320,7 +338,7 @@
         "cache-purge"
       ],
       "notes": [
-        "Explicit quantified-alternation known-gap row so alternation inside wider ranged repeats stays on the benchmark surface instead of disappearing."
+        "Former named grouped-alternation gap anchor now benchmarks the supported bounded third-repetition `de` branch path directly."
       ]
     },
     {
@@ -328,7 +346,7 @@
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
-      "pattern": "a((bc){1,3})?(?(1)d|e)",
+      "pattern": "a((bc|de){1,3})?(?(1)d|e)",
       "haystack": "zzabcbcdzz",
       "flags": 0,
       "text_model": "str",
@@ -336,6 +354,7 @@
       "timing_scope": "module-helper-call",
       "categories": [
         "grouped",
+        "alternation",
         "quantifier",
         "ranged-repeat",
         "counted-repeat",
@@ -351,10 +370,11 @@
         "quantifiers",
         "counted-repeats",
         "ranged-repeats",
+        "alternation",
         "conditionals"
       ],
       "notes": [
-        "Explicit conditional-combination known-gap row so bounded group-exists conditionals composed with wider ranged repeats stay visible before broader backtracking work is queued."
+        "Explicit conditional-combination known-gap row so bounded group-exists conditionals composed with wider ranged-repeat grouped alternation stay visible before broader backtracking work is queued."
       ]
     },
     {
@@ -362,7 +382,7 @@
       "bucket": "pattern-fullmatch",
       "family": "module",
       "operation": "pattern.fullmatch",
-      "pattern": "a((b|bc)c){1,3}d",
+      "pattern": "a((bc|b)c){1,3}d",
       "haystack": "abcbcd",
       "flags": 0,
       "text_model": "str",
@@ -389,7 +409,7 @@
         "cache-purge"
       ],
       "notes": [
-        "Explicit broader backtracking-heavy known-gap row so overlapping branches inside repeated groups stay visible after the small deterministic `{1,3}` slice reaches benchmark publication."
+        "Explicit broader backtracking-heavy known-gap row so overlapping grouped branches inside repeated counted repeats stay visible after the small deterministic `{1,3}` grouped-alternation slice reaches benchmark publication."
       ]
     }
   ]
