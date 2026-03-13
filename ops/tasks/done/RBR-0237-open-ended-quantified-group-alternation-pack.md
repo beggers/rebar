@@ -1,6 +1,6 @@
 # RBR-0237: Publish a bounded open-ended quantified-group alternation correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0236`.
 - This task exists so grouped alternation reaches the same bounded open-ended counted-repeat envelope already proven for simpler quantified alternation instead of stopping at the wider `{1,3}` slice.
+- Completed 2026-03-13: added a dedicated 16-case open-ended grouped-alternation correctness manifest covering numbered and named compile/module/compiled-pattern observations for `a(bc|de){1,}d` and `a(?P<word>bc|de){1,}d`, added focused regression coverage, and republished `reports/correctness/latest.json` to the combined 72-manifest / 584-case scorecard with 16 honest `unimplemented` outcomes for this newly published slice.
