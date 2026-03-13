@@ -1,6 +1,6 @@
 # RBR-0164: Catch bounded quantified empty-yes-arm conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,7 @@ Created: 2026-03-13
 - Build on `RBR-0163`.
 - Use the existing `pattern-fullmatch-numbered-quantified-conditional-group-exists-empty-yes-else-purged-gap` row in `benchmarks/workloads/conditional_group_exists_empty_yes_else_boundary.json` as the benchmark anchor for this slice.
 - This task exists so the queue does not reach quantified empty-yes-arm parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Updated the empty-yes-arm benchmark manifest so the quantified `(?:a(b)?c(?(1)|e)){2}` and `(?:a(?P<word>b)?c(?(word)|e)){2}` slice now publishes four real numbered and named `module.search()` / `Pattern.fullmatch()` timings alongside the existing bounded baseline rows.
+- Refreshed the affected benchmark assertions and republished `reports/benchmarks/latest.json` at 302 workloads with 251 real `rebar` timings and 51 explicit known gaps, leaving the broader alternation-heavy empty-arm follow-on explicit as the remaining gap in this manifest.
