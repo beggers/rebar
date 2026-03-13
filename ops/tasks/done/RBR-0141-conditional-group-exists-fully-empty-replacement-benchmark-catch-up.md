@@ -1,6 +1,6 @@
 # RBR-0141: Catch bounded fully-empty conditional replacement benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 - Build on `RBR-0118` and `RBR-0140`.
 - Use the existing `module-sub-numbered-conditional-group-exists-fully-empty-replacement-warm-gap` row in `benchmarks/workloads/conditional_group_exists_fully_empty_boundary.json` as the benchmark anchor for this slice.
 - This task exists so the queue does not reach bounded fully-empty conditional replacement parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Expanded `benchmarks/workloads/conditional_group_exists_fully_empty_boundary.json` from the single replacement gap row to the bounded eight-row fully-empty replacement benchmark slice across module and compiled-`Pattern` `sub()`/`subn()` entrypoints for numbered and named conditionals.
+- Updated `tests/benchmarks/test_conditional_group_exists_fully_empty_boundary_benchmarks.py` to the current combined benchmark totals and to assert the new fully-empty replacement rows measure real `rebar` timings while nested, quantified, and alternation-heavy follow-ons remain explicit gaps.
+- Re-ran the focused benchmark test and republished `reports/benchmarks/latest.json`, which now records 283 total workloads, 225 measured `rebar` timings, and 58 known gaps with the fully-empty conditional manifest at 17 workloads, 14 measured, and 3 gaps.
