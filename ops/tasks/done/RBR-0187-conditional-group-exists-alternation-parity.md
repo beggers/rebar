@@ -1,8 +1,9 @@
 # RBR-0187: Add bounded alternation-heavy two-arm conditional parity
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Convert the bounded alternation-heavy two-arm conditional cases from the published correctness pack into real Rust-backed behavior without reopening quantified conditionals, deeper nesting, or a broad backtracking bucket all at once.
@@ -27,3 +28,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0186`.
 - This task exists so the queue converts the first broader backtracking-heavy conditional composition slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
+
+## Completion
+- Extended the Rust conditional parser and matcher to accept the exact bounded two-arm alternation shape in both numbered and named forms, with CPython-aligned group metadata for the branch-local capture slots (`groups == 3`, yes-arm capture in group `2`, else-arm capture in group `3`).
+- Added focused Rust and Python parity coverage for `a(b)?c(?(1)(de|df)|(eg|eh))` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))`, including both yes-arm and else-arm branch selections through module and compiled-pattern flows.
+- Republished `reports/correctness/latest.json`; the combined published scorecard now reports `406` total cases across `55` manifests with `406` passes and `0` `unimplemented` cases.

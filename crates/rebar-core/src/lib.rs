@@ -918,11 +918,8 @@ impl<'a> QuantifiedAlternationPattern<'a> {
 
 impl<'a> ConditionalGroupExistsPattern<'a> {
     fn group_count(&self) -> usize {
-        if self.yes_branch_alternation.is_some() || self.no_branch_alternation.is_some() {
-            2
-        } else {
-            1
-        }
+        1 + usize::from(self.yes_branch_alternation.is_some())
+            + usize::from(self.no_branch_alternation.is_some())
     }
 
     fn named_groups(&self) -> Vec<NamedGroup> {
@@ -943,9 +940,14 @@ impl<'a> ConditionalGroupExistsPattern<'a> {
         capture_present: bool,
         matched_alternation_branch: Option<&str>,
     ) -> Vec<Option<(usize, usize)>> {
+        let has_yes_alternation = self.yes_branch_alternation.is_some();
+        let has_no_alternation = self.no_branch_alternation.is_some();
         if !capture_present {
             let mut spans = vec![None];
-            if self.no_branch_alternation.is_some() {
+            if has_yes_alternation {
+                spans.push(None);
+            }
+            if has_no_alternation {
                 let no_branch_span = matched_alternation_branch.map(|branch| {
                     let start =
                         match_start + self.prefix.chars().count() + self.middle.chars().count();
@@ -953,8 +955,6 @@ impl<'a> ConditionalGroupExistsPattern<'a> {
                     (start, end)
                 });
                 spans.push(no_branch_span);
-            } else if self.group_count() == 2 {
-                spans.push(None);
             }
             return spans;
         }
@@ -963,14 +963,15 @@ impl<'a> ConditionalGroupExistsPattern<'a> {
         let capture_end = capture_start + self.capture.body.chars().count();
         let mut spans = vec![Some((capture_start, capture_end))];
 
-        if self.yes_branch_alternation.is_some() {
+        if has_yes_alternation {
             let yes_group_span = matched_alternation_branch.map(|branch| {
                 let start = capture_end + self.middle.chars().count();
                 let end = start + branch.chars().count();
                 (start, end)
             });
             spans.push(yes_group_span);
-        } else if self.no_branch_alternation.is_some() {
+        }
+        if has_no_alternation {
             spans.push(None);
         }
 
@@ -2296,9 +2297,6 @@ fn parse_conditional_group_exists_pattern_str(
     let yes_branch_alternation = if normalized_yes_branch.is_empty() {
         None
     } else if nested_yes_branch.is_none() && normalized_yes_branch.chars().any(is_meta_character) {
-        if !matches!(no_branch, None | Some("")) {
-            return None;
-        }
         parse_grouped_literal_alternation_branch(normalized_yes_branch)
     } else {
         None
@@ -2311,16 +2309,12 @@ fn parse_conditional_group_exists_pattern_str(
         no_branch
     };
 
-    let no_branch_alternation = if normalized_yes_branch.is_empty() {
-        normalized_no_branch.and_then(|branch| {
-            if nested_no_branch.is_some() || !branch.chars().any(is_meta_character) {
-                return None;
-            }
-            parse_grouped_literal_alternation_branch(branch)
-        })
-    } else {
-        None
-    };
+    let no_branch_alternation = normalized_no_branch.and_then(|branch| {
+        if nested_no_branch.is_some() || !branch.chars().any(is_meta_character) {
+            return None;
+        }
+        parse_grouped_literal_alternation_branch(branch)
+    });
 
     if yes_branch_alternation.is_none() && normalized_yes_branch.chars().any(is_meta_character) {
         return None;
@@ -6418,6 +6412,64 @@ mod tests {
         assert_eq!(outcome.span, Some((0, 2)));
         assert_eq!(outcome.group_spans, vec![None]);
         assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
+    fn conditional_group_exists_two_arm_alternation_search_reports_yes_branch_capture_span() {
+        let outcome = literal_match(
+            PatternRef::Str("a(b)?c(?(1)(de|df)|(eg|eh))"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabcdfzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 7)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 4)), Some((5, 7)), None]);
+        assert_eq!(outcome.lastindex, Some(2));
+    }
+
+    #[test]
+    fn named_conditional_group_exists_two_arm_alternation_fullmatch_reports_no_branch_capture_span()
+    {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<word>b)?c(?(word)(de|df)|(eg|eh))"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("aceh"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 4)));
+        assert_eq!(outcome.group_spans, vec![None, None, Some((2, 4))]);
+        assert_eq!(outcome.lastindex, Some(3));
+    }
+
+    #[test]
+    fn compile_reports_two_arm_conditional_alternation_group_count() {
+        let outcome = compile(PatternRef::Str("a(b)?c(?(1)(de|df)|(eg|eh))"), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert_eq!(outcome.group_count, 3);
+        assert!(outcome.named_groups.is_empty());
+
+        let named_outcome =
+            compile(PatternRef::Str("a(?P<word>b)?c(?(word)(de|df)|(eg|eh))"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.group_count, 3);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "word".to_string(),
+                index: 1,
+            }]
+        );
     }
 
     #[test]
