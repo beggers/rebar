@@ -1,8 +1,9 @@
 # RBR-0249: Publish an open-ended quantified-group alternation backtracking-heavy correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published correctness scorecard with one bounded open-ended grouped backtracking-heavy manifest so the queue reopens overlapping-branch grouped alternation through the already-anchored `{1,}` counted-repeat slice before larger counted ranges or broader grouped-conditionals resume.
@@ -28,3 +29,5 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0248`.
 - This task exists so the queue reuses the already-published open-ended grouped backtracking-heavy benchmark anchor instead of pausing after the open-ended grouped-conditional trio or jumping to a broader counted-range bucket.
+- Added `open_ended_quantified_group_alternation_backtracking_heavy_workflows.json` plus a focused regression that publishes 12 numbered/named compile, module, and compiled-pattern observations for `a((bc|b)c){1,}d` and `a(?P<word>(bc|b)c){1,}d`.
+- Regenerated the combined correctness scorecard at `reports/correctness/latest.json`; the published surface is now 633 total cases across 76 manifests with 621 passes, 0 explicit failures, and 12 honest `unimplemented` outcomes for the newly published open-ended grouped backtracking-heavy slice pending parity work in `RBR-0250`.
