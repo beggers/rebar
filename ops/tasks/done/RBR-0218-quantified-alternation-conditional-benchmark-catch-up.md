@@ -1,6 +1,6 @@
 # RBR-0218: Catch bounded quantified-alternation-plus-conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,8 @@ Created: 2026-03-13
 - Build on `RBR-0217`.
 - Keep this slice in the existing `quantified_alternation_boundary` manifest rather than inventing a second benchmark family for the same bounded quantified-alternation-plus-conditional surface.
 - This task exists so the queue does not reach bounded quantified-alternation-plus-conditional parity and then leave that newly supported slice absent from benchmark reporting.
+
+## Completion
+- Added numbered and named quantified-alternation-plus-conditional compile/search/fullmatch benchmark rows to the existing `quantified_alternation_boundary` manifest, reusing the old numbered `module.search` conditional gap anchor and leaving broader counted ranges, nested branches, open-ended repeats, and backtracking-heavy shapes as explicit known gaps.
+- Regenerated `reports/benchmarks/latest.json`, moving the published benchmark surface to 381 workloads with 339 measured `rebar` timings and 42 explicit known gaps; the `quantified-alternation-boundary` manifest now reports 22 workloads with 18 measured and 4 known gaps.
+- Verified with `PYTHONPATH=python python3 -m rebar_harness.benchmarks --manifest benchmarks/workloads/quantified_alternation_boundary.json --report /tmp/rebar_quantified_alt_conditional_bench.json` and `PYTHONPATH=python python3 -m unittest tests.benchmarks.test_quantified_alternation_boundary_benchmarks`.

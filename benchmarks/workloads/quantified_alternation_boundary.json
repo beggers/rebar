@@ -7,7 +7,7 @@
   ],
   "notes": [
     "Quantified-alternation boundary workloads keep captures, one literal alternation site repeated across a bounded `{1,2}` envelope, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported quantified-alternation slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b|c){1,2}d`, `a(?P<word>b|c){1,2}d`, `a((b|c)\\2){1,2}d`, and `a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d` compile/search/fullmatch paths directly at representative lower-bound and second-repetition haystacks, so branch-local backreferences inside quantified alternation now reach the published benchmark surface while wider counted ranges, open-ended repeats, nested alternation inside quantified branches, conditional combinations, and broader backtracking-heavy shapes stay as explicit known-gap rows until queued follow-ons land."
+    "Measured rows cover the bounded `a(b|c){1,2}d`, `a(?P<word>b|c){1,2}d`, `a((b|c)\\2){1,2}d`, `a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d`, `a((b|c){1,2})?(?(1)d|e)`, and `a(?P<outer>(b|c){1,2})?(?(outer)d|e)` compile/search/fullmatch paths directly at representative absent, lower-bound, and second-repetition haystacks, so bounded conditionals and branch-local backreferences inside quantified alternation now reach the published benchmark surface while wider counted ranges, open-ended repeats, nested alternation inside quantified branches, and broader backtracking-heavy shapes stay as explicit known-gap rows until queued follow-ons land."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -535,12 +535,44 @@
       ]
     },
     {
-      "id": "module-search-numbered-quantified-alternation-conditional-warm-gap",
+      "id": "module-compile-numbered-quantified-alternation-conditional-cold-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a((b|c){1,2})?(?(1)d|e)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "conditional",
+        "optional-group",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals"
+      ],
+      "notes": [
+        "Cold module.compile benchmark for the bounded numbered quantified-alternation-plus-conditional slice so compile metadata timing reaches the published report."
+      ]
+    },
+    {
+      "id": "module-search-numbered-quantified-alternation-conditional-lower-bound-b-warm-str",
       "bucket": "module-search",
       "family": "module",
       "operation": "module.search",
       "pattern": "a((b|c){1,2})?(?(1)d|e)",
-      "haystack": "zzabcdzz",
+      "haystack": "zzabdzz",
       "flags": 0,
       "text_model": "str",
       "cache_mode": "warm",
@@ -551,9 +583,12 @@
         "quantifier",
         "counted-repeat",
         "conditional",
+        "optional-group",
         "search",
         "module",
-        "unsupported",
+        "present",
+        "lower-bound",
+        "b-branch",
         "warm-cache"
       ],
       "syntax_features": [
@@ -565,7 +600,156 @@
         "conditionals"
       ],
       "notes": [
-        "Explicit conditional-combination known-gap row so bounded conditionals composed with quantified alternation stay visible before broader backtracking work is queued."
+        "Warm module.search helper path for the bounded numbered quantified-alternation-plus-conditional workflow when one `b` branch repetition selects the conditional yes arm."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-quantified-alternation-conditional-second-repetition-mixed-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a((b|c){1,2})?(?(1)d|e)",
+      "haystack": "abcd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "conditional",
+        "optional-group",
+        "fullmatch",
+        "present",
+        "second-repetition",
+        "mixed-branches",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered quantified-alternation-plus-conditional workflow after one `b` branch plus one `c` branch repetition."
+      ]
+    },
+    {
+      "id": "module-compile-named-quantified-alternation-conditional-warm-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<outer>(b|c){1,2})?(?(outer)d|e)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "conditional",
+        "optional-group",
+        "named-group",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.compile benchmark for the bounded named quantified-alternation-plus-conditional slice so named compile metadata timing reaches the published report."
+      ]
+    },
+    {
+      "id": "module-search-named-quantified-alternation-conditional-absent-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<outer>(b|c){1,2})?(?(outer)d|e)",
+      "haystack": "zzaezz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "conditional",
+        "optional-group",
+        "named-group",
+        "search",
+        "module",
+        "absent",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded named quantified-alternation-plus-conditional workflow when the optional quantified alternation is skipped and the else arm accepts `e`."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-quantified-alternation-conditional-second-repetition-c-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<outer>(b|c){1,2})?(?(outer)d|e)",
+      "haystack": "accd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "conditional",
+        "optional-group",
+        "named-group",
+        "fullmatch",
+        "present",
+        "second-repetition",
+        "c-branch",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded named quantified-alternation-plus-conditional workflow after two `c` branch repetitions."
       ]
     },
     {
