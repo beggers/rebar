@@ -14,18 +14,18 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is widening a real Rust-backed subset, but the project is still early relative to the drop-in `re` target. |
 | Delivery estimate | Foundation work is complete, the published slice is expanding with explicit honest gaps and catch-up tasks, and overall stdlib-parity progress is still in the early implementation stage. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `6` ready, `0` in progress, `176` done, `0` blocked |
+| Work queue | `11` ready, `0` in progress, `177` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `356` |
+| Published cases | `364` |
 | Passing in published slice | `356` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `49` |
+| Honest gaps (`unimplemented`) | `8` |
+| Covered manifests | `50` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
 _These correctness counts cover only the published slice. Overall delivery estimate: Foundation work is complete, the published slice is expanding with explicit honest gaps and catch-up tasks, and overall stdlib-parity progress is still in the early implementation stage._
@@ -47,8 +47,8 @@ _README speedup rollups stay omitted while only `253` of `303` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0168` to reconcile the alternation-heavy empty-arm benchmark anchors before those broader follow-ons widen.
-- Then land `RBR-0169` through `RBR-0174` for the first bounded alternation-heavy empty-yes-arm and fully-empty follow-ons once those manifest contracts are distinct.
+- Land `RBR-0169` through `RBR-0174` for the first bounded alternation-heavy empty-yes-arm and fully-empty follow-ons now that their benchmark contracts are distinct.
+- Then land `RBR-0175` through `RBR-0180` for the bounded quantified omitted-no-arm and explicit-empty-else conditional follow-ons already anchored in the benchmark manifests.
 
 ### Current Risks
 
@@ -58,15 +58,15 @@ _README speedup rollups stay omitted while only `253` of `303` published workloa
 
 ## Implementation Snapshot
 
-`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The published slice currently reports `356` passes with `0` honest gaps across `356` cases in `49` manifests, and the benchmark surface now reports `303` workloads with `253` real `rebar` timings and `50` explicit gaps after landing quantified fully-empty conditional benchmark catch-up. The next queued work is `RBR-0168` for the alternation-heavy empty-arm anchor cleanup before `RBR-0169` through `RBR-0174` reopen that frontier.
+`rebar` now has the hard part of the operating system in place: a supervisor/worker loop, durable state, honest correctness and benchmark publication, a Rust core crate, and a CPython-facing extension boundary. The implementation itself is real but still narrow. The published slice currently reports `356` passes with `0` honest gaps across `356` cases in `49` manifests, and the benchmark surface now reports `303` workloads with `253` real `rebar` timings and `50` explicit gaps after `RBR-0168` separated the alternation-heavy empty-arm benchmark anchors. The next queued work is `RBR-0169` through `RBR-0174` for the alternation-heavy empty-yes-arm and fully-empty follow-ons, with `RBR-0175` through `RBR-0180` already queued behind them for quantified omitted-no-arm and explicit-empty-else conditionals.
 
-The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. The deterministic systematic corpus, the bounded nested empty-yes-arm and fully-empty conditional slices, and both bounded quantified empty-arm conditional slices are now part of the tracked Rust-backed baseline. Near-term work is `RBR-0168`, with `RBR-0169` through `RBR-0174` already queued behind that cleanup for the first bounded alternation-heavy empty-yes-arm and fully-empty follow-ons.
+The practical read is simple: infrastructure is no longer the blocker, and compatibility work is progressing in small Rust-backed slices. The deterministic systematic corpus, the bounded nested empty-yes-arm and fully-empty conditional slices, and both bounded quantified empty-arm conditional slices are now part of the tracked Rust-backed baseline. Near-term work is `RBR-0169` through `RBR-0174`, with `RBR-0175` through `RBR-0180` already queued behind them so the conditional frontier can continue through quantified omitted-no-arm and explicit-empty-else follow-ons without another supervisor-only rewrite.
 
 Benchmark publication is still partial by design. The generated status block above carries the current workload and known-gap totals, while the full suite still times the source-tree shim and the built-native path remains a separate six-workload smoke artifact in `reports/benchmarks/native_smoke.json`.
 
 ## What The Numbers Mean
 
-The correctness report is a slice-health signal, not an end-state signal. `356` passes with `0` honest gaps across `356` published cases in `49` manifests means the currently published slice is internally clean, not that the project is close to replacing stdlib `re` across the board. The next queued work is `RBR-0168` for alternation-heavy empty-arm anchor cleanup, with the first bounded alternation-heavy empty-arm behavior slices queued immediately behind it.
+The correctness report is a slice-health signal, not an end-state signal. `356` passes with `0` honest gaps across `356` published cases in `49` manifests means the currently published slice is internally clean, not that the project is close to replacing stdlib `re` across the board. The next queued work is `RBR-0169` through `RBR-0174` for the first bounded alternation-heavy empty-arm behavior slices, with quantified omitted-no-arm and explicit-empty-else follow-ons already queued immediately behind them.
 
 The benchmark report is still a coverage-first artifact too. It already exercises a wide workload set, but `50` workloads are still explicit gaps and the main published run still measures the source-tree shim rather than the fully built-native path. That is enough to guide the queue, but not enough to make broad speed claims yet.
 

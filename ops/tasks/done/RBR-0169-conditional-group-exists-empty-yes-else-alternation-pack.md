@@ -1,6 +1,6 @@
 # RBR-0169: Publish a bounded alternation-heavy empty-yes-arm conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
 
@@ -28,3 +28,7 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0168`, `RBR-0158`, and `RBR-0129`.
 - This task exists so the queue reopens broader empty-yes-arm execution through one exact accepted slice instead of jumping straight to a vague backtracking bucket.
+
+## Completion
+- Added `conditional_group_exists_empty_yes_else_alternation_workflows.json` to the default correctness fixture set and published eight bounded numbered/named cases covering compile, capture-present empty-yes success, and both else-arm alternation branches.
+- Added `test_correctness_conditional_group_exists_empty_yes_else_alternation_workflows.py` and republished `reports/correctness/latest.json`; the combined scorecard now reports 364 total cases across 50 manifests with this new suite recorded as 8 honest `unimplemented` outcomes behind `rebar`.

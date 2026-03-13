@@ -4,20 +4,25 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0168` to reconcile the alternation-heavy empty-arm benchmark anchors so the empty-yes-arm and fully-empty manifests stop collapsing to the same stored pattern before those broader follow-ons are widened.
-2. Land `RBR-0169` to publish one bounded alternation-heavy empty-yes-arm conditional correctness pack for `a(b)?c(?(1)|(e|f))` and `a(?P<word>b)?c(?(word)|(e|f))` once the benchmark contracts are distinct.
-3. Land `RBR-0170` to convert that bounded alternation-heavy empty-yes-arm conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
-4. Land `RBR-0171` to catch bounded alternation-heavy empty-yes-arm conditional benchmarks up so that the first broader empty-yes-arm composition reaches the published benchmark surface.
-5. Land `RBR-0172` to publish one bounded alternation-bearing fully-empty conditional correctness pack for `a(b)?c(?(1)|(?:|))` and `a(?P<word>b)?c(?(word)|(?:|))` so the accepted fully-empty spelling stays explicit after the anchors are fixed.
-6. Land `RBR-0173` to convert that bounded alternation-bearing fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a syntax-only publication island.
-7. Land `RBR-0174` to catch bounded alternation-bearing fully-empty conditional benchmarks up so that the accepted fully-empty follow-on reaches the published benchmark surface with distinct manifest contracts.
+1. Land `RBR-0169` to publish one bounded alternation-heavy empty-yes-arm conditional correctness pack for `a(b)?c(?(1)|(e|f))` and `a(?P<word>b)?c(?(word)|(e|f))` now that the benchmark contracts are distinct.
+2. Land `RBR-0170` to convert that bounded alternation-heavy empty-yes-arm conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
+3. Land `RBR-0171` to catch bounded alternation-heavy empty-yes-arm conditional benchmarks up so that the first broader empty-yes-arm composition reaches the published benchmark surface.
+4. Land `RBR-0172` to publish one bounded alternation-bearing fully-empty conditional correctness pack for `a(b)?c(?(1)|(?:|))` and `a(?P<word>b)?c(?(word)|(?:|))` so the accepted fully-empty spelling stays explicit after the anchors are fixed.
+5. Land `RBR-0173` to convert that bounded alternation-bearing fully-empty conditional slice into real Rust-backed behavior instead of leaving it as a syntax-only publication island.
+6. Land `RBR-0174` to catch bounded alternation-bearing fully-empty conditional benchmarks up so that the accepted fully-empty follow-on reaches the published benchmark surface with distinct manifest contracts.
+7. Land `RBR-0175` to publish one bounded quantified omitted-no-arm conditional correctness pack for `a(b)?c(?(1)d){2}` and `a(?P<word>b)?c(?(word)d){2}` so repeated accepted no-else behavior becomes explicit instead of living only as a benchmark gap row.
+8. Land `RBR-0176` to convert that bounded quantified omitted-no-arm conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
+9. Land `RBR-0177` to catch bounded quantified omitted-no-arm conditional benchmarks up so that the accepted repeated no-else slice reaches the published benchmark surface.
+10. Land `RBR-0178` to publish one bounded quantified explicit-empty-else conditional correctness pack for `a(b)?c(?(1)d|){2}` and `a(?P<word>b)?c(?(word)d|){2}` so the accepted `|)` spelling stays explicit even where its bounded absent-arm runtime overlaps the omitted-no-arm form.
+11. Land `RBR-0179` to convert that bounded quantified explicit-empty-else conditional slice into real Rust-backed behavior instead of leaving it as publication-only coverage.
+12. Land `RBR-0180` to catch bounded quantified explicit-empty-else conditional benchmarks up so that the accepted repeated explicit-empty-else slice reaches the published benchmark surface.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
 - Prefer replacing vague items with concrete task files instead of growing this document indefinitely.
 - Keep scaffold tickets small enough that one implementation-agent run can finish them without needing another synthesis pass first.
 - Seed dependent follow-on tasks early when lexical ordering is enough to keep prerequisites ahead of them in the ready queue.
-- Keep `RBR-0169` through `RBR-0174` pre-seeded behind `RBR-0168`; the task contracts are now explicit enough that lexical queue order is sufficient and the worker should not wait on another supervisor-only reseed pass.
+- Keep `RBR-0169` through `RBR-0180` pre-seeded in lexical order; the task contracts are explicit enough that the worker should not need another supervisor-only reseed pass between the alternation-heavy and quantified conditional follow-ons.
 - Keep README landing-page summaries short, and keep published-slice pass counts clearly separate from any claim about overall stdlib `re` feature completeness.
 - Translate remote-only user requests into concrete local queue items when git history is diverged, so the working queue can keep moving before a later merge or rebase reconciles `origin/main`.
 - Once exact baseline provenance lands, keep the next milestone focused on native import validation and broader harness coverage instead of reopening metadata-only work.
@@ -123,4 +128,8 @@ Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier,
 - Use the existing `module-search-numbered-conditional-group-exists-empty-yes-else-alternation-heavy-warm-gap` row in `benchmarks/workloads/conditional_group_exists_empty_yes_else_boundary.json` as the benchmark anchor for the post-`RBR-0168` empty-yes-arm slice; do not fork a second benchmark family for the same accepted workflows.
 - After `RBR-0171`, reopen the queue with one bounded alternation-bearing fully-empty slice as `RBR-0172` through `RBR-0174`, pinned to `a(b)?c(?(1)|(?:|))` and `a(?P<word>b)?c(?(word)|(?:|))`, so the accepted fully-empty spelling stays explicit even though its bounded runtime overlaps the already-landed fully-empty slice.
 - Use the corrected `module-search-numbered-conditional-group-exists-fully-empty-alternation-heavy-warm-gap` row in `benchmarks/workloads/conditional_group_exists_fully_empty_boundary.json` as the benchmark anchor for the post-`RBR-0171` fully-empty slice; do not fork a second benchmark family for the same accepted workflows.
+- After `RBR-0174`, reopen the queue with one bounded quantified omitted-no-arm slice as `RBR-0175` through `RBR-0177`, pinned to `a(b)?c(?(1)d){2}` and `a(?P<word>b)?c(?(word)d){2}`, before quantified explicit-empty-else follow-ons or broader backtracking-heavy conditional execution reopen the frontier.
+- Use the existing `pattern-fullmatch-numbered-quantified-conditional-group-exists-no-else-purged-gap` row in `benchmarks/workloads/conditional_group_exists_no_else_boundary.json` as the benchmark anchor for the post-`RBR-0174` quantified omitted-no-arm slice; do not fork a second benchmark family for the same exact workflows.
+- After `RBR-0177`, reopen the queue with one bounded quantified explicit-empty-else slice as `RBR-0178` through `RBR-0180`, pinned to `a(b)?c(?(1)d|){2}` and `a(?P<word>b)?c(?(word)d|){2}`, so the accepted explicit `|)` spelling stays distinct even though its bounded absent-arm runtime overlaps the omitted-no-arm form.
+- Use the existing `pattern-fullmatch-numbered-quantified-conditional-group-exists-empty-else-purged-gap` row in `benchmarks/workloads/conditional_group_exists_empty_else_boundary.json` as the benchmark anchor for the post-`RBR-0177` quantified explicit-empty-else slice; do not fork a second benchmark family for the same exact workflows.
 - Keep the `README ...` summary sections in `ops/state/current_status.md` to one short line or two short bullets each; detailed compatibility inventories and long risk lists belong in the main status sections, not in the landing-page feed.
