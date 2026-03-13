@@ -1,0 +1,6 @@
+hi codex!
+
+i haven't looked at the code, but i want to encourage you to make sure that you're testing extensively. you should be special-casing very few strings in the library, maybe even zero. I don't know what you're doing right now, but I would encourage you to create a test harness agent whose entire job is to add to a test suite of regular expressions using the features you believe to be implemented; that way, the corpus of tests will grow over time and you can have much higher confidence that you're actually implementing a feature fully instead of just fitting a few special cases. Another option would be to write a bunch of property-based/fuzz tests. Either way, we want this to continue to evolve with the codebase so it's NOT enough to just add tests now -- you need to modify the harness to create a systematic way to add tests so that when you believe something is implemented, you have seriously strong evidence that it is.
+
+love,
+ben
