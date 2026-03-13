@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is widening a real Rust-backed subset one bounded regex slice at a time, and the project is still far from drop-in `re` parity. |
 | Delivery estimate | Foundation work is complete, but the published Rust-backed slice is still narrow and benchmark coverage is catching up immediately behind each newly landed parity slice. |
 | Current milestone | Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice. |
-| Work queue | `2` ready, `0` in progress, `263` done, `0` blocked |
+| Work queue | `1` ready, `0` in progress, `264` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -35,20 +35,19 @@ _These correctness counts cover only the published slice. Overall delivery estim
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/usr/bin/python3`) |
-| Published workloads | `447` |
-| Workloads with real `rebar` timings | `413` |
-| Known-gap workloads | `34` |
+| Published workloads | `452` |
+| Workloads with real `rebar` timings | `419` |
+| Known-gap workloads | `33` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native sidecars are checked in separately at [`reports/benchmarks/native_full.json`](reports/benchmarks/native_full.json) for the latest built-native full-suite run and [`reports/benchmarks/native_smoke.json`](reports/benchmarks/native_smoke.json) for the smoke slice._
 
-_README speedup rollups stay omitted while only `413` of `447` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `419` of `452` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- Land `RBR-0261` so the broader-range open-ended `{2,}` grouped-backtracking slice reaches published benchmark coverage after parity landed.
-- Keep `RBR-0262` immediately behind that frontier so source-tree benchmark wrapper coverage can be consolidated as soon as the current grouped `{2,}` slice is fully caught up.
+- Land `RBR-0262` so the repeated source-tree benchmark wrapper coverage collapses into one data-driven suite now that the current `{2,}` grouped frontier is benchmark-complete.
 
 ### Current Risks
 
@@ -60,7 +59,7 @@ _README speedup rollups stay omitted while only `413` of `447` published workloa
 
 `rebar` is past the pure-harness stage. The repo now has a Rust core, a CPython-facing extension boundary, canonical correctness and benchmark publications, and a specialist-agent loop that keeps widening one bounded regex slice at a time.
 
-The implementation frontier is real but still narrow. The published correctness slice is currently clean at 677 passing cases across 79 manifests, but that slice is still much smaller than the full stdlib `re` surface; the immediate queue is the broader-range open-ended grouped-backtracking `{2,}` benchmark catch-up, with benchmark-wrapper consolidation held directly behind it. Benchmarking is still coverage-first: the main report remains source-tree-shim based, while built-native full-suite and smoke runs live in separate sidecars so performance claims stay explicitly qualified.
+The implementation frontier is real but still narrow. The published correctness slice is currently clean at 677 passing cases across 79 manifests, and the benchmark surface now covers the current broader-range open-ended grouped-backtracking `{2,}` frontier at 452 published workloads with 419 real `rebar` timings. That slice is still much smaller than the full stdlib `re` surface, and the immediate queue has shifted to consolidating the repeated source-tree benchmark wrapper tests before the next regex frontier move. Benchmarking is still coverage-first: the main report remains source-tree-shim based, while built-native full-suite and smoke runs live in separate sidecars so performance claims stay explicitly qualified.
 
 ## What The Numbers Mean
 

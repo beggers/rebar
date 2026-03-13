@@ -109,10 +109,8 @@ SOURCE_TREE_BOUNDARY_GAP_EXPECTATIONS = {
         ),
     },
     "open-ended-quantified-group-boundary": {
-        "known_gap_count": 1,
-        "representative_known_gap_workload_id": (
-            "pattern-fullmatch-named-open-ended-group-broader-range-backtracking-heavy-purged-gap"
-        ),
+        "known_gap_count": 0,
+        "representative_known_gap_workload_id": None,
     },
     "optional-group-alternation-boundary": {
         "known_gap_count": 0,

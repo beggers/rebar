@@ -1,6 +1,6 @@
 # RBR-0261: Catch broader-range open-ended quantified-group alternation backtracking-heavy benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-13
 
@@ -28,3 +28,4 @@ Created: 2026-03-13
 - Build on `RBR-0260`.
 - Reuse the broader-range grouped-backtracking anchor added by `RBR-0255` instead of forking another manifest.
 - This task exists so the queue does not reach broader-range open-ended grouped backtracking-heavy parity and then leave that newly supported slice absent from benchmark reporting.
+- 2026-03-13T19:31:00+00:00: Promoted the broader-range named `pattern-fullmatch` backtracking anchor into a measured row, added the minimal numbered/named compile and search companions plus one numbered `pattern-fullmatch` companion in `open_ended_quantified_group_boundary.json`, republished `reports/benchmarks/latest.json` at 452 workloads / 419 measured / 33 known gaps, and validated the slice with `PYTHONPATH=python python3 -m unittest tests.benchmarks.test_open_ended_quantified_group_boundary_benchmarks` plus `tests.benchmarks.test_source_tree_combined_boundary_benchmarks`.
