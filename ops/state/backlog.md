@@ -4,11 +4,14 @@
 Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier, with correctness publication, Rust-backed parity, and benchmark catch-up landing in lockstep for each bounded regex slice.
 
 ## Ordered Work
-1. Land `RBR-0150` to catch bounded quantified-conditional benchmarks up so that repeated conditional-arm behavior reaches the published benchmark surface before broader backtracking-heavy conditional execution reopens the frontier further.
-2. Land `RBR-0151` to publish one bounded nested explicit-empty-else conditional correctness pack for `a(b)?c(?(1)(?(1)d)|)` and `a(?P<word>b)?c(?(word)(?(word)d)|)` so the queue keeps accepted nested conditional syntax explicit before empty-yes-arm or fully-empty nested variants reopen the frontier.
-3. Land `RBR-0152` to convert that bounded nested explicit-empty-else conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
-4. Land `RBR-0153` to catch bounded nested explicit-empty-else conditional benchmarks up so that accepted nested explicit-empty-else composition reaches the published benchmark surface before broader nested conditional expansion reopens the frontier further.
-5. Land `RBR-0154` to add a deterministic systematic correctness-corpus harness for already-landed slices so stronger evidence can accumulate alongside feature work instead of relying only on hand-written per-slice fixture growth.
+1. Land `RBR-0151` to publish one bounded nested explicit-empty-else conditional correctness pack for `a(b)?c(?(1)(?(1)d)|)` and `a(?P<word>b)?c(?(word)(?(word)d)|)` so the queue keeps accepted nested conditional syntax explicit before broader nested empty-arm variants reopen the frontier.
+2. Land `RBR-0152` to convert that bounded nested explicit-empty-else conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+3. Land `RBR-0153` to catch bounded nested explicit-empty-else conditional benchmarks up so that accepted nested explicit-empty-else composition reaches the published benchmark surface before broader nested conditional expansion reopens the frontier further.
+4. Land `RBR-0154` to add a deterministic systematic correctness-corpus harness for already-landed slices so stronger evidence can accumulate alongside feature work instead of relying only on hand-written per-slice fixture growth.
+5. Land `RBR-0155` to reconcile the nested empty-arm benchmark anchors so the empty-yes-arm and fully-empty manifests stop collapsing to the same stored pattern before the next feature slice is queued against them.
+6. Land `RBR-0156` to publish one bounded nested empty-yes-arm conditional correctness pack for `a(b)?c(?(1)|(?(1)e|f))` and `a(?P<word>b)?c(?(word)|(?(word)e|f))` so the queue keeps accepted nested empty-arm syntax explicit before nested fully-empty conditionals or broader backtracking reopen the frontier.
+7. Land `RBR-0157` to convert that bounded nested empty-yes-arm conditional slice into real Rust-backed behavior instead of leaving it as a correctness-only island.
+8. Land `RBR-0158` to catch bounded nested empty-yes-arm conditional benchmarks up so that accepted nested empty-yes-arm composition reaches the published benchmark surface before nested fully-empty conditionals or broader backtracking reopen the frontier further.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
@@ -114,5 +117,6 @@ Milestone 2 keeps widening a narrow but real Rust-backed compatibility frontier,
 - Treat `USER-ASK-2` as durable architectural direction: new compatibility behavior belongs in Rust, while `python/rebar/__init__.py` should stay limited to symbol export, object wrappers, argument normalization, cache plumbing, and FFI calls.
 - If a ready task is already satisfied as a side effect of earlier landed work, retire it directly in the queue and advance the milestone front instead of burning a no-op worker cycle.
 - Keep `reports/benchmarks/native_smoke.json` as the bounded native-path check-in while the main full-suite report remains source-tree-shim-backed; README and status surfaces should preserve that distinction explicitly.
-- Do not seed post-`RBR-0154` feature follow-ons until the exact CPython-supported nested empty-arm slice and benchmark anchor patterns are pinned cleanly; the current nested empty-yes-arm and fully-empty benchmark gap rows still collapse to the same stored pattern and need supervisor reconciliation before they become worker task contracts.
+- Use `RBR-0155` to reconcile the nested empty-arm benchmark anchors before the next feature slice lands; keep the empty-yes-arm anchor pinned to `a(b)?c(?(1)|(?(1)e|f))` and correct the nested fully-empty follow-on anchor to `a(b)?c(?(1)|(?(1)|))` instead of letting both manifests carry the same stored pattern.
+- After `RBR-0155`, keep the next feature slice narrow as `RBR-0156` through `RBR-0158` for nested empty-yes-arm conditionals, and defer nested fully-empty follow-ons until that slice lands cleanly.
 - Keep the `README ...` summary sections in `ops/state/current_status.md` to one short line or two short bullets each; detailed compatibility inventories and long risk lists belong in the main status sections, not in the landing-page feed.

@@ -1,8 +1,9 @@
 # RBR-0151: Publish a bounded nested explicit-empty-else conditional correctness pack
 
-Status: ready
+Status: done
 Owner: implementation
 Created: 2026-03-13
+Completed: 2026-03-13
 
 ## Goal
 - Extend the published correctness scorecard with one bounded nested explicit-empty-else conditional manifest so the queue keeps accepted nested conditional composition explicit before empty-yes-arm or fully-empty nested variants reopen the frontier.
@@ -28,3 +29,8 @@ Created: 2026-03-13
 ## Notes
 - Build on `RBR-0111`, `RBR-0147`, and the already-landed explicit-empty-else baseline.
 - This task exists so the queue keeps accepted nested conditional syntax explicit instead of jumping straight from one omitted-no-arm nested slice to broader backtracking-heavy composition.
+
+## Completion
+- Added `conditional_group_exists_empty_else_nested_workflows.json` as a dedicated manifest for the bounded nested explicit-empty-else slice and wired it into the default correctness fixture set.
+- Added a focused correctness test covering the new combined report totals plus the numbered and named compile/module/pattern observations for `a(b)?c(?(1)(?(1)d)|)` and `a(?P<word>b)?c(?(word)(?(word)d)|)`.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports 44 manifests and 304 passing cases with 0 honest gaps.
