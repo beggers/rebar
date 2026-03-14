@@ -1176,6 +1176,14 @@ def _pythonpath_env(entries: list[pathlib.Path]) -> dict[str, str]:
     return env
 
 
+def _native_runtime_failure(
+    temp_dir: tempfile.TemporaryDirectory,
+    reason: str,
+) -> tuple[None, None, str]:
+    temp_dir.cleanup()
+    return None, None, reason
+
+
 def provision_built_native_runtime() -> tuple[dict[str, Any] | None, tempfile.TemporaryDirectory | None, str | None]:
     maturin = shutil.which("maturin")
     if maturin is None:
@@ -1205,13 +1213,17 @@ def provision_built_native_runtime() -> tuple[dict[str, Any] | None, tempfile.Te
         text=True,
     )
     if build_result.returncode != 0:
-        temp_dir.cleanup()
-        return None, None, _clean_failure_message("maturin build", build_result)
+        return _native_runtime_failure(
+            temp_dir,
+            _clean_failure_message("maturin build", build_result),
+        )
 
     wheels = sorted(wheelhouse.glob("rebar-*.whl"))
     if len(wheels) != 1:
-        temp_dir.cleanup()
-        return None, None, f"built-native mode unavailable because wheel build produced {len(wheels)} rebar wheels"
+        return _native_runtime_failure(
+            temp_dir,
+            f"built-native mode unavailable because wheel build produced {len(wheels)} rebar wheels",
+        )
 
     install_result = subprocess.run(
         [
@@ -1230,8 +1242,10 @@ def provision_built_native_runtime() -> tuple[dict[str, Any] | None, tempfile.Te
         text=True,
     )
     if install_result.returncode != 0:
-        temp_dir.cleanup()
-        return None, None, _clean_failure_message("pip install --target", install_result)
+        return _native_runtime_failure(
+            temp_dir,
+            _clean_failure_message("pip install --target", install_result),
+        )
 
     probe_result = subprocess.run(
         [
@@ -1247,15 +1261,15 @@ def provision_built_native_runtime() -> tuple[dict[str, Any] | None, tempfile.Te
         env=_pythonpath_env([install_root, PYTHON_SOURCE]),
     )
     if probe_result.returncode != 0:
-        temp_dir.cleanup()
-        return None, None, _clean_failure_message("native metadata probe", probe_result)
+        return _native_runtime_failure(
+            temp_dir,
+            _clean_failure_message("native metadata probe", probe_result),
+        )
 
     probed = json.loads(probe_result.stdout)
     if not probed.get("native_module_loaded", False):
-        temp_dir.cleanup()
-        return (
-            None,
-            None,
+        return _native_runtime_failure(
+            temp_dir,
             "built-native mode unavailable because the installed wheel did not load `rebar._rebar`",
         )
 
