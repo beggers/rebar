@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import json
-import os
 import pathlib
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -12,21 +10,13 @@ import unittest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYTHON_SOURCE = REPO_ROOT / "python"
-MATURIN = shutil.which("maturin")
 
 if str(PYTHON_SOURCE) not in sys.path:
     sys.path.insert(0, str(PYTHON_SOURCE))
 
 
 import rebar
-
-
-def _venv_python(venv_root: pathlib.Path) -> pathlib.Path:
-    return venv_root / "bin" / "python"
-
-
-def _venv_pip(venv_root: pathlib.Path) -> pathlib.Path:
-    return venv_root / "bin" / "pip"
+from tests.python.native_wheel_test_support import MATURIN, build_and_install_rebar_wheel
 
 
 class RebarPatternObjectScaffoldTest(unittest.TestCase):
@@ -97,46 +87,7 @@ class RebarPatternObjectScaffoldTest(unittest.TestCase):
     def test_built_wheel_keeps_pattern_scaffold_contract(self) -> None:
         with tempfile.TemporaryDirectory(prefix="rebar-pattern-scaffold-") as temp_dir:
             temp_root = pathlib.Path(temp_dir)
-            venv_root = temp_root / "venv"
-            wheelhouse = temp_root / "wheelhouse"
-
-            subprocess.run(
-                [sys.executable, "-m", "venv", str(venv_root)],
-                cwd=REPO_ROOT,
-                check=True,
-            )
-
-            python_bin = _venv_python(venv_root)
-            pip_bin = _venv_pip(venv_root)
-            wheelhouse.mkdir()
-
-            build_env = os.environ.copy()
-            build_env["PATH"] = f"{pathlib.Path(MATURIN).parent}{os.pathsep}{build_env['PATH']}"
-
-            subprocess.run(
-                [
-                    MATURIN,
-                    "build",
-                    "--manifest-path",
-                    "crates/rebar-cpython/Cargo.toml",
-                    "--interpreter",
-                    str(python_bin),
-                    "--out",
-                    str(wheelhouse),
-                ],
-                cwd=REPO_ROOT,
-                check=True,
-                env=build_env,
-            )
-
-            wheels = sorted(wheelhouse.glob("rebar-*.whl"))
-            self.assertEqual(len(wheels), 1, f"expected one built wheel, found {wheels}")
-
-            subprocess.run(
-                [str(pip_bin), "install", str(wheels[0])],
-                cwd=REPO_ROOT,
-                check=True,
-            )
+            python_bin = build_and_install_rebar_wheel(self, temp_root=temp_root)
 
             probe = """
 import json
