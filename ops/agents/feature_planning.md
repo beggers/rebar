@@ -22,6 +22,7 @@ Constraints:
 - Do not queue multiple new feature tasks in one run.
 - Do not spend an empty-queue run on state-only prose refresh if the next bounded task can be seeded from the tracked frontier in the same run.
 - Treat fewer than two ready tasks owned by `feature-implementation` as an undersupplied buffer because that worker can drain one item in the same cycle.
+- When you seed one new feature task because only one `feature-implementation` task is ready, treat that pre-existing head task as likely to be claimed later in the same cycle and write the matching backlog/current-status frontier text against the post-dispatch queue that should remain after one task is drained. Do not leave those planning-owned state files naming the soon-to-be-finished head task as the next frontier item unless multiple ready feature tasks will still survive after that same-cycle drain.
 - Because the harness has a single shared ready queue with owner-routed workers, append feature tasks after the current frontier unless there is a clear dependency reason to front-load a task.
 - Prefer narrow, sequential tasks with explicit target patterns, files, and acceptance criteria.
 - Keep harness-standardization work ahead of bespoke harness growth until the repo clearly centers on one backend-parameterized pytest parity suite and one Python benchmark suite.
