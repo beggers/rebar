@@ -2012,6 +2012,7 @@ def result_last_message_text(result: RunResult) -> str:
 
 
 def commit_summary_text(text: str) -> str | None:
+    candidates: list[str] = []
     for raw_line in text.splitlines():
         line = raw_line.strip()
         if not line or line.startswith("```"):
@@ -2021,8 +2022,22 @@ def commit_summary_text(text: str) -> str | None:
         line = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", line)
         line = line.replace("`", "").strip().rstrip(".")
         if line:
-            return line
-    return None
+            candidates.append(line)
+    if not candidates:
+        return None
+
+    preamble_prefixes = (
+        "no ",
+        "i verified",
+        "verified ",
+        "results:",
+        "per the role constraints",
+    )
+    for line in candidates:
+        if line.lower().startswith(preamble_prefixes):
+            continue
+        return line
+    return candidates[0]
 
 
 def truncate_commit_subject(text: str, limit: int = 72) -> str:

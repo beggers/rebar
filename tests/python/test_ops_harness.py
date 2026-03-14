@@ -137,6 +137,23 @@ class OpsHarnessTest(unittest.TestCase):
         )
         self.assertIn("<agent-name>: <brief description>", prompt)
 
+    def test_commit_summary_text_skips_leading_preamble_when_action_line_follows(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+
+        summary = rebar_ops.commit_summary_text(
+            """No tracked `.venv/` or `site-packages` tree was present, so I used this run on one bounded duplicate-plumbing cleanup instead.
+
+I consolidated the duplicated scorecard read/write helpers into [scorecard_io.py](/tmp/scorecard_io.py).
+
+Verified with `python -m unittest`.
+"""
+        )
+
+        self.assertEqual(
+            summary,
+            "I consolidated the duplicated scorecard read/write helpers into scorecard_io.py",
+        )
+
     def test_owner_routed_task_claims_select_only_matching_owner(self) -> None:
         rebar_ops = load_rebar_ops_module()
         with tempfile.TemporaryDirectory() as temp_dir:
