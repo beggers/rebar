@@ -2888,9 +2888,13 @@ def run_cycle(
             if commit_action is not None:
                 commit_actions.append(commit_action)
             continue
-        if git_worktree_dirty():
+        if agent.kind == "reporting_worker":
+            # Keep generated report/README churn attached to the reporting pass so
+            # earlier agent commits only contain files their final summaries could
+            # reasonably describe.
             refresh_published_correctness_scorecard()
             sync_readme_status(config)
+        if git_worktree_dirty():
             commit_action = maybe_commit_agent_changes(
                 config,
                 agent,
