@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now has `RBR-0334` seeded as the surviving follow-on so quantified nested-group-alternation-plus-branch-local-backreference benchmark catch-up remains queued on the existing Python-path surface once the ready parity head drains.
+Milestone 2 now has `RBR-0336` seeded as the surviving follow-on so the broader `{1,4}` counted-repeat nested-group-alternation-plus-branch-local-backreference correctness slice stays queued once the ready benchmark head drains.
 
 ## Ordered Work
-1. Land `RBR-0334` to catch the bounded quantified nested-group-alternation-plus-branch-local-backreference workflows from `RBR-0332` up on `benchmarks/workloads/nested_group_alternation_boundary.py` through `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`.
+1. Land `RBR-0336` to publish the bounded broader `{1,4}` counted-repeat nested-group-alternation-plus-branch-local-backreference workflows for `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d` through `python/rebar_harness/correctness.py`, `tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py`, `tests/conformance/correctness_expectations.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
