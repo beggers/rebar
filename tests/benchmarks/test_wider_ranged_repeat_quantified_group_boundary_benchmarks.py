@@ -16,7 +16,7 @@ MANIFEST_PATH = (
 
 
 class WiderRangedRepeatQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCase):
-    def test_broader_range_and_nested_open_ended_grouped_alternation_rows_are_measured(self) -> None:
+    def test_broader_range_conditional_and_adjacent_grouped_rows_are_measured(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             report_path = pathlib.Path(temp_dir) / "benchmarks.json"
             subprocess.run(
@@ -45,6 +45,12 @@ class WiderRangedRepeatQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCa
             "module-compile-named-wider-ranged-repeat-group-broader-range-warm-str",
             "module-search-named-wider-ranged-repeat-group-broader-range-upper-bound-all-de-warm-str",
             "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-upper-bound-mixed-purged-str",
+            "module-compile-numbered-wider-ranged-repeat-group-broader-range-conditional-cold-str",
+            "module-search-numbered-wider-ranged-repeat-group-broader-range-conditional-absent-warm-str",
+            "pattern-fullmatch-numbered-wider-ranged-repeat-group-broader-range-conditional-lower-bound-bc-purged-str",
+            "module-compile-named-wider-ranged-repeat-group-broader-range-conditional-warm-str",
+            "module-search-named-wider-ranged-repeat-group-broader-range-conditional-upper-bound-mixed-warm-str",
+            "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-conditional-upper-bound-mixed-purged-str",
             "module-compile-numbered-wider-ranged-repeat-group-open-ended-cold-str",
             "module-search-numbered-wider-ranged-repeat-group-open-ended-lower-bound-bc-warm-str",
             "pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-gap",
@@ -63,8 +69,8 @@ class WiderRangedRepeatQuantifiedGroupBoundaryBenchmarkSuiteTest(unittest.TestCa
 
         manifest_summary = scorecard["manifests"]["wider-ranged-repeat-quantified-group-boundary"]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
-        self.assertEqual(manifest_summary["measured_workloads"], 30)
-        self.assertEqual(manifest_summary["workload_count"], 30)
+        self.assertEqual(manifest_summary["measured_workloads"], 36)
+        self.assertEqual(manifest_summary["workload_count"], 36)
 
 
 if __name__ == "__main__":

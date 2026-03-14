@@ -6,8 +6,8 @@
     "docs/spec/drop-in-re-compatibility.md"
   ],
   "notes": [
-    "Wider ranged-repeat quantified-group boundary workloads keep captures, counted ranges, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded `{1,3}` slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(bc|de){1,3}d`, `a(?P<word>bc|de){1,3}d`, `a(bc|de){1,4}d`, `a(?P<word>bc|de){1,4}d`, `a((bc|de){1,})d`, `a(?P<outer>(bc|de){1,})d`, `a((bc|de){1,3})?(?(1)d|e)`, `a(?P<outer>(bc|de){1,3})?(?(outer)d|e)`, `a((bc|b)c){1,3}d`, and `a(?P<word>(bc|b)c){1,3}d` compile/search/fullmatch paths directly at representative lower-bound, mixed-branch, upper-bound, and overlapping-branch haystacks, while open-ended grouped alternation plus conditional and backtracking-heavy follow-ons stay explicit instead of being silently dropped from publication."
+    "Wider ranged-repeat quantified-group boundary workloads keep captures, counted ranges, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the tracked grouped-alternation, grouped-conditional, and overlapping-branch slices rather than regex throughput.",
+    "Measured rows cover the bounded `a(bc|de){1,3}d`, `a(?P<word>bc|de){1,3}d`, `a(bc|de){1,4}d`, `a(?P<word>bc|de){1,4}d`, `a((bc|de){1,3})?(?(1)d|e)`, `a(?P<outer>(bc|de){1,3})?(?(outer)d|e)`, `a((bc|de){1,4})?(?(1)d|e)`, `a(?P<outer>(bc|de){1,4})?(?(outer)d|e)`, `a((bc|de){1,})d`, `a(?P<outer>(bc|de){1,})d`, `a((bc|b)c){1,3}d`, and `a(?P<word>(bc|b)c){1,3}d` compile/search/fullmatch paths directly at representative absent-group, lower-bound, mixed-branch, upper-bound, and overlapping-branch haystacks so adjacent grouped follow-ons stay explicit instead of being silently dropped from publication."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -893,6 +893,248 @@
       ],
       "notes": [
         "Purged-cache Pattern.fullmatch probe for the bounded named grouped-alternation-plus-conditional workflow on one `bc` then one `de` repetition before the conditional yes arm matches."
+      ]
+    },
+    {
+      "id": "module-compile-numbered-wider-ranged-repeat-group-broader-range-conditional-cold-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a((bc|de){1,4})?(?(1)d|e)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "broader-range",
+        "conditional",
+        "optional-group",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation",
+        "conditionals"
+      ],
+      "notes": [
+        "Cold module.compile benchmark for the broader-range numbered wider ranged-repeat grouped-alternation-plus-conditional slice so `{1,4}` compile metadata joins the published benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-numbered-wider-ranged-repeat-group-broader-range-conditional-absent-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a((bc|de){1,4})?(?(1)d|e)",
+      "haystack": "zzaezz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "broader-range",
+        "conditional",
+        "optional-group",
+        "search",
+        "module",
+        "absent",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm module.search helper path for the broader-range numbered grouped-alternation-plus-conditional workflow when the optional outer group is absent and the else arm accepts `e`."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-wider-ranged-repeat-group-broader-range-conditional-lower-bound-bc-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a((bc|de){1,4})?(?(1)d|e)",
+      "haystack": "abcd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "broader-range",
+        "conditional",
+        "optional-group",
+        "fullmatch",
+        "present",
+        "lower-bound",
+        "bc-branch",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the broader-range numbered grouped-alternation-plus-conditional workflow at the `bc` lower bound before the conditional yes arm matches."
+      ]
+    },
+    {
+      "id": "module-compile-named-wider-ranged-repeat-group-broader-range-conditional-warm-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "broader-range",
+        "conditional",
+        "optional-group",
+        "named-group",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.compile benchmark for the broader-range named wider ranged-repeat grouped-alternation-plus-conditional slice so named `{1,4}` compile metadata joins the published report."
+      ]
+    },
+    {
+      "id": "module-search-named-wider-ranged-repeat-group-broader-range-conditional-upper-bound-mixed-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
+      "haystack": "zzabcdedededzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "broader-range",
+        "conditional",
+        "optional-group",
+        "named-group",
+        "search",
+        "module",
+        "present",
+        "upper-bound",
+        "mixed",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.search helper path for the broader-range named grouped-alternation-plus-conditional workflow at a mixed four-repetition upper bound before the yes arm accepts the trailing `d`."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-conditional-upper-bound-mixed-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
+      "haystack": "abcdededed",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "broader-range",
+        "conditional",
+        "optional-group",
+        "named-group",
+        "fullmatch",
+        "present",
+        "upper-bound",
+        "mixed",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the broader-range named grouped-alternation-plus-conditional workflow at the mixed four-repetition upper bound."
       ]
     },
     {

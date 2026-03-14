@@ -1,6 +1,6 @@
 # RBR-0273: Catch broader-range wider-ranged-repeat quantified-group alternation plus conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-13
 
@@ -28,3 +28,6 @@ Created: 2026-03-13
 - Build on `RBR-0271`.
 - Keep the broader `{1,4}` grouped-conditional follow-on on the existing wider-ranged-repeat grouped boundary manifest instead of forking another benchmark family.
 - Add only the directly adjacent broader-range conditional rows needed to publish this exact slice cleanly; broader grouped backtracking-heavy or open-ended grouped-conditional follow-ons stay out of scope.
+
+## Completion
+- 2026-03-14: Added the minimal numbered and named compile/search/`Pattern.fullmatch()` `{1,4}` grouped-conditional benchmark rows to `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.json`, updated the focused and combined benchmark assertions, and republished `reports/benchmarks/latest.json` so the wider-ranged-repeat manifest now reports 36 measured workloads and the combined source-tree benchmark scorecard reports 467 workloads with 436 real `rebar` timings and 31 explicit known gaps.
