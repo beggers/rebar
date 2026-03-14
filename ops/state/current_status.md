@@ -9,7 +9,7 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 remains a bounded Rust-backed subset, with correctness, Rust-backed parity, and the main Python-path benchmark report aligned through quantified nested-group replacement templates.
 
 ## README Delivery Estimate
-The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity: the published slice is narrow, the main benchmark report still runs through the source-tree shim, and quantified nested-group callable replacement plus deeper grouped execution remain ahead.
+The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity: the published slice is narrow, the main benchmark report still runs through the source-tree shim, and broader native-path measurement plus deeper grouped execution remain ahead.
 
 ## README Next Steps
 - Land `RBR-0316` to catch the published quantified nested-group callable replacement slice up on the existing Python-path benchmark surface.
@@ -17,7 +17,7 @@ The repo has the right harness and reporting shape, but it is still far from dro
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded and carries 30 explicit known-gap workloads, so the scorecards remain frontier reporting while quantified nested-group callable replacement still needs benchmark catch-up and quantified nested-group alternation sits immediately behind it.
+- The published benchmark surface is still bounded and carries 29 explicit known-gap workloads, so the scorecards remain frontier reporting rather than a broad claim about `re` compatibility or speed.
 
 ## Compatibility Heuristic
 Early subset, still far from drop-in parity: the Rust boundary covers literals, captures, several bounded conditional and replacement workflows, quantified branch-local backreferences, and grouped alternation through bounded `{1,4}` plus open-ended `{1,}` and `{2,}` counted-repeat slices. The last grouped slice aligned across correctness, Rust-backed parity, and the main Python-path benchmark surface remains quantified nested-group replacement-template workflows on `a((bc)+)d` and `a(?P<outer>(?P<inner>bc)+)d`; `RBR-0313` has already converted the adjacent quantified nested-group callable replacement slice to Rust-backed parity, `RBR-0316` is queued to catch that same bounded callback workflow up on the existing Python-path benchmark surface, and `RBR-0318` is seeded immediately behind it to reopen correctness on quantified nested-group alternation for `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`.

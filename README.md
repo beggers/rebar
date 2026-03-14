@@ -12,7 +12,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 remains a bounded Rust-backed subset, with correctness, Rust-backed parity, and the main Python-path benchmark report aligned through quantified nested-group replacement templates. |
-| Delivery estimate | The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity: the published slice is narrow, the main benchmark report still runs through the source-tree shim, and quantified nested-group callable replacement plus deeper grouped execution remain ahead. |
+| Delivery estimate | The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity: the published slice is narrow, the main benchmark report still runs through the source-tree shim, and broader native-path measurement plus deeper grouped execution remain ahead. |
 | Current milestone | Milestone 2 now has quantified nested-group callable replacement at Rust-backed parity; `RBR-0316` is next to catch that bounded slice up on the existing Python-path benchmark surface, and `RBR-0318` is queued immediately behind it to reopen correctness on quantified nested-group alternation through the existing nested alternation path. |
 | Work queue | `1` ready, `0` in progress, `320` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
@@ -28,7 +28,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `87` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity: the published slice is narrow, the main benchmark report still runs through the source-tree shim, and quantified nested-group callable replacement plus deeper grouped execution remain ahead._
+_These correctness counts cover only the published slice. Overall delivery estimate: The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity: the published slice is narrow, the main benchmark report still runs through the source-tree shim, and broader native-path measurement plus deeper grouped execution remain ahead._
 
 ### Benchmark Snapshot
 
@@ -53,14 +53,14 @@ _README speedup rollups stay omitted while only `470` of `499` published workloa
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded and carries 30 explicit known-gap workloads, so the scorecards remain frontier reporting while quantified nested-group callable replacement still needs benchmark catch-up and quantified nested-group alternation sits immediately behind it.
+- The published benchmark surface is still bounded and carries 29 explicit known-gap workloads, so the scorecards remain frontier reporting rather than a broad claim about `re` compatibility or speed.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
 
 `rebar` already has a real Rust core, a CPython-facing extension boundary, and canonical correctness and benchmark reports. It is still an early, narrow `re` subset rather than a drop-in replacement.
 
-The project is still moving one bounded slice at a time, so the status block and published reports are the place to read the exact frontier and measurement coverage. Near term, the frontier is quantified nested-group callable replacement on the correctness surface, then the same slice behind the Rust boundary. The one benchmark result worth surfacing here today is the tiny compile-path parser slice: its five currently measured workloads median about 2.2x CPython, while the much larger module-path report is still slower overall, still source-tree-shim-backed, and still not a basis for broad speed claims.
+The safest read today is that correctness is ahead of the broader benchmark story, the main published benchmark report still runs through the source-tree shim, and the project is still advancing one bounded grouped slice at a time rather than closing in on broad `re` parity. The only speed signal worth quoting is the tiny parser/compile slice, where eight published parser workloads median about 2.1x CPython; the much larger module-path report is still slower overall and not a basis for broad performance claims.
 
 ## Where To Look
 
