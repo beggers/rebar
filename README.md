@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, keeping correctness and the published Python-path benchmark surface aligned at the current frontier. |
 | Delivery estimate | The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 now has quantified nested-group callable replacement aligned across correctness, Rust-backed parity, and the main Python-path benchmark surface; `RBR-0318` is queued to publish quantified nested-group alternation, and `RBR-0320` is seeded immediately behind it to convert that same slice to Rust-backed parity through the existing nested alternation path. |
-| Work queue | `1` ready, `0` in progress, `323` done, `0` blocked |
+| Current milestone | Milestone 2 now has quantified nested-group callable replacement aligned across correctness, Rust-backed parity, and the main Python-path benchmark surface, and quantified nested-group alternation is published on the correctness surface; `RBR-0322` is seeded as the surviving follow-on to catch that same bounded slice up on the main Python-path benchmark surface once the queued parity step clears. |
+| Work queue | `2` ready, `0` in progress, `323` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -47,12 +47,12 @@ _README speedup rollups stay omitted while only `470` of `499` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0320` so the newly published quantified nested-group alternation slice crosses the Rust boundary before benchmark catch-up resumes.
+- Land `RBR-0322` once the queued quantified nested-group alternation parity step clears so that same bounded slice reaches the main Python-path benchmark surface.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded and carries 29 explicit known-gap workloads, including the newly published quantified nested-group alternation slice.
+- The published benchmark surface is still bounded and carries 29 explicit known-gap workloads, including the quantified nested-group alternation slice that still needs benchmark catch-up.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
