@@ -59,7 +59,7 @@ _README speedup rollups stay omitted while only `477` of `504` published workloa
 
 `rebar` already has a real Rust core, a CPython-facing extension boundary, and canonical correctness and benchmark publications. It is still a bounded `re` subset, not a drop-in replacement.
 
-The published reports currently say three things: the implemented correctness slice is clean at the current frontier, the benchmark surface is still partial and source-tree-shim-backed, and the project is still moving one bounded regex shape at a time rather than closing in on broad `re` parity. The only speed signal worth repeating here is the tiny parser/compile slice, where the published median is about 2.0x CPython across eight workloads; the much larger module-path report is still slower overall and not a basis for broad performance claims.
+The published reports currently say three things: the implemented correctness slice is clean at the current frontier, the benchmark surface is still partial and source-tree-shim-backed, and the project is still moving one bounded regex shape at a time rather than closing in on broad `re` parity. That is enough to trust the current published slice, but not enough to make broad parity or performance claims.
 
 ## Where To Look
 
