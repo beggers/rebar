@@ -59,7 +59,7 @@ _README speedup rollups stay omitted while only `480` of `507` published workloa
 
 `rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The all-green correctness report is real, but it still describes a narrow frontier rather than broad `re` compatibility.
 
-The benchmark story is similarly early. The small parser-only compile slice is already about 2x faster on median than CPython in the tracked report, but the much larger published module-path slice is still slower overall because the main publication runs through the source-tree shim. That is useful signal, not a general speed claim.
+The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice: across eight published parser workloads it is about 2x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
 ## Where To Look
 
