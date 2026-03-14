@@ -1,0 +1,323 @@
+MANIFEST = {
+  "schema_version": 1,
+  "manifest_id": "conditional-group-exists-empty-else-nested-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.conditional_group_exists_empty_else_nested",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "conditional-group-exists-empty-else-nested-compile-metadata-str",
+      "operation": "compile",
+      "family": "conditional_group_exists_empty_else_nested_compile_metadata",
+      "pattern": "a(b)?c(?(1)(?(1)d)|)",
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-else", "nested", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes one bounded numbered explicit-empty-else conditional compile path whose yes-arm contains a single nested explicit-empty-else conditional site so the accepted nested `|)` spelling stays explicit in the scorecard."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-empty-else-nested-module-search-present-str",
+      "operation": "module_call",
+      "family": "conditional_group_exists_empty_else_nested_module_present_workflow",
+      "helper": "search",
+      "args": ["a(b)?c(?(1)(?(1)d)|)", "zzabcdzz"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-else", "nested", "search", "module", "present", "str", "gap"],
+      "notes": [
+        "Documents the numbered module-level nested explicit-empty-else search path when the optional capture is present so the outer yes-arm still requires the nested `d` suffix."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-empty-else-nested-module-fullmatch-missing-suffix-str",
+      "operation": "module_call",
+      "family": "conditional_group_exists_empty_else_nested_module_missing_suffix_workflow",
+      "helper": "fullmatch",
+      "args": ["a(b)?c(?(1)(?(1)d)|)", "abc"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-else", "nested", "fullmatch", "module", "present", "failure", "str", "gap"],
+      "notes": [
+        "Documents the numbered module-level nested explicit-empty-else failure path when the optional capture is present but the nested yes-arm suffix is missing, keeping the bounded failure outcome explicit."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-empty-else-nested-pattern-fullmatch-absent-str",
+      "operation": "pattern_call",
+      "family": "conditional_group_exists_empty_else_nested_pattern_absent_workflow",
+      "pattern": "a(b)?c(?(1)(?(1)d)|)",
+      "helper": "fullmatch",
+      "args": ["ac"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-else", "nested", "fullmatch", "pattern", "absent", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch numbered nested explicit-empty-else path when the optional capture is omitted so the outer explicit empty else contributes no suffix and the absent-capture match remains explicit."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-empty-else-nested-compile-metadata-str",
+      "operation": "compile",
+      "family": "named_conditional_group_exists_empty_else_nested_compile_metadata",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d)|)",
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-else", "nested", "named-group", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the matching named explicit-empty-else nested-conditional compile frontier for the same bounded single-site nested shape."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-empty-else-nested-module-search-present-str",
+      "operation": "module_call",
+      "family": "named_conditional_group_exists_empty_else_nested_module_present_workflow",
+      "helper": "search",
+      "args": ["a(?P<word>b)?c(?(word)(?(word)d)|)", "zzabcdzz"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-else", "nested", "named-group", "search", "module", "present", "str", "gap"],
+      "notes": [
+        "Documents the named module-level nested explicit-empty-else search path when the optional named capture is present so the nested yes-arm still requires the trailing `d`."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-empty-else-nested-module-fullmatch-missing-suffix-str",
+      "operation": "module_call",
+      "family": "named_conditional_group_exists_empty_else_nested_module_missing_suffix_workflow",
+      "helper": "fullmatch",
+      "args": ["a(?P<word>b)?c(?(word)(?(word)d)|)", "abc"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-else", "nested", "named-group", "fullmatch", "module", "present", "failure", "str", "gap"],
+      "notes": [
+        "Documents the named module-level nested explicit-empty-else failure path when the optional named capture is present but the nested yes-arm suffix is missing."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-empty-else-nested-pattern-fullmatch-absent-str",
+      "operation": "pattern_call",
+      "family": "named_conditional_group_exists_empty_else_nested_pattern_absent_workflow",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d)|)",
+      "helper": "fullmatch",
+      "args": ["ac"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "empty-else", "nested", "named-group", "fullmatch", "pattern", "absent", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch named nested explicit-empty-else path when the optional named capture is omitted so the outer explicit empty else keeps the absent-capture match explicit."
+      ]
+    },
+    {
+      "id": "systematic-conditional-group-exists-empty-else-nested-numbered-compile-metadata-str",
+      "family": "systematic_conditional_group_exists_empty_else_nested_numbered_compile_metadata",
+      "operation": "compile",
+      "notes": [
+        "Covers the landed nested explicit-empty-else conditional slice across numbered and named compile, module, and Pattern observations so it has broader evidence without another hand-written manifest.",
+        "Uses the bounded numbered nested explicit-empty-else conditional slice.",
+        "Publishes the compile metadata observation for the nested conditional slice."
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "nested",
+        "landed-slice",
+        "numbered-capture",
+        "compile",
+        "metadata"
+      ],
+      "text_model": "str",
+      "pattern": "a(b)?c(?(1)(?(1)d)|)"
+    },
+    {
+      "id": "systematic-conditional-group-exists-empty-else-nested-numbered-module-search-present-str",
+      "family": "systematic_conditional_group_exists_empty_else_nested_numbered_module_present_workflow",
+      "operation": "module_call",
+      "notes": [
+        "Covers the landed nested explicit-empty-else conditional slice across numbered and named compile, module, and Pattern observations so it has broader evidence without another hand-written manifest.",
+        "Uses the bounded numbered nested explicit-empty-else conditional slice.",
+        "Exercises the module-level path where the outer and nested yes-arms both activate."
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "nested",
+        "landed-slice",
+        "numbered-capture",
+        "module",
+        "search",
+        "present"
+      ],
+      "text_model": "str",
+      "helper": "search",
+      "args": [
+        "a(b)?c(?(1)(?(1)d)|)",
+        "zzabcdzz"
+      ]
+    },
+    {
+      "id": "systematic-conditional-group-exists-empty-else-nested-numbered-module-fullmatch-missing-suffix-str",
+      "family": "systematic_conditional_group_exists_empty_else_nested_numbered_module_missing_suffix_workflow",
+      "operation": "module_call",
+      "notes": [
+        "Covers the landed nested explicit-empty-else conditional slice across numbered and named compile, module, and Pattern observations so it has broader evidence without another hand-written manifest.",
+        "Uses the bounded numbered nested explicit-empty-else conditional slice.",
+        "Exercises the module-level path where the capture is present but the nested yes-arm suffix is missing."
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "nested",
+        "landed-slice",
+        "numbered-capture",
+        "module",
+        "fullmatch",
+        "failure",
+        "present"
+      ],
+      "text_model": "str",
+      "helper": "fullmatch",
+      "args": [
+        "a(b)?c(?(1)(?(1)d)|)",
+        "abc"
+      ]
+    },
+    {
+      "id": "systematic-conditional-group-exists-empty-else-nested-numbered-pattern-fullmatch-absent-str",
+      "family": "systematic_conditional_group_exists_empty_else_nested_numbered_pattern_absent_workflow",
+      "operation": "pattern_call",
+      "notes": [
+        "Covers the landed nested explicit-empty-else conditional slice across numbered and named compile, module, and Pattern observations so it has broader evidence without another hand-written manifest.",
+        "Uses the bounded numbered nested explicit-empty-else conditional slice.",
+        "Exercises the compiled Pattern path where both nested conditionals take the empty else-arm."
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "nested",
+        "landed-slice",
+        "numbered-capture",
+        "pattern",
+        "fullmatch",
+        "absent"
+      ],
+      "text_model": "str",
+      "helper": "fullmatch",
+      "pattern": "a(b)?c(?(1)(?(1)d)|)",
+      "args": [
+        "ac"
+      ]
+    },
+    {
+      "id": "systematic-conditional-group-exists-empty-else-nested-named-compile-metadata-str",
+      "family": "systematic_conditional_group_exists_empty_else_nested_named_compile_metadata",
+      "operation": "compile",
+      "notes": [
+        "Covers the landed nested explicit-empty-else conditional slice across numbered and named compile, module, and Pattern observations so it has broader evidence without another hand-written manifest.",
+        "Uses the matching named nested explicit-empty-else conditional slice.",
+        "Publishes the compile metadata observation for the nested conditional slice."
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "nested",
+        "landed-slice",
+        "named-group",
+        "compile",
+        "metadata"
+      ],
+      "text_model": "str",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d)|)"
+    },
+    {
+      "id": "systematic-conditional-group-exists-empty-else-nested-named-module-search-present-str",
+      "family": "systematic_conditional_group_exists_empty_else_nested_named_module_present_workflow",
+      "operation": "module_call",
+      "notes": [
+        "Covers the landed nested explicit-empty-else conditional slice across numbered and named compile, module, and Pattern observations so it has broader evidence without another hand-written manifest.",
+        "Uses the matching named nested explicit-empty-else conditional slice.",
+        "Exercises the module-level path where the outer and nested yes-arms both activate."
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "nested",
+        "landed-slice",
+        "named-group",
+        "module",
+        "search",
+        "present"
+      ],
+      "text_model": "str",
+      "helper": "search",
+      "args": [
+        "a(?P<word>b)?c(?(word)(?(word)d)|)",
+        "zzabcdzz"
+      ]
+    },
+    {
+      "id": "systematic-conditional-group-exists-empty-else-nested-named-module-fullmatch-missing-suffix-str",
+      "family": "systematic_conditional_group_exists_empty_else_nested_named_module_missing_suffix_workflow",
+      "operation": "module_call",
+      "notes": [
+        "Covers the landed nested explicit-empty-else conditional slice across numbered and named compile, module, and Pattern observations so it has broader evidence without another hand-written manifest.",
+        "Uses the matching named nested explicit-empty-else conditional slice.",
+        "Exercises the module-level path where the capture is present but the nested yes-arm suffix is missing."
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "nested",
+        "landed-slice",
+        "named-group",
+        "module",
+        "fullmatch",
+        "failure",
+        "present"
+      ],
+      "text_model": "str",
+      "helper": "fullmatch",
+      "args": [
+        "a(?P<word>b)?c(?(word)(?(word)d)|)",
+        "abc"
+      ]
+    },
+    {
+      "id": "systematic-conditional-group-exists-empty-else-nested-named-pattern-fullmatch-absent-str",
+      "family": "systematic_conditional_group_exists_empty_else_nested_named_pattern_absent_workflow",
+      "operation": "pattern_call",
+      "notes": [
+        "Covers the landed nested explicit-empty-else conditional slice across numbered and named compile, module, and Pattern observations so it has broader evidence without another hand-written manifest.",
+        "Uses the matching named nested explicit-empty-else conditional slice.",
+        "Exercises the compiled Pattern path where both nested conditionals take the empty else-arm."
+      ],
+      "categories": [
+        "systematic",
+        "grouped",
+        "conditional",
+        "group-exists",
+        "empty-else",
+        "nested",
+        "landed-slice",
+        "named-group",
+        "pattern",
+        "fullmatch",
+        "absent"
+      ],
+      "text_model": "str",
+      "helper": "fullmatch",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d)|)",
+      "args": [
+        "ac"
+      ]
+    }
+  ]
+}

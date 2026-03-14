@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import json
 import pathlib
+import subprocess
 import sys
+import tempfile
+from collections.abc import Iterable
 from dataclasses import dataclass
 from functools import lru_cache
 
@@ -18,6 +22,44 @@ from rebar_harness.correctness import (
     determine_phase,
     load_fixture_manifest,
 )
+
+
+@lru_cache(maxsize=1)
+def build_rebar_extension() -> None:
+    subprocess.run(
+        ["cargo", "build", "-p", "rebar-cpython"],
+        check=True,
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+    )
+
+
+def run_correctness_scorecard(
+    fixture_paths: Iterable[pathlib.Path],
+) -> tuple[dict[str, object], dict[str, object]]:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        report_path = pathlib.Path(temp_dir) / "correctness.json"
+        command = [
+            sys.executable,
+            "-m",
+            "rebar_harness.correctness",
+            "--fixtures",
+            *(str(path) for path in fixture_paths),
+            "--report",
+            str(report_path),
+        ]
+        result = subprocess.run(
+            command,
+            check=True,
+            cwd=REPO_ROOT,
+            env={"PYTHONPATH": str(PYTHON_SOURCE)},
+            capture_output=True,
+            text=True,
+        )
+        summary = json.loads(result.stdout.strip())
+        scorecard = json.loads(report_path.read_text(encoding="utf-8"))
+    return summary, scorecard
 
 
 COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
@@ -158,6 +200,14 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-subn-template-nested-group-numbered-str",
             "pattern-sub-template-nested-group-named-str",
             "pattern-subn-template-nested-group-named-str",
+        ),
+    },
+    "quantified-nested-group-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-template-quantified-nested-group-numbered-lower-bound-str",
+            "module-subn-template-quantified-nested-group-numbered-first-match-only-str",
+            "pattern-sub-template-quantified-nested-group-named-repeated-outer-capture-str",
+            "pattern-subn-template-quantified-nested-group-named-first-match-only-str",
         ),
     },
     "nested-group-callable-replacement-workflows": {
@@ -316,6 +366,60 @@ WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "broader-range-wider-ranged-repeat-quantified-group-alternation-named-module-search-upper-bound-all-de-str",
             "broader-range-wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-upper-bound-mixed-str",
             "broader-range-wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-overflow-str",
+        ),
+    },
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-workflows": {
+        "representative_case_ids": (
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-compile-metadata-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-module-search-lower-bound-bc-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-module-search-lower-bound-de-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-pattern-fullmatch-third-repetition-mixed-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-pattern-fullmatch-upper-bound-all-de-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-pattern-fullmatch-no-match-short-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-pattern-fullmatch-no-match-missing-trailing-d-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-named-compile-metadata-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-named-module-search-lower-bound-bc-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-named-module-search-lower-bound-de-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-third-repetition-mixed-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-upper-bound-all-de-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-short-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-overflow-str",
+        ),
+    },
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows": {
+        "representative_case_ids": (
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-compile-metadata-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-module-search-absent-workflow-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-module-search-lower-bound-bc-workflow-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-module-search-lower-bound-de-workflow-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-pattern-fullmatch-mixed-workflow-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-pattern-fullmatch-no-match-missing-conditional-e-workflow-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-pattern-fullmatch-no-match-short-workflow-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-compile-metadata-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-module-search-absent-workflow-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-module-search-lower-bound-de-workflow-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-module-search-upper-bound-all-de-workflow-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-pattern-fullmatch-mixed-workflow-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-pattern-fullmatch-no-match-short-workflow-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-pattern-fullmatch-no-match-overflow-workflow-str",
+        ),
+    },
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows": {
+        "representative_case_ids": (
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-short-branch-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-long-branch-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-short-then-long-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-long-then-short-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-fourth-repetition-mixed-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-no-match-invalid-tail-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-compile-metadata-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-module-search-lower-bound-long-branch-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-module-search-second-repetition-short-then-long-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-module-search-fourth-repetition-mixed-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-second-repetition-long-then-short-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-invalid-tail-str",
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-overflow-str",
         ),
     },
     "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows": {

@@ -1,0 +1,1808 @@
+MANIFEST = {
+  "schema_version": 1,
+  "manifest_id": "conditional-group-exists-boundary",
+  "spec_refs": [
+    "docs/benchmarks/plan.md",
+    "docs/spec/drop-in-re-compatibility.md"
+  ],
+  "notes": [
+    "Conditional group-exists boundary workloads keep one optional capture, one conditional site, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported bounded two-arm conditional slice rather than regex throughput.",
+    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch plus constant-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the bounded alternation-heavy replacement `a(b)?c(?(1)(de|df)|(eg|eh))` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the bounded nested two-arm `a(b)?c(?(1)(?(1)d|e)|f)` / `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` module-search, Pattern.fullmatch, and constant-replacement `sub()`/`subn()` probes through module and compiled-`Pattern` entrypoints, one bounded quantified `{2}` Pattern.fullmatch companion for each numbered and named spelling, the bounded quantified two-arm replacement `a(b)?c(?(1)d|e){2}` / `a(?P<word>b)?c(?(word)d|e){2}` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, and the bounded quantified alternation-heavy `a(b)?c(?(1)(de|df)|(eg|eh)){2}` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` module-search and Pattern.fullmatch probes, while replacement templates that read captures, callable replacements, alternation-heavy quantified replacement arms, deeper nested replacement-conditioned shapes, branch-local-backreference-conditioned flows, and broader backtracking-heavy conditional shapes stay explicit gap rows instead of being silently omitted here."
+  ],
+  "defaults": {
+    "warmup_iterations": 2,
+    "sample_iterations": 5,
+    "timed_samples": 7
+  },
+  "workloads": [
+    {
+      "id": "module-compile-numbered-conditional-group-exists-cold-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals"
+      ],
+      "notes": [
+        "Cold module.compile benchmark for the bounded numbered conditional group-exists slice so compile metadata timing reaches the published benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-numbered-conditional-group-exists-present-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzabcdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "smoke": True,
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "search",
+        "module",
+        "present",
+        "warm-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded numbered conditional workflow when the optional capture is present and the yes-arm literal suffix is selected."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-conditional-group-exists-absent-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "ace",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fullmatch",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the same bounded numbered conditional workflow when the optional capture is omitted and the no-arm literal suffix is selected."
+      ]
+    },
+    {
+      "id": "module-compile-named-conditional-group-exists-warm-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "named-group",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.compile path for the bounded named conditional group-exists slice so named metadata timing reaches the benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-named-conditional-group-exists-present-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzabcdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "named-group",
+        "search",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded named conditional workflow when the optional named capture is present and the yes-arm literal suffix is selected."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-conditional-group-exists-absent-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "ace",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "smoke": True,
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "named-group",
+        "fullmatch",
+        "absent",
+        "purged-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Smoke-sized Pattern.fullmatch probe for the bounded named conditional workflow when the optional capture is omitted so named-group None payload timing reaches the benchmark report."
+      ]
+    },
+    {
+      "id": "module-sub-numbered-conditional-group-exists-replacement-warm-gap",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "sub",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded numbered two-arm conditional replacement workflow when the optional capture is present and the yes-arm literal `d` participates in the matched span."
+      ]
+    },
+    {
+      "id": "module-subn-numbered-conditional-group-exists-replacement-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzacezz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "subn",
+        "module",
+        "absent",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded numbered two-arm conditional replacement count workflow when the optional capture is absent and the else-arm literal `e` participates in the matched span."
+      ]
+    },
+    {
+      "id": "pattern-sub-numbered-conditional-group-exists-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "sub",
+        "present",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded numbered two-arm conditional replacement workflow when the optional capture is present and the matched span ends with `d`."
+      ]
+    },
+    {
+      "id": "pattern-subn-numbered-conditional-group-exists-replacement-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzacezz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "subn",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded numbered two-arm conditional replacement count workflow when the optional capture is absent and the matched span instead ends with `e`."
+      ]
+    },
+    {
+      "id": "module-sub-named-conditional-group-exists-replacement-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "named-group",
+        "sub",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded named two-arm conditional replacement workflow when the optional named capture is present."
+      ]
+    },
+    {
+      "id": "module-subn-named-conditional-group-exists-replacement-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzacezz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "named-group",
+        "subn",
+        "module",
+        "absent",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded named two-arm conditional replacement count workflow when the optional named capture is absent and the else arm contributes `e`."
+      ]
+    },
+    {
+      "id": "pattern-sub-named-conditional-group-exists-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "named-group",
+        "sub",
+        "present",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded named two-arm conditional replacement workflow when the optional named capture is present."
+      ]
+    },
+    {
+      "id": "pattern-subn-named-conditional-group-exists-replacement-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzacezz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "named-group",
+        "subn",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded named two-arm conditional replacement count workflow when the optional named capture is absent."
+      ]
+    },
+    {
+      "id": "module-sub-template-numbered-conditional-group-exists-replacement-warm-gap",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": "<\\1>",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "replacement-template",
+        "module",
+        "unsupported",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "replacement-template"
+      ],
+      "notes": [
+        "Explicit replacement-template gap row so capture-reading `sub()` helpers for the bounded two-arm conditional slice stay visible until template expansion reaches this conditional replacement path."
+      ]
+    },
+    {
+      "id": "pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "prefix": "<",
+        "suffix": ">"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable-replacement",
+        "named-group",
+        "unsupported",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Explicit callable replacement gap row so bound `Pattern.subn()` helpers that read the named conditional capture stay visible until callable replacement semantics reach this slice."
+      ]
+    },
+    {
+      "id": "module-sub-numbered-conditional-group-exists-alternation-heavy-replacement-warm-gap",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)(de|df)|(eg|eh))",
+      "haystack": "zzabcdezz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "replacement",
+        "sub",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "alternation"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded numbered alternation-heavy two-arm conditional replacement workflow when the optional capture is present and the yes-arm alternation takes its first `de` branch."
+      ]
+    },
+    {
+      "id": "module-subn-numbered-conditional-group-exists-alternation-heavy-replacement-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(b)?c(?(1)(de|df)|(eg|eh))",
+      "haystack": "zzabcdfzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "replacement",
+        "subn",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "alternation"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded numbered alternation-heavy two-arm conditional replacement count workflow when the optional capture is present and the yes-arm alternation takes its second `df` branch."
+      ]
+    },
+    {
+      "id": "pattern-sub-numbered-conditional-group-exists-alternation-heavy-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)(de|df)|(eg|eh))",
+      "haystack": "zzacegzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "replacement",
+        "sub",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "alternation",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded numbered alternation-heavy two-arm conditional replacement workflow when the optional capture is absent and the else-arm alternation takes its first `eg` branch."
+      ]
+    },
+    {
+      "id": "pattern-subn-numbered-conditional-group-exists-alternation-heavy-replacement-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(b)?c(?(1)(de|df)|(eg|eh))",
+      "haystack": "zzacehzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "replacement",
+        "subn",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "alternation",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded numbered alternation-heavy two-arm conditional replacement count workflow when the optional capture is absent and the else-arm alternation takes its second `eh` branch."
+      ]
+    },
+    {
+      "id": "module-sub-named-conditional-group-exists-alternation-heavy-replacement-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+      "haystack": "zzabcdezz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "replacement",
+        "named-group",
+        "sub",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "alternation"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded named alternation-heavy two-arm conditional replacement workflow when the optional named capture is present and the yes-arm alternation takes its first `de` branch."
+      ]
+    },
+    {
+      "id": "module-subn-named-conditional-group-exists-alternation-heavy-replacement-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+      "haystack": "zzabcdfzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "replacement",
+        "named-group",
+        "subn",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "alternation"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded named alternation-heavy two-arm conditional replacement count workflow when the optional named capture is present and the yes-arm alternation takes its second `df` branch."
+      ]
+    },
+    {
+      "id": "pattern-sub-named-conditional-group-exists-alternation-heavy-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+      "haystack": "zzacegzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "replacement",
+        "named-group",
+        "sub",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "alternation",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded named alternation-heavy two-arm conditional replacement workflow when the optional named capture is absent and the else-arm alternation takes its first `eg` branch."
+      ]
+    },
+    {
+      "id": "pattern-subn-named-conditional-group-exists-alternation-heavy-replacement-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+      "haystack": "zzacehzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "replacement",
+        "named-group",
+        "subn",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "alternation",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded named alternation-heavy two-arm conditional replacement count workflow when the optional named capture is absent and the else-arm alternation takes its second `eh` branch."
+      ]
+    },
+    {
+      "id": "module-sub-numbered-nested-conditional-group-exists-replacement-warm-gap",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzabcdzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded numbered nested two-arm conditional replacement workflow when the optional capture is present and the outer and inner yes arms both keep the trailing `d` inside the replaced span."
+      ]
+    },
+    {
+      "id": "module-subn-numbered-nested-conditional-group-exists-replacement-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzacfzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "subn",
+        "module",
+        "absent",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded numbered nested two-arm conditional replacement count workflow when the optional capture is absent and the outer else arm contributes the accepted trailing `f`."
+      ]
+    },
+    {
+      "id": "pattern-sub-numbered-nested-conditional-group-exists-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzabcdzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "sub",
+        "present",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded numbered nested two-arm conditional replacement workflow when the optional capture is present and both nested yes arms still force the trailing `d`."
+      ]
+    },
+    {
+      "id": "pattern-subn-numbered-nested-conditional-group-exists-replacement-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzacfzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "subn",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded numbered nested two-arm conditional replacement count workflow when the optional capture is absent and the outer else arm leaves the accepted trailing `f` inside the replaced span."
+      ]
+    },
+    {
+      "id": "module-sub-named-nested-conditional-group-exists-replacement-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzabcdzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "named-group",
+        "sub",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded named nested two-arm conditional replacement workflow when the optional named capture is present and the nested yes arm still requires the trailing `d`."
+      ]
+    },
+    {
+      "id": "module-subn-named-nested-conditional-group-exists-replacement-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzacfzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "named-group",
+        "subn",
+        "module",
+        "absent",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded named nested two-arm conditional replacement count workflow when the optional named capture is absent and the outer else arm contributes the accepted trailing `f`."
+      ]
+    },
+    {
+      "id": "pattern-sub-named-nested-conditional-group-exists-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzabcdzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "named-group",
+        "sub",
+        "present",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded named nested two-arm conditional replacement workflow when the optional named capture is present and the nested yes arm still keeps the trailing `d` explicit."
+      ]
+    },
+    {
+      "id": "pattern-subn-named-nested-conditional-group-exists-replacement-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzacfzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "replacement",
+        "named-group",
+        "subn",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded named nested two-arm conditional replacement count workflow when the optional named capture is absent and the outer else arm contributes the accepted trailing `f`."
+      ]
+    },
+    {
+      "id": "module-sub-numbered-quantified-conditional-group-exists-replacement-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)d|e){2}",
+      "haystack": "zzabcddzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "replacement",
+        "sub",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "quantifiers"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded numbered quantified two-arm conditional replacement workflow when the optional capture is present and the repeated yes arm requires `dd` before replacement text is emitted."
+      ]
+    },
+    {
+      "id": "module-subn-numbered-quantified-conditional-group-exists-replacement-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(b)?c(?(1)d|e){2}",
+      "haystack": "zzaceezz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "replacement",
+        "subn",
+        "module",
+        "absent",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "quantifiers"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded numbered quantified two-arm conditional replacement count workflow when the optional capture is absent and the repeated else arm contributes `ee`."
+      ]
+    },
+    {
+      "id": "pattern-sub-numbered-quantified-conditional-group-exists-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)d|e){2}",
+      "haystack": "zzabcddzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "replacement",
+        "sub",
+        "present",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "quantifiers",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded numbered quantified two-arm conditional replacement workflow when the optional capture is present and the matched span ends with repeated `dd`."
+      ]
+    },
+    {
+      "id": "pattern-subn-numbered-quantified-conditional-group-exists-replacement-purged-gap",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(b)?c(?(1)d|e){2}",
+      "haystack": "zzaceezz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "replacement",
+        "subn",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "quantifiers",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded numbered quantified two-arm conditional replacement count workflow when the optional capture is absent and the matched span instead ends with repeated `ee`."
+      ]
+    },
+    {
+      "id": "module-sub-named-quantified-conditional-group-exists-replacement-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(?P<word>b)?c(?(word)d|e){2}",
+      "haystack": "zzabcddzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "replacement",
+        "named-group",
+        "sub",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "quantifiers"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded named quantified two-arm conditional replacement workflow when the optional named capture is present and the repeated yes arm still requires `dd`."
+      ]
+    },
+    {
+      "id": "module-subn-named-quantified-conditional-group-exists-replacement-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e){2}",
+      "haystack": "zzaceezz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "replacement",
+        "named-group",
+        "subn",
+        "module",
+        "absent",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "quantifiers"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded named quantified two-arm conditional replacement count workflow when the optional named capture is absent and the repeated else arm contributes `ee`."
+      ]
+    },
+    {
+      "id": "pattern-sub-named-quantified-conditional-group-exists-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(?P<word>b)?c(?(word)d|e){2}",
+      "haystack": "zzabcddzz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "replacement",
+        "named-group",
+        "sub",
+        "present",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "quantifiers",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded named quantified two-arm conditional replacement workflow when the optional named capture is present and the repeated yes arm still keeps `dd` explicit."
+      ]
+    },
+    {
+      "id": "pattern-subn-named-quantified-conditional-group-exists-replacement-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e){2}",
+      "haystack": "zzaceezz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "replacement",
+        "named-group",
+        "subn",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "quantifiers",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded named quantified two-arm conditional replacement count workflow when the optional named capture is absent and the matched span ends with repeated `ee`."
+      ]
+    },
+    {
+      "id": "module-search-numbered-nested-conditional-group-exists-present-cold-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "zzabcdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "search",
+        "module",
+        "present",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals"
+      ],
+      "notes": [
+        "Cold module.search helper path for the bounded numbered nested two-arm conditional workflow when the optional capture is present and both outer and inner yes arms select the trailing `d` suffix."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-nested-conditional-group-exists-absent-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "haystack": "acf",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "fullmatch",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered nested two-arm conditional workflow when the optional capture is absent and the outer else arm contributes the accepted trailing `f`."
+      ]
+    },
+    {
+      "id": "module-search-named-nested-conditional-group-exists-present-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "zzabcdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "named-group",
+        "search",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded named nested two-arm conditional workflow when the optional named capture is present and the nested yes arm still requires the trailing `d`."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-nested-conditional-group-exists-absent-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "haystack": "acf",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "nested-conditional",
+        "named-group",
+        "fullmatch",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded named nested two-arm conditional workflow when the optional named capture is absent and the outer else arm keeps the accepted trailing `f` explicit."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-quantified-conditional-group-exists-purged-gap",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(b)?c(?(1)d|e){2}",
+      "haystack": "abcdd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "fullmatch",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "quantifiers",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered quantified conditional workflow when the optional capture is present and the repeated yes arm must supply exactly two trailing `d` literals."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-quantified-conditional-group-exists-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>b)?c(?(word)d|e){2}",
+      "haystack": "abcdd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "quantified",
+        "named-group",
+        "fullmatch",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "quantifiers",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded named quantified conditional workflow when the optional named capture is present and the repeated yes arm must still supply exactly two trailing `d` literals."
+      ]
+    },
+    {
+      "id": "module-search-numbered-conditional-group-exists-quantified-alternation-heavy-present-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(b)?c(?(1)(de|df)|(eg|eh)){2}",
+      "haystack": "zzabcdedezz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "search",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "alternation",
+        "quantifiers"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded numbered quantified alternation-heavy two-arm conditional workflow when the optional capture is present and the repeated yes arm selects its first literal branch twice."
+      ]
+    },
+    {
+      "id": "module-search-named-conditional-group-exists-quantified-alternation-heavy-absent-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}",
+      "haystack": "zzacegegzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "named-group",
+        "search",
+        "module",
+        "absent",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "alternation",
+        "quantifiers"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded named quantified alternation-heavy two-arm conditional workflow when the optional named capture is absent and the repeated else arm selects its first literal branch twice."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-conditional-group-exists-quantified-alternation-heavy-absent-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(b)?c(?(1)(de|df)|(eg|eh)){2}",
+      "haystack": "aceheh",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "fullmatch",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "alternation",
+        "quantifiers",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered quantified alternation-heavy two-arm conditional workflow when the optional capture is absent and the repeated else arm backtracks to its second literal branch twice."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-conditional-group-exists-quantified-alternation-heavy-present-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}",
+      "haystack": "abcdfdf",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "alternation-heavy",
+        "named-group",
+        "fullmatch",
+        "present",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "alternation",
+        "quantifiers",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded named quantified alternation-heavy two-arm conditional workflow when the optional named capture is present and the repeated yes arm backtracks to its second literal branch twice."
+      ]
+    }
+  ]
+}

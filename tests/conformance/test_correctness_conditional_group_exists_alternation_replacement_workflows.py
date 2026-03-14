@@ -12,6 +12,9 @@ import unittest
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYTHON_SOURCE = REPO_ROOT / "python"
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
+FIXTURE_PATH = (
+    "tests/conformance/fixtures/conditional_group_exists_alternation_replacement_workflows.py"
+)
 
 
 class CorrectnessHarnessConditionalGroupExistsAlternationReplacementWorkflowTest(
@@ -86,6 +89,7 @@ class CorrectnessHarnessConditionalGroupExistsAlternationReplacementWorkflowTest
             "conditional-group-exists-alternation-workflows",
             scorecard["fixtures"]["manifest_ids"],
         )
+        self.assertIn(FIXTURE_PATH, scorecard["fixtures"]["paths"])
 
         self.assertEqual(scorecard["summary"], tracked_scorecard["summary"])
         self.assertEqual(len(scorecard["cases"]), len(tracked_scorecard["cases"]))

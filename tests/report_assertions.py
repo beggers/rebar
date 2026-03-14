@@ -275,13 +275,24 @@ def assert_benchmark_summary_consistent(
     )
     testcase.assertEqual(
         summary["regression_workloads"],
-        scorecard["manifests"].get("regression-matrix", {}).get("workload_count", 0),
+        sum(1 for workload in workloads if workload["manifest_id"] == "regression-matrix"),
     )
 
     for cache_mode, expected_count in scorecard["summary"]["workloads_by_cache_mode"].items():
         testcase.assertEqual(
             expected_count,
             sum(1 for workload in workloads if workload["cache_mode"] == cache_mode),
+        )
+
+    if summary["measured_workloads"] > 0:
+        testcase.assertIsInstance(scorecard["summary"]["baseline_median_ns"], int)
+        testcase.assertGreater(scorecard["summary"]["baseline_median_ns"], 0)
+        testcase.assertGreater(scorecard["summary"]["baseline_median_ops_per_second"], 0)
+        testcase.assertIsInstance(scorecard["summary"]["implementation_median_ns"], int)
+        testcase.assertGreater(scorecard["summary"]["implementation_median_ns"], 0)
+        testcase.assertGreater(
+            scorecard["summary"]["implementation_median_ops_per_second"],
+            0,
         )
 
     for family_id, family_summary in scorecard["families"].items():
@@ -305,6 +316,57 @@ def assert_benchmark_summary_consistent(
                 ),
             )
 
+    for cache_mode, cache_summary in scorecard["cache_modes"].items():
+        cache_workloads = [workload for workload in workloads if workload["cache_mode"] == cache_mode]
+        testcase.assertEqual(cache_summary["workload_count"], len(cache_workloads))
+        testcase.assertEqual(
+            cache_summary["known_gap_count"],
+            sum(1 for workload in cache_workloads if workload["status"] in _KNOWN_GAP_STATUSES),
+        )
+
+
+def _smoke_workload_ids(workloads: list[dict[str, Any]]) -> list[str]:
+    return [
+        str(workload["id"])
+        for workload in workloads
+        if bool(workload.get("smoke", False) or "smoke" in workload.get("categories", []))
+    ]
+
+
+def _artifact_manifest_record(
+    manifest_path: str,
+    manifest_document: dict[str, Any],
+) -> dict[str, Any]:
+    return {
+        "manifest": manifest_path,
+        "manifest_id": manifest_document["manifest_id"],
+        "manifest_schema_version": manifest_document["schema_version"],
+        "workload_count": len(manifest_document.get("workloads", [])),
+        "smoke_workload_ids": _smoke_workload_ids(manifest_document.get("workloads", [])),
+        "spec_refs": [str(ref) for ref in manifest_document.get("spec_refs", [])],
+    }
+
+
+def _selected_manifest_workloads(
+    manifest_document: dict[str, Any],
+    *,
+    selected_workload_ids: tuple[str, ...] | None,
+) -> list[dict[str, Any]]:
+    if selected_workload_ids is None:
+        return list(manifest_document["workloads"])
+
+    workload_documents = {
+        str(workload["id"]): workload for workload in manifest_document["workloads"]
+    }
+    selected_workloads: list[dict[str, Any]] = []
+    for workload_id in selected_workload_ids:
+        if workload_id not in workload_documents:
+            raise AssertionError(
+                f"missing workload definition {workload_id!r} in {manifest_document['manifest_id']!r}"
+            )
+        selected_workloads.append(workload_documents[workload_id])
+    return selected_workloads
+
 
 def assert_source_tree_benchmark_contract(
     testcase: Any,
@@ -313,19 +375,41 @@ def assert_source_tree_benchmark_contract(
     *,
     expected_phase: str,
     expected_runner_version: str,
+    expected_adapter: str,
+    expected_manifest_documents: list[dict[str, Any]],
     expected_manifest_paths: list[str],
+    expected_selection_mode: str,
     tracked_report_path: pathlib.Path | None = None,
 ) -> None:
+    expected_manifest_records = [
+        _artifact_manifest_record(manifest_path, manifest_document)
+        for manifest_path, manifest_document in zip(
+            expected_manifest_paths,
+            expected_manifest_documents,
+            strict=True,
+        )
+    ]
+
     assert_benchmark_summary_consistent(testcase, scorecard, summary)
     testcase.assertEqual(scorecard["schema_version"], "1.0")
+    testcase.assertEqual(scorecard["suite"], "benchmarks")
     testcase.assertEqual(scorecard["phase"], expected_phase)
-    testcase.assertEqual(
-        scorecard["baseline"]["python_implementation"],
-        platform.python_implementation(),
-    )
+    testcase.assertEqual(scorecard["baseline"]["python_implementation"], platform.python_implementation())
     testcase.assertEqual(scorecard["baseline"]["python_version"], platform.python_version())
+    testcase.assertEqual(scorecard["baseline"]["python_version_family"], "3.12.x")
+    testcase.assertEqual(
+        scorecard["baseline"]["python_build"],
+        {
+            "name": platform.python_build()[0],
+            "date": platform.python_build()[1],
+        },
+    )
+    testcase.assertEqual(scorecard["baseline"]["python_compiler"], platform.python_compiler())
+    testcase.assertEqual(scorecard["baseline"]["platform"], platform.platform())
+    testcase.assertEqual(scorecard["baseline"]["executable"], sys.executable)
+    testcase.assertEqual(scorecard["baseline"]["re_module"], "re")
     testcase.assertEqual(scorecard["implementation"]["module_name"], "rebar")
-    testcase.assertEqual(scorecard["implementation"]["adapter"], "rebar.module-surface")
+    testcase.assertEqual(scorecard["implementation"]["adapter"], expected_adapter)
     testcase.assertEqual(
         scorecard["implementation"]["adapter_mode_requested"],
         "source-tree-shim",
@@ -336,20 +420,62 @@ def assert_source_tree_benchmark_contract(
     )
     testcase.assertEqual(scorecard["implementation"]["build_mode"], "source-tree-shim")
     testcase.assertEqual(scorecard["implementation"]["timing_path"], "source-tree-shim")
+    testcase.assertIsNone(scorecard["implementation"]["native_build_tool"])
+    testcase.assertIsNone(scorecard["implementation"]["native_wheel"])
     testcase.assertIsInstance(scorecard["implementation"]["native_module_loaded"], bool)
+    testcase.assertEqual(scorecard["implementation"]["native_module_name"], "rebar._rebar")
+    if scorecard["implementation"]["native_module_loaded"]:
+        testcase.assertEqual(scorecard["implementation"]["native_scaffold_status"], "scaffold-only")
+        testcase.assertEqual(
+            scorecard["implementation"]["native_target_cpython_series"],
+            "3.12.x",
+        )
+    else:
+        testcase.assertIsNone(scorecard["implementation"]["native_scaffold_status"])
+        testcase.assertIsNone(
+            scorecard["implementation"]["native_target_cpython_series"]
+        )
     testcase.assertIn(
         "not requested",
         scorecard["implementation"]["native_unavailable_reason"],
     )
     testcase.assertEqual(scorecard["environment"]["runner_version"], expected_runner_version)
-    testcase.assertEqual(scorecard["artifacts"]["manifest"], None)
-    testcase.assertEqual(scorecard["artifacts"]["manifest_id"], "combined-benchmark-suite")
-    testcase.assertEqual(scorecard["artifacts"]["manifest_schema_version"], 1)
-    testcase.assertEqual(scorecard["artifacts"]["selection_mode"], "full")
     testcase.assertEqual(
-        [artifact["manifest"] for artifact in scorecard["artifacts"]["manifests"]],
-        expected_manifest_paths,
+        scorecard["environment"]["execution_model"],
+        "single-process in-process adapter comparison",
     )
+    testcase.assertEqual(scorecard["artifacts"]["selection_mode"], expected_selection_mode)
+    testcase.assertIsNone(scorecard["artifacts"]["raw_samples"])
+    testcase.assertEqual(scorecard["artifacts"]["manifests"], expected_manifest_records)
+    if len(expected_manifest_records) == 1:
+        testcase.assertEqual(
+            scorecard["artifacts"]["manifest"],
+            expected_manifest_records[0]["manifest"],
+        )
+        testcase.assertEqual(
+            scorecard["artifacts"]["manifest_id"],
+            expected_manifest_records[0]["manifest_id"],
+        )
+        testcase.assertEqual(
+            scorecard["artifacts"]["manifest_schema_version"],
+            expected_manifest_records[0]["manifest_schema_version"],
+        )
+        testcase.assertEqual(
+            scorecard["artifacts"]["workload_count"],
+            expected_manifest_records[0]["workload_count"],
+        )
+        testcase.assertEqual(
+            scorecard["artifacts"]["smoke_workload_ids"],
+            expected_manifest_records[0]["smoke_workload_ids"],
+        )
+        testcase.assertEqual(
+            scorecard["artifacts"]["spec_refs"],
+            expected_manifest_records[0]["spec_refs"],
+        )
+    else:
+        testcase.assertEqual(scorecard["artifacts"]["manifest"], None)
+        testcase.assertEqual(scorecard["artifacts"]["manifest_id"], "combined-benchmark-suite")
+        testcase.assertEqual(scorecard["artifacts"]["manifest_schema_version"], 1)
     if tracked_report_path is not None:
         testcase.assertTrue(tracked_report_path.is_file())
 
@@ -362,22 +488,38 @@ def assert_benchmark_manifest_contract(
     manifest_document: dict[str, Any],
     manifest_path: str,
     known_gap_count: int,
+    selection_mode: str = "full",
+    selected_workload_ids: tuple[str, ...] | None = None,
 ) -> None:
-    workloads = manifest_document["workloads"]
-    smoke_ids = [workload["id"] for workload in workloads if workload.get("smoke", False)]
-    operations = sorted({workload["operation"] for workload in workloads})
+    workloads = list(manifest_document["workloads"])
+    selected_workloads = _selected_manifest_workloads(
+        manifest_document,
+        selected_workload_ids=selected_workload_ids,
+    )
+    smoke_ids = _smoke_workload_ids(workloads)
+    operations = sorted({workload["operation"] for workload in selected_workloads})
+    families = sorted(
+        {
+            str(workload.get("family", "parser"))
+            for workload in selected_workloads
+        }
+    )
 
     testcase.assertEqual(manifest_summary["workload_count"], len(workloads))
-    testcase.assertEqual(manifest_summary["selected_workload_count"], len(workloads))
-    testcase.assertEqual(manifest_summary["measured_workloads"], len(workloads) - known_gap_count)
+    testcase.assertEqual(manifest_summary["selected_workload_count"], len(selected_workloads))
+    testcase.assertEqual(
+        manifest_summary["measured_workloads"],
+        len(selected_workloads) - known_gap_count,
+    )
     testcase.assertEqual(manifest_summary["known_gap_count"], known_gap_count)
     testcase.assertEqual(
         manifest_summary["readiness"],
         "measured" if known_gap_count == 0 else "partial",
     )
-    testcase.assertEqual(manifest_summary["selection_mode"], "full")
+    testcase.assertEqual(manifest_summary["selection_mode"], selection_mode)
     testcase.assertEqual(manifest_summary["available_smoke_workload_count"], len(smoke_ids))
     testcase.assertEqual(manifest_summary["smoke_workload_ids"], smoke_ids)
+    testcase.assertEqual(manifest_summary["families"], families)
     testcase.assertEqual(manifest_summary["operations"], operations)
     if "spec_refs" in manifest_document:
         testcase.assertEqual(manifest_summary["spec_refs"], manifest_document["spec_refs"])
@@ -418,7 +560,10 @@ def assert_benchmark_workload_contract(
         workload_document.get("text_model", "str"),
     )
     testcase.assertEqual(workload_record["cache_mode"], workload_document["cache_mode"])
-    testcase.assertEqual(workload_record["timing_scope"], workload_document["timing_scope"])
+    testcase.assertEqual(
+        workload_record["timing_scope"],
+        workload_document.get("timing_scope", "compile-path-proxy"),
+    )
     testcase.assertEqual(workload_record["syntax_features"], expected_syntax_features)
     testcase.assertEqual(workload_record["status"], expected_status)
     testcase.assertEqual(
@@ -426,13 +571,19 @@ def assert_benchmark_workload_contract(
         "measured",
     )
     testcase.assertGreater(workload_record["baseline_ns"], 0)
+    testcase.assertGreater(workload_record["baseline_ops_per_second"], 0)
     testcase.assertEqual(
         workload_record["implementation_timing"]["status"],
         expected_status,
     )
     if expected_status == "measured":
         testcase.assertGreater(workload_record["implementation_ns"], 0)
+        testcase.assertGreater(workload_record["implementation_ops_per_second"], 0)
         testcase.assertIsInstance(workload_record["speedup_vs_cpython"], float)
+    else:
+        testcase.assertIsNone(workload_record["implementation_ns"])
+        testcase.assertIsNone(workload_record["implementation_ops_per_second"])
+        testcase.assertIsNone(workload_record["speedup_vs_cpython"])
 
 
 def find_manifest_record(scorecard: dict[str, Any], manifest_id: str) -> dict[str, Any]:

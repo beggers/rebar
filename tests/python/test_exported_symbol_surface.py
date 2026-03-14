@@ -51,6 +51,19 @@ class RebarExportedSymbolSurfaceTest(unittest.TestCase):
         self.assertEqual(rebar.Pattern.__module__, "re")
         self.assertEqual(rebar.Match.__module__, "re")
 
+    def test_scaffold_metadata_exports_are_coherent(self) -> None:
+        self.assertEqual(rebar.TARGET_CPYTHON_SERIES, "3.12.x")
+        self.assertEqual(rebar.SCAFFOLD_STATUS, "scaffold-only")
+        self.assertEqual(rebar.NATIVE_MODULE_NAME, "rebar._rebar")
+        self.assertIsInstance(rebar.native_module_loaded(), bool)
+
+        if rebar.native_module_loaded():
+            self.assertEqual(rebar.native_scaffold_status(), "scaffold-only")
+            self.assertEqual(rebar.native_target_cpython_series(), "3.12.x")
+        else:
+            self.assertIsNone(rebar.native_scaffold_status())
+            self.assertIsNone(rebar.native_target_cpython_series())
+
     def test_primary_flag_values_match_cpython(self) -> None:
         for name in PRIMARY_FLAG_EXPORTS:
             with self.subTest(name=name):
@@ -87,6 +100,10 @@ class RebarExportedSymbolSurfaceTest(unittest.TestCase):
 
         self.assertIs(type(compiled), rebar.Pattern)
         self.assertIsInstance(compiled, rebar.Pattern)
+        self.assertEqual(compiled.pattern, "abc")
+        self.assertEqual(compiled.flags, int(rebar.UNICODE))
+        self.assertEqual(compiled.groups, 0)
+        self.assertEqual(compiled.groupindex, {})
 
         match = rebar.search("abc", "zzabczz")
         self.assertIs(type(match), rebar.Match)

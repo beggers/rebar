@@ -1,0 +1,52 @@
+MANIFEST = {
+  "schema_version": 1,
+  "manifest_id": "conditional-group-exists-assertion-diagnostics",
+  "layer": "parser_acceptance_and_diagnostics",
+  "suite_id": "parser.conditional_group_exists_assertion_diagnostics",
+  "defaults": {
+    "operation": "compile",
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "conditional-group-exists-assertion-positive-lookahead-error-str",
+      "family": "conditional_group_exists_assertion_compile_diagnostic",
+      "pattern": "a(?(?=b)b|c)d",
+      "categories": [
+        "grouped",
+        "conditional",
+        "group-exists",
+        "assertion-conditioned",
+        "positive-lookahead",
+        "compile",
+        "diagnostic",
+        "rejected-syntax",
+        "str",
+        "gap"
+      ],
+      "notes": [
+        "Publishes the bounded CPython-rejected assertion-conditioned conditional form where a positive lookahead appears in the condition slot and stdlib re reports it as an invalid group name."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-assertion-negative-lookahead-error-str",
+      "family": "conditional_group_exists_assertion_compile_diagnostic",
+      "pattern": "a(?(?!b)b|c)d",
+      "categories": [
+        "grouped",
+        "conditional",
+        "group-exists",
+        "assertion-conditioned",
+        "negative-lookahead",
+        "compile",
+        "diagnostic",
+        "rejected-syntax",
+        "str",
+        "gap"
+      ],
+      "notes": [
+        "Keeps the diagnostic slice narrow but explicit by recording the matching negative-lookahead form, which CPython also rejects at compile time before any runtime conditional execution is attempted."
+      ]
+    }
+  ]
+}

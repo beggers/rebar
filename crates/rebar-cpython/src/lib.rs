@@ -18,8 +18,9 @@ use rebar_core::{
     grouped_alternation_find_spans_str as core_grouped_alternation_find_spans_str,
     grouped_literal_find_spans_str as core_grouped_literal_find_spans_str,
     literal_find_spans as core_literal_find_spans, literal_match as core_literal_match,
-    nested_capture_find_spans_str as core_nested_capture_find_spans_str, CapturedMatchSpan,
-    CompileStatus, MatchMode, MatchStatus, PatternRef, TARGET_CPYTHON_SERIES,
+    nested_capture_find_spans_str as core_nested_capture_find_spans_str,
+    quantified_nested_capture_find_spans_str as core_quantified_nested_capture_find_spans_str,
+    CapturedMatchSpan, CompileStatus, MatchMode, MatchStatus, PatternRef, TARGET_CPYTHON_SERIES,
 };
 
 const SCAFFOLD_STATUS: &str = "scaffold-only";
@@ -663,26 +664,44 @@ fn boundary_literal_template_subn(
                             compile_outcome.named_groups,
                         )
                     } else {
-                        let grouped_alternation_outcome = core_grouped_alternation_find_spans_str(
-                            pattern_value,
-                            flags,
-                            string_value,
-                            0,
-                            None,
-                        );
-                        (
-                            grouped_alternation_outcome.status,
-                            grouped_alternation_outcome
-                                .matches
-                                .into_iter()
-                                .map(|matched| CapturedMatchSpan {
-                                    span: matched.span,
-                                    group_spans: vec![Some(matched.group_1_span)],
-                                })
-                                .collect(),
-                            compile_outcome.group_count,
-                            compile_outcome.named_groups,
-                        )
+                        let quantified_nested_capture_outcome =
+                            core_quantified_nested_capture_find_spans_str(
+                                pattern_value,
+                                flags,
+                                string_value,
+                                0,
+                                None,
+                            );
+                        if quantified_nested_capture_outcome.status != MatchStatus::Unsupported {
+                            (
+                                quantified_nested_capture_outcome.status,
+                                quantified_nested_capture_outcome.matches,
+                                compile_outcome.group_count,
+                                compile_outcome.named_groups,
+                            )
+                        } else {
+                            let grouped_alternation_outcome =
+                                core_grouped_alternation_find_spans_str(
+                                    pattern_value,
+                                    flags,
+                                    string_value,
+                                    0,
+                                    None,
+                                );
+                            (
+                                grouped_alternation_outcome.status,
+                                grouped_alternation_outcome
+                                    .matches
+                                    .into_iter()
+                                    .map(|matched| CapturedMatchSpan {
+                                        span: matched.span,
+                                        group_spans: vec![Some(matched.group_1_span)],
+                                    })
+                                    .collect(),
+                                compile_outcome.group_count,
+                                compile_outcome.named_groups,
+                            )
+                        }
                     }
                 }
             }

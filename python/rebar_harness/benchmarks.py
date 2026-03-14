@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import importlib
+import importlib.util
 import json
 import math
 import os
@@ -34,42 +35,42 @@ TARGET_CPYTHON_SERIES = "3.12.x"
 REPORT_SCHEMA_VERSION = "1.0"
 MANIFEST_SCHEMA_VERSION = 1
 DEFAULT_MANIFEST_PATHS = (
-    REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "pattern_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "collection_replacement_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "literal_flag_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "grouped_named_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "numbered_backreference_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "grouped_segment_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "literal_alternation_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_replacement_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_callable_replacement_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_alternation_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_callable_replacement_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "branch_local_backreference_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "exact_repeat_quantified_group_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "ranged_repeat_quantified_group_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "wider_ranged_repeat_quantified_group_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "quantified_alternation_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "optional_group_alternation_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_no_else_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_empty_else_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_empty_yes_else_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_fully_empty_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.json",
+    REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "pattern_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "collection_replacement_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "literal_flag_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "grouped_named_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "numbered_backreference_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "grouped_segment_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "literal_alternation_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_replacement_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_callable_replacement_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_alternation_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_callable_replacement_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "branch_local_backreference_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "exact_repeat_quantified_group_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "ranged_repeat_quantified_group_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "wider_ranged_repeat_quantified_group_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "quantified_alternation_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "optional_group_alternation_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_no_else_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_empty_else_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_empty_yes_else_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_fully_empty_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
 DEFAULT_NATIVE_SMOKE_MANIFEST_PATHS = (
-    REPO_ROOT / "benchmarks" / "workloads" / "pattern_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "collection_replacement_boundary.json",
-    REPO_ROOT / "benchmarks" / "workloads" / "literal_flag_boundary.json",
+    REPO_ROOT / "benchmarks" / "workloads" / "pattern_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "collection_replacement_boundary.py",
+    REPO_ROOT / "benchmarks" / "workloads" / "literal_flag_boundary.py",
 )
 DEFAULT_NATIVE_SMOKE_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "native_smoke.json"
 DEFAULT_NATIVE_FULL_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "native_full.json"
@@ -298,8 +299,36 @@ def workload_from_payload(payload: dict[str, Any]) -> Workload:
     )
 
 
+def _load_python_manifest(path: pathlib.Path) -> dict[str, Any]:
+    module_name = f"_rebar_benchmark_manifest_{path.stem}".replace("-", "_")
+    spec = importlib.util.spec_from_file_location(module_name, path)
+    if spec is None or spec.loader is None:
+        raise ValueError(f"unable to load Python benchmark manifest from {path}")
+
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    if not hasattr(module, "MANIFEST"):
+        raise ValueError(f"Python benchmark manifest module {path} is missing a MANIFEST value")
+    raw_manifest = getattr(module, "MANIFEST")
+    if not isinstance(raw_manifest, dict):
+        raise ValueError(f"benchmark manifest in {path} must be a dict")
+    return raw_manifest
+
+
+def _load_raw_manifest(path: pathlib.Path) -> dict[str, Any]:
+    if path.suffix != ".py":
+        raise ValueError(
+            f"unsupported benchmark manifest extension {path.suffix!r} for {path}"
+        )
+    raw_manifest = _load_python_manifest(path)
+
+    if not isinstance(raw_manifest, dict):
+        raise ValueError(f"benchmark manifest in {path} must be an object")
+    return raw_manifest
+
+
 def load_manifest(path: pathlib.Path) -> tuple[dict[str, Any], list[Workload]]:
-    raw_manifest = json.loads(path.read_text(encoding="utf-8"))
+    raw_manifest = _load_raw_manifest(path)
     schema_version = raw_manifest.get("schema_version")
     if schema_version != MANIFEST_SCHEMA_VERSION:
         raise ValueError(

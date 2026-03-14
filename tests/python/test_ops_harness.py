@@ -52,6 +52,27 @@ class OpsHarnessTest(unittest.TestCase):
             ["architecture-implementation"],
         )
 
+    def test_only_maintenance_agents_opt_into_dirty_worktree_dispatch(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        config = rebar_ops.load_config()
+        agents = {agent.name: agent for agent in rebar_ops.load_agent_specs(config)}
+
+        for name in ("qa-testing", "cleanup", "reporting"):
+            with self.subTest(agent=name):
+                self.assertTrue(agents[name].dispatch.get("allow_dirty_worktree"))
+                self.assertTrue(rebar_ops.agent_may_dispatch_on_dirty_worktree(agents[name]))
+
+        for name in (
+            "architecture",
+            "architecture-implementation",
+            "feature-planning",
+            "feature-implementation",
+            "implementation-faithfulness",
+        ):
+            with self.subTest(agent=name):
+                self.assertFalse(agents[name].dispatch.get("allow_dirty_worktree", False))
+                self.assertFalse(rebar_ops.agent_may_dispatch_on_dirty_worktree(agents[name]))
+
     def test_all_agents_use_xhigh_reasoning(self) -> None:
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
@@ -170,6 +191,105 @@ class OpsHarnessTest(unittest.TestCase):
             self.assertIn("python/rebar_harness/benchmarks.py", commit_messages[0])
             self.assertIn("Details:", commit_messages[0])
             self.assertIn("Verification passed for the touched benchmark tests.", commit_messages[0])
+
+    def test_maybe_checkpoint_inherited_dirty_worktree_requires_prior_stall(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        supervisor = rebar_ops.AgentSpec(
+            name="supervisor",
+            kind="supervisor",
+            description="",
+            enabled=True,
+            cycle_order=0,
+            spec_path=REPO_ROOT / "ops" / "agents" / "supervisor.json",
+            prompt_path=REPO_ROOT / "ops" / "agents" / "supervisor.md",
+            dispatch={},
+            codex={},
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir, mock.patch.object(
+            rebar_ops, "git_worktree_dirty", return_value=True
+        ), mock.patch.object(rebar_ops, "git_run") as git_run_mock:
+            action = rebar_ops.maybe_checkpoint_inherited_dirty_worktree(
+                {"runtime": {"artifact_dir": temp_dir}},
+                supervisor,
+                {"last_cycle_anomalies": []},
+            )
+
+        self.assertIsNone(action)
+        git_run_mock.assert_not_called()
+
+    def test_maybe_checkpoint_inherited_dirty_worktree_commits_supervisor_recovery(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        supervisor = rebar_ops.AgentSpec(
+            name="supervisor",
+            kind="supervisor",
+            description="",
+            enabled=True,
+            cycle_order=0,
+            spec_path=REPO_ROOT / "ops" / "agents" / "supervisor.json",
+            prompt_path=REPO_ROOT / "ops" / "agents" / "supervisor.md",
+            dispatch={},
+            codex={},
+        )
+        commit_messages: list[str] = []
+
+        def fake_git_run(*args: str, **kwargs):
+            if args == ("add", "-A"):
+                return completed_process(*args)
+            if args == ("commit", "-F", "-"):
+                commit_messages.append(kwargs["input_text"])
+                return completed_process(*args)
+            raise AssertionError(f"Unexpected git invocation: {args}")
+
+        loop_state = {
+            "last_cycle_anomalies": [
+                {
+                    "type": "git_sync_error",
+                    "message": (
+                        "Skipped non-supervisor agent dispatch because the worktree was already "
+                        "dirty before this cycle started and remained dirty before these agents "
+                        "would have run: architecture, feature-implementation."
+                    ),
+                }
+            ]
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir, mock.patch.object(
+            rebar_ops, "git_worktree_dirty", return_value=True
+        ), mock.patch.object(
+            rebar_ops, "git_run", side_effect=fake_git_run
+        ), mock.patch.object(
+            rebar_ops,
+            "git_stdout",
+            return_value="ops/tasks/done/RBR-0308.md\npython/rebar_harness/benchmarks.py\n",
+        ), mock.patch.object(rebar_ops, "git_head", return_value="deadbeef"):
+            action = rebar_ops.maybe_checkpoint_inherited_dirty_worktree(
+                {
+                    "runtime": {"artifact_dir": temp_dir},
+                    "git_policy": {"command_timeout_seconds": 30},
+                },
+                supervisor,
+                loop_state,
+            )
+
+        self.assertIsNotNone(action)
+        assert action is not None
+        self.assertTrue(action["commit_created"])
+        self.assertEqual(action["commit_sha"], "deadbeef")
+        self.assertEqual(
+            action["subject"],
+            rebar_ops.truncate_commit_subject(
+                "supervisor: Checkpointed the inherited dirty worktree to unblock queue dispatch"
+            ),
+        )
+        self.assertEqual(
+            action["changed_files"],
+            ["ops/tasks/done/RBR-0308.md", "python/rebar_harness/benchmarks.py"],
+        )
+        self.assertEqual(len(commit_messages), 1)
+        self.assertIn("Agent: supervisor", commit_messages[0])
+        self.assertIn("before the next dispatch attempt", commit_messages[0])
+        self.assertIn("ops/tasks/done/RBR-0308.md", commit_messages[0])
 
     def test_maybe_commit_and_push_merges_upstream_before_push_when_diverged(self) -> None:
         rebar_ops = load_rebar_ops_module()

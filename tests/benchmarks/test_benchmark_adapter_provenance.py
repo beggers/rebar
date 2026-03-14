@@ -15,7 +15,7 @@ if str(PYTHON_SOURCE) not in sys.path:
 from rebar_harness import benchmarks
 
 
-MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_smoke.json"
+MANIFEST_PATH = benchmarks.DEFAULT_MANIFEST_PATHS[0].with_name("compile_smoke.py")
 MATURIN = shutil.which("maturin")
 
 

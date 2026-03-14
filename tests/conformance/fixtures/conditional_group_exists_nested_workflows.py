@@ -1,0 +1,99 @@
+MANIFEST = {
+  "schema_version": 1,
+  "manifest_id": "conditional-group-exists-nested-workflows",
+  "layer": "match_behavior",
+  "suite_id": "match.conditional_group_exists_nested",
+  "defaults": {
+    "text_model": "str"
+  },
+  "cases": [
+    {
+      "id": "conditional-group-exists-nested-compile-metadata-str",
+      "operation": "compile",
+      "family": "conditional_group_exists_nested_compile_metadata",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "nested", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes one bounded numbered nested two-arm conditional compile path whose outer yes arm contains a single nested two-arm conditional site, keeping accepted nested two-arm composition explicit in the scorecard."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-nested-module-search-present-str",
+      "operation": "module_call",
+      "family": "conditional_group_exists_nested_module_present_workflow",
+      "helper": "search",
+      "args": ["a(b)?c(?(1)(?(1)d|e)|f)", "zzabcdzz"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "nested", "search", "module", "present", "str", "gap"],
+      "notes": [
+        "Documents the numbered module-level nested two-arm conditional search path when the optional capture is present so the outer yes arm still requires the nested `d` suffix."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-nested-module-fullmatch-absent-str",
+      "operation": "module_call",
+      "family": "conditional_group_exists_nested_module_absent_workflow",
+      "helper": "fullmatch",
+      "args": ["a(b)?c(?(1)(?(1)d|e)|f)", "acf"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "nested", "fullmatch", "module", "absent", "str", "gap"],
+      "notes": [
+        "Documents the numbered module-level nested two-arm conditional fullmatch path when the optional capture is absent so the outer else arm contributes the accepted trailing `f`."
+      ]
+    },
+    {
+      "id": "conditional-group-exists-nested-pattern-fullmatch-unreachable-inner-else-str",
+      "operation": "pattern_call",
+      "family": "conditional_group_exists_nested_pattern_unreachable_inner_else_workflow",
+      "pattern": "a(b)?c(?(1)(?(1)d|e)|f)",
+      "helper": "fullmatch",
+      "args": ["abce"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "nested", "fullmatch", "pattern", "present", "failure", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch numbered nested two-arm failure path that keeps the inner `e` arm unreachable in this exact bounded shape instead of silently broadening the scorecard to a different nesting structure."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-nested-compile-metadata-str",
+      "operation": "compile",
+      "family": "named_conditional_group_exists_nested_compile_metadata",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "nested", "named-group", "compile", "metadata", "str", "gap"],
+      "notes": [
+        "Publishes the matching named nested two-arm conditional compile frontier for the same bounded single-site nested shape."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-nested-module-search-present-str",
+      "operation": "module_call",
+      "family": "named_conditional_group_exists_nested_module_present_workflow",
+      "helper": "search",
+      "args": ["a(?P<word>b)?c(?(word)(?(word)d|e)|f)", "zzabcdzz"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "nested", "named-group", "search", "module", "present", "str", "gap"],
+      "notes": [
+        "Documents the named module-level nested two-arm conditional search path when the optional named capture is present so the nested yes arm still requires the trailing `d`."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-nested-module-fullmatch-absent-str",
+      "operation": "module_call",
+      "family": "named_conditional_group_exists_nested_module_absent_workflow",
+      "helper": "fullmatch",
+      "args": ["a(?P<word>b)?c(?(word)(?(word)d|e)|f)", "acf"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "nested", "named-group", "fullmatch", "module", "absent", "str", "gap"],
+      "notes": [
+        "Documents the named module-level nested two-arm conditional fullmatch path when the optional named capture is absent so the outer else arm keeps the accepted trailing `f` explicit."
+      ]
+    },
+    {
+      "id": "named-conditional-group-exists-nested-pattern-fullmatch-unreachable-inner-else-str",
+      "operation": "pattern_call",
+      "family": "named_conditional_group_exists_nested_pattern_unreachable_inner_else_workflow",
+      "pattern": "a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+      "helper": "fullmatch",
+      "args": ["abce"],
+      "categories": ["grouped", "optional-group", "conditional", "group-exists", "two-arm", "nested", "named-group", "fullmatch", "pattern", "present", "failure", "str", "gap"],
+      "notes": [
+        "Documents the bound Pattern.fullmatch named nested two-arm failure path so the exact accepted nested shape stays narrow and the inner `e` arm remains explicitly unreachable here."
+      ]
+    }
+  ]
+}

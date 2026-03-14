@@ -1,0 +1,44 @@
+MANIFEST = {
+  "schema_version": 1,
+  "manifest_id": "compile-smoke",
+  "defaults": {
+    "warmup_iterations": 2,
+    "sample_iterations": 5,
+    "timed_samples": 7
+  },
+  "workloads": [
+    {
+      "id": "compile-literal-cold",
+      "family": "parser",
+      "operation": "compile",
+      "pattern": "abc",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "categories": [
+        "literal",
+        "smoke"
+      ],
+      "notes": [
+        "Phase 0 cold compile proxy workload against stdlib re."
+      ]
+    },
+    {
+      "id": "compile-character-class-warm",
+      "family": "parser",
+      "operation": "compile",
+      "pattern": "[A-Z][a-z]+",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "categories": [
+        "character-class",
+        "warm-cache",
+        "smoke"
+      ],
+      "notes": [
+        "Phase 0 warm compile proxy workload to keep cache-state labeling visible."
+      ]
+    }
+  ]
+}

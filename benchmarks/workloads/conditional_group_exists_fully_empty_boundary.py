@@ -1,0 +1,852 @@
+MANIFEST = {
+  "schema_version": 1,
+  "manifest_id": "conditional-group-exists-fully-empty-boundary",
+  "spec_refs": [
+    "docs/benchmarks/plan.md",
+    "docs/spec/drop-in-re-compatibility.md"
+  ],
+  "notes": [
+    "Conditional group-exists fully-empty boundary workloads keep one optional capture, one conditional site, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported bounded fully-empty conditional slice rather than regex throughput.",
+    "Measured rows cover the bounded `a(b)?c(?(1)|)` and `a(?P<word>b)?c(?(word)|)` compile/search/fullmatch plus constant-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the bounded nested fully-empty `a(b)?c(?(1)|(?(1)|))` / `a(?P<word>b)?c(?(word)|(?(word)|))` module-search and `Pattern.fullmatch()` paths, the exact-repeat quantified fully-empty `(?:a(b)?c(?(1)|)){2}` / `(?:a(?P<word>b)?c(?(word)|)){2}` `Pattern.fullmatch()` rows, and the bounded alternation-bearing fully-empty `a(b)?c(?(1)|(?:|))` / `a(?P<word>b)?c(?(word)|(?:|))` module-search and `Pattern.fullmatch()` rows now time directly while broader repeated replacement helpers, nested alternation-bearing follow-ons, and wider backtracking-heavy empty-arm shapes remain outside this bounded manifest slice.",
+    "Assertion-conditioned branches remain outside this benchmark manifest because CPython rejects them and the current benchmark harness only publishes timing rows for accepted syntax."
+  ],
+  "defaults": {
+    "warmup_iterations": 2,
+    "sample_iterations": 5,
+    "timed_samples": 7
+  },
+  "workloads": [
+    {
+      "id": "module-compile-numbered-conditional-group-exists-fully-empty-cold-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(b)?c(?(1)|)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals"
+      ],
+      "notes": [
+        "Cold module.compile benchmark for the bounded numbered fully-empty conditional slice so compile metadata timing reaches the published benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-numbered-conditional-group-exists-fully-empty-present-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(b)?c(?(1)|)",
+      "haystack": "zzabczz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "smoke": True,
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "search",
+        "module",
+        "present",
+        "warm-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded numbered fully-empty workflow when the optional capture is present and both conditional arms resolve to an empty suffix."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-conditional-group-exists-fully-empty-absent-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(b)?c(?(1)|)",
+      "haystack": "ac",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "fullmatch",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered fully-empty conditional workflow when the optional capture is omitted and the conditional contributes no suffix in either branch."
+      ]
+    },
+    {
+      "id": "module-compile-named-conditional-group-exists-fully-empty-warm-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<word>b)?c(?(word)|)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "named-group",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.compile path for the bounded named fully-empty conditional slice so named metadata timing reaches the benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-named-conditional-group-exists-fully-empty-present-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>b)?c(?(word)|)",
+      "haystack": "zzabczz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "named-group",
+        "search",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded named fully-empty workflow when the optional named capture is present and both conditional arms resolve to an empty suffix."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-conditional-group-exists-fully-empty-absent-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>b)?c(?(word)|)",
+      "haystack": "ac",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "smoke": True,
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "named-group",
+        "fullmatch",
+        "absent",
+        "purged-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Smoke-sized Pattern.fullmatch probe for the bounded named fully-empty workflow when the optional capture is omitted so the empty-arm conditional stays on the published benchmark surface."
+      ]
+    },
+    {
+      "id": "module-search-numbered-nested-conditional-group-exists-fully-empty-present-cold-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(b)?c(?(1)|(?(1)|))",
+      "haystack": "zzabczz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "nested-conditional",
+        "search",
+        "module",
+        "present",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals"
+      ],
+      "notes": [
+        "Cold module.search helper path for the bounded numbered nested fully-empty conditional workflow when the optional capture is present and both nested conditional sites contribute zero-width suffixes."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-nested-conditional-group-exists-fully-empty-absent-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(b)?c(?(1)|(?(1)|))",
+      "haystack": "ac",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "nested-conditional",
+        "fullmatch",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered nested fully-empty conditional workflow when the optional capture is absent and both nested branches remain zero width."
+      ]
+    },
+    {
+      "id": "module-search-named-nested-conditional-group-exists-fully-empty-present-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>b)?c(?(word)|(?(word)|))",
+      "haystack": "zzabczz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "nested-conditional",
+        "named-group",
+        "search",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded named nested fully-empty conditional workflow when the optional named capture is present and the nested conditional stays zero width throughout."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-nested-conditional-group-exists-fully-empty-absent-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>b)?c(?(word)|(?(word)|))",
+      "haystack": "ac",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "nested-conditional",
+        "named-group",
+        "fullmatch",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded named nested fully-empty conditional workflow when the optional named capture is absent and the nested conditional contributes no suffix in either branch."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-quantified-conditional-group-exists-fully-empty-purged-gap",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "(?:a(b)?c(?(1)|)){2}",
+      "haystack": "acac",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "quantified-conditional",
+        "fullmatch",
+        "unsupported",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered quantified fully-empty conditional workflow when both repetitions omit the optional capture so the accepted repeated zero-width else arm stays explicit on the published benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-quantified-conditional-group-exists-fully-empty-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "(?:a(?P<word>b)?c(?(word)|)){2}",
+      "haystack": "abcabc",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "quantified-conditional",
+        "named-group",
+        "fullmatch",
+        "present",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded named quantified fully-empty conditional workflow when both repetitions populate the named optional capture and both conditional sites therefore remain zero width."
+      ]
+    },
+    {
+      "id": "module-sub-numbered-conditional-group-exists-fully-empty-replacement-warm-gap",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)|)",
+      "haystack": "zzac zzabczz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "replacement",
+        "module",
+        "sub",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded numbered fully-empty conditional replacement workflow when the conditional contributes zero-width suffixes in both branches."
+      ]
+    },
+    {
+      "id": "module-subn-numbered-conditional-group-exists-fully-empty-replacement-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(b)?c(?(1)|)",
+      "haystack": "zzaczz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "replacement",
+        "subn",
+        "module",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded numbered fully-empty conditional replacement count workflow when the optional capture is absent."
+      ]
+    },
+    {
+      "id": "pattern-sub-numbered-conditional-group-exists-fully-empty-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)|)",
+      "haystack": "zzabczz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "replacement",
+        "sub",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded numbered fully-empty conditional replacement workflow when the optional capture is present and the matched span stays `abc`."
+      ]
+    },
+    {
+      "id": "pattern-subn-numbered-conditional-group-exists-fully-empty-replacement-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(b)?c(?(1)|)",
+      "haystack": "zzaczz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "replacement",
+        "subn",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded numbered fully-empty conditional replacement count workflow when the optional capture is absent."
+      ]
+    },
+    {
+      "id": "module-sub-named-conditional-group-exists-fully-empty-replacement-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(?P<word>b)?c(?(word)|)",
+      "haystack": "zzac zzabczz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "replacement",
+        "named-group",
+        "sub",
+        "module",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded named fully-empty conditional replacement workflow."
+      ]
+    },
+    {
+      "id": "module-subn-named-conditional-group-exists-fully-empty-replacement-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)|)",
+      "haystack": "zzaczz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "replacement",
+        "named-group",
+        "subn",
+        "module",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded named fully-empty conditional replacement count workflow when the optional capture is absent."
+      ]
+    },
+    {
+      "id": "pattern-sub-named-conditional-group-exists-fully-empty-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(?P<word>b)?c(?(word)|)",
+      "haystack": "zzabczz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "replacement",
+        "named-group",
+        "sub",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded named fully-empty conditional replacement workflow."
+      ]
+    },
+    {
+      "id": "pattern-subn-named-conditional-group-exists-fully-empty-replacement-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(?P<word>b)?c(?(word)|)",
+      "haystack": "zzaczz",
+      "replacement": "X",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "replacement",
+        "named-group",
+        "subn",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded named fully-empty conditional replacement count workflow when the optional capture is absent."
+      ]
+    },
+    {
+      "id": "module-search-numbered-conditional-group-exists-fully-empty-alternation-heavy-warm-gap",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(b)?c(?(1)|(?:|))",
+      "haystack": "zzaczz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "alternation-heavy",
+        "search",
+        "module",
+        "absent",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "alternation"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded numbered alternation-bearing fully-empty workflow when the optional capture is absent and the else arm still resolves through an explicit empty alternation site."
+      ]
+    },
+    {
+      "id": "module-search-named-conditional-group-exists-fully-empty-alternation-heavy-present-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>b)?c(?(word)|(?:|))",
+      "haystack": "zzabczz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "alternation-heavy",
+        "named-group",
+        "search",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "alternation"
+      ],
+      "notes": [
+        "Warm module.search helper path for the bounded named alternation-bearing fully-empty workflow when the optional named capture is present and the yes arm remains the accepted zero-width branch."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-conditional-group-exists-fully-empty-alternation-heavy-absent-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(b)?c(?(1)|(?:|))",
+      "haystack": "ac",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "alternation-heavy",
+        "fullmatch",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "alternation",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded numbered alternation-bearing fully-empty workflow when the optional capture is absent and the else arm still resolves through an explicit empty alternation site."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-conditional-group-exists-fully-empty-alternation-heavy-present-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>b)?c(?(word)|(?:|))",
+      "haystack": "abc",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "fully-empty",
+        "alternation-heavy",
+        "named-group",
+        "fullmatch",
+        "present",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "alternation",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the bounded named alternation-bearing fully-empty workflow when the optional named capture is present and the conditional still resolves through the accepted zero-width yes arm."
+      ]
+    }
+  ]
+}

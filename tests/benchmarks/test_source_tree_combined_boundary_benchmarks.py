@@ -60,14 +60,13 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     summary,
                     expected_phase=case["expected_phase"],
                     expected_runner_version=case["expected_runner_version"],
+                    expected_adapter=case["expected_adapter"],
+                    expected_manifest_documents=case["manifest_documents"],
                     expected_manifest_paths=case["expected_manifest_paths"],
+                    expected_selection_mode=case["selection_mode"],
                     tracked_report_path=TRACKED_REPORT_PATH,
                 )
                 self.assertEqual(summary, case["expected_summary"])
-                self.assertEqual(
-                    scorecard["summary"]["workloads_by_cache_mode"],
-                    case["expected_cache_counts"],
-                )
 
                 manifest_id = case["manifest_id"]
                 manifest_summary = scorecard["manifests"][manifest_id]
@@ -79,6 +78,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     manifest_document=case["target_manifest"],
                     manifest_path=case["manifest_path"],
                     known_gap_count=manifest_expectation["known_gap_count"],
+                    selection_mode=case["selection_mode"],
+                    selected_workload_ids=case["selected_workload_ids_by_manifest"][manifest_id],
                 )
 
                 representative_ids = representative_measured_workload_ids(

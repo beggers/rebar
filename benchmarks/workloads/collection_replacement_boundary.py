@@ -1,0 +1,295 @@
+MANIFEST = {
+  "schema_version": 1,
+  "manifest_id": "collection-replacement-boundary",
+  "spec_refs": [
+    "docs/benchmarks/plan.md",
+    "docs/spec/drop-in-re-compatibility.md"
+  ],
+  "notes": [
+    "Collection/replacement boundary workloads keep patterns and haystacks intentionally tiny so the timings stay about helper-call overhead instead of regex throughput, even when they exercise bounded wildcard or replacement-template behavior.",
+    "Cache labels describe module compile-cache state or precompiled Pattern provenance rather than replacement-template complexity, capture-group breadth, or large-haystack scanning cost."
+  ],
+  "defaults": {
+    "warmup_iterations": 2,
+    "sample_iterations": 5,
+    "timed_samples": 7
+  },
+  "workloads": [
+    {
+      "id": "module-split-literal-warm-str",
+      "bucket": "module-split",
+      "family": "module",
+      "operation": "module.split",
+      "pattern": ":",
+      "haystack": "a:b:c",
+      "flags": 0,
+      "maxsplit": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "smoke": True,
+      "categories": [
+        "collection",
+        "split",
+        "literal",
+        "warm-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "module-split",
+        "literal-text"
+      ],
+      "notes": [
+        "Warm module.split helper path over a tiny literal separator with the default maxsplit."
+      ]
+    },
+    {
+      "id": "module-split-literal-purged-bytes",
+      "bucket": "module-split",
+      "family": "module",
+      "operation": "module.split",
+      "pattern": ":",
+      "haystack": "a:b:c",
+      "flags": 0,
+      "maxsplit": 1,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "collection",
+        "split",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-split",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Bytes module.split helper path with a one-split limit so cache-purge provenance stays visible."
+      ]
+    },
+    {
+      "id": "module-findall-single-dot-warm-str",
+      "bucket": "module-findall",
+      "family": "module",
+      "operation": "module.findall",
+      "pattern": "a.c",
+      "haystack": "zzabcyyaxc",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "collection",
+        "findall",
+        "single-dot",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-findall",
+        "wildcard-single-dot"
+      ],
+      "notes": [
+        "Warm module.findall helper path over the bounded single-dot workflow so wildcard support is timed alongside the earlier literal-only collection rows."
+      ]
+    },
+    {
+      "id": "module-findall-literal-purged-bytes",
+      "bucket": "module-findall",
+      "family": "module",
+      "operation": "module.findall",
+      "pattern": "ab",
+      "haystack": "zzabyyab",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "collection",
+        "findall",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-findall",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Bytes module.findall helper path that keeps repeated-match behavior visible without broadening into throughput claims."
+      ]
+    },
+    {
+      "id": "module-sub-template-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "abc",
+      "replacement": "\\g<0>x",
+      "haystack": "zzabcyyabc",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "template",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "literal-text",
+        "replacement-template"
+      ],
+      "notes": [
+        "Warm module.sub helper path with a whole-match replacement template so the Rust-backed template workflow reaches the benchmark scorecard."
+      ]
+    },
+    {
+      "id": "module-sub-literal-purged-bytes",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "ab",
+      "replacement": "XY",
+      "haystack": "zzabyyab",
+      "flags": 0,
+      "count": 1,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "replacement",
+        "sub",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Bytes module.sub helper path with a single replacement count so replacement-boundary overhead stays easy to isolate."
+      ]
+    },
+    {
+      "id": "pattern-finditer-literal-warm-str",
+      "bucket": "pattern-finditer",
+      "family": "module",
+      "operation": "pattern.finditer",
+      "pattern": "ab",
+      "haystack": "zzabyyab",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "finditer",
+        "literal",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-finditer",
+        "literal-text"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.finditer helper path with eager iterator consumption over a tiny haystack."
+      ]
+    },
+    {
+      "id": "pattern-finditer-literal-purged-bytes",
+      "bucket": "pattern-finditer",
+      "family": "module",
+      "operation": "pattern.finditer",
+      "pattern": "ab",
+      "haystack": "zzabyyab",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "collection",
+        "finditer",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-finditer",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Bytes precompiled Pattern.finditer helper path that keeps purge provenance visible while still consuming the tiny iterator output."
+      ]
+    },
+    {
+      "id": "pattern-subn-grouped-template-warm-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "(abc)",
+      "replacement": "\\1x",
+      "haystack": "zzabcyyabc",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "replacement",
+        "subn",
+        "grouped",
+        "template",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "replacement-template"
+      ],
+      "notes": [
+        "Warm precompiled Pattern.subn helper path with a grouped-literal replacement template so capture-aware replacement timing is published explicitly."
+      ]
+    },
+    {
+      "id": "pattern-subn-literal-purged-bytes",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "ab",
+      "replacement": "XY",
+      "haystack": "zzabyyab",
+      "flags": 0,
+      "count": 1,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "smoke": True,
+      "categories": [
+        "pattern",
+        "replacement",
+        "subn",
+        "bytes",
+        "purged-cache",
+        "smoke"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "pattern-text-model",
+        "cache-purge"
+      ],
+      "notes": [
+        "Smoke-sized bytes Pattern.subn helper path with a single replacement count and explicit purge provenance."
+      ]
+    }
+  ]
+}

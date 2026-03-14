@@ -2019,6 +2019,61 @@ def compose_agent_commit_message(
     return "\n".join(lines).rstrip() + "\n"
 
 
+def last_cycle_stalled_on_inherited_dirty_worktree(loop_state: dict[str, Any]) -> bool:
+    anomalies = loop_state.get("last_cycle_anomalies")
+    if not isinstance(anomalies, list):
+        return False
+    for anomaly in anomalies:
+        if not isinstance(anomaly, dict):
+            continue
+        message = str(anomaly.get("message", ""))
+        if "worktree was already dirty" not in message:
+            continue
+        if "Skipped non-supervisor agent dispatch" in message:
+            return True
+        if "Skipped post-agent refresh and auto-commit" in message:
+            return True
+    return False
+
+
+def maybe_checkpoint_inherited_dirty_worktree(
+    config: dict[str, Any],
+    supervisor_agent: AgentSpec | None,
+    loop_state: dict[str, Any],
+) -> dict[str, Any] | None:
+    if supervisor_agent is None or not git_worktree_dirty():
+        return None
+    if not last_cycle_stalled_on_inherited_dirty_worktree(loop_state):
+        return None
+
+    paths = runtime_paths(config)
+    ensure_runtime_dirs(paths)
+    run_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + "-supervisor-inherited-dirty-checkpoint"
+    run_dir = paths["runs_root"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    write_text(
+        run_dir / "last_message.md",
+        (
+            "Checkpointed the inherited dirty worktree to unblock queue dispatch\n\n"
+            "The previous cycle already stalled on an inherited dirty worktree, so this "
+            "checkpoint commit preserves the existing dirty batch as-is before the next "
+            "dispatch attempt. No tests were run; this was a harness recovery checkpoint.\n"
+        ),
+    )
+    result = RunResult(
+        agent_name=supervisor_agent.name,
+        agent_kind=supervisor_agent.kind,
+        run_id=run_id,
+        exit_code=0,
+        timed_out=False,
+        run_dir=run_dir,
+        task_initial_path=None,
+        task_final_path=None,
+        task_final_status=None,
+    )
+    return maybe_commit_agent_changes(config, supervisor_agent, [result], [])
+
+
 def maybe_commit_agent_changes(
     config: dict[str, Any],
     agent: AgentSpec,
@@ -2659,6 +2714,16 @@ def run_cycle(
     recovery_actions.extend(stale_actions)
     results: list[RunResult] = []
     commit_actions: list[dict[str, Any]] = []
+    supervisor_agent = next((agent for agent in agents if agent.kind == "supervisor"), None)
+    if cycle_inherited_dirty:
+        checkpoint_action = maybe_checkpoint_inherited_dirty_worktree(
+            config,
+            supervisor_agent,
+            loop_state,
+        )
+        if checkpoint_action is not None:
+            commit_actions.append(checkpoint_action)
+            cycle_inherited_dirty = git_worktree_dirty()
     skipped_dirty_dispatch_agents: list[str] = []
     skipped_dirty_autocommit_agents: list[str] = []
     forced = force_agents or set()

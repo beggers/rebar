@@ -57,6 +57,11 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
+    / "quantified_nested_group_replacement_workflows.py",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
     / "nested_group_callable_replacement_workflows.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "literal_alternation_workflows.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_alternation_workflows.json",
@@ -75,13 +80,13 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_branch_local_backreference_workflows.json",
+    / "conditional_group_exists_branch_local_backreference_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
     / "quantified_branch_local_backreference_workflows.json",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "optional_group_workflows.json",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "optional_group_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
@@ -112,6 +117,21 @@ DEFAULT_FIXTURE_PATHS = (
     / "conformance"
     / "fixtures"
     / "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
+    / "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
+    / "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
+    / "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
@@ -171,42 +191,42 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "optional_group_alternation_workflows.json",
+    / "optional_group_alternation_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "optional_group_alternation_branch_local_backreference_workflows.json",
+    / "optional_group_alternation_branch_local_backreference_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_workflows.json",
+    / "conditional_group_exists_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_no_else_workflows.json",
+    / "conditional_group_exists_no_else_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_no_else_alternation_workflows.json",
+    / "conditional_group_exists_no_else_alternation_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_no_else_nested_workflows.json",
+    / "conditional_group_exists_no_else_nested_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_replacement_workflows.json",
+    / "conditional_group_exists_replacement_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_alternation_replacement_workflows.json",
+    / "conditional_group_exists_alternation_replacement_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
@@ -216,42 +236,42 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_quantified_replacement_workflows.json",
+    / "conditional_group_exists_quantified_replacement_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_no_else_replacement_workflows.json",
+    / "conditional_group_exists_no_else_replacement_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_no_else_quantified_workflows.json",
+    / "conditional_group_exists_no_else_quantified_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_empty_else_workflows.json",
+    / "conditional_group_exists_empty_else_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_empty_else_replacement_workflows.json",
+    / "conditional_group_exists_empty_else_replacement_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_empty_else_alternation_workflows.json",
+    / "conditional_group_exists_empty_else_alternation_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_empty_else_nested_workflows.json",
+    / "conditional_group_exists_empty_else_nested_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_empty_else_quantified_workflows.json",
+    / "conditional_group_exists_empty_else_quantified_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
@@ -276,27 +296,27 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_fully_empty_alternation_workflows.json",
+    / "conditional_group_exists_fully_empty_alternation_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_fully_empty_quantified_workflows.json",
+    / "conditional_group_exists_fully_empty_quantified_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_fully_empty_nested_workflows.json",
+    / "conditional_group_exists_fully_empty_nested_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_alternation_workflows.json",
+    / "conditional_group_exists_alternation_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_nested_workflows.json",
+    / "conditional_group_exists_nested_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
@@ -306,22 +326,22 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_fully_empty_replacement_workflows.json",
+    / "conditional_group_exists_fully_empty_replacement_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_fully_empty_workflows.json",
+    / "conditional_group_exists_fully_empty_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_assertion_diagnostics.json",
+    / "conditional_group_exists_assertion_diagnostics.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_quantified_workflows.json",
+    / "conditional_group_exists_quantified_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
@@ -474,6 +494,7 @@ def _materialize_fixture_value(value: Any) -> Any:
             def _callable_constant(_match: Any, *, _value: Any = constant_value) -> Any:
                 return _value
 
+            _callable_constant.__module__ = "rebar_harness.correctness"
             _callable_constant.__name__ = "callable_constant"
             _callable_constant.__qualname__ = "callable_constant"
             return _callable_constant
@@ -491,6 +512,7 @@ def _materialize_fixture_value(value: Any) -> Any:
             ) -> Any:
                 return _prefix + match.group(_group_reference) + _suffix
 
+            _callable_match_group.__module__ = "rebar_harness.correctness"
             _callable_match_group.__name__ = "callable_match_group"
             _callable_match_group.__qualname__ = "callable_match_group"
             return _callable_match_group

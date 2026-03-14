@@ -2,7 +2,7 @@
 
 `rebar` is a Rust-backed attempt at a bug-for-bug compatible replacement for Python's `re` module. The target is simple: match CPython's accepted syntax, public API behavior, parse trees, and diagnostics first, then compete on compile and match speed through a CPython-facing extension.
 
-The repo runs through an agent loop, but the landing page stays human-first. Start with the status block for the current published slice, how much of it is measured, and what still blocks broader claims.
+Start with the status block for the current published slice, how much of it is measured, and what still blocks broader parity or performance claims.
 
 <!-- REBAR:STATUS_START -->
 ## Current State
@@ -11,73 +11,66 @@ _This block reports the implemented slice and measurement coverage, not estimate
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 3 is still a bounded Rust-backed subset: published correctness is fully passing through the broader `{1,4}` grouped backtracking-heavy slice, while published benchmark coverage still stops one bounded slice earlier. |
-| Delivery estimate | The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity. Benchmark coverage is still catching up to the newest correctness slice, and broad performance claims remain premature. |
-| Current milestone | Milestone 2 has the broader `{1,4}` grouped backtracking-heavy slice at Rust-backed parity; next up is catching that same bounded workflow up on the Python-path benchmark surface. |
-| Work queue | `2` ready, `0` in progress, `286` done, `0` blocked |
+| Phase | Phase 3 is still a bounded Rust-backed subset: correctness and Rust-backed parity are aligned through quantified nested-group replacement templates, while the main Python-path benchmark report still trails that slice by one bounded follow-on and quantified nested-group callable replacement is queued immediately behind it. |
+| Delivery estimate | The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity. Correctness and Rust-backed parity are aligned through quantified nested-group replacement templates, the main Python-path benchmark surface still trails that slice by one bounded follow-on, publication still runs through the source-tree shim, and broader callable-replacement plus deeper nested grouped execution work remain ahead. |
+| Current milestone | Milestone 2 now has quantified nested-group replacement-template parity aligned on the correctness and Rust-backed surfaces; `RBR-0307` is next to catch that slice up on the main Python-path benchmark surface, and `RBR-0309` is queued immediately behind it to reopen quantified nested-group callable replacement on the correctness surface. |
+| Work queue | `1` ready, `0` in progress, `311` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `729` |
-| Passing in published slice | `729` |
+| Published cases | `779` |
+| Passing in published slice | `779` |
 | Explicit failures | `0` |
 | Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `82` |
+| Covered manifests | `86` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity. Benchmark coverage is still catching up to the newest correctness slice, and broad performance claims remain premature._
+_These correctness counts cover only the published slice. Overall delivery estimate: The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity. Correctness and Rust-backed parity are aligned through quantified nested-group replacement templates, the main Python-path benchmark surface still trails that slice by one bounded follow-on, publication still runs through the source-tree shim, and broader callable-replacement plus deeper nested grouped execution work remain ahead._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/usr/bin/python3`) |
-| Published workloads | `473` |
-| Workloads with real `rebar` timings | `442` |
-| Known-gap workloads | `31` |
+| Published workloads | `496` |
+| Workloads with real `rebar` timings | `466` |
+| Known-gap workloads | `30` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native sidecars are checked in separately at [`reports/benchmarks/native_full.json`](reports/benchmarks/native_full.json) for the latest built-native full-suite run and [`reports/benchmarks/native_smoke.json`](reports/benchmarks/native_smoke.json) for the smoke slice._
 
-_README speedup rollups stay omitted while only `442` of `473` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `466` of `496` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- Land `RBR-0278` to catch the broader `{1,4}` grouped backtracking-heavy slice up on the Python-path benchmark surface.
+- Land `RBR-0307` to catch quantified nested-group replacement benchmarks up on the main Python-path surface.
+- Follow with `RBR-0309` to publish quantified nested-group callable replacement workflows on the correctness surface.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The newly landed broader `{1,4}` grouped backtracking-heavy slice is not yet on the published benchmark surface, so the fully passing and fully measured frontier still stops one bounded slice earlier.
+- The published benchmark surface still trails the parity-aligned quantified nested-group replacement slice and carries 30 explicit known-gap workloads, so the scorecards remain bounded frontier reporting.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
 
 `rebar` already has a real Rust core, a CPython-facing extension boundary, and canonical correctness and benchmark reports. It is still an early, narrow `re` subset rather than a drop-in replacement.
 
-The published correctness slice is clean, but the benchmark story is still catch-up work on that same bounded frontier and the main report still runs through the source-tree shim. Near term, the project is finishing Python-path benchmark coverage for the latest Rust-backed `{1,4}` grouped backtracking-heavy slice before widening the frontier again.
+The project is still moving one bounded slice at a time, so the status block and published reports are the place to read the exact frontier and measurement coverage. Near term, the work stays on benchmark catch-up and trustworthy Python-path reporting before broader compatibility or performance claims widen.
 
 ## Where To Look
 
-For detailed project state, start with `ops/state/current_status.md` and `ops/state/backlog.md`. For the published scorecards, use `reports/correctness/latest.json`, `reports/benchmarks/latest.json`, `reports/benchmarks/native_full.json`, and `reports/benchmarks/native_smoke.json`. For the operating model and queue layout, `ops/README.md` is the canonical reference.
+For the published scorecards, start with `reports/correctness/latest.json` and `reports/benchmarks/latest.json`. For the latest strict built-native checkpoints, use `reports/benchmarks/native_full.json` and `reports/benchmarks/native_smoke.json`. For the broader project frontier, `ops/state/current_status.md` is the current narrative state; `ops/README.md` is the operator guide for the loop and queue layout.
 
-## Useful Commands
+## Inspecting The Current Slice
 
 ```bash
 python3 scripts/rebar_ops.py status
 python3 scripts/rebar_ops.py report
-python3 scripts/rebar_ops.py render supervisor
-python3 scripts/rebar_ops.py cycle --force-agent feature-implementation
-python3 scripts/rebar_ops.py cycle --force-supervisor
-bash scripts/loop_forever.sh
 ```
 
-## Operating Notes
-
-- Run the forever loop from a normal shell on a writable checkout.
-- Do not start a second `python3 scripts/rebar_ops.py cycle ...` run against the same checkout while `scripts/loop_forever.sh` is active.
-- Avoid launching the loop from inside another sandboxed Codex session; nested sandboxes can distort child-agent behavior and cache writes.
+Loop-running and queue-management details stay in `ops/README.md` so this landing page can stay focused on project shape, current coverage, and the published reports.

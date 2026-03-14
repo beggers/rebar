@@ -316,6 +316,9 @@ class Match:
             values.append(self._slice_group(self._resolve_group_reference(group)))
         return tuple(values)
 
+    def __getitem__(self, group: object) -> str | bytes:
+        return self.group(group)
+
     def groups(self, default: object = None) -> tuple[object, ...]:
         return tuple(self._slice_group(group_index, default) for group_index in range(1, len(self._group_spans) + 1))
 
@@ -324,6 +327,9 @@ class Match:
             name: self._slice_group(group_index, default)
             for name, group_index in self.re.groupindex.items()
         }
+
+    def expand(self, template: object) -> str | bytes:
+        return _expand_match_template(self, template)
 
     def span(self, group: object = 0) -> tuple[int, int]:
         group_index = self._resolve_group_reference(group)
@@ -337,6 +343,173 @@ class Match:
 
     def end(self, group: object = 0) -> int:
         return self.span(group)[1]
+
+
+def _expand_match_template(match: Match, template: object) -> str | bytes:
+    if isinstance(template, str):
+        return _expand_str_match_template(match, template)
+    if isinstance(template, (bytes, bytearray, memoryview)):
+        return _expand_bytes_match_template(match, bytes(template))
+    raise TypeError(f"decoding to str: need a bytes-like object, {type(template).__name__} found")
+
+
+def _expand_str_match_template(match: Match, template: str) -> str | bytes:
+    pieces: list[str | bytes] = []
+    literal_start = 0
+    index = 0
+
+    while index < len(template):
+        if template[index] != "\\":
+            index += 1
+            continue
+
+        if literal_start != index:
+            pieces.append(template[literal_start:index])
+
+        piece, index = _expand_str_match_escape(match, template, index)
+        pieces.append(piece)
+        literal_start = index
+
+    if literal_start < len(template):
+        pieces.append(template[literal_start:])
+
+    return template[:0].join(pieces)
+
+
+def _expand_str_match_escape(match: Match, template: str, escape_index: int) -> tuple[str | bytes, int]:
+    if escape_index + 1 >= len(template):
+        _raise_regex_error("bad escape (end of pattern)", template, escape_index)
+        raise AssertionError("_raise_regex_error() should raise")  # pragma: no cover
+
+    token = template[escape_index + 1]
+    if token == "\\":
+        return "\\", escape_index + 2
+
+    if token == "g":
+        if escape_index + 2 >= len(template) or template[escape_index + 2] != "<":
+            _raise_regex_error(r"bad escape \g", template, escape_index)
+            raise AssertionError("_raise_regex_error() should raise")  # pragma: no cover
+        close_index = template.find(">", escape_index + 3)
+        if close_index == -1:
+            _raise_regex_error("missing >, unterminated name", template, escape_index + 3)
+            raise AssertionError("_raise_regex_error() should raise")  # pragma: no cover
+        return (
+            _resolve_template_group_value(
+                match,
+                template[escape_index + 3 : close_index],
+                template[:0],
+                template,
+                escape_index + 3,
+            ),
+            close_index + 1,
+        )
+
+    if token.isdigit():
+        if token == "0":
+            return "\x00", escape_index + 2
+        return (
+            _resolve_template_group_value(
+                match,
+                token,
+                template[:0],
+                template,
+                escape_index + 1,
+            ),
+            escape_index + 2,
+        )
+
+    _raise_regex_error(fr"bad escape \{token}", template, escape_index)
+    raise AssertionError("_raise_regex_error() should raise")  # pragma: no cover
+
+
+def _expand_bytes_match_template(match: Match, template: bytes) -> str | bytes:
+    pieces: list[str | bytes] = []
+    literal_start = 0
+    index = 0
+
+    while index < len(template):
+        if template[index] != 92:
+            index += 1
+            continue
+
+        if literal_start != index:
+            pieces.append(template[literal_start:index])
+
+        piece, index = _expand_bytes_match_escape(match, template, index)
+        pieces.append(piece)
+        literal_start = index
+
+    if literal_start < len(template):
+        pieces.append(template[literal_start:])
+
+    return template[:0].join(pieces)
+
+
+def _expand_bytes_match_escape(match: Match, template: bytes, escape_index: int) -> tuple[str | bytes, int]:
+    if escape_index + 1 >= len(template):
+        _raise_regex_error("bad escape (end of pattern)", template, escape_index)
+        raise AssertionError("_raise_regex_error() should raise")  # pragma: no cover
+
+    token = template[escape_index + 1]
+    if token == 92:
+        return b"\\", escape_index + 2
+
+    if token == ord("g"):
+        if escape_index + 2 >= len(template) or template[escape_index + 2] != ord("<"):
+            _raise_regex_error(r"bad escape \g", template, escape_index)
+            raise AssertionError("_raise_regex_error() should raise")  # pragma: no cover
+        close_index = template.find(b">", escape_index + 3)
+        if close_index == -1:
+            _raise_regex_error("missing >, unterminated name", template, escape_index + 3)
+            raise AssertionError("_raise_regex_error() should raise")  # pragma: no cover
+        return (
+            _resolve_template_group_value(
+                match,
+                template[escape_index + 3 : close_index].decode("ascii"),
+                template[:0],
+                template,
+                escape_index + 3,
+            ),
+            close_index + 1,
+        )
+
+    if chr(token).isdigit():
+        if token == ord("0"):
+            return b"\x00", escape_index + 2
+        return (
+            _resolve_template_group_value(
+                match,
+                chr(token),
+                template[:0],
+                template,
+                escape_index + 1,
+            ),
+            escape_index + 2,
+        )
+
+    _raise_regex_error(fr"bad escape \{chr(token)}", template, escape_index)
+    raise AssertionError("_raise_regex_error() should raise")  # pragma: no cover
+
+
+def _resolve_template_group_value(
+    match: Match,
+    group_name: str,
+    empty: str | bytes,
+    template: str | bytes,
+    position: int,
+) -> str | bytes:
+    if group_name.isdigit():
+        group_index = int(group_name)
+        if group_index == 0:
+            return match._slice_group(0, empty)
+        if not 1 <= group_index <= len(match._group_spans):
+            _raise_regex_error(f"invalid group reference {group_index}", template, position)
+            raise AssertionError("_raise_regex_error() should raise")  # pragma: no cover
+        return match._slice_group(group_index, empty)
+
+    if group_name not in match.re.groupindex:
+        raise IndexError(f"unknown group name '{group_name}'")
+    return match._slice_group(match.re.groupindex[group_name], empty)
 
 
 Match.__module__ = "re"
@@ -819,6 +992,18 @@ def _compile_known_parser_case(pattern: str | bytes, flags: int) -> Pattern | No
         grouped_literal_body = _grouped_literal_body(pattern)
         if grouped_literal_body is not None:
             return _build_compiled_pattern(pattern, flags, supports_literal=False, groups=1)
+
+    if pattern in {
+        "a((bc|de){1,4})d",
+        "a(?P<outer>(bc|de){1,4})d",
+    } and flags == int(UNICODE):
+        return _build_compiled_pattern(
+            pattern,
+            flags,
+            supports_literal=False,
+            groups=2,
+            groupindex={"outer": 1} if pattern.startswith("a(?P<outer>") else {},
+        )
 
     if (
         pattern == "[A-Z_][a-z0-9_]+"

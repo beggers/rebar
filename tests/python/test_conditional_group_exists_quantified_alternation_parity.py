@@ -1,276 +1,183 @@
 from __future__ import annotations
 
-import pathlib
+from dataclasses import dataclass
 import re
-import sys
-import unittest
 
-
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-PYTHON_SOURCE = REPO_ROOT / "python"
-
-if str(PYTHON_SOURCE) not in sys.path:
-    sys.path.insert(0, str(PYTHON_SOURCE))
-
+import pytest
 
 import rebar
 
 
-class RebarConditionalGroupExistsQuantifiedAlternationParityTest(unittest.TestCase):
-    def setUp(self) -> None:
-        rebar.purge()
+@dataclass(frozen=True)
+class ParityCase:
+    id: str
+    pattern: str
+    max_group: int
+    group_names: tuple[str, ...] = ()
+    search_matches: tuple[str, ...] = ()
+    search_misses: tuple[str, ...] = ()
+    fullmatch_matches: tuple[str, ...] = ()
+    fullmatch_misses: tuple[str, ...] = ()
 
-    def tearDown(self) -> None:
-        rebar.purge()
 
-    def _assert_match_parity(
-        self,
-        observed: rebar.Match,
-        expected: re.Match[str],
-        *,
-        group_names: tuple[str, ...] = (),
-    ) -> None:
-        self.assertIs(type(observed), rebar.Match)
-        self.assertEqual(observed.group(0), expected.group(0))
-        self.assertEqual(observed.group(1), expected.group(1))
-        self.assertEqual(observed.group(2), expected.group(2))
-        self.assertEqual(observed.group(3), expected.group(3))
-        self.assertEqual(observed.groups(), expected.groups())
-        self.assertEqual(observed.groupdict(), expected.groupdict())
-        self.assertEqual(observed.span(), expected.span())
-        self.assertEqual(observed.span(1), expected.span(1))
-        self.assertEqual(observed.span(2), expected.span(2))
-        self.assertEqual(observed.span(3), expected.span(3))
-        self.assertEqual(observed.start(1), expected.start(1))
-        self.assertEqual(observed.start(2), expected.start(2))
-        self.assertEqual(observed.start(3), expected.start(3))
-        self.assertEqual(observed.end(1), expected.end(1))
-        self.assertEqual(observed.end(2), expected.end(2))
-        self.assertEqual(observed.end(3), expected.end(3))
-        self.assertEqual(observed.lastindex, expected.lastindex)
-        self.assertEqual(observed.lastgroup, expected.lastgroup)
-        for group_name in group_names:
-            self.assertEqual(observed.group(group_name), expected.group(group_name))
-            self.assertEqual(observed.span(group_name), expected.span(group_name))
+_MISSING_GROUP_DEFAULT = object()
 
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "conditional group-exists quantified alternation parity requires rebar._rebar",
+
+CASES = (
+    ParityCase(
+        id="conditional-group-exists-quantified-alternation-numbered",
+        pattern=r"a(b)?c(?(1)(de|df)|(eg|eh)){2}",
+        max_group=3,
+        search_matches=("zzabcdedezz", "zzacegegzz"),
+        search_misses=("zzabcdehzz", "zzacegedzz", "zzadzz", "zzabcegzz"),
+        fullmatch_matches=("abcdfdf", "abcdedf", "aceheh", "acegeh"),
+        fullmatch_misses=("abcdeh", "aceged", "ad", "abceg"),
+    ),
+    ParityCase(
+        id="conditional-group-exists-quantified-alternation-named",
+        pattern=r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}",
+        max_group=3,
+        group_names=("word",),
+        search_matches=("zzabcdedezz", "zzacegegzz"),
+        search_misses=("zzabcdehzz", "zzacegedzz", "zzadzz", "zzabcegzz"),
+        fullmatch_matches=("abcdfdf", "abcdedf", "aceheh", "acegeh"),
+        fullmatch_misses=("abcdeh", "aceged", "ad", "abceg"),
+    ),
+)
+
+
+def _assert_match_parity(
+    backend_name: str,
+    observed: object,
+    expected: re.Match[str],
+    *,
+    max_group: int,
+    group_names: tuple[str, ...],
+) -> None:
+    if backend_name == "rebar":
+        assert type(observed) is rebar.Match
+    else:
+        assert type(observed) is type(expected)
+
+    group_indexes = tuple(range(max_group + 1))
+
+    assert observed.group(0) == expected.group(0)
+    assert observed.group(*group_indexes) == expected.group(*group_indexes)
+
+    for group_index in range(1, max_group + 1):
+        assert observed.group(group_index) == expected.group(group_index)
+        assert observed.span(group_index) == expected.span(group_index)
+        assert observed.start(group_index) == expected.start(group_index)
+        assert observed.end(group_index) == expected.end(group_index)
+
+    assert observed.groups() == expected.groups()
+    assert observed.groups(_MISSING_GROUP_DEFAULT) == expected.groups(_MISSING_GROUP_DEFAULT)
+    assert observed.groupdict() == expected.groupdict()
+    assert observed.groupdict(_MISSING_GROUP_DEFAULT) == expected.groupdict(
+        _MISSING_GROUP_DEFAULT
     )
-    def test_compile_matches_cpython_numbered_conditional_group_exists_quantified_alternation_metadata(
-        self,
-    ) -> None:
-        pattern = "a(b)?c(?(1)(de|df)|(eg|eh)){2}"
-        observed = rebar.compile(pattern)
-        expected = re.compile(pattern)
+    assert observed.string == expected.string
+    assert observed.pos == expected.pos
+    assert observed.endpos == expected.endpos
+    assert observed.span() == expected.span()
+    assert observed.lastindex == expected.lastindex
+    assert observed.lastgroup == expected.lastgroup
+    assert observed.re.pattern == expected.re.pattern
+    assert observed.re.flags == expected.re.flags
+    assert observed.re.groups == expected.re.groups
+    assert observed.re.groupindex == expected.re.groupindex
 
-        self.assertIs(observed, rebar.compile(pattern))
-        self.assertEqual(observed.pattern, expected.pattern)
-        self.assertEqual(observed.flags, expected.flags)
-        self.assertEqual(observed.groups, expected.groups)
-        self.assertEqual(observed.groupindex, expected.groupindex)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "conditional group-exists quantified alternation parity requires rebar._rebar",
-    )
-    def test_module_search_matches_cpython_numbered_present_first_arm_behavior(self) -> None:
-        pattern = "a(b)?c(?(1)(de|df)|(eg|eh)){2}"
-        observed = rebar.search(pattern, "zzabcdedezz")
-        expected = re.search(pattern, "zzabcdedezz")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "conditional group-exists quantified alternation parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_numbered_present_second_arm_behavior(
-        self,
-    ) -> None:
-        pattern = "a(b)?c(?(1)(de|df)|(eg|eh)){2}"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("abcdfdf")
-        expected = expected_pattern.fullmatch("abcdfdf")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "conditional group-exists quantified alternation parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_numbered_mixed_yes_arm_behavior(self) -> None:
-        pattern = "a(b)?c(?(1)(de|df)|(eg|eh)){2}"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("abcdedf")
-        expected = expected_pattern.fullmatch("abcdedf")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "conditional group-exists quantified alternation parity requires rebar._rebar",
-    )
-    def test_module_search_matches_cpython_numbered_absent_first_arm_behavior(self) -> None:
-        pattern = "a(b)?c(?(1)(de|df)|(eg|eh)){2}"
-        observed = rebar.search(pattern, "zzacegegzz")
-        expected = re.search(pattern, "zzacegegzz")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "conditional group-exists quantified alternation parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_numbered_absent_second_arm_behavior(
-        self,
-    ) -> None:
-        pattern = "a(b)?c(?(1)(de|df)|(eg|eh)){2}"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("aceheh")
-        expected = expected_pattern.fullmatch("aceheh")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "conditional group-exists quantified alternation parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_numbered_mixed_no_arm_behavior(self) -> None:
-        pattern = "a(b)?c(?(1)(de|df)|(eg|eh)){2}"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("acegeh")
-        expected = expected_pattern.fullmatch("acegeh")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "conditional group-exists quantified alternation parity requires rebar._rebar",
-    )
-    def test_compile_matches_cpython_named_conditional_group_exists_quantified_alternation_metadata(
-        self,
-    ) -> None:
-        pattern = "a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}"
-        observed = rebar.compile(pattern)
-        expected = re.compile(pattern)
-
-        self.assertIs(observed, rebar.compile(pattern))
-        self.assertEqual(observed.pattern, expected.pattern)
-        self.assertEqual(observed.flags, expected.flags)
-        self.assertEqual(observed.groups, expected.groups)
-        self.assertEqual(observed.groupindex, expected.groupindex)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "conditional group-exists quantified alternation parity requires rebar._rebar",
-    )
-    def test_module_search_matches_cpython_named_present_first_arm_behavior(self) -> None:
-        pattern = "a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}"
-        observed = rebar.search(pattern, "zzabcdedezz")
-        expected = re.search(pattern, "zzabcdedezz")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected, group_names=("word",))
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "conditional group-exists quantified alternation parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_named_present_second_arm_behavior(self) -> None:
-        pattern = "a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("abcdfdf")
-        expected = expected_pattern.fullmatch("abcdfdf")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected, group_names=("word",))
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "conditional group-exists quantified alternation parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_named_mixed_yes_arm_behavior(self) -> None:
-        pattern = "a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("abcdedf")
-        expected = expected_pattern.fullmatch("abcdedf")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected, group_names=("word",))
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "conditional group-exists quantified alternation parity requires rebar._rebar",
-    )
-    def test_module_search_matches_cpython_named_absent_first_arm_behavior(self) -> None:
-        pattern = "a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}"
-        observed = rebar.search(pattern, "zzacegegzz")
-        expected = re.search(pattern, "zzacegegzz")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected, group_names=("word",))
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "conditional group-exists quantified alternation parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_named_absent_second_arm_behavior(self) -> None:
-        pattern = "a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("aceheh")
-        expected = expected_pattern.fullmatch("aceheh")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected, group_names=("word",))
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "conditional group-exists quantified alternation parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_named_mixed_no_arm_behavior(self) -> None:
-        pattern = "a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("acegeh")
-        expected = expected_pattern.fullmatch("acegeh")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected, group_names=("word",))
+    for group_name in group_names:
+        assert observed.group(group_name) == expected.group(group_name)
+        assert observed.span(group_name) == expected.span(group_name)
+        assert observed.start(group_name) == expected.start(group_name)
+        assert observed.end(group_name) == expected.end(group_name)
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.mark.parametrize("case", CASES, ids=lambda case: case.id)
+def test_compile_metadata_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: ParityCase,
+) -> None:
+    _, backend = regex_backend
+
+    observed = backend.compile(case.pattern)
+    expected = re.compile(case.pattern)
+
+    assert observed is backend.compile(case.pattern)
+    assert observed.pattern == expected.pattern
+    assert observed.flags == expected.flags
+    assert observed.groups == expected.groups
+    assert observed.groupindex == expected.groupindex
+
+
+@pytest.mark.parametrize("case", CASES, ids=lambda case: case.id)
+def test_module_search_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: ParityCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    for text in case.search_matches:
+        observed = backend.search(case.pattern, text)
+        expected = re.search(case.pattern, text)
+
+        assert observed is not None
+        assert expected is not None
+        _assert_match_parity(
+            backend_name,
+            observed,
+            expected,
+            max_group=case.max_group,
+            group_names=case.group_names,
+        )
+
+
+@pytest.mark.parametrize("case", CASES, ids=lambda case: case.id)
+def test_module_search_misses_match_cpython(
+    regex_backend: tuple[str, object],
+    case: ParityCase,
+) -> None:
+    _, backend = regex_backend
+
+    for text in case.search_misses:
+        assert backend.search(case.pattern, text) is None
+        assert re.search(case.pattern, text) is None
+
+
+@pytest.mark.parametrize("case", CASES, ids=lambda case: case.id)
+def test_pattern_fullmatch_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: ParityCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern = backend.compile(case.pattern)
+    expected_pattern = re.compile(case.pattern)
+
+    for text in case.fullmatch_matches:
+        observed = observed_pattern.fullmatch(text)
+        expected = expected_pattern.fullmatch(text)
+
+        assert observed is not None
+        assert expected is not None
+        _assert_match_parity(
+            backend_name,
+            observed,
+            expected,
+            max_group=case.max_group,
+            group_names=case.group_names,
+        )
+
+
+@pytest.mark.parametrize("case", CASES, ids=lambda case: case.id)
+def test_pattern_fullmatch_misses_match_cpython(
+    regex_backend: tuple[str, object],
+    case: ParityCase,
+) -> None:
+    _, backend = regex_backend
+    observed_pattern = backend.compile(case.pattern)
+    expected_pattern = re.compile(case.pattern)
+
+    for text in case.fullmatch_misses:
+        assert observed_pattern.fullmatch(text) is None
+        assert expected_pattern.fullmatch(text) is None
