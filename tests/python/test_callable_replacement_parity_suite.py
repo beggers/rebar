@@ -136,6 +136,36 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
+    _fixture_bundle(
+        "nested_group_alternation_callable_replacement_workflows.py",
+        expected_manifest_id="nested-group-alternation-callable-replacement-workflows",
+        expected_case_ids=frozenset(
+            {
+                "module-sub-callable-nested-group-alternation-numbered-b-branch-str",
+                "module-subn-callable-nested-group-alternation-numbered-first-match-only-str",
+                "pattern-sub-callable-nested-group-alternation-numbered-mixed-branches-str",
+                "pattern-subn-callable-nested-group-alternation-numbered-c-branch-first-match-only-str",
+                "module-sub-callable-nested-group-alternation-named-c-branch-str",
+                "module-subn-callable-nested-group-alternation-named-first-match-only-str",
+                "pattern-sub-callable-nested-group-alternation-named-mixed-branches-str",
+                "pattern-subn-callable-nested-group-alternation-named-b-branch-first-match-only-str",
+            }
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a((b|c))d",
+                r"a(?P<outer>(?P<inner>b|c))d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("module_call", "sub"): 2,
+                ("module_call", "subn"): 2,
+                ("pattern_call", "sub"): 2,
+                ("pattern_call", "subn"): 2,
+            }
+        ),
+    ),
 )
 
 COMPILE_PATTERNS = tuple(
