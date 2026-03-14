@@ -19,18 +19,12 @@ TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
 class CorrectnessHarnessNestedGroupAlternationBranchLocalBackreferenceWorkflowTest(
     unittest.TestCase
 ):
-    def assert_rebar_pass_or_unimplemented(self, case: dict[str, object]) -> None:
-        comparison = case["comparison"]
+    def assert_rebar_pass(self, case: dict[str, object]) -> None:
         cpython_observation = case["observations"]["cpython"]
         rebar_observation = case["observations"]["rebar"]
-
-        if comparison == "pass":
-            self.assertEqual(rebar_observation["outcome"], "success")
-            self.assertEqual(rebar_observation["result"], cpython_observation["result"])
-            return
-
-        self.assertEqual(comparison, "unimplemented")
-        self.assertEqual(rebar_observation["outcome"], "unimplemented")
+        self.assertEqual(case["comparison"], "pass")
+        self.assertEqual(rebar_observation["outcome"], "success")
+        self.assertEqual(rebar_observation["result"], cpython_observation["result"])
 
     def test_runner_regenerates_combined_nested_group_alternation_branch_local_backreference_scorecard(
         self,
@@ -136,11 +130,8 @@ class CorrectnessHarnessNestedGroupAlternationBranchLocalBackreferenceWorkflowTe
         self.assertEqual(workflow_suite["summary"]["total_cases"], 8)
         self.assertEqual(workflow_suite["summary"]["failed_cases"], 0)
         self.assertEqual(workflow_suite["summary"]["skipped_cases"], 0)
-        self.assertEqual(
-            workflow_suite["summary"]["passed_cases"]
-            + workflow_suite["summary"]["unimplemented_cases"],
-            8,
-        )
+        self.assertEqual(workflow_suite["summary"]["passed_cases"], 8)
+        self.assertEqual(workflow_suite["summary"]["unimplemented_cases"], 0)
         self.assertEqual(
             workflow_suite["families"],
             [
@@ -169,7 +160,7 @@ class CorrectnessHarnessNestedGroupAlternationBranchLocalBackreferenceWorkflowTe
             numbered_compile_case["observations"]["cpython"]["result"]["groups"],
             2,
         )
-        self.assert_rebar_pass_or_unimplemented(numbered_compile_case)
+        self.assert_rebar_pass(numbered_compile_case)
 
         numbered_b_branch_case = cases_by_id[
             "nested-group-alternation-branch-local-numbered-backreference-module-search-b-branch-str"
@@ -191,7 +182,7 @@ class CorrectnessHarnessNestedGroupAlternationBranchLocalBackreferenceWorkflowTe
             numbered_b_branch_case["observations"]["cpython"]["result"]["group_spans"],
             [[3, 4], [3, 4]],
         )
-        self.assert_rebar_pass_or_unimplemented(numbered_b_branch_case)
+        self.assert_rebar_pass(numbered_b_branch_case)
 
         numbered_c_branch_case = cases_by_id[
             "nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-c-branch-str"
@@ -213,14 +204,14 @@ class CorrectnessHarnessNestedGroupAlternationBranchLocalBackreferenceWorkflowTe
             numbered_c_branch_case["observations"]["cpython"]["result"]["span"],
             [0, 4],
         )
-        self.assert_rebar_pass_or_unimplemented(numbered_c_branch_case)
+        self.assert_rebar_pass(numbered_c_branch_case)
 
         numbered_no_match_case = cases_by_id[
             "nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-str"
         ]
         self.assertEqual(numbered_no_match_case["helper"], "fullmatch")
         self.assertIsNone(numbered_no_match_case["observations"]["cpython"]["result"])
-        self.assert_rebar_pass_or_unimplemented(numbered_no_match_case)
+        self.assert_rebar_pass(numbered_no_match_case)
 
         named_compile_case = cases_by_id[
             "nested-group-alternation-branch-local-named-backreference-compile-metadata-str"
@@ -234,7 +225,7 @@ class CorrectnessHarnessNestedGroupAlternationBranchLocalBackreferenceWorkflowTe
             named_compile_case["observations"]["cpython"]["result"]["groups"],
             2,
         )
-        self.assert_rebar_pass_or_unimplemented(named_compile_case)
+        self.assert_rebar_pass(named_compile_case)
 
         named_c_branch_case = cases_by_id[
             "nested-group-alternation-branch-local-named-backreference-module-search-c-branch-str"
@@ -256,7 +247,7 @@ class CorrectnessHarnessNestedGroupAlternationBranchLocalBackreferenceWorkflowTe
             named_c_branch_case["observations"]["cpython"]["result"]["lastgroup"],
             "outer",
         )
-        self.assert_rebar_pass_or_unimplemented(named_c_branch_case)
+        self.assert_rebar_pass(named_c_branch_case)
 
         named_b_branch_case = cases_by_id[
             "nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-b-branch-str"
@@ -278,14 +269,14 @@ class CorrectnessHarnessNestedGroupAlternationBranchLocalBackreferenceWorkflowTe
             named_b_branch_case["observations"]["cpython"]["result"]["lastgroup"],
             "outer",
         )
-        self.assert_rebar_pass_or_unimplemented(named_b_branch_case)
+        self.assert_rebar_pass(named_b_branch_case)
 
         named_no_match_case = cases_by_id[
             "nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str"
         ]
         self.assertEqual(named_no_match_case["helper"], "fullmatch")
         self.assertIsNone(named_no_match_case["observations"]["cpython"]["result"])
-        self.assert_rebar_pass_or_unimplemented(named_no_match_case)
+        self.assert_rebar_pass(named_no_match_case)
 
 
 if __name__ == "__main__":

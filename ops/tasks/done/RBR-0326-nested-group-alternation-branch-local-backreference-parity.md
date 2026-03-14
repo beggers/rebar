@@ -1,6 +1,6 @@
 # RBR-0326: Add bounded nested-group-alternation-plus-branch-local-backreference parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-14
 
@@ -28,3 +28,9 @@ Created: 2026-03-14
 ## Notes
 - Build on `RBR-0324`, `RBR-0320`, and the existing bounded branch-local-backreference execution support.
 - Keep later benchmark catch-up on the existing `benchmarks/workloads/nested_group_alternation_boundary.py` path, which already carries the `pattern-fullmatch-named-nested-group-branch-local-backreference-purged-gap` anchor.
+
+## Completion Notes
+- Added one narrow Rust-backed parser and matcher path for `a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d`, keeping the slice pinned to one outer capture whose inner literal alternation is replayed by an immediate same-branch backreference.
+- Left Python-side behavior on the existing native wrapper path; the new parity work landed in `crates/rebar-core/src/lib.rs`, and the task-local correctness assertion now requires the suite to stay fully passing instead of tolerating `unimplemented`.
+- Republished `reports/correctness/latest.py`; the tracked combined scorecard now reports `801` executed cases, `801` passes, `0` failures, and `0` `unimplemented` outcomes, with the nested-group-alternation-plus-branch-local-backreference suite moving to `8` passes and `0` `unimplemented`.
+- Verified with `cargo build -p rebar-cpython`, `./.venv/bin/python -m pytest tests/conformance/test_correctness_nested_group_alternation_branch_local_backreference_workflows.py -q`, and `./.venv/bin/python -m pytest tests/python/test_nested_group_alternation_branch_local_backreference_parity.py tests/python/test_nested_group_alternation_parity.py tests/python/test_branch_local_backreference_parity.py tests/python/test_quantified_nested_group_alternation_parity.py -q`.
