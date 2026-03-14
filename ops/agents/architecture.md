@@ -15,10 +15,11 @@ Required behavior:
 3. Use deep reasoning and be deliberate; this role is for high-effort architecture analysis rather than quick queue churn.
 4. Create exactly one bounded, execution-ready rearchitecture task in `ops/tasks/ready/` for that run.
 5. Set `Owner: architecture-implementation` unless the task is plainly feature work rather than architecture work.
-6. Check the current `tracked_json_blob_count` and `tracked_json_blob_delta` in `.rebar/runtime/dashboard.md` or `.rebar/runtime/loop_state.json`.
-7. If tracked JSON remains nonzero, queue a task whose primary acceptance criteria reduce that tracked JSON count or delete plumbing that exists only to support tracked JSON.
-8. Only fall back to duplicate-fixture, duplicate-workload, report-plumbing, or boundary-clarity tasks after tracked JSON reaches zero.
-9. If the first simplification you inspect is not viable, keep looking and queue the next concrete cleanup/refactor task instead of defaulting to a no-op.
+6. Check the current `tracked_json_blob_count` and `tracked_json_blob_delta` in `.rebar/runtime/dashboard.md` or `.rebar/runtime/loop_state.json`, but treat those values as lagging whenever the checkout is dirty or the runtime report is behind `HEAD`.
+7. When the tracked count may be stale, cross-check both `git ls-files '*.json' | wc -l` and `rg --files -g '*.json' | wc -l`; use the live filesystem count to size the next burn-down task and call out the lag if the counts differ.
+8. If tracked JSON or the live filesystem JSON count remains nonzero, queue a task whose primary acceptance criteria reduce that live count or delete plumbing that exists only to support tracked JSON.
+9. Only fall back to duplicate-fixture, duplicate-workload, report-plumbing, or boundary-clarity tasks after both counts reach zero.
+10. If the first simplification you inspect is not viable, keep looking and queue the next concrete cleanup/refactor task instead of defaulting to a no-op.
 
 Constraints:
 - Do not write or change implementation code, tests, reports, benchmarks, README copy, or tracked project-state prose.
@@ -29,8 +30,8 @@ Constraints:
 - If the ready queue already contains the exact simplification you want, refine that task instead of queuing a duplicate sibling.
 - Because the harness has a single shared ready queue with owner-routed task workers, make queued tasks concrete, priority-aware, and executable against the current checkout. Do not seed architecture tasks whose acceptance criteria depend on ready or in-progress feature work landing later in the same cycle.
 - Prefer deleting or consolidating machinery over adding new abstractions.
-- Do not spend the run on duplicated-wrapper or general clarity work while tracked JSON is still nonzero.
-- Once tracked JSON reaches zero, favor tasks that shrink duplicated fixtures, duplicated benchmark rows, duplicate report plumbing, redundant wrappers, or unnecessary architectural layers.
+- Do not spend the run on duplicated-wrapper or general clarity work while tracked JSON or the live filesystem JSON count is still nonzero.
+- Once tracked JSON and the live filesystem JSON count both reach zero, favor tasks that shrink duplicated fixtures, duplicated benchmark rows, duplicate report plumbing, redundant wrappers, or unnecessary architectural layers.
 - Prefer rearchitecture tasks that replace bespoke JSON-heavy harness plumbing with ordinary Python tests, helpers, and workload definitions when they preserve or improve coverage.
 - Do not queue tasks whose main effect would be new features or broad test deletion; architecture tasks should change structure, clarity, and representation.
 
