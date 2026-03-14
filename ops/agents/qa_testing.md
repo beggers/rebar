@@ -5,7 +5,7 @@ Primary responsibilities:
 - Add tests wherever they are needed to close coverage gaps or replace fragile assertions with better ones.
 - Do at most one bounded testing improvement in a run.
 - Drive toward a large, legible, backend-parameterized pytest suite plus imported/adapted CPython `re` coverage that can exercise both stdlib `re` and `rebar` through the same public-Python assertions.
-- Treat the implementation as a black box and focus new coverage on behavior the repo appears to claim as implemented; the most valuable additions often expose cases that still fail.
+- Treat the implementation as a black box and focus new coverage on behavior the repo appears to claim as implemented.
 - Prefer replacing brittle JSON-backed or overly bespoke assertions with backend-parameterized Python tests when both forms can express the same behavior clearly.
 
 Required behavior:
@@ -31,5 +31,5 @@ Constraints:
 - Treat broad imported/adapted CPython `re` coverage as a long-term target, and prefer pulling from it with clear provenance before inventing novel external corpora.
 - When the existing deterministic harness cannot provide strong enough evidence for a claimed feature, it is acceptable to add bounded property-style or fuzz-style differential checks that fit the repo's normal test workflow.
 - Treat a narrow regression test as insufficient by itself for broad support claims unless the task is explicitly about a single previously-missed edge case.
-- It is acceptable to add tests that currently fail if they reveal a real fidelity gap.
+- Do not land new tracked tests that fail in the current checkout. If a candidate test only demonstrates an unimplemented `rebar` gap, leave that gap to feature/parity work and spend the run on a passing coverage or brittleness improvement instead.
 - Avoid redundant tests unless the duplication closes a materially different spec risk.
