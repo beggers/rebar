@@ -1,224 +1,118 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from collections import Counter
+import pathlib
 import re
+import sys
 
 import pytest
 
 
-CaptureRef = int | str
-
-
-@dataclass(frozen=True)
-class ProbeSpec:
-    id: str
-    string: str
-    count: int
-    callback_kind: str
-    helpers: tuple[str, ...] = ("sub", "subn")
-
-
-@dataclass(frozen=True)
-class Scenario:
-    id: str
-    pattern: str
-    outer_ref: CaptureRef
-    inner_ref: CaptureRef
-    probes: tuple[ProbeSpec, ...]
-
-
-@dataclass(frozen=True)
-class ReplacementCase:
-    id: str
-    pattern: str
-    outer_ref: CaptureRef
-    inner_ref: CaptureRef
-    helper: str
-    string: str
-    count: int
-    callback_kind: str
-
-
-SCENARIOS = (
-    Scenario(
-        id="quantified-nested-group-callable-replacement-numbered",
-        pattern=r"a((bc)+)d",
-        outer_ref=1,
-        inner_ref=2,
-        probes=(
-            ProbeSpec(
-                id="single-repeat-all-matches",
-                string="zzabcdzz",
-                count=0,
-                callback_kind="capture_summary",
-            ),
-            ProbeSpec(
-                id="double-repeat-all-matches",
-                string="zzabcbcdabcbcdzz",
-                count=0,
-                callback_kind="capture_summary",
-            ),
-            ProbeSpec(
-                id="double-repeat-first-match-only",
-                string="zzabcbcdabcbcdzz",
-                count=1,
-                callback_kind="span_summary",
-            ),
-        ),
-    ),
-    Scenario(
-        id="quantified-nested-group-callable-replacement-named",
-        pattern=r"a(?P<outer>(?P<inner>bc)+)d",
-        outer_ref="outer",
-        inner_ref="inner",
-        probes=(
-            ProbeSpec(
-                id="single-repeat-all-matches",
-                string="zzabcdzz",
-                count=0,
-                callback_kind="capture_summary",
-            ),
-            ProbeSpec(
-                id="double-repeat-all-matches",
-                string="zzabcbcdabcbcdzz",
-                count=0,
-                callback_kind="capture_summary",
-            ),
-            ProbeSpec(
-                id="double-repeat-first-match-only",
-                string="zzabcbcdabcbcdzz",
-                count=1,
-                callback_kind="span_summary",
-            ),
-        ),
-    ),
+REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
+PYTHON_SOURCE = REPO_ROOT / "python"
+FIXTURE_PATH = (
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
+    / "quantified_nested_group_callable_replacement_workflows.py"
 )
 
+if str(PYTHON_SOURCE) not in sys.path:
+    sys.path.insert(0, str(PYTHON_SOURCE))
 
-def _build_cases() -> tuple[ReplacementCase, ...]:
-    cases: list[ReplacementCase] = []
-    for scenario in SCENARIOS:
-        for probe in scenario.probes:
-            for helper in probe.helpers:
-                cases.append(
-                    ReplacementCase(
-                        id=f"{scenario.id}-{probe.id}-{helper}",
-                        pattern=scenario.pattern,
-                        outer_ref=scenario.outer_ref,
-                        inner_ref=scenario.inner_ref,
-                        helper=helper,
-                        string=probe.string,
-                        count=probe.count,
-                        callback_kind=probe.callback_kind,
-                    )
-                )
-    return tuple(cases)
+from rebar_harness.correctness import FixtureCase, load_fixture_manifest
 
 
-CASES = _build_cases()
+FIXTURE_MANIFEST, PUBLISHED_CASES = load_fixture_manifest(FIXTURE_PATH)
+EXPECTED_CASE_IDS = {
+    "module-sub-callable-quantified-nested-group-numbered-lower-bound-str",
+    "module-subn-callable-quantified-nested-group-numbered-first-match-only-str",
+    "pattern-sub-callable-quantified-nested-group-numbered-repeated-outer-capture-str",
+    "pattern-subn-callable-quantified-nested-group-numbered-first-match-only-str",
+    "module-sub-callable-quantified-nested-group-named-lower-bound-str",
+    "module-subn-callable-quantified-nested-group-named-first-match-only-str",
+    "pattern-sub-callable-quantified-nested-group-named-repeated-outer-capture-str",
+    "pattern-subn-callable-quantified-nested-group-named-first-match-only-str",
+}
+EXPECTED_COMPILE_PATTERNS = {
+    r"a((bc)+)d",
+    r"a(?P<outer>(?P<inner>bc)+)d",
+}
+EXPECTED_OPERATION_HELPER_COUNTS = Counter({
+    ("module_call", "sub"): 2,
+    ("module_call", "subn"): 2,
+    ("pattern_call", "sub"): 2,
+    ("pattern_call", "subn"): 2,
+})
+MODULE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "module_call")
+PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pattern_call")
 
 
-def _named_group_summary(
-    match: re.Match[str],
-    *,
-    outer_ref: CaptureRef,
-    inner_ref: CaptureRef,
-) -> str:
-    if not isinstance(outer_ref, str) or not isinstance(inner_ref, str):
-        return ""
-    return (
-        f"|outer={match.groupdict()[outer_ref]}"
-        f"|inner={match.groupdict()[inner_ref]}"
-        f"|outer-index={match.re.groupindex[outer_ref]}"
-        f"|inner-index={match.re.groupindex[inner_ref]}"
+def _case_pattern(case: FixtureCase) -> str:
+    if case.pattern is not None:
+        return case.pattern_payload()
+    return case.args[0]
+
+
+def test_parity_suite_stays_aligned_with_published_correctness_fixture() -> None:
+    assert FIXTURE_MANIFEST.manifest_id == (
+        "quantified-nested-group-callable-replacement-workflows"
+    )
+    assert len(PUBLISHED_CASES) == len(EXPECTED_CASE_IDS)
+    assert {case.case_id for case in PUBLISHED_CASES} == EXPECTED_CASE_IDS
+    assert {_case_pattern(case) for case in PUBLISHED_CASES} == EXPECTED_COMPILE_PATTERNS
+    assert Counter((case.operation, case.helper) for case in PUBLISHED_CASES) == (
+        EXPECTED_OPERATION_HELPER_COUNTS
     )
 
 
-def _build_replacement(case: ReplacementCase):
-    if case.callback_kind == "capture_summary":
-
-        def _replacement(match: re.Match[str]) -> str:
-            return (
-                f"<{match.group(0)}|{match.group(case.outer_ref)}|{match.group(case.inner_ref)}"
-                f"{_named_group_summary(match, outer_ref=case.outer_ref, inner_ref=case.inner_ref)}"
-                f"|{match.lastindex}:{match.re.groups}>"
-            )
-
-        return _replacement
-
-    if case.callback_kind == "span_summary":
-
-        def _replacement(match: re.Match[str]) -> str:
-            return (
-                f"[{match.start()}:{match.end()}|"
-                f"{match.start(case.outer_ref)}:{match.end(case.outer_ref)}|"
-                f"{match.start(case.inner_ref)}:{match.end(case.inner_ref)}]"
-            )
-
-        return _replacement
-
-    raise AssertionError(f"unknown callback kind: {case.callback_kind}")
-
-
-@pytest.mark.parametrize("scenario", SCENARIOS, ids=lambda scenario: scenario.id)
+@pytest.mark.parametrize(
+    "pattern",
+    sorted(EXPECTED_COMPILE_PATTERNS),
+)
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
-    scenario: Scenario,
+    pattern: str,
 ) -> None:
     _, backend = regex_backend
 
-    observed = backend.compile(scenario.pattern)
-    expected = re.compile(scenario.pattern)
+    observed = backend.compile(pattern)
+    expected = re.compile(pattern)
 
-    assert observed is backend.compile(scenario.pattern)
+    assert observed is backend.compile(pattern)
     assert observed.pattern == expected.pattern
     assert observed.flags == expected.flags
     assert observed.groups == expected.groups
     assert observed.groupindex == expected.groupindex
 
 
-@pytest.mark.parametrize("case", CASES, ids=lambda case: case.id)
+@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
 def test_module_callable_replacement_matches_cpython(
     regex_backend: tuple[str, object],
-    case: ReplacementCase,
+    case: FixtureCase,
 ) -> None:
     _, backend = regex_backend
+    assert case.helper is not None
 
-    observed = getattr(backend, case.helper)(
-        case.pattern,
-        _build_replacement(case),
-        case.string,
-        count=case.count,
-    )
-    expected = getattr(re, case.helper)(
-        case.pattern,
-        _build_replacement(case),
-        case.string,
-        count=case.count,
-    )
+    observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
+    expected = getattr(re, case.helper)(*case.args, **case.kwargs)
 
     assert observed == expected
 
 
-@pytest.mark.parametrize("case", CASES, ids=lambda case: case.id)
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
 def test_pattern_callable_replacement_matches_cpython(
     regex_backend: tuple[str, object],
-    case: ReplacementCase,
+    case: FixtureCase,
 ) -> None:
     _, backend = regex_backend
+    assert case.helper is not None
 
-    observed_pattern = backend.compile(case.pattern)
-    expected_pattern = re.compile(case.pattern)
+    observed_pattern = backend.compile(case.pattern_payload(), case.flags or 0)
+    expected_pattern = re.compile(case.pattern_payload(), case.flags or 0)
 
-    observed = getattr(observed_pattern, case.helper)(
-        _build_replacement(case),
-        case.string,
-        count=case.count,
-    )
-    expected = getattr(expected_pattern, case.helper)(
-        _build_replacement(case),
-        case.string,
-        count=case.count,
-    )
+    observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
+    expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
 
     assert observed == expected
