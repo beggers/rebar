@@ -27,6 +27,57 @@ from tests.report_assertions import (
 
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"
 NESTED_GROUP_ALTERNATION_MANIFEST_ID = "nested-group-alternation-boundary"
+CALLABLE_REPLACEMENT_FORMER_GAP_CASES = (
+    {
+        "manifest_id": "grouped-alternation-callable-replacement-boundary",
+        "expected_workload_ids": (
+            "module-sub-callable-nested-grouped-alternation-cold-gap",
+            "pattern-subn-callable-named-nested-grouped-alternation-purged-gap",
+        ),
+        "expected_patterns": {
+            r"a((b|c))d",
+            r"a(?P<outer>(b|c))d",
+        },
+        "expected_operations": {
+            "module.sub",
+            "pattern.subn",
+        },
+        "expected_haystacks": {
+            "abdacd",
+            "acdabd",
+        },
+        "required_categories": {
+            "alternation",
+            "replacement",
+            "callable",
+            "gap",
+        },
+    },
+    {
+        "manifest_id": "nested-group-callable-replacement-boundary",
+        "expected_workload_ids": (
+            "module-sub-callable-nested-group-alternation-cold-gap",
+            "pattern-subn-callable-named-quantified-nested-group-purged-gap",
+        ),
+        "expected_patterns": {
+            r"a((b|c))d",
+            r"a(?P<outer>(?P<inner>bc)+)d",
+        },
+        "expected_operations": {
+            "module.sub",
+            "pattern.subn",
+        },
+        "expected_haystacks": {
+            "abdacd",
+            "zzabcbcdabcbcdzz",
+        },
+        "required_categories": {
+            "nested-group",
+            "replacement",
+            "callable",
+        },
+    },
+)
 NESTED_GROUP_ALTERNATION_NON_QUANTIFIED_BRANCH_LOCAL_WORKLOAD_IDS = (
     "module-search-numbered-nested-group-branch-local-backreference-b-branch-warm-str",
     "module-compile-named-nested-group-branch-local-backreference-warm-str",
@@ -350,6 +401,57 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     ),
                     expected_status="measured",
                 )
+
+    def test_callable_replacement_former_gap_rows_are_measured_in_combined_suite(
+        self,
+    ) -> None:
+        for case_definition in CALLABLE_REPLACEMENT_FORMER_GAP_CASES:
+            manifest_id = case_definition["manifest_id"]
+            with self.subTest(manifest_id=manifest_id):
+                case = source_tree_combined_case(manifest_id)
+                _, scorecard = run_source_tree_benchmark_scorecard(case["manifest_paths"])
+
+                manifest_summary = scorecard["manifests"][manifest_id]
+                self.assertEqual(manifest_summary["known_gap_count"], 0)
+
+                former_gap_rows = [
+                    workload
+                    for workload in case["target_manifest"]["workloads"]
+                    if workload["id"].endswith("gap")
+                    and "callable-replacement" in workload["syntax_features"]
+                ]
+                self.assertEqual(
+                    tuple(workload["id"] for workload in former_gap_rows),
+                    case_definition["expected_workload_ids"],
+                )
+                self.assertEqual(
+                    {workload["pattern"] for workload in former_gap_rows},
+                    case_definition["expected_patterns"],
+                )
+                self.assertEqual(
+                    {workload["operation"] for workload in former_gap_rows},
+                    case_definition["expected_operations"],
+                )
+                self.assertEqual(
+                    {str(workload["haystack"]) for workload in former_gap_rows},
+                    case_definition["expected_haystacks"],
+                )
+                for workload in former_gap_rows:
+                    for category in case_definition["required_categories"]:
+                        self.assertIn(category, workload["categories"])
+
+                for workload_id in case_definition["expected_workload_ids"]:
+                    with self.subTest(workload_id=workload_id):
+                        assert_benchmark_workload_contract(
+                            self,
+                            find_workload_record(scorecard, workload_id),
+                            manifest_id=manifest_id,
+                            workload_document=find_workload_document(
+                                case["target_manifest"],
+                                workload_id,
+                            ),
+                            expected_status="measured",
+                        )
 
     def test_wider_ranged_repeat_manifest_shape_stays_covered_in_combined_suite(
         self,

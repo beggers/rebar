@@ -260,11 +260,12 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "grouped-alternation-callable-replacement-boundary": {
-        "known_gap_count": 2,
-        "representative_known_gap_workload_ids": (
+        "known_gap_count": 0,
+        "representative_known_gap_workload_ids": (),
+        "representative_measured_workload_ids": (
             "module-sub-callable-nested-grouped-alternation-cold-gap",
+            "pattern-subn-callable-named-nested-grouped-alternation-purged-gap",
         ),
-        "representative_measured_workload_ids": (),
     },
     "nested-group-boundary": {
         "known_gap_count": 2,
@@ -303,11 +304,10 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         ),
     },
     "nested-group-callable-replacement-boundary": {
-        "known_gap_count": 1,
-        "representative_known_gap_workload_ids": (
-            "module-sub-callable-nested-group-alternation-cold-gap",
-        ),
+        "known_gap_count": 0,
+        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (
+            "module-sub-callable-nested-group-alternation-cold-gap",
             "module-sub-callable-numbered-quantified-nested-group-lower-bound-warm-str",
             "module-subn-callable-numbered-quantified-nested-group-first-match-only-warm-str",
             "pattern-sub-callable-named-quantified-nested-group-repeated-outer-purged-str",
