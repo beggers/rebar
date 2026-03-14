@@ -1100,21 +1100,10 @@ def render_readme_status(config: dict[str, Any]) -> str:
             ]
         )
         if benchmark.get("timing_path") == "source-tree-shim":
-            native_full_exists = resolve_repo_path("reports/benchmarks/native_full.json").exists()
             lines.extend(
                 [
                     "",
-                    (
-                        "_Full-suite benchmark publication still runs through the source-tree shim; strict built-native sidecars are checked in separately at "
-                        + markdown_link("reports/benchmarks/native_full.json")
-                        + " for the latest built-native full-suite run and "
-                        + markdown_link("reports/benchmarks/native_smoke.json")
-                        + " for the smoke slice._"
-                        if native_full_exists
-                        else "_Full-suite benchmark publication still runs through the source-tree shim; built-native timing remains limited to "
-                        + markdown_link("reports/benchmarks/native_smoke.json")
-                        + "._"
-                    ),
+                    "_Full-suite benchmark publication still runs through the source-tree shim; strict built-native smoke and full-suite modes remain available for ad hoc runs and tests via `--native-smoke` and `--native-full` when you pass an explicit `--report` path._",
                 ]
             )
         measured_workloads = benchmark.get("measured_workloads")

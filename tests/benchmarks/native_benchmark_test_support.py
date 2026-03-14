@@ -24,6 +24,19 @@ _MISSING_MATURIN_REASON = (
 _MISSING_MATURIN_PATTERN = "no `maturin` executable was found on PATH"
 
 
+def build_minimal_scorecard() -> dict[str, object]:
+    return {
+        "summary": {
+            "total_workloads": 0,
+            "parser_workloads": 0,
+            "module_workloads": 0,
+            "regression_workloads": 0,
+            "measured_workloads": 0,
+            "known_gap_count": 0,
+        }
+    }
+
+
 def assert_native_mode_requires_real_built_runtime(
     testcase: unittest.TestCase,
     *,
@@ -58,6 +71,73 @@ def run_native_benchmark_with_report(
         testcase.assertTrue(report_path.is_file())
 
     return scorecard
+
+
+def assert_native_runner_uses_optional_report_path(
+    testcase: unittest.TestCase,
+    *,
+    runner: Callable[..., dict[str, object]],
+    expected_manifest_paths: tuple[pathlib.Path, ...],
+    expected_smoke_only: bool,
+) -> None:
+    scorecard = build_minimal_scorecard()
+    explicit_report_path = REPO_ROOT / "reports" / "benchmarks" / "explicit-native-check.json"
+
+    with mock.patch.object(benchmarks, "run_benchmarks", return_value=scorecard) as mocked_run:
+        returned = runner()
+
+    testcase.assertIs(returned, scorecard)
+    mocked_run.assert_called_once_with(
+        manifest_paths=list(expected_manifest_paths),
+        report_path=None,
+        smoke_only=expected_smoke_only,
+        adapter_mode=benchmarks.BUILT_NATIVE_MODE,
+        allow_fallback=False,
+    )
+
+    with mock.patch.object(benchmarks, "run_benchmarks", return_value=scorecard) as mocked_run:
+        returned = runner(report_path=explicit_report_path)
+
+    testcase.assertIs(returned, scorecard)
+    mocked_run.assert_called_once_with(
+        manifest_paths=list(expected_manifest_paths),
+        report_path=explicit_report_path,
+        smoke_only=expected_smoke_only,
+        adapter_mode=benchmarks.BUILT_NATIVE_MODE,
+        allow_fallback=False,
+    )
+
+
+def assert_native_cli_uses_optional_report_path(
+    testcase: unittest.TestCase,
+    *,
+    flag: str,
+    runner_name: str,
+    report_name: str,
+) -> None:
+    scorecard = build_minimal_scorecard()
+
+    with (
+        mock.patch.object(benchmarks, runner_name, return_value=scorecard) as mocked_runner,
+        mock.patch("builtins.print"),
+    ):
+        exit_code = benchmarks.main([flag])
+
+    testcase.assertEqual(exit_code, 0)
+    mocked_runner.assert_called_once_with(report_path=None)
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        report_path = pathlib.Path(temp_dir) / report_name
+        with (
+            mock.patch.object(
+                benchmarks, runner_name, return_value=scorecard
+            ) as mocked_runner,
+            mock.patch("builtins.print"),
+        ):
+            exit_code = benchmarks.main([flag, "--report", str(report_path)])
+
+    testcase.assertEqual(exit_code, 0)
+    mocked_runner.assert_called_once_with(report_path=report_path)
 
 
 def assert_built_native_combined_scorecard_fields(

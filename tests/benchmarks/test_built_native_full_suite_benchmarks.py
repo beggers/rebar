@@ -5,13 +5,31 @@ import unittest
 from tests.benchmarks.native_benchmark_test_support import (
     MATURIN,
     assert_built_native_combined_scorecard_fields,
+    assert_native_cli_uses_optional_report_path,
     assert_native_mode_requires_real_built_runtime,
+    assert_native_runner_uses_optional_report_path,
     benchmarks,
     run_native_benchmark_with_report,
 )
 
 
 class BuiltNativeFullSuiteBenchmarkTest(unittest.TestCase):
+    def test_native_full_runner_uses_explicit_report_paths_only(self) -> None:
+        assert_native_runner_uses_optional_report_path(
+            self,
+            runner=benchmarks.run_built_native_full_benchmarks,
+            expected_manifest_paths=benchmarks.DEFAULT_MANIFEST_PATHS,
+            expected_smoke_only=False,
+        )
+
+    def test_native_full_cli_uses_explicit_report_paths_only(self) -> None:
+        assert_native_cli_uses_optional_report_path(
+            self,
+            flag="--native-full",
+            runner_name="run_built_native_full_benchmarks",
+            report_name="benchmarks-native-full.json",
+        )
+
     def test_native_full_mode_requires_real_built_runtime(self) -> None:
         assert_native_mode_requires_real_built_runtime(
             self,

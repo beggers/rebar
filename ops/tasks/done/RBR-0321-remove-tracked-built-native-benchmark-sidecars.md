@@ -1,6 +1,6 @@
 # RBR-0321: Remove the tracked built-native benchmark sidecars
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
 
@@ -38,3 +38,8 @@ Created: 2026-03-14
 - The live JSON count and the tracked JSON count currently agree at `4`, so there is no dashboard lag to account for in this checkout.
 - `reports/benchmarks/latest.json` already points at the current `.py` workload manifests, while the tracked built-native sidecars still embed deleted `.json` workload paths and no longer reflect the live benchmark registry shape. That makes them stale duplicated artifacts, not a second trustworthy publication surface.
 - This is the cleanest remaining JSON burn-down step that deletes report-specific plumbing instead of replacing those blobs with another tracked storage format.
+
+## Completion Notes
+- 2026-03-14: Removed the tracked native-sidecar default report paths from `python/rebar_harness/benchmarks.py`, made `--report` optional so ordinary benchmark runs still default to `reports/benchmarks/latest.json` while `--native-smoke` / `--native-full` and the built-native runner helpers stay in-memory unless callers pass an explicit report path, and updated README/reporting wording to describe built-native coverage as strict ad hoc modes instead of checked-in sidecars.
+- Added direct benchmark coverage that the built-native helper wrappers and CLI flags no longer default to tracked `native_*.json` outputs, kept the strict failure and explicit-report coverage on temporary paths, deleted `reports/benchmarks/native_smoke.json` and `reports/benchmarks/native_full.json`, and verified with `PYTHONPATH=python python3 -m unittest tests.benchmarks.test_built_native_benchmark_smoke tests.benchmarks.test_built_native_full_suite_benchmarks tests.benchmarks.test_benchmark_adapter_provenance tests.python.test_readme_reporting`, `python3 scripts/rebar_ops.py report`, and `rg --files -g '*.json' | wc -l` (`2`).
+- `git ls-files '*.json' | wc -l` still reports `4` inside this unstaged worktree because Git continues listing deleted tracked paths until the harness stages/commits the deletions at the end of the run.

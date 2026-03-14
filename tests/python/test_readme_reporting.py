@@ -100,6 +100,13 @@ class ReadmeReportingTest(unittest.TestCase):
         self.assertIn(f"| Honest gaps (`unimplemented`) | `{expected_unimplemented}` |", rendered)
         self.assertIn("Overall delivery estimate:", rendered)
         self.assertIn("These correctness counts cover only the published slice.", rendered)
+        self.assertIn("| Timing path | `source-tree-shim` |", rendered)
+        self.assertIn("strict built-native smoke and full-suite modes remain available", rendered)
+        self.assertIn("`--native-smoke`", rendered)
+        self.assertIn("`--native-full`", rendered)
+        self.assertIn("explicit `--report` path", rendered)
+        self.assertNotIn("native_smoke.json", rendered)
+        self.assertNotIn("native_full.json", rendered)
 
 
 if __name__ == "__main__":
