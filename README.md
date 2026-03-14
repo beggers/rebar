@@ -57,13 +57,9 @@ _README speedup rollups stay omitted while only `436` of `467` published workloa
 
 ## What Exists Today
 
-`rebar` already has a real Rust core, a CPython-facing extension boundary, and published correctness and benchmark reports. What it does not have yet is broad `re` coverage: the current published slice is still small relative to stdlib `re`, but that slice is now both correctness-backed and benchmark-published rather than only partially measured.
+`rebar` already has a real Rust core, a CPython-facing extension boundary, and canonical correctness and benchmark reports. It is still an early, narrow `re` subset rather than a drop-in replacement.
 
-That means the repo is past scaffolding but still well short of drop-in parity or optimization work. The main published benchmark suite still runs through the source-tree shim, and the built-native numbers live in separate sidecars, so the README treats benchmark output as coverage and direction, not proof of speed.
-
-## How To Read It
-
-Treat the correctness counts as "the documented frontier matches CPython on this slice," not as a claim of broad drop-in compatibility. Treat the benchmark counts as "that same slice is published on the benchmark surface with explicit gaps still called out," not as proof that `rebar` is already faster than stdlib `re`.
+The published correctness slice is clean, but the benchmark story is still catch-up work on that same bounded frontier and the main report still runs through the source-tree shim. Near term, the project is finishing Python-path benchmark coverage for the latest Rust-backed `{1,4}` grouped backtracking-heavy slice before widening the frontier again.
 
 ## Where To Look
 
