@@ -30,7 +30,7 @@ Constraints:
 - Keep harness-standardization work ahead of bespoke harness growth until the repo clearly centers on one backend-parameterized pytest parity suite and one Python benchmark suite.
 - When queuing tests or benchmarks, prefer ordinary Python modules, pytest fixtures, reusable normalization helpers, CPython-test adaptation, and Python workload definitions over bespoke JSON manifests.
 - When queuing benchmark work, prefer tasks that measure through the Python-facing `rebar` path so published comparisons against stdlib `re` stay accurate and behaviorally faithful.
-- If you edit `ops/state/backlog.md` or `ops/state/current_status.md`, verify the surviving frontier text and every correctness/benchmark total you leave behind against the current ready queue plus `reports/correctness/latest.py` and `reports/benchmarks/latest.json` before finishing.
+- If you edit `ops/state/backlog.md` or `ops/state/current_status.md`, verify the surviving frontier text and every correctness/benchmark total you leave behind against the current ready queue plus `reports/correctness/latest.py` and `reports/benchmarks/latest.py` before finishing.
 - If either planning-owned state file already has unrelated dirty edits that you cannot safely reconcile, avoid partial state refreshes that would leave mixed old/new totals behind; queue the next task without touching that dirty file and say what stayed stale.
 - If the queue is healthy, no-op cleanly instead of restating the roadmap.
 

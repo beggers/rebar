@@ -81,7 +81,7 @@ CONFIG = {
             "label": "Published benchmark scorecard",
             "description": "Committed summary of parser benchmark results.",
             "paths_any": [
-                "reports/benchmarks/latest.json",
+                "reports/benchmarks/latest.py",
             ],
             "task": "RBR-0008-benchmark-harness-scaffold.md",
         },
@@ -92,7 +92,7 @@ CONFIG = {
     },
     "benchmark_scorecard": {
         "title": "Benchmark Snapshot",
-        "path": "reports/benchmarks/latest.json",
+        "path": "reports/benchmarks/latest.py",
     },
     "status_sections": {
         "phase": "README Phase Summary",

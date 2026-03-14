@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, keeping correctness and the published Python-path benchmark surface aligned at the current frontier. |
 | Delivery estimate | The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
 | Current milestone | Milestone 2 now has `RBR-0326` seeded as the surviving follow-on so the bounded nested-group-alternation-plus-branch-local-backreference slice reaches Rust-backed parity after the current correctness pack lands on the existing `nested_group_alternation_boundary.py` anchor. |
-| Work queue | `2` ready, `0` in progress, `328` done, `0` blocked |
+| Work queue | `1` ready, `0` in progress, `329` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -39,7 +39,7 @@ _These correctness counts cover only the published slice. Overall delivery estim
 | Workloads with real `rebar` timings | `474` |
 | Known-gap workloads | `28` |
 | Timing path | `source-tree-shim` |
-| Source | [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json) |
+| Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native smoke and full-suite modes remain available for ad hoc runs and tests via `--native-smoke` and `--native-full` when you pass an explicit `--report` path._
 
@@ -63,7 +63,7 @@ The published reports currently say three things: the implemented correctness sl
 
 ## Where To Look
 
-For the published scorecards, start with `reports/correctness/latest.py` and `reports/benchmarks/latest.json`. For strict built-native coverage, run `python -m rebar_harness.benchmarks --native-smoke --report <path>` or `python -m rebar_harness.benchmarks --native-full --report <path>` when you need an ad hoc native-path scorecard. For the broader project frontier, `ops/state/current_status.md` is the current narrative state; `ops/README.md` is the operator guide for the loop and queue layout.
+For the published scorecards, start with `reports/correctness/latest.py` and `reports/benchmarks/latest.py`. For strict built-native coverage, run `python -m rebar_harness.benchmarks --native-smoke --report <path>` or `python -m rebar_harness.benchmarks --native-full --report <path>` when you need an ad hoc native-path scorecard. For the broader project frontier, `ops/state/current_status.md` is the current narrative state; `ops/README.md` is the operator guide for the loop and queue layout.
 
 ## Inspecting The Current Slice
 

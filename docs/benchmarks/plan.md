@@ -200,7 +200,7 @@ Deliver:
 - a workload manifest format
 - a CPython baseline adapter
 - a placeholder `rebar` adapter
-- a minimal scorecard writer for `reports/benchmarks/latest.json`
+- a minimal scorecard writer for `reports/benchmarks/latest.py`
 
 Exit criteria:
 
@@ -250,7 +250,7 @@ The exact implementation language can be chosen later, but the harness should li
 
 Recommended pieces:
 
-- a workload manifest, likely JSON or TOML, checked into the repo
+- a workload manifest module, preferably ordinary Python data checked into the repo
 - a Python benchmark runner that can invoke CPython `re` and `rebar` symmetrically
 - optional internal adapters for parser-only hooks once the Rust implementation exposes them
 - a scorecard writer that emits stable machine-readable output
@@ -259,7 +259,7 @@ This keeps the harness close to the user-visible import boundary while still all
 
 ## Benchmark Scorecard Shape
 
-`reports/benchmarks/latest.json` should publish a stable top-level shape even before every benchmark family exists.
+`reports/benchmarks/latest.py` should publish a stable top-level shape even before every benchmark family exists. Temporary ad hoc runs can still target caller-selected `.json` paths when a scratch artifact is more convenient.
 
 Recommended top-level fields:
 
@@ -301,7 +301,7 @@ The scorecard should prefer stable machine-readable values over prose so the REA
 - define the workload manifest schema and baseline/implementation adapters
 - add the first compile-path workload corpus tied to the syntax-scope construct map
 - add import and module-boundary smoke benchmarks for `compile`, `search`, and `match`
-- publish the first placeholder `reports/benchmarks/latest.json`
+- publish the first placeholder `reports/benchmarks/latest.py`
 - wire README/reporting consumption to the published benchmark scorecard once reports exist
 
 ## Open Questions To Settle During Implementation

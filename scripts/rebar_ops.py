@@ -1004,7 +1004,7 @@ def tracked_project_snapshot(config: dict[str, Any]) -> dict[str, Any]:
             config,
             "benchmark_scorecard",
             "Benchmark Snapshot",
-            "reports/benchmarks/latest.json",
+            "reports/benchmarks/latest.py",
         ),
     }
 

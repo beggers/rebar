@@ -28,8 +28,8 @@ Early subset, still far from drop-in parity: the Rust boundary covers literals, 
 - A tiny outer shell loop in `scripts/loop_forever.sh` that re-runs bounded cycles so supervisor changes apply on the next iteration.
 - Per-agent commits, end-of-cycle auto-push, stale-task recovery, runtime retention, and dashboard generation policy in the harness.
 - A tracked `README.md` landing page with an auto-synced current-state section for humans.
-- A README reporting model that now surfaces the tracked correctness and benchmark scorecards from `reports/correctness/latest.py` and `reports/benchmarks/latest.json`.
-- A Python-backed published correctness scorecard at `reports/correctness/latest.py`, leaving `reports/benchmarks/latest.json` as the lone tracked JSON publication while narrow correctness reruns can still emit caller-selected `.json` outputs.
+- A README reporting model that now surfaces the tracked correctness and benchmark scorecards from `reports/correctness/latest.py` and `reports/benchmarks/latest.py`.
+- Python-backed published correctness and benchmark scorecards at `reports/correctness/latest.py` and `reports/benchmarks/latest.py`, while narrow correctness or benchmark reruns can still emit caller-selected `.json` outputs.
 - Strict built-native smoke/full benchmark modes in `python/rebar_harness/benchmarks.py` that require a real built wheel and only write scorecards when callers pass an explicit report path.
 - One live bounded burn-in cycle that exercised runtime state writes, recovery, dashboard generation, and automatic commit/push.
 - A follow-up harness fix that requeues read-only worker runs instead of poisoning tasks as blocked.
@@ -312,8 +312,8 @@ Early subset, still far from drop-in parity: the Rust boundary covers literals, 
 ## What Does Not Exist Yet
 - Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 88 manifests and 793 cases with 793 passes, 0 explicit failures, and 0 honest `unimplemented` outcomes through quantified nested-group alternation parity, and that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
-- A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.json` still reflects the source-tree shim while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
-- A fully measured main benchmark publication: `reports/benchmarks/latest.json` now covers 502 workloads across 30 manifests with 474 real `rebar` timings and 28 explicit known gaps, so the published benchmark surface is still bounded and now leaves the named nested-group branch-local-backreference row on `nested_group_alternation_boundary.py` as the explicit gap anchor while `RBR-0326` is the surviving parity follow-on after the current correctness pack lands.
+- A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree shim while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
+- A fully measured main benchmark publication: `reports/benchmarks/latest.py` now covers 502 workloads across 30 manifests with 474 real `rebar` timings and 28 explicit known gaps, so the published benchmark surface is still bounded and now leaves the named nested-group branch-local-backreference row on `nested_group_alternation_boundary.py` as the explicit gap anchor while `RBR-0326` is the surviving parity follow-on after the current correctness pack lands.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.

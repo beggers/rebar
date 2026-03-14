@@ -1,6 +1,6 @@
 # RBR-0327: Replace the tracked benchmark scorecard JSON with a Python module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
 
@@ -43,3 +43,8 @@ Created: 2026-03-14
 - `.rebar/runtime/dashboard.md` is current in this checkout: it reports `tracked_json_blob_count: 1`, `tracked_json_blob_delta: -1`, a clean worktree, and no last-cycle anomalies.
 - Live counts match the runtime report here: `git ls-files '*.json'` and `rg --files -g '*.json'` both list only `reports/benchmarks/latest.json`.
 - `python/rebar_harness/benchmarks.py` already loads `.py` workload manifests and `scripts/rebar_ops.py` already reads structured `.py` or `.json` dict payloads, so this migration should reuse those existing patterns instead of inventing a second benchmark-specific format layer.
+
+## Completion Notes
+- 2026-03-14: Changed `python/rebar_harness.benchmarks` to publish `reports/benchmarks/latest.py` by default, added mixed `.py`/`.json` scorecard read-write support with an explicit rejection of the retired `reports/benchmarks/latest.json` path, and updated `scripts/rebar_ops.py`, README/reporting config, docs, state guidance, and the directly coupled benchmark/reporting tests to consume the Python-backed publication.
+- Regenerated `reports/benchmarks/latest.py` from the pre-migration published payload, deleted `reports/benchmarks/latest.json`, and verified the load-bearing migration contract by comparing the restored `.py` scorecard against the saved JSON payload for suite id, summary totals, baseline metadata, implementation metadata, artifact manifest ordering, and workload ordering.
+- Verification: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/python/test_readme_reporting.py` passed (`8` tests, `55` subtests). `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` passed. `./.venv/bin/python scripts/rebar_ops.py report` passed. `git diff --name-status -- reports/benchmarks/latest.json` reports `D`. `rg --files -g '*.json' | wc -l` is `0`, while `git ls-files '*.json' | wc -l` remains `1` in this unstaged worktree until the harness commit records the tracked deletion.

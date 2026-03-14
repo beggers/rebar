@@ -18,6 +18,8 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 MODULE_PATH = REPO_ROOT / "scripts" / "rebar_ops.py"
 CORRECTNESS_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
 LEGACY_CORRECTNESS_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
+BENCHMARK_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
+LEGACY_BENCHMARK_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
 PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py"
 PYTHON_SOURCE = REPO_ROOT / "python"
 
@@ -56,6 +58,28 @@ class ReadmeReportingTest(unittest.TestCase):
         self.assertIn("reports/correctness/latest.py", result.stderr)
         self.assertIn("non-tracked temporary .json path", result.stderr)
         self.assertFalse(LEGACY_CORRECTNESS_REPORT_PATH.exists())
+
+    def test_benchmark_cli_rejects_legacy_tracked_json_path(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "rebar_harness.benchmarks",
+                "--report",
+                str(LEGACY_BENCHMARK_REPORT_PATH),
+            ],
+            check=False,
+            cwd=REPO_ROOT,
+            env={"PYTHONPATH": str(PYTHON_SOURCE)},
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("reports/benchmarks/latest.json is a retired legacy", result.stderr)
+        self.assertIn("reports/benchmarks/latest.py", result.stderr)
+        self.assertIn("non-tracked temporary .json path", result.stderr)
+        self.assertFalse(LEGACY_BENCHMARK_REPORT_PATH.exists())
 
     def test_refresh_published_correctness_scorecard_deletes_legacy_json_sidecar(self) -> None:
         rebar_ops = load_rebar_ops_module()
@@ -163,6 +187,41 @@ class ReadmeReportingTest(unittest.TestCase):
         self.assertIn("explicit `--report` path", rendered)
         self.assertNotIn("native_smoke.json", rendered)
         self.assertNotIn("native_full.json", rendered)
+
+    def test_benchmark_scorecard_uses_tracked_summary_shape(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        config = rebar_ops.load_config()
+        payload = rebar_ops.read_structured_dict(
+            BENCHMARK_REPORT_PATH,
+            default=None,
+            label="benchmark scorecard",
+        )
+
+        self.assertIsInstance(payload, dict)
+        summary = payload["summary"]
+        implementation = payload["implementation"]
+
+        scorecard = rebar_ops.scorecard_from_config(
+            config,
+            "benchmark_scorecard",
+            "Benchmark Snapshot",
+            "reports/benchmarks/latest.py",
+        )
+
+        self.assertTrue(scorecard["available"])
+        self.assertEqual(scorecard["workload_count"], summary["total_workloads"])
+        self.assertEqual(scorecard["measured_workloads"], summary["measured_workloads"])
+        self.assertEqual(scorecard["known_gap_count"], summary["known_gap_count"])
+        self.assertEqual(scorecard["candidate"], implementation["module_name"])
+
+        rendered = rebar_ops.render_readme_status(config)
+        self.assertIn(f"| Published workloads | `{summary['total_workloads']}` |", rendered)
+        self.assertIn(
+            f"| Workloads with real `rebar` timings | `{summary['measured_workloads']}` |",
+            rendered,
+        )
+        self.assertIn("reports/benchmarks/latest.py", rendered)
+        self.assertNotIn("reports/benchmarks/latest.json", rendered)
 
 
 if __name__ == "__main__":

@@ -10,6 +10,7 @@ import math
 import os
 import pathlib
 import platform
+import pprint
 import re as cpython_re
 import shutil
 import statistics
@@ -33,7 +34,15 @@ from rebar_harness.metadata import build_cpython_baseline
 
 TARGET_CPYTHON_SERIES = "3.12.x"
 REPORT_SCHEMA_VERSION = "1.0"
+REPORT_ATTRIBUTE = "REPORT"
 MANIFEST_SCHEMA_VERSION = 1
+PUBLISHED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
+LEGACY_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
+LEGACY_REPORT_PATH_ERROR = (
+    "reports/benchmarks/latest.json is a retired legacy published scorecard path; "
+    "use reports/benchmarks/latest.py for the tracked published scorecard or a "
+    "non-tracked temporary .json path for scratch output."
+)
 DEFAULT_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py",
     REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.py",
@@ -66,7 +75,7 @@ DEFAULT_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_fully_empty_boundary.py",
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py",
 )
-DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
+DEFAULT_REPORT_PATH = PUBLISHED_REPORT_PATH
 DEFAULT_NATIVE_SMOKE_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "pattern_boundary.py",
     REPO_ROOT / "benchmarks" / "workloads" / "collection_replacement_boundary.py",
@@ -1463,9 +1472,77 @@ def build_scorecard(
     }
 
 
+def _load_python_scorecard(path: pathlib.Path) -> dict[str, Any]:
+    module_name = f"_rebar_benchmark_scorecard_{path.stem}".replace("-", "_")
+    spec = importlib.util.spec_from_file_location(module_name, path)
+    if spec is None or spec.loader is None:
+        raise ValueError(f"unable to load Python benchmark scorecard from {path}")
+
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    if not hasattr(module, REPORT_ATTRIBUTE):
+        raise ValueError(
+            f"Python benchmark scorecard module {path} is missing a {REPORT_ATTRIBUTE} value"
+        )
+    payload = getattr(module, REPORT_ATTRIBUTE)
+    if not isinstance(payload, dict):
+        raise ValueError(f"benchmark scorecard in {path} must be a dict")
+    return payload
+
+
+def _resolve_report_path(report_path: pathlib.Path) -> pathlib.Path:
+    expanded = report_path.expanduser()
+    if not expanded.is_absolute():
+        expanded = pathlib.Path.cwd() / expanded
+    return expanded.resolve()
+
+
+def validate_report_path(report_path: pathlib.Path) -> pathlib.Path:
+    resolved_path = _resolve_report_path(report_path)
+    if resolved_path == LEGACY_REPORT_PATH:
+        raise ValueError(LEGACY_REPORT_PATH_ERROR)
+    return resolved_path
+
+
+def load_scorecard(report_path: pathlib.Path) -> dict[str, Any]:
+    if report_path.suffix == ".json":
+        raw_payload = json.loads(report_path.read_text(encoding="utf-8"))
+        if not isinstance(raw_payload, dict):
+            raise ValueError(f"benchmark scorecard in {report_path} must be a dict")
+        return raw_payload
+    if report_path.suffix == ".py":
+        return _load_python_scorecard(report_path)
+    raise ValueError(
+        f"unsupported benchmark scorecard extension {report_path.suffix!r} for {report_path}"
+    )
+
+
+def _format_python_scorecard_module(scorecard: dict[str, Any]) -> str:
+    literal_safe_scorecard = json.loads(json.dumps(scorecard, sort_keys=True))
+    payload_literal = pprint.pformat(literal_safe_scorecard, indent=4, sort_dicts=True, width=100)
+    return f"{REPORT_ATTRIBUTE} = {payload_literal}\n"
+
+
 def write_scorecard(scorecard: dict[str, Any], report_path: pathlib.Path) -> None:
+    report_path = validate_report_path(report_path)
     report_path.parent.mkdir(parents=True, exist_ok=True)
-    report_path.write_text(json.dumps(scorecard, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if report_path.suffix == ".json":
+        report_path.write_text(json.dumps(scorecard, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        return
+    if report_path.suffix == ".py":
+        report_path.write_text(_format_python_scorecard_module(scorecard), encoding="utf-8")
+        return
+    raise ValueError(
+        f"unsupported benchmark scorecard extension {report_path.suffix!r} for {report_path}"
+    )
+
+
+def remove_legacy_report_sidecar() -> bool:
+    try:
+        LEGACY_REPORT_PATH.unlink()
+    except FileNotFoundError:
+        return False
+    return True
 
 
 def run_benchmarks(
@@ -1479,7 +1556,9 @@ def run_benchmarks(
     resolved_manifest_paths = [
         path.resolve() for path in (manifest_paths or list(DEFAULT_MANIFEST_PATHS))
     ]
-    resolved_report_path = report_path.resolve() if report_path is not None else None
+    resolved_report_path = (
+        validate_report_path(report_path) if report_path is not None else None
+    )
     raw_manifests, manifest_workloads = load_manifests(resolved_manifest_paths)
     selected_manifest_workloads = select_workloads(manifest_workloads, smoke_only=smoke_only)
     run_context = prepare_benchmark_run(
@@ -1506,6 +1585,8 @@ def run_benchmarks(
         )
         if resolved_report_path is not None:
             write_scorecard(scorecard, resolved_report_path)
+            if resolved_report_path == DEFAULT_REPORT_PATH:
+                remove_legacy_report_sidecar()
         return scorecard
     finally:
         run_context.cleanup()
@@ -1549,9 +1630,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         type=pathlib.Path,
         default=None,
         help=(
-            "Path to the output JSON scorecard. Ordinary runs default to "
-            "`reports/benchmarks/latest.json`; strict built-native modes only write a report "
-            "when you pass this flag explicitly."
+            "Path to the output scorecard. Ordinary runs default to "
+            "`reports/benchmarks/latest.py`; explicit `.py` and temporary `.json` outputs "
+            "remain supported, and strict built-native modes only write a report when you pass "
+            "this flag explicitly."
         ),
     )
     parser.add_argument(
@@ -1629,29 +1711,33 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.native_smoke and args.native_full:
         raise SystemExit("--native-smoke and --native-full are mutually exclusive")
-    if args.native_smoke:
-        if args.manifest is not None:
-            raise SystemExit("--native-smoke cannot be combined with --manifest")
-        if args.smoke:
-            raise SystemExit("--native-smoke already implies smoke-only selection")
-        if args.adapter_mode != SOURCE_TREE_SHIM_MODE:
-            raise SystemExit("--native-smoke manages adapter selection itself")
-        scorecard = run_built_native_smoke_benchmarks(report_path=args.report)
-    elif args.native_full:
-        if args.manifest is not None:
-            raise SystemExit("--native-full cannot be combined with --manifest")
-        if args.smoke:
-            raise SystemExit("--native-full runs the full suite and cannot be combined with --smoke")
-        if args.adapter_mode != SOURCE_TREE_SHIM_MODE:
-            raise SystemExit("--native-full manages adapter selection itself")
-        scorecard = run_built_native_full_benchmarks(report_path=args.report)
-    else:
-        scorecard = run_benchmarks(
-            manifest_paths=args.manifest,
-            report_path=args.report or DEFAULT_REPORT_PATH,
-            smoke_only=args.smoke,
-            adapter_mode=args.adapter_mode,
-        )
+    try:
+        if args.native_smoke:
+            if args.manifest is not None:
+                raise SystemExit("--native-smoke cannot be combined with --manifest")
+            if args.smoke:
+                raise SystemExit("--native-smoke already implies smoke-only selection")
+            if args.adapter_mode != SOURCE_TREE_SHIM_MODE:
+                raise SystemExit("--native-smoke manages adapter selection itself")
+            scorecard = run_built_native_smoke_benchmarks(report_path=args.report)
+        elif args.native_full:
+            if args.manifest is not None:
+                raise SystemExit("--native-full cannot be combined with --manifest")
+            if args.smoke:
+                raise SystemExit("--native-full runs the full suite and cannot be combined with --smoke")
+            if args.adapter_mode != SOURCE_TREE_SHIM_MODE:
+                raise SystemExit("--native-full manages adapter selection itself")
+            scorecard = run_built_native_full_benchmarks(report_path=args.report)
+        else:
+            scorecard = run_benchmarks(
+                manifest_paths=args.manifest,
+                report_path=args.report or DEFAULT_REPORT_PATH,
+                smoke_only=args.smoke,
+                adapter_mode=args.adapter_mode,
+            )
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
     smoke_summary = {
         "total_workloads": scorecard["summary"]["total_workloads"],
         "parser_workloads": scorecard["summary"]["parser_workloads"],
