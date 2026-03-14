@@ -6,20 +6,20 @@ Updated: 2026-03-14
 Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while keeping the correctness and benchmark publications caught up with each newly supported slice.
 
 ## README Phase Summary
-Phase 3 is widening a bounded Rust-backed `re` slice; the tracked fully passing frontier now reaches the broader `{1,4}` grouped-conditional slice, but overall parity is still narrow.
+Phase 3 is widening a bounded Rust-backed `re` slice; the fully passing frontier still stops at the broader `{1,4}` grouped-conditional slice while the adjacent broader `{1,4}` grouped backtracking-heavy pack is now published ahead of parity.
 
 ## README Delivery Estimate
-Foundation and reporting are in place. The tracked correctness frontier is fully passing and the Python-path benchmark report is caught up with that published slice, but the project is still far from drop-in parity and not ready for speed claims.
+Foundation and reporting are in place. The fully passing Rust-backed and benchmark-caught-up frontier still stops at the broader `{1,4}` grouped-conditional slice, while the published correctness surface is one bounded broader `{1,4}` grouped backtracking-heavy pack ahead with honest gaps.
 
 ## README Next Steps
-- Publish the adjacent broader `{1,4}` grouped backtracking-heavy slice, then convert that same bounded workflow to Rust-backed parity.
+- Land `RBR-0276` to convert the published broader `{1,4}` grouped backtracking-heavy slice to Rust-backed parity, then land `RBR-0278` to catch that same bounded workflow up on the Python-path benchmark surface.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The adjacent broader `{1,4}` grouped backtracking-heavy slice is queued next but not yet published or Rust-backed, so the tracked frontier still stops short of that overlapping-branch workflow.
+- The published correctness frontier is one broader `{1,4}` grouped backtracking-heavy pack ahead of both Rust parity and benchmark catch-up, so the tracked slice is temporarily wider than the fully passing and fully measured frontier.
 
 ## Compatibility Heuristic
-Early subset, still far from drop-in parity: the Rust boundary covers literals, captures, several bounded conditional and replacement workflows, quantified branch-local backreferences, and grouped alternation through bounded `{1,4}` plus open-ended `{1,}` and `{2,}` counted-repeat slices. The tracked fully passing frontier now reaches the broader `{1,4}` grouped-conditional slice, the Python-path benchmark report is caught up with that slice, and the next queued expansion is the adjacent broader `{1,4}` grouped backtracking-heavy workflow.
+Early subset, still far from drop-in parity: the Rust boundary covers literals, captures, several bounded conditional and replacement workflows, quantified branch-local backreferences, and grouped alternation through bounded `{1,4}` plus open-ended `{1,}` and `{2,}` counted-repeat slices. The fully passing Rust-backed and benchmark-caught-up frontier still stops at the broader `{1,4}` grouped-conditional slice, while the published correctness surface now includes the adjacent broader `{1,4}` grouped backtracking-heavy pack with 14 honest `unimplemented` outcomes pending parity and benchmark catch-up.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -296,7 +296,7 @@ Early subset, still far from drop-in parity: the Rust boundary covers literals, 
 - A two-hundred-sixty-ninth completed implementation task, `RBR-0269`, with refreshed `python/rebar_harness/benchmarks.py`, promoted broader `{1,4}` grouped-alternation rows in `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.json`, matching assertion updates in `tests/benchmarks/test_wider_ranged_repeat_quantified_group_boundary_benchmarks.py`, and a regenerated `reports/benchmarks/latest.json`, moving the published benchmark scorecard to 461 workloads across 30 manifests with 430 real `rebar` timings and 31 explicit known gaps while catching the broader `{1,4}` grouped-alternation slice up on the Python-path benchmark surface.
 - A two-hundred-seventieth completed implementation task, `RBR-0270`, with `python/rebar_harness/correctness.py`, `tests/conformance/fixtures/broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.json`, `tests/conformance/test_correctness_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py`, and a regenerated `reports/correctness/latest.json`, adding an eighty-second manifest that publishes fourteen bounded numbered and named compile/module/pattern cases for `a((bc|de){1,4})?(?(1)d|e)` and `a(?P<outer>(bc|de){1,4})?(?(outer)d|e)` while widening the combined scorecard to 715 total cases across 82 manifests with 701 passes, 0 explicit failures, and 14 honest `unimplemented` outcomes pending `RBR-0271`.
 - A supervisor-retuned ready queue that now inserts Rust-boundary migration tasks ahead of the remaining parser and module-workflow follow-ons, so new compatibility work stops deepening the Python shim and instead lands behind the `rebar._rebar` extension boundary.
-- The ready queue now starts with `RBR-0275`, which publishes the adjacent broader `{1,4}` grouped backtracking-heavy slice `a((bc|b)c){1,4}d` / `a(?P<word>(bc|b)c){1,4}d` on the correctness surface after `RBR-0273` caught the broader grouped-conditional slice up on the Python-path benchmark report, and keeps `RBR-0276` queued directly behind it to convert that same bounded slice behind the Rust boundary.
+- The ready queue now starts with `RBR-0276`, which converts the adjacent broader `{1,4}` grouped backtracking-heavy slice `a((bc|b)c){1,4}d` / `a(?P<word>(bc|b)c){1,4}d` behind the Rust boundary after `RBR-0275` published it on the correctness surface, and keeps `RBR-0278` queued directly behind it to catch that same bounded slice up on the existing Python-path benchmark manifest.
 - Report rendering that recomputes last-cycle environment issues from run artifacts so dashboard anomalies do not stay stale after a detection fix.
 - A fetch-before-push git sync path that measures ahead/behind state against fresh upstream refs and reports diverged branches explicitly instead of pushing against stale remote-tracking data.
 - README capability reporting that now keys scaffold and scorecard tracks to concrete artifact paths and distinguishes the benchmark harness from the published benchmark report.
@@ -307,10 +307,10 @@ Early subset, still far from drop-in parity: the Rust boundary covers literals, 
 - Tracked state, task queue directories, and seeded ready tasks under `ops/`.
 
 ## What Does Not Exist Yet
-- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.json` now covers 82 manifests and 715 cases with 715 passes, 0 explicit failures, and 0 honest `unimplemented` outcomes in the published slice, and that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
+- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.json` now covers 83 manifests and 729 cases with 715 passes, 0 explicit failures, and 14 honest `unimplemented` outcomes because the adjacent broader `{1,4}` grouped backtracking-heavy pack is published ahead of Rust-backed parity, and that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.json` still reflects the source-tree shim while `reports/benchmarks/native_full.json` and `reports/benchmarks/native_smoke.json` remain separate native-path checkpoints.
-- Full benchmark coverage for every published slice: the main benchmark scorecard now covers 467 workloads across 30 manifests with 436 measured rows and 31 explicit known gaps, so unsupported adjacent feature families are still published honestly as gaps rather than disappearing from the report.
+- Full benchmark coverage for every published slice: the main benchmark scorecard now covers 467 workloads across 30 manifests with 436 measured rows and 31 explicit known gaps, and the newly published broader `{1,4}` grouped backtracking-heavy slice is queued but not yet represented there.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.
@@ -326,8 +326,9 @@ Early subset, still far from drop-in parity: the Rust boundary covers literals, 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Land `RBR-0275` so the adjacent broader `{1,4}` grouped backtracking-heavy slice `a((bc|b)c){1,4}d` / `a(?P<word>(bc|b)c){1,4}d` is published on the correctness surface, then land `RBR-0276` so that same bounded workflow reaches Rust-backed parity without another queue rewrite.
+- Land `RBR-0276` so the published broader `{1,4}` grouped backtracking-heavy slice `a((bc|b)c){1,4}d` / `a(?P<word>(bc|b)c){1,4}d` reaches Rust-backed parity, then land `RBR-0278` so that same bounded workflow reaches the Python-path benchmark surface without another queue rewrite.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
-- Built-native full-suite benchmark coverage still lives in separate sidecars, so native-path performance claims still need explicit artifact attribution instead of assuming the shim-backed primary report and native-path checkpoints are in sync.
+- The published correctness frontier now includes 14 honest `unimplemented` cases from the broader `{1,4}` grouped backtracking-heavy pack, so the fully passing Rust-backed frontier still stops one bounded slice earlier.
+- The same broader `{1,4}` grouped backtracking-heavy slice is not yet on the published benchmark surface, so the main Python-path comparison report still stops at the adjacent grouped-conditional frontier.

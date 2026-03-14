@@ -11,10 +11,10 @@ _This block reports the implemented slice and measurement coverage, not estimate
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 3 is widening a bounded Rust-backed `re` slice; the tracked fully passing frontier now reaches the broader `{1,4}` grouped-conditional slice, but overall parity is still narrow. |
-| Delivery estimate | Foundation and reporting are in place. The tracked correctness frontier is fully passing and the Python-path benchmark report is caught up with that published slice, but the project is still far from drop-in parity and not ready for speed claims. |
-| Current milestone | Milestone 2 has the broader `{1,4}` grouped-conditional slice landed behind `rebar._rebar` and caught up on the Python-path benchmark surface; next up is the adjacent broader `{1,4}` grouped backtracking-heavy slice through publication and parity. |
-| Work queue | `1` ready, `0` in progress, `279` done, `0` blocked |
+| Phase | Phase 3 is widening a bounded Rust-backed `re` slice; the fully passing frontier still stops at the broader `{1,4}` grouped-conditional slice while the adjacent broader `{1,4}` grouped backtracking-heavy pack is now published ahead of parity. |
+| Delivery estimate | Foundation and reporting are in place. The fully passing Rust-backed and benchmark-caught-up frontier still stops at the broader `{1,4}` grouped-conditional slice, while the published correctness surface is one bounded broader `{1,4}` grouped backtracking-heavy pack ahead with honest gaps. |
+| Current milestone | Milestone 2 has the adjacent broader `{1,4}` grouped backtracking-heavy correctness pack published; next up is converting that same bounded slice to Rust-backed parity and then catching it up on the Python-path benchmark surface. |
+| Work queue | `2` ready, `0` in progress, `279` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,7 +28,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `83` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Foundation and reporting are in place. The tracked correctness frontier is fully passing and the Python-path benchmark report is caught up with that published slice, but the project is still far from drop-in parity and not ready for speed claims._
+_These correctness counts cover only the published slice. Overall delivery estimate: Foundation and reporting are in place. The fully passing Rust-backed and benchmark-caught-up frontier still stops at the broader `{1,4}` grouped-conditional slice, while the published correctness surface is one bounded broader `{1,4}` grouped backtracking-heavy pack ahead with honest gaps._
 
 ### Benchmark Snapshot
 
@@ -47,12 +47,12 @@ _README speedup rollups stay omitted while only `436` of `467` published workloa
 
 ### Immediate Next Steps
 
-- Publish the adjacent broader `{1,4}` grouped backtracking-heavy slice, then convert that same bounded workflow to Rust-backed parity.
+- Land `RBR-0276` to convert the published broader `{1,4}` grouped backtracking-heavy slice to Rust-backed parity, then land `RBR-0278` to catch that same bounded workflow up on the Python-path benchmark surface.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The adjacent broader `{1,4}` grouped backtracking-heavy slice is queued next but not yet published or Rust-backed, so the tracked frontier still stops short of that overlapping-branch workflow.
+- The published correctness frontier is one broader `{1,4}` grouped backtracking-heavy pack ahead of both Rust parity and benchmark catch-up, so the tracked slice is temporarily wider than the fully passing and fully measured frontier.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
