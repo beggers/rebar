@@ -227,6 +227,21 @@ def assert_correctness_suite_contract(
     return suite
 
 
+def assert_correctness_suite_case_accounting(
+    testcase: Any,
+    suite: dict[str, Any],
+    *,
+    expected_case_count: int,
+) -> None:
+    testcase.assertEqual(suite["summary"]["total_cases"], expected_case_count)
+    testcase.assertEqual(suite["summary"]["failed_cases"], 0)
+    testcase.assertEqual(suite["summary"]["skipped_cases"], 0)
+    testcase.assertEqual(
+        suite["summary"]["passed_cases"] + suite["summary"]["unimplemented_cases"],
+        expected_case_count,
+    )
+
+
 def assert_benchmark_summary_consistent(
     testcase: Any,
     scorecard: dict[str, Any],

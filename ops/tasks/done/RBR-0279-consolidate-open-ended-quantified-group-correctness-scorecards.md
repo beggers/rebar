@@ -1,8 +1,9 @@
 # RBR-0279: Consolidate open-ended quantified-group correctness scorecards into one data-driven suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
+Completed: 2026-03-14
 
 ## Goal
 - Replace the repeated open-ended quantified-group correctness workflow modules with one legible, data-driven suite so this grouped counted-repeat frontier is asserted in one place instead of across repeated subprocess/report boilerplate and hand-expanded case checks.
@@ -37,3 +38,8 @@ Created: 2026-03-14
 - These seven modules currently total about 2.8k lines and rerun the same cargo-build plus correctness-report contract with only manifest ids and representative case tables varying.
 - Build on `RBR-0263`, `RBR-0274`, and `RBR-0277`: the matching Python parity frontier is already consolidated in `tests/python/test_open_ended_quantified_group_parity_suite.py`, the cumulative correctness wrapper contract is already data-driven, and the wider-ranged-repeat grouped scorecards already use the intended expectation-driven pattern.
 - Keep this architecture cleanup independent of `RBR-0278`; the current benchmark catch-up task should remain executable as-is while this scorecard consolidation lands separately.
+
+## Completion Notes
+- Added `tests/conformance/test_open_ended_quantified_group_scorecards.py`, backed by explicit open-ended manifest expectations in `tests/conformance/correctness_expectations.py` and a shared suite-accounting helper in `tests/report_assertions.py`.
+- Removed the seven superseded open-ended quantified-group correctness modules so this grouped counted-repeat frontier now lives in one data-driven conformance suite.
+- Verified with `PYTHONPATH=python python3 -m unittest tests.conformance.test_open_ended_quantified_group_scorecards tests.conformance.test_wider_ranged_repeat_quantified_group_scorecards tests.conformance.test_combined_correctness_scorecards -q`.
