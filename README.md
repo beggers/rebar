@@ -2,7 +2,7 @@
 
 `rebar` is a Rust-backed attempt at a bug-for-bug compatible replacement for Python's `re` module. The target is simple: match CPython's accepted syntax, public API behavior, parse trees, and diagnostics first, then compete on compile and match speed through a CPython-facing extension.
 
-Start with the status block for the current published slice, how much of it is measured, and what still blocks broader parity or performance claims.
+The status block below is the published slice: what passes today, how much of it is benchmarked, and what still blocks broader parity or performance claims.
 
 <!-- REBAR:STATUS_START -->
 ## Current State
@@ -57,9 +57,9 @@ _README speedup rollups stay omitted while only `480` of `507` published workloa
 
 ## What Exists Today
 
-`rebar` already has a real Rust core, a CPython-facing extension boundary, and canonical correctness and benchmark publications. It is still a bounded `re` subset, not a drop-in replacement.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The all-green correctness report is real, but it still describes a narrow frontier rather than broad `re` compatibility.
 
-The published reports currently say three things: the implemented correctness slice is clean at the current frontier, the benchmark surface is still partial and source-tree-shim-backed, and the project is still moving one bounded regex shape at a time rather than closing in on broad `re` parity. That is enough to trust the current published slice, but not enough to make broad parity or performance claims.
+The benchmark story is similarly early. The small parser-only compile slice is already about 2x faster on median than CPython in the tracked report, but the much larger published module-path slice is still slower overall because the main publication runs through the source-tree shim. That is useful signal, not a general speed claim.
 
 ## Where To Look
 
