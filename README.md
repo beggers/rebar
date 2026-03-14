@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, keeping correctness and the published Python-path benchmark surface aligned at the current frontier. |
 | Delivery estimate | The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
 | Current milestone | Milestone 2 now has quantified nested-group callable replacement aligned across correctness, Rust-backed parity, and the main Python-path benchmark surface; `RBR-0318` is queued to publish quantified nested-group alternation, and `RBR-0320` is seeded immediately behind it to convert that same slice to Rust-backed parity through the existing nested alternation path. |
-| Work queue | `1` ready, `0` in progress, `322` done, `0` blocked |
+| Work queue | `2` ready, `0` in progress, `322` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
