@@ -9,10 +9,12 @@ MANIFEST = {'schema_version': 1,
            '`a(?P<outer>(?P<inner>b|c))d` compile/search/fullmatch paths directly, '
            'the quantified `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d` '
            'lower-bound module.search and repeated-branch Pattern.fullmatch probes, '
-           'and one exact nested-group branch-local-backreference follow-on for '
-           '`a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d`, while '
-           'quantified nested backreferences, broader counted repeats, replacement '
-           'semantics, and deeper nested grouped execution stay out of scope.'],
+           'one exact nested-group branch-local-backreference follow-on for '
+           '`a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d`, and one '
+           'bounded quantified same-branch replay follow-on for `a((b|c)+)\\2d` '
+           'and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d`, while broader counted '
+           'repeats, replacement semantics, and deeper nested grouped execution '
+           'stay out of scope.'],
  'defaults': {'warmup_iterations': 2, 'sample_iterations': 5, 'timed_samples': 7},
  'workloads': [{'id': 'module-compile-nested-group-alternation-cold-str',
                 'bucket': 'module-compile',
@@ -365,7 +367,108 @@ MANIFEST = {'schema_version': 1,
                                     'named-backreferences',
                                     'branch-local-backreferences',
                                     'cache-purge'],
-                'notes': ['Former branch-local backreference gap anchor now benchmarks '
+               'notes': ['Former branch-local backreference gap anchor now benchmarks '
                           'the bounded named nested-group alternation success path on '
                           '`accd`, so both `outer` and `inner` captures stay visible '
-                          'under the same-branch replay.']}]}
+                          'under the same-branch replay.']},
+               {'id': 'module-search-numbered-quantified-nested-group-branch-local-backreference-lower-bound-b-branch-warm-str',
+                'bucket': 'module-search',
+                'family': 'module',
+                'operation': 'module.search',
+                'pattern': 'a((b|c)+)\\2d',
+                'haystack': 'zzabbdzz',
+                'flags': 0,
+                'text_model': 'str',
+                'cache_mode': 'warm',
+                'timing_scope': 'module-helper-call',
+                'categories': ['grouped',
+                               'nested-group',
+                               'alternation',
+                               'numbered-backreference',
+                               'branch-local',
+                               'quantified',
+                               'search',
+                               'module',
+                               'lower-bound',
+                               'b-branch',
+                               'warm-cache'],
+                'syntax_features': ['module-search',
+                                    'grouping-forms',
+                                    'nested-groups',
+                                    'alternation',
+                                    'numbered-backreferences',
+                                    'branch-local-backreferences',
+                                    'quantifiers'],
+                'notes': ['Warm module.search helper path for the bounded numbered '
+                          'quantified nested-group alternation branch-local '
+                          'backreference lower-bound success case on `abbd`, so the '
+                          'same-branch replay stays visible through the public module '
+                          'helper.']},
+               {'id': 'module-compile-named-quantified-nested-group-branch-local-backreference-warm-str',
+                'bucket': 'module-compile',
+                'family': 'module',
+                'operation': 'module.compile',
+                'pattern': 'a(?P<outer>(?P<inner>b|c)+)(?P=inner)d',
+                'flags': 0,
+                'text_model': 'str',
+                'cache_mode': 'warm',
+                'timing_scope': 'module-helper-call',
+                'categories': ['compile',
+                               'grouped',
+                               'nested-group',
+                               'alternation',
+                               'named-group',
+                               'named-backreference',
+                               'branch-local',
+                               'quantified',
+                               'warm-cache'],
+                'syntax_features': ['module-compile',
+                                    'grouping-forms',
+                                    'nested-groups',
+                                    'alternation',
+                                    'named-groups',
+                                    'named-backreferences',
+                                    'branch-local-backreferences',
+                                    'quantifiers'],
+                'notes': ['Warm module.compile path for the bounded named quantified '
+                          'nested-group alternation branch-local backreference slice so '
+                          'named compile metadata lands beside the quantified runtime '
+                          'rows.']},
+               {'id': 'pattern-fullmatch-named-quantified-nested-group-branch-local-backreference-repeated-mixed-purged-str',
+                'bucket': 'pattern-fullmatch',
+                'family': 'module',
+                'operation': 'pattern.fullmatch',
+                'pattern': 'a(?P<outer>(?P<inner>b|c)+)(?P=inner)d',
+                'haystack': 'abccd',
+                'flags': 0,
+                'text_model': 'str',
+                'cache_mode': 'purged',
+                'timing_scope': 'pattern-helper-call',
+                'categories': ['pattern',
+                               'grouped',
+                               'nested-group',
+                               'alternation',
+                               'named-group',
+                               'named-backreference',
+                               'branch-local',
+                               'quantified',
+                               'fullmatch',
+                               'repeated-branch',
+                               'mixed',
+                               'outer-capture',
+                               'final-inner-capture',
+                               'purged-cache'],
+                'syntax_features': ['pattern-fullmatch',
+                                    'grouping-forms',
+                                    'nested-groups',
+                                    'alternation',
+                                    'named-groups',
+                                    'named-backreferences',
+                                    'branch-local-backreferences',
+                                    'quantifiers',
+                                    'cache-purge'],
+                'notes': ['Purged-cache Pattern.fullmatch probe for the bounded named '
+                          'quantified nested-group alternation branch-local '
+                          'backreference repeated-branch workflow on `abccd`, so the '
+                          'repeated `outer` capture plus final `inner` branch stay '
+                          'observable under same-branch replay.']}]}

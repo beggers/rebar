@@ -27,14 +27,23 @@ from tests.report_assertions import (
 
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"
 NESTED_GROUP_ALTERNATION_MANIFEST_ID = "nested-group-alternation-boundary"
-NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_WORKLOAD_IDS = (
+NESTED_GROUP_ALTERNATION_NON_QUANTIFIED_BRANCH_LOCAL_WORKLOAD_IDS = (
     "module-search-numbered-nested-group-branch-local-backreference-b-branch-warm-str",
     "module-compile-named-nested-group-branch-local-backreference-warm-str",
     "pattern-fullmatch-named-nested-group-branch-local-backreference-purged-gap",
 )
-NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_PATTERNS = {
+NESTED_GROUP_ALTERNATION_NON_QUANTIFIED_BRANCH_LOCAL_PATTERNS = {
     r"a((b|c))\2d",
     r"a(?P<outer>(?P<inner>b|c))(?P=inner)d",
+}
+NESTED_GROUP_ALTERNATION_QUANTIFIED_BRANCH_LOCAL_WORKLOAD_IDS = (
+    "module-search-numbered-quantified-nested-group-branch-local-backreference-lower-bound-b-branch-warm-str",
+    "module-compile-named-quantified-nested-group-branch-local-backreference-warm-str",
+    "pattern-fullmatch-named-quantified-nested-group-branch-local-backreference-repeated-mixed-purged-str",
+)
+NESTED_GROUP_ALTERNATION_QUANTIFIED_BRANCH_LOCAL_PATTERNS = {
+    r"a((b|c)+)\2d",
+    r"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
 }
 WIDER_RANGED_REPEAT_REPRESENTATIVE_MEASURED_WORKLOAD_IDS = (
     "module-search-numbered-wider-ranged-repeat-group-broader-range-cold-gap",
@@ -205,7 +214,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                         expected_status=expected_status,
                     )
 
-    def test_nested_group_alternation_manifest_covers_branch_local_backreference_slice(
+    def test_nested_group_alternation_manifest_covers_non_quantified_branch_local_backreference_slice(
         self,
     ) -> None:
         case = source_tree_combined_case(NESTED_GROUP_ALTERNATION_MANIFEST_ID)
@@ -218,10 +227,54 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             workload
             for workload in case["target_manifest"]["workloads"]
             if "branch-local-backreferences" in workload["syntax_features"]
+            and "quantifiers" not in workload["syntax_features"]
         ]
+        self._assert_nested_group_alternation_branch_local_rows(
+            case["target_manifest"],
+            scorecard,
+            branch_local_rows=branch_local_rows,
+            expected_workload_ids=NESTED_GROUP_ALTERNATION_NON_QUANTIFIED_BRANCH_LOCAL_WORKLOAD_IDS,
+            expected_patterns=NESTED_GROUP_ALTERNATION_NON_QUANTIFIED_BRANCH_LOCAL_PATTERNS,
+            expected_haystacks={"zzabbdzz", "accd"},
+        )
+
+    def test_nested_group_alternation_manifest_covers_quantified_branch_local_backreference_slice(
+        self,
+    ) -> None:
+        case = source_tree_combined_case(NESTED_GROUP_ALTERNATION_MANIFEST_ID)
+        _, scorecard = run_source_tree_benchmark_scorecard(case["manifest_paths"])
+
+        manifest_summary = scorecard["manifests"][NESTED_GROUP_ALTERNATION_MANIFEST_ID]
+        self.assertEqual(manifest_summary["known_gap_count"], 0)
+
+        quantified_branch_local_rows = [
+            workload
+            for workload in case["target_manifest"]["workloads"]
+            if "branch-local-backreferences" in workload["syntax_features"]
+            and "quantifiers" in workload["syntax_features"]
+        ]
+        self._assert_nested_group_alternation_branch_local_rows(
+            case["target_manifest"],
+            scorecard,
+            branch_local_rows=quantified_branch_local_rows,
+            expected_workload_ids=NESTED_GROUP_ALTERNATION_QUANTIFIED_BRANCH_LOCAL_WORKLOAD_IDS,
+            expected_patterns=NESTED_GROUP_ALTERNATION_QUANTIFIED_BRANCH_LOCAL_PATTERNS,
+            expected_haystacks={"zzabbdzz", "abccd"},
+        )
+
+    def _assert_nested_group_alternation_branch_local_rows(
+        self,
+        manifest_document: dict[str, object],
+        scorecard: dict[str, object],
+        *,
+        branch_local_rows: list[dict[str, object]],
+        expected_workload_ids: tuple[str, ...],
+        expected_patterns: set[str],
+        expected_haystacks: set[str],
+    ) -> None:
         self.assertEqual(
             tuple(workload["id"] for workload in branch_local_rows),
-            NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_WORKLOAD_IDS,
+            expected_workload_ids,
         )
         self.assertEqual(
             {workload["operation"] for workload in branch_local_rows},
@@ -229,7 +282,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(
             {workload["pattern"] for workload in branch_local_rows},
-            NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_PATTERNS,
+            expected_patterns,
         )
         self.assertEqual(
             {
@@ -237,28 +290,28 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 for workload in branch_local_rows
                 if workload.get("haystack") is not None
             },
-            {"zzabbdzz", "accd"},
+            expected_haystacks,
         )
 
         scorecard_rows = [
             workload
             for workload in scorecard["workloads"]
             if workload["manifest_id"] == NESTED_GROUP_ALTERNATION_MANIFEST_ID
-            and workload["id"] in NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_WORKLOAD_IDS
+            and workload["id"] in expected_workload_ids
         ]
         self.assertEqual(
             {workload["id"] for workload in scorecard_rows},
-            set(NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_WORKLOAD_IDS),
+            set(expected_workload_ids),
         )
 
-        for workload_id in NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_WORKLOAD_IDS:
+        for workload_id in expected_workload_ids:
             with self.subTest(workload_id=workload_id):
                 assert_benchmark_workload_contract(
                     self,
                     find_workload_record(scorecard, workload_id),
                     manifest_id=NESTED_GROUP_ALTERNATION_MANIFEST_ID,
                     workload_document=find_workload_document(
-                        case["target_manifest"],
+                        manifest_document,
                         workload_id,
                     ),
                     expected_status="measured",
