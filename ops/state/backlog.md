@@ -1,7 +1,7 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now has the broader `{1,4}` grouped-conditional slice converted behind `rebar._rebar`; the active frontier is catching that slice up on the Python-path benchmark surface with `RBR-0273` and then reopening the adjacent broader `{1,4}` grouped backtracking-heavy slice with `RBR-0275`.
+Milestone 2 has the broader `{1,4}` grouped-conditional slice landed behind `rebar._rebar`; the next step is benchmark catch-up on that same slice before reopening the adjacent broader `{1,4}` grouped backtracking-heavy frontier.
 
 ## Ordered Work
 1. Land `RBR-0273` to catch the broader `{1,4}` wider-ranged-repeat grouped-alternation-plus-conditional slice `a((bc|de){1,4})?(?(1)d|e)` / `a(?P<outer>(bc|de){1,4})?(?(outer)d|e)` up on the Python-path benchmark surface through `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.json`.
