@@ -6,10 +6,10 @@ Updated: 2026-03-14
 Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while keeping the correctness and benchmark publications caught up with each newly supported slice.
 
 ## README Phase Summary
-Phase 3 is still a bounded Rust-backed subset: correctness, Rust-backed parity, and the main Python-path benchmark report are now aligned through quantified nested-group replacement templates, while quantified nested-group callable replacement publication is next and bounded callable-replacement parity follows immediately behind it.
+Phase 3 remains a bounded Rust-backed subset, with correctness, Rust-backed parity, and the main Python-path benchmark report aligned through quantified nested-group replacement templates.
 
 ## README Delivery Estimate
-The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity. Correctness, Rust-backed parity, and the main Python-path benchmark surface are aligned through quantified nested-group replacement templates, publication still runs through the source-tree shim, and quantified nested-group callable replacement plus broader nested callable and deeper grouped execution work remain ahead.
+The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity: the published slice is narrow, the main benchmark report still runs through the source-tree shim, and callable replacement plus deeper grouped execution remain ahead.
 
 ## README Next Steps
 - Land `RBR-0309` to publish quantified nested-group callable replacement workflows on the correctness surface.
