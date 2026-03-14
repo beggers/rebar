@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is widening a bounded Rust-backed `re` slice; the fully passing Rust-backed frontier now reaches the broader `{1,4}` grouped backtracking-heavy slice, while the fully passing and benchmark-caught-up frontier still stops at the broader `{1,4}` grouped-conditional slice. |
 | Delivery estimate | Foundation and reporting are in place. The fully passing Rust-backed frontier now reaches the broader `{1,4}` grouped backtracking-heavy slice, while the benchmark-caught-up frontier still stops at the broader `{1,4}` grouped-conditional slice until `RBR-0278` lands. |
 | Current milestone | Milestone 2 has the broader `{1,4}` grouped backtracking-heavy slice at Rust-backed parity; next up is catching that same bounded workflow up on the Python-path benchmark surface. |
-| Work queue | `1` ready, `0` in progress, `280` done, `0` blocked |
+| Work queue | `2` ready, `0` in progress, `280` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
