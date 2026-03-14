@@ -1,4 +1,4 @@
-{
+MANIFEST = {
   "schema_version": 1,
   "manifest_id": "nested-group-workflows",
   "layer": "match_behavior",

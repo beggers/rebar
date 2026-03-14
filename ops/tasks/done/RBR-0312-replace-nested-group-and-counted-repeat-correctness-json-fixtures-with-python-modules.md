@@ -1,6 +1,6 @@
 # RBR-0312: Replace the nested-group and counted-repeat correctness JSON fixtures with Python modules
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
 
@@ -43,3 +43,10 @@ Created: 2026-03-14
 - `.rebar/runtime/dashboard.md` still reports `tracked_json_blob_count: 103` and `tracked_json_blob_delta: 0`, but the live tracked/filesystem JSON baseline in this checkout is already `32`; size and verify the task against the live counts rather than the stale dashboard snapshot.
 - This batch removes the remaining nested-group and counted-repeat JSON fixtures from the default correctness registry without touching the early bootstrap path constants that still appear in several dedicated tests, so it burns down seven tracked JSON files in one run without coupling the work to a broader path-assertion rewrite.
 - The current checkout does not carry dedicated fixture-path assertions for these seven manifests; keep verification anchored in the shared combined scorecard and fixture-contract suites plus the existing quantified branch-local, exact-repeat alternation, and quantified nested-group replacement scorecard tests unless a real path-specific assumption appears during execution.
+
+## Completion Notes
+- Repointed the seven targeted `DEFAULT_FIXTURE_PATHS` entries in `python/rebar_harness/correctness.py` from `.json` to `.py` while preserving their existing slots between `grouped_segment_workflows.py` and `wider_ranged_repeat_quantified_group_workflows.py`, so the shared mixed-extension loader remains the only manifest path.
+- Replaced `nested_group_workflows.json`, `nested_group_alternation_workflows.json`, `nested_group_replacement_workflows.json`, `quantified_branch_local_backreference_workflows.json`, `exact_repeat_quantified_group_workflows.json`, `exact_repeat_quantified_group_alternation_workflows.json`, and `ranged_repeat_quantified_group_workflows.json` with one-manifest-per-file Python `MANIFEST` modules carrying the same manifest ids, suite ids, defaults, case ids, case ordering, and case payloads, then deleted the JSON originals.
+- Regenerated `reports/correctness/latest.json`; the converted manifests remain in fixture-order slots `14`, `15`, `16`, `25`, `27`, `28`, and `29`, keep their `6`, `6`, `8`, `8`, `6`, `10`, and `6` case counts, preserve the combined `86`-manifest / `779`-case / `779`-pass / `0`-failure / `0`-unimplemented scorecard totals, and now publish `.py` fixture paths for the targeted slice.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.json` and `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py tests/conformance/test_correctness_fixture_inventory_contract.py tests/conformance/test_python_fixture_manifest_contract.py tests/conformance/test_correctness_quantified_branch_local_backreference_workflows.py tests/conformance/test_correctness_exact_repeat_quantified_group_alternation_workflows.py tests/conformance/test_correctness_quantified_nested_group_replacement_workflows.py` (`8` tests passed, `1024` subtests passed).
+- Verified the live JSON reduction with `rg --files -g '*.json' | wc -l` as `32 -> 25`; in this dirty pre-commit worktree `git ls-files '*.json' | wc -l` still reports deleted tracked paths, so the matching deleted-path count was confirmed separately as `git ls-files --deleted '*.json' | wc -l = 7`.

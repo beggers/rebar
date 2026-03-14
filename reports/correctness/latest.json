@@ -1,6 +1,6 @@
 {
   "baseline": {
-    "executable": "/usr/bin/python3",
+    "executable": "/home/ubuntu/rebar/.venv/bin/python",
     "oracle": "cpython-stdlib-re",
     "platform": "Linux-6.14.0-1018-aws-x86_64-with-glibc2.39",
     "python_build": {
@@ -82811,9 +82811,9 @@
       "tests/conformance/fixtures/named_backreference_workflows.py",
       "tests/conformance/fixtures/numbered_backreference_workflows.py",
       "tests/conformance/fixtures/grouped_segment_workflows.py",
-      "tests/conformance/fixtures/nested_group_workflows.json",
-      "tests/conformance/fixtures/nested_group_alternation_workflows.json",
-      "tests/conformance/fixtures/nested_group_replacement_workflows.json",
+      "tests/conformance/fixtures/nested_group_workflows.py",
+      "tests/conformance/fixtures/nested_group_alternation_workflows.py",
+      "tests/conformance/fixtures/nested_group_replacement_workflows.py",
       "tests/conformance/fixtures/quantified_nested_group_replacement_workflows.py",
       "tests/conformance/fixtures/nested_group_callable_replacement_workflows.py",
       "tests/conformance/fixtures/literal_alternation_workflows.py",
@@ -82822,11 +82822,11 @@
       "tests/conformance/fixtures/grouped_alternation_callable_replacement_workflows.py",
       "tests/conformance/fixtures/branch_local_backreference_workflows.py",
       "tests/conformance/fixtures/conditional_group_exists_branch_local_backreference_workflows.py",
-      "tests/conformance/fixtures/quantified_branch_local_backreference_workflows.json",
+      "tests/conformance/fixtures/quantified_branch_local_backreference_workflows.py",
       "tests/conformance/fixtures/optional_group_workflows.py",
-      "tests/conformance/fixtures/exact_repeat_quantified_group_workflows.json",
-      "tests/conformance/fixtures/exact_repeat_quantified_group_alternation_workflows.json",
-      "tests/conformance/fixtures/ranged_repeat_quantified_group_workflows.json",
+      "tests/conformance/fixtures/exact_repeat_quantified_group_workflows.py",
+      "tests/conformance/fixtures/exact_repeat_quantified_group_alternation_workflows.py",
+      "tests/conformance/fixtures/ranged_repeat_quantified_group_workflows.py",
       "tests/conformance/fixtures/wider_ranged_repeat_quantified_group_workflows.py",
       "tests/conformance/fixtures/wider_ranged_repeat_quantified_group_alternation_workflows.py",
       "tests/conformance/fixtures/broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
@@ -82885,7 +82885,7 @@
       "tests/conformance/fixtures/quantified_alternation_open_ended_workflows.py"
     ]
   },
-  "generated_at": "2026-03-14T12:29:41Z",
+  "generated_at": "2026-03-14T12:42:05Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {

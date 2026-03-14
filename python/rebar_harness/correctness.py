@@ -42,17 +42,17 @@ DEFAULT_FIXTURE_PATHS = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "named_backreference_workflows.py",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "numbered_backreference_workflows.py",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_segment_workflows.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "nested_group_workflows.json",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "nested_group_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "nested_group_alternation_workflows.json",
+    / "nested_group_alternation_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "nested_group_replacement_workflows.json",
+    / "nested_group_replacement_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
@@ -85,23 +85,23 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "quantified_branch_local_backreference_workflows.json",
+    / "quantified_branch_local_backreference_workflows.py",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "optional_group_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "exact_repeat_quantified_group_workflows.json",
+    / "exact_repeat_quantified_group_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "exact_repeat_quantified_group_alternation_workflows.json",
+    / "exact_repeat_quantified_group_alternation_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "ranged_repeat_quantified_group_workflows.json",
+    / "ranged_repeat_quantified_group_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
