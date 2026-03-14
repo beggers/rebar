@@ -57,13 +57,13 @@ _README speedup rollups stay omitted while only `436` of `467` published workloa
 
 ## What Exists Today
 
-`rebar` already has a real Rust core, a CPython-facing extension boundary, and published correctness and benchmark reports. What it does not have yet is broad `re` coverage: the current correctness frontier is fully passing, the benchmark report still trails that frontier, and the supported slice is still small relative to stdlib `re`.
+`rebar` already has a real Rust core, a CPython-facing extension boundary, and published correctness and benchmark reports. What it does not have yet is broad `re` coverage: the current published slice is still small relative to stdlib `re`, but that slice is now both correctness-backed and benchmark-published rather than only partially measured.
 
-Benchmarking is useful as a coverage signal, not a performance victory lap yet. The main published suite still runs through the source-tree shim, and the built-native numbers live in separate sidecars, so the README avoids headline speedups and treats benchmark counts as coverage, not proof of speed.
+That means the repo is past scaffolding but still well short of drop-in parity or optimization work. The main published benchmark suite still runs through the source-tree shim, and the built-native numbers live in separate sidecars, so the README treats benchmark output as coverage and direction, not proof of speed.
 
 ## How To Read It
 
-Treat the correctness counts as "the documented frontier matches CPython on this slice," not as a claim of broad drop-in compatibility. Treat the benchmark counts as "this much of that slice is measured through the public Python path," not as proof that `rebar` is already faster than stdlib `re`.
+Treat the correctness counts as "the documented frontier matches CPython on this slice," not as a claim of broad drop-in compatibility. Treat the benchmark counts as "that same slice is published on the benchmark surface with explicit gaps still called out," not as proof that `rebar` is already faster than stdlib `re`.
 
 ## Where To Look
 
