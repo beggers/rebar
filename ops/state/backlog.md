@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now has `RBR-0344` seeded as the surviving follow-on so bounded nested-group alternation callable-replacement workflows for `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d` move behind the Rust boundary on the existing nested-group callback path before benchmark catch-up or deeper nested grouped execution broadens the queue.
+Milestone 2 now has `RBR-0346` seeded as the surviving follow-on so the bounded nested-group alternation callable-replacement workflows for `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d` reach the existing Python-path benchmark surface on `nested_group_callable_replacement_boundary.py` before broader callback behavior or deeper nested grouped execution broadens the queue.
 
 ## Ordered Work
-1. Land `RBR-0344` to add bounded nested-group alternation callable-replacement parity for `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d` through `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_nested_group_alternation_callable_replacement_parity.py`, and `reports/correctness/latest.py`, keeping later benchmark catch-up on `benchmarks/workloads/nested_group_callable_replacement_boundary.py`.
+1. Land `RBR-0346` to catch the bounded nested-group alternation callable-replacement slice up on `benchmarks/workloads/nested_group_callable_replacement_boundary.py` through `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, promoting the current `module-sub-callable-nested-group-alternation-cold-gap` anchor plus only the minimal adjacent numbered and named `sub()` / `subn()` rows needed to publish this exact slice.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
