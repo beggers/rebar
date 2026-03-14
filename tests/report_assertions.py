@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pathlib
 import platform
+import sys
 from typing import Any
 
 
@@ -21,7 +22,11 @@ def _correctness_summary(cases: list[dict[str, Any]]) -> dict[str, int]:
     }
 
 
-def assert_correctness_summary_consistent(testcase: Any, scorecard: dict[str, Any], summary: dict[str, Any]) -> None:
+def assert_correctness_summary_consistent(
+    testcase: Any,
+    scorecard: dict[str, Any],
+    summary: dict[str, Any],
+) -> None:
     testcase.assertEqual(summary, scorecard["summary"])
     testcase.assertEqual(scorecard["summary"], _correctness_summary(scorecard["cases"]))
 
@@ -33,8 +38,51 @@ def assert_correctness_layer_summary_consistent(
 ) -> dict[str, Any]:
     layer = scorecard["layers"][layer_id]
     layer_cases = [case for case in scorecard["cases"] if case["layer"] == layer_id]
+    testcase.assertEqual(layer["case_count"], len(layer_cases))
     testcase.assertEqual(layer["summary"], _correctness_summary(layer_cases))
     return layer
+
+
+def _correctness_cases_for_suite(
+    scorecard: dict[str, Any],
+    suite: dict[str, Any],
+) -> list[dict[str, Any]]:
+    suite_cases = [
+        case
+        for case in scorecard["cases"]
+        if case["manifest_id"] in suite["manifest_ids"] and case["layer"] == suite["layer"]
+    ]
+    if suite["operations"]:
+        suite_cases = [
+            case for case in suite_cases if case["operation"] in suite["operations"]
+        ]
+    if suite["text_models"]:
+        suite_cases = [
+            case
+            for case in suite_cases
+            if case.get("text_model") in suite["text_models"]
+        ]
+    return suite_cases
+
+
+def find_correctness_suite_record(
+    scorecard: dict[str, Any],
+    suite_id: str,
+) -> dict[str, Any]:
+    for suite in scorecard["suites"]:
+        if suite["id"] == suite_id:
+            return suite
+    raise AssertionError(f"missing correctness suite record for {suite_id!r}")
+
+
+def find_correctness_case_record(
+    scorecard: dict[str, Any],
+    case_id: str,
+) -> dict[str, Any]:
+    for case in scorecard["cases"]:
+        if case["id"] == case_id:
+            return case
+    raise AssertionError(f"missing correctness case record for {case_id!r}")
 
 
 def assert_correctness_suite_summary_consistent(
@@ -42,15 +90,105 @@ def assert_correctness_suite_summary_consistent(
     scorecard: dict[str, Any],
     suite_id: str,
 ) -> dict[str, Any]:
-    suite = next(suite for suite in scorecard["suites"] if suite["id"] == suite_id)
-    if "case_ids" in suite:
-        suite_case_ids = set(suite["case_ids"])
-        suite_cases = [case for case in scorecard["cases"] if case["id"] in suite_case_ids]
-        testcase.assertEqual(suite["summary"], _correctness_summary(suite_cases))
+    suite = find_correctness_suite_record(scorecard, suite_id)
+    suite_cases = _correctness_cases_for_suite(scorecard, suite)
+    testcase.assertEqual(suite["case_count"], len(suite_cases))
+    testcase.assertEqual(suite["summary"], _correctness_summary(suite_cases))
     return suite
 
 
-def assert_benchmark_summary_consistent(testcase: Any, scorecard: dict[str, Any], summary: dict[str, Any]) -> None:
+def assert_correctness_report_contract(
+    testcase: Any,
+    scorecard: dict[str, Any],
+    summary: dict[str, Any],
+    *,
+    expected_phase: str,
+    tracked_report_path: pathlib.Path | None = None,
+) -> None:
+    assert_correctness_summary_consistent(testcase, scorecard, summary)
+    testcase.assertEqual(scorecard["schema_version"], "1.0")
+    testcase.assertEqual(scorecard["suite"], "correctness")
+    testcase.assertEqual(scorecard["phase"], expected_phase)
+
+    baseline = scorecard["baseline"]
+    testcase.assertEqual(
+        baseline["python_implementation"],
+        platform.python_implementation(),
+    )
+    testcase.assertEqual(baseline["python_version"], platform.python_version())
+    testcase.assertEqual(baseline["python_version_family"], "3.12.x")
+    testcase.assertEqual(
+        baseline["python_build"],
+        {
+            "name": platform.python_build()[0],
+            "date": platform.python_build()[1],
+        },
+    )
+    testcase.assertEqual(baseline["python_compiler"], platform.python_compiler())
+    testcase.assertEqual(baseline["platform"], platform.platform())
+    testcase.assertEqual(baseline["executable"], sys.executable)
+    testcase.assertEqual(baseline["re_module"], "re")
+    testcase.assertEqual(baseline["oracle"], "cpython-stdlib-re")
+    testcase.assertEqual(baseline["target_module"], "rebar")
+
+    if tracked_report_path is not None:
+        testcase.assertTrue(tracked_report_path.is_file())
+
+
+def assert_correctness_fixture_contract(
+    testcase: Any,
+    scorecard: dict[str, Any],
+    *,
+    expected_manifest_ids: tuple[str, ...],
+    expected_paths: tuple[str, ...],
+    expected_case_count: int,
+) -> None:
+    fixtures = scorecard["fixtures"]
+    testcase.assertEqual(fixtures["manifest_count"], len(expected_manifest_ids))
+    testcase.assertEqual(fixtures["manifest_ids"], list(expected_manifest_ids))
+    testcase.assertEqual(fixtures["paths"], list(expected_paths))
+    testcase.assertEqual(fixtures["case_count"], expected_case_count)
+
+
+def assert_correctness_layer_contract(
+    testcase: Any,
+    scorecard: dict[str, Any],
+    layer_id: str,
+    *,
+    expected_manifest_ids: tuple[str, ...],
+    expected_operations: tuple[str, ...],
+    expected_text_models: tuple[str, ...],
+) -> dict[str, Any]:
+    layer = assert_correctness_layer_summary_consistent(testcase, scorecard, layer_id)
+    testcase.assertEqual(layer["manifest_ids"], list(expected_manifest_ids))
+    testcase.assertEqual(layer["operations"], list(expected_operations))
+    testcase.assertEqual(layer["text_models"], list(expected_text_models))
+    return layer
+
+
+def assert_correctness_suite_contract(
+    testcase: Any,
+    scorecard: dict[str, Any],
+    suite_id: str,
+    *,
+    expected_manifest_ids: tuple[str, ...],
+    expected_families: tuple[str, ...],
+    expected_operations: tuple[str, ...],
+    expected_text_models: tuple[str, ...],
+) -> dict[str, Any]:
+    suite = assert_correctness_suite_summary_consistent(testcase, scorecard, suite_id)
+    testcase.assertEqual(suite["manifest_ids"], list(expected_manifest_ids))
+    testcase.assertEqual(suite["families"], list(expected_families))
+    testcase.assertEqual(suite["operations"], list(expected_operations))
+    testcase.assertEqual(suite["text_models"], list(expected_text_models))
+    return suite
+
+
+def assert_benchmark_summary_consistent(
+    testcase: Any,
+    scorecard: dict[str, Any],
+    summary: dict[str, Any],
+) -> None:
     workloads = scorecard["workloads"]
     expected_summary = {
         key: scorecard["summary"][key]
@@ -93,7 +231,11 @@ def assert_benchmark_summary_consistent(testcase: Any, scorecard: dict[str, Any]
         testcase.assertEqual(family_summary["workload_count"], len(family_workloads))
         testcase.assertEqual(
             family_summary["known_gap_count"],
-            sum(1 for workload in family_workloads if workload["status"] in _KNOWN_GAP_STATUSES),
+            sum(
+                1
+                for workload in family_workloads
+                if workload["status"] in _KNOWN_GAP_STATUSES
+            ),
         )
         for cache_mode, cache_summary in family_summary["cache_modes"].items():
             testcase.assertEqual(
@@ -213,7 +355,10 @@ def assert_benchmark_workload_contract(
     testcase.assertEqual(workload_record["flags"], workload_document.get("flags", 0))
     testcase.assertEqual(workload_record["count"], workload_document.get("count", 0))
     testcase.assertEqual(workload_record["maxsplit"], workload_document.get("maxsplit", 0))
-    testcase.assertEqual(workload_record["text_model"], workload_document.get("text_model", "str"))
+    testcase.assertEqual(
+        workload_record["text_model"],
+        workload_document.get("text_model", "str"),
+    )
     testcase.assertEqual(workload_record["cache_mode"], workload_document["cache_mode"])
     testcase.assertEqual(workload_record["timing_scope"], workload_document["timing_scope"])
     testcase.assertEqual(workload_record["syntax_features"], expected_syntax_features)

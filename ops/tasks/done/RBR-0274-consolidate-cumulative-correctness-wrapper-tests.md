@@ -1,6 +1,6 @@
 # RBR-0274: Consolidate the cumulative correctness wrapper tests into one data-driven suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-13
 
@@ -59,3 +59,10 @@ tests/conformance/test_correctness_quantified_alternation_workflows.py
 tests/conformance/test_correctness_ranged_repeat_quantified_group_workflows.py
 tests/conformance/test_correctness_wider_ranged_repeat_quantified_group_workflows.py
 ```
+
+## Completion Note
+- Consolidated the repeated cumulative correctness wrappers into `tests/conformance/test_combined_correctness_scorecards.py`, with manifest-keyed prefix selection and representative case expectations centralized in `tests/conformance/correctness_expectations.py`.
+- Extended `tests/report_assertions.py` so shared correctness contract checks now cover report metadata, fixture-prefix assertions, and real layer and suite summary consistency instead of repeating those checks across 26 modules.
+- Deleted the 26 superseded cumulative wrapper modules listed above; the combined correctness scorecard contract now lives in the single data-driven suite.
+- Verified the preserved correctness surface with `python3 -m unittest tests.conformance.test_combined_correctness_scorecards tests.conformance.test_correctness_smoke tests.conformance.test_correctness_parser_matrix tests.conformance.test_correctness_public_api_surface tests.conformance.test_correctness_exported_symbol_surface tests.conformance.test_correctness_pattern_object_surface tests.conformance.test_correctness_module_workflow tests.conformance.test_correctness_collection_replacement_workflows tests.conformance.test_correctness_literal_flag_workflows tests.conformance.test_systematic_feature_corpus` and `python3 -m unittest tests.conformance.test_correctness_match_behavior`.
+- `python3 -m unittest tests.conformance.test_systematic_feature_corpus_generator` could not run in this VM because the module imports `pytest` and `pytest` is not installed here.

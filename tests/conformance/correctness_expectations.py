@@ -1,0 +1,393 @@
+from __future__ import annotations
+
+import pathlib
+import sys
+from dataclasses import dataclass
+from functools import lru_cache
+
+
+REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
+PYTHON_SOURCE = REPO_ROOT / "python"
+if str(PYTHON_SOURCE) not in sys.path:
+    sys.path.append(str(PYTHON_SOURCE))
+
+from rebar_harness.correctness import (
+    DEFAULT_FIXTURE_PATHS,
+    FixtureCase,
+    FixtureManifest,
+    determine_phase,
+    load_fixture_manifest,
+)
+
+
+COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
+    "named-group-workflows": {
+        "representative_case_ids": (
+            "named-group-compile-metadata-str",
+            "named-group-module-search-metadata-str",
+            "named-group-pattern-search-metadata-str",
+        ),
+    },
+    "named-group-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-template-named-group-str",
+            "module-subn-template-named-group-str",
+            "pattern-sub-template-named-group-str",
+            "pattern-subn-template-named-group-str",
+        ),
+    },
+    "named-backreference-workflows": {
+        "representative_case_ids": (
+            "named-backreference-compile-metadata-str",
+            "named-backreference-module-search-str",
+            "named-backreference-pattern-search-str",
+        ),
+    },
+    "numbered-backreference-workflows": {
+        "representative_case_ids": (
+            "numbered-backreference-compile-metadata-str",
+            "numbered-backreference-module-search-str",
+            "numbered-backreference-pattern-search-str",
+        ),
+    },
+    "grouped-segment-workflows": {
+        "representative_case_ids": (
+            "grouped-segment-compile-metadata-str",
+            "named-grouped-segment-compile-metadata-str",
+            "grouped-segment-module-search-str",
+            "named-grouped-segment-pattern-fullmatch-str",
+        ),
+    },
+    "nested-group-workflows": {
+        "representative_case_ids": (
+            "nested-group-compile-metadata-str",
+            "named-nested-group-compile-metadata-str",
+            "nested-group-module-search-str",
+            "named-nested-group-pattern-fullmatch-str",
+        ),
+    },
+    "literal-alternation-workflows": {
+        "representative_case_ids": (
+            "literal-alternation-compile-metadata-str",
+            "literal-alternation-module-search-str",
+            "literal-alternation-pattern-fullmatch-str",
+        ),
+    },
+    "grouped-alternation-workflows": {
+        "representative_case_ids": (
+            "grouped-alternation-compile-metadata-str",
+            "named-grouped-alternation-compile-metadata-str",
+            "grouped-alternation-module-search-str",
+            "named-grouped-alternation-pattern-fullmatch-str",
+        ),
+    },
+    "grouped-alternation-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-template-grouped-alternation-str",
+            "module-subn-template-grouped-alternation-str",
+            "pattern-sub-template-named-grouped-alternation-str",
+            "pattern-subn-template-named-grouped-alternation-str",
+        ),
+    },
+    "grouped-alternation-callable-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-callable-grouped-alternation-str",
+            "module-subn-callable-grouped-alternation-str",
+            "pattern-sub-callable-named-grouped-alternation-str",
+        ),
+    },
+    "branch-local-backreference-workflows": {
+        "representative_case_ids": (
+            "branch-local-numbered-backreference-compile-metadata-str",
+            "branch-local-numbered-backreference-module-search-str",
+            "branch-local-numbered-backreference-pattern-fullmatch-str",
+            "branch-local-named-backreference-compile-metadata-str",
+            "branch-local-named-backreference-module-search-str",
+            "branch-local-named-backreference-pattern-fullmatch-str",
+        ),
+    },
+    "optional-group-workflows": {
+        "representative_case_ids": (
+            "optional-group-compile-metadata-str",
+            "optional-group-module-search-present-str",
+            "optional-group-pattern-fullmatch-absent-str",
+            "named-optional-group-compile-metadata-str",
+            "named-optional-group-module-search-absent-str",
+            "named-optional-group-pattern-fullmatch-present-str",
+        ),
+    },
+    "exact-repeat-quantified-group-workflows": {
+        "representative_case_ids": (
+            "exact-repeat-numbered-group-compile-metadata-str",
+            "exact-repeat-numbered-group-module-search-str",
+            "exact-repeat-numbered-group-pattern-fullmatch-str",
+            "exact-repeat-named-group-compile-metadata-str",
+            "exact-repeat-named-group-module-search-str",
+            "exact-repeat-named-group-pattern-fullmatch-str",
+        ),
+    },
+    "ranged-repeat-quantified-group-workflows": {
+        "representative_case_ids": (
+            "ranged-repeat-numbered-group-compile-metadata-str",
+            "ranged-repeat-numbered-group-module-search-lower-bound-str",
+            "ranged-repeat-numbered-group-pattern-fullmatch-upper-bound-str",
+            "ranged-repeat-named-group-compile-metadata-str",
+            "ranged-repeat-named-group-module-search-upper-bound-str",
+            "ranged-repeat-named-group-pattern-fullmatch-lower-bound-str",
+        ),
+    },
+    "wider-ranged-repeat-quantified-group-workflows": {
+        "representative_case_ids": (
+            "wider-ranged-repeat-numbered-group-compile-metadata-str",
+            "wider-ranged-repeat-numbered-group-pattern-fullmatch-upper-bound-str",
+            "wider-ranged-repeat-named-group-module-search-upper-bound-str",
+            "wider-ranged-repeat-named-group-pattern-fullmatch-lower-bound-str",
+        ),
+    },
+    "nested-group-alternation-workflows": {
+        "representative_case_ids": (
+            "nested-group-alternation-compile-metadata-str",
+            "named-nested-group-alternation-pattern-fullmatch-str",
+        ),
+    },
+    "nested-group-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-template-nested-group-numbered-str",
+            "module-subn-template-nested-group-numbered-str",
+            "pattern-sub-template-nested-group-named-str",
+            "pattern-subn-template-nested-group-named-str",
+        ),
+    },
+    "nested-group-callable-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-callable-nested-group-numbered-str",
+            "module-subn-callable-nested-group-numbered-str",
+            "pattern-sub-callable-nested-group-named-str",
+        ),
+    },
+    "optional-group-alternation-workflows": {
+        "representative_case_ids": (
+            "optional-group-alternation-compile-metadata-str",
+            "optional-group-alternation-module-search-present-str",
+            "optional-group-alternation-pattern-fullmatch-absent-str",
+            "named-optional-group-alternation-compile-metadata-str",
+            "named-optional-group-alternation-module-search-present-str",
+            "named-optional-group-alternation-pattern-fullmatch-absent-str",
+        ),
+    },
+    "conditional-group-exists-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-compile-metadata-str",
+            "conditional-group-exists-module-search-present-str",
+            "conditional-group-exists-pattern-fullmatch-absent-str",
+            "named-conditional-group-exists-compile-metadata-str",
+            "named-conditional-group-exists-module-search-present-str",
+            "named-conditional-group-exists-pattern-fullmatch-absent-str",
+        ),
+    },
+    "conditional-group-exists-no-else-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-no-else-compile-metadata-str",
+            "conditional-group-exists-no-else-module-search-present-str",
+            "conditional-group-exists-no-else-pattern-fullmatch-absent-str",
+            "named-conditional-group-exists-no-else-compile-metadata-str",
+            "named-conditional-group-exists-no-else-module-search-present-str",
+            "named-conditional-group-exists-no-else-pattern-fullmatch-absent-str",
+        ),
+    },
+    "conditional-group-exists-empty-else-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-empty-else-compile-metadata-str",
+            "conditional-group-exists-empty-else-module-search-present-str",
+            "conditional-group-exists-empty-else-pattern-fullmatch-absent-str",
+            "named-conditional-group-exists-empty-else-compile-metadata-str",
+            "named-conditional-group-exists-empty-else-module-search-present-str",
+            "named-conditional-group-exists-empty-else-pattern-fullmatch-absent-str",
+        ),
+    },
+    "conditional-group-exists-empty-yes-else-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-empty-yes-else-compile-metadata-str",
+            "conditional-group-exists-empty-yes-else-module-search-present-str",
+            "conditional-group-exists-empty-yes-else-pattern-fullmatch-absent-str",
+            "named-conditional-group-exists-empty-yes-else-compile-metadata-str",
+            "named-conditional-group-exists-empty-yes-else-module-search-present-str",
+            "named-conditional-group-exists-empty-yes-else-pattern-fullmatch-absent-str",
+        ),
+    },
+    "conditional-group-exists-fully-empty-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-fully-empty-compile-metadata-str",
+            "conditional-group-exists-fully-empty-module-search-present-str",
+            "conditional-group-exists-fully-empty-pattern-fullmatch-absent-str",
+            "named-conditional-group-exists-fully-empty-compile-metadata-str",
+            "named-conditional-group-exists-fully-empty-module-search-present-str",
+            "named-conditional-group-exists-fully-empty-pattern-fullmatch-absent-str",
+        ),
+    },
+    "conditional-group-exists-assertion-diagnostics": {
+        "representative_case_ids": (
+            "conditional-group-exists-assertion-positive-lookahead-error-str",
+            "conditional-group-exists-assertion-negative-lookahead-error-str",
+        ),
+    },
+    "quantified-alternation-workflows": {
+        "representative_case_ids": (
+            "quantified-alternation-numbered-module-search-lower-bound-str",
+            "quantified-alternation-numbered-pattern-fullmatch-second-repetition-str",
+            "quantified-alternation-named-compile-metadata-str",
+            "quantified-alternation-named-module-search-second-repetition-str",
+            "quantified-alternation-named-pattern-fullmatch-lower-bound-str",
+        ),
+    },
+}
+
+
+@dataclass(frozen=True)
+class CombinedCorrectnessCase:
+    fixture_paths: tuple[pathlib.Path, ...]
+    expected_fixture_case_count: int
+    expected_fixture_manifest_ids: tuple[str, ...]
+    expected_fixture_paths: tuple[str, ...]
+    expected_phase: str
+    expected_suite_ids: tuple[str, ...]
+    representative_cases: tuple[FixtureCase, ...]
+    target_layer_id: str
+    target_layer_manifest_ids: tuple[str, ...]
+    target_layer_operations: tuple[str, ...]
+    target_layer_text_models: tuple[str, ...]
+    target_manifest_id: str
+    target_suite_families: tuple[str, ...]
+    target_suite_id: str
+    target_suite_operations: tuple[str, ...]
+    target_suite_text_models: tuple[str, ...]
+
+
+def _sorted_unique_strings(values: object) -> tuple[str, ...]:
+    return tuple(sorted({str(value) for value in values if value is not None}))
+
+
+@lru_cache(maxsize=1)
+def _fixture_inventory() -> tuple[tuple[pathlib.Path, FixtureManifest, tuple[FixtureCase, ...]], ...]:
+    inventory = []
+    for path in DEFAULT_FIXTURE_PATHS:
+        manifest, cases = load_fixture_manifest(path)
+        inventory.append((path, manifest, tuple(cases)))
+    return tuple(inventory)
+
+
+def combined_target_manifest_ids() -> tuple[str, ...]:
+    target_manifest_ids = tuple(
+        manifest.manifest_id
+        for _, manifest, _ in _fixture_inventory()
+        if manifest.manifest_id in COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS
+    )
+    missing_expectations = set(COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS) - set(
+        target_manifest_ids
+    )
+    if missing_expectations:
+        raise AssertionError(
+            "combined correctness manifest expectations drifted from DEFAULT_FIXTURE_PATHS: "
+            f"missing {sorted(missing_expectations)}"
+        )
+    return target_manifest_ids
+
+
+@lru_cache(maxsize=None)
+def combined_correctness_case(target_manifest_id: str) -> CombinedCorrectnessCase:
+    selected_paths: list[pathlib.Path] = []
+    selected_manifests: list[FixtureManifest] = []
+    selected_cases: list[FixtureCase] = []
+    target_cases: tuple[FixtureCase, ...] | None = None
+    target_manifest: FixtureManifest | None = None
+
+    for path, manifest, cases in _fixture_inventory():
+        selected_paths.append(path)
+        selected_manifests.append(manifest)
+        selected_cases.extend(cases)
+        if manifest.manifest_id == target_manifest_id:
+            target_manifest = manifest
+            target_cases = cases
+            break
+
+    if target_manifest is None or target_cases is None:
+        raise AssertionError(
+            f"target manifest {target_manifest_id!r} is not in DEFAULT_FIXTURE_PATHS"
+        )
+
+    expectation = COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS.get(target_manifest_id)
+    if expectation is None:
+        raise AssertionError(
+            f"missing combined correctness expectation for {target_manifest_id!r}"
+        )
+
+    representative_case_ids = expectation["representative_case_ids"]
+    target_cases_by_id = {case.case_id: case for case in target_cases}
+    missing_case_ids = sorted(
+        case_id for case_id in representative_case_ids if case_id not in target_cases_by_id
+    )
+    if missing_case_ids:
+        raise AssertionError(
+            f"missing representative cases for {target_manifest_id!r}: {missing_case_ids}"
+        )
+
+    target_suite_cases = tuple(
+        case for case in target_cases if case.suite_id == target_manifest.suite_id
+    )
+    target_suite_operations = _sorted_unique_strings(
+        case.operation for case in target_suite_cases
+    )
+    target_suite_text_models = _sorted_unique_strings(
+        case.text_model for case in target_suite_cases
+    )
+    expected_suite_ids = [target_manifest.suite_id]
+    expected_suite_ids.extend(
+        f"{target_manifest.suite_id}.{text_model}"
+        for text_model in target_suite_text_models
+    )
+    if len(target_suite_operations) > 1:
+        expected_suite_ids.extend(
+            f"{target_manifest.suite_id}.{operation}"
+            for operation in target_suite_operations
+        )
+
+    target_layer_cases = [
+        case for case in selected_cases if case.layer == target_manifest.layer
+    ]
+
+    return CombinedCorrectnessCase(
+        fixture_paths=tuple(selected_paths),
+        expected_fixture_case_count=len(selected_cases),
+        expected_fixture_manifest_ids=tuple(
+            manifest.manifest_id for manifest in selected_manifests
+        ),
+        expected_fixture_paths=tuple(
+            str(path.relative_to(REPO_ROOT)) for path in selected_paths
+        ),
+        expected_phase=determine_phase(
+            {manifest.layer: {} for manifest in selected_manifests}
+        ),
+        expected_suite_ids=tuple(expected_suite_ids),
+        representative_cases=tuple(
+            target_cases_by_id[case_id] for case_id in representative_case_ids
+        ),
+        target_layer_id=target_manifest.layer,
+        target_layer_manifest_ids=_sorted_unique_strings(
+            manifest.manifest_id
+            for manifest in selected_manifests
+            if manifest.layer == target_manifest.layer
+        ),
+        target_layer_operations=_sorted_unique_strings(
+            case.operation for case in target_layer_cases
+        ),
+        target_layer_text_models=_sorted_unique_strings(
+            case.text_model for case in target_layer_cases
+        ),
+        target_manifest_id=target_manifest.manifest_id,
+        target_suite_families=_sorted_unique_strings(
+            case.family for case in target_suite_cases
+        ),
+        target_suite_id=target_manifest.suite_id,
+        target_suite_operations=target_suite_operations,
+        target_suite_text_models=target_suite_text_models,
+    )
