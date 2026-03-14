@@ -118,61 +118,63 @@ SCENARIOS = (
 
 
 def _build_cases() -> tuple[ReplacementCase, ...]:
-    cases: list[ReplacementCase] = []
-    for scenario in SCENARIOS:
+    return tuple(
+        ReplacementCase(
+            id=f"{scenario.id}-{variant}-{probe.id}-{helper}",
+            pattern=pattern,
+            helper=helper,
+            string=probe.string,
+            count=probe.count,
+        )
+        for scenario in SCENARIOS
         for variant, pattern in (
             ("numbered", scenario.numbered_pattern),
             ("named", scenario.named_pattern),
-        ):
-            for probe in scenario.probes:
-                for helper in probe.helpers:
-                    cases.append(
-                        ReplacementCase(
-                            id=f"{scenario.id}-{variant}-{probe.id}-{helper}",
-                            pattern=pattern,
-                            helper=helper,
-                            string=probe.string,
-                            count=probe.count,
-                        )
-                    )
-    return tuple(cases)
+        )
+        for probe in scenario.probes
+        for helper in probe.helpers
+    )
 
 
 CASES = _build_cases()
 
 
-@pytest.mark.parametrize("case", CASES, ids=lambda case: case.id)
-def test_module_replacement_matches_cpython(case: ReplacementCase) -> None:
-    observed = getattr(rebar, case.helper)(
+def _replacement_result(
+    backend: object,
+    case: ReplacementCase,
+    *,
+    compiled_pattern: bool,
+) -> object:
+    if compiled_pattern:
+        compiled = backend.compile(case.pattern)
+        return getattr(compiled, case.helper)(
+            REPLACEMENT,
+            case.string,
+            count=case.count,
+        )
+
+    return getattr(backend, case.helper)(
         case.pattern,
         REPLACEMENT,
         case.string,
         count=case.count,
     )
-    expected = getattr(re, case.helper)(
-        case.pattern,
-        REPLACEMENT,
-        case.string,
-        count=case.count,
-    )
-
-    assert observed == expected
 
 
+@pytest.mark.parametrize("compiled_pattern", (False, True), ids=("module", "pattern"))
 @pytest.mark.parametrize("case", CASES, ids=lambda case: case.id)
-def test_pattern_replacement_matches_cpython(case: ReplacementCase) -> None:
-    observed_pattern = rebar.compile(case.pattern)
-    expected_pattern = re.compile(case.pattern)
-
-    observed = getattr(observed_pattern, case.helper)(
-        REPLACEMENT,
-        case.string,
-        count=case.count,
+def test_replacement_matches_cpython(
+    case: ReplacementCase,
+    compiled_pattern: bool,
+) -> None:
+    observed = _replacement_result(
+        rebar,
+        case,
+        compiled_pattern=compiled_pattern,
     )
-    expected = getattr(expected_pattern, case.helper)(
-        REPLACEMENT,
-        case.string,
-        count=case.count,
+    expected = _replacement_result(
+        re,
+        case,
+        compiled_pattern=compiled_pattern,
     )
-
     assert observed == expected
