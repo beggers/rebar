@@ -1,8 +1,9 @@
 # RBR-0278: Catch broader-range wider-ranged-repeat quantified-group alternation backtracking-heavy benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-14
+Completed: 2026-03-14
 
 ## Goal
 - Extend the published benchmark surface so the broader `{1,4}` grouped backtracking-heavy workflows supported by `RBR-0276` produce real `rebar` timings without leaving this newly supported slice absent from benchmark reporting.
@@ -28,3 +29,4 @@ Created: 2026-03-14
 - Build on `RBR-0276`.
 - Keep the broader `{1,4}` grouped backtracking-heavy follow-on on the existing wider-ranged-repeat grouped boundary manifest instead of forking another benchmark family.
 - Add only the directly adjacent broader-range grouped backtracking-heavy rows needed to publish this exact slice cleanly; open-ended grouped backtracking, grouped conditionals, replacement workflows, and broader grouped execution stay out of scope.
+- 2026-03-14T02:05:37Z: Added six measured broader `{1,4}` grouped backtracking-heavy rows for numbered and named `module.compile`, `module.search`, and `pattern.fullmatch` coverage in `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.json`, updated the focused benchmark test, and republished `reports/benchmarks/latest.json` to 473 workloads / 442 measured / 31 known gaps. Verified with `env PYTHONPATH=python python3 -m rebar_harness.benchmarks --manifest benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.json --report /tmp/rbr-0278-wider-ranged-repeat-benchmarks.json` and `env PYTHONPATH=python python3 -m unittest tests.benchmarks.test_wider_ranged_repeat_quantified_group_boundary_benchmarks`.
