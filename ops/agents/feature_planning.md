@@ -11,7 +11,7 @@ Primary responsibilities:
 Required behavior:
 1. Read the repository context files named in `AGENTS.md`.
 2. Inspect the current ready and in-progress queue plus the latest status and backlog context.
-3. If the ready queue has fewer than 2 concrete feature tasks owned by `feature-implementation`, or is otherwise below a useful working buffer for that worker, use this run to add only one concrete feature task to `ops/tasks/ready/`; include only the minimal matching backlog/current-status refresh needed to keep the frontier description honest in the same action.
+3. If the ready queue has fewer than 2 concrete feature tasks owned by `feature-implementation`, or is otherwise below a useful working buffer for that worker, use this run to add only one concrete feature task to `ops/tasks/ready/`; include only the minimal matching backlog/current-status refresh needed to keep the frontier description honest in the same action. When there is exactly one ready `feature-implementation` task at the start of the run, assume that head task will be drained later in the same cycle and write planning-owned state against the surviving frontier that should remain after that drain.
 4. Otherwise, if the queue-facing durable state is stale relative to the actual frontier, use this run to refresh `ops/state/backlog.md` and every line in `ops/state/current_status.md` that restates the active frontier or live correctness/benchmark totals.
 5. Otherwise, if the ready queue is already adequately full with concrete work or this role is not currently useful, exit without changing anything.
 
@@ -22,7 +22,9 @@ Constraints:
 - Do not queue multiple new feature tasks in one run.
 - Do not spend an empty-queue run on state-only prose refresh if the next bounded task can be seeded from the tracked frontier in the same run.
 - Treat fewer than two ready tasks owned by `feature-implementation` as an undersupplied buffer because that worker can drain one item in the same cycle.
-- When you seed one new feature task because only one `feature-implementation` task is ready, treat that pre-existing head task as likely to be claimed later in the same cycle and write the matching backlog/current-status frontier text against the post-dispatch queue that should remain after one task is drained. Do not leave those planning-owned state files naming the soon-to-be-finished head task as the next frontier item unless multiple ready feature tasks will still survive after that same-cycle drain.
+- Planning-owned state must describe the post-dispatch frontier, not the queue snapshot from before you seeded a follow-on.
+- If exactly one `feature-implementation` task is ready when you start and you add one new follow-on, the backlog/current-status frontier text must name only the follow-on task as the surviving next item. Do not leave the pre-existing head task described as "queued", "next", or "leading" in those files after the run.
+- Only leave two task IDs in frontier text when two or more ready `feature-implementation` tasks will still remain after the likely same-cycle drain.
 - Because the harness has a single shared ready queue with owner-routed workers, append feature tasks after the current frontier unless there is a clear dependency reason to front-load a task.
 - Prefer narrow, sequential tasks with explicit target patterns, files, and acceptance criteria.
 - Keep harness-standardization work ahead of bespoke harness growth until the repo clearly centers on one backend-parameterized pytest parity suite and one Python benchmark suite.

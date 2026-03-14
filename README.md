@@ -11,24 +11,24 @@ _This block reports the implemented slice and measurement coverage, not estimate
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while keeping the correctness and benchmark publications caught up with each newly supported slice. |
-| Delivery estimate | Early subset, still far from drop-in parity: the Rust boundary covers literals, captures, several bounded conditional and replacement workflows, quantified branch-local backreferences, and grouped alternation through bounded `{1,4}` plus open-ended `{1,}` and `{2,}` counted-repeat slices. The last grouped slice aligned across correctness, Rust-backed parity, and the main Python-path benchmark surface now reaches quantified nested-group callable-replacement workflows on `a((bc)+)d` and `a(?P<outer>(?P<inner>bc)+)d`; `RBR-0318` is queued to publish quantified nested-group alternation for `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`, and `RBR-0320` is seeded immediately behind it to convert that same bounded slice to Rust-backed parity before benchmark catch-up. |
+| Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, keeping correctness and the published Python-path benchmark surface aligned at the current frontier. |
+| Delivery estimate | The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
 | Current milestone | Milestone 2 now has quantified nested-group callable replacement aligned across correctness, Rust-backed parity, and the main Python-path benchmark surface; `RBR-0318` is queued to publish quantified nested-group alternation, and `RBR-0320` is seeded immediately behind it to convert that same slice to Rust-backed parity through the existing nested alternation path. |
 | Work queue | `1` ready, `0` in progress, `322` done, `0` blocked |
-| Foundation tracks | `0/0` landed (`[..................] 0%`) |
+| Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `787` |
+| Published cases | `793` |
 | Passing in published slice | `787` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `87` |
+| Honest gaps (`unimplemented`) | `6` |
+| Covered manifests | `88` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Early subset, still far from drop-in parity: the Rust boundary covers literals, captures, several bounded conditional and replacement workflows, quantified branch-local backreferences, and grouped alternation through bounded `{1,4}` plus open-ended `{1,}` and `{2,}` counted-repeat slices. The last grouped slice aligned across correctness, Rust-backed parity, and the main Python-path benchmark surface now reaches quantified nested-group callable-replacement workflows on `a((bc)+)d` and `a(?P<outer>(?P<inner>bc)+)d`; `RBR-0318` is queued to publish quantified nested-group alternation for `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`, and `RBR-0320` is seeded immediately behind it to convert that same bounded slice to Rust-backed parity before benchmark catch-up._
+_These correctness counts cover only the published slice. Overall delivery estimate: The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 
@@ -47,13 +47,12 @@ _README speedup rollups stay omitted while only `470` of `499` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0318` so quantified nested-group alternation reopens on the correctness surface through `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`.
-- Keep the surviving frontier on `RBR-0320` so that same bounded slice reaches Rust-backed parity before benchmark catch-up or broader counted repeats broaden the queue.
+- Land `RBR-0320` so the newly published quantified nested-group alternation slice crosses the Rust boundary before benchmark catch-up resumes.
 
 ### Current Risks
 
-- The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
-- The published benchmark surface still carries 29 explicit known-gap workloads, including the quantified nested-group alternation anchor that remains ahead of benchmark catch-up while `RBR-0318` and `RBR-0320` lead the queue.
+- The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
+- The published benchmark surface is still bounded and carries 29 explicit known-gap workloads, including the newly published quantified nested-group alternation slice.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
