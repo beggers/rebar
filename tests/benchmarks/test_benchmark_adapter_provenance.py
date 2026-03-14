@@ -1,22 +1,13 @@
 from __future__ import annotations
 
 import pathlib
-import shutil
-import sys
 import tempfile
 import unittest
 from unittest import mock
 
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-PYTHON_SOURCE = REPO_ROOT / "python"
-if str(PYTHON_SOURCE) not in sys.path:
-    sys.path.insert(0, str(PYTHON_SOURCE))
-
-from rebar_harness import benchmarks
-
+from tests.benchmarks.native_benchmark_test_support import MATURIN, benchmarks
 
 MANIFEST_PATH = benchmarks.DEFAULT_MANIFEST_PATHS[0].with_name("compile_smoke.py")
-MATURIN = shutil.which("maturin")
 
 
 class BenchmarkAdapterProvenanceTest(unittest.TestCase):
