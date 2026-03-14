@@ -1,6 +1,6 @@
 # RBR-0341: Consolidate the cumulative correctness scorecard wrappers into the data-driven suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
 
@@ -46,3 +46,7 @@ Created: 2026-03-14
 ## Notes
 - These nine wrapper modules currently total 1,881 lines of largely repeated build-plus-regenerate scaffolding.
 - `_build_scorecard_expectation(...)` already derives cumulative fixture prefixes from `DEFAULT_FIXTURE_PATHS`, so this ladder is structurally aligned with the shared expectation path already; the remaining work is to encode the representative-case tables and delete the wrappers.
+
+## Completion
+- Landed the cumulative prefix manifests in `COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS`, strengthened the shared scorecard/report assertions to validate cumulative suite/layer structure plus diagnostics consistency, and deleted the nine superseded wrapper modules.
+- Verified with `.venv/bin/python -m pytest tests/conformance/test_combined_correctness_scorecards.py -q` (`9 passed, 826 subtests passed`), and confirmed the deleted wrapper paths show `D` in `git diff --name-status`.

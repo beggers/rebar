@@ -63,6 +63,89 @@ def run_correctness_scorecard(
 
 
 COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
+    "parser-matrix": {
+        "representative_case_ids": (
+            "str-literal-success",
+            "str-inline-unicode-flag-success",
+            "str-character-class-ignorecase-success",
+            "str-possessive-quantifier-success",
+            "str-atomic-group-success",
+            "str-fixed-width-lookbehind-success",
+            "str-nested-set-warning",
+            "str-variable-width-lookbehind-error",
+            "bytes-inline-unicode-flag-error",
+            "bytes-inline-locale-flag-success",
+        ),
+    },
+    "public-api-surface": {
+        "representative_case_ids": (
+            "compile-pattern-scaffold-success",
+            "purge-noop-success",
+            "search-literal-success",
+            "escape-success",
+        ),
+    },
+    "match-behavior-smoke": {
+        "representative_case_ids": (
+            "search-str-success-literal",
+            "match-str-no-match",
+            "fullmatch-bytes-success-literal",
+        ),
+    },
+    "exported-symbol-surface": {
+        "representative_case_ids": (
+            "regexflag-type-metadata",
+            "error-type-metadata",
+            "ascii-constant-value",
+            "pattern-type-metadata",
+            "pattern-constructor-guard",
+        ),
+    },
+    "pattern-object-surface": {
+        "representative_case_ids": (
+            "pattern-object-str-metadata",
+            "pattern-object-bytes-ignorecase-metadata",
+            "pattern-search-literal-success",
+        ),
+    },
+    "module-workflow-surface": {
+        "representative_case_ids": (
+            "workflow-cache-hit-str",
+            "workflow-purge-reset-str",
+            "workflow-pattern-search-str",
+            "workflow-pattern-fullmatch-bytes",
+            "workflow-escape-bytes",
+        ),
+    },
+    "collection-replacement-workflows": {
+        "representative_case_ids": (
+            "module-finditer-str-repeated",
+            "pattern-split-bytes-maxsplit",
+            "module-subn-bytes-count",
+            "module-sub-template-str",
+            "module-sub-callable-str",
+            "module-sub-grouping-template",
+            "module-findall-nonliteral-str",
+        ),
+    },
+    "literal-flag-workflows": {
+        "representative_case_ids": (
+            "flag-module-search-ignorecase-str-hit",
+            "flag-pattern-fullmatch-ignorecase-str-miss",
+            "flag-pattern-match-ignorecase-bytes-hit",
+            "flag-cache-distinct-str-normalized",
+            "flag-unsupported-inline-flag-search",
+            "flag-unsupported-locale-bytes-search",
+            "flag-unsupported-nonliteral-ignorecase-search",
+        ),
+    },
+    "grouped-match-workflows": {
+        "representative_case_ids": (
+            "grouped-module-search-single-capture-str",
+            "grouped-pattern-match-single-capture-str",
+            "grouped-module-fullmatch-two-capture-gap-str",
+        ),
+    },
     "named-group-workflows": {
         "representative_case_ids": (
             "named-group-compile-metadata-str",
@@ -1115,13 +1198,23 @@ OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
 
 
 @dataclass(frozen=True)
+class CorrectnessLayerExpectation:
+    layer_id: str
+    expected_manifest_ids: tuple[str, ...]
+    expected_operations: tuple[str, ...]
+    expected_text_models: tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class CorrectnessScorecardExpectation:
     fixture_paths: tuple[pathlib.Path, ...]
     expected_fixture_case_count: int
     expected_fixture_manifest_ids: tuple[str, ...]
     expected_fixture_paths: tuple[str, ...]
     expected_phase: str
+    expected_cumulative_suite_ids: tuple[str, ...]
     expected_suite_ids: tuple[str, ...]
+    layer_expectations: tuple[CorrectnessLayerExpectation, ...]
     representative_cases: tuple[FixtureCase, ...]
     target_layer_id: str
     target_layer_manifest_ids: tuple[str, ...]
@@ -1205,6 +1298,12 @@ def _build_scorecard_expectation(
             f"missing representative cases for {target_manifest_id!r}: {missing_case_ids}"
         )
 
+    selected_cases_by_manifest_id = {
+        manifest.manifest_id: tuple(
+            case for case in selected_cases if case.manifest_id == manifest.manifest_id
+        )
+        for manifest in selected_manifests
+    }
     target_suite_cases = tuple(
         case for case in target_cases if case.suite_id == target_manifest.suite_id
     )
@@ -1225,9 +1324,42 @@ def _build_scorecard_expectation(
             for operation in target_suite_operations
         )
 
+    expected_cumulative_suite_ids: list[str] = []
+    for manifest in selected_manifests:
+        manifest_cases = selected_cases_by_manifest_id[manifest.manifest_id]
+        expected_cumulative_suite_ids.append(manifest.suite_id)
+        expected_cumulative_suite_ids.extend(
+            f"{manifest.suite_id}.{text_model}"
+            for text_model in _sorted_unique_strings(
+                case.text_model for case in manifest_cases
+            )
+        )
+        manifest_operations = _sorted_unique_strings(
+            case.operation for case in manifest_cases
+        )
+        if len(manifest_operations) > 1:
+            expected_cumulative_suite_ids.extend(
+                f"{manifest.suite_id}.{operation}" for operation in manifest_operations
+            )
+
     target_layer_cases = [
         case for case in selected_cases if case.layer == target_manifest.layer
     ]
+    layer_expectations = tuple(
+        CorrectnessLayerExpectation(
+            layer_id=layer_id,
+            expected_manifest_ids=_sorted_unique_strings(
+                case.manifest_id for case in selected_cases if case.layer == layer_id
+            ),
+            expected_operations=_sorted_unique_strings(
+                case.operation for case in selected_cases if case.layer == layer_id
+            ),
+            expected_text_models=_sorted_unique_strings(
+                case.text_model for case in selected_cases if case.layer == layer_id
+            ),
+        )
+        for layer_id in _sorted_unique_strings(case.layer for case in selected_cases)
+    )
 
     return CorrectnessScorecardExpectation(
         fixture_paths=tuple(selected_paths),
@@ -1241,7 +1373,9 @@ def _build_scorecard_expectation(
         expected_phase=determine_phase(
             {manifest.layer: {} for manifest in selected_manifests}
         ),
+        expected_cumulative_suite_ids=tuple(expected_cumulative_suite_ids),
         expected_suite_ids=tuple(expected_suite_ids),
+        layer_expectations=layer_expectations,
         representative_cases=tuple(
             target_cases_by_id[case_id] for case_id in representative_case_ids
         ),

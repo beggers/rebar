@@ -74,14 +74,26 @@ def assert_correctness_scorecard_suite(
                 expected_paths=case.expected_fixture_paths,
                 expected_case_count=case.expected_fixture_case_count,
             )
-            assert_correctness_layer_contract(
-                testcase,
-                scorecard,
-                case.target_layer_id,
-                expected_manifest_ids=case.target_layer_manifest_ids,
-                expected_operations=case.target_layer_operations,
-                expected_text_models=case.target_layer_text_models,
+            testcase.assertEqual(
+                [suite["id"] for suite in scorecard["suites"]],
+                list(case.expected_cumulative_suite_ids),
             )
+            testcase.assertEqual(
+                tuple(scorecard["layers"]),
+                tuple(
+                    layer_expectation.layer_id
+                    for layer_expectation in case.layer_expectations
+                ),
+            )
+            for layer_expectation in case.layer_expectations:
+                assert_correctness_layer_contract(
+                    testcase,
+                    scorecard,
+                    layer_expectation.layer_id,
+                    expected_manifest_ids=layer_expectation.expected_manifest_ids,
+                    expected_operations=layer_expectation.expected_operations,
+                    expected_text_models=layer_expectation.expected_text_models,
+                )
             workflow_suite = assert_correctness_suite_contract(
                 testcase,
                 scorecard,
