@@ -2539,9 +2539,11 @@ def run_cycle(
     recovery_actions.extend(stale_actions)
     results: list[RunResult] = []
     commit_actions: list[dict[str, Any]] = []
+    skipped_dirty_autocommit_agents: list[str] = []
     forced = force_agents or set()
     for agent in agents:
         force = agent.name in forced or (force_supervisor and agent.kind == "supervisor")
+        worktree_dirty_before_agent = git_worktree_dirty()
         agent_results = dispatch_agent(agent, config, loop_state, force=force)
         if not agent_results:
             continue
@@ -2551,6 +2553,10 @@ def run_cycle(
             agent_recovery_actions.extend(finalize_task_result(config, result, task_state))
         recovery_actions.extend(agent_recovery_actions)
         write_json(paths["task_state"], task_state)
+        if worktree_dirty_before_agent:
+            if git_worktree_dirty():
+                skipped_dirty_autocommit_agents.append(agent.name)
+            continue
         if git_worktree_dirty():
             refresh_published_correctness_scorecard()
             sync_readme_status(config)
@@ -2566,6 +2572,13 @@ def run_cycle(
     write_json(paths["task_state"], task_state)
     prune_action = prune_run_dirs(config, paths)
     git_action = maybe_commit_and_push(config)
+    if skipped_dirty_autocommit_agents:
+        git_action.setdefault("errors", []).append(
+            "Skipped post-agent refresh and auto-commit because the worktree was already dirty "
+            "before these agents ran: "
+            + ", ".join(skipped_dirty_autocommit_agents)
+            + "."
+        )
     state = update_loop_state(
         config,
         agents,
