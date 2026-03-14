@@ -401,6 +401,11 @@ DEFAULT_FIXTURE_PATHS = (
     / "conformance"
     / "fixtures"
     / "quantified_nested_group_alternation_workflows.py",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
+    / "nested_group_alternation_branch_local_backreference_workflows.py",
 )
 DEFAULT_REPORT_PATH = PUBLISHED_REPORT_PATH
 PHASE_BY_LAYER = {

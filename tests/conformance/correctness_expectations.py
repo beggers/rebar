@@ -322,6 +322,18 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "quantified-nested-group-alternation-named-pattern-fullmatch-repeated-mixed-str",
         ),
     },
+    "nested-group-alternation-branch-local-backreference-workflows": {
+        "representative_case_ids": (
+            "nested-group-alternation-branch-local-numbered-backreference-compile-metadata-str",
+            "nested-group-alternation-branch-local-numbered-backreference-module-search-b-branch-str",
+            "nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-c-branch-str",
+            "nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-str",
+            "nested-group-alternation-branch-local-named-backreference-compile-metadata-str",
+            "nested-group-alternation-branch-local-named-backreference-module-search-c-branch-str",
+            "nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-b-branch-str",
+            "nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
+        ),
+    },
 }
 
 
