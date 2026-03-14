@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import pathlib
 import re as cpython_re
@@ -115,17 +116,17 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "open_ended_quantified_group_alternation_workflows.json",
+    / "open_ended_quantified_group_alternation_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "nested_open_ended_quantified_group_alternation_workflows.json",
+    / "nested_open_ended_quantified_group_alternation_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "broader_range_open_ended_quantified_group_alternation_workflows.json",
+    / "broader_range_open_ended_quantified_group_alternation_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
@@ -140,17 +141,17 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "open_ended_quantified_group_alternation_conditional_workflows.json",
+    / "open_ended_quantified_group_alternation_conditional_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "broader_range_open_ended_quantified_group_alternation_conditional_workflows.json",
+    / "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "open_ended_quantified_group_alternation_backtracking_heavy_workflows.json",
+    / "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
@@ -165,7 +166,7 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.json",
+    / "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
@@ -500,8 +501,39 @@ def _materialize_fixture_value(value: Any) -> Any:
     return value
 
 
+def _load_python_fixture_manifest(path: pathlib.Path) -> dict[str, Any]:
+    module_name = f"_rebar_fixture_{path.stem}".replace("-", "_")
+    spec = importlib.util.spec_from_file_location(module_name, path)
+    if spec is None or spec.loader is None:
+        raise ValueError(f"unable to load Python fixture module from {path}")
+
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    if not hasattr(module, "MANIFEST"):
+        raise ValueError(f"Python fixture module {path} is missing a MANIFEST value")
+    raw_manifest = getattr(module, "MANIFEST")
+    if not isinstance(raw_manifest, dict):
+        raise ValueError(f"fixture manifest in {path} must be a dict")
+    return raw_manifest
+
+
+def _load_raw_fixture_manifest(path: pathlib.Path) -> dict[str, Any]:
+    if path.suffix == ".json":
+        raw_manifest = json.loads(path.read_text(encoding="utf-8"))
+    elif path.suffix == ".py":
+        raw_manifest = _load_python_fixture_manifest(path)
+    else:
+        raise ValueError(
+            f"unsupported fixture manifest extension {path.suffix!r} for {path}"
+        )
+
+    if not isinstance(raw_manifest, dict):
+        raise ValueError(f"fixture manifest in {path} must be an object")
+    return raw_manifest
+
+
 def load_fixture_manifest(path: pathlib.Path) -> tuple[FixtureManifest, list[FixtureCase]]:
-    raw_manifest = json.loads(path.read_text(encoding="utf-8"))
+    raw_manifest = _load_raw_fixture_manifest(path)
     schema_version = raw_manifest.get("schema_version")
     if schema_version != FIXTURE_SCHEMA_VERSION:
         raise ValueError(

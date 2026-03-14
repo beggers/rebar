@@ -1,8 +1,9 @@
 # RBR-0281: Replace the open-ended quantified-group correctness JSON fixtures with Python modules
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
+Completed: 2026-03-14
 
 ## Goal
 - Reduce tracked JSON and simplify the correctness harness input path by replacing the isolated open-ended quantified-group correctness manifests with ordinary Python fixture modules while preserving the existing scorecard surface.
@@ -44,3 +45,9 @@ Created: 2026-03-14
 - `.rebar/runtime/dashboard.md` currently reports `tracked_json_blob_count: 129` and `tracked_json_blob_delta: 0`, so this task needs to make JSON-count reduction its primary result rather than a secondary cleanup.
 - `RBR-0279` already consolidated this family’s scorecard assertions into `tests/conformance/test_open_ended_quantified_group_scorecards.py`, which keeps the verification surface stable while the fixture representation changes underneath it.
 - Keep the Python fixtures path-based rather than package-discovery based. A path loader keeps `--fixtures` behavior intact and avoids turning this into a broader harness rewrite.
+
+## Completion Notes
+- Updated `python/rebar_harness/correctness.py` so `load_fixture_manifest()` now dispatches `.json` and `.py` fixture paths through one shared validation path, while `DEFAULT_FIXTURE_PATHS` points this seven-manifest family at Python modules.
+- Renamed the seven targeted open-ended quantified-group correctness fixtures from `.json` to `.py` and preserved each manifest payload verbatim except for the top-level `MANIFEST =` assignment.
+- Regenerated `reports/correctness/latest.json`, verified the fixture paths now end in `.py`, and confirmed the tracked JSON blob count dropped from `129` to `122`.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python python3 -m rebar_harness.correctness --report reports/correctness/latest.json`, and `PYTHONPATH=python python3 -m unittest tests.conformance.test_open_ended_quantified_group_scorecards tests.conformance.test_combined_correctness_scorecards`.

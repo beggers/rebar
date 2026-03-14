@@ -3920,7 +3920,7 @@
       "args": [
         "abc",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_constant",
           "type": "callable"
         },
@@ -8767,7 +8767,7 @@
       "args": [
         "a((b))d",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -8819,7 +8819,7 @@
       "args": [
         "a((b))d",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -8878,7 +8878,7 @@
     {
       "args": [
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -8930,7 +8930,7 @@
     {
       "args": [
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -8991,7 +8991,7 @@
       "args": [
         "a(?P<outer>(?P<inner>b))d",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -9043,7 +9043,7 @@
       "args": [
         "a(?P<outer>(?P<inner>b))d",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -9102,7 +9102,7 @@
     {
       "args": [
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -9154,7 +9154,7 @@
     {
       "args": [
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -10387,7 +10387,7 @@
       "args": [
         "a(b|c)d",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -10439,7 +10439,7 @@
       "args": [
         "a(b|c)d",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -10498,7 +10498,7 @@
     {
       "args": [
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -10550,7 +10550,7 @@
     {
       "args": [
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -10611,7 +10611,7 @@
       "args": [
         "a(?P<word>b|c)d",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -10664,7 +10664,7 @@
       "args": [
         "a(?P<word>b|c)d",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -10724,7 +10724,7 @@
     {
       "args": [
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -10777,7 +10777,7 @@
     {
       "args": [
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -77017,17 +77017,17 @@
       "tests/conformance/fixtures/wider_ranged_repeat_quantified_group_workflows.json",
       "tests/conformance/fixtures/wider_ranged_repeat_quantified_group_alternation_workflows.json",
       "tests/conformance/fixtures/broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.json",
-      "tests/conformance/fixtures/open_ended_quantified_group_alternation_workflows.json",
-      "tests/conformance/fixtures/nested_open_ended_quantified_group_alternation_workflows.json",
-      "tests/conformance/fixtures/broader_range_open_ended_quantified_group_alternation_workflows.json",
+      "tests/conformance/fixtures/open_ended_quantified_group_alternation_workflows.py",
+      "tests/conformance/fixtures/nested_open_ended_quantified_group_alternation_workflows.py",
+      "tests/conformance/fixtures/broader_range_open_ended_quantified_group_alternation_workflows.py",
       "tests/conformance/fixtures/wider_ranged_repeat_quantified_group_alternation_conditional_workflows.json",
       "tests/conformance/fixtures/broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.json",
-      "tests/conformance/fixtures/open_ended_quantified_group_alternation_conditional_workflows.json",
-      "tests/conformance/fixtures/broader_range_open_ended_quantified_group_alternation_conditional_workflows.json",
-      "tests/conformance/fixtures/open_ended_quantified_group_alternation_backtracking_heavy_workflows.json",
+      "tests/conformance/fixtures/open_ended_quantified_group_alternation_conditional_workflows.py",
+      "tests/conformance/fixtures/broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
+      "tests/conformance/fixtures/open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
       "tests/conformance/fixtures/wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.json",
       "tests/conformance/fixtures/broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.json",
-      "tests/conformance/fixtures/broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.json",
+      "tests/conformance/fixtures/broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
       "tests/conformance/fixtures/optional_group_alternation_workflows.json",
       "tests/conformance/fixtures/optional_group_alternation_branch_local_backreference_workflows.json",
       "tests/conformance/fixtures/conditional_group_exists_workflows.json",
@@ -77069,7 +77069,7 @@
       "tests/conformance/fixtures/quantified_alternation_open_ended_workflows.json"
     ]
   },
-  "generated_at": "2026-03-14T01:42:26Z",
+  "generated_at": "2026-03-14T02:34:21Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
