@@ -1,8 +1,9 @@
 # RBR-0343: Consolidate the exact-repeat quantified-group alternation correctness scorecard into the shared suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
+Completed: 2026-03-14
 
 ## Goal
 - Replace the last standalone exact-repeat quantified-group alternation correctness wrapper with the existing data-driven combined scorecard path so this counted-repeat alternation slice is asserted through shared expectation data instead of bespoke cargo-build, subprocess, tracked-report, and hand-expanded case boilerplate.
@@ -31,3 +32,12 @@ Created: 2026-03-14
 ## Notes
 - `tests/conformance/test_correctness_exact_repeat_quantified_group_alternation_workflows.py` is 330 lines and is now the only remaining `tests/conformance/test_correctness_.*workflows.py` wrapper outside the shared suite.
 - `tests/conformance/correctness_expectations.py` currently has no entry for `exact-repeat-quantified-group-alternation-workflows`, so `test_combined_correctness_scorecards.py` cannot absorb this manifest until that single manifest-keyed expectation is added.
+
+## Completion
+- Added `exact-repeat-quantified-group-alternation-workflows` to `COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS` in `tests/conformance/correctness_expectations.py`, keeping all 10 published numbered and named cases explicit on the shared `combined_correctness_case(...)` path.
+- Deleted `tests/conformance/test_correctness_exact_repeat_quantified_group_alternation_workflows.py`, so this manifest now runs only through `tests/conformance/test_combined_correctness_scorecards.py` and the shared `assert_correctness_scorecard_suite(...)` helper.
+
+## Verification
+- `.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py -k runner_regenerates_combined_correctness_scorecards`
+- `git diff --name-status -- tests/conformance/test_correctness_exact_repeat_quantified_group_alternation_workflows.py`
+- `rg --files tests/conformance | rg 'test_correctness_exact_repeat_quantified_group_alternation_workflows\\.py$'`

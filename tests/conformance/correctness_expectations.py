@@ -253,6 +253,20 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "exact-repeat-named-group-pattern-fullmatch-str",
         ),
     },
+    "exact-repeat-quantified-group-alternation-workflows": {
+        "representative_case_ids": (
+            "exact-repeat-quantified-group-alternation-numbered-compile-metadata-str",
+            "exact-repeat-quantified-group-alternation-numbered-module-search-bc-bc-str",
+            "exact-repeat-quantified-group-alternation-numbered-module-search-bc-de-str",
+            "exact-repeat-quantified-group-alternation-numbered-pattern-fullmatch-de-de-str",
+            "exact-repeat-quantified-group-alternation-numbered-pattern-fullmatch-no-match-short-str",
+            "exact-repeat-quantified-group-alternation-named-compile-metadata-str",
+            "exact-repeat-quantified-group-alternation-named-module-search-bc-bc-str",
+            "exact-repeat-quantified-group-alternation-named-module-search-bc-de-str",
+            "exact-repeat-quantified-group-alternation-named-pattern-fullmatch-de-de-str",
+            "exact-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-extra-repetition-str",
+        ),
+    },
     "ranged-repeat-quantified-group-workflows": {
         "representative_case_ids": (
             "ranged-repeat-numbered-group-compile-metadata-str",
