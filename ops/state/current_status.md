@@ -6,18 +6,17 @@ Updated: 2026-03-14
 Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while keeping the correctness and benchmark publications caught up with each newly supported slice.
 
 ## README Phase Summary
-Phase 3 remains a bounded Rust-backed subset, with correctness, Rust-backed parity, and the main Python-path benchmark report aligned through quantified nested-group callable replacement.
+Phase 3 is still widening one bounded Rust-backed regex slice at a time, keeping correctness and the published Python-path benchmark surface aligned at the current frontier.
 
 ## README Delivery Estimate
-The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity: the published slice is narrow, the main benchmark report still runs through the source-tree shim, and broader native-path measurement plus deeper grouped execution remain ahead.
+The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- Land `RBR-0318` to publish quantified nested-group alternation on the correctness surface through `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`.
-- Keep the surviving frontier on `RBR-0320`, which converts that same bounded slice to Rust-backed parity before benchmark catch-up or broader counted repeats reopen the queue.
+- Land `RBR-0320` so the newly published quantified nested-group alternation slice crosses the Rust boundary before benchmark catch-up resumes.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded and carries 29 explicit known-gap workloads, including the quantified nested-group alternation anchor that remains ahead of benchmark catch-up while `RBR-0318` and `RBR-0320` lead the queue.
+- The published benchmark surface is still bounded and carries 29 explicit known-gap workloads, including the newly published quantified nested-group alternation slice.
 
 ## Compatibility Heuristic
 Early subset, still far from drop-in parity: the Rust boundary covers literals, captures, several bounded conditional and replacement workflows, quantified branch-local backreferences, and grouped alternation through bounded `{1,4}` plus open-ended `{1,}` and `{2,}` counted-repeat slices. The last grouped slice aligned across correctness, Rust-backed parity, and the main Python-path benchmark surface now reaches quantified nested-group callable-replacement workflows on `a((bc)+)d` and `a(?P<outer>(?P<inner>bc)+)d`; `RBR-0318` is queued to publish quantified nested-group alternation for `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`, and `RBR-0320` is seeded immediately behind it to convert that same bounded slice to Rust-backed parity before benchmark catch-up.
