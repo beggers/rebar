@@ -280,6 +280,9 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         ),
         "representative_measured_workload_ids": (
             "module-search-nested-group-quantified-alternation-cold-gap",
+            "pattern-fullmatch-numbered-quantified-nested-group-alternation-repeated-mixed-purged-str",
+            "module-search-named-quantified-nested-group-alternation-lower-bound-c-warm-str",
+            "pattern-fullmatch-named-quantified-nested-group-alternation-repeated-mixed-purged-str",
         ),
     },
     "nested-group-replacement-boundary": {

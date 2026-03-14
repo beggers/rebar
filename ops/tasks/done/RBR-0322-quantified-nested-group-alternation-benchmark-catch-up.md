@@ -1,6 +1,6 @@
 # RBR-0322: Catch quantified nested-group alternation benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-14
 
@@ -29,3 +29,9 @@ Created: 2026-03-14
 - Build on `RBR-0320`.
 - Keep this follow-on on the existing `nested_group_alternation_boundary.py` manifest path instead of forking another benchmark family.
 - Add only the directly adjacent quantified numbered and named rows needed to publish this exact slice cleanly; broader counted repeats, replacement workflows on this alternation shape, branch-local backreferences, and deeper nested grouped execution stay explicit gaps or out of scope.
+
+## Completion Notes
+- Promoted the existing quantified numbered `module.search()` gap anchor into a measured lower-bound row on `zzabdzz` and added the minimal adjacent quantified numbered and named `Pattern.fullmatch()` / named `module.search()` rows needed to cover repeated-branch and named lower-bound probes on the existing manifest path.
+- Updated the combined source-tree benchmark expectations so the quantified numbered and named workload IDs are asserted as measured while the existing named nested-group branch-local-backreference anchor remains the lone explicit gap on this manifest.
+- Republished `reports/benchmarks/latest.json`; the published benchmark scorecard now reports `502` total workloads, `474` measured `rebar` timings, and `28` explicit known gaps, while the `nested-group-alternation-boundary` manifest now reports `11` workloads with `10` measured rows and `1` remaining gap.
+- Verified the Rust-backed public slice and benchmark publication path with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --internal-probe-rebar-metadata`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_alternation_boundary.py --report /tmp/rebar-nested-group-alternation-bench.json`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_nested_group_alternation_parity.py`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.json`.

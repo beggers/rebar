@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, keeping correctness and the published Python-path benchmark surface aligned at the current frontier. |
 | Delivery estimate | The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
 | Current milestone | Milestone 2 still has quantified nested-group alternation one benchmark catch-up step short of the main Python-path surface, and `RBR-0324` is seeded as the surviving follow-on to reopen that existing nested-group alternation anchor with one bounded branch-local-backreference correctness pack once the current gap clears. |
-| Work queue | `2` ready, `0` in progress, `325` done, `0` blocked |
+| Work queue | `1` ready, `0` in progress, `326` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -26,15 +26,15 @@ No published correctness scorecard yet. Expected tracked source: [`reports/corre
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `499` |
-| Workloads with real `rebar` timings | `470` |
-| Known-gap workloads | `29` |
+| Published workloads | `502` |
+| Workloads with real `rebar` timings | `474` |
+| Known-gap workloads | `28` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native smoke and full-suite modes remain available for ad hoc runs and tests via `--native-smoke` and `--native-full` when you pass an explicit `--report` path._
 
-_README speedup rollups stay omitted while only `470` of `499` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `474` of `502` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
