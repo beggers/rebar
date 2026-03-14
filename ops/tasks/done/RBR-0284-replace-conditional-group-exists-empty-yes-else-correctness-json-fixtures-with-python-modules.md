@@ -1,6 +1,6 @@
 # RBR-0284: Replace the conditional-group-exists empty-yes-else correctness JSON fixtures with Python modules
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
 
@@ -38,3 +38,8 @@ Created: 2026-03-14
 - `.rebar/runtime/dashboard.md` still reports `tracked_json_blob_count: 129` and `tracked_json_blob_delta: 0`, but the live tracked baseline in this checkout is already `108`; verify the count with `git ls-files '*.json' | wc -l` instead of relying on the stale dashboard total.
 - The empty-yes-else family already has combined-scorecard coverage plus four dedicated conformance tests, so this is a bounded representation cleanup rather than a harness redesign.
 - Keep the fixture model path-based so explicit `--fixtures` arguments continue to work without another discovery abstraction.
+
+## Completion Notes
+- Swapped the five `conditional_group_exists_empty_yes_else*` correctness manifests from JSON blobs to one-manifest-per-file Python `MANIFEST` modules and repointed `DEFAULT_FIXTURE_PATHS` to the new `.py` files without changing loader behavior or manifest contents.
+- Regenerated `reports/correctness/latest.json`; the targeted manifest ids, case payloads, manifest ordering, totals, and aggregate summary stayed unchanged, with only the five fixture path extensions moving from `.json` to `.py`.
+- Verified with `python3 -m unittest` over `tests.conformance.test_combined_correctness_scorecards`, `tests.conformance.test_correctness_conditional_group_exists_empty_yes_else_alternation_workflows`, `tests.conformance.test_correctness_conditional_group_exists_empty_yes_else_nested_workflows`, `tests.conformance.test_correctness_conditional_group_exists_empty_yes_else_quantified_workflows`, and `tests.conformance.test_correctness_conditional_group_exists_empty_yes_else_replacement_workflows`.

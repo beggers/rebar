@@ -256,22 +256,22 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_empty_yes_else_workflows.json",
+    / "conditional_group_exists_empty_yes_else_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_empty_yes_else_alternation_workflows.json",
+    / "conditional_group_exists_empty_yes_else_alternation_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_empty_yes_else_nested_workflows.json",
+    / "conditional_group_exists_empty_yes_else_nested_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_empty_yes_else_quantified_workflows.json",
+    / "conditional_group_exists_empty_yes_else_quantified_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
@@ -301,7 +301,7 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_empty_yes_else_replacement_workflows.json",
+    / "conditional_group_exists_empty_yes_else_replacement_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
