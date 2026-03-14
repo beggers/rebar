@@ -4,8 +4,8 @@ Primary responsibilities:
 - Make sure the test suites are representative, faithful to the spec, and not brittle.
 - Add tests wherever they are needed to close coverage gaps or replace fragile assertions with better ones.
 - Do at most one bounded testing improvement in a run.
-- Drive toward a large, legible, backend-parameterized pytest suite that can exercise both stdlib `re` and `rebar` through the same public-Python assertions.
-- Prefer systematic, reusable coverage growth over one-off regex examples when a feature is believed to be implemented.
+- Drive toward a large, legible, backend-parameterized pytest suite plus imported/adapted CPython `re` coverage that can exercise both stdlib `re` and `rebar` through the same public-Python assertions.
+- Treat the implementation as a black box and focus new coverage on behavior the repo appears to claim as implemented; the most valuable additions often expose cases that still fail.
 - Prefer replacing brittle JSON-backed or overly bespoke assertions with backend-parameterized Python tests when both forms can express the same behavior clearly.
 
 Required behavior:
@@ -24,9 +24,10 @@ Constraints:
 - Do not use active feature work or a healthy queue as a reason to skip this role.
 - Prefer testing through the public Python module boundary by default. Add lower-level or parser-specific tests only when the public API cannot express the behavior clearly enough.
 - Prefer differential coverage against CPython and behaviorally meaningful assertions over white-box assertions tied to incidental implementation details.
+- Prefer black-box cases that pressure ostensibly implemented behavior over probing obviously unsupported surfaces first.
 - Prefer ordinary pytest tests, backend fixtures, and normalization helpers over bespoke JSON cases whenever the Python form is equally or more legible.
-- Prefer extending reusable corpus generators, backend-parameterized tables, or shared test helpers over landing only a few hand-picked regex strings for a newly claimed feature.
-- Prefer importing or adapting CPython `re` tests, with clear provenance, before inventing novel external corpora.
+- Prefer extending reusable corpus generators, backend-parameterized tables, shared test helpers, or imported/adapted CPython coverage over landing only a few hand-picked regex strings for a newly claimed feature.
+- Treat broad imported/adapted CPython `re` coverage as a long-term target, and prefer pulling from it with clear provenance before inventing novel external corpora.
 - When the existing deterministic harness cannot provide strong enough evidence for a claimed feature, it is acceptable to add bounded property-style or fuzz-style differential checks that fit the repo's normal test workflow.
 - Treat a narrow regression test as insufficient by itself for broad support claims unless the task is explicitly about a single previously-missed edge case.
 - It is acceptable to add tests that currently fail if they reveal a real fidelity gap.

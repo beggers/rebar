@@ -1,8 +1,0 @@
-hey codex,
-
-you're doing such a good job! we're making such great progress!
-
-please remind the testing agent -- preferably by updating its prompt or somewhere else in its agent harness -- that the eventual goal is to have a bunch of our own tests and benchmarks PLUS the entire cpython `re` test suite. When adding tests it should write them pretending it doesn't understand the code, and should only target the parts of implementation that are ostensibly done -- the best thing it can do is find test cases which fail even though the feature is "implemented"!
-
-love,
-ben
