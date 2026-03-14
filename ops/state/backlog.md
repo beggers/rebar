@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now has `RBR-0340` seeded as the surviving follow-on so the broader `{1,4}` counted-repeat nested-group-alternation-plus-branch-local-backreference slice reaches the existing Python-path benchmark surface once `RBR-0338` lands.
+Milestone 2 now has `RBR-0342` seeded as the surviving follow-on so bounded nested-group alternation callable-replacement workflows for `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d` reopen the correctness frontier on the existing callable-replacement path after the current broader `{1,4}` benchmark head drains.
 
 ## Ordered Work
-1. Land `RBR-0340` to catch the bounded broader `{1,4}` counted-repeat nested-group-alternation-plus-branch-local-backreference workflows for `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d` up on `benchmarks/workloads/nested_group_alternation_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` once `RBR-0338` lands.
+1. Land `RBR-0342` to publish the bounded nested-group alternation callable-replacement workflows for `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d` through `python/rebar_harness/correctness.py`, `tests/conformance/fixtures/nested_group_alternation_callable_replacement_workflows.py`, `tests/conformance/correctness_expectations.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`, keeping later parity and benchmark catch-up on `benchmarks/workloads/nested_group_callable_replacement_boundary.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
