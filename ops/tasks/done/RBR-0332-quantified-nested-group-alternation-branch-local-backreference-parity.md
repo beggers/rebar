@@ -1,6 +1,6 @@
 # RBR-0332: Add quantified nested-group-alternation-plus-branch-local-backreference parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-14
 
@@ -28,3 +28,9 @@ Created: 2026-03-14
 ## Notes
 - Build on `RBR-0330`, `RBR-0326`, and `RBR-0208`.
 - Keep later benchmark catch-up on the existing `benchmarks/workloads/nested_group_alternation_boundary.py` path instead of forking another benchmark family for the same bounded nested-group alternation frontier.
+
+## Completion Notes
+- Added one narrow Rust-backed parser and matcher path for `a((b|c)+)\\2d` and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d`, keeping the slice pinned to one `+`-quantified inner `b|c` alternation whose final branch is replayed by an immediate same-branch backreference.
+- Kept the Python and CPython-facing layers on the existing generic compile/match boundary path; the new behavior landed in `crates/rebar-core/src/lib.rs`, and no ad hoc Python execution path was added.
+- Republished `reports/correctness/latest.py`; the tracked combined scorecard now reports `811` executed cases, `811` passes, `0` failures, and `0` `unimplemented` outcomes, with the quantified nested-group-alternation-plus-branch-local-backreference suite moving to `10` passes and `0` `unimplemented`.
+- Verified with `cargo build -p rebar-cpython`, `./.venv/bin/python -m pytest tests/python/test_quantified_nested_group_alternation_branch_local_backreference_parity.py tests/python/test_quantified_nested_group_alternation_parity.py tests/python/test_nested_group_alternation_branch_local_backreference_parity.py -q`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`, `./.venv/bin/python -m pytest tests/conformance/test_correctness_quantified_nested_group_alternation_branch_local_backreference_workflows.py -q`, and `./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -q -k nested_group_alternation_manifest_covers_branch_local_backreference_slice`.
