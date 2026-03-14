@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, keeping correctness and the published Python-path benchmark surface aligned at the current frontier. |
 | Delivery estimate | The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 still has quantified nested-group alternation one benchmark catch-up step short of the main Python-path surface, and `RBR-0324` is seeded as the surviving follow-on to reopen that existing nested-group alternation anchor with one bounded branch-local-backreference correctness pack once the current gap clears. |
-| Work queue | `1` ready, `0` in progress, `327` done, `0` blocked |
+| Current milestone | Milestone 2 now has `RBR-0326` seeded as the surviving follow-on so the bounded nested-group-alternation-plus-branch-local-backreference slice reaches Rust-backed parity after the current correctness pack lands on the existing `nested_group_alternation_boundary.py` anchor. |
+| Work queue | `2` ready, `0` in progress, `327` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `474` of `502` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0324` after the current quantified nested-group alternation benchmark catch-up clears so the remaining explicit gap on `nested_group_alternation_boundary.py` reopens as a bounded branch-local-backreference correctness pack.
+- Land `RBR-0326` after the current bounded nested-group-alternation-plus-branch-local-backreference correctness pack publishes so the remaining `nested_group_alternation_boundary.py` gap turns into a bounded Rust-backed parity slice.
 
 ### Current Risks
 
