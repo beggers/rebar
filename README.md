@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, keeping correctness and the published Python-path benchmark surface aligned at the current frontier. |
 | Delivery estimate | The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 now has `RBR-0336` seeded as the surviving follow-on so the broader `{1,4}` counted-repeat nested-group-alternation-plus-branch-local-backreference correctness slice stays queued once the ready benchmark head drains. |
-| Work queue | `1` ready, `0` in progress, `339` done, `0` blocked |
+| Current milestone | Milestone 2 now has `RBR-0338` seeded as the surviving follow-on so the broader `{1,4}` counted-repeat nested-group-alternation-plus-branch-local-backreference slice stays queued for Rust-backed parity once `RBR-0336` publishes it. |
+| Work queue | `2` ready, `0` in progress, `339` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `480` of `507` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0336` so the broader `{1,4}` counted-repeat nested-group-alternation-plus-branch-local-backreference slice becomes explicit on the correctness surface.
+- Keep `RBR-0338` queued so the broader `{1,4}` counted-repeat nested-group-alternation-plus-branch-local-backreference slice reaches Rust-backed parity after `RBR-0336` publishes it.
 
 ### Current Risks
 
