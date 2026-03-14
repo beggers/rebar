@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 remains a bounded Rust-backed subset, with correctness, Rust-backed parity, and the main Python-path benchmark report aligned through quantified nested-group replacement templates. |
-| Delivery estimate | The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity: the published slice is narrow, the main benchmark report still runs through the source-tree shim, and callable replacement plus deeper grouped execution remain ahead. |
-| Current milestone | Milestone 2 now has quantified nested-group replacement-template parity aligned across correctness, Rust-backed parity, and the main Python-path benchmark surface; `RBR-0309` is next to publish quantified nested-group callable replacement on the correctness surface, and `RBR-0313` is queued immediately behind it to convert that same slice to Rust-backed parity. |
-| Work queue | `2` ready, `0` in progress, `316` done, `0` blocked |
+| Delivery estimate | The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity: the published slice is narrow, the main benchmark report still runs through the source-tree shim, and quantified nested-group callable replacement plus deeper grouped execution remain ahead. |
+| Current milestone | Milestone 2 now has quantified nested-group callable replacement published on the correctness surface; `RBR-0313` is next to convert that bounded slice to Rust-backed parity, and `RBR-0316` is queued immediately behind it to catch the same slice up on the existing Python-path benchmark surface. |
+| Work queue | `2` ready, `0` in progress, `317` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,7 +28,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `87` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity: the published slice is narrow, the main benchmark report still runs through the source-tree shim, and callable replacement plus deeper grouped execution remain ahead._
+_These correctness counts cover only the published slice. Overall delivery estimate: The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity: the published slice is narrow, the main benchmark report still runs through the source-tree shim, and quantified nested-group callable replacement plus deeper grouped execution remain ahead._
 
 ### Benchmark Snapshot
 
@@ -47,13 +47,13 @@ _README speedup rollups stay omitted while only `466` of `496` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0309` to publish quantified nested-group callable replacement workflows on the correctness surface.
-- Follow with `RBR-0313` to convert that same quantified callable slice to Rust-backed parity.
+- Land `RBR-0313` to convert the published quantified nested-group callable replacement slice to Rust-backed parity.
+- Follow with `RBR-0316` to catch that same bounded callable slice up on the existing Python-path benchmark surface.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded and carries 30 explicit known-gap workloads, so the scorecards remain frontier reporting even after the quantified nested-group replacement-template slice caught up on the Python-path surface.
+- The published benchmark surface is still bounded and carries 30 explicit known-gap workloads, so the scorecards remain frontier reporting while quantified nested-group callable replacement still needs Rust-backed parity and benchmark catch-up.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
