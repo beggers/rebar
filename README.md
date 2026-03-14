@@ -60,7 +60,7 @@ _README speedup rollups stay omitted while only `466` of `496` published workloa
 
 `rebar` already has a real Rust core, a CPython-facing extension boundary, and canonical correctness and benchmark reports. It is still an early, narrow `re` subset rather than a drop-in replacement.
 
-The project is still moving one bounded slice at a time, so the status block and published reports are the place to read the exact frontier and measurement coverage. Near term, the frontier is quantified nested-group callable replacement on the correctness surface, then the same slice behind the Rust boundary; broader benchmark catch-up and speed claims stay secondary.
+The project is still moving one bounded slice at a time, so the status block and published reports are the place to read the exact frontier and measurement coverage. Near term, the frontier is quantified nested-group callable replacement on the correctness surface, then the same slice behind the Rust boundary. The one benchmark result worth surfacing here today is the tiny compile-path parser slice: its five currently measured workloads median about 2.2x CPython, while the much larger module-path report is still slower overall, still source-tree-shim-backed, and still not a basis for broad speed claims.
 
 ## Where To Look
 
