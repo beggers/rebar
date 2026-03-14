@@ -1,5 +1,8 @@
 # Decision Log
 
+## 2026-03-14
+- Flatten the one-off systematic correctness corpus into a literal checked-in fixture once its 18-case slice stabilizes, so published coverage lives in ordinary manifest data instead of special generator plumbing.
+
 ## 2026-03-11
 - Separate the repo into two agent roles: a supervisor that owns the harness and sequencing, and implementation agents that own bounded units of work.
 - Keep durable project context in tracked `ops/state/` files so future runs do not need to reconstruct history from runtime artifacts.

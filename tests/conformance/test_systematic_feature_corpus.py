@@ -17,7 +17,15 @@ SYSTEMATIC_FIXTURES_PATH = (
 
 
 class SystematicFeatureCorpusTest(unittest.TestCase):
-    def test_runner_expands_compact_systematic_feature_specs_into_real_cases(self) -> None:
+    def test_fixture_is_checked_in_as_literal_cases(self) -> None:
+        raw_manifest = json.loads(SYSTEMATIC_FIXTURES_PATH.read_text(encoding="utf-8"))
+
+        self.assertEqual(raw_manifest["manifest_id"], "systematic-feature-corpus")
+        self.assertNotIn("generator", raw_manifest)
+        self.assertNotIn("feature_specs", raw_manifest)
+        self.assertEqual(len(raw_manifest["cases"]), 18)
+
+    def test_runner_executes_literal_systematic_feature_corpus(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             report_path = pathlib.Path(temp_dir) / "correctness.json"
             subprocess.run(

@@ -102,7 +102,7 @@ These should be the default source of early coverage because they scale without 
 Sources:
 
 - construct-family generators derived from [`docs/spec/syntax-scope.md`](../spec/syntax-scope.md)
-- compact systematic feature manifests that expand one landed slice into deterministic numbered-versus-named, module-versus-compiled, and present-versus-absent matrices
+- small systematic feature manifests that spell out deterministic numbered-versus-named, module-versus-compiled, and present-versus-absent matrices for one landed slice
 - flag-combination matrices
 - `str`/`bytes` mirrored cases
 - invalid-pattern mutators that intentionally create malformed escapes, repeats, groups, backreferences, and inline-flag placements
@@ -110,7 +110,7 @@ Sources:
 Benefits:
 
 - fast expansion of parser coverage
-- broader landed-slice regression evidence without hand-writing one fixture record per obvious matrix variant
+- broader landed-slice regression evidence without having to hand-write every obvious matrix variant from scratch
 - explicit tie-back to the syntax scope document
 - easy regeneration when the harness shape changes
 
