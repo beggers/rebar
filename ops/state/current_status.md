@@ -16,7 +16,7 @@ The repo now has real parity and benchmark publications, but they still cover a 
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded and carries 29 explicit known-gap workloads, including the quantified nested-group alternation slice that still needs benchmark catch-up.
+- The published benchmark surface is still bounded and carries 28 explicit known-gap workloads.
 
 ## Compatibility Heuristic
 Early subset, still far from drop-in parity: the Rust boundary covers literals, captures, several bounded conditional and replacement workflows, quantified branch-local backreferences, and grouped alternation through bounded `{1,4}` plus open-ended `{1,}` and `{2,}` counted-repeat slices. The last grouped slice aligned across correctness, Rust-backed parity, and the main Python-path benchmark surface now reaches quantified nested-group callable-replacement workflows on `a((bc)+)d` and `a(?P<outer>(?P<inner>bc)+)d`; quantified nested-group alternation has reached correctness and Rust-backed parity for `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`, and the surviving follow-on is `RBR-0324`, which reopens the existing nested-group alternation anchor with one bounded branch-local-backreference correctness pack for `a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d`.

@@ -43,7 +43,7 @@ _README speedup rollups stay omitted while only `474` of `502` published workloa
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded and carries 29 explicit known-gap workloads, including the quantified nested-group alternation slice that still needs benchmark catch-up.
+- The published benchmark surface is still bounded and carries 28 explicit known-gap workloads.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
