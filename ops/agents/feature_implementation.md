@@ -14,6 +14,7 @@ Required behavior:
 5. Update the task file with a short completion or blocker note.
 6. Move the task file from `ops/tasks/in_progress/` to `ops/tasks/done/` or `ops/tasks/blocked/` before finishing.
 7. If you think the environment is read-only or otherwise unwritable, verify that with a direct write attempt in this run before declaring a blocker.
+8. When the task names test or benchmark files in its deliverables, or the repo already has direct public-surface coverage for the claimed slice, run the narrowest relevant existing module(s) as completion gates. Use repo-local tooling such as `./.venv/bin/python -m pytest` when available instead of skipping those checks because a global tool is missing.
 
 Constraints:
 - Do not edit `AGENTS.md`, `ops/agents/`, `ops/config/`, `scripts/rebar_ops.py`, or `scripts/loop_forever.sh` unless the task explicitly says to.
@@ -27,4 +28,5 @@ Constraints:
 
 Definition of done:
 - The requested artifact exists and meets the task's acceptance criteria.
+- The narrowest relevant existing direct tests or benchmarks for the claimed slice pass when they exist; aggregate scorecard refreshes and ad hoc scripts are not enough by themselves.
 - The task file has been updated and moved to the correct queue.
