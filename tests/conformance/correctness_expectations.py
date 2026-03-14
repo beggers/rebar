@@ -322,6 +322,14 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "pattern-sub-callable-nested-group-named-str",
         ),
     },
+    "nested-group-alternation-callable-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-callable-nested-group-alternation-numbered-b-branch-str",
+            "pattern-sub-callable-nested-group-alternation-numbered-mixed-branches-str",
+            "module-sub-callable-nested-group-alternation-named-c-branch-str",
+            "pattern-subn-callable-nested-group-alternation-named-b-branch-first-match-only-str",
+        ),
+    },
     "optional-group-alternation-workflows": {
         "representative_case_ids": (
             "optional-group-alternation-compile-metadata-str",
