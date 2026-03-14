@@ -22,6 +22,9 @@ if str(PYTHON_SOURCE) not in sys.path:
     sys.path.insert(0, str(PYTHON_SOURCE))
 
 from rebar_harness.correctness import FixtureCase, load_fixture_manifest
+from tests.python.callable_replacement_callback_support import (
+    assert_callable_replacement_match_parity,
+)
 
 
 FIXTURE_MANIFEST, PUBLISHED_CASES = load_fixture_manifest(FIXTURE_PATH)
@@ -47,6 +50,67 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter({
 })
 MODULE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "module_call")
 PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pattern_call")
+CALLBACK_MODULE_CASES = (
+    pytest.param("sub", r"a((bc)+)d", "zzabcdzz", 0, (), id="module-numbered-lower-bound-sub"),
+    pytest.param(
+        "subn",
+        r"a((bc)+)d",
+        "zzabcbcdabcbcdzz",
+        1,
+        (),
+        id="module-numbered-first-match-only-subn",
+    ),
+    pytest.param(
+        "sub",
+        r"a(?P<outer>(?P<inner>bc)+)d",
+        "zzabcdzz",
+        0,
+        ("outer", "inner"),
+        id="module-named-lower-bound-sub",
+    ),
+    pytest.param(
+        "subn",
+        r"a(?P<outer>(?P<inner>bc)+)d",
+        "zzabcbcdabcbcdzz",
+        1,
+        ("outer", "inner"),
+        id="module-named-first-match-only-subn",
+    ),
+)
+CALLBACK_PATTERN_CASES = (
+    pytest.param(
+        "sub",
+        r"a((bc)+)d",
+        "zzabcbcdzz",
+        0,
+        (),
+        id="pattern-numbered-repeated-outer-sub",
+    ),
+    pytest.param(
+        "subn",
+        r"a((bc)+)d",
+        "zzabcbcdabcbcdzz",
+        1,
+        (),
+        id="pattern-numbered-first-match-only-subn",
+    ),
+    pytest.param(
+        "sub",
+        r"a(?P<outer>(?P<inner>bc)+)d",
+        "zzabcbcdzz",
+        0,
+        ("outer", "inner"),
+        id="pattern-named-repeated-outer-sub",
+    ),
+    pytest.param(
+        "subn",
+        r"a(?P<outer>(?P<inner>bc)+)d",
+        "zzabcbcdabcbcdzz",
+        1,
+        ("outer", "inner"),
+        id="pattern-named-first-match-only-subn",
+    ),
+)
 
 
 def _case_pattern(case: FixtureCase) -> str:
@@ -116,3 +180,54 @@ def test_pattern_callable_replacement_matches_cpython(
     expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
 
     assert observed == expected
+
+
+@pytest.mark.parametrize(
+    ("helper", "pattern", "string", "count", "group_names"),
+    CALLBACK_MODULE_CASES,
+)
+def test_module_callable_replacement_callback_match_objects_match_cpython(
+    regex_backend: tuple[str, object],
+    helper: str,
+    pattern: str,
+    string: str,
+    count: int,
+    group_names: tuple[str, ...],
+) -> None:
+    backend_name, backend = regex_backend
+
+    assert_callable_replacement_match_parity(
+        backend_name=backend_name,
+        backend=backend,
+        helper=helper,
+        pattern=pattern,
+        string=string,
+        count=count,
+        group_names=group_names,
+    )
+
+
+@pytest.mark.parametrize(
+    ("helper", "pattern", "string", "count", "group_names"),
+    CALLBACK_PATTERN_CASES,
+)
+def test_pattern_callable_replacement_callback_match_objects_match_cpython(
+    regex_backend: tuple[str, object],
+    helper: str,
+    pattern: str,
+    string: str,
+    count: int,
+    group_names: tuple[str, ...],
+) -> None:
+    backend_name, backend = regex_backend
+
+    assert_callable_replacement_match_parity(
+        backend_name=backend_name,
+        backend=backend,
+        helper=helper,
+        pattern=pattern,
+        string=string,
+        count=count,
+        group_names=group_names,
+        use_compiled_pattern=True,
+    )
