@@ -63,13 +63,13 @@ The published reports currently say three things: the implemented correctness sl
 
 ## Where To Look
 
-For the published scorecards, start with `reports/correctness/latest.py` and `reports/benchmarks/latest.py`. For strict built-native coverage, run `python -m rebar_harness.benchmarks --native-smoke --report <path>` or `python -m rebar_harness.benchmarks --native-full --report <path>` when you need an ad hoc native-path scorecard. For the broader project frontier, `ops/state/current_status.md` is the current narrative state; `ops/README.md` is the operator guide for the loop and queue layout.
+Start with the tracked scorecards in `reports/correctness/latest.py` and `reports/benchmarks/latest.py`.
 
-## Inspecting The Current Slice
+To rerun the same repo-local parity and benchmark harnesses from a checkout, use:
 
 ```bash
-python3 scripts/rebar_ops.py status
-python3 scripts/rebar_ops.py report
+PYTHONPATH=python python3 -m rebar_harness.correctness --report <path>
+PYTHONPATH=python python3 -m rebar_harness.benchmarks --report <path>
 ```
 
-Loop-running and queue-management details stay in `ops/README.md` so this landing page can stay focused on project shape, current coverage, and the published reports.
+For stricter built-native benchmark spot checks, run `PYTHONPATH=python python3 -m rebar_harness.benchmarks --native-smoke --report <path>` or `PYTHONPATH=python python3 -m rebar_harness.benchmarks --native-full --report <path>`. `ops/state/current_status.md` tracks the current frontier; `ops/README.md` is only for loop and queue operations.
