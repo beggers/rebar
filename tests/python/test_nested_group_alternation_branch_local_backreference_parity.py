@@ -151,6 +151,31 @@ def _assert_match_parity(
         assert observed.end(group_name) == expected.end(group_name)
 
 
+def _assert_match_convenience_api_parity(
+    observed: object,
+    expected: re.Match[str] | re.Match[bytes],
+) -> None:
+    for group_index in range(expected.re.groups + 1):
+        assert observed[group_index] == expected[group_index]
+
+    ordered_group_names = tuple(expected.re.groupindex)
+    for group_name in ordered_group_names:
+        assert observed[group_name] == expected[group_name]
+
+    templates = [r"<\g<0>>"]
+    if expected.re.groups >= 1:
+        templates.append(r"<\1>")
+    if expected.re.groups >= 2:
+        templates.append(r"<\1:\2>")
+    if ordered_group_names:
+        templates.append(
+            "<" + ":".join(fr"\g<{group_name}>" for group_name in ordered_group_names) + ">"
+        )
+
+    for template in templates:
+        assert observed.expand(template) == expected.expand(template)
+
+
 def test_parity_suite_stays_aligned_with_published_correctness_fixture() -> None:
     assert FIXTURE_MANIFEST.manifest_id == (
         "nested-group-alternation-branch-local-backreference-workflows"
@@ -200,6 +225,7 @@ def test_published_workflows_match_cpython(
         return
 
     _assert_match_parity(backend_name, observed, expected)
+    _assert_match_convenience_api_parity(observed, expected)
 
 
 @pytest.mark.parametrize(("target", "pattern", "helper", "text"), NEGATIVE_CASES)
