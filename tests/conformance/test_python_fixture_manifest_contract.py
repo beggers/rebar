@@ -177,6 +177,153 @@ class PythonFixtureManifestContractTest(unittest.TestCase):
             },
         )
 
+    def test_python_fixture_manifest_materializes_bytes_callables_without_aliasing_defaults(
+        self,
+    ) -> None:
+        fixture_source = """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "bytes-callable-loader-contract",
+            "layer": "module_workflow",
+            "suite_id": "collection.replacement.bytes.callable.contract",
+            "defaults": {
+                "operation": "pattern_call",
+                "helper": "sub",
+                "text_model": "bytes",
+                "pattern_encoding": "latin-1",
+                "args": [
+                    {
+                        "type": "callable_match_group",
+                        "group": 1,
+                        "prefix": {
+                            "type": "bytes",
+                            "value": "<",
+                        },
+                        "suffix": {
+                            "type": "bytes",
+                            "value": ">",
+                        },
+                    },
+                    {
+                        "type": "bytes",
+                        "value": "zzabcbcdzz",
+                    },
+                ],
+                "kwargs": {
+                    "count": 1,
+                },
+            },
+            "cases": [
+                {
+                    "id": "pattern-sub-callable-match-group-default-a-bytes",
+                    "family": "bytes_callable_match_group_default",
+                    "pattern": r"a((bc)+)d",
+                },
+                {
+                    "id": "pattern-sub-callable-match-group-default-b-bytes",
+                    "family": "bytes_callable_match_group_default",
+                    "pattern": r"a((bc)+)d",
+                },
+                {
+                    "id": "pattern-sub-callable-constant-override-bytes",
+                    "family": "bytes_callable_constant_override",
+                    "pattern": r"a((bc)+)d",
+                    "args": [
+                        {
+                            "type": "callable_constant",
+                            "value": {
+                                "type": "bytes",
+                                "value": "CONST",
+                            },
+                        },
+                        {
+                            "type": "bytes",
+                            "value": "zzabcbcdzz",
+                        },
+                    ],
+                },
+            ],
+        }
+        """
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_path = self._write_fixture(
+                pathlib.Path(temp_dir),
+                "bytes_callable_fixture.py",
+                fixture_source,
+            )
+            manifest, cases = load_fixture_manifest(fixture_path)
+
+        self.assertEqual(
+            manifest.manifest_id,
+            "bytes-callable-loader-contract",
+        )
+        self.assertEqual(manifest.layer, "module_workflow")
+        self.assertEqual(
+            manifest.suite_id,
+            "collection.replacement.bytes.callable.contract",
+        )
+        self.assertEqual([case.case_id for case in cases], [
+            "pattern-sub-callable-match-group-default-a-bytes",
+            "pattern-sub-callable-match-group-default-b-bytes",
+            "pattern-sub-callable-constant-override-bytes",
+        ])
+
+        first_default_case, second_default_case, constant_case = cases
+
+        self.assertEqual(first_default_case.pattern_payload(), b"a((bc)+)d")
+        self.assertEqual(second_default_case.pattern_payload(), b"a((bc)+)d")
+        self.assertEqual(constant_case.pattern_payload(), b"a((bc)+)d")
+
+        self.assertIsNot(first_default_case.args, second_default_case.args)
+        self.assertIsNot(first_default_case.kwargs, second_default_case.kwargs)
+        self.assertTrue(callable(first_default_case.args[0]))
+        self.assertTrue(callable(second_default_case.args[0]))
+        self.assertIsNot(first_default_case.args[0], second_default_case.args[0])
+        self.assertEqual(first_default_case.args[1], b"zzabcbcdzz")
+        self.assertEqual(first_default_case.serialized_args(), [
+            {
+                "type": "callable",
+                "module": "rebar_harness.correctness",
+                "qualname": "callable_match_group",
+            },
+            {
+                "encoding": "latin-1",
+                "value": "zzabcbcdzz",
+            },
+        ])
+        self.assertEqual(first_default_case.serialized_kwargs(), {"count": 1})
+
+        match = re.search(first_default_case.pattern_payload(), first_default_case.args[1])
+        self.assertIsNotNone(match)
+        self.assertEqual(first_default_case.args[0](match), b"<bcbc>")
+
+        first_default_case.args[1] = b"mutated"
+        first_default_case.kwargs["count"] = 0
+        self.assertEqual(second_default_case.args[1], b"zzabcbcdzz")
+        self.assertEqual(second_default_case.kwargs["count"], 1)
+        self.assertEqual(constant_case.kwargs["count"], 1)
+
+        self.assertTrue(callable(constant_case.args[0]))
+        constant_match = re.search(constant_case.pattern_payload(), constant_case.args[1])
+        self.assertIsNotNone(constant_match)
+        self.assertEqual(constant_case.args[0](constant_match), b"CONST")
+        self.assertEqual(
+            constant_case.serialized_args()[0],
+            {
+                "type": "callable",
+                "module": "rebar_harness.correctness",
+                "qualname": "callable_constant",
+            },
+        )
+        self.assertEqual(
+            constant_case.serialized_args()[1],
+            {
+                "encoding": "latin-1",
+                "value": "zzabcbcdzz",
+            },
+        )
+
     def test_python_fixture_manifest_rejects_missing_and_non_dict_manifest_values(
         self,
     ) -> None:
