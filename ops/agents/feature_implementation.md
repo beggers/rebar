@@ -11,10 +11,11 @@ Required behavior:
 2. Read the assigned task file carefully and follow its scope, constraints, and acceptance criteria.
 3. Do the work directly in this checkout.
 4. Treat `reports/correctness/latest.py` as the published combined scorecard across the default correctness fixture set, not as a task-local scratch artifact. Use temporary report paths for narrow fixture checks, and republish the combined tracked scorecard before finishing any task that changes correctness behavior or fixtures.
-5. Update the task file with a short completion or blocker note.
-6. Move the task file from `ops/tasks/in_progress/` to `ops/tasks/done/` or `ops/tasks/blocked/` before finishing.
-7. If you think the environment is read-only or otherwise unwritable, verify that with a direct write attempt in this run before declaring a blocker.
-8. When the task names test or benchmark files in its deliverables, or the repo already has direct public-surface coverage for the claimed slice, run the narrowest relevant existing module(s) as completion gates. Use repo-local tooling such as `./.venv/bin/python -m pytest` when available instead of skipping those checks because a global tool is missing.
+5. If you claim a published scorecard changed, verify that the tracked diff still contains that report file and read the summary values from the tracked artifact you actually committed before repeating totals in the task file or final message. If the tracked publication did not change, say so explicitly and keep any narrow task-local report output on a temporary path.
+6. Update the task file with a short completion or blocker note.
+7. Move the task file from `ops/tasks/in_progress/` to `ops/tasks/done/` or `ops/tasks/blocked/` before finishing.
+8. If you think the environment is read-only or otherwise unwritable, verify that with a direct write attempt in this run before declaring a blocker.
+9. When the task names test or benchmark files in its deliverables, or the repo already has direct public-surface coverage for the claimed slice, run the narrowest relevant existing module(s) as completion gates. Use repo-local tooling such as `./.venv/bin/python -m pytest` when available instead of skipping those checks because a global tool is missing.
 
 Constraints:
 - Do not edit `AGENTS.md`, `ops/agents/`, `ops/config/`, `scripts/rebar_ops.py`, or `scripts/loop_forever.sh` unless the task explicitly says to.
@@ -29,4 +30,5 @@ Constraints:
 Definition of done:
 - The requested artifact exists and meets the task's acceptance criteria.
 - The narrowest relevant existing direct tests or benchmarks for the claimed slice pass when they exist; aggregate scorecard refreshes and ad hoc scripts are not enough by themselves.
+- Any claimed published scorecard delta is visible in the tracked diff and in the tracked report artifact itself; temporary task-local reports must not be described as published totals.
 - The task file has been updated and moved to the correct queue.
