@@ -1,6 +1,6 @@
 # RBR-0333: Consolidate alternation-bearing conditional correctness scorecards into the data-driven suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
 
@@ -40,3 +40,9 @@ Created: 2026-03-14
 ## Notes
 - These six wrapper modules total 1,869 lines and still duplicate the same build-plus-regenerate flow with only manifest ids, suite ids, and representative alternation-bearing conditional cases varying.
 - This is the next clean scorecard-family follow-on after `RBR-0329` and `RBR-0331`: the existing expectation builder already derives fixture prefixes from `DEFAULT_FIXTURE_PATHS`, so this family can land as another bounded table-plus-accessor extension rather than a new harness abstraction.
+
+## Completion
+- Added `CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS` plus shared accessors in `tests/conformance/correctness_expectations.py`, and wired the new family into `tests/conformance/test_combined_correctness_scorecards.py` through `assert_correctness_scorecard_suite(...)`.
+- Deleted the six superseded alternation-bearing conditional wrapper modules from `tests/conformance/`.
+- Verified `.venv/bin/python -m pytest tests/conformance/test_combined_correctness_scorecards.py -k conditional_alternation -q` passed (`1 passed, 5 deselected, 58 subtests passed`).
+- Verified `conditional_alternation_scorecard_target_manifest_ids()` resolves exactly the six intended manifests from `DEFAULT_FIXTURE_PATHS`, and `git diff --name-status -- tests/conformance` shows each deleted wrapper module as `D`.

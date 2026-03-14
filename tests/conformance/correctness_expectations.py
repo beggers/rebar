@@ -351,6 +351,86 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
 }
 
 
+CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
+    "conditional-group-exists-no-else-alternation-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-no-else-alternation-compile-metadata-str",
+            "conditional-group-exists-no-else-alternation-module-search-first-arm-str",
+            "conditional-group-exists-no-else-alternation-module-search-second-arm-str",
+            "conditional-group-exists-no-else-alternation-pattern-fullmatch-absent-str",
+            "named-conditional-group-exists-no-else-alternation-compile-metadata-str",
+            "named-conditional-group-exists-no-else-alternation-module-search-first-arm-str",
+            "named-conditional-group-exists-no-else-alternation-module-search-second-arm-str",
+            "named-conditional-group-exists-no-else-alternation-pattern-fullmatch-absent-str",
+        ),
+    },
+    "conditional-group-exists-empty-else-alternation-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-empty-else-alternation-compile-metadata-str",
+            "conditional-group-exists-empty-else-alternation-module-search-first-arm-str",
+            "conditional-group-exists-empty-else-alternation-module-search-second-arm-str",
+            "conditional-group-exists-empty-else-alternation-pattern-fullmatch-absent-str",
+            "named-conditional-group-exists-empty-else-alternation-compile-metadata-str",
+            "named-conditional-group-exists-empty-else-alternation-module-search-first-arm-str",
+            "named-conditional-group-exists-empty-else-alternation-module-search-second-arm-str",
+            "named-conditional-group-exists-empty-else-alternation-pattern-fullmatch-absent-str",
+        ),
+    },
+    "conditional-group-exists-empty-yes-else-alternation-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-empty-yes-else-alternation-compile-metadata-str",
+            "conditional-group-exists-empty-yes-else-alternation-module-search-present-str",
+            "conditional-group-exists-empty-yes-else-alternation-module-search-absent-first-arm-str",
+            "conditional-group-exists-empty-yes-else-alternation-pattern-fullmatch-absent-second-arm-str",
+            "named-conditional-group-exists-empty-yes-else-alternation-compile-metadata-str",
+            "named-conditional-group-exists-empty-yes-else-alternation-module-search-present-str",
+            "named-conditional-group-exists-empty-yes-else-alternation-module-search-absent-first-arm-str",
+            "named-conditional-group-exists-empty-yes-else-alternation-pattern-fullmatch-absent-second-arm-str",
+        ),
+    },
+    "conditional-group-exists-fully-empty-alternation-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-fully-empty-alternation-compile-metadata-str",
+            "conditional-group-exists-fully-empty-alternation-module-search-present-str",
+            "conditional-group-exists-fully-empty-alternation-module-fullmatch-absent-str",
+            "conditional-group-exists-fully-empty-alternation-pattern-fullmatch-extra-suffix-failure-str",
+            "named-conditional-group-exists-fully-empty-alternation-compile-metadata-str",
+            "named-conditional-group-exists-fully-empty-alternation-module-search-present-str",
+            "named-conditional-group-exists-fully-empty-alternation-module-fullmatch-absent-str",
+            "named-conditional-group-exists-fully-empty-alternation-pattern-fullmatch-extra-suffix-failure-str",
+        ),
+    },
+    "conditional-group-exists-alternation-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-alternation-compile-metadata-str",
+            "conditional-group-exists-alternation-module-search-present-first-arm-str",
+            "conditional-group-exists-alternation-pattern-fullmatch-present-second-arm-str",
+            "conditional-group-exists-alternation-module-search-absent-first-arm-str",
+            "conditional-group-exists-alternation-pattern-fullmatch-absent-second-arm-str",
+            "named-conditional-group-exists-alternation-compile-metadata-str",
+            "named-conditional-group-exists-alternation-module-search-present-first-arm-str",
+            "named-conditional-group-exists-alternation-pattern-fullmatch-present-second-arm-str",
+            "named-conditional-group-exists-alternation-module-search-absent-first-arm-str",
+            "named-conditional-group-exists-alternation-pattern-fullmatch-absent-second-arm-str",
+        ),
+    },
+    "conditional-group-exists-quantified-alternation-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-quantified-alternation-compile-metadata-str",
+            "conditional-group-exists-quantified-alternation-module-search-present-first-arm-str",
+            "conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
+            "conditional-group-exists-quantified-alternation-module-search-absent-first-arm-str",
+            "conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
+            "named-conditional-group-exists-quantified-alternation-compile-metadata-str",
+            "named-conditional-group-exists-quantified-alternation-module-search-present-first-arm-str",
+            "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
+            "named-conditional-group-exists-quantified-alternation-module-search-absent-first-arm-str",
+            "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
+        ),
+    },
+}
+
+
 QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
     "quantified-alternation-broader-range-workflows": {
         "representative_case_ids": (
@@ -1023,6 +1103,23 @@ def quantified_alternation_scorecard_case(
     return _build_scorecard_expectation(
         target_manifest_id,
         QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
+    )
+
+
+def conditional_alternation_scorecard_target_manifest_ids() -> tuple[str, ...]:
+    return _expected_target_manifest_ids(
+        CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
+        expectation_label="conditional-alternation correctness scorecard",
+    )
+
+
+@lru_cache(maxsize=None)
+def conditional_alternation_scorecard_case(
+    target_manifest_id: str,
+) -> CorrectnessScorecardExpectation:
+    return _build_scorecard_expectation(
+        target_manifest_id,
+        CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
     )
 
 
