@@ -18,6 +18,9 @@ class Scenario:
     search_misses: tuple[str, ...] = ()
     fullmatch_matches: tuple[str, ...] = ()
     fullmatch_misses: tuple[str, ...] = ()
+    text_models: tuple[str, ...] = ("str",)
+    bytes_unsupported_backends: tuple[str, ...] = ()
+    bytes_unsupported_backend_reason: str | None = None
 
 
 @dataclass(frozen=True)
@@ -30,60 +33,106 @@ class ParityCase:
     search_misses: tuple[str | bytes, ...] = ()
     fullmatch_matches: tuple[str | bytes, ...] = ()
     fullmatch_misses: tuple[str | bytes, ...] = ()
+    unsupported_backends: tuple[str, ...] = ()
+    unsupported_backend_reason: str | None = None
 
 
 SCENARIOS = (
     Scenario(
-        id="broader-range-conditional-numbered",
+        id="wider-ranged-repeat-numbered",
+        pattern=r"a(bc){1,3}d",
+        max_group=1,
+        search_matches=("zzabcdzz",),
+        fullmatch_matches=("abcbcbcd",),
+    ),
+    Scenario(
+        id="wider-ranged-repeat-named",
+        pattern=r"a(?P<word>bc){1,3}d",
+        max_group=1,
+        group_names=("word",),
+        search_matches=("zzabcbcbcdzz",),
+        fullmatch_matches=("abcd",),
+    ),
+    Scenario(
+        id="wider-ranged-repeat-conditional-numbered",
+        pattern=r"a((bc|de){1,3})?(?(1)d|e)",
+        max_group=2,
+        search_matches=("zzaezz", "zzabcdzz", "zzadedzz"),
+        fullmatch_matches=("abcded",),
+        fullmatch_misses=("abcde",),
+    ),
+    Scenario(
+        id="wider-ranged-repeat-conditional-named",
+        pattern=r"a(?P<outer>(bc|de){1,3})?(?(outer)d|e)",
+        max_group=2,
+        group_names=("outer",),
+        search_matches=("zzaezz", "zzadedzz", "zzabcbcdedzz"),
+        fullmatch_matches=("abcded",),
+        fullmatch_misses=("ad",),
+    ),
+    Scenario(
+        id="wider-ranged-repeat-backtracking-numbered",
+        pattern=r"a((bc|b)c){1,3}d",
+        max_group=2,
+        search_matches=("zzabcdzz",),
+        fullmatch_matches=("abccd", "abcbcd", "abcbccd"),
+        fullmatch_misses=("abcccd",),
+    ),
+    Scenario(
+        id="wider-ranged-repeat-backtracking-named",
+        pattern=r"a(?P<word>(bc|b)c){1,3}d",
+        max_group=2,
+        group_names=("word",),
+        search_matches=("zzabccdzz", "zzabcbccbccdzz"),
+        search_misses=("zzabcccezz",),
+        fullmatch_matches=("abccbcd", "abcbcbccd"),
+    ),
+    Scenario(
+        id="broader-range-wider-ranged-repeat-numbered",
+        pattern=r"a(bc|de){1,4}d",
+        max_group=1,
+        search_matches=("zzabcdzz", "zzadedzz"),
+        fullmatch_matches=("abcbcded",),
+        fullmatch_misses=("ad",),
+    ),
+    Scenario(
+        id="broader-range-wider-ranged-repeat-named",
+        pattern=r"a(?P<word>bc|de){1,4}d",
+        max_group=1,
+        group_names=("word",),
+        search_matches=("zzabcbcdedzz", "zzadededededzz"),
+        fullmatch_matches=("abcbcdeded",),
+        fullmatch_misses=("abcbcbcbcbcd",),
+    ),
+    Scenario(
+        id="broader-range-wider-ranged-repeat-conditional-numbered",
         pattern=r"a((bc|de){1,4})?(?(1)d|e)",
         max_group=2,
-        search_matches=(
-            "zzaezz",
-            "zzabcdzz",
-            "zzadedzz",
-            "zzabcdedededzz",
-        ),
-        search_misses=(
-            "zzadzz",
-            "zzabcbcbcbcbcdzz",
-        ),
-        fullmatch_matches=(
-            "ae",
-            "abcded",
-            "abcbcded",
-            "abcdededed",
-        ),
-        fullmatch_misses=(
-            "ad",
-            "abcdede",
-            "abcbcbcbcbcd",
+        search_matches=("zzaezz", "zzabcdzz", "zzadedzz", "zzabcdedededzz"),
+        search_misses=("zzadzz", "zzabcbcbcbcbcdzz"),
+        fullmatch_matches=("ae", "abcded", "abcbcded", "abcdededed"),
+        fullmatch_misses=("ad", "abcdede", "abcbcbcbcbcd"),
+        text_models=("str", "bytes"),
+        bytes_unsupported_backends=("rebar",),
+        bytes_unsupported_backend_reason=(
+            "rebar does not yet support broader-range wider-ranged-repeat "
+            "grouped-conditional bytes parity"
         ),
     ),
     Scenario(
-        id="broader-range-conditional-named",
+        id="broader-range-wider-ranged-repeat-conditional-named",
         pattern=r"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
         max_group=2,
         group_names=("outer",),
-        search_matches=(
-            "zzaezz",
-            "zzabcdzz",
-            "zzadedzz",
-            "zzabcdedededzz",
-        ),
-        search_misses=(
-            "zzadzz",
-            "zzabcbcbcbcbcdzz",
-        ),
-        fullmatch_matches=(
-            "ae",
-            "abcded",
-            "abcbcded",
-            "abcdededed",
-        ),
-        fullmatch_misses=(
-            "ad",
-            "abcdede",
-            "abcbcbcbcbcd",
+        search_matches=("zzaezz", "zzabcdzz", "zzadedzz", "zzabcdedededzz"),
+        search_misses=("zzadzz", "zzabcbcbcbcbcdzz"),
+        fullmatch_matches=("ae", "abcded", "abcbcded", "abcdededed"),
+        fullmatch_misses=("ad", "abcdede", "abcbcbcbcbcd"),
+        text_models=("str", "bytes"),
+        bytes_unsupported_backends=("rebar",),
+        bytes_unsupported_backend_reason=(
+            "rebar does not yet support broader-range wider-ranged-repeat "
+            "grouped-conditional bytes parity"
         ),
     ),
 )
@@ -93,11 +142,7 @@ def _encode_values(values: tuple[str, ...]) -> tuple[bytes, ...]:
     return tuple(value.encode("ascii") for value in values)
 
 
-def _parity_case(
-    scenario: Scenario,
-    *,
-    text_model: str,
-) -> ParityCase:
+def _parity_case(scenario: Scenario, *, text_model: str) -> ParityCase:
     if text_model == "str":
         return ParityCase(
             id=f"{scenario.id}-str",
@@ -119,6 +164,8 @@ def _parity_case(
             search_misses=_encode_values(scenario.search_misses),
             fullmatch_matches=_encode_values(scenario.fullmatch_matches),
             fullmatch_misses=_encode_values(scenario.fullmatch_misses),
+            unsupported_backends=scenario.bytes_unsupported_backends,
+            unsupported_backend_reason=scenario.bytes_unsupported_backend_reason,
         )
     raise AssertionError(f"unsupported text_model {text_model!r}")
 
@@ -126,7 +173,7 @@ def _parity_case(
 CASES = tuple(
     _parity_case(scenario, text_model=text_model)
     for scenario in SCENARIOS
-    for text_model in ("str", "bytes")
+    for text_model in scenario.text_models
 )
 
 

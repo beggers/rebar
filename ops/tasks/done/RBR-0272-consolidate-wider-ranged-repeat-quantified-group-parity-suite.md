@@ -1,6 +1,6 @@
 # RBR-0272: Consolidate the wider-ranged-repeat quantified-group parity frontier into one backend-parameterized pytest suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-13
 
@@ -37,3 +37,9 @@ Created: 2026-03-13
 - Build on `RBR-0271`.
 - `RBR-0263` already established the intended pattern for grouped counted-repeat parity work with `tests/python/test_open_ended_quantified_group_parity_suite.py`; this task applies the same simplification to the still-duplicated `{1,3}` and `{1,4}` wider-ranged-repeat grouped frontier.
 - The earlier blocker is cleared in the current checkout: a direct `python3` probe with `rebar.native_module_loaded() == True` now compiles both broader `{1,4}` grouped-conditional patterns, so the consolidation can absorb that coverage without masking a missing feature dependency.
+
+## Completion
+- Completed 2026-03-14.
+- Added `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` as the single backend-parameterized pytest suite for the `{1,3}` and `{1,4}` wider-ranged-repeat grouped frontier, removed the five superseded parity modules, and made `tests/python/conftest.py` own the generic native-module gate plus case-driven backend skips for unsupported subsets.
+- Preserved the broader `{1,4}` grouped-conditional `bytes` cases inside the consolidated suite; the shared backend fixture now keeps those rows active for stdlib coverage while explicitly skipping the currently unsupported `rebar` `bytes` subset instead of leaving a second singleton suite in place.
+- Verified with `/tmp/rebar-pytest-venv/bin/python -m pytest tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py -q` (`150 passed, 6 skipped`).
