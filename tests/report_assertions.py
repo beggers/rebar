@@ -23,6 +23,39 @@ def _correctness_summary(cases: list[dict[str, Any]]) -> dict[str, int]:
     }
 
 
+def _assert_tracked_report_exists(
+    testcase: Any,
+    tracked_report_path: pathlib.Path | None,
+) -> None:
+    if tracked_report_path is not None:
+        testcase.assertTrue(tracked_report_path.is_file())
+
+
+def _assert_cpython_baseline_contract(
+    testcase: Any,
+    baseline: dict[str, Any],
+    *,
+    expected_re_module: str,
+) -> None:
+    testcase.assertEqual(
+        baseline["python_implementation"],
+        platform.python_implementation(),
+    )
+    testcase.assertEqual(baseline["python_version"], platform.python_version())
+    testcase.assertEqual(baseline["python_version_family"], "3.12.x")
+    testcase.assertEqual(
+        baseline["python_build"],
+        {
+            "name": platform.python_build()[0],
+            "date": platform.python_build()[1],
+        },
+    )
+    testcase.assertEqual(baseline["python_compiler"], platform.python_compiler())
+    testcase.assertEqual(baseline["platform"], platform.platform())
+    testcase.assertEqual(baseline["executable"], sys.executable)
+    testcase.assertEqual(baseline["re_module"], expected_re_module)
+
+
 def assert_correctness_summary_consistent(
     testcase: Any,
     scorecard: dict[str, Any],
@@ -166,28 +199,14 @@ def assert_correctness_report_contract(
     testcase.assertEqual(scorecard["phase"], expected_phase)
 
     baseline = scorecard["baseline"]
-    testcase.assertEqual(
-        baseline["python_implementation"],
-        platform.python_implementation(),
+    _assert_cpython_baseline_contract(
+        testcase,
+        baseline,
+        expected_re_module="re",
     )
-    testcase.assertEqual(baseline["python_version"], platform.python_version())
-    testcase.assertEqual(baseline["python_version_family"], "3.12.x")
-    testcase.assertEqual(
-        baseline["python_build"],
-        {
-            "name": platform.python_build()[0],
-            "date": platform.python_build()[1],
-        },
-    )
-    testcase.assertEqual(baseline["python_compiler"], platform.python_compiler())
-    testcase.assertEqual(baseline["platform"], platform.platform())
-    testcase.assertEqual(baseline["executable"], sys.executable)
-    testcase.assertEqual(baseline["re_module"], "re")
     testcase.assertEqual(baseline["oracle"], "cpython-stdlib-re")
     testcase.assertEqual(baseline["target_module"], "rebar")
-
-    if tracked_report_path is not None:
-        testcase.assertTrue(tracked_report_path.is_file())
+    _assert_tracked_report_exists(testcase, tracked_report_path)
 
 
 def assert_correctness_fixture_contract(
@@ -406,20 +425,11 @@ def assert_source_tree_benchmark_contract(
     testcase.assertEqual(scorecard["schema_version"], "1.0")
     testcase.assertEqual(scorecard["suite"], "benchmarks")
     testcase.assertEqual(scorecard["phase"], expected_phase)
-    testcase.assertEqual(scorecard["baseline"]["python_implementation"], platform.python_implementation())
-    testcase.assertEqual(scorecard["baseline"]["python_version"], platform.python_version())
-    testcase.assertEqual(scorecard["baseline"]["python_version_family"], "3.12.x")
-    testcase.assertEqual(
-        scorecard["baseline"]["python_build"],
-        {
-            "name": platform.python_build()[0],
-            "date": platform.python_build()[1],
-        },
+    _assert_cpython_baseline_contract(
+        testcase,
+        scorecard["baseline"],
+        expected_re_module="re",
     )
-    testcase.assertEqual(scorecard["baseline"]["python_compiler"], platform.python_compiler())
-    testcase.assertEqual(scorecard["baseline"]["platform"], platform.platform())
-    testcase.assertEqual(scorecard["baseline"]["executable"], sys.executable)
-    testcase.assertEqual(scorecard["baseline"]["re_module"], "re")
     testcase.assertEqual(scorecard["implementation"]["module_name"], "rebar")
     testcase.assertEqual(scorecard["implementation"]["adapter"], expected_adapter)
     testcase.assertEqual(
@@ -488,8 +498,7 @@ def assert_source_tree_benchmark_contract(
         testcase.assertEqual(scorecard["artifacts"]["manifest"], None)
         testcase.assertEqual(scorecard["artifacts"]["manifest_id"], "combined-benchmark-suite")
         testcase.assertEqual(scorecard["artifacts"]["manifest_schema_version"], 1)
-    if tracked_report_path is not None:
-        testcase.assertTrue(tracked_report_path.is_file())
+    _assert_tracked_report_exists(testcase, tracked_report_path)
 
 
 def assert_benchmark_manifest_contract(
