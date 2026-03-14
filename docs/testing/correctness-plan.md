@@ -102,7 +102,7 @@ These should be the default source of early coverage because they scale without 
 Sources:
 
 - construct-family generators derived from [`docs/spec/syntax-scope.md`](../spec/syntax-scope.md)
-- small systematic feature manifests that spell out deterministic numbered-versus-named, module-versus-compiled, and present-versus-absent matrices for one landed slice
+- small systematic case blocks folded into ordinary fixture manifests so deterministic numbered-versus-named, module-versus-compiled, and present-versus-absent matrices stay published without one-off harness paths
 - flag-combination matrices
 - `str`/`bytes` mirrored cases
 - invalid-pattern mutators that intentionally create malformed escapes, repeats, groups, backreferences, and inline-flag placements

@@ -1,6 +1,7 @@
 # Decision Log
 
 ## 2026-03-14
+- Fold the former one-off `systematic_feature_corpus` correctness manifest back into the ordinary optional-group and nested explicit-empty-else fixture packs once its 18-case slice stabilizes, so the published corpus stays on standard manifests without a dedicated test-only path.
 - Flatten the one-off systematic correctness corpus into a literal checked-in fixture once its 18-case slice stabilizes, so published coverage lives in ordinary manifest data instead of special generator plumbing.
 
 ## 2026-03-11

@@ -25,7 +25,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Passing in published slice | `729` |
 | Explicit failures | `0` |
 | Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `83` |
+| Covered manifests | `82` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
 _These correctness counts cover only the published slice. Overall delivery estimate: Foundation and reporting are in place. The fully passing Rust-backed frontier now reaches the broader `{1,4}` grouped backtracking-heavy slice, while the benchmark-caught-up frontier still stops at the broader `{1,4}` grouped-conditional slice until `RBR-0278` lands._

@@ -104,11 +104,11 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseNestedWorkflowTest(unitte
         self.assertEqual(
             nested_suite["summary"],
             {
-                "executed_cases": 8,
+                "executed_cases": 16,
                 "failed_cases": 0,
-                "passed_cases": 8,
+                "passed_cases": 16,
                 "skipped_cases": 0,
-                "total_cases": 8,
+                "total_cases": 16,
                 "unimplemented_cases": 0,
             },
         )
@@ -123,6 +123,14 @@ class CorrectnessHarnessConditionalGroupExistsEmptyElseNestedWorkflowTest(unitte
                 "named_conditional_group_exists_empty_else_nested_module_missing_suffix_workflow",
                 "named_conditional_group_exists_empty_else_nested_module_present_workflow",
                 "named_conditional_group_exists_empty_else_nested_pattern_absent_workflow",
+                "systematic_conditional_group_exists_empty_else_nested_named_compile_metadata",
+                "systematic_conditional_group_exists_empty_else_nested_named_module_missing_suffix_workflow",
+                "systematic_conditional_group_exists_empty_else_nested_named_module_present_workflow",
+                "systematic_conditional_group_exists_empty_else_nested_named_pattern_absent_workflow",
+                "systematic_conditional_group_exists_empty_else_nested_numbered_compile_metadata",
+                "systematic_conditional_group_exists_empty_else_nested_numbered_module_missing_suffix_workflow",
+                "systematic_conditional_group_exists_empty_else_nested_numbered_module_present_workflow",
+                "systematic_conditional_group_exists_empty_else_nested_numbered_pattern_absent_workflow",
             ],
         )
 
