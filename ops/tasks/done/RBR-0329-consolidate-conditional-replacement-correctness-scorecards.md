@@ -1,8 +1,9 @@
 # RBR-0329: Consolidate conditional replacement correctness scorecards into the data-driven suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
+Completed: 2026-03-14
 
 ## Goal
 - Replace the remaining conditional-replacement correctness wrapper modules with one legible, data-driven scorecard suite so this replacement-conditioned frontier is asserted in one place instead of across repeated cargo-build, subprocess, tracked-report, and representative-case boilerplate.
@@ -46,3 +47,8 @@ Created: 2026-03-14
 ## Notes
 - These eight wrapper modules total about 1.8k lines and currently duplicate the same cargo-build plus scorecard-regeneration flow with only manifest ids and representative replacement cases varying.
 - Build on the existing data-driven shape already used in `tests/conformance/test_combined_correctness_scorecards.py`; this should be a follow-on consolidation, not a new testing architecture.
+
+## Completion Notes
+- Added a dedicated eight-manifest conditional-replacement expectation table plus helper accessors in `tests/conformance/correctness_expectations.py`, and wired `tests/conformance/test_combined_correctness_scorecards.py` to run that family through `assert_correctness_scorecard_suite(...)`.
+- Kept the coverage on shared assertion paths by adding `assert_correctness_suites_present(...)` in `tests/report_assertions.py` and reusing it from `tests/conformance/scorecard_suite_support.py`.
+- Deleted the eight superseded conditional-replacement wrapper modules and verified the new shared path with `PYTHONPATH=python python3 -m unittest tests.conformance.test_combined_correctness_scorecards.CorrectnessScorecardSuitesTest.test_runner_regenerates_conditional_replacement_correctness_scorecards tests.conformance.test_combined_correctness_scorecards.CorrectnessScorecardSuitesTest.test_runner_regenerates_open_ended_quantified_group_scorecards -q`.

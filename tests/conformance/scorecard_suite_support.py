@@ -29,9 +29,9 @@ from tests.report_assertions import (
     assert_correctness_fixture_contract,
     assert_correctness_layer_contract,
     assert_correctness_report_contract,
+    assert_correctness_suites_present,
     assert_correctness_suite_case_accounting,
     assert_correctness_suite_contract,
-    assert_correctness_suite_summary_consistent,
     find_correctness_case_record,
 )
 
@@ -95,9 +95,11 @@ def assert_correctness_scorecard_suite(
                 workflow_suite,
                 expected_case_count=case.target_manifest_case_count,
             )
-
-            for suite_id in case.expected_suite_ids[1:]:
-                assert_correctness_suite_summary_consistent(testcase, scorecard, suite_id)
+            assert_correctness_suites_present(
+                testcase,
+                scorecard,
+                case.expected_suite_ids[1:],
+            )
 
             for fixture_case in case.representative_cases:
                 with testcase.subTest(

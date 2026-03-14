@@ -337,6 +337,106 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
 }
 
 
+CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS = {
+    "conditional-group-exists-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-conditional-group-exists-replacement-present-str",
+            "module-subn-conditional-group-exists-replacement-absent-str",
+            "pattern-sub-conditional-group-exists-replacement-present-str",
+            "pattern-subn-conditional-group-exists-replacement-absent-str",
+            "module-sub-named-conditional-group-exists-replacement-present-str",
+            "module-subn-named-conditional-group-exists-replacement-absent-str",
+            "pattern-sub-named-conditional-group-exists-replacement-present-str",
+            "pattern-subn-named-conditional-group-exists-replacement-absent-str",
+        ),
+    },
+    "conditional-group-exists-no-else-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-conditional-group-exists-no-else-replacement-present-str",
+            "module-subn-conditional-group-exists-no-else-replacement-absent-str",
+            "pattern-sub-conditional-group-exists-no-else-replacement-present-str",
+            "pattern-subn-conditional-group-exists-no-else-replacement-absent-str",
+            "module-sub-named-conditional-group-exists-no-else-replacement-present-str",
+            "module-subn-named-conditional-group-exists-no-else-replacement-absent-str",
+            "pattern-sub-named-conditional-group-exists-no-else-replacement-present-str",
+            "pattern-subn-named-conditional-group-exists-no-else-replacement-absent-str",
+        ),
+    },
+    "conditional-group-exists-empty-else-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-conditional-group-exists-empty-else-replacement-present-str",
+            "module-subn-conditional-group-exists-empty-else-replacement-absent-str",
+            "pattern-sub-conditional-group-exists-empty-else-replacement-present-str",
+            "pattern-subn-conditional-group-exists-empty-else-replacement-absent-str",
+            "module-sub-named-conditional-group-exists-empty-else-replacement-present-str",
+            "module-subn-named-conditional-group-exists-empty-else-replacement-absent-str",
+            "pattern-sub-named-conditional-group-exists-empty-else-replacement-present-str",
+            "pattern-subn-named-conditional-group-exists-empty-else-replacement-absent-str",
+        ),
+    },
+    "conditional-group-exists-empty-yes-else-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-conditional-group-exists-empty-yes-else-replacement-present-str",
+            "module-subn-conditional-group-exists-empty-yes-else-replacement-absent-str",
+            "pattern-sub-conditional-group-exists-empty-yes-else-replacement-present-str",
+            "pattern-subn-conditional-group-exists-empty-yes-else-replacement-absent-str",
+            "module-sub-named-conditional-group-exists-empty-yes-else-replacement-present-str",
+            "module-subn-named-conditional-group-exists-empty-yes-else-replacement-absent-str",
+            "pattern-sub-named-conditional-group-exists-empty-yes-else-replacement-present-str",
+            "pattern-subn-named-conditional-group-exists-empty-yes-else-replacement-absent-str",
+        ),
+    },
+    "conditional-group-exists-fully-empty-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-conditional-group-exists-fully-empty-replacement-present-str",
+            "module-subn-conditional-group-exists-fully-empty-replacement-absent-str",
+            "pattern-sub-conditional-group-exists-fully-empty-replacement-present-str",
+            "pattern-subn-conditional-group-exists-fully-empty-replacement-absent-str",
+            "module-sub-named-conditional-group-exists-fully-empty-replacement-present-str",
+            "module-subn-named-conditional-group-exists-fully-empty-replacement-absent-str",
+            "pattern-sub-named-conditional-group-exists-fully-empty-replacement-present-str",
+            "pattern-subn-named-conditional-group-exists-fully-empty-replacement-absent-str",
+        ),
+    },
+    "conditional-group-exists-alternation-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-conditional-group-exists-alternation-replacement-present-first-arm-str",
+            "module-subn-conditional-group-exists-alternation-replacement-present-second-arm-str",
+            "pattern-sub-conditional-group-exists-alternation-replacement-absent-first-arm-str",
+            "pattern-subn-conditional-group-exists-alternation-replacement-absent-second-arm-str",
+            "module-sub-named-conditional-group-exists-alternation-replacement-present-first-arm-str",
+            "module-subn-named-conditional-group-exists-alternation-replacement-present-second-arm-str",
+            "pattern-sub-named-conditional-group-exists-alternation-replacement-absent-first-arm-str",
+            "pattern-subn-named-conditional-group-exists-alternation-replacement-absent-second-arm-str",
+        ),
+    },
+    "conditional-group-exists-nested-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-conditional-group-exists-nested-replacement-present-str",
+            "module-subn-conditional-group-exists-nested-replacement-absent-str",
+            "pattern-sub-conditional-group-exists-nested-replacement-present-str",
+            "pattern-subn-conditional-group-exists-nested-replacement-absent-str",
+            "module-sub-named-conditional-group-exists-nested-replacement-present-str",
+            "module-subn-named-conditional-group-exists-nested-replacement-absent-str",
+            "pattern-sub-named-conditional-group-exists-nested-replacement-present-str",
+            "pattern-subn-named-conditional-group-exists-nested-replacement-absent-str",
+        ),
+    },
+    "conditional-group-exists-quantified-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-conditional-group-exists-quantified-replacement-present-str",
+            "module-subn-conditional-group-exists-quantified-replacement-absent-str",
+            "pattern-sub-conditional-group-exists-quantified-replacement-present-str",
+            "pattern-subn-conditional-group-exists-quantified-replacement-absent-str",
+            "module-sub-named-conditional-group-exists-quantified-replacement-present-str",
+            "module-subn-named-conditional-group-exists-quantified-replacement-absent-str",
+            "pattern-sub-named-conditional-group-exists-quantified-replacement-present-str",
+            "pattern-subn-named-conditional-group-exists-quantified-replacement-absent-str",
+        ),
+    },
+}
+
+
 WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
     "wider-ranged-repeat-quantified-group-alternation-workflows": {
         "representative_case_ids": (
@@ -788,6 +888,23 @@ def combined_correctness_case(target_manifest_id: str) -> CorrectnessScorecardEx
     return _build_scorecard_expectation(
         target_manifest_id,
         COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
+    )
+
+
+def conditional_replacement_scorecard_target_manifest_ids() -> tuple[str, ...]:
+    return _expected_target_manifest_ids(
+        CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS,
+        expectation_label="conditional replacement correctness scorecard",
+    )
+
+
+@lru_cache(maxsize=None)
+def conditional_replacement_scorecard_case(
+    target_manifest_id: str,
+) -> CorrectnessScorecardExpectation:
+    return _build_scorecard_expectation(
+        target_manifest_id,
+        CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS,
     )
 
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 import pathlib
 import platform
 import sys
@@ -138,6 +139,17 @@ def assert_correctness_suite_summary_consistent(
     testcase.assertEqual(suite["case_count"], len(suite_cases))
     testcase.assertEqual(suite["summary"], _correctness_summary(suite_cases))
     return suite
+
+
+def assert_correctness_suites_present(
+    testcase: Any,
+    scorecard: dict[str, Any],
+    suite_ids: Iterable[str],
+) -> tuple[dict[str, Any], ...]:
+    return tuple(
+        assert_correctness_suite_summary_consistent(testcase, scorecard, suite_id)
+        for suite_id in suite_ids
+    )
 
 
 def assert_correctness_report_contract(

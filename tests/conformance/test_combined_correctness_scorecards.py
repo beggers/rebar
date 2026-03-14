@@ -5,6 +5,8 @@ import unittest
 from tests.conformance.correctness_expectations import (
     combined_correctness_case,
     combined_target_manifest_ids,
+    conditional_replacement_scorecard_case,
+    conditional_replacement_scorecard_target_manifest_ids,
     open_ended_quantified_group_scorecard_case,
     open_ended_quantified_group_scorecard_target_manifest_ids,
     wider_ranged_repeat_quantified_group_scorecard_case,
@@ -21,6 +23,15 @@ class CorrectnessScorecardSuitesTest(unittest.TestCase):
             self,
             target_manifest_ids=combined_target_manifest_ids(),
             case_factory=combined_correctness_case,
+        )
+
+    def test_runner_regenerates_conditional_replacement_correctness_scorecards(
+        self,
+    ) -> None:
+        assert_correctness_scorecard_suite(
+            self,
+            target_manifest_ids=conditional_replacement_scorecard_target_manifest_ids(),
+            case_factory=conditional_replacement_scorecard_case,
         )
 
     def test_runner_regenerates_open_ended_quantified_group_scorecards(self) -> None:
