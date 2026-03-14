@@ -6,7 +6,6 @@ import argparse
 import importlib.util
 import json
 import pathlib
-import pprint
 import re as cpython_re
 import sys
 import warnings
@@ -23,6 +22,11 @@ if str(PYTHON_SOURCE) not in sys.path:
 
 import rebar
 from rebar_harness.metadata import build_cpython_baseline
+from rebar_harness.scorecard_io import (
+    format_python_scorecard_module,
+    remove_scorecard_sidecar,
+    validate_scorecard_report_path,
+)
 
 
 TARGET_CPYTHON_SERIES = "3.12.x"
@@ -1660,18 +1664,12 @@ def _load_python_scorecard(path: pathlib.Path) -> dict[str, Any]:
     return payload
 
 
-def _resolve_report_path(report_path: pathlib.Path) -> pathlib.Path:
-    expanded = report_path.expanduser()
-    if not expanded.is_absolute():
-        expanded = pathlib.Path.cwd() / expanded
-    return expanded.resolve()
-
-
 def validate_report_path(report_path: pathlib.Path) -> pathlib.Path:
-    resolved_path = _resolve_report_path(report_path)
-    if resolved_path == LEGACY_REPORT_PATH:
-        raise ValueError(LEGACY_REPORT_PATH_ERROR)
-    return resolved_path
+    return validate_scorecard_report_path(
+        report_path,
+        legacy_path=LEGACY_REPORT_PATH,
+        legacy_path_error=LEGACY_REPORT_PATH_ERROR,
+    )
 
 
 def load_scorecard(report_path: pathlib.Path) -> dict[str, Any]:
@@ -1687,13 +1685,6 @@ def load_scorecard(report_path: pathlib.Path) -> dict[str, Any]:
     )
 
 
-def _format_python_scorecard_module(scorecard: dict[str, Any]) -> str:
-    # Reuse the JSON serializer's coercions so IntFlag and similar values land as literals.
-    literal_safe_scorecard = json.loads(json.dumps(scorecard, sort_keys=True))
-    payload_literal = pprint.pformat(literal_safe_scorecard, indent=4, sort_dicts=True, width=100)
-    return f"{REPORT_ATTRIBUTE} = {payload_literal}\n"
-
-
 def write_scorecard(scorecard: dict[str, Any], report_path: pathlib.Path) -> None:
     report_path = validate_report_path(report_path)
     report_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1704,7 +1695,13 @@ def write_scorecard(scorecard: dict[str, Any], report_path: pathlib.Path) -> Non
         )
         return
     if report_path.suffix == ".py":
-        report_path.write_text(_format_python_scorecard_module(scorecard), encoding="utf-8")
+        report_path.write_text(
+            format_python_scorecard_module(
+                scorecard,
+                report_attribute=REPORT_ATTRIBUTE,
+            ),
+            encoding="utf-8",
+        )
         return
     raise ValueError(
         f"unsupported correctness scorecard extension {report_path.suffix!r} for {report_path}"
@@ -1712,11 +1709,7 @@ def write_scorecard(scorecard: dict[str, Any], report_path: pathlib.Path) -> Non
 
 
 def remove_legacy_report_sidecar() -> bool:
-    try:
-        LEGACY_REPORT_PATH.unlink()
-    except FileNotFoundError:
-        return False
-    return True
+    return remove_scorecard_sidecar(LEGACY_REPORT_PATH)
 
 
 def run_correctness_harness(
