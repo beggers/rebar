@@ -456,6 +456,15 @@ struct QuantifiedNestedCaptureLiteralPattern<'a> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+struct QuantifiedNestedGroupAlternationPattern<'a> {
+    prefix: &'a str,
+    outer_name: Option<&'a str>,
+    inner_name: Option<&'a str>,
+    branches: Vec<&'a str>,
+    suffix: &'a str,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct NestedAlternationLiteralPattern<'a> {
     prefix: &'a str,
     outer_name: Option<&'a str>,
@@ -908,6 +917,41 @@ impl<'a> QuantifiedNestedCaptureLiteralPattern<'a> {
             Some((outer_start, outer_end)),
             Some((inner_start, outer_end)),
         ]
+    }
+}
+
+impl<'a> QuantifiedNestedGroupAlternationPattern<'a> {
+    fn group_count(&self) -> usize {
+        2
+    }
+
+    fn named_groups(&self) -> Vec<NamedGroup> {
+        let mut groups = Vec::new();
+        if let Some(name) = self.outer_name {
+            groups.push(NamedGroup {
+                name: name.to_string(),
+                index: 1,
+            });
+        }
+        if let Some(name) = self.inner_name {
+            groups.push(NamedGroup {
+                name: name.to_string(),
+                index: 2,
+            });
+        }
+        groups
+    }
+
+    fn group_spans(
+        &self,
+        outer_span: (usize, usize),
+        inner_span: (usize, usize),
+    ) -> Vec<Option<(usize, usize)>> {
+        vec![Some(outer_span), Some(inner_span)]
+    }
+
+    fn matched_lastindex(&self, group_spans: &[Option<(usize, usize)>]) -> Option<usize> {
+        group_spans.first().copied().flatten().map(|_| 1)
     }
 }
 
@@ -1930,6 +1974,21 @@ fn compile_known_supported_case(
             })
         }
         PatternRef::Str(pattern)
+            if parse_quantified_nested_group_alternation_pattern_str(pattern).is_some()
+                && normalized_flags == FLAG_UNICODE =>
+        {
+            let grouped_pattern = parse_quantified_nested_group_alternation_pattern_str(pattern)
+                .expect("guarded quantified nested-group alternation literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
+                warning: None,
+            })
+        }
+        PatternRef::Str(pattern)
             if parse_nested_alternation_literal_pattern_str(pattern).is_some()
                 && normalized_flags == FLAG_UNICODE =>
         {
@@ -2732,6 +2791,70 @@ fn parse_quantified_nested_capture_literal_pattern_str(
             body: inner_body,
             name: inner_name,
         },
+        suffix,
+    })
+}
+
+fn parse_quantified_nested_group_alternation_pattern_str(
+    pattern: &str,
+) -> Option<QuantifiedNestedGroupAlternationPattern<'_>> {
+    let open_offset = pattern.find('(')?;
+    let prefix = &pattern[..open_offset];
+    if prefix.is_empty() || prefix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let remainder = &pattern[open_offset + 1..];
+    let (outer_name, outer_body) = if let Some(named_remainder) = remainder.strip_prefix("?P<") {
+        let name_end = named_remainder.find('>')?;
+        let name = &named_remainder[..name_end];
+        if !is_supported_group_name(name) {
+            return None;
+        }
+        (Some(name), &named_remainder[name_end + 1..])
+    } else {
+        (None, remainder)
+    };
+
+    let inner_remainder = outer_body.strip_prefix('(')?;
+    let (inner_name, inner_body, inner_close_offset) =
+        if let Some(named_remainder) = inner_remainder.strip_prefix("?P<") {
+            let name_end = named_remainder.find('>')?;
+            let name = &named_remainder[..name_end];
+            if !is_supported_group_name(name) {
+                return None;
+            }
+            let body = &named_remainder[name_end + 1..];
+            let close_offset = body.find(')')?;
+            (
+                Some(name),
+                &body[..close_offset],
+                3 + name_end + 1 + close_offset,
+            )
+        } else {
+            let close_offset = inner_remainder.find(')')?;
+            (None, &inner_remainder[..close_offset], close_offset)
+        };
+
+    if outer_name.is_some() != inner_name.is_some() {
+        return None;
+    }
+
+    let branches: Vec<&str> = inner_body.split('|').collect();
+    if branches.as_slice() != ["b", "c"] {
+        return None;
+    }
+
+    let suffix = inner_remainder[inner_close_offset + 1..].strip_prefix("+)")?;
+    if suffix.is_empty() || suffix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    Some(QuantifiedNestedGroupAlternationPattern {
+        prefix,
+        outer_name,
+        inner_name,
+        branches,
         suffix,
     })
 }
@@ -4939,6 +5062,31 @@ fn literal_match_str(
                     (Some(span), group_spans)
                 })
             } else if let Some(grouped_pattern) =
+                parse_quantified_nested_group_alternation_pattern_str(pattern_value)
+            {
+                if flags != FLAG_UNICODE {
+                    return MatchOutcome {
+                        status: MatchStatus::Unsupported,
+                        pos: normalized_pos,
+                        endpos: normalized_endpos,
+                        span: None,
+                        group_spans: Vec::new(),
+                        lastindex: None,
+                    };
+                }
+
+                find_quantified_nested_group_alternation_match_span_str(
+                    &grouped_pattern,
+                    flags,
+                    mode,
+                    &string_chars,
+                    normalized_pos,
+                    normalized_endpos,
+                )
+                .map_or((None, Vec::new()), |(span, group_spans)| {
+                    (Some(span), group_spans)
+                })
+            } else if let Some(grouped_pattern) =
                 parse_branch_local_numbered_backreference_pattern_str(pattern_value)
             {
                 if flags != FLAG_UNICODE {
@@ -5687,6 +5835,10 @@ fn literal_match_str(
             .or_else(|| {
                 parse_nested_alternation_literal_pattern_str(pattern_value)
                     .map(|grouped_pattern| grouped_pattern.lastindex())
+            })
+            .or_else(|| {
+                parse_quantified_nested_group_alternation_pattern_str(pattern_value)
+                    .and_then(|grouped_pattern| grouped_pattern.matched_lastindex(&group_spans))
             })
             .or_else(|| {
                 parse_branch_local_numbered_backreference_pattern_str(pattern_value)
@@ -9167,6 +9319,91 @@ fn find_nested_alternation_match_span_str(
                 pattern.group_spans_for_branch_len(pos, branch_len),
             ))
         }),
+    }
+}
+
+fn quantified_nested_group_alternation_matches_at_str(
+    pattern: &QuantifiedNestedGroupAlternationPattern<'_>,
+    flags: i32,
+    string: &[char],
+    start: usize,
+    endpos: usize,
+) -> Option<((usize, usize), (usize, usize), usize)> {
+    let prefix_chars: Vec<char> = pattern.prefix.chars().collect();
+    let suffix_chars: Vec<char> = pattern.suffix.chars().collect();
+
+    if !literal_matches_at_str(prefix_chars.as_slice(), flags, string, start, endpos) {
+        return None;
+    }
+
+    let repetition_start = start + prefix_chars.len();
+    let max_repeat = quantified_alternation_open_ended_max_repeats_for_branches(
+        pattern.branches.as_slice(),
+        flags,
+        string,
+        repetition_start,
+        endpos,
+        suffix_chars.as_slice(),
+    );
+    if max_repeat == 0 {
+        return None;
+    }
+
+    for candidate_count in (1..=max_repeat).rev() {
+        if let Some((inner_span, match_end)) = quantified_alternation_matches_exact_repeats(
+            pattern.branches.as_slice(),
+            flags,
+            string,
+            repetition_start,
+            endpos,
+            candidate_count,
+            suffix_chars.as_slice(),
+        ) {
+            return Some(((repetition_start, inner_span.1), inner_span, match_end));
+        }
+    }
+
+    None
+}
+
+fn find_quantified_nested_group_alternation_match_span_str(
+    pattern: &QuantifiedNestedGroupAlternationPattern<'_>,
+    flags: i32,
+    mode: MatchMode,
+    string: &[char],
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    match mode {
+        MatchMode::Search => (pos..=endpos).find_map(|start| {
+            quantified_nested_group_alternation_matches_at_str(
+                pattern, flags, string, start, endpos,
+            )
+            .map(|(outer_span, inner_span, match_end)| {
+                (
+                    (start, match_end),
+                    pattern.group_spans(outer_span, inner_span),
+                )
+            })
+        }),
+        MatchMode::Match => {
+            quantified_nested_group_alternation_matches_at_str(pattern, flags, string, pos, endpos)
+                .map(|(outer_span, inner_span, match_end)| {
+                    (
+                        (pos, match_end),
+                        pattern.group_spans(outer_span, inner_span),
+                    )
+                })
+        }
+        MatchMode::Fullmatch => {
+            quantified_nested_group_alternation_matches_at_str(pattern, flags, string, pos, endpos)
+                .and_then(|(outer_span, inner_span, match_end)| {
+                    (match_end == endpos).then_some((
+                        (pos, match_end),
+                        pattern.group_spans(outer_span, inner_span),
+                    ))
+                })
+        }
     }
 }
 

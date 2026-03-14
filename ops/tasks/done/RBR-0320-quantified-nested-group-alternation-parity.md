@@ -1,6 +1,6 @@
 # RBR-0320: Add quantified nested-group alternation parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-14
 
@@ -28,3 +28,9 @@ Created: 2026-03-14
 ## Notes
 - Build on `RBR-0318`, `RBR-0313`, and the existing nested-group alternation execution support.
 - Keep later benchmark catch-up on the existing `benchmarks/workloads/nested_group_alternation_boundary.py` path, which already carries the quantified nested-group alternation gap anchor; do not fork another benchmark family when that follow-on is seeded.
+
+## Completion Notes
+- Added one narrow Rust parser/matcher path for `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`, reusing the existing open-ended alternation repeat helpers while keeping the supported slice pinned to the published `b|c` `+`-quantified inner alternation cases.
+- Kept Python-side behavior on the existing wrapper/native-marshal path; no new ad hoc Python regex execution was added, and the current CPython boundary did not need extra special-casing beyond the new core metadata and match spans.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports 793 executed cases, 793 passes, 0 failures, and 0 `unimplemented` outcomes, with the quantified nested-group alternation suite moving to 6 passes and 0 `unimplemented`.
+- Verified with `cargo build -p rebar-cpython`, `./.venv/bin/python -m pytest tests/python/test_quantified_nested_group_alternation_parity.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/quantified_nested_group_alternation_workflows.py --report /tmp/rebar-rbr0320-quantified-nested-group-alternation.json`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.json`, and `./.venv/bin/python -m unittest tests.conformance.test_combined_correctness_scorecards`.
