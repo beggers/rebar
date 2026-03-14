@@ -22,6 +22,7 @@ Constraints:
 - When a task touches harness code, prefer ordinary Python tests, pytest helpers, and readable workload definitions over new bespoke fixture formats or custom data plumbing.
 - When a task touches the Rust implementation or Python boundary, prefer deletion, consolidation, and clearer ownership boundaries over new wrappers or abstractions.
 - Do not widen the scope beyond the single claimed task except for small adjacent changes required to finish it cleanly.
+- Do not run `git add`, `git commit`, `git push`, or other staging/commit commands; the harness owns version-control state and per-agent commits.
 - If you discover follow-up architecture work, note it in the task file so the Architecture Agent can queue it explicitly.
 - Do not treat prior runtime logs, stale queue state, or historical sandbox failures as proof that the current run cannot write.
 - If a direct write attempt in this run fails, say so explicitly in the final message and include the failing path or command.
