@@ -265,18 +265,6 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "named-conditional-group-exists-empty-else-pattern-fullmatch-absent-str",
         ),
     },
-    "conditional-group-exists-empty-else-nested-workflows": {
-        "representative_case_ids": (
-            "conditional-group-exists-empty-else-nested-compile-metadata-str",
-            "conditional-group-exists-empty-else-nested-module-search-present-str",
-            "conditional-group-exists-empty-else-nested-pattern-fullmatch-absent-str",
-            "named-conditional-group-exists-empty-else-nested-compile-metadata-str",
-            "named-conditional-group-exists-empty-else-nested-module-search-present-str",
-            "named-conditional-group-exists-empty-else-nested-pattern-fullmatch-absent-str",
-            "systematic-conditional-group-exists-empty-else-nested-numbered-module-search-present-str",
-            "systematic-conditional-group-exists-empty-else-nested-named-pattern-fullmatch-absent-str",
-        ),
-    },
     "conditional-group-exists-empty-yes-else-workflows": {
         "representative_case_ids": (
             "conditional-group-exists-empty-yes-else-compile-metadata-str",
@@ -346,6 +334,132 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-lower-bound-b-branch-str",
             "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-second-iteration-mixed-branches-str",
             "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
+        ),
+    },
+}
+
+
+CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS = {
+    "conditional-group-exists-nested-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-nested-compile-metadata-str",
+            "conditional-group-exists-nested-module-search-present-str",
+            "conditional-group-exists-nested-module-fullmatch-absent-str",
+            "conditional-group-exists-nested-pattern-fullmatch-unreachable-inner-else-str",
+            "named-conditional-group-exists-nested-compile-metadata-str",
+            "named-conditional-group-exists-nested-module-search-present-str",
+            "named-conditional-group-exists-nested-module-fullmatch-absent-str",
+            "named-conditional-group-exists-nested-pattern-fullmatch-unreachable-inner-else-str",
+        ),
+    },
+    "conditional-group-exists-no-else-nested-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-no-else-nested-compile-metadata-str",
+            "conditional-group-exists-no-else-nested-module-search-present-str",
+            "conditional-group-exists-no-else-nested-module-fullmatch-missing-suffix-str",
+            "conditional-group-exists-no-else-nested-pattern-fullmatch-absent-str",
+            "named-conditional-group-exists-no-else-nested-compile-metadata-str",
+            "named-conditional-group-exists-no-else-nested-module-search-present-str",
+            "named-conditional-group-exists-no-else-nested-module-fullmatch-missing-suffix-str",
+            "named-conditional-group-exists-no-else-nested-pattern-fullmatch-absent-str",
+        ),
+    },
+    "conditional-group-exists-quantified-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-quantified-compile-metadata-str",
+            "conditional-group-exists-quantified-module-search-present-str",
+            "conditional-group-exists-quantified-module-fullmatch-absent-str",
+            "conditional-group-exists-quantified-pattern-fullmatch-missing-repeat-str",
+            "named-conditional-group-exists-quantified-compile-metadata-str",
+            "named-conditional-group-exists-quantified-module-search-present-str",
+            "named-conditional-group-exists-quantified-module-fullmatch-absent-str",
+            "named-conditional-group-exists-quantified-pattern-fullmatch-missing-repeat-str",
+        ),
+    },
+    "conditional-group-exists-no-else-quantified-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-no-else-quantified-compile-metadata-str",
+            "conditional-group-exists-no-else-quantified-module-search-present-str",
+            "conditional-group-exists-no-else-quantified-module-fullmatch-absent-str",
+            "conditional-group-exists-no-else-quantified-pattern-fullmatch-missing-repeat-str",
+            "named-conditional-group-exists-no-else-quantified-compile-metadata-str",
+            "named-conditional-group-exists-no-else-quantified-module-search-present-str",
+            "named-conditional-group-exists-no-else-quantified-module-fullmatch-absent-str",
+            "named-conditional-group-exists-no-else-quantified-pattern-fullmatch-missing-repeat-str",
+        ),
+    },
+    "conditional-group-exists-empty-else-nested-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-empty-else-nested-compile-metadata-str",
+            "conditional-group-exists-empty-else-nested-module-search-present-str",
+            "conditional-group-exists-empty-else-nested-module-fullmatch-missing-suffix-str",
+            "conditional-group-exists-empty-else-nested-pattern-fullmatch-absent-str",
+            "named-conditional-group-exists-empty-else-nested-compile-metadata-str",
+            "named-conditional-group-exists-empty-else-nested-module-search-present-str",
+            "named-conditional-group-exists-empty-else-nested-module-fullmatch-missing-suffix-str",
+            "named-conditional-group-exists-empty-else-nested-pattern-fullmatch-absent-str",
+        ),
+    },
+    "conditional-group-exists-empty-else-quantified-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-empty-else-quantified-compile-metadata-str",
+            "conditional-group-exists-empty-else-quantified-module-search-present-str",
+            "conditional-group-exists-empty-else-quantified-module-fullmatch-absent-str",
+            "conditional-group-exists-empty-else-quantified-pattern-fullmatch-missing-repeat-str",
+            "named-conditional-group-exists-empty-else-quantified-compile-metadata-str",
+            "named-conditional-group-exists-empty-else-quantified-module-search-present-str",
+            "named-conditional-group-exists-empty-else-quantified-module-fullmatch-absent-str",
+            "named-conditional-group-exists-empty-else-quantified-pattern-fullmatch-missing-repeat-str",
+        ),
+    },
+    "conditional-group-exists-empty-yes-else-nested-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-empty-yes-else-nested-compile-metadata-str",
+            "conditional-group-exists-empty-yes-else-nested-module-search-present-str",
+            "conditional-group-exists-empty-yes-else-nested-module-fullmatch-absent-str",
+            "conditional-group-exists-empty-yes-else-nested-pattern-fullmatch-absent-failure-str",
+            "named-conditional-group-exists-empty-yes-else-nested-compile-metadata-str",
+            "named-conditional-group-exists-empty-yes-else-nested-module-search-present-str",
+            "named-conditional-group-exists-empty-yes-else-nested-module-fullmatch-absent-str",
+            "named-conditional-group-exists-empty-yes-else-nested-pattern-fullmatch-absent-failure-str",
+        ),
+    },
+    "conditional-group-exists-empty-yes-else-quantified-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-empty-yes-else-quantified-compile-metadata-str",
+            "conditional-group-exists-empty-yes-else-quantified-module-fullmatch-present-str",
+            "conditional-group-exists-empty-yes-else-quantified-module-fullmatch-absent-str",
+            "conditional-group-exists-empty-yes-else-quantified-pattern-fullmatch-mixed-str",
+            "named-conditional-group-exists-empty-yes-else-quantified-compile-metadata-str",
+            "named-conditional-group-exists-empty-yes-else-quantified-module-fullmatch-present-str",
+            "named-conditional-group-exists-empty-yes-else-quantified-module-fullmatch-absent-str",
+            "named-conditional-group-exists-empty-yes-else-quantified-pattern-fullmatch-mixed-str",
+        ),
+    },
+    "conditional-group-exists-fully-empty-nested-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-fully-empty-nested-compile-metadata-str",
+            "conditional-group-exists-fully-empty-nested-module-search-present-str",
+            "conditional-group-exists-fully-empty-nested-module-fullmatch-absent-str",
+            "conditional-group-exists-fully-empty-nested-pattern-fullmatch-extra-suffix-failure-str",
+            "named-conditional-group-exists-fully-empty-nested-compile-metadata-str",
+            "named-conditional-group-exists-fully-empty-nested-module-search-present-str",
+            "named-conditional-group-exists-fully-empty-nested-module-fullmatch-absent-str",
+            "named-conditional-group-exists-fully-empty-nested-pattern-fullmatch-extra-suffix-failure-str",
+        ),
+    },
+    "conditional-group-exists-fully-empty-quantified-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-fully-empty-quantified-compile-metadata-str",
+            "conditional-group-exists-fully-empty-quantified-module-fullmatch-present-str",
+            "conditional-group-exists-fully-empty-quantified-module-fullmatch-absent-str",
+            "conditional-group-exists-fully-empty-quantified-pattern-fullmatch-mixed-str",
+            "conditional-group-exists-fully-empty-quantified-pattern-fullmatch-extra-suffix-failure-str",
+            "named-conditional-group-exists-fully-empty-quantified-compile-metadata-str",
+            "named-conditional-group-exists-fully-empty-quantified-module-fullmatch-present-str",
+            "named-conditional-group-exists-fully-empty-quantified-module-fullmatch-absent-str",
+            "named-conditional-group-exists-fully-empty-quantified-pattern-fullmatch-mixed-str",
+            "named-conditional-group-exists-fully-empty-quantified-pattern-fullmatch-extra-suffix-failure-str",
         ),
     },
 }
@@ -1086,6 +1200,23 @@ def combined_correctness_case(target_manifest_id: str) -> CorrectnessScorecardEx
     return _build_scorecard_expectation(
         target_manifest_id,
         COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
+    )
+
+
+def conditional_nested_quantified_scorecard_target_manifest_ids() -> tuple[str, ...]:
+    return _expected_target_manifest_ids(
+        CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS,
+        expectation_label="conditional nested/quantified correctness scorecard",
+    )
+
+
+@lru_cache(maxsize=None)
+def conditional_nested_quantified_scorecard_case(
+    target_manifest_id: str,
+) -> CorrectnessScorecardExpectation:
+    return _build_scorecard_expectation(
+        target_manifest_id,
+        CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS,
     )
 
 

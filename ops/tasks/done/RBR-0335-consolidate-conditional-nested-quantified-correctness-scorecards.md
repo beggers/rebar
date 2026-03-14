@@ -1,8 +1,9 @@
 # RBR-0335: Consolidate nested and quantified conditional correctness scorecards into the data-driven suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
+Completed: 2026-03-14
 
 ## Goal
 - Replace the remaining non-alternation conditional correctness wrapper modules for nested and quantified group-exists workflows with one legible, data-driven scorecard suite so this conditional frontier is asserted in one place instead of across repeated cargo-build, subprocess, tracked-report, and representative-case boilerplate.
@@ -48,3 +49,13 @@ Created: 2026-03-14
 ## Notes
 - These ten wrapper modules total 2,717 lines and still duplicate the same build-plus-regenerate flow with only manifest ids and representative nested/quantified conditional cases varying.
 - The existing `_build_scorecard_expectation(...)` path in `tests/conformance/correctness_expectations.py` already derives cumulative fixture prefixes from `DEFAULT_FIXTURE_PATHS`, so this family can land as another bounded table-plus-accessor extension instead of a new abstraction.
+
+## Completion
+- Added `CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS` plus shared accessors in `tests/conformance/correctness_expectations.py`, and routed the ten nested/quantified conditional manifests through `tests/conformance/test_combined_correctness_scorecards.py`.
+- Moved the last non-alternation nested/quantified conditional scorecard coverage onto `assert_correctness_scorecard_suite(...)`, including the previously duplicated `conditional-group-exists-empty-else-nested-workflows` entry that had partially lived in the combined expectation table.
+- Deleted the ten superseded nested/quantified conditional wrapper modules from `tests/conformance/`.
+
+## Verification
+- `.venv/bin/python -m pytest tests/conformance/test_combined_correctness_scorecards.py -q`
+- `.venv/bin/python - <<'PY'` importing `conditional_nested_quantified_scorecard_target_manifest_ids()` confirmed it resolves exactly the ten intended manifests from `DEFAULT_FIXTURE_PATHS`, and `combined_target_manifest_ids()` no longer includes `conditional-group-exists-empty-else-nested-workflows`.
+- `git diff --name-status -- tests/conformance/test_correctness_conditional_group_exists_nested_workflows.py tests/conformance/test_correctness_conditional_group_exists_no_else_nested_workflows.py tests/conformance/test_correctness_conditional_group_exists_empty_else_nested_workflows.py tests/conformance/test_correctness_conditional_group_exists_empty_yes_else_nested_workflows.py tests/conformance/test_correctness_conditional_group_exists_fully_empty_nested_workflows.py tests/conformance/test_correctness_conditional_group_exists_quantified_workflows.py tests/conformance/test_correctness_conditional_group_exists_no_else_quantified_workflows.py tests/conformance/test_correctness_conditional_group_exists_empty_else_quantified_workflows.py tests/conformance/test_correctness_conditional_group_exists_empty_yes_else_quantified_workflows.py tests/conformance/test_correctness_conditional_group_exists_fully_empty_quantified_workflows.py` showed each deleted wrapper as `D`, and `rg --files tests/conformance | rg 'test_correctness_conditional_group_exists_(nested|no_else_nested|empty_else_nested|empty_yes_else_nested|fully_empty_nested|quantified|no_else_quantified|empty_else_quantified|empty_yes_else_quantified|fully_empty_quantified)_workflows\\.py$'` returned no matches.

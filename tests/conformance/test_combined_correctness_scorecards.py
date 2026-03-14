@@ -7,6 +7,8 @@ from tests.conformance.correctness_expectations import (
     combined_target_manifest_ids,
     conditional_alternation_scorecard_case,
     conditional_alternation_scorecard_target_manifest_ids,
+    conditional_nested_quantified_scorecard_case,
+    conditional_nested_quantified_scorecard_target_manifest_ids,
     conditional_replacement_scorecard_case,
     conditional_replacement_scorecard_target_manifest_ids,
     open_ended_quantified_group_scorecard_case,
@@ -45,6 +47,17 @@ class CorrectnessScorecardSuitesTest(unittest.TestCase):
             self,
             target_manifest_ids=conditional_alternation_scorecard_target_manifest_ids(),
             case_factory=conditional_alternation_scorecard_case,
+        )
+
+    def test_runner_regenerates_conditional_nested_quantified_correctness_scorecards(
+        self,
+    ) -> None:
+        assert_correctness_scorecard_suite(
+            self,
+            target_manifest_ids=(
+                conditional_nested_quantified_scorecard_target_manifest_ids()
+            ),
+            case_factory=conditional_nested_quantified_scorecard_case,
         )
 
     def test_runner_regenerates_quantified_alternation_correctness_scorecards(
