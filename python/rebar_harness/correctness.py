@@ -600,8 +600,27 @@ def load_fixture_manifest(path: pathlib.Path) -> tuple[FixtureManifest, list[Fix
 def load_fixture_manifests(paths: Sequence[pathlib.Path]) -> tuple[list[FixtureManifest], list[FixtureCase]]:
     manifests: list[FixtureManifest] = []
     cases: list[FixtureCase] = []
+    seen_manifest_ids: dict[str, pathlib.Path] = {}
+    seen_case_ids: dict[str, pathlib.Path] = {}
     for path in paths:
         manifest, manifest_cases = load_fixture_manifest(path)
+        prior_manifest_path = seen_manifest_ids.get(manifest.manifest_id)
+        if prior_manifest_path is not None:
+            raise ValueError(
+                "duplicate fixture manifest id "
+                f"{manifest.manifest_id!r} in {prior_manifest_path} and {manifest.path}"
+            )
+        seen_manifest_ids[manifest.manifest_id] = manifest.path
+
+        for case in manifest_cases:
+            prior_case_path = seen_case_ids.get(case.case_id)
+            if prior_case_path is not None:
+                raise ValueError(
+                    "duplicate fixture case id "
+                    f"{case.case_id!r} in {prior_case_path} and {manifest.path}"
+                )
+            seen_case_ids[case.case_id] = manifest.path
+
         manifests.append(manifest)
         cases.extend(manifest_cases)
     return manifests, cases
