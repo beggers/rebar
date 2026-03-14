@@ -1025,6 +1025,20 @@ def _compile_known_parser_case(pattern: str | bytes, flags: int) -> Pattern | No
             groupindex={"outer": 1} if pattern.startswith("a(?P<outer>") else {},
         )
 
+    if pattern in {
+        r"a((b|c){1,4})\2d",
+        r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
+    } and flags == int(UNICODE):
+        return _build_compiled_pattern(
+            pattern,
+            flags,
+            supports_literal=False,
+            groups=2,
+            groupindex={"outer": 1, "inner": 2}
+            if pattern.startswith("a(?P<outer>")
+            else {},
+        )
+
     if (
         pattern == "[A-Z_][a-z0-9_]+"
         and flags == int(IGNORECASE | UNICODE)

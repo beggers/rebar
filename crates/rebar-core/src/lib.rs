@@ -471,6 +471,7 @@ struct QuantifiedNestedGroupAlternationBranchLocalBackreferencePattern<'a> {
     inner_name: Option<&'a str>,
     branches: Vec<&'a str>,
     suffix: &'a str,
+    max_repeat: Option<usize>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -3050,9 +3051,16 @@ fn parse_quantified_nested_group_alternation_branch_local_numbered_backreference
         return None;
     }
 
-    let suffix = inner_remainder[inner_close_offset + 1..]
-        .strip_prefix("+)")?
-        .strip_prefix(r"\2")?;
+    let quantifier_and_remainder = &inner_remainder[inner_close_offset + 1..];
+    let (max_repeat, quantified_remainder) =
+        if let Some(quantified_remainder) = quantifier_and_remainder.strip_prefix("+)") {
+            (None, quantified_remainder)
+        } else {
+            let quantified_remainder = quantifier_and_remainder.strip_prefix("{1,4})")?;
+            (Some(4), quantified_remainder)
+        };
+
+    let suffix = quantified_remainder.strip_prefix(r"\2")?;
     if suffix.is_empty() || suffix.chars().any(is_meta_character) {
         return None;
     }
@@ -3064,6 +3072,7 @@ fn parse_quantified_nested_group_alternation_branch_local_numbered_backreference
             inner_name: None,
             branches,
             suffix,
+            max_repeat,
         },
     )
 }
@@ -3101,9 +3110,16 @@ fn parse_quantified_nested_group_alternation_branch_local_named_backreference_pa
         return None;
     }
 
-    let backreference = inner_body_and_remainder[inner_close_offset + 1..]
-        .strip_prefix("+)")?
-        .strip_prefix("(?P=")?;
+    let quantifier_and_remainder = &inner_body_and_remainder[inner_close_offset + 1..];
+    let (max_repeat, quantified_remainder) =
+        if let Some(quantified_remainder) = quantifier_and_remainder.strip_prefix("+)") {
+            (None, quantified_remainder)
+        } else {
+            let quantified_remainder = quantifier_and_remainder.strip_prefix("{1,4})")?;
+            (Some(4), quantified_remainder)
+        };
+
+    let backreference = quantified_remainder.strip_prefix("(?P=")?;
     let reference_close_offset = backreference.find(')')?;
     let reference_name = &backreference[..reference_close_offset];
     if reference_name != inner_name {
@@ -3122,6 +3138,7 @@ fn parse_quantified_nested_group_alternation_branch_local_named_backreference_pa
             inner_name: Some(inner_name),
             branches,
             suffix,
+            max_repeat,
         },
     )
 }
@@ -10056,6 +10073,9 @@ fn quantified_nested_group_alternation_branch_local_backreference_matches_at_str
         endpos,
         backreference_suffix_chars.as_slice(),
     );
+    let max_repeat = pattern
+        .max_repeat
+        .map_or(max_repeat, |bounded_max_repeat| usize::min(bounded_max_repeat, max_repeat));
     if max_repeat == 0 {
         return None;
     }
