@@ -1470,6 +1470,30 @@ def parse_iso8601_timestamp(value: str | None) -> datetime | None:
         return None
 
 
+def parse_run_id_timestamp(value: str | None) -> datetime | None:
+    if not isinstance(value, str) or not value:
+        return None
+    stamp = value.split("-", 1)[0]
+    try:
+        return datetime.strptime(stamp, "%Y%m%dT%H%M%SZ").replace(tzinfo=UTC)
+    except ValueError:
+        return None
+
+
+def run_artifacts_newer_than_loop_state(loop_state: dict[str, Any], runs_root: Path) -> bool:
+    updated_at = parse_iso8601_timestamp(loop_state.get("updated_at"))
+    if updated_at is None:
+        return False
+    try:
+        run_dirs = [path for path in runs_root.iterdir() if path.is_dir()]
+    except OSError:
+        return False
+    return any(
+        (run_started := parse_run_id_timestamp(path.name)) is not None and run_started > updated_at
+        for path in run_dirs
+    )
+
+
 def agent_in_environment_backoff(agent: AgentSpec, loop_state: dict[str, Any]) -> bool:
     backoff_seconds = int(agent.dispatch.get("environment_issue_backoff_seconds", 0))
     if backoff_seconds <= 0:
@@ -2043,10 +2067,12 @@ def maybe_checkpoint_inherited_dirty_worktree(
 ) -> dict[str, Any] | None:
     if supervisor_agent is None or not git_worktree_dirty():
         return None
-    if not last_cycle_stalled_on_inherited_dirty_worktree(loop_state):
+    paths = runtime_paths(config)
+    if not last_cycle_stalled_on_inherited_dirty_worktree(loop_state) and not run_artifacts_newer_than_loop_state(
+        loop_state, paths["runs_root"]
+    ):
         return None
 
-    paths = runtime_paths(config)
     ensure_runtime_dirs(paths)
     run_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + "-supervisor-inherited-dirty-checkpoint"
     run_dir = paths["runs_root"] / run_id
