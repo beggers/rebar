@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import Counter
 import pathlib
 import re
 import sys
@@ -9,95 +10,85 @@ import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYTHON_SOURCE = REPO_ROOT / "python"
+FIXTURE_PATH = (
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
+    / "quantified_nested_group_alternation_branch_local_backreference_workflows.py"
+)
 
 if str(PYTHON_SOURCE) not in sys.path:
     sys.path.insert(0, str(PYTHON_SOURCE))
 
 
 import rebar
+from rebar_harness.correctness import FixtureCase, load_fixture_manifest
 
 
-NUMBERED_PATTERN = r"a((b|c)+)\2d"
-NAMED_PATTERN = r"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d"
-COMPILE_CASES = (
-    pytest.param(NUMBERED_PATTERN, id="numbered-compile"),
-    pytest.param(NAMED_PATTERN, id="named-compile"),
+FIXTURE_MANIFEST, PUBLISHED_CASES = load_fixture_manifest(FIXTURE_PATH)
+EXPECTED_CASE_IDS = {
+    "quantified-nested-group-alternation-branch-local-numbered-backreference-compile-metadata-str",
+    "quantified-nested-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
+    "quantified-nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-lower-bound-c-branch-str",
+    "quantified-nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-second-iteration-b-branch-str",
+    "quantified-nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-str",
+    "quantified-nested-group-alternation-branch-local-named-backreference-compile-metadata-str",
+    "quantified-nested-group-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-str",
+    "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-lower-bound-b-branch-str",
+    "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-second-iteration-mixed-branches-str",
+    "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
+}
+EXPECTED_COMPILE_PATTERNS = {
+    r"a((b|c)+)\2d",
+    r"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
+}
+EXPECTED_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("compile", None): 2,
+        ("module_call", "search"): 2,
+        ("pattern_call", "fullmatch"): 6,
+    }
 )
-WORKFLOW_CASES = (
-    pytest.param(
-        "module",
-        NUMBERED_PATTERN,
-        "search",
-        "zzabbdzz",
-        id="module-numbered-search-lower-bound-b-branch",
-    ),
-    pytest.param(
-        "pattern",
-        NUMBERED_PATTERN,
-        "fullmatch",
-        "abbbd",
-        id="pattern-numbered-fullmatch-repeated-b-branch",
-    ),
-    pytest.param(
-        "pattern",
-        NUMBERED_PATTERN,
-        "fullmatch",
-        "abccd",
-        id="pattern-numbered-fullmatch-repeated-mixed-branch",
-    ),
-    pytest.param(
-        "module",
-        NAMED_PATTERN,
-        "search",
-        "zzaccdzz",
-        id="module-named-search-lower-bound-c-branch",
-    ),
-    pytest.param(
-        "pattern",
-        NAMED_PATTERN,
-        "fullmatch",
-        "abbbd",
-        id="pattern-named-fullmatch-repeated-b-branch",
-    ),
-    pytest.param(
-        "pattern",
-        NAMED_PATTERN,
-        "fullmatch",
-        "acbbd",
-        id="pattern-named-fullmatch-repeated-mixed-branch",
-    ),
-)
+COMPILE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "compile")
+WORKFLOW_CASES = tuple(case for case in PUBLISHED_CASES if case.operation != "compile")
 NEGATIVE_CASES = (
     pytest.param(
         "module",
-        NUMBERED_PATTERN,
+        r"a((b|c)+)\2d",
         "search",
         "zzabcdzz",
         id="module-numbered-search-miss-mismatched-replay",
     ),
     pytest.param(
         "pattern",
-        NUMBERED_PATTERN,
+        r"a((b|c)+)\2d",
         "fullmatch",
         "acbd",
         id="pattern-numbered-fullmatch-miss-short-replay",
     ),
     pytest.param(
         "module",
-        NAMED_PATTERN,
+        r"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
         "search",
         "zzacbdzz",
         id="module-named-search-miss-short-replay",
     ),
     pytest.param(
         "pattern",
-        NAMED_PATTERN,
+        r"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
         "fullmatch",
         "abcd",
         id="pattern-named-fullmatch-miss-mismatched-replay",
     ),
 )
 MISSING_GROUP_DEFAULT = object()
+
+
+def _case_pattern(case: FixtureCase) -> str | bytes:
+    if case.pattern is not None:
+        return case.pattern_payload()
+    return case.args[0]
 
 
 def _assert_pattern_parity(
@@ -187,48 +178,60 @@ def _assert_match_convenience_api_parity(
         assert observed.expand(template) == expected.expand(template)
 
 
-@pytest.mark.parametrize("pattern", COMPILE_CASES)
+def test_parity_suite_stays_aligned_with_published_correctness_fixture() -> None:
+    assert FIXTURE_MANIFEST.manifest_id == (
+        "quantified-nested-group-alternation-branch-local-backreference-workflows"
+    )
+    assert len(PUBLISHED_CASES) == len(EXPECTED_CASE_IDS)
+    assert {case.case_id for case in PUBLISHED_CASES} == EXPECTED_CASE_IDS
+    assert {_case_pattern(case) for case in PUBLISHED_CASES} == EXPECTED_COMPILE_PATTERNS
+    assert Counter((case.operation, case.helper) for case in PUBLISHED_CASES) == (
+        EXPECTED_OPERATION_HELPER_COUNTS
+    )
+
+
+@pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
-    pattern: str,
+    case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
 
-    observed = backend.compile(pattern)
-    expected = re.compile(pattern)
+    observed = backend.compile(case.pattern_payload(), case.flags or 0)
+    expected = re.compile(case.pattern_payload(), case.flags or 0)
 
-    assert observed is backend.compile(pattern)
+    assert observed is backend.compile(case.pattern_payload(), case.flags or 0)
     _assert_pattern_parity(backend_name, observed, expected)
 
 
-@pytest.mark.parametrize(("target", "pattern", "helper", "text"), WORKFLOW_CASES)
-def test_supported_success_paths_match_cpython(
+@pytest.mark.parametrize("case", WORKFLOW_CASES, ids=lambda case: case.case_id)
+def test_published_workflows_match_cpython(
     regex_backend: tuple[str, object],
-    target: str,
-    pattern: str,
-    helper: str,
-    text: str,
+    case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
+    assert case.helper is not None
 
-    if target == "module":
-        observed = getattr(backend, helper)(pattern, text)
-        expected = getattr(re, helper)(pattern, text)
+    if case.operation == "module_call":
+        observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
+        expected = getattr(re, case.helper)(*case.args, **case.kwargs)
     else:
-        observed_pattern = backend.compile(pattern)
-        expected_pattern = re.compile(pattern)
+        observed_pattern = backend.compile(case.pattern_payload(), case.flags or 0)
+        expected_pattern = re.compile(case.pattern_payload(), case.flags or 0)
         _assert_pattern_parity(backend_name, observed_pattern, expected_pattern)
-        observed = getattr(observed_pattern, helper)(text)
-        expected = getattr(expected_pattern, helper)(text)
+        observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
+        expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
 
-    assert observed is not None
-    assert expected is not None
+    assert (observed is None) == (expected is None)
+    if expected is None:
+        return
+
     _assert_match_parity(backend_name, observed, expected)
     _assert_match_convenience_api_parity(observed, expected)
 
 
 @pytest.mark.parametrize(("target", "pattern", "helper", "text"), NEGATIVE_CASES)
-def test_no_match_paths_match_cpython(
+def test_mismatched_replay_paths_match_cpython(
     regex_backend: tuple[str, object],
     target: str,
     pattern: str,
