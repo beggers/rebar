@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while keeping the correctness and benchmark publications caught up with each newly supported slice. |
 | Delivery estimate | Early subset, still far from drop-in parity: the Rust boundary covers literals, captures, several bounded conditional and replacement workflows, quantified branch-local backreferences, and grouped alternation through bounded `{1,4}` plus open-ended `{1,}` and `{2,}` counted-repeat slices. The last grouped slice aligned across correctness, Rust-backed parity, and the main Python-path benchmark surface now reaches quantified nested-group callable-replacement workflows on `a((bc)+)d` and `a(?P<outer>(?P<inner>bc)+)d`; `RBR-0318` is queued to publish quantified nested-group alternation for `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`, and `RBR-0320` is seeded immediately behind it to convert that same bounded slice to Rust-backed parity before benchmark catch-up. |
 | Current milestone | Milestone 2 now has quantified nested-group callable replacement aligned across correctness, Rust-backed parity, and the main Python-path benchmark surface; `RBR-0318` is queued to publish quantified nested-group alternation, and `RBR-0320` is seeded immediately behind it to convert that same slice to Rust-backed parity through the existing nested alternation path. |
-| Work queue | `2` ready, `0` in progress, `321` done, `0` blocked |
+| Work queue | `1` ready, `0` in progress, `322` done, `0` blocked |
 | Foundation tracks | `0/0` landed (`[..................] 0%`) |
 
 ### Correctness Snapshot

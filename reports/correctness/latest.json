@@ -1,6 +1,6 @@
 {
   "baseline": {
-    "executable": "/home/ubuntu/rebar/.venv/bin/python",
+    "executable": "/usr/bin/python3",
     "oracle": "cpython-stdlib-re",
     "platform": "Linux-6.14.0-1018-aws-x86_64-with-glibc2.39",
     "python_build": {
@@ -83455,7 +83455,7 @@
       "tests/conformance/fixtures/quantified_alternation_open_ended_workflows.py"
     ]
   },
-  "generated_at": "2026-03-14T14:57:19Z",
+  "generated_at": "2026-03-14T15:28:26Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {

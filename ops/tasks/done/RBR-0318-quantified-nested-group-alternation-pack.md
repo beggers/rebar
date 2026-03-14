@@ -1,6 +1,6 @@
 # RBR-0318: Publish a quantified nested-group alternation correctness pack
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-14
 
@@ -29,3 +29,9 @@ Created: 2026-03-14
 - Queue this immediately behind `RBR-0316` so benchmark catch-up for the callable slice lands before the next correctness frontier reopens.
 - Build on `RBR-0087` and the existing quantified nested-group fixture helpers.
 - Keep later parity and benchmark follow-ons on the existing `benchmarks/workloads/nested_group_alternation_boundary.py` path, which already carries the quantified nested-group alternation gap anchor instead of forking another benchmark family.
+
+## Completion Notes
+- Added `tests/conformance/fixtures/quantified_nested_group_alternation_workflows.py` and appended it to `python/rebar_harness/correctness.py`, publishing six bounded numbered and named compile/module-search/compiled-pattern cases for `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`.
+- Added representative combined-scorecard coverage in `tests/conformance/correctness_expectations.py` and a dedicated regression in `tests/conformance/test_correctness_quantified_nested_group_alternation_workflows.py`.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports 88 manifests, 793 total cases, 787 passes, and 6 honest `unimplemented` outcomes from the new quantified nested-group alternation pack pending `RBR-0320`.
+- Verified with `./.venv/bin/python -m pytest tests/conformance/test_correctness_quantified_nested_group_alternation_workflows.py` and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.json`.

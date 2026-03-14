@@ -312,6 +312,16 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "quantified-alternation-named-pattern-fullmatch-lower-bound-str",
         ),
     },
+    "quantified-nested-group-alternation-workflows": {
+        "representative_case_ids": (
+            "quantified-nested-group-alternation-numbered-compile-metadata-str",
+            "quantified-nested-group-alternation-numbered-module-search-lower-bound-b-str",
+            "quantified-nested-group-alternation-numbered-pattern-fullmatch-repeated-mixed-str",
+            "quantified-nested-group-alternation-named-compile-metadata-str",
+            "quantified-nested-group-alternation-named-module-search-lower-bound-c-str",
+            "quantified-nested-group-alternation-named-pattern-fullmatch-repeated-mixed-str",
+        ),
+    },
 }
 
 
