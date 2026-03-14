@@ -1,6 +1,6 @@
 # RBR-0309: Publish a quantified nested-group callable-replacement correctness pack
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-14
 
@@ -29,3 +29,10 @@ Created: 2026-03-14
 - Queue this immediately after `RBR-0307` so benchmark catch-up lands before the next correctness frontier reopens.
 - Build on `RBR-0305` and the existing callable-replacement fixture helpers.
 - Keep later parity and benchmark follow-ons on the existing `benchmarks/workloads/nested_group_callable_replacement_boundary.py` path instead of forking another benchmark family when this slice moves beyond publication.
+
+## Completion Notes
+- Added `tests/conformance/fixtures/quantified_nested_group_callable_replacement_workflows.py` and wired it into `python/rebar_harness/correctness.py`, publishing eight bounded module and compiled-`Pattern` `sub()`/`subn()` callable-replacement cases across numbered and named quantified nested-group captures.
+- Added representative combined-scorecard coverage in `tests/conformance/correctness_expectations.py` and a dedicated regression in `tests/conformance/test_correctness_quantified_nested_group_callable_replacement_workflows.py`.
+- Updated the adjacent quantified callable contract test to assert the current honest frontier: CPython succeeds on the published callback cases while `rebar` still reports them as `unimplemented` pending the queued parity follow-on.
+- Republished `reports/correctness/latest.json`; the combined scorecard now reports 787 total cases with 779 passes and 8 explicit `unimplemented` outcomes from the new quantified nested-group callable manifest.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python python3 -m unittest tests.conformance.test_python_fixture_manifest_contract tests.conformance.test_correctness_quantified_nested_group_callable_replacement_contract tests.conformance.test_correctness_quantified_nested_group_callable_replacement_workflows tests.conformance.test_correctness_fixture_inventory_contract`, and `PYTHONPATH=python python3 -m rebar_harness.correctness --report reports/correctness/latest.json`.

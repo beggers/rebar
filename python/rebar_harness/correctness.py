@@ -62,6 +62,11 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
+    / "quantified_nested_group_callable_replacement_workflows.py",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
     / "nested_group_callable_replacement_workflows.py",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "literal_alternation_workflows.py",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_alternation_workflows.py",

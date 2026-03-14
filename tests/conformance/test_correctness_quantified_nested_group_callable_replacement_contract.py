@@ -266,20 +266,24 @@ class CorrectnessHarnessQuantifiedNestedGroupCallableReplacementContractTest(
         for case_id, expected_result in expected_results.items():
             with self.subTest(case_id=case_id):
                 case_record = find_correctness_case_record(scorecard, case_id)
-                self.assertEqual(case_record["comparison"], "pass")
+                self.assertEqual(case_record["comparison"], "unimplemented")
                 self.assertEqual(
                     case_record["observations"]["cpython"]["outcome"],
                     "success",
                 )
                 self.assertEqual(
-                    case_record["observations"]["rebar"]["outcome"],
-                    "success",
-                )
-                self.assertEqual(
-                    case_record["observations"]["rebar"]["result"],
+                    case_record["observations"]["cpython"]["result"],
                     expected_result,
                 )
-                self.assertIsNone(case_record["observations"]["rebar"]["exception"])
+                self.assertEqual(
+                    case_record["observations"]["rebar"]["outcome"],
+                    "unimplemented",
+                )
+                self.assertIsNone(case_record["observations"]["rebar"]["result"])
+                self.assertEqual(
+                    case_record["observations"]["rebar"]["exception"]["type"],
+                    "NotImplementedError",
+                )
 
 
 if __name__ == "__main__":

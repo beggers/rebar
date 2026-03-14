@@ -210,6 +210,14 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "pattern-subn-template-quantified-nested-group-named-first-match-only-str",
         ),
     },
+    "quantified-nested-group-callable-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-callable-quantified-nested-group-numbered-lower-bound-str",
+            "module-subn-callable-quantified-nested-group-numbered-first-match-only-str",
+            "pattern-sub-callable-quantified-nested-group-named-repeated-outer-capture-str",
+            "pattern-subn-callable-quantified-nested-group-named-first-match-only-str",
+        ),
+    },
     "nested-group-callable-replacement-workflows": {
         "representative_case_ids": (
             "module-sub-callable-nested-group-numbered-str",

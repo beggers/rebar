@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is still a bounded Rust-backed subset: correctness, Rust-backed parity, and the main Python-path benchmark report are now aligned through quantified nested-group replacement templates, while quantified nested-group callable replacement publication is next and bounded callable-replacement parity follows immediately behind it. |
 | Delivery estimate | The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity. Correctness, Rust-backed parity, and the main Python-path benchmark surface are aligned through quantified nested-group replacement templates, publication still runs through the source-tree shim, and quantified nested-group callable replacement plus broader nested callable and deeper grouped execution work remain ahead. |
 | Current milestone | Milestone 2 now has quantified nested-group replacement-template parity aligned across correctness, Rust-backed parity, and the main Python-path benchmark surface; `RBR-0309` is next to publish quantified nested-group callable replacement on the correctness surface, and `RBR-0313` is queued immediately behind it to convert that same slice to Rust-backed parity. |
-| Work queue | `2` ready, `0` in progress, `314` done, `0` blocked |
+| Work queue | `1` ready, `0` in progress, `315` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
