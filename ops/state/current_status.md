@@ -12,14 +12,14 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, keeping
 The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- Keep `RBR-0342` queued so nested-group alternation callable-replacement workflows for `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d` reopen the correctness frontier after the current broader `{1,4}` benchmark catch-up head drains.
+- Keep `RBR-0344` queued so the exact `a((b|c))d` / `a(?P<outer>(?P<inner>b|c))d` callable-replacement workflows become the surviving Rust-backed parity follow-on on the existing nested-group callback path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
 - The published benchmark surface is still bounded and carries 27 explicit known-gap workloads.
 
 ## Compatibility Heuristic
-Early subset, still far from drop-in parity: the Rust boundary covers literals, captures, several bounded conditional and replacement workflows, quantified branch-local backreferences, and grouped alternation through bounded `{1,4}` plus open-ended `{1,}` and `{2,}` counted-repeat slices. With the current broader `{1,4}` nested-group-alternation-plus-branch-local-backreference benchmark head expected to drain later this cycle, the surviving follow-on is `RBR-0342`, which publishes bounded nested-group alternation callable-replacement workflows for `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d` on the existing correctness path before deeper nested grouped execution broadens the queue.
+Early subset, still far from drop-in parity: the Rust boundary covers literals, captures, several bounded conditional and replacement workflows, quantified branch-local backreferences, and grouped alternation through bounded `{1,4}` plus open-ended `{1,}` and `{2,}` counted-repeat slices. The surviving follow-on is `RBR-0344`, which converts the exact nested-group alternation callable-replacement workflows `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d` to Rust-backed parity before benchmark catch-up or deeper nested grouped execution broadens the queue.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -299,7 +299,7 @@ Early subset, still far from drop-in parity: the Rust boundary covers literals, 
 - A two-hundred-seventieth completed implementation task, `RBR-0270`, with `python/rebar_harness/correctness.py`, `tests/conformance/fixtures/broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.json`, `tests/conformance/test_correctness_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py`, and a regenerated `reports/correctness/latest.py`, adding an eighty-second manifest that publishes fourteen bounded numbered and named compile/module/pattern cases for `a((bc|de){1,4})?(?(1)d|e)` and `a(?P<outer>(bc|de){1,4})?(?(outer)d|e)` while widening the combined scorecard to 715 total cases across 82 manifests with 701 passes, 0 explicit failures, and 14 honest `unimplemented` outcomes pending `RBR-0271`.
 - A two-hundred-seventy-sixth completed implementation task, `RBR-0276`, with broader `{1,4}` grouped backtracking-heavy parser and executor support in `crates/rebar-core/src/lib.rs`, focused parity coverage kept in `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` plus added core tests, and a regenerated `reports/correctness/latest.py`, converting the bounded `a((bc|b)c){1,4}d` and `a(?P<word>(bc|b)c){1,4}d` slice to real Rust-backed behavior and moving the combined 82-manifest scorecard to 729 passes, 0 explicit failures, and 0 honest `unimplemented` outcomes.
 - A supervisor-retuned ready queue that now inserts Rust-boundary migration tasks ahead of the remaining parser and module-workflow follow-ons, so new compatibility work stops deepening the Python shim and instead lands behind the `rebar._rebar` extension boundary.
-- The surviving post-dispatch frontier is `RBR-0342`, which publishes bounded nested-group alternation callable-replacement workflows for `a((b|c))d` / `a(?P<outer>(?P<inner>b|c))d` on the existing correctness path and leaves later parity plus benchmark catch-up on `nested_group_callable_replacement_boundary.py`.
+- The surviving post-dispatch frontier is `RBR-0344`, which converts the bounded nested-group alternation callable-replacement workflows for `a((b|c))d` / `a(?P<outer>(?P<inner>b|c))d` to Rust-backed parity while later benchmark catch-up stays on `nested_group_callable_replacement_boundary.py`.
 - Report rendering that recomputes last-cycle environment issues from run artifacts so dashboard anomalies do not stay stale after a detection fix.
 - A fetch-before-push git sync path that measures ahead/behind state against fresh upstream refs and reports diverged branches explicitly instead of pushing against stale remote-tracking data.
 - README capability reporting that now keys scaffold and scorecard tracks to concrete artifact paths and distinguishes the benchmark harness from the published benchmark report.
@@ -313,7 +313,7 @@ Early subset, still far from drop-in parity: the Rust boundary covers literals, 
 - Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 91 manifests and 825 cases with 825 passes, 0 explicit failures, and 0 honest `unimplemented` outcomes through the published broader `{1,4}` nested-group-alternation-plus-branch-local-backreference slice, and that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree shim while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
-- A fully measured main benchmark publication: `reports/benchmarks/latest.py` now covers 507 workloads across 30 manifests with 480 real `rebar` timings and 27 explicit known gaps, so the published benchmark surface is still bounded; once the current benchmark head drains, the surviving follow-on is `RBR-0342` on bounded nested-group alternation callable-replacement publication.
+- A fully measured main benchmark publication: `reports/benchmarks/latest.py` now covers 510 workloads across 30 manifests with 483 real `rebar` timings and 27 explicit known gaps, so the published benchmark surface is still bounded; the surviving follow-on is `RBR-0344` on bounded nested-group alternation callable-replacement parity.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.
@@ -329,8 +329,8 @@ Early subset, still far from drop-in parity: the Rust boundary covers literals, 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Keep `RBR-0342` queued so nested-group alternation callable-replacement workflows for `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d` reopen the correctness frontier after the current broader `{1,4}` benchmark catch-up head drains.
+- Keep `RBR-0344` queued so the exact `a((b|c))d` / `a(?P<outer>(?P<inner>b|c))d` callable-replacement workflows become the surviving Rust-backed parity follow-on on the existing nested-group callback path.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
-- The published benchmark surface still carries 27 explicit known-gap workloads, and the surviving queued follow-on is the narrow `RBR-0342` nested-group alternation callable-replacement correctness task that should remain once the current broader `{1,4}` benchmark head drains.
+- The published benchmark surface still carries 27 explicit known-gap workloads, and the surviving queued follow-on is the narrow `RBR-0344` nested-group alternation callable-replacement parity task on the existing nested-group callback path.

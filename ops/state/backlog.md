@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now has `RBR-0342` seeded as the surviving follow-on so bounded nested-group alternation callable-replacement workflows for `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d` reopen the correctness frontier on the existing callable-replacement path after the current broader `{1,4}` benchmark head drains.
+Milestone 2 now has `RBR-0344` seeded as the surviving follow-on so bounded nested-group alternation callable-replacement workflows for `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d` move behind the Rust boundary on the existing nested-group callback path before benchmark catch-up or deeper nested grouped execution broadens the queue.
 
 ## Ordered Work
-1. Land `RBR-0342` to publish the bounded nested-group alternation callable-replacement workflows for `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d` through `python/rebar_harness/correctness.py`, `tests/conformance/fixtures/nested_group_alternation_callable_replacement_workflows.py`, `tests/conformance/correctness_expectations.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`, keeping later parity and benchmark catch-up on `benchmarks/workloads/nested_group_callable_replacement_boundary.py`.
+1. Land `RBR-0344` to add bounded nested-group alternation callable-replacement parity for `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d` through `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_nested_group_alternation_callable_replacement_parity.py`, and `reports/correctness/latest.py`, keeping later benchmark catch-up on `benchmarks/workloads/nested_group_callable_replacement_boundary.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
