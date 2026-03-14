@@ -21,11 +21,11 @@ _This block reports the implemented slice and measurement coverage, not estimate
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `715` |
+| Published cases | `729` |
 | Passing in published slice | `715` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `82` |
+| Honest gaps (`unimplemented`) | `14` |
+| Covered manifests | `83` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
 _These correctness counts cover only the published slice. Overall delivery estimate: Foundation and reporting are in place. The tracked correctness frontier is fully passing and the Python-path benchmark report is caught up with that published slice, but the project is still far from drop-in parity and not ready for speed claims._
