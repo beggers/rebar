@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, keeping correctness and the published Python-path benchmark surface aligned at the current frontier. |
 | Delivery estimate | The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 now has quantified nested-group callable replacement aligned across correctness, Rust-backed parity, and the main Python-path benchmark surface, and quantified nested-group alternation is published on the correctness surface; `RBR-0322` is seeded as the surviving follow-on to catch that same bounded slice up on the main Python-path benchmark surface once the queued parity step clears. |
-| Work queue | `1` ready, `0` in progress, `325` done, `0` blocked |
+| Current milestone | Milestone 2 still has quantified nested-group alternation one benchmark catch-up step short of the main Python-path surface, and `RBR-0324` is seeded as the surviving follow-on to reopen that existing nested-group alternation anchor with one bounded branch-local-backreference correctness pack once the current gap clears. |
+| Work queue | `2` ready, `0` in progress, `325` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -38,7 +38,7 @@ _README speedup rollups stay omitted while only `470` of `499` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0322` once the queued quantified nested-group alternation parity step clears so that same bounded slice reaches the main Python-path benchmark surface.
+- Land `RBR-0324` after the current quantified nested-group alternation benchmark catch-up clears so the remaining explicit gap on `nested_group_alternation_boundary.py` reopens as a bounded branch-local-backreference correctness pack.
 
 ### Current Risks
 
