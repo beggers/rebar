@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 remains a bounded Rust-backed subset, with correctness, Rust-backed parity, and the main Python-path benchmark report aligned through quantified nested-group replacement templates. |
 | Delivery estimate | The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity: the published slice is narrow, the main benchmark report still runs through the source-tree shim, and quantified nested-group callable replacement plus deeper grouped execution remain ahead. |
-| Current milestone | Milestone 2 now has quantified nested-group callable replacement published on the correctness surface; `RBR-0313` is next to convert that bounded slice to Rust-backed parity, and `RBR-0316` is queued immediately behind it to catch the same slice up on the existing Python-path benchmark surface. |
-| Work queue | `1` ready, `0` in progress, `319` done, `0` blocked |
+| Current milestone | Milestone 2 now has quantified nested-group callable replacement at Rust-backed parity; `RBR-0316` is next to catch that bounded slice up on the existing Python-path benchmark surface, and `RBR-0318` is queued immediately behind it to reopen correctness on quantified nested-group alternation through the existing nested alternation path. |
+| Work queue | `2` ready, `0` in progress, `319` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -47,13 +47,13 @@ _README speedup rollups stay omitted while only `466` of `496` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0313` to convert the published quantified nested-group callable replacement slice to Rust-backed parity.
-- Follow with `RBR-0316` to catch that same bounded callable slice up on the existing Python-path benchmark surface.
+- Land `RBR-0316` to catch the published quantified nested-group callable replacement slice up on the existing Python-path benchmark surface.
+- Follow with `RBR-0318` to reopen correctness on quantified nested-group alternation through `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d`.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded and carries 30 explicit known-gap workloads, so the scorecards remain frontier reporting while quantified nested-group callable replacement still needs Rust-backed parity and benchmark catch-up.
+- The published benchmark surface is still bounded and carries 30 explicit known-gap workloads, so the scorecards remain frontier reporting while quantified nested-group callable replacement still needs benchmark catch-up and quantified nested-group alternation sits immediately behind it.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
