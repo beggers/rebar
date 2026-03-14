@@ -29,6 +29,13 @@ TARGET_CPYTHON_SERIES = "3.12.x"
 REPORT_SCHEMA_VERSION = "1.0"
 REPORT_ATTRIBUTE = "REPORT"
 FIXTURE_SCHEMA_VERSION = 1
+PUBLISHED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
+LEGACY_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
+LEGACY_REPORT_PATH_ERROR = (
+    "reports/correctness/latest.json is a retired legacy published scorecard path; "
+    "use reports/correctness/latest.py for the tracked published scorecard or a "
+    "non-tracked temporary .json path for scratch output."
+)
 DEFAULT_FIXTURE_PATHS = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "public_api_surface.py",
@@ -395,7 +402,7 @@ DEFAULT_FIXTURE_PATHS = (
     / "fixtures"
     / "quantified_nested_group_alternation_workflows.py",
 )
-DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
+DEFAULT_REPORT_PATH = PUBLISHED_REPORT_PATH
 PHASE_BY_LAYER = {
     "parser_acceptance_and_diagnostics": "phase1-parser-conformance-pack",
     "module_api_surface": "phase2-public-api-surface-pack",
@@ -1648,6 +1655,20 @@ def _load_python_scorecard(path: pathlib.Path) -> dict[str, Any]:
     return payload
 
 
+def _resolve_report_path(report_path: pathlib.Path) -> pathlib.Path:
+    expanded = report_path.expanduser()
+    if not expanded.is_absolute():
+        expanded = pathlib.Path.cwd() / expanded
+    return expanded.resolve()
+
+
+def validate_report_path(report_path: pathlib.Path) -> pathlib.Path:
+    resolved_path = _resolve_report_path(report_path)
+    if resolved_path == LEGACY_REPORT_PATH:
+        raise ValueError(LEGACY_REPORT_PATH_ERROR)
+    return resolved_path
+
+
 def load_scorecard(report_path: pathlib.Path) -> dict[str, Any]:
     if report_path.suffix == ".json":
         raw_payload = json.loads(report_path.read_text(encoding="utf-8"))
@@ -1669,6 +1690,7 @@ def _format_python_scorecard_module(scorecard: dict[str, Any]) -> str:
 
 
 def write_scorecard(scorecard: dict[str, Any], report_path: pathlib.Path) -> None:
+    report_path = validate_report_path(report_path)
     report_path.parent.mkdir(parents=True, exist_ok=True)
     if report_path.suffix == ".json":
         report_path.write_text(
@@ -1684,18 +1706,28 @@ def write_scorecard(scorecard: dict[str, Any], report_path: pathlib.Path) -> Non
     )
 
 
+def remove_legacy_report_sidecar() -> bool:
+    try:
+        LEGACY_REPORT_PATH.unlink()
+    except FileNotFoundError:
+        return False
+    return True
+
+
 def run_correctness_harness(
     fixture_paths: Sequence[pathlib.Path] = DEFAULT_FIXTURE_PATHS,
     report_path: pathlib.Path = DEFAULT_REPORT_PATH,
 ) -> dict[str, Any]:
     resolved_fixture_paths = [path.resolve() for path in fixture_paths]
-    report_path = report_path.resolve()
+    report_path = validate_report_path(report_path)
     manifests, cases = load_fixture_manifests(resolved_fixture_paths)
     cpython_adapter = CpythonReAdapter()
     rebar_adapter = RebarAdapter()
     case_results = [evaluate_case(case, cpython_adapter, rebar_adapter) for case in cases]
     scorecard = build_scorecard(manifests=manifests, case_results=case_results)
     write_scorecard(scorecard, report_path)
+    if report_path == DEFAULT_REPORT_PATH:
+        remove_legacy_report_sidecar()
     return scorecard
 
 
@@ -1719,7 +1751,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    scorecard = run_correctness_harness(fixture_paths=args.fixtures, report_path=args.report)
+    try:
+        report_path = validate_report_path(args.report)
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+    scorecard = run_correctness_harness(fixture_paths=args.fixtures, report_path=report_path)
     print(json.dumps(scorecard["summary"], sort_keys=True))
     return 0
 

@@ -17,6 +17,7 @@ from tests.conformance.scorecard_suite_support import (
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 MODULE_PATH = REPO_ROOT / "scripts" / "rebar_ops.py"
 CORRECTNESS_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
+LEGACY_CORRECTNESS_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py"
 PYTHON_SOURCE = REPO_ROOT / "python"
 
@@ -32,6 +33,55 @@ def load_rebar_ops_module():
 
 
 class ReadmeReportingTest(unittest.TestCase):
+    def test_correctness_cli_rejects_legacy_tracked_json_path(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "rebar_harness.correctness",
+                "--fixtures",
+                str(PARSER_FIXTURES_PATH),
+                "--report",
+                str(LEGACY_CORRECTNESS_REPORT_PATH),
+            ],
+            check=False,
+            cwd=REPO_ROOT,
+            env={"PYTHONPATH": str(PYTHON_SOURCE)},
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("reports/correctness/latest.json is a retired legacy", result.stderr)
+        self.assertIn("reports/correctness/latest.py", result.stderr)
+        self.assertIn("non-tracked temporary .json path", result.stderr)
+        self.assertFalse(LEGACY_CORRECTNESS_REPORT_PATH.exists())
+
+    def test_refresh_published_correctness_scorecard_deletes_legacy_json_sidecar(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        original_payload = CORRECTNESS_REPORT_PATH.read_text(encoding="utf-8")
+
+        try:
+            LEGACY_CORRECTNESS_REPORT_PATH.write_text(
+                json.dumps({"legacy": True}, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+
+            refreshed = rebar_ops.refresh_published_correctness_scorecard()
+
+            self.assertIsInstance(refreshed, dict)
+            self.assertFalse(LEGACY_CORRECTNESS_REPORT_PATH.exists())
+
+            repaired_payload = load_published_correctness_scorecard()
+            expected_manifest_ids = rebar_ops.expected_correctness_manifest_ids(
+                rebar_ops.load_correctness_harness_module()
+            )
+            self.assertEqual(repaired_payload["fixtures"]["manifest_count"], len(expected_manifest_ids))
+            self.assertEqual(repaired_payload["fixtures"]["manifest_ids"], expected_manifest_ids)
+        finally:
+            CORRECTNESS_REPORT_PATH.write_text(original_payload, encoding="utf-8")
+            LEGACY_CORRECTNESS_REPORT_PATH.unlink(missing_ok=True)
+
     def test_refresh_published_correctness_scorecard_repairs_narrowed_report(self) -> None:
         rebar_ops = load_rebar_ops_module()
         original_payload = CORRECTNESS_REPORT_PATH.read_text(encoding="utf-8")

@@ -1,6 +1,6 @@
 # RBR-0325: Retire the legacy correctness scorecard JSON path
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
 
@@ -29,3 +29,5 @@ Created: 2026-03-14
 - `RBR-0323` already moved the published correctness scorecard to `reports/correctness/latest.py`, but the current clean checkout still tracks a newer `reports/correctness/latest.json` sidecar with no remaining README or reporting references.
 - `.rebar/runtime/dashboard.md` is one commit behind `HEAD` in this checkout (`62c10ca` vs `c0b54b7`), but both the dashboard and the live filesystem still agree that the current JSON count is `2`, so there is no count mismatch to reconcile before executing this task.
 - The supervisor retuned the JSON-burn-down worker prompts in commit `c0b54b7` after recent runs claimed this file was deleted when it had only been modified. This follow-on should remove that ambiguity by making the legacy path impossible to treat as a second tracked publication target.
+- Completed 2026-03-14: `python/rebar_harness/correctness.py` now rejects the exact legacy output path `reports/correctness/latest.json`, published refresh in `scripts/rebar_ops.py` deletes any stray legacy sidecar even when `reports/correctness/latest.py` is already current, `tests/python/test_readme_reporting.py` covers both the rejection and sidecar-removal regressions, and `reports/correctness/latest.json` is deleted from the worktree with `git diff --name-status -- reports/correctness/latest.json` reporting `D`.
+- Verification: `PYTHONPATH=python ./.venv/bin/python -m pytest tests/python/test_readme_reporting.py -q` passed (`4` tests). `rg --files -g '*.json'` now lists only `reports/benchmarks/latest.json` and `rg --files -g '*.json' | wc -l` is `1`. `git ls-files '*.json' | wc -l` remains `2` in the unstaged worktree because the harness owns index updates and will drop to `1` after the harness commit records the tracked deletion.

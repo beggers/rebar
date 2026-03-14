@@ -2735,7 +2735,30 @@ def expected_correctness_manifest_ids(correctness_harness: Any) -> list[str]:
     return manifest_ids
 
 
+def legacy_published_correctness_report_path(correctness_harness: Any) -> Path:
+    legacy_report_path = getattr(correctness_harness, "LEGACY_REPORT_PATH", None)
+    if legacy_report_path is not None:
+        return Path(legacy_report_path)
+    return Path(correctness_harness.DEFAULT_REPORT_PATH).with_suffix(".json")
+
+
+def remove_legacy_published_correctness_report(correctness_harness: Any) -> bool:
+    remove_sidecar = getattr(correctness_harness, "remove_legacy_report_sidecar", None)
+    if callable(remove_sidecar):
+        return bool(remove_sidecar())
+
+    legacy_report_path = legacy_published_correctness_report_path(correctness_harness)
+    try:
+        legacy_report_path.unlink()
+    except FileNotFoundError:
+        return False
+    return True
+
+
 def published_correctness_report_needs_refresh(correctness_harness: Any) -> bool:
+    if legacy_published_correctness_report_path(correctness_harness).exists():
+        return True
+
     load_scorecard = getattr(correctness_harness, "load_scorecard", None)
     if callable(load_scorecard):
         try:
@@ -2768,9 +2791,22 @@ def published_correctness_report_needs_refresh(correctness_harness: Any) -> bool
 
 def refresh_published_correctness_scorecard() -> dict[str, Any] | None:
     correctness_harness = load_correctness_harness_module()
+    removed_legacy_report = remove_legacy_published_correctness_report(correctness_harness)
     if not published_correctness_report_needs_refresh(correctness_harness):
+        if removed_legacy_report:
+            load_scorecard = getattr(correctness_harness, "load_scorecard", None)
+            if callable(load_scorecard):
+                return load_scorecard(Path(correctness_harness.DEFAULT_REPORT_PATH))
+            payload = read_structured_dict(
+                Path(correctness_harness.DEFAULT_REPORT_PATH),
+                default=None,
+                label="correctness scorecard",
+            )
+            return payload if isinstance(payload, dict) else None
         return None
-    return correctness_harness.run_correctness_harness()
+    scorecard = correctness_harness.run_correctness_harness()
+    remove_legacy_published_correctness_report(correctness_harness)
+    return scorecard
 
 
 def run_cycle(
