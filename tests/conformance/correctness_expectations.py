@@ -337,6 +337,110 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
 }
 
 
+QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
+    "quantified-alternation-broader-range-workflows": {
+        "representative_case_ids": (
+            "quantified-alternation-broader-range-numbered-compile-metadata-str",
+            "quantified-alternation-broader-range-numbered-module-search-lower-bound-b-str",
+            "quantified-alternation-broader-range-numbered-module-search-lower-bound-c-str",
+            "quantified-alternation-broader-range-numbered-pattern-fullmatch-third-repetition-bbb-str",
+            "quantified-alternation-broader-range-numbered-pattern-fullmatch-third-repetition-bcc-str",
+            "quantified-alternation-broader-range-numbered-pattern-fullmatch-third-repetition-bcb-str",
+            "quantified-alternation-broader-range-numbered-pattern-fullmatch-no-match-below-lower-bound-str",
+            "quantified-alternation-broader-range-numbered-pattern-fullmatch-no-match-overflow-str",
+            "quantified-alternation-broader-range-named-compile-metadata-str",
+            "quantified-alternation-broader-range-named-module-search-lower-bound-b-str",
+            "quantified-alternation-broader-range-named-module-search-lower-bound-c-str",
+            "quantified-alternation-broader-range-named-pattern-fullmatch-third-repetition-bbb-str",
+            "quantified-alternation-broader-range-named-pattern-fullmatch-third-repetition-bcc-str",
+            "quantified-alternation-broader-range-named-pattern-fullmatch-third-repetition-bcb-str",
+            "quantified-alternation-broader-range-named-pattern-fullmatch-no-match-below-lower-bound-str",
+            "quantified-alternation-broader-range-named-pattern-fullmatch-no-match-overflow-str",
+        ),
+    },
+    "quantified-alternation-open-ended-workflows": {
+        "representative_case_ids": (
+            "quantified-alternation-open-ended-numbered-compile-metadata-str",
+            "quantified-alternation-open-ended-numbered-module-search-lower-bound-b-str",
+            "quantified-alternation-open-ended-numbered-module-search-lower-bound-c-str",
+            "quantified-alternation-open-ended-numbered-pattern-fullmatch-second-repetition-str",
+            "quantified-alternation-open-ended-numbered-pattern-fullmatch-third-repetition-bcc-str",
+            "quantified-alternation-open-ended-numbered-pattern-fullmatch-fourth-repetition-bcbc-str",
+            "quantified-alternation-open-ended-numbered-pattern-fullmatch-no-match-below-lower-bound-str",
+            "quantified-alternation-open-ended-numbered-pattern-fullmatch-no-match-invalid-branch-str",
+            "quantified-alternation-open-ended-named-compile-metadata-str",
+            "quantified-alternation-open-ended-named-module-search-lower-bound-b-str",
+            "quantified-alternation-open-ended-named-module-search-lower-bound-c-str",
+            "quantified-alternation-open-ended-named-pattern-fullmatch-second-repetition-str",
+            "quantified-alternation-open-ended-named-pattern-fullmatch-third-repetition-bcc-str",
+            "quantified-alternation-open-ended-named-pattern-fullmatch-fourth-repetition-bcbc-str",
+            "quantified-alternation-open-ended-named-pattern-fullmatch-no-match-below-lower-bound-str",
+            "quantified-alternation-open-ended-named-pattern-fullmatch-no-match-invalid-branch-str",
+        ),
+    },
+    "quantified-alternation-nested-branch-workflows": {
+        "representative_case_ids": (
+            "quantified-alternation-nested-branch-numbered-compile-metadata-str",
+            "quantified-alternation-nested-branch-numbered-module-search-lower-bound-inner-branch-str",
+            "quantified-alternation-nested-branch-numbered-pattern-fullmatch-lower-bound-literal-branch-str",
+            "quantified-alternation-nested-branch-numbered-pattern-fullmatch-second-repetition-mixed-branches-str",
+            "quantified-alternation-nested-branch-numbered-pattern-fullmatch-no-match-str",
+            "quantified-alternation-nested-branch-named-compile-metadata-str",
+            "quantified-alternation-nested-branch-named-module-search-lower-bound-literal-branch-str",
+            "quantified-alternation-nested-branch-named-pattern-fullmatch-lower-bound-inner-branch-str",
+            "quantified-alternation-nested-branch-named-pattern-fullmatch-second-repetition-mixed-branches-str",
+            "quantified-alternation-nested-branch-named-pattern-fullmatch-no-match-str",
+        ),
+    },
+    "quantified-alternation-backtracking-heavy-workflows": {
+        "representative_case_ids": (
+            "quantified-alternation-backtracking-heavy-numbered-compile-metadata-str",
+            "quantified-alternation-backtracking-heavy-numbered-module-search-lower-bound-b-branch-str",
+            "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-lower-bound-bc-branch-str",
+            "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-b-then-bc-str",
+            "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-bc-then-b-str",
+            "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-bc-then-bc-str",
+            "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-no-match-str",
+            "quantified-alternation-backtracking-heavy-named-compile-metadata-str",
+            "quantified-alternation-backtracking-heavy-named-module-search-lower-bound-bc-branch-str",
+            "quantified-alternation-backtracking-heavy-named-pattern-fullmatch-second-repetition-b-then-b-str",
+            "quantified-alternation-backtracking-heavy-named-pattern-fullmatch-second-repetition-bc-then-b-str",
+            "quantified-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-str",
+        ),
+    },
+    "quantified-alternation-conditional-workflows": {
+        "representative_case_ids": (
+            "quantified-alternation-conditional-numbered-compile-metadata-str",
+            "quantified-alternation-conditional-numbered-module-search-absent-workflow-str",
+            "quantified-alternation-conditional-numbered-module-search-lower-bound-b-workflow-str",
+            "quantified-alternation-conditional-numbered-pattern-fullmatch-second-repetition-b-workflow-str",
+            "quantified-alternation-conditional-numbered-pattern-fullmatch-second-repetition-mixed-workflow-str",
+            "quantified-alternation-conditional-numbered-pattern-fullmatch-no-match-workflow-str",
+            "quantified-alternation-conditional-named-compile-metadata-str",
+            "quantified-alternation-conditional-named-module-search-absent-workflow-str",
+            "quantified-alternation-conditional-named-module-search-lower-bound-c-workflow-str",
+            "quantified-alternation-conditional-named-pattern-fullmatch-second-repetition-c-workflow-str",
+            "quantified-alternation-conditional-named-pattern-fullmatch-second-repetition-mixed-workflow-str",
+            "quantified-alternation-conditional-named-pattern-fullmatch-no-match-workflow-str",
+        ),
+    },
+    "quantified-alternation-branch-local-backreference-workflows": {
+        "representative_case_ids": (
+            "quantified-alternation-branch-local-numbered-backreference-compile-metadata-str",
+            "quantified-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
+            "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-lower-bound-c-branch-str",
+            "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-second-repetition-b-branch-str",
+            "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-str",
+            "quantified-alternation-branch-local-named-backreference-compile-metadata-str",
+            "quantified-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-str",
+            "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-second-repetition-c-branch-str",
+            "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-second-repetition-mixed-branches-str",
+            "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
+        ),
+    },
+}
+
+
 CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS = {
     "conditional-group-exists-replacement-workflows": {
         "representative_case_ids": (
@@ -888,6 +992,23 @@ def combined_correctness_case(target_manifest_id: str) -> CorrectnessScorecardEx
     return _build_scorecard_expectation(
         target_manifest_id,
         COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
+    )
+
+
+def quantified_alternation_scorecard_target_manifest_ids() -> tuple[str, ...]:
+    return _expected_target_manifest_ids(
+        QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
+        expectation_label="quantified-alternation correctness scorecard",
+    )
+
+
+@lru_cache(maxsize=None)
+def quantified_alternation_scorecard_case(
+    target_manifest_id: str,
+) -> CorrectnessScorecardExpectation:
+    return _build_scorecard_expectation(
+        target_manifest_id,
+        QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
     )
 
 

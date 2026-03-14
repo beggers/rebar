@@ -1,6 +1,6 @@
 # RBR-0331: Consolidate quantified-alternation correctness scorecards into the data-driven suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
 
@@ -41,3 +41,13 @@ Created: 2026-03-14
 ## Notes
 - These six wrapper modules total about 2.6k lines and still duplicate the same build-plus-regenerate flow with only manifest ids and representative quantified-alternation cases varying.
 - This task intentionally stays independent of the active `RBR-0330` feature slice so the architecture queue can keep shrinking duplicated correctness plumbing without waiting on new quantified nested-group fixtures to land first.
+
+## Completion
+- Added `QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS` plus shared accessors in `tests/conformance/correctness_expectations.py` for the six quantified-alternation manifests, and routed them through `tests/conformance/test_combined_correctness_scorecards.py`.
+- Kept the shared assertions on the existing `assert_correctness_scorecard_suite(...)` path, with representative-case checks evaluated through `evaluate_case()` rather than hard-coded `pass`/`unimplemented` expectations.
+- Deleted the six superseded quantified-alternation wrapper modules after verifying the consolidated suite covered them.
+
+## Verification
+- `.venv/bin/python -m pytest tests/conformance/test_combined_correctness_scorecards.py`
+- `git diff --name-status -- tests/conformance/test_correctness_quantified_alternation_broader_range_workflows.py tests/conformance/test_correctness_quantified_alternation_open_ended_workflows.py tests/conformance/test_correctness_quantified_alternation_nested_branch_workflows.py tests/conformance/test_correctness_quantified_alternation_backtracking_heavy_workflows.py tests/conformance/test_correctness_quantified_alternation_conditional_workflows.py tests/conformance/test_correctness_quantified_alternation_branch_local_backreference_workflows.py`
+- `rg --files tests/conformance | rg 'test_correctness_quantified_alternation_(broader_range|open_ended|nested_branch|backtracking_heavy|conditional|branch_local_backreference)_workflows\\.py$'` returned no matches.

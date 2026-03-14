@@ -50,6 +50,7 @@ def assert_correctness_scorecard_suite(
     target_manifest_ids: Iterable[str],
     case_factory: Callable[[str], CorrectnessScorecardExpectation],
 ) -> None:
+    target_manifest_ids = tuple(target_manifest_ids)
     build_rebar_extension()
     cpython_adapter = CpythonReAdapter()
     rebar_adapter = RebarAdapter()
