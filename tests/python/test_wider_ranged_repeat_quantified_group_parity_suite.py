@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from itertools import product
 import re
 
 import pytest
@@ -35,6 +36,23 @@ class ParityCase:
     fullmatch_misses: tuple[str | bytes, ...] = ()
     unsupported_backends: tuple[str, ...] = ()
     unsupported_backend_reason: str | None = None
+
+
+@dataclass(frozen=True)
+class BacktrackingTraceCase:
+    id: str
+    pattern: str
+    max_group: int
+    group_names: tuple[str, ...] = ()
+    search_text: str = ""
+    fullmatch_text: str = ""
+
+
+_MISSING_GROUP_DEFAULT = object()
+_BACKTRACKING_BRANCH_TEXT = {
+    "short": "bc",
+    "long": "bcc",
+}
 
 
 SCENARIOS = (
@@ -196,6 +214,44 @@ CASES = tuple(
 )
 
 
+def _build_broader_range_backtracking_trace_cases() -> tuple[BacktrackingTraceCase, ...]:
+    cases: list[BacktrackingTraceCase] = []
+    for variant, pattern, group_names in (
+        (
+            "numbered",
+            r"a((bc|b)c){1,4}d",
+            (),
+        ),
+        (
+            "named",
+            r"a(?P<word>(bc|b)c){1,4}d",
+            ("word",),
+        ),
+    ):
+        for repetition_count in range(1, 5):
+            for branch_order in product(("short", "long"), repeat=repetition_count):
+                body = "".join(_BACKTRACKING_BRANCH_TEXT[branch] for branch in branch_order)
+                branch_id = "-".join(branch_order)
+                fullmatch_text = f"a{body}d"
+                cases.append(
+                    BacktrackingTraceCase(
+                        id=(
+                            "broader-range-wider-ranged-repeat-backtracking-"
+                            f"{variant}-{branch_id}"
+                        ),
+                        pattern=pattern,
+                        max_group=2,
+                        group_names=group_names,
+                        search_text=f"zz{fullmatch_text}zz",
+                        fullmatch_text=fullmatch_text,
+                    )
+                )
+    return tuple(cases)
+
+
+BROADER_RANGE_BACKTRACKING_TRACE_CASES = _build_broader_range_backtracking_trace_cases()
+
+
 def _assert_match_parity(
     backend_name: str,
     observed: object,
@@ -210,6 +266,9 @@ def _assert_match_parity(
         assert type(observed) is type(expected)
 
     assert observed.group(0) == expected.group(0)
+    assert observed.group(*tuple(range(max_group + 1))) == expected.group(
+        *tuple(range(max_group + 1))
+    )
     for group_index in range(1, max_group + 1):
         assert observed.group(group_index) == expected.group(group_index)
         assert observed.span(group_index) == expected.span(group_index)
@@ -217,10 +276,21 @@ def _assert_match_parity(
         assert observed.end(group_index) == expected.end(group_index)
 
     assert observed.groups() == expected.groups()
+    assert observed.groups(_MISSING_GROUP_DEFAULT) == expected.groups(_MISSING_GROUP_DEFAULT)
     assert observed.groupdict() == expected.groupdict()
+    assert observed.groupdict(_MISSING_GROUP_DEFAULT) == expected.groupdict(
+        _MISSING_GROUP_DEFAULT
+    )
+    assert observed.string == expected.string
+    assert observed.pos == expected.pos
+    assert observed.endpos == expected.endpos
     assert observed.span() == expected.span()
     assert observed.lastindex == expected.lastindex
     assert observed.lastgroup == expected.lastgroup
+    assert observed.re.pattern == expected.re.pattern
+    assert observed.re.flags == expected.re.flags
+    assert observed.re.groups == expected.re.groups
+    assert observed.re.groupindex == expected.re.groupindex
 
     for group_name in group_names:
         assert observed.group(group_name) == expected.group(group_name)
@@ -298,3 +368,55 @@ def test_pattern_fullmatch_matches_cpython(
     for text in case.fullmatch_misses:
         assert observed_pattern.fullmatch(text) is None
         assert expected_pattern.fullmatch(text) is None
+
+
+@pytest.mark.parametrize(
+    "case",
+    BROADER_RANGE_BACKTRACKING_TRACE_CASES,
+    ids=lambda case: case.id,
+)
+def test_broader_range_module_search_branch_traces_match_cpython(
+    regex_backend: tuple[str, object],
+    case: BacktrackingTraceCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    observed = backend.search(case.pattern, case.search_text)
+    expected = re.search(case.pattern, case.search_text)
+
+    assert observed is not None
+    assert expected is not None
+    _assert_match_parity(
+        backend_name,
+        observed,
+        expected,
+        max_group=case.max_group,
+        group_names=case.group_names,
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
+    BROADER_RANGE_BACKTRACKING_TRACE_CASES,
+    ids=lambda case: case.id,
+)
+def test_broader_range_pattern_fullmatch_branch_traces_match_cpython(
+    regex_backend: tuple[str, object],
+    case: BacktrackingTraceCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern = backend.compile(case.pattern)
+    expected_pattern = re.compile(case.pattern)
+
+    observed = observed_pattern.fullmatch(case.fullmatch_text)
+    expected = expected_pattern.fullmatch(case.fullmatch_text)
+
+    assert observed is not None
+    assert expected is not None
+    _assert_match_parity(
+        backend_name,
+        observed,
+        expected,
+        max_group=case.max_group,
+        group_names=case.group_names,
+    )
