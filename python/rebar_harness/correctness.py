@@ -101,17 +101,17 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "wider_ranged_repeat_quantified_group_workflows.json",
+    / "wider_ranged_repeat_quantified_group_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "wider_ranged_repeat_quantified_group_alternation_workflows.json",
+    / "wider_ranged_repeat_quantified_group_alternation_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.json",
+    / "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
@@ -131,12 +131,12 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.json",
+    / "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.json",
+    / "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
@@ -156,12 +156,12 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.json",
+    / "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.json",
+    / "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"

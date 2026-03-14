@@ -1,4 +1,4 @@
-{
+MANIFEST = {
   "schema_version": 1,
   "manifest_id": "wider-ranged-repeat-quantified-group-alternation-workflows",
   "layer": "match_behavior",

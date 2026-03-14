@@ -1,8 +1,9 @@
 # RBR-0282: Replace the wider-ranged-repeat quantified-group correctness JSON fixtures with Python modules
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
+Completed: 2026-03-14
 
 ## Goal
 - Reduce tracked JSON and simplify the correctness harness input path by replacing the wider-ranged-repeat quantified-group correctness manifests with ordinary Python fixture modules while preserving the existing scorecard surface.
@@ -44,3 +45,9 @@ Created: 2026-03-14
 - `RBR-0277` already consolidated this family's scorecard assertions into `tests/conformance/test_wider_ranged_repeat_quantified_group_scorecards.py`, and `RBR-0281` already proved the mixed `.json`/`.py` fixture path in `python/rebar_harness/correctness.py`, so this task is a bounded representation cleanup rather than a harness redesign.
 - The latest tracked dashboard snapshot still shows a flat JSON delta, but the live tracked JSON baseline in this checkout is already `122` after `RBR-0281`; verify the count with `git ls-files '*.json' | wc -l` instead of relying on the stale pre-`RBR-0281` dashboard number.
 - Keep the fixture path model path-based so `python -m rebar_harness.correctness --fixtures ...` continues to work without another discovery abstraction.
+
+## Completion Notes
+- Updated `python/rebar_harness/correctness.py` so `DEFAULT_FIXTURE_PATHS` now points the seven wider-ranged-repeat quantified-group correctness manifests at `.py` modules while keeping the shared mixed-extension loader path unchanged.
+- Renamed the seven targeted wider-ranged-repeat quantified-group fixtures from `.json` to `.py` and preserved each manifest payload verbatim except for the top-level `MANIFEST =` assignment.
+- Regenerated `reports/correctness/latest.json` and verified the published fixture paths for this family now end in `.py` while the manifest order, suite ids, case counts, and aggregate totals stay unchanged.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python python3 -m rebar_harness.correctness --report reports/correctness/latest.json`, and `PYTHONPATH=python python3 -m unittest tests.conformance.test_wider_ranged_repeat_quantified_group_scorecards tests.conformance.test_combined_correctness_scorecards`.
