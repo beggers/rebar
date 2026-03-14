@@ -11,8 +11,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 3 is widening a bounded Rust-backed `re` slice; the fully passing Rust-backed frontier now reaches the broader `{1,4}` grouped backtracking-heavy slice, while the fully passing and benchmark-caught-up frontier still stops at the broader `{1,4}` grouped-conditional slice. |
-| Delivery estimate | Foundation and reporting are in place. The fully passing Rust-backed frontier now reaches the broader `{1,4}` grouped backtracking-heavy slice, while the benchmark-caught-up frontier still stops at the broader `{1,4}` grouped-conditional slice until `RBR-0278` lands. |
+| Phase | Phase 3 is still a bounded Rust-backed subset: published correctness is fully passing through the broader `{1,4}` grouped backtracking-heavy slice, while published benchmark coverage still stops one bounded slice earlier. |
+| Delivery estimate | The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity. Benchmark coverage is still catching up to the newest correctness slice, and broad performance claims remain premature. |
 | Current milestone | Milestone 2 has the broader `{1,4}` grouped backtracking-heavy slice at Rust-backed parity; next up is catching that same bounded workflow up on the Python-path benchmark surface. |
 | Work queue | `1` ready, `0` in progress, `282` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
@@ -28,7 +28,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `82` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Foundation and reporting are in place. The fully passing Rust-backed frontier now reaches the broader `{1,4}` grouped backtracking-heavy slice, while the benchmark-caught-up frontier still stops at the broader `{1,4}` grouped-conditional slice until `RBR-0278` lands._
+_These correctness counts cover only the published slice. Overall delivery estimate: The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity. Benchmark coverage is still catching up to the newest correctness slice, and broad performance claims remain premature._
 
 ### Benchmark Snapshot
 

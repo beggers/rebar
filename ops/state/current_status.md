@@ -6,10 +6,10 @@ Updated: 2026-03-14
 Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while keeping the correctness and benchmark publications caught up with each newly supported slice.
 
 ## README Phase Summary
-Phase 3 is widening a bounded Rust-backed `re` slice; the fully passing Rust-backed frontier now reaches the broader `{1,4}` grouped backtracking-heavy slice, while the fully passing and benchmark-caught-up frontier still stops at the broader `{1,4}` grouped-conditional slice.
+Phase 3 is still a bounded Rust-backed subset: published correctness is fully passing through the broader `{1,4}` grouped backtracking-heavy slice, while published benchmark coverage still stops one bounded slice earlier.
 
 ## README Delivery Estimate
-Foundation and reporting are in place. The fully passing Rust-backed frontier now reaches the broader `{1,4}` grouped backtracking-heavy slice, while the benchmark-caught-up frontier still stops at the broader `{1,4}` grouped-conditional slice until `RBR-0278` lands.
+The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity. Benchmark coverage is still catching up to the newest correctness slice, and broad performance claims remain premature.
 
 ## README Next Steps
 - Land `RBR-0278` to catch the broader `{1,4}` grouped backtracking-heavy slice up on the Python-path benchmark surface.
