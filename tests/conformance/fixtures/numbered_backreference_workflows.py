@@ -1,4 +1,4 @@
-{
+MANIFEST = {
   "schema_version": 1,
   "manifest_id": "numbered-backreference-workflows",
   "layer": "match_behavior",

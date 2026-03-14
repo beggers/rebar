@@ -82805,12 +82805,12 @@
       "tests/conformance/fixtures/module_workflow_surface.json",
       "tests/conformance/fixtures/collection_replacement_workflows.json",
       "tests/conformance/fixtures/literal_flag_workflows.json",
-      "tests/conformance/fixtures/grouped_match_workflows.json",
-      "tests/conformance/fixtures/named_group_workflows.json",
-      "tests/conformance/fixtures/named_group_replacement_workflows.json",
-      "tests/conformance/fixtures/named_backreference_workflows.json",
-      "tests/conformance/fixtures/numbered_backreference_workflows.json",
-      "tests/conformance/fixtures/grouped_segment_workflows.json",
+      "tests/conformance/fixtures/grouped_match_workflows.py",
+      "tests/conformance/fixtures/named_group_workflows.py",
+      "tests/conformance/fixtures/named_group_replacement_workflows.py",
+      "tests/conformance/fixtures/named_backreference_workflows.py",
+      "tests/conformance/fixtures/numbered_backreference_workflows.py",
+      "tests/conformance/fixtures/grouped_segment_workflows.py",
       "tests/conformance/fixtures/nested_group_workflows.json",
       "tests/conformance/fixtures/nested_group_alternation_workflows.json",
       "tests/conformance/fixtures/nested_group_replacement_workflows.json",
@@ -82885,7 +82885,7 @@
       "tests/conformance/fixtures/quantified_alternation_open_ended_workflows.py"
     ]
   },
-  "generated_at": "2026-03-14T12:18:16Z",
+  "generated_at": "2026-03-14T12:29:41Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {

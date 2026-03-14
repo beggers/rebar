@@ -36,12 +36,12 @@ DEFAULT_FIXTURE_PATHS = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "module_workflow_surface.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "collection_replacement_workflows.json",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "literal_flag_workflows.json",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_match_workflows.json",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "named_group_workflows.json",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "named_group_replacement_workflows.json",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "named_backreference_workflows.json",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "numbered_backreference_workflows.json",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_segment_workflows.json",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_match_workflows.py",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "named_group_workflows.py",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "named_group_replacement_workflows.py",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "named_backreference_workflows.py",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "numbered_backreference_workflows.py",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_segment_workflows.py",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "nested_group_workflows.json",
     REPO_ROOT
     / "tests"

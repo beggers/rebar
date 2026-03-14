@@ -1,6 +1,6 @@
 # RBR-0311: Replace the grouped-match through grouped-segment correctness JSON fixtures with Python modules
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
 
@@ -43,3 +43,10 @@ Created: 2026-03-14
 - `.rebar/runtime/dashboard.md` still reports `tracked_json_blob_count: 103` and `tracked_json_blob_delta: 0`, but the live tracked baseline in this clean checkout is `38`; verify the reduction with `git ls-files '*.json' | wc -l` rather than relying on the stale runtime snapshot.
 - This is the remaining contiguous early-workflow JSON block inside `python/rebar_harness/correctness.py::DEFAULT_FIXTURE_PATHS` between `literal_flag_workflows.json` and `nested_group_workflows.json`, so it burns down another six tracked JSON fixtures without mixing in the earlier parser/module-surface scaffolds or the later nested-group trio.
 - `tests/conformance/test_correctness_grouped_match_workflows.py` is the only direct fixture-path test in this batch; the other targeted manifests are already covered through the shared combined scorecard and fixture-contract suites, so avoid inventing new one-off path tests unless a real assumption appears during execution.
+
+## Completion Notes
+- Repointed the six targeted `DEFAULT_FIXTURE_PATHS` entries in `python/rebar_harness/correctness.py` from `.json` to `.py` and updated `tests/conformance/test_correctness_grouped_match_workflows.py` so `GROUPED_MATCH_FIXTURES_PATH` now targets the Python-backed grouped-match manifest while the preceding eight fixture constants stay unchanged.
+- Replaced `grouped_match_workflows.json`, `named_group_workflows.json`, `named_group_replacement_workflows.json`, `named_backreference_workflows.json`, `numbered_backreference_workflows.json`, and `grouped_segment_workflows.json` with one-manifest-per-file Python `MANIFEST` modules carrying the same manifest ids, suite ids, defaults, case ids, case ordering, and case payloads, then deleted the JSON originals.
+- Regenerated `reports/correctness/latest.json`; the targeted fixture paths now resolve to `.py`, the converted manifest case counts remain `6`, `3`, `4`, `3`, `3`, and `6`, the grouped-match nine-manifest slice remains `86` cases, and the combined report remains `779` executed / `779` passed / `0` failed / `0` unimplemented.
+- Verified with `python3 -m unittest tests.conformance.test_combined_correctness_scorecards tests.conformance.test_correctness_grouped_match_workflows tests.conformance.test_correctness_fixture_inventory_contract tests.conformance.test_python_fixture_manifest_contract` and `PYTHONPATH=python python3 -m rebar_harness.correctness --report reports/correctness/latest.json`.
+- `python3 -m pytest ...` was not available because `pytest` is not installed in this checkout. In the working tree, `git ls-files '*.json' | wc -l` still reports deleted tracked files until the harness commit lands, so the live six-file reduction was verified with `rg --files -g '*.json' | wc -l` as `38 -> 32` and `git ls-files --deleted '*.json' | wc -l` as `6`.

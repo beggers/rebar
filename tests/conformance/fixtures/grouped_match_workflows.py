@@ -1,4 +1,4 @@
-{
+MANIFEST = {
   "schema_version": 1,
   "manifest_id": "grouped-match-workflows",
   "layer": "match_behavior",

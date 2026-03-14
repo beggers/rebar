@@ -34,7 +34,7 @@ LITERAL_FLAG_FIXTURES_PATH = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "literal_flag_workflows.json"
 )
 GROUPED_MATCH_FIXTURES_PATH = (
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_match_workflows.json"
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_match_workflows.py"
 )
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 
