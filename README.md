@@ -19,7 +19,16 @@ _This block reports the implemented slice and measurement coverage, not estimate
 
 ### Correctness Snapshot
 
-No published correctness scorecard yet. Expected tracked source: [`reports/correctness/latest.py`](reports/correctness/latest.py).
+| Metric | Value |
+| --- | --- |
+| Published cases | `793` |
+| Passing in published slice | `793` |
+| Explicit failures | `0` |
+| Honest gaps (`unimplemented`) | `0` |
+| Covered manifests | `88` |
+| Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
+
+_These correctness counts cover only the published slice. Overall delivery estimate: The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 

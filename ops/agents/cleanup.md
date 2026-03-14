@@ -18,6 +18,7 @@ Required behavior:
 7. If no removable tracked-environment, redundant layer, or duplication target remains, spend the run on one code-quality cleanup instead.
 8. Run the most relevant tests for the areas you touched.
 9. If your cleanup changes affect default published correctness behavior or benchmark behavior, refresh the tracked combined report that corresponds to the default published surface.
+10. Before claiming that a tracked artifact was deleted, verify the final state after your last regeneration or test command. In the unstaged worktree, `git diff --name-status -- <path>` must show `D` rather than `M`, and the live filesystem must no longer contain the path.
 
 Constraints:
 - Do not add new features.
@@ -35,3 +36,4 @@ Constraints:
 - Do not independently convert active JSON fixtures or workload manifests while the architecture lane is burning down tracked JSON; let architecture queue and architecture-implementation land those migrations, and keep cleanup on non-overlapping structural waste instead.
 - Do not edit the task queue or harness.
 - Avoid speculative rewrites. Make only cleanup changes you can justify with concrete duplication or unnecessary complexity in the current tree, and do not use "there is a lot left" as a reason to skip the next target.
+- Do not report a tracked artifact as removed if your final diff shows it only changed or if a later command recreated it; describe the actual remaining file instead.
