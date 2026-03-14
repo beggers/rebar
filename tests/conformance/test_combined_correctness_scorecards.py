@@ -5,11 +5,15 @@ import unittest
 from tests.conformance.correctness_expectations import (
     combined_correctness_case,
     combined_target_manifest_ids,
+    open_ended_quantified_group_scorecard_case,
+    open_ended_quantified_group_scorecard_target_manifest_ids,
+    wider_ranged_repeat_quantified_group_scorecard_case,
+    wider_ranged_repeat_quantified_group_scorecard_target_manifest_ids,
 )
 from tests.conformance.scorecard_suite_support import assert_correctness_scorecard_suite
 
 
-class CombinedCorrectnessScorecardSuiteTest(unittest.TestCase):
+class CorrectnessScorecardSuitesTest(unittest.TestCase):
     maxDiff = None
 
     def test_runner_regenerates_combined_correctness_scorecards(self) -> None:
@@ -17,6 +21,24 @@ class CombinedCorrectnessScorecardSuiteTest(unittest.TestCase):
             self,
             target_manifest_ids=combined_target_manifest_ids(),
             case_factory=combined_correctness_case,
+        )
+
+    def test_runner_regenerates_open_ended_quantified_group_scorecards(self) -> None:
+        assert_correctness_scorecard_suite(
+            self,
+            target_manifest_ids=open_ended_quantified_group_scorecard_target_manifest_ids(),
+            case_factory=open_ended_quantified_group_scorecard_case,
+        )
+
+    def test_runner_regenerates_wider_ranged_repeat_quantified_group_scorecards(
+        self,
+    ) -> None:
+        assert_correctness_scorecard_suite(
+            self,
+            target_manifest_ids=(
+                wider_ranged_repeat_quantified_group_scorecard_target_manifest_ids()
+            ),
+            case_factory=wider_ranged_repeat_quantified_group_scorecard_case,
         )
 
 
