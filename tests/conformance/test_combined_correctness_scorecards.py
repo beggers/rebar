@@ -3,6 +3,8 @@ from __future__ import annotations
 import unittest
 
 from tests.conformance.correctness_expectations import (
+    branch_local_backreference_scorecard_case,
+    branch_local_backreference_scorecard_target_manifest_ids,
     combined_correctness_case,
     combined_target_manifest_ids,
     conditional_alternation_scorecard_case,
@@ -29,6 +31,17 @@ class CorrectnessScorecardSuitesTest(unittest.TestCase):
             self,
             target_manifest_ids=combined_target_manifest_ids(),
             case_factory=combined_correctness_case,
+        )
+
+    def test_runner_regenerates_branch_local_backreference_correctness_scorecards(
+        self,
+    ) -> None:
+        assert_correctness_scorecard_suite(
+            self,
+            target_manifest_ids=(
+                branch_local_backreference_scorecard_target_manifest_ids()
+            ),
+            case_factory=branch_local_backreference_scorecard_case,
         )
 
     def test_runner_regenerates_conditional_replacement_correctness_scorecards(

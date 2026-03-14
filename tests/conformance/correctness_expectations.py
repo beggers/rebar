@@ -339,6 +339,46 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
 }
 
 
+BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS = {
+    "conditional-group-exists-branch-local-backreference-workflows": {
+        "representative_case_ids": (
+            "conditional-group-exists-branch-local-numbered-backreference-compile-metadata-str",
+            "conditional-group-exists-branch-local-numbered-backreference-module-search-present-str",
+            "conditional-group-exists-branch-local-numbered-backreference-pattern-fullmatch-absent-str",
+            "conditional-group-exists-branch-local-named-backreference-compile-metadata-str",
+            "conditional-group-exists-branch-local-named-backreference-module-search-present-str",
+            "conditional-group-exists-branch-local-named-backreference-pattern-fullmatch-absent-str",
+        ),
+    },
+    "optional-group-alternation-branch-local-backreference-workflows": {
+        "representative_case_ids": (
+            "optional-group-alternation-branch-local-numbered-backreference-compile-metadata-str",
+            "optional-group-alternation-branch-local-numbered-backreference-module-search-b-branch-str",
+            "optional-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-c-branch-str",
+            "optional-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-absent-group-str",
+            "optional-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-str",
+            "optional-group-alternation-branch-local-named-backreference-compile-metadata-str",
+            "optional-group-alternation-branch-local-named-backreference-module-search-c-branch-str",
+            "optional-group-alternation-branch-local-named-backreference-pattern-fullmatch-b-branch-str",
+            "optional-group-alternation-branch-local-named-backreference-pattern-fullmatch-absent-group-str",
+            "optional-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
+        ),
+    },
+    "quantified-branch-local-backreference-workflows": {
+        "representative_case_ids": (
+            "quantified-branch-local-numbered-backreference-compile-metadata-str",
+            "quantified-branch-local-numbered-backreference-module-search-lower-bound-str",
+            "quantified-branch-local-numbered-backreference-pattern-fullmatch-second-iteration-str",
+            "quantified-branch-local-numbered-backreference-pattern-fullmatch-absent-branch-str",
+            "quantified-branch-local-named-backreference-compile-metadata-str",
+            "quantified-branch-local-named-backreference-module-search-lower-bound-str",
+            "quantified-branch-local-named-backreference-pattern-fullmatch-second-iteration-str",
+            "quantified-branch-local-named-backreference-pattern-fullmatch-absent-branch-str",
+        ),
+    },
+}
+
+
 CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS = {
     "conditional-group-exists-nested-workflows": {
         "representative_case_ids": (
@@ -1200,6 +1240,23 @@ def combined_correctness_case(target_manifest_id: str) -> CorrectnessScorecardEx
     return _build_scorecard_expectation(
         target_manifest_id,
         COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
+    )
+
+
+def branch_local_backreference_scorecard_target_manifest_ids() -> tuple[str, ...]:
+    return _expected_target_manifest_ids(
+        BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS,
+        expectation_label="branch-local-backreference correctness scorecard",
+    )
+
+
+@lru_cache(maxsize=None)
+def branch_local_backreference_scorecard_case(
+    target_manifest_id: str,
+) -> CorrectnessScorecardExpectation:
+    return _build_scorecard_expectation(
+        target_manifest_id,
+        BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS,
     )
 
 

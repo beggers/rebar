@@ -1,8 +1,9 @@
 # RBR-0337: Consolidate the remaining branch-local-backreference correctness scorecards into the data-driven suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
+Completed: 2026-03-14
 
 ## Goal
 - Replace the remaining branch-local-backreference correctness wrapper modules with one legible, data-driven scorecard path so this frontier is asserted through shared expectation tables instead of repeated cargo-build, subprocess, tracked-report, and observation boilerplate.
@@ -41,3 +42,13 @@ Created: 2026-03-14
 - These five wrapper modules still total 1,573 lines of largely repeated build-plus-regenerate scaffolding.
 - `combined_correctness_case("nested-group-alternation-branch-local-backreference-workflows")` already covers all 8 published cases for that manifest, and `combined_correctness_case("quantified-nested-group-alternation-branch-local-backreference-workflows")` already covers all 10 published cases for that manifest, so those two files are pure wrapper redundancy now.
 - This task is independent of `RBR-0336`: it only consolidates scorecard plumbing around manifests that are already landed in the current checkout.
+
+## Completion
+- Added `BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS` plus shared accessors in `tests/conformance/correctness_expectations.py`, covering the three remaining non-data-driven branch-local manifests without copying the two nested branch-local manifests that already belong to `COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS`.
+- Routed the remaining branch-local scorecard coverage through `tests/conformance/test_combined_correctness_scorecards.py` using `assert_correctness_scorecard_suite(...)`, so representative-case assertions now flow through `evaluate_case()` and the shared scorecard helpers instead of bespoke subprocess wrappers.
+- Deleted the five superseded branch-local-backreference wrapper modules from `tests/conformance/`.
+
+## Verification
+- `.venv/bin/python -m pytest tests/conformance/test_combined_correctness_scorecards.py -k branch_local_backreference -q`
+- `.venv/bin/python - <<'PY'` importing `branch_local_backreference_scorecard_target_manifest_ids()`, `combined_target_manifest_ids()`, and `combined_correctness_case()` confirmed the new helper resolves exactly the three intended manifests from `DEFAULT_FIXTURE_PATHS`, and the nested branch-local manifests remain fully covered by the existing combined expectation family.
+- `git diff --name-status -- tests/conformance/test_correctness_conditional_group_exists_branch_local_backreference_workflows.py tests/conformance/test_correctness_optional_group_alternation_branch_local_backreference_workflows.py tests/conformance/test_correctness_quantified_branch_local_backreference_workflows.py tests/conformance/test_correctness_nested_group_alternation_branch_local_backreference_workflows.py tests/conformance/test_correctness_quantified_nested_group_alternation_branch_local_backreference_workflows.py` showed each deleted wrapper as `D`, and `rg --files tests/conformance | rg 'test_correctness_(conditional_group_exists_branch_local_backreference|optional_group_alternation_branch_local_backreference|quantified_branch_local_backreference|nested_group_alternation_branch_local_backreference|quantified_nested_group_alternation_branch_local_backreference)_workflows\\.py$'` returned no matches.
