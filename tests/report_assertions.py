@@ -85,6 +85,49 @@ def find_correctness_case_record(
     raise AssertionError(f"missing correctness case record for {case_id!r}")
 
 
+def assert_correctness_case_record_matches(
+    testcase: Any,
+    actual_case: dict[str, Any],
+    expected_case: dict[str, Any],
+) -> None:
+    for key in (
+        "id",
+        "manifest_id",
+        "suite_id",
+        "layer",
+        "family",
+        "operation",
+        "notes",
+        "categories",
+        "comparison",
+        "comparison_notes",
+        "observations",
+    ):
+        testcase.assertEqual(actual_case.get(key), expected_case.get(key))
+
+    for key in ("text_model", "pattern", "flags", "helper", "kwargs"):
+        testcase.assertEqual(actual_case.get(key), expected_case.get(key))
+
+    actual_args = actual_case.get("args")
+    expected_args = expected_case.get("args")
+    testcase.assertEqual(bool(actual_args), bool(expected_args))
+    if not actual_args or not expected_args:
+        return
+
+    testcase.assertEqual(len(actual_args), len(expected_args))
+    for actual_arg, expected_arg in zip(actual_args, expected_args):
+        if (
+            isinstance(actual_arg, dict)
+            and isinstance(expected_arg, dict)
+            and actual_arg.get("type") == "callable"
+            and expected_arg.get("type") == "callable"
+        ):
+            testcase.assertEqual(actual_arg["type"], expected_arg["type"])
+            testcase.assertEqual(actual_arg["qualname"], expected_arg["qualname"])
+            continue
+        testcase.assertEqual(actual_arg, expected_arg)
+
+
 def assert_correctness_suite_summary_consistent(
     testcase: Any,
     scorecard: dict[str, Any],

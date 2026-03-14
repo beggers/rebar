@@ -20,6 +20,7 @@ from tests.conformance.correctness_expectations import (
     combined_target_manifest_ids,
 )
 from tests.report_assertions import (
+    assert_correctness_case_record_matches,
     assert_correctness_fixture_contract,
     assert_correctness_layer_contract,
     assert_correctness_report_contract,
@@ -41,48 +42,6 @@ class CombinedCorrectnessScorecardSuiteTest(unittest.TestCase):
             capture_output=True,
             text=True,
         )
-
-    def assert_case_matches_expected(
-        self,
-        actual_case: dict[str, object],
-        expected_case: dict[str, object],
-    ) -> None:
-        for key in (
-            "id",
-            "manifest_id",
-            "suite_id",
-            "layer",
-            "family",
-            "operation",
-            "notes",
-            "categories",
-            "comparison",
-            "comparison_notes",
-            "observations",
-        ):
-            self.assertEqual(actual_case.get(key), expected_case.get(key))
-
-        for key in ("text_model", "pattern", "flags", "helper", "kwargs"):
-            self.assertEqual(actual_case.get(key), expected_case.get(key))
-
-        actual_args = actual_case.get("args")
-        expected_args = expected_case.get("args")
-        self.assertEqual(bool(actual_args), bool(expected_args))
-        if not actual_args or not expected_args:
-            return
-
-        self.assertEqual(len(actual_args), len(expected_args))
-        for actual_arg, expected_arg in zip(actual_args, expected_args):
-            if (
-                isinstance(actual_arg, dict)
-                and isinstance(expected_arg, dict)
-                and actual_arg.get("type") == "callable"
-                and expected_arg.get("type") == "callable"
-            ):
-                self.assertEqual(actual_arg["type"], expected_arg["type"])
-                self.assertEqual(actual_arg["qualname"], expected_arg["qualname"])
-                continue
-            self.assertEqual(actual_arg, expected_arg)
 
     def test_runner_regenerates_combined_correctness_scorecards(self) -> None:
         for target_manifest_id in combined_target_manifest_ids():
@@ -152,7 +111,8 @@ class CombinedCorrectnessScorecardSuiteTest(unittest.TestCase):
                         CpythonReAdapter(),
                         RebarAdapter(),
                     )
-                    self.assert_case_matches_expected(
+                    assert_correctness_case_record_matches(
+                        self,
                         find_correctness_case_record(scorecard, fixture_case.case_id),
                         expected_case,
                     )

@@ -243,8 +243,108 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
 }
 
 
+WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
+    "wider-ranged-repeat-quantified-group-alternation-workflows": {
+        "representative_case_ids": (
+            "wider-ranged-repeat-quantified-group-alternation-numbered-compile-metadata-str",
+            "wider-ranged-repeat-quantified-group-alternation-numbered-module-search-lower-bound-bc-str",
+            "wider-ranged-repeat-quantified-group-alternation-numbered-module-search-lower-bound-de-str",
+            "wider-ranged-repeat-quantified-group-alternation-numbered-pattern-fullmatch-mixed-str",
+            "wider-ranged-repeat-quantified-group-alternation-numbered-pattern-fullmatch-no-match-short-str",
+            "wider-ranged-repeat-quantified-group-alternation-named-compile-metadata-str",
+            "wider-ranged-repeat-quantified-group-alternation-named-module-search-mixed-str",
+            "wider-ranged-repeat-quantified-group-alternation-named-module-search-upper-bound-mixed-str",
+            "wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-upper-bound-de-str",
+            "wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-overflow-str",
+        ),
+    },
+    "wider-ranged-repeat-quantified-group-alternation-conditional-workflows": {
+        "representative_case_ids": (
+            "wider-ranged-repeat-quantified-group-alternation-conditional-numbered-compile-metadata-str",
+            "wider-ranged-repeat-quantified-group-alternation-conditional-numbered-module-search-absent-workflow-str",
+            "wider-ranged-repeat-quantified-group-alternation-conditional-numbered-module-search-lower-bound-bc-workflow-str",
+            "wider-ranged-repeat-quantified-group-alternation-conditional-numbered-module-search-lower-bound-de-workflow-str",
+            "wider-ranged-repeat-quantified-group-alternation-conditional-numbered-pattern-fullmatch-mixed-workflow-str",
+            "wider-ranged-repeat-quantified-group-alternation-conditional-numbered-pattern-fullmatch-no-match-missing-trailing-d-workflow-str",
+            "wider-ranged-repeat-quantified-group-alternation-conditional-named-compile-metadata-str",
+            "wider-ranged-repeat-quantified-group-alternation-conditional-named-module-search-absent-workflow-str",
+            "wider-ranged-repeat-quantified-group-alternation-conditional-named-module-search-lower-bound-de-workflow-str",
+            "wider-ranged-repeat-quantified-group-alternation-conditional-named-module-search-upper-bound-mixed-workflow-str",
+            "wider-ranged-repeat-quantified-group-alternation-conditional-named-pattern-fullmatch-mixed-workflow-str",
+            "wider-ranged-repeat-quantified-group-alternation-conditional-named-pattern-fullmatch-no-match-short-workflow-str",
+        ),
+    },
+    "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows": {
+        "representative_case_ids": (
+            "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-str",
+            "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-short-branch-str",
+            "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-lower-bound-long-branch-str",
+            "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-short-then-short-str",
+            "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-short-then-long-str",
+            "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-no-match-overlap-tail-str",
+            "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-compile-metadata-str",
+            "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-module-search-lower-bound-long-branch-str",
+            "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-module-search-third-repetition-mixed-str",
+            "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-second-repetition-long-then-short-str",
+            "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-third-repetition-short-short-long-str",
+            "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-module-search-no-match-invalid-tail-str",
+        ),
+    },
+    "broader-range-wider-ranged-repeat-quantified-group-alternation-workflows": {
+        "representative_case_ids": (
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-compile-metadata-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-module-search-lower-bound-bc-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-module-search-lower-bound-de-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-pattern-fullmatch-third-repetition-mixed-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-pattern-fullmatch-no-match-short-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-named-compile-metadata-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-named-module-search-mixed-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-named-module-search-upper-bound-all-de-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-upper-bound-mixed-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-overflow-str",
+        ),
+    },
+    "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows": {
+        "representative_case_ids": (
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-compile-metadata-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-module-search-absent-workflow-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-module-search-lower-bound-bc-workflow-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-module-search-lower-bound-de-workflow-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-pattern-fullmatch-third-repetition-mixed-workflow-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-pattern-fullmatch-no-match-missing-trailing-d-workflow-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-pattern-fullmatch-no-match-short-workflow-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-compile-metadata-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-module-search-absent-workflow-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-module-search-lower-bound-de-workflow-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-module-search-upper-bound-mixed-workflow-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-pattern-fullmatch-third-repetition-mixed-workflow-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-pattern-fullmatch-no-match-short-workflow-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-pattern-fullmatch-no-match-overflow-workflow-str",
+        ),
+    },
+    "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows": {
+        "representative_case_ids": (
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-short-branch-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-long-branch-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-short-then-long-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-long-then-short-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-fourth-repetition-mixed-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-no-match-invalid-tail-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-compile-metadata-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-module-search-lower-bound-long-branch-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-module-search-second-repetition-short-then-long-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-module-search-fourth-repetition-mixed-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-second-repetition-long-then-short-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-invalid-tail-str",
+            "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-overflow-str",
+        ),
+    },
+}
+
+
 @dataclass(frozen=True)
-class CombinedCorrectnessCase:
+class CorrectnessScorecardExpectation:
     fixture_paths: tuple[pathlib.Path, ...]
     expected_fixture_case_count: int
     expected_fixture_manifest_ids: tuple[str, ...]
@@ -256,6 +356,7 @@ class CombinedCorrectnessCase:
     target_layer_manifest_ids: tuple[str, ...]
     target_layer_operations: tuple[str, ...]
     target_layer_text_models: tuple[str, ...]
+    target_manifest_case_count: int
     target_manifest_id: str
     target_suite_families: tuple[str, ...]
     target_suite_id: str
@@ -276,25 +377,29 @@ def _fixture_inventory() -> tuple[tuple[pathlib.Path, FixtureManifest, tuple[Fix
     return tuple(inventory)
 
 
-def combined_target_manifest_ids() -> tuple[str, ...]:
+def _expected_target_manifest_ids(
+    expectations: dict[str, dict[str, tuple[str, ...]]],
+    *,
+    expectation_label: str,
+) -> tuple[str, ...]:
     target_manifest_ids = tuple(
         manifest.manifest_id
         for _, manifest, _ in _fixture_inventory()
-        if manifest.manifest_id in COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS
+        if manifest.manifest_id in expectations
     )
-    missing_expectations = set(COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS) - set(
-        target_manifest_ids
-    )
+    missing_expectations = set(expectations) - set(target_manifest_ids)
     if missing_expectations:
         raise AssertionError(
-            "combined correctness manifest expectations drifted from DEFAULT_FIXTURE_PATHS: "
+            f"{expectation_label} manifest expectations drifted from DEFAULT_FIXTURE_PATHS: "
             f"missing {sorted(missing_expectations)}"
         )
     return target_manifest_ids
 
 
-@lru_cache(maxsize=None)
-def combined_correctness_case(target_manifest_id: str) -> CombinedCorrectnessCase:
+def _build_scorecard_expectation(
+    target_manifest_id: str,
+    expectation_table: dict[str, dict[str, tuple[str, ...]]],
+) -> CorrectnessScorecardExpectation:
     selected_paths: list[pathlib.Path] = []
     selected_manifests: list[FixtureManifest] = []
     selected_cases: list[FixtureCase] = []
@@ -315,11 +420,9 @@ def combined_correctness_case(target_manifest_id: str) -> CombinedCorrectnessCas
             f"target manifest {target_manifest_id!r} is not in DEFAULT_FIXTURE_PATHS"
         )
 
-    expectation = COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS.get(target_manifest_id)
+    expectation = expectation_table.get(target_manifest_id)
     if expectation is None:
-        raise AssertionError(
-            f"missing combined correctness expectation for {target_manifest_id!r}"
-        )
+        raise AssertionError(f"missing correctness expectation for {target_manifest_id!r}")
 
     representative_case_ids = expectation["representative_case_ids"]
     target_cases_by_id = {case.case_id: case for case in target_cases}
@@ -355,7 +458,7 @@ def combined_correctness_case(target_manifest_id: str) -> CombinedCorrectnessCas
         case for case in selected_cases if case.layer == target_manifest.layer
     ]
 
-    return CombinedCorrectnessCase(
+    return CorrectnessScorecardExpectation(
         fixture_paths=tuple(selected_paths),
         expected_fixture_case_count=len(selected_cases),
         expected_fixture_manifest_ids=tuple(
@@ -383,6 +486,7 @@ def combined_correctness_case(target_manifest_id: str) -> CombinedCorrectnessCas
         target_layer_text_models=_sorted_unique_strings(
             case.text_model for case in target_layer_cases
         ),
+        target_manifest_case_count=len(target_cases),
         target_manifest_id=target_manifest.manifest_id,
         target_suite_families=_sorted_unique_strings(
             case.family for case in target_suite_cases
@@ -390,4 +494,36 @@ def combined_correctness_case(target_manifest_id: str) -> CombinedCorrectnessCas
         target_suite_id=target_manifest.suite_id,
         target_suite_operations=target_suite_operations,
         target_suite_text_models=target_suite_text_models,
+    )
+
+
+def combined_target_manifest_ids() -> tuple[str, ...]:
+    return _expected_target_manifest_ids(
+        COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
+        expectation_label="combined correctness",
+    )
+
+
+@lru_cache(maxsize=None)
+def combined_correctness_case(target_manifest_id: str) -> CorrectnessScorecardExpectation:
+    return _build_scorecard_expectation(
+        target_manifest_id,
+        COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
+    )
+
+
+def wider_ranged_repeat_quantified_group_scorecard_target_manifest_ids() -> tuple[str, ...]:
+    return _expected_target_manifest_ids(
+        WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
+        expectation_label="wider-ranged-repeat quantified-group scorecard",
+    )
+
+
+@lru_cache(maxsize=None)
+def wider_ranged_repeat_quantified_group_scorecard_case(
+    target_manifest_id: str,
+) -> CorrectnessScorecardExpectation:
+    return _build_scorecard_expectation(
+        target_manifest_id,
+        WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
     )

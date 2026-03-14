@@ -1,6 +1,6 @@
 # RBR-0277: Consolidate wider-ranged-repeat quantified-group correctness scorecards into one data-driven suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
 
@@ -34,3 +34,7 @@ Created: 2026-03-14
 ## Notes
 - The six current modules total roughly 2.3k lines and rerun the same cargo-build plus correctness-report contract with only manifest ids and case tables varying.
 - Build on `RBR-0272` and `RBR-0274`: the wider-ranged-repeat parity frontier is already consolidated on the Python side, and the combined correctness wrapper contract is already data-driven. This task applies the same simplification to the remaining wider-ranged-repeat manifest-specific correctness surface.
+
+## Completion Notes
+- Added `tests/conformance/test_wider_ranged_repeat_quantified_group_scorecards.py`, backed by shared manifest-prefix expectations in `tests/conformance/correctness_expectations.py` and shared case/report assertions in `tests/report_assertions.py`.
+- Removed the six superseded wider-ranged-repeat quantified-group correctness modules and verified the consolidated suite alongside `tests/conformance/test_combined_correctness_scorecards.py` with `PYTHONPATH=python python3 -m unittest ... -q`.
