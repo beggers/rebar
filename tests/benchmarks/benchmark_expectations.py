@@ -274,11 +274,13 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "nested-group-alternation-boundary": {
-        "known_gap_count": 2,
+        "known_gap_count": 1,
         "representative_known_gap_workload_ids": (
+            "pattern-fullmatch-named-nested-group-branch-local-backreference-purged-gap",
+        ),
+        "representative_measured_workload_ids": (
             "module-search-nested-group-quantified-alternation-cold-gap",
         ),
-        "representative_measured_workload_ids": (),
     },
     "nested-group-replacement-boundary": {
         "known_gap_count": 0,
