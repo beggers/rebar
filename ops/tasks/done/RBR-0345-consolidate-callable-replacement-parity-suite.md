@@ -1,8 +1,9 @@
 # RBR-0345: Consolidate the callable-replacement parity modules into one shared pytest suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
+Completed: 2026-03-14
 
 ## Goal
 - Replace the three landed callable-replacement parity modules with one backend-parameterized pytest suite so grouped and nested callback parity lives on one Python-path contract instead of repeated fixture loading, compile assertions, module/pattern wrapper tests, and one leftover `unittest` class.
@@ -40,3 +41,13 @@ Created: 2026-03-14
 ## Notes
 - The current three modules total 584 lines and already share the same compile/result/callback assertion structure; only the oldest nested-group slice still sits on a standalone `unittest` class with hand-maintained case tuples.
 - This is the same simplification pattern already used for the grouped counted-repeat frontiers in `tests/python/test_open_ended_quantified_group_parity_suite.py` and `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`, applied to the callable-replacement frontier that is still split across one legacy singleton and two near-duplicate pytest modules.
+
+## Completion
+- Added `tests/python/test_callable_replacement_parity_suite.py`, consolidating the nested-group, grouped-alternation, and quantified-nested-group callable-replacement parity checks onto one backend-parameterized pytest suite.
+- Kept manifest alignment explicit per published fixture by asserting each fixture's manifest id, case-id set, compile-pattern set, and operation/helper distribution before reusing the loaded `FixtureCase` rows for compile metadata, module/pattern `sub()` / `subn()` parity, and callback `Match` snapshot parity.
+- Deleted `tests/python/test_nested_group_callable_replacement_parity.py`, `tests/python/test_grouped_alternation_callable_replacement_parity.py`, and `tests/python/test_quantified_nested_group_callable_replacement_parity.py`.
+
+## Verification
+- `.venv/bin/python -m pytest tests/python/test_callable_replacement_parity_suite.py`
+- `git diff --name-status -- tests/python/test_callable_replacement_parity_suite.py tests/python/test_nested_group_callable_replacement_parity.py tests/python/test_grouped_alternation_callable_replacement_parity.py tests/python/test_quantified_nested_group_callable_replacement_parity.py`
+- `rg --files tests/python | rg 'test_(nested_group|grouped_alternation|quantified_nested_group)_callable_replacement_parity\\.py$'`
