@@ -27,7 +27,7 @@ class DefaultCorrectnessFixtureInventoryContractTest(unittest.TestCase):
             with self.subTest(path=str(path.relative_to(REPO_ROOT))):
                 self.assertTrue(path.is_relative_to(FIXTURES_ROOT))
                 self.assertTrue(path.is_file())
-                self.assertIn(path.suffix, {".json", ".py"})
+                self.assertEqual(path.suffix, ".py")
 
     def test_default_fixture_inventory_has_unique_manifest_and_case_ids(self) -> None:
         manifests, cases = load_fixture_manifests(DEFAULT_FIXTURE_PATHS)

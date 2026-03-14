@@ -236,7 +236,7 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_nested_replacement_workflows.json",
+    / "conditional_group_exists_nested_replacement_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
@@ -351,7 +351,7 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "conditional_group_exists_quantified_alternation_workflows.json",
+    / "conditional_group_exists_quantified_alternation_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
@@ -544,23 +544,10 @@ def _load_python_fixture_manifest(path: pathlib.Path) -> dict[str, Any]:
     return raw_manifest
 
 
-def _load_raw_fixture_manifest(path: pathlib.Path) -> dict[str, Any]:
-    if path.suffix == ".json":
-        raw_manifest = json.loads(path.read_text(encoding="utf-8"))
-    elif path.suffix == ".py":
-        raw_manifest = _load_python_fixture_manifest(path)
-    else:
-        raise ValueError(
-            f"unsupported fixture manifest extension {path.suffix!r} for {path}"
-        )
-
-    if not isinstance(raw_manifest, dict):
-        raise ValueError(f"fixture manifest in {path} must be an object")
-    return raw_manifest
-
-
 def load_fixture_manifest(path: pathlib.Path) -> tuple[FixtureManifest, list[FixtureCase]]:
-    raw_manifest = _load_raw_fixture_manifest(path)
+    if path.suffix != ".py":
+        raise ValueError(f"fixture manifests must be Python modules; got {path}")
+    raw_manifest = _load_python_fixture_manifest(path)
     schema_version = raw_manifest.get("schema_version")
     if schema_version != FIXTURE_SCHEMA_VERSION:
         raise ValueError(

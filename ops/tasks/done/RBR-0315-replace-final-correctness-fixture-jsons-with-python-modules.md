@@ -1,6 +1,6 @@
 # RBR-0315: Replace the final correctness fixture JSONs with Python modules
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
 
@@ -33,3 +33,10 @@ Created: 2026-03-14
 ## Notes
 - `.rebar/runtime/dashboard.md` still shows a stale pre-checkpoint JSON count of `25`, but the live checkout is already at `17`: `python3 scripts/rebar_ops.py status` reports `tracked_json_blob_count=17` and `tracked_json_blob_delta=-8`, and both `git ls-files '*.json' | wc -l` and `rg --files -g '*.json' | wc -l` currently agree at `17`.
 - This is the last tracked correctness-fixture JSON block. After it lands, the remaining tracked JSON should be limited to ops agent/config/report files and published report artifacts, so later architecture burn-down can move out of `tests/conformance/fixtures/` and into harness/report plumbing.
+
+## Completion Notes
+- Replaced the last two tracked correctness fixture JSONs with one-manifest-per-file Python `MANIFEST` modules, preserved manifest ids/defaults/case ordering/payloads, and deleted the JSON originals.
+- Repointed `DEFAULT_FIXTURE_PATHS` to the new `.py` fixtures in the same ordering slots and removed the correctness-fixture `.json` loader branch, so `load_fixture_manifest()` now accepts only Python fixture modules while report JSON handling stays unchanged.
+- Tightened `tests/conformance/test_correctness_fixture_inventory_contract.py` to require `.py` fixture paths, regenerated `reports/correctness/latest.json`, and preserved the combined report totals at `87` manifests, `787` total cases, `779` passed, `0` failed, and `8` unimplemented. The converted fixture paths in the report now end in `.py`.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python python3 -m rebar_harness.correctness --report reports/correctness/latest.json`, and `PYTHONPATH=python .venv/bin/python -m pytest tests/conformance/test_combined_correctness_scorecards.py tests/conformance/test_correctness_fixture_inventory_contract.py tests/conformance/test_correctness_manifest_loader_duplicate_contract.py tests/conformance/test_python_fixture_manifest_contract.py tests/conformance/test_correctness_conditional_group_exists_nested_replacement_workflows.py tests/conformance/test_correctness_conditional_group_exists_quantified_alternation_workflows.py` (`9` tests passed).
+- Live JSON count is now `15` by `rg --files -g '*.json' | wc -l`; `git ls-files '*.json' | wc -l` still shows `17` in this dirty checkout until the harness commit records the deletions.

@@ -1,4 +1,4 @@
-{
+MANIFEST = {
   "schema_version": 1,
   "manifest_id": "conditional-group-exists-quantified-alternation-workflows",
   "layer": "match_behavior",
