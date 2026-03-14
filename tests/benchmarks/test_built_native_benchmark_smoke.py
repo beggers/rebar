@@ -1,55 +1,33 @@
 from __future__ import annotations
 
-import pathlib
-import shutil
-import sys
-import tempfile
 import unittest
-from unittest import mock
 
-
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-PYTHON_SOURCE = REPO_ROOT / "python"
-if str(PYTHON_SOURCE) not in sys.path:
-    sys.path.insert(0, str(PYTHON_SOURCE))
-
-from rebar_harness import benchmarks
-
-
-MATURIN = shutil.which("maturin")
+from tests.benchmarks.native_benchmark_test_support import (
+    MATURIN,
+    assert_native_mode_requires_real_built_runtime,
+    benchmarks,
+    run_native_benchmark_with_report,
+)
 
 
 class BuiltNativeBenchmarkSmokeTest(unittest.TestCase):
     def test_native_smoke_mode_requires_real_built_runtime(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            report_path = pathlib.Path(temp_dir) / "benchmarks-native-smoke.json"
-            with mock.patch.object(
-                benchmarks,
-                "provision_built_native_runtime",
-                return_value=(
-                    None,
-                    None,
-                    "built-native mode unavailable because no `maturin` executable was found on PATH",
-                ),
-            ):
-                with self.assertRaisesRegex(
-                    benchmarks.NativeBenchmarkProvisionError,
-                    "no `maturin` executable was found on PATH",
-                ):
-                    benchmarks.run_built_native_smoke_benchmarks(report_path=report_path)
-
-            self.assertFalse(report_path.exists())
+        assert_native_mode_requires_real_built_runtime(
+            self,
+            runner=benchmarks.run_built_native_smoke_benchmarks,
+            report_name="benchmarks-native-smoke.json",
+        )
 
     @unittest.skipUnless(
         MATURIN is not None,
         "built-native benchmark smoke requires a maturin executable on PATH",
     )
     def test_native_smoke_mode_writes_built_native_report(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            report_path = pathlib.Path(temp_dir) / "benchmarks-native-smoke.json"
-            scorecard = benchmarks.run_built_native_smoke_benchmarks(report_path=report_path)
-            self.assertTrue(report_path.is_file())
-
+        scorecard = run_native_benchmark_with_report(
+            self,
+            runner=benchmarks.run_built_native_smoke_benchmarks,
+            report_name="benchmarks-native-smoke.json",
+        )
         self.assertEqual(scorecard["schema_version"], "1.0")
         self.assertEqual(scorecard["phase"], "phase2-module-boundary-suite")
         self.assertEqual(scorecard["implementation"]["module_name"], "rebar")
