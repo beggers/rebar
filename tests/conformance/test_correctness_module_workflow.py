@@ -33,7 +33,7 @@ PATTERN_OBJECT_FIXTURES_PATH = (
 MODULE_WORKFLOW_FIXTURES_PATH = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "module_workflow_surface.py"
 )
-TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
+TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
 
 
 class CorrectnessHarnessModuleWorkflowTest(unittest.TestCase):

@@ -33,7 +33,7 @@ COLLECTION_REPLACEMENT_FIXTURES_PATH = (
 LITERAL_FLAG_FIXTURES_PATH = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "literal_flag_workflows.py"
 )
-TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
+TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
 
 
 class CorrectnessHarnessLiteralFlagWorkflowTest(unittest.TestCase):

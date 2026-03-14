@@ -27,7 +27,7 @@ MATCH_BEHAVIOR_FIXTURES_PATH = (
 EXPORTED_SYMBOL_FIXTURES_PATH = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "exported_symbol_surface.py"
 )
-TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
+TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
 
 
 class CorrectnessHarnessExportedSymbolSurfaceTest(unittest.TestCase):

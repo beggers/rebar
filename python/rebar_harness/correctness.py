@@ -6,6 +6,7 @@ import argparse
 import importlib.util
 import json
 import pathlib
+import pprint
 import re as cpython_re
 import sys
 import warnings
@@ -26,6 +27,7 @@ from rebar_harness.metadata import build_cpython_baseline
 
 TARGET_CPYTHON_SERIES = "3.12.x"
 REPORT_SCHEMA_VERSION = "1.0"
+REPORT_ATTRIBUTE = "REPORT"
 FIXTURE_SCHEMA_VERSION = 1
 DEFAULT_FIXTURE_PATHS = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py",
@@ -393,7 +395,7 @@ DEFAULT_FIXTURE_PATHS = (
     / "fixtures"
     / "quantified_nested_group_alternation_workflows.py",
 )
-DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
+DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
 PHASE_BY_LAYER = {
     "parser_acceptance_and_diagnostics": "phase1-parser-conformance-pack",
     "module_api_surface": "phase2-public-api-surface-pack",
@@ -1630,9 +1632,56 @@ def build_scorecard(
     }
 
 
+def _load_python_scorecard(path: pathlib.Path) -> dict[str, Any]:
+    module_name = f"_rebar_correctness_scorecard_{path.stem}".replace("-", "_")
+    spec = importlib.util.spec_from_file_location(module_name, path)
+    if spec is None or spec.loader is None:
+        raise ValueError(f"unable to load Python correctness scorecard from {path}")
+
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    if not hasattr(module, REPORT_ATTRIBUTE):
+        raise ValueError(f"Python correctness scorecard module {path} is missing a {REPORT_ATTRIBUTE} value")
+    payload = getattr(module, REPORT_ATTRIBUTE)
+    if not isinstance(payload, dict):
+        raise ValueError(f"correctness scorecard in {path} must be a dict")
+    return payload
+
+
+def load_scorecard(report_path: pathlib.Path) -> dict[str, Any]:
+    if report_path.suffix == ".json":
+        raw_payload = json.loads(report_path.read_text(encoding="utf-8"))
+        if not isinstance(raw_payload, dict):
+            raise ValueError(f"correctness scorecard in {report_path} must be a dict")
+        return raw_payload
+    if report_path.suffix == ".py":
+        return _load_python_scorecard(report_path)
+    raise ValueError(
+        f"unsupported correctness scorecard extension {report_path.suffix!r} for {report_path}"
+    )
+
+
+def _format_python_scorecard_module(scorecard: dict[str, Any]) -> str:
+    # Reuse the JSON serializer's coercions so IntFlag and similar values land as literals.
+    literal_safe_scorecard = json.loads(json.dumps(scorecard, sort_keys=True))
+    payload_literal = pprint.pformat(literal_safe_scorecard, indent=4, sort_dicts=True, width=100)
+    return f"{REPORT_ATTRIBUTE} = {payload_literal}\n"
+
+
 def write_scorecard(scorecard: dict[str, Any], report_path: pathlib.Path) -> None:
     report_path.parent.mkdir(parents=True, exist_ok=True)
-    report_path.write_text(json.dumps(scorecard, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if report_path.suffix == ".json":
+        report_path.write_text(
+            json.dumps(scorecard, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        return
+    if report_path.suffix == ".py":
+        report_path.write_text(_format_python_scorecard_module(scorecard), encoding="utf-8")
+        return
+    raise ValueError(
+        f"unsupported correctness scorecard extension {report_path.suffix!r} for {report_path}"
+    )
 
 
 def run_correctness_harness(
@@ -1663,7 +1712,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--report",
         type=pathlib.Path,
         default=DEFAULT_REPORT_PATH,
-        help="Path to the output JSON scorecard.",
+        help="Path to the output scorecard; the tracked default is a Python module and explicit .json outputs remain supported.",
     )
     return parser.parse_args(argv)
 

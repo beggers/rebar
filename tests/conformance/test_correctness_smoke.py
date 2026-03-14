@@ -14,7 +14,7 @@ from tests.report_assertions import assert_correctness_summary_consistent
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYTHON_SOURCE = REPO_ROOT / "python"
 FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_smoke.py"
-TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
+TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
 
 
 class CorrectnessHarnessSmokeTest(unittest.TestCase):

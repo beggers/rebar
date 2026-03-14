@@ -73,7 +73,7 @@ CONFIG = {
             "label": "Published correctness scorecard",
             "description": "Committed summary of correctness coverage and parity.",
             "paths_any": [
-                "reports/correctness/latest.json",
+                "reports/correctness/latest.py",
             ],
             "task": "RBR-0007-conformance-harness-scaffold.md",
         },
@@ -88,7 +88,7 @@ CONFIG = {
     ],
     "correctness_scorecard": {
         "title": "Correctness Snapshot",
-        "path": "reports/correctness/latest.json",
+        "path": "reports/correctness/latest.py",
     },
     "benchmark_scorecard": {
         "title": "Benchmark Snapshot",

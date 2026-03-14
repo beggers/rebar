@@ -8,10 +8,12 @@ import sys
 import tempfile
 import unittest
 
+from tests.conformance.scorecard_suite_support import load_published_correctness_scorecard
+
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYTHON_SOURCE = REPO_ROOT / "python"
-TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
+TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
 
 
 class CorrectnessHarnessConditionalGroupExistsNestedWorkflowTest(unittest.TestCase):
@@ -63,7 +65,7 @@ class CorrectnessHarnessConditionalGroupExistsNestedWorkflowTest(unittest.TestCa
         self.assertEqual(scorecard["baseline"]["re_module"], "re")
         self.assertEqual(scorecard["summary"], summary)
         self.assertTrue(TRACKED_REPORT_PATH.is_file())
-        tracked_scorecard = json.loads(TRACKED_REPORT_PATH.read_text(encoding="utf-8"))
+        tracked_scorecard = load_published_correctness_scorecard()
 
         self.assertEqual(
             scorecard["fixtures"]["manifest_count"],

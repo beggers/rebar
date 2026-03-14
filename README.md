@@ -14,21 +14,12 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, keeping correctness and the published Python-path benchmark surface aligned at the current frontier. |
 | Delivery estimate | The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
 | Current milestone | Milestone 2 now has quantified nested-group callable replacement aligned across correctness, Rust-backed parity, and the main Python-path benchmark surface, and quantified nested-group alternation is published on the correctness surface; `RBR-0322` is seeded as the surviving follow-on to catch that same bounded slice up on the main Python-path benchmark surface once the queued parity step clears. |
-| Work queue | `2` ready, `0` in progress, `324` done, `0` blocked |
+| Work queue | `1` ready, `0` in progress, `325` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
-| Metric | Value |
-| --- | --- |
-| Published cases | `793` |
-| Passing in published slice | `793` |
-| Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `88` |
-| Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
-
-_These correctness counts cover only the published slice. Overall delivery estimate: The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity._
+No published correctness scorecard yet. Expected tracked source: [`reports/correctness/latest.py`](reports/correctness/latest.py).
 
 ### Benchmark Snapshot
 
@@ -63,7 +54,7 @@ The safest read today is that correctness is ahead of the broader benchmark stor
 
 ## Where To Look
 
-For the published scorecards, start with `reports/correctness/latest.json` and `reports/benchmarks/latest.json`. For strict built-native coverage, run `python -m rebar_harness.benchmarks --native-smoke --report <path>` or `python -m rebar_harness.benchmarks --native-full --report <path>` when you need an ad hoc native-path scorecard. For the broader project frontier, `ops/state/current_status.md` is the current narrative state; `ops/README.md` is the operator guide for the loop and queue layout.
+For the published scorecards, start with `reports/correctness/latest.py` and `reports/benchmarks/latest.json`. For strict built-native coverage, run `python -m rebar_harness.benchmarks --native-smoke --report <path>` or `python -m rebar_harness.benchmarks --native-full --report <path>` when you need an ad hoc native-path scorecard. For the broader project frontier, `ops/state/current_status.md` is the current narrative state; `ops/README.md` is the operator guide for the loop and queue layout.
 
 ## Inspecting The Current Slice
 

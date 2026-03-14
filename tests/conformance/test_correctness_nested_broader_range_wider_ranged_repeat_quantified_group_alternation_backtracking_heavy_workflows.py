@@ -7,10 +7,12 @@ import sys
 import tempfile
 import unittest
 
+from tests.conformance.scorecard_suite_support import load_published_correctness_scorecard
+
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYTHON_SOURCE = REPO_ROOT / "python"
-TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
+TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
 FIXTURE_PATH = (
     REPO_ROOT
     / "tests"
@@ -117,7 +119,7 @@ class NestedBroaderRangeWiderRangedRepeatQuantifiedGroupAlternationBacktrackingH
             expected_phase="phase3-module-workflow-pack",
             tracked_report_path=TRACKED_REPORT_PATH,
         )
-        tracked_scorecard = json.loads(TRACKED_REPORT_PATH.read_text(encoding="utf-8"))
+        tracked_scorecard = load_published_correctness_scorecard()
         self.assertEqual(scorecard["summary"], tracked_scorecard["summary"])
         self.assertEqual(
             scorecard["fixtures"]["manifest_count"],

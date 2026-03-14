@@ -8,11 +8,17 @@ import unittest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYTHON_SOURCE = REPO_ROOT / "python"
-TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
+TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
 if str(PYTHON_SOURCE) not in sys.path:
     sys.path.append(str(PYTHON_SOURCE))
 
-from rebar_harness.correctness import CpythonReAdapter, RebarAdapter, evaluate_case
+from rebar_harness.correctness import (
+    CpythonReAdapter,
+    RebarAdapter,
+    evaluate_case,
+    load_scorecard,
+    write_scorecard,
+)
 from tests.conformance.correctness_expectations import (
     CorrectnessScorecardExpectation,
     build_rebar_extension,
@@ -28,6 +34,14 @@ from tests.report_assertions import (
     assert_correctness_suite_summary_consistent,
     find_correctness_case_record,
 )
+
+
+def load_published_correctness_scorecard() -> dict[str, object]:
+    return load_scorecard(TRACKED_REPORT_PATH)
+
+
+def write_published_correctness_scorecard(scorecard: dict[str, object]) -> None:
+    write_scorecard(scorecard, TRACKED_REPORT_PATH)
 
 
 def assert_correctness_scorecard_suite(

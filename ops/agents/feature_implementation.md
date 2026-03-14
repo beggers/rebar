@@ -10,7 +10,7 @@ Required behavior:
 1. Read the repository context files named in `AGENTS.md`.
 2. Read the assigned task file carefully and follow its scope, constraints, and acceptance criteria.
 3. Do the work directly in this checkout.
-4. Treat `reports/correctness/latest.json` as the published combined scorecard across the default correctness fixture set, not as a task-local scratch artifact. Use temporary report paths for narrow fixture checks, and republish the combined tracked scorecard before finishing any task that changes correctness behavior or fixtures.
+4. Treat `reports/correctness/latest.py` as the published combined scorecard across the default correctness fixture set, not as a task-local scratch artifact. Use temporary report paths for narrow fixture checks, and republish the combined tracked scorecard before finishing any task that changes correctness behavior or fixtures.
 5. Update the task file with a short completion or blocker note.
 6. Move the task file from `ops/tasks/in_progress/` to `ops/tasks/done/` or `ops/tasks/blocked/` before finishing.
 7. If you think the environment is read-only or otherwise unwritable, verify that with a direct write attempt in this run before declaring a blocker.

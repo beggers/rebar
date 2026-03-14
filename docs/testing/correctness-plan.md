@@ -233,7 +233,7 @@ Deliver:
 
 Exit criteria:
 
-- the harness can publish parser acceptance totals and failure categories in `reports/correctness/latest.json`
+- the harness can publish parser acceptance totals and failure categories in `reports/correctness/latest.py`
 
 ### Phase 2: Public API Surface Pack
 
@@ -291,7 +291,7 @@ This keeps fixtures reusable across both CPython and `rebar` adapters.
 
 ## Correctness Scorecard Shape
 
-`reports/correctness/latest.json` should publish a stable top-level shape even while coverage is still growing.
+`reports/correctness/latest.py` should publish a stable top-level shape even while coverage is still growing.
 
 Recommended top-level fields:
 

@@ -24,7 +24,7 @@ PUBLIC_API_FIXTURES_PATH = (
 MATCH_BEHAVIOR_FIXTURES_PATH = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "match_behavior_smoke.py"
 )
-TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
+TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
 
 
 class CorrectnessHarnessMatchBehaviorTest(unittest.TestCase):

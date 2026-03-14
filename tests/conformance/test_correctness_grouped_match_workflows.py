@@ -36,7 +36,7 @@ LITERAL_FLAG_FIXTURES_PATH = (
 GROUPED_MATCH_FIXTURES_PATH = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_match_workflows.py"
 )
-TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
+TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
 
 
 class CorrectnessHarnessGroupedMatchWorkflowTest(unittest.TestCase):

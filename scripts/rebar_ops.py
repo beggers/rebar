@@ -139,6 +139,25 @@ def load_optional_python_dict_attribute(
         return dict(default)
 
 
+def read_structured_dict(
+    path: Path,
+    *,
+    default: Any,
+    python_attribute: str = "REPORT",
+    label: str = "report",
+) -> Any:
+    if not path.exists():
+        return default
+    if path.suffix == ".json":
+        return read_json(path, default=default)
+    if path.suffix == ".py":
+        try:
+            return load_python_dict_attribute(path, attribute=python_attribute, label=label)
+        except (FileNotFoundError, OSError, ImportError, SyntaxError, RuntimeError):
+            return default
+    return default
+
+
 def resolve_repo_path(raw: str | Path) -> Path:
     path = Path(raw).expanduser()
     if path.is_absolute():
@@ -836,9 +855,9 @@ def scorecard_from_config(config: dict[str, Any], key: str, default_title: str, 
     if not path.exists():
         return scorecard
 
-    payload = read_json(path, default=None)
+    payload = read_structured_dict(path, default=None, label="scorecard")
     if not isinstance(payload, dict):
-        scorecard["error"] = "invalid_json"
+        scorecard["error"] = "invalid_report"
         return scorecard
 
     summary = payload.get("summary")
@@ -979,7 +998,7 @@ def tracked_project_snapshot(config: dict[str, Any]) -> dict[str, Any]:
             config,
             "correctness_scorecard",
             "Correctness Snapshot",
-            "reports/correctness/latest.json",
+            "reports/correctness/latest.py",
         ),
         "benchmark_scorecard": scorecard_from_config(
             config,
@@ -2717,7 +2736,18 @@ def expected_correctness_manifest_ids(correctness_harness: Any) -> list[str]:
 
 
 def published_correctness_report_needs_refresh(correctness_harness: Any) -> bool:
-    payload = read_json(Path(correctness_harness.DEFAULT_REPORT_PATH), default={})
+    load_scorecard = getattr(correctness_harness, "load_scorecard", None)
+    if callable(load_scorecard):
+        try:
+            payload = load_scorecard(Path(correctness_harness.DEFAULT_REPORT_PATH))
+        except (ImportError, OSError, SyntaxError, TypeError, ValueError, json.JSONDecodeError):
+            return True
+    else:
+        payload = read_structured_dict(
+            Path(correctness_harness.DEFAULT_REPORT_PATH),
+            default=None,
+            label="correctness scorecard",
+        )
     if not isinstance(payload, dict):
         return True
 

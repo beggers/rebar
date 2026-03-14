@@ -8,12 +8,19 @@ import sys
 import tempfile
 import unittest
 
+from tests.conformance.scorecard_suite_support import (
+    load_published_correctness_scorecard,
+    write_published_correctness_scorecard,
+)
+
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 MODULE_PATH = REPO_ROOT / "scripts" / "rebar_ops.py"
-CORRECTNESS_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
+CORRECTNESS_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
 PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py"
 PYTHON_SOURCE = REPO_ROOT / "python"
+
+
 def load_rebar_ops_module():
     spec = importlib.util.spec_from_file_location("rebar_ops_for_tests", MODULE_PATH)
     if spec is None or spec.loader is None:
@@ -49,15 +56,14 @@ class ReadmeReportingTest(unittest.TestCase):
                     text=True,
                 )
 
-                CORRECTNESS_REPORT_PATH.write_text(
-                    narrowed_report_path.read_text(encoding="utf-8"),
-                    encoding="utf-8",
+                write_published_correctness_scorecard(
+                    json.loads(narrowed_report_path.read_text(encoding="utf-8"))
                 )
 
                 refreshed = rebar_ops.refresh_published_correctness_scorecard()
                 self.assertIsInstance(refreshed, dict)
 
-                repaired_payload = json.loads(CORRECTNESS_REPORT_PATH.read_text(encoding="utf-8"))
+                repaired_payload = load_published_correctness_scorecard()
                 expected_manifest_ids = rebar_ops.expected_correctness_manifest_ids(
                     rebar_ops.load_correctness_harness_module()
                 )
@@ -72,7 +78,7 @@ class ReadmeReportingTest(unittest.TestCase):
     def test_correctness_scorecard_uses_tracked_summary_shape(self) -> None:
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
-        payload = json.loads(CORRECTNESS_REPORT_PATH.read_text(encoding="utf-8"))
+        payload = load_published_correctness_scorecard()
         summary = payload["summary"]
 
         expected_total = summary.get("cases_total", summary.get("total_cases"))
@@ -82,7 +88,7 @@ class ReadmeReportingTest(unittest.TestCase):
             config,
             "correctness_scorecard",
             "Correctness Scorecard",
-            "reports/correctness/latest.json",
+            "reports/correctness/latest.py",
         )
 
         self.assertTrue(scorecard["available"])
