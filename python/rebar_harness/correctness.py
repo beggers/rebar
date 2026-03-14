@@ -23,9 +23,10 @@ if str(PYTHON_SOURCE) not in sys.path:
 import rebar
 from rebar_harness.metadata import build_cpython_baseline
 from rebar_harness.scorecard_io import (
-    format_python_scorecard_module,
+    load_scorecard_report,
     remove_scorecard_sidecar,
     validate_scorecard_report_path,
+    write_scorecard_report,
 )
 
 
@@ -1653,22 +1654,6 @@ def build_scorecard(
     }
 
 
-def _load_python_scorecard(path: pathlib.Path) -> dict[str, Any]:
-    module_name = f"_rebar_correctness_scorecard_{path.stem}".replace("-", "_")
-    spec = importlib.util.spec_from_file_location(module_name, path)
-    if spec is None or spec.loader is None:
-        raise ValueError(f"unable to load Python correctness scorecard from {path}")
-
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    if not hasattr(module, REPORT_ATTRIBUTE):
-        raise ValueError(f"Python correctness scorecard module {path} is missing a {REPORT_ATTRIBUTE} value")
-    payload = getattr(module, REPORT_ATTRIBUTE)
-    if not isinstance(payload, dict):
-        raise ValueError(f"correctness scorecard in {path} must be a dict")
-    return payload
-
-
 def validate_report_path(report_path: pathlib.Path) -> pathlib.Path:
     return validate_scorecard_report_path(
         report_path,
@@ -1678,38 +1663,22 @@ def validate_report_path(report_path: pathlib.Path) -> pathlib.Path:
 
 
 def load_scorecard(report_path: pathlib.Path) -> dict[str, Any]:
-    if report_path.suffix == ".json":
-        raw_payload = json.loads(report_path.read_text(encoding="utf-8"))
-        if not isinstance(raw_payload, dict):
-            raise ValueError(f"correctness scorecard in {report_path} must be a dict")
-        return raw_payload
-    if report_path.suffix == ".py":
-        return _load_python_scorecard(report_path)
-    raise ValueError(
-        f"unsupported correctness scorecard extension {report_path.suffix!r} for {report_path}"
+    return load_scorecard_report(
+        report_path,
+        module_name_prefix="_rebar_correctness_scorecard",
+        report_attribute=REPORT_ATTRIBUTE,
+        scorecard_kind="correctness",
     )
 
 
 def write_scorecard(scorecard: dict[str, Any], report_path: pathlib.Path) -> None:
     report_path = validate_report_path(report_path)
     report_path.parent.mkdir(parents=True, exist_ok=True)
-    if report_path.suffix == ".json":
-        report_path.write_text(
-            json.dumps(scorecard, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
-        return
-    if report_path.suffix == ".py":
-        report_path.write_text(
-            format_python_scorecard_module(
-                scorecard,
-                report_attribute=REPORT_ATTRIBUTE,
-            ),
-            encoding="utf-8",
-        )
-        return
-    raise ValueError(
-        f"unsupported correctness scorecard extension {report_path.suffix!r} for {report_path}"
+    write_scorecard_report(
+        scorecard,
+        report_path,
+        report_attribute=REPORT_ATTRIBUTE,
+        scorecard_kind="correctness",
     )
 
 
