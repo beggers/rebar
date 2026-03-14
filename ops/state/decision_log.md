@@ -2,6 +2,7 @@
 
 ## 2026-03-14
 - Replace the tracked agent registry JSON files with data-only `SPEC` modules under `ops/agents/*.py`, so the harness loads agent metadata through the same importlib-based Python-module path already used for correctness fixtures and benchmark manifests.
+- Replace the tracked loop and README reporting config JSON files with data-only `CONFIG` modules under `ops/config/loop.py` and `ops/reporting/readme.py`, so repo-owned operator settings use the same importlib-backed Python path as the rest of the harness.
 - Fold the former one-off `systematic_feature_corpus` correctness manifest back into the ordinary optional-group and nested explicit-empty-else fixture packs once its 18-case slice stabilizes, so the published corpus stays on standard manifests without a dedicated test-only path.
 - Flatten the one-off systematic correctness corpus into a literal checked-in fixture once its 18-case slice stabilizes, so published coverage lives in ordinary manifest data instead of special generator plumbing.
 
@@ -9,7 +10,7 @@
 - Separate the repo into two agent roles: a supervisor that owns the harness and sequencing, and implementation agents that own bounded units of work.
 - Keep durable project context in tracked `ops/state/` files so future runs do not need to reconstruct history from runtime artifacts.
 - Keep ephemeral prompts, logs, and run metadata in ignored `.rebar/`.
-- Keep the forever loop thin and config-driven; tune cadence and worker counts in `ops/config/loop.json` instead of baking policy into shell.
+- Keep the forever loop thin and config-driven; tune cadence and worker counts in `ops/config/loop.py` and README reporting structure in `ops/reporting/readme.py` instead of baking policy into shell.
 - Default implementation execution to multiple bounded runs per cycle, but still in a single checkout, to avoid premature merge orchestration complexity.
 - Promote the supervisor to the explicit owner of indefinite progress, with authority to change the harness, project structure, and active non-supervisor agents as gaps appear.
 - Load active agents from tracked spec files under `ops/agents/` so the supervisor can evolve the worker set without rewriting the loop controller each time.

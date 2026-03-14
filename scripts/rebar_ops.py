@@ -19,11 +19,11 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OPS_ROOT = REPO_ROOT / "ops"
-CONFIG_PATH = OPS_ROOT / "config" / "loop.json"
+CONFIG_PATH = OPS_ROOT / "config" / "loop.py"
 TASK_ROOT = OPS_ROOT / "tasks"
 USER_ASK_ROOT = OPS_ROOT / "user_asks"
 STATE_ROOT = OPS_ROOT / "state"
-README_REPORTING_CONFIG_PATH = OPS_ROOT / "reporting" / "readme.json"
+README_REPORTING_CONFIG_PATH = OPS_ROOT / "reporting" / "readme.py"
 README_STATUS_START = "<!-- REBAR:STATUS_START -->"
 README_STATUS_END = "<!-- REBAR:STATUS_END -->"
 DEFAULT_CONTEXT_FILES = [
@@ -102,10 +102,12 @@ def ensure_python_source_on_syspath() -> None:
 
 
 def load_config() -> dict[str, Any]:
-    config = read_json(CONFIG_PATH, default={})
-    if not isinstance(config, dict):
-        raise RuntimeError(f"Invalid config: {CONFIG_PATH}")
-    return config
+    try:
+        return load_python_dict_attribute(CONFIG_PATH, attribute="CONFIG", label="ops config")
+    except (FileNotFoundError, OSError, ImportError, SyntaxError):
+        return {}
+    except RuntimeError as exc:
+        raise RuntimeError(f"Invalid config: {CONFIG_PATH}") from exc
 
 
 def load_python_dict_attribute(path: Path, *, attribute: str, label: str) -> dict[str, Any]:
@@ -122,6 +124,19 @@ def load_python_dict_attribute(path: Path, *, attribute: str, label: str) -> dic
     if not isinstance(raw, dict):
         raise RuntimeError(f"{label.capitalize()} in {path} must be a dict")
     return raw
+
+
+def load_optional_python_dict_attribute(
+    path: Path,
+    *,
+    attribute: str,
+    label: str,
+    default: dict[str, Any],
+) -> dict[str, Any]:
+    try:
+        return load_python_dict_attribute(path, attribute=attribute, label=label)
+    except (FileNotFoundError, OSError, ImportError, SyntaxError, RuntimeError):
+        return dict(default)
 
 
 def resolve_repo_path(raw: str | Path) -> Path:
@@ -626,9 +641,12 @@ def load_readme_reporting_config(config: dict[str, Any]) -> dict[str, Any]:
     path = resolve_repo_path(
         reporting_cfg.get("readme_config_path", str(README_REPORTING_CONFIG_PATH))
     )
-    payload = read_json(path, default={})
-    if not isinstance(payload, dict):
-        return {"readme_path": "README.md", "capability_tracks": [], "benchmark_scorecard": {}}
+    payload = load_optional_python_dict_attribute(
+        path,
+        attribute="CONFIG",
+        label="README reporting config",
+        default={},
+    )
     payload.setdefault("readme_path", "README.md")
     payload.setdefault("capability_tracks", [])
     payload.setdefault("benchmark_scorecard", {})

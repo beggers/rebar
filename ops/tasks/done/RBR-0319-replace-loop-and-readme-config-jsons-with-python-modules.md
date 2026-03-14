@@ -1,6 +1,6 @@
 # RBR-0319: Replace the loop and README reporting config JSONs with Python modules
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
 
@@ -30,6 +30,12 @@ Created: 2026-03-14
 - Prefer simple data-only Python modules and the shared dict-loader path already present in `scripts/rebar_ops.py`; do not introduce another config parser, metaclass layer, or generator.
 
 ## Notes
-- Live counts are the source of truth for this run: `git status --short` is clean and both JSON-count commands agree at `6`, even though `.rebar/runtime/dashboard.md` still carries a stale dirty-worktree sample from an earlier point in the cycle.
+- At task start, `git status --short` was clean and both JSON-count commands agreed at `6`, even though `.rebar/runtime/dashboard.md` still carried a stale dirty-worktree sample from an earlier point in the cycle.
 - `RBR-0317` already introduced `load_python_dict_attribute()` for the agent registry. Reusing that same plain-Python loading pattern here keeps ops config aligned with the rest of the harness instead of preserving one more JSON-specific path.
 - Landing this task removes every tracked JSON file under `ops/`, leaving only the four published report artifacts for the next JSON burn-down step.
+
+## Completion Notes
+- Replaced `ops/config/loop.json` and `ops/reporting/readme.json` with data-only `CONFIG` modules in `ops/config/loop.py` and `ops/reporting/readme.py`, preserving the existing loop, reporting, and README rendering values while updating the loop config's `readme_config_path` to `ops/reporting/readme.py`.
+- Updated `scripts/rebar_ops.py` so `load_config()` and `load_readme_reporting_config()` now load those tracked ops settings through the existing importlib-backed dict path instead of `json.loads`, while leaving runtime JSON artifact handling and published report JSON scorecards unchanged.
+- Updated `tests/python/test_ops_harness.py` with direct coverage that the loop and README config paths are `.py` modules and that those loaders no longer call `read_json`, and refreshed `ops/state/decision_log.md` so it points operators at the new Python config paths.
+- Verified with `./.venv/bin/python -m pytest tests/python/test_ops_harness.py` and `rg --files -g '*.json' | wc -l`, which now reports `4` live JSON files in the working tree. `git ls-files '*.json' | wc -l` will drop from `6` to `4` once the harness commit records the two tracked deletions.

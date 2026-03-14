@@ -91,6 +91,38 @@ class OpsHarnessTest(unittest.TestCase):
                 self.assertEqual(agent.spec_path.suffix, ".py")
                 self.assertTrue(agent.spec_path.exists())
 
+    def test_loop_and_readme_configs_load_from_python_modules(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+
+        with mock.patch.object(
+            rebar_ops,
+            "read_json",
+            side_effect=AssertionError("ops config should not use JSON parsing"),
+        ):
+            config = rebar_ops.load_config()
+            reporting_cfg = rebar_ops.load_readme_reporting_config(config)
+
+        self.assertEqual(rebar_ops.CONFIG_PATH.suffix, ".py")
+        self.assertEqual(rebar_ops.README_REPORTING_CONFIG_PATH.suffix, ".py")
+        self.assertEqual(config["reporting"]["readme_config_path"], "ops/reporting/readme.py")
+        self.assertEqual(reporting_cfg["readme_path"], "README.md")
+        self.assertEqual(
+            rebar_ops.load_python_dict_attribute(
+                rebar_ops.CONFIG_PATH,
+                attribute="CONFIG",
+                label="ops config",
+            ),
+            config,
+        )
+        self.assertEqual(
+            rebar_ops.load_python_dict_attribute(
+                rebar_ops.README_REPORTING_CONFIG_PATH,
+                attribute="CONFIG",
+                label="README reporting config",
+            ),
+            reporting_cfg,
+        )
+
     def test_render_prompt_includes_generated_commit_policy(self) -> None:
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
