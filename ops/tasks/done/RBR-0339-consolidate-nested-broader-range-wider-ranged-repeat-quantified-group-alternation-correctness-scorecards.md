@@ -1,8 +1,9 @@
 # RBR-0339: Consolidate nested broader-range wider-ranged-repeat quantified-group alternation correctness scorecards
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
+Completed: 2026-03-14
 
 ## Goal
 - Replace the remaining nested broader-range wider-ranged-repeat quantified-group alternation correctness wrapper modules with one legible, data-driven scorecard suite so this nested counted-repeat frontier is asserted in one place instead of across repeated cargo-build, subprocess, tracked-report, and representative-case boilerplate.
@@ -34,3 +35,14 @@ Created: 2026-03-14
 ## Notes
 - These three wrapper modules still total 549 lines and duplicate the same build-plus-regenerate flow with only manifest ids and representative nested broader-range cases varying.
 - `tests/conformance/correctness_expectations.py` does not currently carry a nested broader-range expectation family, so this task can land as one bounded table-plus-accessor extension on the existing shared path.
+
+## Completion
+- Added `NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_SCORECARD_EXPECTATIONS` plus shared accessors in `tests/conformance/correctness_expectations.py`, so the three nested broader-range manifests now resolve through one explicit manifest-keyed family instead of hiding inside the broader wider-ranged-repeat table.
+- Routed that family through `tests/conformance/test_combined_correctness_scorecards.py` using `assert_correctness_scorecard_suite(...)`, keeping representative-case assertions on `evaluate_case()` and the shared scorecard helpers rather than bespoke subprocess wrappers.
+- Deleted the three superseded nested broader-range wrapper modules from `tests/conformance/`.
+
+## Verification
+- `.venv/bin/python -m pytest tests/conformance/test_combined_correctness_scorecards.py -k 'wider_ranged_repeat_quantified_group_scorecards or nested_broader_range_wider_ranged_repeat_quantified_group_alternation_scorecards' -q`
+- `.venv/bin/python -m pytest tests/conformance/test_combined_correctness_scorecards.py -q`
+- `.venv/bin/python - <<'PY'` importing `nested_broader_range_wider_ranged_repeat_quantified_group_alternation_scorecard_target_manifest_ids()` and `wider_ranged_repeat_quantified_group_scorecard_target_manifest_ids()` confirmed the new helper resolves exactly the three intended manifests from `DEFAULT_FIXTURE_PATHS`, and the broader wider-ranged-repeat family no longer includes them.
+- `git diff --name-status -- tests/conformance/test_correctness_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py tests/conformance/test_correctness_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py tests/conformance/test_correctness_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py` showed each deleted wrapper as `D`, and `rg --files tests/conformance | rg 'test_correctness_nested_broader_range_wider_ranged_repeat_quantified_group_alternation(_conditional|_backtracking_heavy)?_workflows\\.py$'` returned no matches.
