@@ -9213,6 +9213,514 @@
     },
     {
       "args": [
+        "a((bc)+)d",
+        {
+          "module": "rebar_harness.correctness",
+          "qualname": "callable_match_group",
+          "type": "callable"
+        },
+        "zzabcdzz"
+      ],
+      "categories": [
+        "workflow",
+        "sub",
+        "callable-replacement",
+        "grouped",
+        "nested-group",
+        "quantified",
+        "numbered-group",
+        "outer-capture",
+        "lower-bound",
+        "module",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_nested_group_numbered_outer_callable_workflow",
+      "helper": "sub",
+      "id": "module-sub-callable-quantified-nested-group-numbered-lower-bound-str",
+      "layer": "module_workflow",
+      "manifest_id": "quantified-nested-group-callable-replacement-workflows",
+      "notes": [
+        "Publishes the bounded numbered module-level quantified nested-group callable replacement lower-bound path on `abcd`, so the one-repetition outer capture stays visible without widening into broader counted repeats, alternation, or general callback semantics."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": "zzbcxzz",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.sub() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.quantified_nested_group.callable",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a((bc)+)d",
+        {
+          "module": "rebar_harness.correctness",
+          "qualname": "callable_match_group",
+          "type": "callable"
+        },
+        "zzabcbcdabcbcdzz",
+        1
+      ],
+      "categories": [
+        "workflow",
+        "subn",
+        "callable-replacement",
+        "grouped",
+        "nested-group",
+        "quantified",
+        "numbered-group",
+        "final-inner-capture",
+        "count-limited",
+        "module",
+        "str",
+        "count",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_nested_group_numbered_inner_callable_count_workflow",
+      "helper": "subn",
+      "id": "module-subn-callable-quantified-nested-group-numbered-first-match-only-str",
+      "layer": "module_workflow",
+      "manifest_id": "quantified-nested-group-callable-replacement-workflows",
+      "notes": [
+        "Publishes the numbered module-level quantified nested-group callable replacement first-match-only path on `abcbcdabcbcd`, so the final inner capture from the first quantified match stays observable while the second match remains untouched."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": [
+            "zz<bc>abcbcdzz",
+            1
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.subn() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.quantified_nested_group.callable",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        {
+          "module": "rebar_harness.correctness",
+          "qualname": "callable_match_group",
+          "type": "callable"
+        },
+        "zzabcbcdzz"
+      ],
+      "categories": [
+        "workflow",
+        "sub",
+        "callable-replacement",
+        "grouped",
+        "nested-group",
+        "quantified",
+        "numbered-group",
+        "outer-capture",
+        "repeated-inner-capture",
+        "pattern",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_nested_group_numbered_outer_callable_workflow",
+      "helper": "sub",
+      "id": "pattern-sub-callable-quantified-nested-group-numbered-repeated-outer-capture-str",
+      "layer": "module_workflow",
+      "manifest_id": "quantified-nested-group-callable-replacement-workflows",
+      "notes": [
+        "Publishes the bounded Pattern.sub numbered quantified nested-group callable replacement repeated path on `abcbcd`, so the outer capture expands to the repeated `bcbc` payload under quantification."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": "zzbcbcxzz",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.Pattern.sub() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a((bc)+)d",
+      "suite_id": "collection.replacement.quantified_nested_group.callable",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        {
+          "module": "rebar_harness.correctness",
+          "qualname": "callable_match_group",
+          "type": "callable"
+        },
+        "zzabcbcdabcbcdzz",
+        1
+      ],
+      "categories": [
+        "workflow",
+        "subn",
+        "callable-replacement",
+        "grouped",
+        "nested-group",
+        "quantified",
+        "numbered-group",
+        "final-inner-capture",
+        "count-limited",
+        "pattern",
+        "str",
+        "count",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "quantified_nested_group_numbered_inner_callable_count_workflow",
+      "helper": "subn",
+      "id": "pattern-subn-callable-quantified-nested-group-numbered-first-match-only-str",
+      "layer": "module_workflow",
+      "manifest_id": "quantified-nested-group-callable-replacement-workflows",
+      "notes": [
+        "Publishes the bounded Pattern.subn numbered quantified nested-group callable replacement first-match-only path for the same repeated inner-capture slice."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": [
+            "zz<bc>abcbcdzz",
+            1
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.Pattern.subn() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a((bc)+)d",
+      "suite_id": "collection.replacement.quantified_nested_group.callable",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<outer>(?P<inner>bc)+)d",
+        {
+          "module": "rebar_harness.correctness",
+          "qualname": "callable_match_group",
+          "type": "callable"
+        },
+        "zzabcdzz"
+      ],
+      "categories": [
+        "workflow",
+        "sub",
+        "callable-replacement",
+        "grouped",
+        "nested-group",
+        "quantified",
+        "named-group",
+        "outer-capture",
+        "lower-bound",
+        "module",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_quantified_nested_group_outer_callable_workflow",
+      "helper": "sub",
+      "id": "module-sub-callable-quantified-nested-group-named-lower-bound-str",
+      "layer": "module_workflow",
+      "manifest_id": "quantified-nested-group-callable-replacement-workflows",
+      "notes": [
+        "Publishes the bounded named module-level quantified nested-group callable replacement lower-bound path on `abcd`, so the one-repetition named outer capture stays explicit without claiming broader callback semantics, alternation, or wider counted repeats."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": "zzbcxzz",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.sub() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.quantified_nested_group.callable",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        "a(?P<outer>(?P<inner>bc)+)d",
+        {
+          "module": "rebar_harness.correctness",
+          "qualname": "callable_match_group",
+          "type": "callable"
+        },
+        "zzabcbcdabcbcdzz",
+        1
+      ],
+      "categories": [
+        "workflow",
+        "subn",
+        "callable-replacement",
+        "grouped",
+        "nested-group",
+        "quantified",
+        "named-group",
+        "final-inner-capture",
+        "count-limited",
+        "module",
+        "str",
+        "count",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_quantified_nested_group_inner_callable_count_workflow",
+      "helper": "subn",
+      "id": "module-subn-callable-quantified-nested-group-named-first-match-only-str",
+      "layer": "module_workflow",
+      "manifest_id": "quantified-nested-group-callable-replacement-workflows",
+      "notes": [
+        "Publishes the named module-level quantified nested-group callable replacement first-match-only path on `abcbcdabcbcd`, so the final inner named capture from the first quantified match stays visible while the second match remains untouched."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "module_call",
+          "outcome": "success",
+          "result": [
+            "zz<bc>abcbcdzz",
+            1
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.subn() is a scaffold placeholder; the `re`-compatible API is not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "module_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "module_call",
+      "suite_id": "collection.replacement.quantified_nested_group.callable",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        {
+          "module": "rebar_harness.correctness",
+          "qualname": "callable_match_group",
+          "type": "callable"
+        },
+        "zzabcbcdzz"
+      ],
+      "categories": [
+        "workflow",
+        "sub",
+        "callable-replacement",
+        "grouped",
+        "nested-group",
+        "quantified",
+        "named-group",
+        "outer-capture",
+        "repeated-inner-capture",
+        "pattern",
+        "str",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_quantified_nested_group_outer_callable_workflow",
+      "helper": "sub",
+      "id": "pattern-sub-callable-quantified-nested-group-named-repeated-outer-capture-str",
+      "layer": "module_workflow",
+      "manifest_id": "quantified-nested-group-callable-replacement-workflows",
+      "notes": [
+        "Publishes the bounded Pattern.sub named quantified nested-group callable replacement repeated path on `abcbcd`, so the named outer capture still expands to the repeated `bcbc` payload under quantification."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": "zzbcbcxzz",
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.Pattern.sub() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<outer>(?P<inner>bc)+)d",
+      "suite_id": "collection.replacement.quantified_nested_group.callable",
+      "text_model": "str"
+    },
+    {
+      "args": [
+        {
+          "module": "rebar_harness.correctness",
+          "qualname": "callable_match_group",
+          "type": "callable"
+        },
+        "zzabcbcdabcbcdzz",
+        1
+      ],
+      "categories": [
+        "workflow",
+        "subn",
+        "callable-replacement",
+        "grouped",
+        "nested-group",
+        "quantified",
+        "named-group",
+        "final-inner-capture",
+        "count-limited",
+        "pattern",
+        "str",
+        "count",
+        "gap"
+      ],
+      "comparison": "unimplemented",
+      "comparison_notes": [
+        "rebar adapter reports support as unimplemented"
+      ],
+      "family": "named_quantified_nested_group_inner_callable_count_workflow",
+      "helper": "subn",
+      "id": "pattern-subn-callable-quantified-nested-group-named-first-match-only-str",
+      "layer": "module_workflow",
+      "manifest_id": "quantified-nested-group-callable-replacement-workflows",
+      "notes": [
+        "Publishes the bounded Pattern.subn named quantified nested-group callable replacement first-match-only path for the same repeated inner-capture slice."
+      ],
+      "observations": {
+        "cpython": {
+          "adapter": "cpython.re",
+          "exception": null,
+          "operation": "pattern_call",
+          "outcome": "success",
+          "result": [
+            "zz<bc>abcbcdzz",
+            1
+          ],
+          "warnings": []
+        },
+        "rebar": {
+          "adapter": "rebar",
+          "exception": {
+            "message": "rebar.Pattern.subn() is a scaffold placeholder; compiled pattern semantics are not implemented yet",
+            "type": "NotImplementedError"
+          },
+          "operation": "pattern_call",
+          "outcome": "unimplemented",
+          "result": null,
+          "warnings": []
+        }
+      },
+      "operation": "pattern_call",
+      "pattern": "a(?P<outer>(?P<inner>bc)+)d",
+      "suite_id": "collection.replacement.quantified_nested_group.callable",
+      "text_model": "str"
+    },
+    {
+      "args": [
         "a((b))d",
         {
           "module": "rebar_harness.correctness",
@@ -68480,7 +68988,7 @@
         },
         "outcomes": {
           "exception": 10,
-          "success": 769
+          "success": 777
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -68488,14 +68996,16 @@
         }
       },
       "rebar": {
-        "exception_case_count": 10,
+        "exception_case_count": 18,
         "exception_types": {
+          "NotImplementedError": 8,
           "TypeError": 2,
           "error": 8
         },
         "outcomes": {
           "exception": 10,
-          "success": 769
+          "success": 769,
+          "unimplemented": 8
         },
         "warning_case_count": 1,
         "warning_categories": {
@@ -76542,6 +77052,28 @@
     },
     {
       "case_count": 2,
+      "id": "named_quantified_nested_group_inner_callable_count_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
       "id": "named_quantified_nested_group_inner_template_count_workflow",
       "layers": [
         "module_workflow"
@@ -76557,6 +77089,28 @@
         "skipped_cases": 0,
         "total_cases": 2,
         "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "id": "named_quantified_nested_group_outer_callable_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
       },
       "text_models": [
         "str"
@@ -81166,6 +81720,28 @@
     },
     {
       "case_count": 2,
+      "id": "quantified_nested_group_numbered_inner_callable_count_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
       "id": "quantified_nested_group_numbered_inner_template_count_workflow",
       "layers": [
         "module_workflow"
@@ -81181,6 +81757,28 @@
         "skipped_cases": 0,
         "total_cases": 2,
         "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 2,
+      "id": "quantified_nested_group_numbered_outer_callable_workflow",
+      "layers": [
+        "module_workflow"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 2,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 2,
+        "unimplemented_cases": 2
       },
       "text_models": [
         "str"
@@ -82706,8 +83304,8 @@
     }
   ],
   "fixtures": {
-    "case_count": 779,
-    "manifest_count": 86,
+    "case_count": 787,
+    "manifest_count": 87,
     "manifest_ids": [
       "parser-matrix",
       "public-api-surface",
@@ -82727,6 +83325,7 @@
       "nested-group-alternation-workflows",
       "nested-group-replacement-workflows",
       "quantified-nested-group-replacement-workflows",
+      "quantified-nested-group-callable-replacement-workflows",
       "nested-group-callable-replacement-workflows",
       "literal-alternation-workflows",
       "grouped-alternation-workflows",
@@ -82815,6 +83414,7 @@
       "tests/conformance/fixtures/nested_group_alternation_workflows.py",
       "tests/conformance/fixtures/nested_group_replacement_workflows.py",
       "tests/conformance/fixtures/quantified_nested_group_replacement_workflows.py",
+      "tests/conformance/fixtures/quantified_nested_group_callable_replacement_workflows.py",
       "tests/conformance/fixtures/nested_group_callable_replacement_workflows.py",
       "tests/conformance/fixtures/literal_alternation_workflows.py",
       "tests/conformance/fixtures/grouped_alternation_workflows.py",
@@ -82885,7 +83485,7 @@
       "tests/conformance/fixtures/quantified_alternation_open_ended_workflows.py"
     ]
   },
-  "generated_at": "2026-03-14T13:00:46Z",
+  "generated_at": "2026-03-14T13:21:01Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {
@@ -83719,23 +84319,26 @@
       "text_models": []
     },
     "module_workflow": {
-      "case_count": 144,
+      "case_count": 152,
       "diagnostics": {
         "by_adapter": {
           "cpython": {
             "exception_case_count": 0,
             "exception_types": {},
             "outcomes": {
-              "success": 144
+              "success": 152
             },
             "warning_case_count": 0,
             "warning_categories": {}
           },
           "rebar": {
-            "exception_case_count": 0,
-            "exception_types": {},
+            "exception_case_count": 8,
+            "exception_types": {
+              "NotImplementedError": 8
+            },
             "outcomes": {
-              "success": 144
+              "success": 144,
+              "unimplemented": 8
             },
             "warning_case_count": 0,
             "warning_categories": {}
@@ -83799,12 +84402,16 @@
         "named_grouped_alternation_replacement_workflow",
         "named_nested_group_callable_replacement_workflow",
         "named_nested_group_replacement_workflow",
+        "named_quantified_nested_group_inner_callable_count_workflow",
         "named_quantified_nested_group_inner_template_count_workflow",
+        "named_quantified_nested_group_outer_callable_workflow",
         "named_quantified_nested_group_outer_template_workflow",
         "nested_group_callable_replacement_workflow",
         "nested_group_replacement_workflow",
         "purge_workflow",
+        "quantified_nested_group_numbered_inner_callable_count_workflow",
         "quantified_nested_group_numbered_inner_template_count_workflow",
+        "quantified_nested_group_numbered_outer_callable_workflow",
         "quantified_nested_group_numbered_outer_template_workflow",
         "replacement_workflow",
         "split_workflow",
@@ -83827,6 +84434,7 @@
         "named-group-replacement-workflows",
         "nested-group-callable-replacement-workflows",
         "nested-group-replacement-workflows",
+        "quantified-nested-group-callable-replacement-workflows",
         "quantified-nested-group-replacement-workflows"
       ],
       "operations": [
@@ -83852,17 +84460,18 @@
         "collection.replacement.nested_group",
         "collection.replacement.nested_group.callable",
         "collection.replacement.quantified_nested_group",
+        "collection.replacement.quantified_nested_group.callable",
         "collection.replacement.workflow",
         "literal.flag.workflow",
         "module.workflow"
       ],
       "summary": {
-        "executed_cases": 144,
+        "executed_cases": 152,
         "failed_cases": 0,
         "passed_cases": 144,
         "skipped_cases": 0,
-        "total_cases": 144,
-        "unimplemented_cases": 0
+        "total_cases": 152,
+        "unimplemented_cases": 8
       },
       "text_models": [
         "bytes",
@@ -88182,6 +88791,216 @@
         "skipped_cases": 0,
         "total_cases": 4,
         "unimplemented_cases": 0
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 8,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 8,
+            "exception_types": {
+              "NotImplementedError": 8
+            },
+            "outcomes": {
+              "unimplemented": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "named_quantified_nested_group_inner_callable_count_workflow",
+        "named_quantified_nested_group_outer_callable_workflow",
+        "quantified_nested_group_numbered_inner_callable_count_workflow",
+        "quantified_nested_group_numbered_outer_callable_workflow"
+      ],
+      "id": "collection.replacement.quantified_nested_group.callable",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "quantified-nested-group-callable-replacement-workflows"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 8,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 8,
+        "unimplemented_cases": 8
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 8,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 8,
+            "exception_types": {
+              "NotImplementedError": 8
+            },
+            "outcomes": {
+              "unimplemented": 8
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "named_quantified_nested_group_inner_callable_count_workflow",
+        "named_quantified_nested_group_outer_callable_workflow",
+        "quantified_nested_group_numbered_inner_callable_count_workflow",
+        "quantified_nested_group_numbered_outer_callable_workflow"
+      ],
+      "id": "collection.replacement.quantified_nested_group.callable.str",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "quantified-nested-group-callable-replacement-workflows"
+      ],
+      "operations": [
+        "module_call",
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 8,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 8,
+        "unimplemented_cases": 8
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 4,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 4,
+            "exception_types": {
+              "NotImplementedError": 4
+            },
+            "outcomes": {
+              "unimplemented": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "named_quantified_nested_group_inner_callable_count_workflow",
+        "named_quantified_nested_group_outer_callable_workflow",
+        "quantified_nested_group_numbered_inner_callable_count_workflow",
+        "quantified_nested_group_numbered_outer_callable_workflow"
+      ],
+      "id": "collection.replacement.quantified_nested_group.callable.module_call",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "quantified-nested-group-callable-replacement-workflows"
+      ],
+      "operations": [
+        "module_call"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 4
+      },
+      "text_models": [
+        "str"
+      ]
+    },
+    {
+      "case_count": 4,
+      "diagnostics": {
+        "by_adapter": {
+          "cpython": {
+            "exception_case_count": 0,
+            "exception_types": {},
+            "outcomes": {
+              "success": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          },
+          "rebar": {
+            "exception_case_count": 4,
+            "exception_types": {
+              "NotImplementedError": 4
+            },
+            "outcomes": {
+              "unimplemented": 4
+            },
+            "warning_case_count": 0,
+            "warning_categories": {}
+          }
+        }
+      },
+      "families": [
+        "named_quantified_nested_group_inner_callable_count_workflow",
+        "named_quantified_nested_group_outer_callable_workflow",
+        "quantified_nested_group_numbered_inner_callable_count_workflow",
+        "quantified_nested_group_numbered_outer_callable_workflow"
+      ],
+      "id": "collection.replacement.quantified_nested_group.callable.pattern_call",
+      "layer": "module_workflow",
+      "manifest_ids": [
+        "quantified-nested-group-callable-replacement-workflows"
+      ],
+      "operations": [
+        "pattern_call"
+      ],
+      "summary": {
+        "executed_cases": 4,
+        "failed_cases": 0,
+        "passed_cases": 0,
+        "skipped_cases": 0,
+        "total_cases": 4,
+        "unimplemented_cases": 4
       },
       "text_models": [
         "str"
@@ -105269,11 +106088,11 @@
     }
   ],
   "summary": {
-    "executed_cases": 779,
+    "executed_cases": 787,
     "failed_cases": 0,
     "passed_cases": 779,
     "skipped_cases": 0,
-    "total_cases": 779,
-    "unimplemented_cases": 0
+    "total_cases": 787,
+    "unimplemented_cases": 8
   }
 }

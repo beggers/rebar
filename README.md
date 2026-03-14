@@ -21,11 +21,11 @@ _This block reports the implemented slice and measurement coverage, not estimate
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `779` |
+| Published cases | `787` |
 | Passing in published slice | `779` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `86` |
+| Honest gaps (`unimplemented`) | `8` |
+| Covered manifests | `87` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
 _These correctness counts cover only the published slice. Overall delivery estimate: The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity. Correctness, Rust-backed parity, and the main Python-path benchmark surface are aligned through quantified nested-group replacement templates, publication still runs through the source-tree shim, and quantified nested-group callable replacement plus broader nested callable and deeper grouped execution work remain ahead._
