@@ -274,15 +274,16 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "nested-group-alternation-boundary": {
-        "known_gap_count": 1,
-        "representative_known_gap_workload_ids": (
-            "pattern-fullmatch-named-nested-group-branch-local-backreference-purged-gap",
-        ),
+        "known_gap_count": 0,
+        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (
             "module-search-nested-group-quantified-alternation-cold-gap",
             "pattern-fullmatch-numbered-quantified-nested-group-alternation-repeated-mixed-purged-str",
             "module-search-named-quantified-nested-group-alternation-lower-bound-c-warm-str",
             "pattern-fullmatch-named-quantified-nested-group-alternation-repeated-mixed-purged-str",
+            "module-search-numbered-nested-group-branch-local-backreference-b-branch-warm-str",
+            "module-compile-named-nested-group-branch-local-backreference-warm-str",
+            "pattern-fullmatch-named-nested-group-branch-local-backreference-purged-gap",
         ),
     },
     "nested-group-replacement-boundary": {

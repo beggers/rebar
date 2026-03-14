@@ -26,6 +26,16 @@ from tests.report_assertions import (
 )
 
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"
+NESTED_GROUP_ALTERNATION_MANIFEST_ID = "nested-group-alternation-boundary"
+NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_WORKLOAD_IDS = (
+    "module-search-numbered-nested-group-branch-local-backreference-b-branch-warm-str",
+    "module-compile-named-nested-group-branch-local-backreference-warm-str",
+    "pattern-fullmatch-named-nested-group-branch-local-backreference-purged-gap",
+)
+NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_PATTERNS = {
+    r"a((b|c))\2d",
+    r"a(?P<outer>(?P<inner>b|c))(?P=inner)d",
+}
 WIDER_RANGED_REPEAT_REPRESENTATIVE_MEASURED_WORKLOAD_IDS = (
     "module-search-numbered-wider-ranged-repeat-group-broader-range-cold-gap",
     "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-upper-bound-mixed-purged-str",
@@ -194,6 +204,65 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                         workload_document=find_workload_document(case["target_manifest"], workload_id),
                         expected_status=expected_status,
                     )
+
+    def test_nested_group_alternation_manifest_covers_branch_local_backreference_slice(
+        self,
+    ) -> None:
+        case = source_tree_combined_case(NESTED_GROUP_ALTERNATION_MANIFEST_ID)
+        _, scorecard = run_source_tree_benchmark_scorecard(case["manifest_paths"])
+
+        manifest_summary = scorecard["manifests"][NESTED_GROUP_ALTERNATION_MANIFEST_ID]
+        self.assertEqual(manifest_summary["known_gap_count"], 0)
+
+        branch_local_rows = [
+            workload
+            for workload in case["target_manifest"]["workloads"]
+            if "branch-local-backreferences" in workload["syntax_features"]
+        ]
+        self.assertEqual(
+            tuple(workload["id"] for workload in branch_local_rows),
+            NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_WORKLOAD_IDS,
+        )
+        self.assertEqual(
+            {workload["operation"] for workload in branch_local_rows},
+            {"module.compile", "module.search", "pattern.fullmatch"},
+        )
+        self.assertEqual(
+            {workload["pattern"] for workload in branch_local_rows},
+            NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_PATTERNS,
+        )
+        self.assertEqual(
+            {
+                str(workload["haystack"])
+                for workload in branch_local_rows
+                if workload.get("haystack") is not None
+            },
+            {"zzabbdzz", "accd"},
+        )
+
+        scorecard_rows = [
+            workload
+            for workload in scorecard["workloads"]
+            if workload["manifest_id"] == NESTED_GROUP_ALTERNATION_MANIFEST_ID
+            and workload["id"] in NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_WORKLOAD_IDS
+        ]
+        self.assertEqual(
+            {workload["id"] for workload in scorecard_rows},
+            set(NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_WORKLOAD_IDS),
+        )
+
+        for workload_id in NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_WORKLOAD_IDS:
+            with self.subTest(workload_id=workload_id):
+                assert_benchmark_workload_contract(
+                    self,
+                    find_workload_record(scorecard, workload_id),
+                    manifest_id=NESTED_GROUP_ALTERNATION_MANIFEST_ID,
+                    workload_document=find_workload_document(
+                        case["target_manifest"],
+                        workload_id,
+                    ),
+                    expected_status="measured",
+                )
 
     def test_wider_ranged_repeat_manifest_shape_stays_covered_in_combined_suite(
         self,

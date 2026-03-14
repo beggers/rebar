@@ -1,6 +1,6 @@
 # RBR-0328: Catch nested-group-alternation-plus-branch-local-backreference benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-14
 
@@ -29,3 +29,9 @@ Created: 2026-03-14
 - Build on `RBR-0326`.
 - Keep this follow-on on the existing `nested_group_alternation_boundary.py` manifest path instead of forking another benchmark family.
 - Add only the directly adjacent numbered and named rows needed to publish this exact slice cleanly; quantified nested backreferences, broader counted repeats, replacement workflows, and deeper nested grouped execution stay explicit gaps or out of scope.
+
+## Completion Notes
+- Promoted the existing named `Pattern.fullmatch()` anchor into a measured row on `accd` and added only two adjacent branch-local rows on the same manifest path: a numbered `module.search()` success on `zzabbdzz` plus a named `module.compile()` companion, leaving the nested-group alternation branch-local slice pinned to one exact bounded follow-on.
+- Updated the combined source-tree benchmark expectations so `nested-group-alternation-boundary` now carries `0` known gaps, and added one focused combined-suite assertion that locks the manifest to this exact three-row branch-local benchmark slice.
+- Republished `reports/benchmarks/latest.py`; the tracked combined scorecard now reports `504` total workloads, `477` measured `rebar` timings, and `27` explicit known gaps, while the `nested-group-alternation-boundary` manifest reports `13` workloads with `13` measured rows and `0` remaining gaps.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --internal-probe-rebar-metadata`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_alternation_boundary.py --report /tmp/rebar-rbr0328-nested-group-alternation-bench.json`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_nested_group_alternation_branch_local_backreference_parity.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.

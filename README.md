@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, keeping correctness and the published Python-path benchmark surface aligned at the current frontier. |
 | Delivery estimate | The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
 | Current milestone | Milestone 2 now has `RBR-0330` seeded as the surviving follow-on so quantified nested-group-alternation-plus-branch-local-backreference correctness publication reopens after the current `RBR-0328` benchmark catch-up closes the remaining `nested_group_alternation_boundary.py` gap. |
-| Work queue | `2` ready, `0` in progress, `331` done, `0` blocked |
+| Work queue | `1` ready, `0` in progress, `332` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -35,15 +35,15 @@ _These correctness counts cover only the published slice. Overall delivery estim
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `502` |
-| Workloads with real `rebar` timings | `474` |
-| Known-gap workloads | `28` |
+| Published workloads | `504` |
+| Workloads with real `rebar` timings | `477` |
+| Known-gap workloads | `27` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native smoke and full-suite modes remain available for ad hoc runs and tests via `--native-smoke` and `--native-full` when you pass an explicit `--report` path._
 
-_README speedup rollups stay omitted while only `474` of `502` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `477` of `504` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
