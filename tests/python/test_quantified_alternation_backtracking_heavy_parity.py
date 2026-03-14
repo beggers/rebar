@@ -1,226 +1,214 @@
 from __future__ import annotations
 
-import pathlib
+from dataclasses import dataclass
+from itertools import product
 import re
-import sys
-import unittest
 
-
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-PYTHON_SOURCE = REPO_ROOT / "python"
-
-if str(PYTHON_SOURCE) not in sys.path:
-    sys.path.insert(0, str(PYTHON_SOURCE))
-
+import pytest
 
 import rebar
 
 
-class RebarQuantifiedAlternationBacktrackingHeavyParityTest(unittest.TestCase):
-    def setUp(self) -> None:
-        rebar.purge()
+@dataclass(frozen=True)
+class Scenario:
+    id: str
+    pattern: str
+    max_group: int
+    group_names: tuple[str, ...] = ()
+    search_misses: tuple[str, ...] = ()
+    fullmatch_misses: tuple[str, ...] = ()
 
-    def tearDown(self) -> None:
-        rebar.purge()
 
-    def _assert_match_parity(
-        self,
-        observed: rebar.Match,
-        expected: re.Match[str],
-        *,
-        group_names: tuple[str, ...] = (),
-    ) -> None:
-        self.assertIs(type(observed), rebar.Match)
-        self.assertEqual(observed.group(0), expected.group(0))
-        self.assertEqual(observed.group(1), expected.group(1))
-        self.assertEqual(observed.groups(), expected.groups())
-        self.assertEqual(observed.groupdict(), expected.groupdict())
-        self.assertEqual(observed.span(), expected.span())
-        self.assertEqual(observed.span(1), expected.span(1))
-        self.assertEqual(observed.start(1), expected.start(1))
-        self.assertEqual(observed.end(1), expected.end(1))
-        self.assertEqual(observed.lastindex, expected.lastindex)
-        self.assertEqual(observed.lastgroup, expected.lastgroup)
-        for group_name in group_names:
-            self.assertEqual(observed.group(group_name), expected.group(group_name))
-            self.assertEqual(observed.span(group_name), expected.span(group_name))
+@dataclass(frozen=True)
+class BacktrackingTraceCase:
+    id: str
+    pattern: str
+    max_group: int
+    group_names: tuple[str, ...] = ()
+    search_text: str = ""
+    fullmatch_text: str = ""
 
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "quantified alternation backtracking-heavy parity requires rebar._rebar",
+
+_MISSING_GROUP_DEFAULT = object()
+_BACKTRACKING_BRANCH_TEXT = {
+    "short": "b",
+    "long": "bc",
+}
+
+
+SCENARIOS = (
+    Scenario(
+        id="quantified-alternation-backtracking-heavy-numbered",
+        pattern=r"a(b|bc){1,2}d",
+        max_group=1,
+        search_misses=("zzadzz", "zzabccdzz"),
+        fullmatch_misses=("ad", "abccd"),
+    ),
+    Scenario(
+        id="quantified-alternation-backtracking-heavy-named",
+        pattern=r"a(?P<word>b|bc){1,2}d",
+        max_group=1,
+        group_names=("word",),
+        search_misses=("zzadzz", "zzabccdzz"),
+        fullmatch_misses=("ad", "abccd"),
+    ),
+)
+
+
+def _build_backtracking_trace_cases() -> tuple[BacktrackingTraceCase, ...]:
+    cases: list[BacktrackingTraceCase] = []
+    for scenario in SCENARIOS:
+        for repetition_count in range(1, 3):
+            for branch_order in product(("short", "long"), repeat=repetition_count):
+                body = "".join(_BACKTRACKING_BRANCH_TEXT[branch] for branch in branch_order)
+                branch_id = "-".join(branch_order)
+                fullmatch_text = f"a{body}d"
+                cases.append(
+                    BacktrackingTraceCase(
+                        id=f"{scenario.id}-{branch_id}",
+                        pattern=scenario.pattern,
+                        max_group=scenario.max_group,
+                        group_names=scenario.group_names,
+                        search_text=f"zz{fullmatch_text}zz",
+                        fullmatch_text=fullmatch_text,
+                    )
+                )
+    return tuple(cases)
+
+
+TRACE_CASES = _build_backtracking_trace_cases()
+
+
+def _assert_match_parity(
+    backend_name: str,
+    observed: object,
+    expected: re.Match[str],
+    *,
+    max_group: int,
+    group_names: tuple[str, ...],
+) -> None:
+    if backend_name == "rebar":
+        assert type(observed) is rebar.Match
+    else:
+        assert type(observed) is type(expected)
+
+    group_indexes = tuple(range(max_group + 1))
+
+    assert observed.group(0) == expected.group(0)
+    assert observed.group(*group_indexes) == expected.group(*group_indexes)
+
+    for group_index in range(1, max_group + 1):
+        assert observed.group(group_index) == expected.group(group_index)
+        assert observed.span(group_index) == expected.span(group_index)
+        assert observed.start(group_index) == expected.start(group_index)
+        assert observed.end(group_index) == expected.end(group_index)
+
+    assert observed.groups() == expected.groups()
+    assert observed.groups(_MISSING_GROUP_DEFAULT) == expected.groups(_MISSING_GROUP_DEFAULT)
+    assert observed.groupdict() == expected.groupdict()
+    assert observed.groupdict(_MISSING_GROUP_DEFAULT) == expected.groupdict(
+        _MISSING_GROUP_DEFAULT
     )
-    def test_compile_matches_cpython_numbered_metadata(self) -> None:
-        pattern = "a(b|bc){1,2}d"
-        observed = rebar.compile(pattern)
-        expected = re.compile(pattern)
+    assert observed.string == expected.string
+    assert observed.pos == expected.pos
+    assert observed.endpos == expected.endpos
+    assert observed.span() == expected.span()
+    assert observed.lastindex == expected.lastindex
+    assert observed.lastgroup == expected.lastgroup
+    assert observed.re.pattern == expected.re.pattern
+    assert observed.re.flags == expected.re.flags
+    assert observed.re.groups == expected.re.groups
+    assert observed.re.groupindex == expected.re.groupindex
 
-        self.assertIs(observed, rebar.compile(pattern))
-        self.assertEqual(observed.pattern, expected.pattern)
-        self.assertEqual(observed.flags, expected.flags)
-        self.assertEqual(observed.groups, expected.groups)
-        self.assertEqual(observed.groupindex, expected.groupindex)
+    for group_name in group_names:
+        assert observed.group(group_name) == expected.group(group_name)
+        assert observed.span(group_name) == expected.span(group_name)
+        assert observed.start(group_name) == expected.start(group_name)
+        assert observed.end(group_name) == expected.end(group_name)
 
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "quantified alternation backtracking-heavy parity requires rebar._rebar",
+
+@pytest.mark.parametrize("case", SCENARIOS, ids=lambda case: case.id)
+def test_compile_metadata_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: Scenario,
+) -> None:
+    _, backend = regex_backend
+
+    observed = backend.compile(case.pattern)
+    expected = re.compile(case.pattern)
+
+    assert observed is backend.compile(case.pattern)
+    assert observed.pattern == expected.pattern
+    assert observed.flags == expected.flags
+    assert observed.groups == expected.groups
+    assert observed.groupindex == expected.groupindex
+
+
+@pytest.mark.parametrize("case", TRACE_CASES, ids=lambda case: case.id)
+def test_module_search_branch_traces_match_cpython(
+    regex_backend: tuple[str, object],
+    case: BacktrackingTraceCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    observed = backend.search(case.pattern, case.search_text)
+    expected = re.search(case.pattern, case.search_text)
+
+    assert observed is not None
+    assert expected is not None
+    _assert_match_parity(
+        backend_name,
+        observed,
+        expected,
+        max_group=case.max_group,
+        group_names=case.group_names,
     )
-    def test_module_search_matches_cpython_numbered_lower_bound_b_branch(self) -> None:
-        pattern = "a(b|bc){1,2}d"
-        observed = rebar.search(pattern, "zzabdzz")
-        expected = re.search(pattern, "zzabdzz")
 
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected)
 
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "quantified alternation backtracking-heavy parity requires rebar._rebar",
+@pytest.mark.parametrize("case", SCENARIOS, ids=lambda case: case.id)
+def test_module_search_misses_match_cpython(
+    regex_backend: tuple[str, object],
+    case: Scenario,
+) -> None:
+    _, backend = regex_backend
+
+    for text in case.search_misses:
+        assert backend.search(case.pattern, text) is None
+        assert re.search(case.pattern, text) is None
+
+
+@pytest.mark.parametrize("case", TRACE_CASES, ids=lambda case: case.id)
+def test_pattern_fullmatch_branch_traces_match_cpython(
+    regex_backend: tuple[str, object],
+    case: BacktrackingTraceCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern = backend.compile(case.pattern)
+    expected_pattern = re.compile(case.pattern)
+
+    observed = observed_pattern.fullmatch(case.fullmatch_text)
+    expected = expected_pattern.fullmatch(case.fullmatch_text)
+
+    assert observed is not None
+    assert expected is not None
+    _assert_match_parity(
+        backend_name,
+        observed,
+        expected,
+        max_group=case.max_group,
+        group_names=case.group_names,
     )
-    def test_pattern_fullmatch_matches_cpython_numbered_lower_bound_bc_branch(self) -> None:
-        pattern = "a(b|bc){1,2}d"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("abcd")
-        expected = expected_pattern.fullmatch("abcd")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "quantified alternation backtracking-heavy parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_numbered_second_repetition_b_then_bc(self) -> None:
-        pattern = "a(b|bc){1,2}d"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("abbcd")
-        expected = expected_pattern.fullmatch("abbcd")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "quantified alternation backtracking-heavy parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_numbered_second_repetition_bc_then_b(self) -> None:
-        pattern = "a(b|bc){1,2}d"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("abcbd")
-        expected = expected_pattern.fullmatch("abcbd")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "quantified alternation backtracking-heavy parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_numbered_second_repetition_bc_then_bc(
-        self,
-    ) -> None:
-        pattern = "a(b|bc){1,2}d"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("abcbcd")
-        expected = expected_pattern.fullmatch("abcbcd")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "quantified alternation backtracking-heavy parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_numbered_no_match(self) -> None:
-        observed_pattern = rebar.compile("a(b|bc){1,2}d")
-        expected_pattern = re.compile("a(b|bc){1,2}d")
-
-        self.assertIsNone(observed_pattern.fullmatch("abccd"))
-        self.assertIsNone(expected_pattern.fullmatch("abccd"))
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "quantified alternation backtracking-heavy parity requires rebar._rebar",
-    )
-    def test_compile_matches_cpython_named_metadata(self) -> None:
-        pattern = "a(?P<word>b|bc){1,2}d"
-        observed = rebar.compile(pattern)
-        expected = re.compile(pattern)
-
-        self.assertIs(observed, rebar.compile(pattern))
-        self.assertEqual(observed.pattern, expected.pattern)
-        self.assertEqual(observed.flags, expected.flags)
-        self.assertEqual(observed.groups, expected.groups)
-        self.assertEqual(observed.groupindex, expected.groupindex)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "quantified alternation backtracking-heavy parity requires rebar._rebar",
-    )
-    def test_module_search_matches_cpython_named_lower_bound_bc_branch(self) -> None:
-        pattern = "a(?P<word>b|bc){1,2}d"
-        observed = rebar.search(pattern, "zzabcdzz")
-        expected = re.search(pattern, "zzabcdzz")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected, group_names=("word",))
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "quantified alternation backtracking-heavy parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_named_second_repetition_b_then_b(self) -> None:
-        pattern = "a(?P<word>b|bc){1,2}d"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("abbd")
-        expected = expected_pattern.fullmatch("abbd")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected, group_names=("word",))
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "quantified alternation backtracking-heavy parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_named_second_repetition_bc_then_b(self) -> None:
-        pattern = "a(?P<word>b|bc){1,2}d"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("abcbd")
-        expected = expected_pattern.fullmatch("abcbd")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected, group_names=("word",))
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "quantified alternation backtracking-heavy parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_named_no_match(self) -> None:
-        observed_pattern = rebar.compile("a(?P<word>b|bc){1,2}d")
-        expected_pattern = re.compile("a(?P<word>b|bc){1,2}d")
-
-        self.assertIsNone(observed_pattern.fullmatch("abccd"))
-        self.assertIsNone(expected_pattern.fullmatch("abccd"))
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.mark.parametrize("case", SCENARIOS, ids=lambda case: case.id)
+def test_pattern_fullmatch_misses_match_cpython(
+    regex_backend: tuple[str, object],
+    case: Scenario,
+) -> None:
+    _, backend = regex_backend
+    observed_pattern = backend.compile(case.pattern)
+    expected_pattern = re.compile(case.pattern)
+
+    for text in case.fullmatch_misses:
+        assert observed_pattern.fullmatch(text) is None
+        assert expected_pattern.fullmatch(text) is None
