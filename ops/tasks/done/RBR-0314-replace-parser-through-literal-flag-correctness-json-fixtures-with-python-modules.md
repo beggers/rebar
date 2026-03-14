@@ -1,6 +1,6 @@
 # RBR-0314: Replace the parser-through-literal-flag correctness JSON fixtures with Python modules
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
 
@@ -54,3 +54,10 @@ Created: 2026-03-14
 ## Notes
 - The runtime dashboard is current in this checkout: both the tracked and live filesystem JSON counts are `25`, so size and verify the burn-down against the live counts rather than assuming an older stale snapshot.
 - This is the remaining contiguous front block inside `python/rebar_harness/correctness.py::DEFAULT_FIXTURE_PATHS`; after it lands, only the two isolated late conditional correctness JSON fixtures plus harness/report/config JSON should remain tracked.
+
+## Completion Notes
+- Replaced the eight targeted front-of-registry correctness fixtures with one-manifest-per-file Python `MANIFEST` modules, preserved manifest ids/defaults/case ordering/payloads, and deleted the JSON originals.
+- Repointed the corresponding `DEFAULT_FIXTURE_PATHS` entries in `python/rebar_harness/correctness.py` to the new `.py` fixtures while preserving their existing order ahead of `grouped_match_workflows.py`, and updated the nine direct scorecard tests plus the adjacent `tests/python/test_readme_reporting.py` path constant so the deleted parser fixture no longer breaks report-refresh coverage.
+- Regenerated `reports/correctness/latest.json`; the converted fixture paths now record `.py` extensions and the targeted direct scorecard slices still land at `15`, `22`, `28`, `38`, `44`, `54`, `69`, `80`, and `86` cases. The live combined report remains `787` total / `779` passed / `0` failed / `8` unimplemented, matching the current README/status surface rather than the stale zero-gap total in this task's acceptance text.
+- Verified with `PYTHONPATH=python python3 -m rebar_harness.correctness --report reports/correctness/latest.json` and `PYTHONPATH=python python3 -m unittest tests.conformance.test_combined_correctness_scorecards tests.conformance.test_correctness_fixture_inventory_contract tests.conformance.test_python_fixture_manifest_contract tests.conformance.test_correctness_parser_matrix tests.conformance.test_correctness_public_api_surface tests.conformance.test_correctness_match_behavior tests.conformance.test_correctness_exported_symbol_surface tests.conformance.test_correctness_pattern_object_surface tests.conformance.test_correctness_module_workflow tests.conformance.test_correctness_collection_replacement_workflows tests.conformance.test_correctness_literal_flag_workflows tests.conformance.test_correctness_grouped_match_workflows tests.python.test_readme_reporting`.
+- `python3 -m pytest ...` was not available because `pytest` is not installed in this checkout. The live JSON reduction was verified with `rg --files -g '*.json' | wc -l` as `25 -> 17`; `git ls-files '*.json' | wc -l` still reports `25` until the harness commit records the deletions.

@@ -1,4 +1,4 @@
-{
+MANIFEST = {
   "schema_version": 1,
   "manifest_id": "module-workflow-surface",
   "layer": "module_workflow",

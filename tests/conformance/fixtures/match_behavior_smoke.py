@@ -1,4 +1,4 @@
-{
+MANIFEST = {
   "schema_version": 1,
   "manifest_id": "match-behavior-smoke",
   "layer": "match_behavior",

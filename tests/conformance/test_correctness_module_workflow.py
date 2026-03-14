@@ -17,21 +17,21 @@ from tests.report_assertions import (
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYTHON_SOURCE = REPO_ROOT / "python"
-PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.json"
+PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py"
 PUBLIC_API_FIXTURES_PATH = (
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "public_api_surface.json"
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "public_api_surface.py"
 )
 MATCH_BEHAVIOR_FIXTURES_PATH = (
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "match_behavior_smoke.json"
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "match_behavior_smoke.py"
 )
 EXPORTED_SYMBOL_FIXTURES_PATH = (
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "exported_symbol_surface.json"
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "exported_symbol_surface.py"
 )
 PATTERN_OBJECT_FIXTURES_PATH = (
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "pattern_object_surface.json"
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "pattern_object_surface.py"
 )
 MODULE_WORKFLOW_FIXTURES_PATH = (
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "module_workflow_surface.json"
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "module_workflow_surface.py"
 )
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 

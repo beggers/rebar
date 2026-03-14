@@ -1,4 +1,4 @@
-{
+MANIFEST = {
   "schema_version": 1,
   "manifest_id": "pattern-object-surface",
   "layer": "pattern_object_parity",

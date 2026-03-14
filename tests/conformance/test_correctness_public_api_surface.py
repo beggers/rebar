@@ -17,9 +17,9 @@ from tests.report_assertions import (
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYTHON_SOURCE = REPO_ROOT / "python"
-PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.json"
+PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py"
 PUBLIC_API_FIXTURES_PATH = (
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "public_api_surface.json"
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "public_api_surface.py"
 )
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 

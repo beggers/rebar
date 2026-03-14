@@ -83396,14 +83396,14 @@
       "quantified-alternation-open-ended-workflows"
     ],
     "paths": [
-      "tests/conformance/fixtures/parser_matrix.json",
-      "tests/conformance/fixtures/public_api_surface.json",
-      "tests/conformance/fixtures/match_behavior_smoke.json",
-      "tests/conformance/fixtures/exported_symbol_surface.json",
-      "tests/conformance/fixtures/pattern_object_surface.json",
-      "tests/conformance/fixtures/module_workflow_surface.json",
-      "tests/conformance/fixtures/collection_replacement_workflows.json",
-      "tests/conformance/fixtures/literal_flag_workflows.json",
+      "tests/conformance/fixtures/parser_matrix.py",
+      "tests/conformance/fixtures/public_api_surface.py",
+      "tests/conformance/fixtures/match_behavior_smoke.py",
+      "tests/conformance/fixtures/exported_symbol_surface.py",
+      "tests/conformance/fixtures/pattern_object_surface.py",
+      "tests/conformance/fixtures/module_workflow_surface.py",
+      "tests/conformance/fixtures/collection_replacement_workflows.py",
+      "tests/conformance/fixtures/literal_flag_workflows.py",
       "tests/conformance/fixtures/grouped_match_workflows.py",
       "tests/conformance/fixtures/named_group_workflows.py",
       "tests/conformance/fixtures/named_group_replacement_workflows.py",
@@ -83485,7 +83485,7 @@
       "tests/conformance/fixtures/quantified_alternation_open_ended_workflows.py"
     ]
   },
-  "generated_at": "2026-03-14T13:21:01Z",
+  "generated_at": "2026-03-14T13:29:12Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {

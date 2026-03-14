@@ -12,7 +12,7 @@ import unittest
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 MODULE_PATH = REPO_ROOT / "scripts" / "rebar_ops.py"
 CORRECTNESS_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
-PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.json"
+PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py"
 PYTHON_SOURCE = REPO_ROOT / "python"
 def load_rebar_ops_module():
     spec = importlib.util.spec_from_file_location("rebar_ops_for_tests", MODULE_PATH)

@@ -28,14 +28,14 @@ TARGET_CPYTHON_SERIES = "3.12.x"
 REPORT_SCHEMA_VERSION = "1.0"
 FIXTURE_SCHEMA_VERSION = 1
 DEFAULT_FIXTURE_PATHS = (
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.json",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "public_api_surface.json",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "match_behavior_smoke.json",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "exported_symbol_surface.json",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "pattern_object_surface.json",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "module_workflow_surface.json",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "collection_replacement_workflows.json",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "literal_flag_workflows.json",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "public_api_surface.py",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "match_behavior_smoke.py",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "exported_symbol_surface.py",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "pattern_object_surface.py",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "module_workflow_surface.py",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "collection_replacement_workflows.py",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "literal_flag_workflows.py",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_match_workflows.py",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "named_group_workflows.py",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "named_group_replacement_workflows.py",

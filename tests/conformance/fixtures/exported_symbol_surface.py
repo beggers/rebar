@@ -1,4 +1,4 @@
-{
+MANIFEST = {
   "schema_version": 1,
   "manifest_id": "exported-symbol-surface",
   "layer": "module_api_surface",
