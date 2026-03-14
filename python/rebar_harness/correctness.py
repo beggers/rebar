@@ -160,6 +160,11 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
+    / "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.json",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
     / "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.json",
     REPO_ROOT
     / "tests"

@@ -3920,7 +3920,7 @@
       "args": [
         "abc",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_constant",
           "type": "callable"
         },
@@ -8767,7 +8767,7 @@
       "args": [
         "a((b))d",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -8819,7 +8819,7 @@
       "args": [
         "a((b))d",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -8878,7 +8878,7 @@
     {
       "args": [
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -8930,7 +8930,7 @@
     {
       "args": [
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -8991,7 +8991,7 @@
       "args": [
         "a(?P<outer>(?P<inner>b))d",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -9043,7 +9043,7 @@
       "args": [
         "a(?P<outer>(?P<inner>b))d",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -9102,7 +9102,7 @@
     {
       "args": [
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -9154,7 +9154,7 @@
     {
       "args": [
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -10387,7 +10387,7 @@
       "args": [
         "a(b|c)d",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -10439,7 +10439,7 @@
       "args": [
         "a(b|c)d",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -10498,7 +10498,7 @@
     {
       "args": [
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -10550,7 +10550,7 @@
     {
       "args": [
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -10611,7 +10611,7 @@
       "args": [
         "a(?P<word>b|c)d",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -10664,7 +10664,7 @@
       "args": [
         "a(?P<word>b|c)d",
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -10724,7 +10724,7 @@
     {
       "args": [
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -10777,7 +10777,7 @@
     {
       "args": [
         {
-          "module": "__main__",
+          "module": "rebar_harness.correctness",
           "qualname": "callable_match_group",
           "type": "callable"
         },
@@ -60484,9 +60484,9 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
+        "Covers the landed optional-group capture slice across numbered and named compile, module, and Pattern observations so capture behavior does not rely only on hand-written fixtures.",
         "Uses the bounded numbered optional-group slice that already passes through the Rust boundary.",
-        "Publishes the compile metadata observation for the compact optional-group feature spec."
+        "Publishes the compile metadata observation for the optional-group slice."
       ],
       "observations": {
         "cpython": {
@@ -60547,7 +60547,7 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
+        "Covers the landed optional-group capture slice across numbered and named compile, module, and Pattern observations so capture behavior does not rely only on hand-written fixtures.",
         "Uses the bounded numbered optional-group slice that already passes through the Rust boundary.",
         "Exercises the module-level path where the optional capture participates in the match."
       ],
@@ -60651,7 +60651,7 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
+        "Covers the landed optional-group capture slice across numbered and named compile, module, and Pattern observations so capture behavior does not rely only on hand-written fixtures.",
         "Uses the bounded numbered optional-group slice that already passes through the Rust boundary.",
         "Exercises the module-level path where the optional capture is skipped and the observed group payload must stay aligned with CPython."
       ],
@@ -60754,7 +60754,7 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
+        "Covers the landed optional-group capture slice across numbered and named compile, module, and Pattern observations so capture behavior does not rely only on hand-written fixtures.",
         "Uses the bounded numbered optional-group slice that already passes through the Rust boundary.",
         "Exercises the compiled Pattern path where the optional capture is present."
       ],
@@ -60858,7 +60858,7 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
+        "Covers the landed optional-group capture slice across numbered and named compile, module, and Pattern observations so capture behavior does not rely only on hand-written fixtures.",
         "Uses the bounded numbered optional-group slice that already passes through the Rust boundary.",
         "Exercises the compiled Pattern path where the optional capture is omitted."
       ],
@@ -60957,9 +60957,9 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
-        "Uses the matching named optional-group slice so the generated corpus covers both capture addressing modes.",
-        "Publishes the compile metadata observation for the compact optional-group feature spec."
+        "Covers the landed optional-group capture slice across numbered and named compile, module, and Pattern observations so capture behavior does not rely only on hand-written fixtures.",
+        "Uses the matching named optional-group slice so the corpus covers both capture addressing modes.",
+        "Publishes the compile metadata observation for the optional-group slice."
       ],
       "observations": {
         "cpython": {
@@ -61024,8 +61024,8 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
-        "Uses the matching named optional-group slice so the generated corpus covers both capture addressing modes.",
+        "Covers the landed optional-group capture slice across numbered and named compile, module, and Pattern observations so capture behavior does not rely only on hand-written fixtures.",
+        "Uses the matching named optional-group slice so the corpus covers both capture addressing modes.",
         "Exercises the module-level path where the optional capture participates in the match."
       ],
       "observations": {
@@ -61150,8 +61150,8 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
-        "Uses the matching named optional-group slice so the generated corpus covers both capture addressing modes.",
+        "Covers the landed optional-group capture slice across numbered and named compile, module, and Pattern observations so capture behavior does not rely only on hand-written fixtures.",
+        "Uses the matching named optional-group slice so the corpus covers both capture addressing modes.",
         "Exercises the module-level path where the optional capture is skipped and the observed group payload must stay aligned with CPython."
       ],
       "observations": {
@@ -61275,8 +61275,8 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
-        "Uses the matching named optional-group slice so the generated corpus covers both capture addressing modes.",
+        "Covers the landed optional-group capture slice across numbered and named compile, module, and Pattern observations so capture behavior does not rely only on hand-written fixtures.",
+        "Uses the matching named optional-group slice so the corpus covers both capture addressing modes.",
         "Exercises the compiled Pattern path where the optional capture is present."
       ],
       "observations": {
@@ -61401,8 +61401,8 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact optional-group capture spec into deterministic numbered and named compile, module, and Pattern observations so landed capture behavior no longer relies only on hand-written fixtures.",
-        "Uses the matching named optional-group slice so the generated corpus covers both capture addressing modes.",
+        "Covers the landed optional-group capture slice across numbered and named compile, module, and Pattern observations so capture behavior does not rely only on hand-written fixtures.",
+        "Uses the matching named optional-group slice so the corpus covers both capture addressing modes.",
         "Exercises the compiled Pattern path where the optional capture is omitted."
       ],
       "observations": {
@@ -61524,9 +61524,9 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact nested conditional spec into deterministic numbered and named compile, module, and Pattern observations so a landed conditional slice gets broader evidence without another hand-written manifest.",
+        "Covers the landed nested explicit-empty-else conditional slice across numbered and named compile, module, and Pattern observations so it has broader evidence without another hand-written manifest.",
         "Uses the bounded numbered nested explicit-empty-else conditional slice.",
-        "Publishes the compile metadata observation for the compact nested conditional feature spec."
+        "Publishes the compile metadata observation for the nested conditional slice."
       ],
       "observations": {
         "cpython": {
@@ -61589,7 +61589,7 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact nested conditional spec into deterministic numbered and named compile, module, and Pattern observations so a landed conditional slice gets broader evidence without another hand-written manifest.",
+        "Covers the landed nested explicit-empty-else conditional slice across numbered and named compile, module, and Pattern observations so it has broader evidence without another hand-written manifest.",
         "Uses the bounded numbered nested explicit-empty-else conditional slice.",
         "Exercises the module-level path where the outer and nested yes-arms both activate."
       ],
@@ -61696,7 +61696,7 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact nested conditional spec into deterministic numbered and named compile, module, and Pattern observations so a landed conditional slice gets broader evidence without another hand-written manifest.",
+        "Covers the landed nested explicit-empty-else conditional slice across numbered and named compile, module, and Pattern observations so it has broader evidence without another hand-written manifest.",
         "Uses the bounded numbered nested explicit-empty-else conditional slice.",
         "Exercises the module-level path where the capture is present but the nested yes-arm suffix is missing."
       ],
@@ -61747,7 +61747,7 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact nested conditional spec into deterministic numbered and named compile, module, and Pattern observations so a landed conditional slice gets broader evidence without another hand-written manifest.",
+        "Covers the landed nested explicit-empty-else conditional slice across numbered and named compile, module, and Pattern observations so it has broader evidence without another hand-written manifest.",
         "Uses the bounded numbered nested explicit-empty-else conditional slice.",
         "Exercises the compiled Pattern path where both nested conditionals take the empty else-arm."
       ],
@@ -61848,9 +61848,9 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact nested conditional spec into deterministic numbered and named compile, module, and Pattern observations so a landed conditional slice gets broader evidence without another hand-written manifest.",
+        "Covers the landed nested explicit-empty-else conditional slice across numbered and named compile, module, and Pattern observations so it has broader evidence without another hand-written manifest.",
         "Uses the matching named nested explicit-empty-else conditional slice.",
-        "Publishes the compile metadata observation for the compact nested conditional feature spec."
+        "Publishes the compile metadata observation for the nested conditional slice."
       ],
       "observations": {
         "cpython": {
@@ -61917,7 +61917,7 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact nested conditional spec into deterministic numbered and named compile, module, and Pattern observations so a landed conditional slice gets broader evidence without another hand-written manifest.",
+        "Covers the landed nested explicit-empty-else conditional slice across numbered and named compile, module, and Pattern observations so it has broader evidence without another hand-written manifest.",
         "Uses the matching named nested explicit-empty-else conditional slice.",
         "Exercises the module-level path where the outer and nested yes-arms both activate."
       ],
@@ -62046,7 +62046,7 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact nested conditional spec into deterministic numbered and named compile, module, and Pattern observations so a landed conditional slice gets broader evidence without another hand-written manifest.",
+        "Covers the landed nested explicit-empty-else conditional slice across numbered and named compile, module, and Pattern observations so it has broader evidence without another hand-written manifest.",
         "Uses the matching named nested explicit-empty-else conditional slice.",
         "Exercises the module-level path where the capture is present but the nested yes-arm suffix is missing."
       ],
@@ -62097,7 +62097,7 @@
       "layer": "match_behavior",
       "manifest_id": "systematic-feature-corpus",
       "notes": [
-        "Expands a compact nested conditional spec into deterministic numbered and named compile, module, and Pattern observations so a landed conditional slice gets broader evidence without another hand-written manifest.",
+        "Covers the landed nested explicit-empty-else conditional slice across numbered and named compile, module, and Pattern observations so it has broader evidence without another hand-written manifest.",
         "Uses the matching named nested explicit-empty-else conditional slice.",
         "Exercises the compiled Pattern path where both nested conditionals take the empty else-arm."
       ],
@@ -75344,7 +75344,7 @@
       "tests/conformance/fixtures/systematic_feature_corpus.json"
     ]
   },
-  "generated_at": "2026-03-13T23:29:20Z",
+  "generated_at": "2026-03-14T00:49:03Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {

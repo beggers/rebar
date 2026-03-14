@@ -1,6 +1,6 @@
 # RBR-0275: Publish a broader-range wider ranged-repeat quantified-group alternation backtracking-heavy correctness pack
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-14
 
@@ -28,3 +28,8 @@ Created: 2026-03-14
 ## Notes
 - Build on `RBR-0273`.
 - Keep the eventual parity and benchmark follow-ons on the existing `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.json` path; do not fork another benchmark family when this broader `{1,4}` grouped backtracking-heavy slice is later caught up on the Python-path benchmark surface.
+
+## Completion
+- Added the new broader `{1,4}` grouped backtracking-heavy fixture and default-harness wiring for `a((bc|b)c){1,4}d` plus `a(?P<word>(bc|b)c){1,4}d`.
+- Added a focused conformance test and republished `reports/correctness/latest.json`; the combined scorecard now reports 83 manifests, 729 total cases, 715 passes, and 14 honest `unimplemented` cases from this new publication pack.
+- Verified with `python3 -m unittest tests.conformance.test_correctness_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows`.
