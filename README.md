@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, keeping correctness and the published Python-path benchmark surface aligned at the current frontier. |
 | Delivery estimate | The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 now has `RBR-0344` seeded as the surviving follow-on so bounded nested-group alternation callable-replacement workflows for `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d` move behind the Rust boundary on the existing nested-group callback path before benchmark catch-up or deeper nested grouped execution broadens the queue. |
-| Work queue | `1` ready, `0` in progress, `346` done, `0` blocked |
+| Current milestone | Milestone 2 now has `RBR-0346` seeded as the surviving follow-on so the bounded nested-group alternation callable-replacement workflows for `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d` reach the existing Python-path benchmark surface on `nested_group_callable_replacement_boundary.py` before broader callback behavior or deeper nested grouped execution broadens the queue. |
+| Work queue | `1` ready, `0` in progress, `348` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -22,9 +22,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Metric | Value |
 | --- | --- |
 | Published cases | `833` |
-| Passing in published slice | `825` |
+| Passing in published slice | `833` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `8` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `92` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `483` of `510` published workloa
 
 ### Immediate Next Steps
 
-- Keep `RBR-0344` queued so the exact `a((b|c))d` / `a(?P<outer>(?P<inner>b|c))d` callable-replacement workflows become the surviving Rust-backed parity follow-on on the existing nested-group callback path.
+- Keep `RBR-0346` queued so the exact `a((b|c))d` / `a(?P<outer>(?P<inner>b|c))d` callable-replacement workflows become the surviving Python-path benchmark follow-on on `nested_group_callable_replacement_boundary.py`.
 
 ### Current Risks
 
@@ -57,7 +57,7 @@ _README speedup rollups stay omitted while only `483` of `510` published workloa
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current correctness publication is mostly green, but it still carries one narrow unimplemented frontier rather than anything close to broad `re` compatibility.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current published correctness slice is fully green, but it is still a narrow slice of `re`, not evidence of broad drop-in parity.
 
 The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice: across eight published parser workloads it is about 2x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
