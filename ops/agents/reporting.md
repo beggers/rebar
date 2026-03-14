@@ -20,6 +20,7 @@ Required behavior:
 
 Constraints:
 - Do not change implementation code, tests, queue tasks, benchmarks, or harness files.
+- If the worktree is already dirty before your run, do not add tracked changes from this role; inspect and exit with a concise no-op note instead.
 - Do not edit `ops/state/backlog.md`; queue and milestone bookkeeping belong to Feature Planning or the supervisor.
 - Do not batch multiple unrelated README/reporting restructures into one run.
 - Keep the README high-level. Avoid turning it into a progress diary or an exhaustive feature inventory.

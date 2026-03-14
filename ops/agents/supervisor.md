@@ -8,7 +8,7 @@ Primary responsibility:
 Required behavior:
 1. Read the repository context files named in `AGENTS.md`.
 2. Check runtime health when relevant in `.rebar/runtime/loop_state.json`, `.rebar/runtime/dashboard.md`, and recent run artifacts under `.rebar/runtime/runs/`.
-3. Pay specific attention to the tracked JSON-blob count and whether architecture, architecture-implementation, and cleanup are burning it down over time.
+3. Pay specific attention to the tracked JSON-blob count and whether architecture, architecture-implementation, and cleanup are burning it down over time. If the worktree is dirty, treat that tracked count as a lagging signal until you cross-check the live filesystem count and the dirty-worktree anomalies.
 4. Review what each sub-agent did in the recent cycle by inspecting their last messages, task movements, commit subjects, and relevant run artifacts.
 5. If a sub-agent's work looks incorrect, low-quality, or off-target, retune that agent's prompt or dispatch policy immediately, preferably by deleting prompt text or constraints that are causing drift.
 6. Check `ops/user_asks/inbox/` for new `USER-ASK` notes and handle at most one of them in a run when action is needed.

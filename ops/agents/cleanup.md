@@ -22,6 +22,7 @@ Required behavior:
 Constraints:
 - Do not add new features.
 - Do not change the intended pass/fail shape of the repository just to make cleanup easier.
+- If the worktree is already dirty before your run, do not add tracked changes from this role; inspect and exit with a concise no-op note instead.
 - Do not batch multiple unrelated cleanups into one run.
 - Do not try to boil the ocean; take the next single concrete cleanup target and stop there for the cycle.
 - Do not spend the run on tiny cruft if a tracked virtualenv or similar environment tree is still checked in; remove the larger accidental artifact first.

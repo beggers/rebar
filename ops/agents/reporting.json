@@ -7,6 +7,7 @@
   "prompt_path": "ops/agents/reporting.md",
   "dispatch": {
     "mode": "every_cycle",
+    "allow_dirty_worktree": true,
     "timeout_seconds": 1800
   },
   "codex": {

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import atexit
+import hashlib
 import json
 import os
 import re
@@ -37,6 +38,7 @@ TASK_STATUSES = ("ready", "in_progress", "done", "blocked")
 USER_ASK_STATUSES = ("inbox", "done")
 TRAILER = "Co-authored-by: Codex <noreply@openai.com>"
 PYTHON_SOURCE_ROOT = REPO_ROOT / "python"
+DIRTY_STATUS_SAMPLE_LIMIT = 20
 
 
 @dataclass(frozen=True)
@@ -235,13 +237,86 @@ def git_stdout(*args: str) -> str:
     return result.stdout.strip()
 
 
-def git_status_lines() -> list[str]:
-    output = git_stdout("status", "--porcelain")
+def git_status_lines(*, untracked_all: bool = False) -> list[str]:
+    args = ["status", "--porcelain"]
+    if untracked_all:
+        args.append("--untracked-files=all")
+    result = git_run(*args)
+    if result.returncode != 0:
+        return []
+    output = result.stdout
     return [line for line in output.splitlines() if line]
 
 
 def git_worktree_dirty() -> bool:
     return bool(git_status_lines())
+
+
+def git_status_paths(line: str) -> list[str]:
+    if len(line) <= 3:
+        return []
+    payload = line[3:]
+    if " -> " in payload and ("R" in line[:2] or "C" in line[:2]):
+        before_path, after_path = payload.split(" -> ", 1)
+        return [before_path, after_path]
+    return [payload]
+
+
+def git_dirty_paths(*, untracked_all: bool = False) -> set[str]:
+    paths: set[str] = set()
+    for line in git_status_lines(untracked_all=untracked_all):
+        for path in git_status_paths(line):
+            if path:
+                paths.add(path)
+    return paths
+
+
+def worktree_path_fingerprint(path_text: str) -> tuple[str, int | None, str | None]:
+    path = REPO_ROOT / path_text
+    try:
+        stat_result = path.lstat()
+    except FileNotFoundError:
+        return ("missing", None, None)
+    except OSError:
+        return ("error", None, None)
+
+    if path.is_symlink():
+        try:
+            return ("symlink", stat_result.st_mode, os.readlink(path))
+        except OSError:
+            return ("symlink-error", stat_result.st_mode, None)
+
+    if path.is_file():
+        try:
+            digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        except OSError:
+            return ("file-error", stat_result.st_mode, None)
+        return ("file", stat_result.st_mode, digest)
+
+    return ("other", stat_result.st_mode, str(stat_result.st_size))
+
+
+def snapshot_worktree_paths(paths: set[str]) -> dict[str, tuple[str, int | None, str | None]]:
+    return {path: worktree_path_fingerprint(path) for path in sorted(paths)}
+
+
+def changed_snapshot_paths(
+    snapshot: dict[str, tuple[str, int | None, str | None]],
+) -> list[str]:
+    changed: list[str] = []
+    for path, fingerprint in snapshot.items():
+        if worktree_path_fingerprint(path) != fingerprint:
+            changed.append(path)
+    return changed
+
+
+def git_dirty_summary(*, limit: int = DIRTY_STATUS_SAMPLE_LIMIT) -> dict[str, Any]:
+    status_lines = git_status_lines()
+    return {
+        "count": len(status_lines),
+        "sample": status_lines[:limit],
+        "truncated": len(status_lines) > limit,
+    }
 
 
 def git_branch() -> str:
@@ -339,6 +414,12 @@ def recent_tasks(status: str, limit: int) -> list[dict[str, str]]:
 
 def queue_counts() -> dict[str, int]:
     return {status: len(list_task_files(status)) for status in TASK_STATUSES}
+
+
+def agent_may_dispatch_on_dirty_worktree(agent: AgentSpec) -> bool:
+    if agent.kind == "supervisor":
+        return True
+    return bool(agent.dispatch.get("allow_dirty_worktree", False))
 
 
 def list_user_ask_files(status: str) -> list[Path]:
@@ -1943,6 +2024,8 @@ def maybe_commit_agent_changes(
     agent: AgentSpec,
     agent_results: list[RunResult],
     recovery_actions: list[dict[str, Any]],
+    *,
+    pathspecs: list[str] | None = None,
 ) -> dict[str, Any] | None:
     if not agent_results or not git_worktree_dirty():
         return None
@@ -1956,17 +2039,25 @@ def maybe_commit_agent_changes(
         "subject": None,
         "changed_files": [],
         "errors": [],
+        "pathspecs": pathspecs or [],
     }
 
+    add_args = ["add", "-A"]
+    if pathspecs:
+        add_args.extend(["--", *pathspecs])
     try:
-        git_run("add", "-A", capture_output=True, timeout_seconds=command_timeout)
+        git_run(*add_args, capture_output=True, timeout_seconds=command_timeout)
     except subprocess.TimeoutExpired:
-        action["errors"].append(f"git add timed out after {command_timeout}s.")
+        scope = "selected paths" if pathspecs else "worktree"
+        action["errors"].append(
+            f"git add timed out after {command_timeout}s while staging {scope}."
+        )
         return action
 
-    changed_files = [
-        line for line in git_stdout("diff", "--cached", "--name-only", "--").splitlines() if line
-    ]
+    diff_args = ["diff", "--cached", "--name-only", "--"]
+    if pathspecs:
+        diff_args.extend(pathspecs)
+    changed_files = [line for line in git_stdout(*diff_args).splitlines() if line]
     if not changed_files:
         return None
 
@@ -1974,14 +2065,14 @@ def maybe_commit_agent_changes(
     action["subject"] = message.splitlines()[0]
     action["changed_files"] = changed_files
     action["commit_attempted"] = True
+    commit_args = ["commit"]
+    if pathspecs:
+        commit_args.extend(["--only"])
+    commit_args.extend(["-F", "-"])
+    if pathspecs:
+        commit_args.extend(["--", *pathspecs])
     try:
-        commit = git_run(
-            "commit",
-            "-F",
-            "-",
-            input_text=message,
-            timeout_seconds=command_timeout,
-        )
+        commit = git_run(*commit_args, input_text=message, timeout_seconds=command_timeout)
     except subprocess.TimeoutExpired:
         action["errors"].append(f"git commit timed out after {command_timeout}s.")
         return action
@@ -2001,8 +2092,10 @@ def maybe_commit_and_push(config: dict[str, Any]) -> dict[str, Any]:
     upstream = git_upstream_ref(config)
     command_timeout = int(policy.get("command_timeout_seconds", 30))
     push_timeout = int(policy.get("push_timeout_seconds", 120))
+    dirty_before = git_worktree_dirty()
     action: dict[str, Any] = {
-        "dirty_before": git_worktree_dirty(),
+        "dirty_before": dirty_before,
+        "dirty_before_summary": git_dirty_summary() if dirty_before else {},
         "fetch_attempted": False,
         "fetch_succeeded": False,
         "merge_attempted": False,
@@ -2094,7 +2187,9 @@ def maybe_commit_and_push(config: dict[str, Any]) -> dict[str, Any]:
                             (push.stderr or push.stdout or "git push failed").strip()
                         )
 
-    action["dirty_after"] = git_worktree_dirty()
+    dirty_after = git_worktree_dirty()
+    action["dirty_after"] = dirty_after
+    action["dirty_after_summary"] = git_dirty_summary() if dirty_after else {}
     action["head_after"] = git_head()
     return action
 
@@ -2309,6 +2404,7 @@ def build_report(config: dict[str, Any]) -> dict[str, Any]:
             (ahead_of_upstream or 0) > 0 and (behind_of_upstream or 0) > 0
         ),
         "dirty_worktree": git_worktree_dirty(),
+        "dirty_worktree_summary": git_dirty_summary(),
         "queue_counts": queue_counts(),
         "tracked_json_blob_count": current_json_blob_count,
         "tracked_json_blob_previous": previous_json_blob_count,
@@ -2375,6 +2471,16 @@ def render_markdown_report(report: dict[str, Any]) -> str:
         lines.append(f"- {key}: `{value}`")
     lines.append(f"- tracked_json_blob_count: `{report.get('tracked_json_blob_count')}`")
     lines.append(f"- tracked_json_blob_delta: `{report.get('tracked_json_blob_delta')}`")
+
+    dirty_summary = report.get("dirty_worktree_summary", {})
+    if isinstance(dirty_summary, dict) and dirty_summary.get("count"):
+        lines.extend(["", "## Dirty Worktree"])
+        lines.append(f"- entries: `{dirty_summary.get('count')}`")
+        lines.append(
+            f"- sample_truncated: `{str(dirty_summary.get('truncated')).lower()}`"
+        )
+        for item in dirty_summary.get("sample", []):
+            lines.append(f"- `{item}`")
 
     lines.extend(["", "## Active Agents"])
     agents = report.get("agents", [])
@@ -2483,9 +2589,22 @@ def load_correctness_harness_module() -> Any:
 
 
 def expected_correctness_manifest_ids(correctness_harness: Any) -> list[str]:
+    fixture_paths = tuple(Path(path) for path in correctness_harness.DEFAULT_FIXTURE_PATHS)
+    load_fixture_manifests = getattr(correctness_harness, "load_fixture_manifests", None)
+    if callable(load_fixture_manifests):
+        manifests, _ = load_fixture_manifests(fixture_paths)
+        return [
+            manifest_id
+            for manifest_id in (
+                str(getattr(manifest, "manifest_id", "") or "").strip()
+                for manifest in manifests
+            )
+            if manifest_id
+        ]
+
     manifest_ids: list[str] = []
-    for fixture_path in correctness_harness.DEFAULT_FIXTURE_PATHS:
-        raw_manifest = read_json(Path(fixture_path), default={})
+    for fixture_path in fixture_paths:
+        raw_manifest = read_json(fixture_path, default={})
         if not isinstance(raw_manifest, dict):
             continue
         manifest_id = str(raw_manifest.get("manifest_id") or "").strip()
@@ -2524,6 +2643,7 @@ def refresh_published_correctness_scorecard() -> dict[str, Any] | None:
 def run_cycle(
     config: dict[str, Any], *, force_supervisor: bool = False, force_agents: set[str] | None = None
 ) -> int:
+    cycle_inherited_dirty = git_worktree_dirty()
     paths = runtime_paths(config)
     ensure_runtime_dirs(paths)
     task_state = load_task_state(paths)
@@ -2539,11 +2659,25 @@ def run_cycle(
     recovery_actions.extend(stale_actions)
     results: list[RunResult] = []
     commit_actions: list[dict[str, Any]] = []
+    skipped_dirty_dispatch_agents: list[str] = []
     skipped_dirty_autocommit_agents: list[str] = []
     forced = force_agents or set()
     for agent in agents:
         force = agent.name in forced or (force_supervisor and agent.kind == "supervisor")
         worktree_dirty_before_agent = git_worktree_dirty()
+        inherited_dirty_before_agent = cycle_inherited_dirty and worktree_dirty_before_agent
+        if (
+            inherited_dirty_before_agent
+            and not force
+            and not agent_may_dispatch_on_dirty_worktree(agent)
+        ):
+            skipped_dirty_dispatch_agents.append(agent.name)
+            continue
+        dirty_paths_before_agent: set[str] = set()
+        preexisting_dirty_snapshot: dict[str, tuple[str, int | None, str | None]] = {}
+        if worktree_dirty_before_agent:
+            dirty_paths_before_agent = git_dirty_paths(untracked_all=True)
+            preexisting_dirty_snapshot = snapshot_worktree_paths(dirty_paths_before_agent)
         agent_results = dispatch_agent(agent, config, loop_state, force=force)
         if not agent_results:
             continue
@@ -2554,8 +2688,31 @@ def run_cycle(
         recovery_actions.extend(agent_recovery_actions)
         write_json(paths["task_state"], task_state)
         if worktree_dirty_before_agent:
-            if git_worktree_dirty():
-                skipped_dirty_autocommit_agents.append(agent.name)
+            # Only auto-commit when the inherited dirty baseline stayed untouched.
+            if not git_worktree_dirty():
+                continue
+            changed_preexisting_paths = changed_snapshot_paths(preexisting_dirty_snapshot)
+            if changed_preexisting_paths:
+                skipped_dirty_autocommit_agents.append(
+                    f"{agent.name} (touched pre-existing dirty paths: "
+                    + ", ".join(changed_preexisting_paths[:3])
+                    + (", ..." if len(changed_preexisting_paths) > 3 else "")
+                    + ")"
+                )
+                continue
+            dirty_paths_after_agent = git_dirty_paths(untracked_all=True)
+            safe_dirty_paths = sorted(dirty_paths_after_agent - dirty_paths_before_agent)
+            if not safe_dirty_paths:
+                continue
+            commit_action = maybe_commit_agent_changes(
+                config,
+                agent,
+                agent_results,
+                agent_recovery_actions,
+                pathspecs=safe_dirty_paths,
+            )
+            if commit_action is not None:
+                commit_actions.append(commit_action)
             continue
         if git_worktree_dirty():
             refresh_published_correctness_scorecard()
@@ -2572,6 +2729,13 @@ def run_cycle(
     write_json(paths["task_state"], task_state)
     prune_action = prune_run_dirs(config, paths)
     git_action = maybe_commit_and_push(config)
+    if skipped_dirty_dispatch_agents:
+        git_action.setdefault("errors", []).append(
+            "Skipped non-supervisor agent dispatch because the worktree was already dirty "
+            "before this cycle started and remained dirty before these agents would have run: "
+            + ", ".join(skipped_dirty_dispatch_agents)
+            + "."
+        )
     if skipped_dirty_autocommit_agents:
         git_action.setdefault("errors", []).append(
             "Skipped post-agent refresh and auto-commit because the worktree was already dirty "
