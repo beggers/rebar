@@ -271,10 +271,7 @@ class Match:
         self.endpos = endpos
         self._group_spans = group_spans
         self.lastindex = (
-            next(
-                (index for index in range(len(group_spans), 0, -1) if group_spans[index - 1] is not None),
-                None,
-            )
+            _infer_lastindex(group_spans)
             if lastindex is None
             else lastindex
         )
@@ -328,6 +325,12 @@ class Match:
             for name, group_index in self.re.groupindex.items()
         }
 
+    @property
+    def regs(self) -> tuple[tuple[int, int], ...]:
+        return (self._span,) + tuple(
+            (-1, -1) if span is None else span for span in self._group_spans
+        )
+
     def expand(self, template: object) -> str | bytes:
         return _expand_match_template(self, template)
 
@@ -351,6 +354,23 @@ def _expand_match_template(match: Match, template: object) -> str | bytes:
     if isinstance(template, (bytes, bytearray, memoryview)):
         return _expand_bytes_match_template(match, bytes(template))
     raise TypeError(f"decoding to str: need a bytes-like object, {type(template).__name__} found")
+
+
+def _infer_lastindex(
+    group_spans: tuple[tuple[int, int] | None, ...],
+) -> int | None:
+    inferred_index: int | None = None
+    latest_end = -1
+    for index, span in enumerate(group_spans, start=1):
+        if span is None:
+            continue
+        end = span[1]
+        if inferred_index is None or end > latest_end or (
+            end == latest_end and index < inferred_index
+        ):
+            inferred_index = index
+            latest_end = end
+    return inferred_index
 
 
 def _expand_str_match_template(match: Match, template: str) -> str | bytes:

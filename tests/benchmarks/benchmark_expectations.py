@@ -291,11 +291,16 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         ),
     },
     "nested-group-callable-replacement-boundary": {
-        "known_gap_count": 2,
+        "known_gap_count": 1,
         "representative_known_gap_workload_ids": (
             "module-sub-callable-nested-group-alternation-cold-gap",
         ),
-        "representative_measured_workload_ids": (),
+        "representative_measured_workload_ids": (
+            "module-sub-callable-numbered-quantified-nested-group-lower-bound-warm-str",
+            "module-subn-callable-numbered-quantified-nested-group-first-match-only-warm-str",
+            "pattern-sub-callable-named-quantified-nested-group-repeated-outer-purged-str",
+            "pattern-subn-callable-named-quantified-nested-group-purged-gap",
+        ),
     },
     "branch-local-backreference-boundary": {
         "known_gap_count": 0,

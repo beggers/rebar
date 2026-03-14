@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 remains a bounded Rust-backed subset, with correctness, Rust-backed parity, and the main Python-path benchmark report aligned through quantified nested-group replacement templates. |
 | Delivery estimate | The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity: the published slice is narrow, the main benchmark report still runs through the source-tree shim, and quantified nested-group callable replacement plus deeper grouped execution remain ahead. |
 | Current milestone | Milestone 2 now has quantified nested-group callable replacement at Rust-backed parity; `RBR-0316` is next to catch that bounded slice up on the existing Python-path benchmark surface, and `RBR-0318` is queued immediately behind it to reopen correctness on quantified nested-group alternation through the existing nested alternation path. |
-| Work queue | `2` ready, `0` in progress, `319` done, `0` blocked |
+| Work queue | `1` ready, `0` in progress, `320` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -34,16 +34,16 @@ _These correctness counts cover only the published slice. Overall delivery estim
 
 | Metric | Value |
 | --- | --- |
-| Baseline | CPython 3.12.3 (module `re`, exe `/usr/bin/python3`) |
-| Published workloads | `496` |
-| Workloads with real `rebar` timings | `466` |
-| Known-gap workloads | `30` |
+| Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
+| Published workloads | `499` |
+| Workloads with real `rebar` timings | `470` |
+| Known-gap workloads | `29` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.json`](reports/benchmarks/latest.json) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native sidecars are checked in separately at [`reports/benchmarks/native_full.json`](reports/benchmarks/native_full.json) for the latest built-native full-suite run and [`reports/benchmarks/native_smoke.json`](reports/benchmarks/native_smoke.json) for the smoke slice._
 
-_README speedup rollups stay omitted while only `466` of `496` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `470` of `499` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 

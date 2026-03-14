@@ -1,6 +1,6 @@
 # RBR-0316: Catch quantified nested-group callable-replacement benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-14
 
@@ -29,3 +29,9 @@ Created: 2026-03-14
 - Build on `RBR-0313`.
 - Keep this follow-on on the existing `nested_group_callable_replacement_boundary.py` manifest path instead of forking another benchmark family.
 - Add only the directly adjacent quantified numbered and named callable-replacement rows needed to publish this exact slice cleanly; alternation inside the repeated site, broader counted repeats, and deeper nested grouped execution stay explicit gaps or out of scope.
+
+## Completion Notes
+- Promoted the existing quantified named `Pattern.subn()` gap anchor into a measured first-match-only callable benchmark row and added the minimal adjacent quantified numbered and named module/`Pattern` rows needed to cover lower-bound, repeated-inner-capture, and first-match-only cases on the existing manifest path.
+- Updated the combined source-tree benchmark expectations and republished `reports/benchmarks/latest.json`, moving the published benchmark scorecard to 499 total workloads, 470 measured `rebar` timings, and 29 explicit known gaps; the `nested-group-callable-replacement-boundary` manifest now reports 13 workloads with 12 measured rows and 1 remaining nested-alternation gap.
+- Fixed `rebar.Match` callback metadata for this slice by adding CPython-shaped `regs` and correcting inferred `lastindex` for nested quantified captures, then republished `reports/correctness/latest.json` so the combined correctness scorecard stays current at 787 executed cases, 787 passes, 0 failures, and 0 `unimplemented`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest tests/python/test_quantified_nested_group_callable_replacement_parity.py`, `PYTHONPATH=python ./.venv/bin/python -m pytest tests/python/test_nested_group_parity.py`, `PYTHONPATH=python ./.venv/bin/python -m pytest tests/conformance/test_correctness_quantified_nested_group_callable_replacement_workflows.py`, `PYTHONPATH=python ./.venv/bin/python -m pytest tests/benchmarks/test_python_benchmark_manifest_contract.py`, `PYTHONPATH=python ./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_benchmark_scorecards.py`, and `PYTHONPATH=python ./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
