@@ -287,6 +287,9 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
             "module-search-numbered-quantified-nested-group-branch-local-backreference-lower-bound-b-branch-warm-str",
             "module-compile-named-quantified-nested-group-branch-local-backreference-warm-str",
             "pattern-fullmatch-named-quantified-nested-group-branch-local-backreference-repeated-mixed-purged-str",
+            "module-search-numbered-wider-ranged-repeat-quantified-nested-group-branch-local-backreference-lower-bound-b-branch-warm-str",
+            "module-compile-named-wider-ranged-repeat-quantified-nested-group-branch-local-backreference-warm-str",
+            "pattern-fullmatch-named-wider-ranged-repeat-quantified-nested-group-branch-local-backreference-upper-bound-all-c-purged-str",
         ),
     },
     "nested-group-replacement-boundary": {

@@ -45,6 +45,15 @@ NESTED_GROUP_ALTERNATION_QUANTIFIED_BRANCH_LOCAL_PATTERNS = {
     r"a((b|c)+)\2d",
     r"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
 }
+NESTED_GROUP_ALTERNATION_BROADER_RANGE_BRANCH_LOCAL_WORKLOAD_IDS = (
+    "module-search-numbered-wider-ranged-repeat-quantified-nested-group-branch-local-backreference-lower-bound-b-branch-warm-str",
+    "module-compile-named-wider-ranged-repeat-quantified-nested-group-branch-local-backreference-warm-str",
+    "pattern-fullmatch-named-wider-ranged-repeat-quantified-nested-group-branch-local-backreference-upper-bound-all-c-purged-str",
+)
+NESTED_GROUP_ALTERNATION_BROADER_RANGE_BRANCH_LOCAL_PATTERNS = {
+    r"a((b|c){1,4})\2d",
+    r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
+}
 WIDER_RANGED_REPEAT_REPRESENTATIVE_MEASURED_WORKLOAD_IDS = (
     "module-search-numbered-wider-ranged-repeat-group-broader-range-cold-gap",
     "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-upper-bound-mixed-purged-str",
@@ -252,6 +261,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             for workload in case["target_manifest"]["workloads"]
             if "branch-local-backreferences" in workload["syntax_features"]
             and "quantifiers" in workload["syntax_features"]
+            and "counted-repeats" not in workload["syntax_features"]
         ]
         self._assert_nested_group_alternation_branch_local_rows(
             case["target_manifest"],
@@ -260,6 +270,30 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_workload_ids=NESTED_GROUP_ALTERNATION_QUANTIFIED_BRANCH_LOCAL_WORKLOAD_IDS,
             expected_patterns=NESTED_GROUP_ALTERNATION_QUANTIFIED_BRANCH_LOCAL_PATTERNS,
             expected_haystacks={"zzabbdzz", "abccd"},
+        )
+
+    def test_nested_group_alternation_manifest_covers_broader_range_branch_local_backreference_slice(
+        self,
+    ) -> None:
+        case = source_tree_combined_case(NESTED_GROUP_ALTERNATION_MANIFEST_ID)
+        _, scorecard = run_source_tree_benchmark_scorecard(case["manifest_paths"])
+
+        manifest_summary = scorecard["manifests"][NESTED_GROUP_ALTERNATION_MANIFEST_ID]
+        self.assertEqual(manifest_summary["known_gap_count"], 0)
+
+        broader_range_branch_local_rows = [
+            workload
+            for workload in case["target_manifest"]["workloads"]
+            if "branch-local-backreferences" in workload["syntax_features"]
+            and "counted-repeats" in workload["syntax_features"]
+        ]
+        self._assert_nested_group_alternation_branch_local_rows(
+            case["target_manifest"],
+            scorecard,
+            branch_local_rows=broader_range_branch_local_rows,
+            expected_workload_ids=NESTED_GROUP_ALTERNATION_BROADER_RANGE_BRANCH_LOCAL_WORKLOAD_IDS,
+            expected_patterns=NESTED_GROUP_ALTERNATION_BROADER_RANGE_BRANCH_LOCAL_PATTERNS,
+            expected_haystacks={"zzabbdzz", "acccccd"},
         )
 
     def _assert_nested_group_alternation_branch_local_rows(
