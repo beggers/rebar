@@ -4,6 +4,7 @@ import unittest
 
 from tests.benchmarks.native_benchmark_test_support import (
     MATURIN,
+    assert_built_native_combined_scorecard_fields,
     assert_native_mode_requires_real_built_runtime,
     benchmarks,
     run_native_benchmark_with_report,
@@ -36,28 +37,12 @@ class BuiltNativeFullSuiteBenchmarkTest(unittest.TestCase):
             runner=benchmarks.run_built_native_full_benchmarks,
             report_name="benchmarks-native-full.json",
         )
-        self.assertEqual(scorecard["schema_version"], "1.0")
-        self.assertEqual(scorecard["phase"], "phase3-regression-stability-suite")
-        self.assertEqual(scorecard["implementation"]["module_name"], "rebar")
-        self.assertEqual(scorecard["implementation"]["adapter_mode_requested"], "built-native")
-        self.assertEqual(scorecard["implementation"]["adapter_mode_resolved"], "built-native")
-        self.assertEqual(scorecard["implementation"]["build_mode"], "built-native")
-        self.assertEqual(scorecard["implementation"]["timing_path"], "built-native")
-        self.assertTrue(scorecard["implementation"]["native_module_loaded"])
-        self.assertEqual(scorecard["implementation"]["native_module_name"], "rebar._rebar")
-        self.assertEqual(scorecard["implementation"]["native_build_tool"], "maturin")
-        self.assertTrue(str(scorecard["implementation"]["native_wheel"]).startswith("rebar-"))
-        self.assertIsNone(scorecard["implementation"]["native_unavailable_reason"])
-        self.assertEqual(
-            scorecard["environment"]["execution_model"],
-            "single-interpreter subprocess workload probes against a built native wheel",
-        )
-        self.assertEqual(scorecard["artifacts"]["manifest"], None)
-        self.assertEqual(scorecard["artifacts"]["manifest_id"], "combined-benchmark-suite")
-        self.assertEqual(scorecard["artifacts"]["selection_mode"], "full")
-        self.assertEqual(
-            len(scorecard["artifacts"]["manifests"]),
-            len(benchmarks.DEFAULT_MANIFEST_PATHS),
+        assert_built_native_combined_scorecard_fields(
+            self,
+            scorecard,
+            expected_phase="phase3-regression-stability-suite",
+            expected_selection_mode="full",
+            expected_manifest_count=len(benchmarks.DEFAULT_MANIFEST_PATHS),
         )
         self.assertEqual(scorecard["summary"]["total_workloads"], expected_total)
         self.assertEqual(scorecard["summary"]["parser_workloads"], expected_parser)
