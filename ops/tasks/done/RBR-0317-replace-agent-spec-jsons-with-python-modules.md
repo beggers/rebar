@@ -1,6 +1,6 @@
 # RBR-0317: Replace the agent-spec JSON registry with Python modules
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
 
@@ -50,3 +50,11 @@ Created: 2026-03-14
 - `.rebar/runtime/dashboard.md` is current for this clean checkout: it reports `tracked_json_blob_count: 15` and `tracked_json_blob_delta: -10`, and both `git ls-files '*.json' | wc -l` and `rg --files -g '*.json' | wc -l` agree at `15`.
 - This is the largest remaining non-report JSON block in the repo: `9` of the `11` remaining non-report JSON files are the agent specs. Landing it leaves only loop/reporting config JSON plus the four published report artifacts for the next burn-down step.
 - `scripts/rebar_ops.py` already treats correctness and benchmark manifests as Python modules, so agent specs should converge on that same plain-Python representation instead of keeping a bespoke JSON registry.
+
+## Completion Notes
+- Replaced the nine tracked `ops/agents/*.json` files with one-agent-per-file Python modules exposing top-level `SPEC` dicts, preserved each agent's existing names, kinds, descriptions, enabled flags, cycle ordering, prompt paths, dispatch settings, and Codex config, and deleted the JSON originals.
+- Updated `scripts/rebar_ops.py` so `load_agent_specs()` now loads only `ops/agents/*.py` modules through a shared importlib-based `SPEC` loader, preserves the existing enabled-agent ordering and single-supervisor validation, and updates the `render` CLI help text to point at the `.py` registry.
+- Updated `AGENTS.md`, `ops/README.md`, `ops/agents/README.md`, and `ops/agents/supervisor.md` to describe the Python-backed registry, and refreshed the durable harness-state references in `ops/state/current_status.md` and `ops/state/decision_log.md` so they no longer describe the live agent registry as JSON-backed.
+- Updated `tests/python/test_ops_harness.py` to use `.py` spec paths in the direct `AgentSpec` fixtures and added explicit coverage that the loaded registry resolves agent `spec_path` values to existing Python modules.
+- Verified with `./.venv/bin/python -m pytest tests/python/test_ops_harness.py` (`11` passed) and `./.venv/bin/python scripts/rebar_ops.py render supervisor`.
+- Live JSON count is now `6` by `rg --files -g '*.json' | wc -l`, leaving only `ops/config/loop.json`, `ops/reporting/readme.json`, `reports/benchmarks/latest.json`, `reports/benchmarks/native_full.json`, `reports/benchmarks/native_smoke.json`, and `reports/correctness/latest.json`. `git ls-files '*.json' | wc -l` still reports `15` in this dirty checkout until the harness commit records the deletions.

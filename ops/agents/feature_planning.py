@@ -1,0 +1,17 @@
+SPEC = {
+    "name": "feature-planning",
+    "kind": "planning_worker",
+    "description": "Keeps the ready queue stocked with the next bounded feature tasks when it is running thin.",
+    "enabled": True,
+    "cycle_order": 25,
+    "prompt_path": "ops/agents/feature_planning.md",
+    "dispatch": {
+        "mode": "every_cycle",
+        "timeout_seconds": 1800,
+    },
+    "codex": {
+        "config": [
+            'model_reasoning_effort="xhigh"',
+        ],
+    },
+}

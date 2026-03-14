@@ -1,0 +1,18 @@
+SPEC = {
+    "name": "implementation-faithfulness",
+    "kind": "repair_worker",
+    "description": "Repairs failing tests by changing implementation only and never editing tests.",
+    "enabled": True,
+    "cycle_order": 50,
+    "prompt_path": "ops/agents/implementation_faithfulness.md",
+    "dispatch": {
+        "mode": "interval",
+        "interval_seconds": 10800,
+        "timeout_seconds": 2700,
+    },
+    "codex": {
+        "config": [
+            'model_reasoning_effort="xhigh"',
+        ],
+    },
+}

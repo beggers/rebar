@@ -1,0 +1,17 @@
+SPEC = {
+    "name": "supervisor",
+    "kind": "supervisor",
+    "description": "Only tunes the agent harness so the specialist workers keep making progress.",
+    "enabled": True,
+    "cycle_order": 0,
+    "prompt_path": "ops/agents/supervisor.md",
+    "dispatch": {
+        "mode": "every_cycle",
+        "timeout_seconds": 1800,
+    },
+    "codex": {
+        "config": [
+            'model_reasoning_effort="xhigh"',
+        ],
+    },
+}

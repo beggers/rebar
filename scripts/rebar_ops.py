@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import atexit
 import hashlib
+import importlib.util
 import json
 import os
 import re
@@ -105,6 +106,22 @@ def load_config() -> dict[str, Any]:
     if not isinstance(config, dict):
         raise RuntimeError(f"Invalid config: {CONFIG_PATH}")
     return config
+
+
+def load_python_dict_attribute(path: Path, *, attribute: str, label: str) -> dict[str, Any]:
+    module_name = f"_rebar_{label}_{path.stem}".replace("-", "_")
+    spec = importlib.util.spec_from_file_location(module_name, path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Unable to load {label} module from {path}")
+
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    if not hasattr(module, attribute):
+        raise RuntimeError(f"Python {label} module {path} is missing a {attribute} value")
+    raw = getattr(module, attribute)
+    if not isinstance(raw, dict):
+        raise RuntimeError(f"{label.capitalize()} in {path} must be a dict")
+    return raw
 
 
 def resolve_repo_path(raw: str | Path) -> Path:
@@ -1131,10 +1148,8 @@ def load_agent_specs(config: dict[str, Any]) -> list[AgentSpec]:
     specs: list[AgentSpec] = []
     seen: set[str] = set()
 
-    for spec_path in sorted(agent_dir.glob("*.json")):
-        raw = read_json(spec_path, default=None)
-        if not isinstance(raw, dict):
-            raise RuntimeError(f"Invalid agent spec: {spec_path}")
+    for spec_path in sorted(agent_dir.glob("*.py")):
+        raw = load_python_dict_attribute(spec_path, attribute="SPEC", label="agent spec")
         name = str(raw.get("name", spec_path.stem))
         if name in seen:
             raise RuntimeError(f"Duplicate agent name: {name}")
@@ -2958,7 +2973,7 @@ def parse_args() -> argparse.Namespace:
     subparsers.add_parser("status", help="Print queue, git, and runtime status.")
 
     render_parser = subparsers.add_parser("render", help="Render a prompt for an agent.")
-    render_parser.add_argument("agent", help="Agent name from ops/agents/*.json")
+    render_parser.add_argument("agent", help="Agent name from ops/agents/*.py")
     render_parser.add_argument("--task", help="Optional task path for task-worker prompts.")
 
     cycle_parser = subparsers.add_parser("cycle", help="Run one full agent cycle.")

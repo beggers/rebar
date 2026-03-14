@@ -81,6 +81,16 @@ class OpsHarnessTest(unittest.TestCase):
         for agent in agents:
             self.assertIn('model_reasoning_effort="xhigh"', agent.codex["config"])
 
+    def test_loaded_agents_use_python_spec_modules(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        config = rebar_ops.load_config()
+        agents = rebar_ops.load_agent_specs(config)
+
+        for agent in agents:
+            with self.subTest(agent=agent.name):
+                self.assertEqual(agent.spec_path.suffix, ".py")
+                self.assertTrue(agent.spec_path.exists())
+
     def test_render_prompt_includes_generated_commit_policy(self) -> None:
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
@@ -141,7 +151,7 @@ class OpsHarnessTest(unittest.TestCase):
                 description="",
                 enabled=True,
                 cycle_order=60,
-                spec_path=REPO_ROOT / "ops" / "agents" / "cleanup.json",
+                spec_path=REPO_ROOT / "ops" / "agents" / "cleanup.py",
                 prompt_path=REPO_ROOT / "ops" / "agents" / "cleanup.md",
                 dispatch={},
                 codex={},
@@ -200,7 +210,7 @@ class OpsHarnessTest(unittest.TestCase):
             description="",
             enabled=True,
             cycle_order=0,
-            spec_path=REPO_ROOT / "ops" / "agents" / "supervisor.json",
+            spec_path=REPO_ROOT / "ops" / "agents" / "supervisor.py",
             prompt_path=REPO_ROOT / "ops" / "agents" / "supervisor.md",
             dispatch={},
             codex={},
@@ -226,7 +236,7 @@ class OpsHarnessTest(unittest.TestCase):
             description="",
             enabled=True,
             cycle_order=0,
-            spec_path=REPO_ROOT / "ops" / "agents" / "supervisor.json",
+            spec_path=REPO_ROOT / "ops" / "agents" / "supervisor.py",
             prompt_path=REPO_ROOT / "ops" / "agents" / "supervisor.md",
             dispatch={},
             codex={},

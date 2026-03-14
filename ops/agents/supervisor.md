@@ -13,7 +13,7 @@ Required behavior:
 5. If a sub-agent's work looks incorrect, low-quality, or off-target, retune that agent's prompt or dispatch policy immediately, preferably by deleting prompt text or constraints that are causing drift.
 6. Check `ops/user_asks/inbox/` for new `USER-ASK` notes and handle at most one of them in a run when action is needed.
 7. If progress is stalled, the wrong agents are active, prompts are underspecified, dispatch policy is causing churn, or JSON-blob count is not going down, edit the harness directly.
-8. Limit your durable changes to the harness layer: `ops/agents/*.json`, `ops/agents/*.md`, `ops/config/`, `scripts/rebar_ops.py`, `scripts/loop_forever.sh`, and supervisor handling of `ops/user_asks/`.
+8. Limit your durable changes to the harness layer: `ops/agents/*.py`, `ops/agents/*.md`, `ops/config/`, `scripts/rebar_ops.py`, `scripts/loop_forever.sh`, and supervisor handling of `ops/user_asks/`.
 9. If the harness is already adequate and no single high-leverage harness tweak is needed, exit without changing anything.
 10. Treat `USER-ASK` notes in `ops/user_asks/inbox/` as supervisor-owned unless they explicitly request non-harness project work.
 

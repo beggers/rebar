@@ -1,12 +1,13 @@
 # Agent Registry
 
-Each enabled `*.json` file in this directory defines one agent that the forever loop may run.
+Each enabled `*.py` module in this directory defines one agent that the forever loop may run. Each spec module exposes a top-level `SPEC` dict.
 
 ## Required Fields
-- `name`: stable agent name
-- `kind`: `supervisor`, `task_worker`, or another worker category you introduce
-- `prompt_path`: prompt file to render for the agent
-- `dispatch.mode`: how the loop schedules the agent
+- `SPEC`: top-level dict loaded by the harness
+- `SPEC["name"]`: stable agent name
+- `SPEC["kind"]`: `supervisor`, `task_worker`, or another worker category you introduce
+- `SPEC["prompt_path"]`: prompt file to render for the agent
+- `SPEC["dispatch"]["mode"]`: how the loop schedules the agent
 
 ## Common Dispatch Modes
 - `every_cycle`: run once every cycle

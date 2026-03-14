@@ -21,7 +21,7 @@
 - Owns the outcome of the project making progress indefinitely through the harness.
 - Owns the harness, prompts, loop config, active agent set, and `USER-ASK` intake.
 - May edit any file when it improves the operating system or unblocks the roadmap.
-- May add, remove, enable, disable, or retune non-supervisor agents by editing `ops/agents/*.json` and their prompt files.
+- May add, remove, enable, disable, or retune non-supervisor agents by editing `ops/agents/*.py` and their prompt files.
 - Must keep the harness and `ops/user_asks/` flow accurate enough that the next agent does not need to rediscover context.
 - Should treat stalled progress, harness failures, or workflow bottlenecks as problems it is expected to fix directly.
 - Should route harness-oriented `USER-ASK`s itself instead of pushing them into the implementation task queue.
@@ -34,7 +34,7 @@
 - Must not change `AGENTS.md`, `ops/agents/`, `ops/config/`, `scripts/rebar_ops.py`, or `scripts/loop_forever.sh` unless the task explicitly authorizes it.
 
 ## Active Agent Set
-- The forever loop loads enabled agent specs from `ops/agents/*.json`.
+- The forever loop loads enabled agent specs from `ops/agents/*.py`.
 - Exactly one enabled agent with `kind: supervisor` must exist; that agent runs first every cycle.
 - Other agents are optional and are entirely under supervisor control.
 - The current intended order is: supervisor, architecture, architecture implementation, feature planning, feature implementation, QA/testing, implementation faithfulness, cleanup, then reporting.

@@ -3,14 +3,14 @@
 This directory is the tracked operating system for the project.
 
 ## Layout
-- `agents/`: prompt bodies plus JSON agent specs that define who runs.
+- `agents/`: prompt bodies plus Python `SPEC` modules that define who runs.
 - `config/`: loop policy and Codex runner settings.
 - `state/`: durable project context that future runs should read first.
 - `tasks/`: task queue and task template.
 - `user_asks/`: supervisor-owned intake for future human notes and harness requests.
 
 ## Workflow
-1. The loop loads enabled agent specs from `ops/agents/*.json`.
+1. The loop loads enabled agent specs from `ops/agents/*.py`.
 2. The enabled supervisor runs first every cycle, owns `USER-ASK` harness work, is the only agent that may retune the harness or active agent set, and should review recent sub-agent output quality so it can trim or retune weak prompts quickly.
 3. The intended specialist order is: architecture, architecture implementation, feature planning, feature implementation, QA/testing, implementation faithfulness, cleanup, then reporting.
 4. The ready queue is owner-routed: `architecture-implementation` claims architecture/refactor tasks and `feature-implementation` claims feature/parity/benchmark tasks, and each worker moves its assigned task to `done/` or `blocked`.

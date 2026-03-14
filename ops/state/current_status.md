@@ -25,7 +25,7 @@ Early subset, still far from drop-in parity: the Rust boundary covers literals, 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
 - A config-driven, supervisor-first loop runner in `scripts/rebar_ops.py`.
-- A dynamic agent registry under `ops/agents/*.json` that the supervisor can edit.
+- A dynamic agent registry under `ops/agents/*.py` that the supervisor can edit.
 - A tiny outer shell loop in `scripts/loop_forever.sh` that re-runs bounded cycles so supervisor changes apply on the next iteration.
 - Per-agent commits, end-of-cycle auto-push, stale-task recovery, runtime retention, and dashboard generation policy in the harness.
 - A tracked `README.md` landing page with an auto-synced current-state section for humans.
