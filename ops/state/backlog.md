@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now has `RBR-0338` seeded as the surviving follow-on so the broader `{1,4}` counted-repeat nested-group-alternation-plus-branch-local-backreference slice stays queued for Rust-backed parity once `RBR-0336` publishes it.
+Milestone 2 now has `RBR-0340` seeded as the surviving follow-on so the broader `{1,4}` counted-repeat nested-group-alternation-plus-branch-local-backreference slice reaches the existing Python-path benchmark surface once `RBR-0338` lands.
 
 ## Ordered Work
-1. Land `RBR-0338` to convert the bounded broader `{1,4}` counted-repeat nested-group-alternation-plus-branch-local-backreference workflows published by `RBR-0336` for `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d` through `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_quantified_nested_group_alternation_branch_local_backreference_parity.py`, and `reports/correctness/latest.py`.
+1. Land `RBR-0340` to catch the bounded broader `{1,4}` counted-repeat nested-group-alternation-plus-branch-local-backreference workflows for `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d` up on `benchmarks/workloads/nested_group_alternation_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` once `RBR-0338` lands.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
