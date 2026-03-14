@@ -334,6 +334,20 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
         ),
     },
+    "quantified-nested-group-alternation-branch-local-backreference-workflows": {
+        "representative_case_ids": (
+            "quantified-nested-group-alternation-branch-local-numbered-backreference-compile-metadata-str",
+            "quantified-nested-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
+            "quantified-nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-lower-bound-c-branch-str",
+            "quantified-nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-second-iteration-b-branch-str",
+            "quantified-nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-str",
+            "quantified-nested-group-alternation-branch-local-named-backreference-compile-metadata-str",
+            "quantified-nested-group-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-str",
+            "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-lower-bound-b-branch-str",
+            "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-second-iteration-mixed-branches-str",
+            "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
+        ),
+    },
 }
 
 
