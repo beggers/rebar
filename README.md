@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `477` of `504` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0332` after `RBR-0330` publishes the quantified nested-group-alternation-plus-branch-local-backreference correctness pack so Rust-backed parity becomes the surviving frontier.
+- Land `RBR-0332` so the already-published quantified nested-group-alternation-plus-branch-local-backreference correctness slice becomes the Rust-backed parity frontier.
 
 ### Current Risks
 

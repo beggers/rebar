@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, keeping
 The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- Land `RBR-0332` after `RBR-0330` publishes the quantified nested-group-alternation-plus-branch-local-backreference correctness pack so Rust-backed parity becomes the surviving frontier.
+- Land `RBR-0332` so the already-published quantified nested-group-alternation-plus-branch-local-backreference correctness slice becomes the Rust-backed parity frontier.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
