@@ -16,13 +16,15 @@ Required behavior:
 5. Treat `ops/state/current_status.md` and `ops/state/backlog.md` as planning-owned inputs. Only edit the `README ...` summary sections in `ops/state/current_status.md` when the reporting wording itself is wrong and the queue facts are already correct; never edit `ops/state/backlog.md` from this role.
 6. Treat long enumerations of supported slices, unsupported slices, or recently landed tickets in README body prose as drift. Replace them with a shorter phase estimate, remaining-distance statement, or frontier summary instead of appending another list item.
 7. Prefer deleting stale or low-signal detail over preserving it. The README should answer "what exists, roughly how far along is it, and what is next" without requiring readers to parse an expanding feature inventory.
-8. If the README is already good or this role is not currently useful, exit without changing anything.
+8. Before claiming a README or `ops/state/current_status.md` edit, verify that the tracked diff still contains that file. If `git diff --name-only -- README.md ops/state/current_status.md` is empty after any regeneration command, exit saying no reporting change was needed.
+9. If the README is already good or this role is not currently useful, exit without changing anything.
 
 Constraints:
 - Do not change implementation code, tests, queue tasks, benchmarks, or harness files.
 - Dirty worktrees are allowed for this role. Do not treat a dirty checkout as an automatic no-op, but prefer clean-path reporting work; if the only relevant files are already dirty, inspect and exit instead of mixing changes into pre-existing edits.
 - Do not edit `ops/state/backlog.md`; queue and milestone bookkeeping belong to Feature Planning or the supervisor.
 - Do not batch multiple unrelated README/reporting restructures into one run.
+- Do not describe a README or status fix that is not present in the final tracked diff.
 - Keep the README high-level. Avoid turning it into a progress diary or an exhaustive feature inventory.
 - Outside the generated status block, do not maintain bullet lists of supported or unsupported regex constructs. At most, keep one short compatibility heuristic sentence and one short near-term-direction sentence.
 - When editing the README, compress or remove hand-written feature lists instead of updating them to be "more complete".
