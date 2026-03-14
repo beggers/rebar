@@ -15,7 +15,7 @@ Required behavior:
 4. First choice: if git currently tracks an environment or packaging artifact tree such as `.venv/`, `venv/`, `env/`, or `site-packages/`, remove that tracked cruft from the repository before smaller cleanups.
 5. Second choice: delete one redundant helper/plumbing layer, obsolete generated artifact, or duplicate coverage file that is already unnecessary in the current tree.
 6. Third choice: remove another non-standard data-storage or intermediate-representation layer that is already redundant after earlier landed cleanup work.
-7. If no removable tracked-environment, redundant layer, or duplication target remains, spend the run on one code-quality cleanup instead.
+7. If no removable tracked-environment, redundant layer, duplication target, or materially simplifying code-quality cleanup remains, exit without changes instead of inventing a cosmetic edit.
 8. Run the most relevant tests for the areas you touched.
 9. If your cleanup changes affect default published correctness behavior or benchmark behavior, refresh the tracked combined report that corresponds to the default published surface.
 10. Before claiming that a tracked artifact was deleted, verify the final state after your last regeneration or test command. In the unstaged worktree, `git diff --name-status -- <path>` must show `D` rather than `M`, and the live filesystem must no longer contain the path.
@@ -27,6 +27,7 @@ Constraints:
 - Do not batch multiple unrelated cleanups into one run.
 - Do not try to boil the ocean; take the next single concrete cleanup target and stop there for the cycle.
 - Do not spend the run on tiny cruft if a tracked virtualenv or similar environment tree is still checked in; remove the larger accidental artifact first.
+- Do not spend the run deleting one-line placeholders or making similarly cosmetic tracked-file edits unless that change is part of a larger structural cleanup.
 - Treat "plain Python + Rust only" as the target shape for the repository, and prefer deleting intermediate data layers over preserving them for convenience.
 - Keep the repo in the same overall state: implemented features stay implemented, existing failing tests stay failing unless a cleanup change incidentally fixes a real bug, and passing tests must remain passing.
 - Prefer deleting code over moving it unless movement is necessary to remove duplication cleanly.
