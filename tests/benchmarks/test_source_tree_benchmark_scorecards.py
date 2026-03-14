@@ -1,10 +1,7 @@
 from __future__ import annotations
 
-import json
 import pathlib
-import subprocess
 import sys
-import tempfile
 import unittest
 
 
@@ -15,6 +12,7 @@ if str(PYTHON_SOURCE) not in sys.path:
     sys.path.append(str(PYTHON_SOURCE))
 
 from tests.benchmarks.benchmark_expectations import (
+    run_source_tree_benchmark_scorecard,
     source_tree_scorecard_case,
     source_tree_scorecard_case_ids,
 )
@@ -35,7 +33,10 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
         for case_id in source_tree_scorecard_case_ids():
             with self.subTest(case_id=case_id):
                 case = source_tree_scorecard_case(case_id)
-                summary, scorecard = self._run_case(case)
+                summary, scorecard = run_source_tree_benchmark_scorecard(
+                    case["manifest_paths"],
+                    smoke=case["selection_mode"] == "smoke",
+                )
 
                 assert_source_tree_benchmark_contract(
                     self,
@@ -72,29 +73,6 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
 
                 self._assert_manifest_contracts(case, scorecard)
                 self._assert_representative_workloads(case, scorecard)
-
-    def _run_case(self, case: dict[str, object]) -> tuple[dict[str, int], dict[str, object]]:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            report_path = pathlib.Path(temp_dir) / "benchmarks.json"
-            command = [sys.executable, "-m", "rebar_harness.benchmarks"]
-            for manifest_path in case["manifest_paths"]:
-                command.extend(("--manifest", str(manifest_path)))
-            if case["selection_mode"] == "smoke":
-                command.append("--smoke")
-            command.extend(("--report", str(report_path)))
-
-            result = subprocess.run(
-                command,
-                check=True,
-                cwd=REPO_ROOT,
-                env={"PYTHONPATH": str(PYTHON_SOURCE)},
-                capture_output=True,
-                text=True,
-            )
-            summary = json.loads(result.stdout.strip())
-            scorecard = json.loads(report_path.read_text(encoding="utf-8"))
-
-        return summary, scorecard
 
     def _assert_manifest_contracts(
         self,

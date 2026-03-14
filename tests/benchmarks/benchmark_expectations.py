@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import json
 import pathlib
+import subprocess
 import sys
+import tempfile
+from collections.abc import Iterable
 from functools import cache
 from typing import Any
 
@@ -436,6 +440,34 @@ def manifest_document_for_id(manifest_id: str) -> dict[str, Any]:
 
 def relative_manifest_path(path: pathlib.Path) -> str:
     return str(path.relative_to(REPO_ROOT))
+
+
+def run_source_tree_benchmark_scorecard(
+    manifest_paths: Iterable[pathlib.Path],
+    *,
+    smoke: bool = False,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        report_path = pathlib.Path(temp_dir) / "benchmarks.json"
+        command = [sys.executable, "-m", "rebar_harness.benchmarks"]
+        for manifest_path in manifest_paths:
+            command.extend(("--manifest", str(manifest_path)))
+        if smoke:
+            command.append("--smoke")
+        command.extend(("--report", str(report_path)))
+
+        result = subprocess.run(
+            command,
+            check=True,
+            cwd=REPO_ROOT,
+            env={"PYTHONPATH": str(PYTHON_SOURCE)},
+            capture_output=True,
+            text=True,
+        )
+        summary = json.loads(result.stdout.strip())
+        scorecard = json.loads(report_path.read_text(encoding="utf-8"))
+
+    return summary, scorecard
 
 
 def ordered_operations(workloads: list[dict[str, Any]]) -> list[str]:

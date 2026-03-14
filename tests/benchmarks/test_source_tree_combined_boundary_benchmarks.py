@@ -1,10 +1,7 @@
 from __future__ import annotations
 
-import json
 import pathlib
-import subprocess
 import sys
-import tempfile
 import unittest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -15,6 +12,7 @@ if str(PYTHON_SOURCE) not in sys.path:
 
 from tests.benchmarks.benchmark_expectations import (
     representative_measured_workload_ids,
+    run_source_tree_benchmark_scorecard,
     source_tree_combined_case,
     source_tree_combined_target_manifest_ids,
 )
@@ -36,23 +34,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(manifest_id=target_manifest_id):
                 case = source_tree_combined_case(target_manifest_id)
                 manifest_expectation = case["manifest_expectation"]
-
-                with tempfile.TemporaryDirectory() as temp_dir:
-                    report_path = pathlib.Path(temp_dir) / "benchmarks.json"
-                    command = [sys.executable, "-m", "rebar_harness.benchmarks"]
-                    for manifest_path in case["manifest_paths"]:
-                        command.extend(("--manifest", str(manifest_path)))
-                    command.extend(("--report", str(report_path)))
-                    result = subprocess.run(
-                        command,
-                        check=True,
-                        cwd=REPO_ROOT,
-                        env={"PYTHONPATH": str(PYTHON_SOURCE)},
-                        capture_output=True,
-                        text=True,
-                    )
-                    summary = json.loads(result.stdout.strip())
-                    scorecard = json.loads(report_path.read_text(encoding="utf-8"))
+                summary, scorecard = run_source_tree_benchmark_scorecard(
+                    case["manifest_paths"],
+                )
 
                 assert_source_tree_benchmark_contract(
                     self,
