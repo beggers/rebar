@@ -14,7 +14,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Phase | Phase 3 remains a bounded Rust-backed subset, with correctness, Rust-backed parity, and the main Python-path benchmark report aligned through quantified nested-group replacement templates. |
 | Delivery estimate | The repo has the right harness and reporting shape, but it is still far from drop-in `re` parity: the published slice is narrow, the main benchmark report still runs through the source-tree shim, and quantified nested-group callable replacement plus deeper grouped execution remain ahead. |
 | Current milestone | Milestone 2 now has quantified nested-group callable replacement published on the correctness surface; `RBR-0313` is next to convert that bounded slice to Rust-backed parity, and `RBR-0316` is queued immediately behind it to catch the same slice up on the existing Python-path benchmark surface. |
-| Work queue | `2` ready, `0` in progress, `317` done, `0` blocked |
+| Work queue | `1` ready, `0` in progress, `318` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -22,9 +22,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Metric | Value |
 | --- | --- |
 | Published cases | `787` |
-| Passing in published slice | `779` |
+| Passing in published slice | `787` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `8` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `87` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 

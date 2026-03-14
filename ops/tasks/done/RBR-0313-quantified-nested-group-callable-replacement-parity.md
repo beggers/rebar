@@ -1,6 +1,6 @@
 # RBR-0313: Add quantified nested-group callable-replacement parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-14
 
@@ -28,3 +28,9 @@ Created: 2026-03-14
 ## Notes
 - Build on `RBR-0309`, `RBR-0084`, and the existing quantified nested-group replacement support.
 - Keep later benchmark catch-up on the existing `benchmarks/workloads/nested_group_callable_replacement_boundary.py` path, which already carries the quantified named `Pattern.subn()` gap row; do not fork another benchmark family when that follow-on is seeded.
+
+## Completion Notes
+- Extended the Rust CPython boundary for nested-capture `finditer` spans so callable replacement now falls through to the already-landed quantified nested-capture span collector when `a((bc)+)d` or `a(?P<outer>(?P<inner>bc)+)d` are compiled through the native path.
+- Kept Python-side behavior limited to the existing wrapper and callable marshalling; no new ad hoc Python regex semantics were added.
+- Republished `reports/correctness/latest.json`, moving the combined published scorecard to 787 executed cases, 787 passes, 0 failures, and 0 `unimplemented` outcomes, with the quantified nested-group callable suite now reporting 8 passes and 0 `unimplemented`.
+- Verified with `cargo build -p rebar-cpython`, a direct Python parity script covering the eight published numbered and named `sub()` / `subn()` cases, `PYTHONPATH=python python3 -m rebar_harness.correctness --fixtures tests/conformance/fixtures/quantified_nested_group_callable_replacement_workflows.py --report /tmp/rebar-rbr0313-correctness.json`, `PYTHONPATH=python python3 -m rebar_harness.correctness`, `python3 -m unittest tests.conformance.test_correctness_quantified_nested_group_callable_replacement_workflows`, and `python3 -m unittest tests.conformance.test_combined_correctness_scorecards`.
