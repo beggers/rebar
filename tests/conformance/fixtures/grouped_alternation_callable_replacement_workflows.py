@@ -1,0 +1,247 @@
+MANIFEST = {
+    "schema_version": 1,
+    "manifest_id": "grouped-alternation-callable-replacement-workflows",
+    "layer": "module_workflow",
+    "suite_id": "collection.replacement.grouped_alternation.callable",
+    "defaults": {
+        "text_model": "str",
+    },
+    "cases": [
+        {
+            "id": "module-sub-callable-grouped-alternation-str",
+            "operation": "module_call",
+            "family": "grouped_alternation_callable_replacement_workflow",
+            "helper": "sub",
+            "args": [
+                "a(b|c)d",
+                {
+                    "type": "callable_match_group",
+                    "group": 1,
+                    "suffix": "x",
+                },
+                "abdacd",
+            ],
+            "categories": [
+                "workflow",
+                "sub",
+                "callable-replacement",
+                "grouped",
+                "alternation",
+                "module",
+                "str",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bounded module-level grouped-alternation callable replacement path for one grouped branch-selection site feeding match.group(1)."
+            ],
+        },
+        {
+            "id": "module-subn-callable-grouped-alternation-str",
+            "operation": "module_call",
+            "family": "grouped_alternation_callable_replacement_workflow",
+            "helper": "subn",
+            "args": [
+                "a(b|c)d",
+                {
+                    "type": "callable_match_group",
+                    "group": 1,
+                    "suffix": "x",
+                },
+                "abdacd",
+                1,
+            ],
+            "categories": [
+                "workflow",
+                "subn",
+                "callable-replacement",
+                "grouped",
+                "alternation",
+                "module",
+                "str",
+                "count",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bounded module-level grouped-alternation callable replacement count path without broadening into nested groups, quantified branches, or general callback semantics."
+            ],
+        },
+        {
+            "id": "pattern-sub-callable-grouped-alternation-str",
+            "operation": "pattern_call",
+            "family": "grouped_alternation_callable_replacement_workflow",
+            "pattern": "a(b|c)d",
+            "helper": "sub",
+            "args": [
+                {
+                    "type": "callable_match_group",
+                    "group": 1,
+                    "suffix": "x",
+                },
+                "acdabd",
+            ],
+            "categories": [
+                "workflow",
+                "sub",
+                "callable-replacement",
+                "grouped",
+                "alternation",
+                "pattern",
+                "str",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bound Pattern.sub grouped-alternation callable replacement path for the same single grouped branch-selection shape."
+            ],
+        },
+        {
+            "id": "pattern-subn-callable-grouped-alternation-str",
+            "operation": "pattern_call",
+            "family": "grouped_alternation_callable_replacement_workflow",
+            "pattern": "a(b|c)d",
+            "helper": "subn",
+            "args": [
+                {
+                    "type": "callable_match_group",
+                    "group": 1,
+                    "suffix": "x",
+                },
+                "acdabd",
+                1,
+            ],
+            "categories": [
+                "workflow",
+                "subn",
+                "callable-replacement",
+                "grouped",
+                "alternation",
+                "pattern",
+                "str",
+                "count",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bound Pattern.subn grouped-alternation callable replacement count path while leaving nested groups and branch-local backreferences out of scope."
+            ],
+        },
+        {
+            "id": "module-sub-callable-named-grouped-alternation-str",
+            "operation": "module_call",
+            "family": "named_grouped_alternation_callable_replacement_workflow",
+            "helper": "sub",
+            "args": [
+                "a(?P<word>b|c)d",
+                {
+                    "type": "callable_match_group",
+                    "group": "word",
+                    "suffix": "x",
+                },
+                "abdacd",
+            ],
+            "categories": [
+                "workflow",
+                "sub",
+                "callable-replacement",
+                "grouped",
+                "alternation",
+                "named-group",
+                "module",
+                "str",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bounded module-level named grouped-alternation callable replacement path for one named branch-selection site feeding match.group(\"word\")."
+            ],
+        },
+        {
+            "id": "module-subn-callable-named-grouped-alternation-str",
+            "operation": "module_call",
+            "family": "named_grouped_alternation_callable_replacement_workflow",
+            "helper": "subn",
+            "args": [
+                "a(?P<word>b|c)d",
+                {
+                    "type": "callable_match_group",
+                    "group": "word",
+                    "suffix": "x",
+                },
+                "abdacd",
+                1,
+            ],
+            "categories": [
+                "workflow",
+                "subn",
+                "callable-replacement",
+                "grouped",
+                "alternation",
+                "named-group",
+                "module",
+                "str",
+                "count",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bounded module-level named grouped-alternation callable replacement count path without claiming broader callback semantics or nested branches."
+            ],
+        },
+        {
+            "id": "pattern-sub-callable-named-grouped-alternation-str",
+            "operation": "pattern_call",
+            "family": "named_grouped_alternation_callable_replacement_workflow",
+            "pattern": "a(?P<word>b|c)d",
+            "helper": "sub",
+            "args": [
+                {
+                    "type": "callable_match_group",
+                    "group": "word",
+                    "suffix": "x",
+                },
+                "acdabd",
+            ],
+            "categories": [
+                "workflow",
+                "sub",
+                "callable-replacement",
+                "grouped",
+                "alternation",
+                "named-group",
+                "pattern",
+                "str",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bound Pattern.sub named grouped-alternation callable replacement path for the same single alternation site."
+            ],
+        },
+        {
+            "id": "pattern-subn-callable-named-grouped-alternation-str",
+            "operation": "pattern_call",
+            "family": "named_grouped_alternation_callable_replacement_workflow",
+            "pattern": "a(?P<word>b|c)d",
+            "helper": "subn",
+            "args": [
+                {
+                    "type": "callable_match_group",
+                    "group": "word",
+                    "suffix": "x",
+                },
+                "acdabd",
+                1,
+            ],
+            "categories": [
+                "workflow",
+                "subn",
+                "callable-replacement",
+                "grouped",
+                "alternation",
+                "named-group",
+                "pattern",
+                "str",
+                "count",
+                "gap",
+            ],
+            "notes": [
+                "Publishes the bound Pattern.subn named grouped-alternation callable replacement count path while keeping nested groups and broader callback helpers out of scope."
+            ],
+        },
+    ],
+}

@@ -82815,12 +82815,12 @@
       "tests/conformance/fixtures/nested_group_alternation_workflows.json",
       "tests/conformance/fixtures/nested_group_replacement_workflows.json",
       "tests/conformance/fixtures/quantified_nested_group_replacement_workflows.py",
-      "tests/conformance/fixtures/nested_group_callable_replacement_workflows.json",
-      "tests/conformance/fixtures/literal_alternation_workflows.json",
-      "tests/conformance/fixtures/grouped_alternation_workflows.json",
-      "tests/conformance/fixtures/grouped_alternation_replacement_workflows.json",
-      "tests/conformance/fixtures/grouped_alternation_callable_replacement_workflows.json",
-      "tests/conformance/fixtures/branch_local_backreference_workflows.json",
+      "tests/conformance/fixtures/nested_group_callable_replacement_workflows.py",
+      "tests/conformance/fixtures/literal_alternation_workflows.py",
+      "tests/conformance/fixtures/grouped_alternation_workflows.py",
+      "tests/conformance/fixtures/grouped_alternation_replacement_workflows.py",
+      "tests/conformance/fixtures/grouped_alternation_callable_replacement_workflows.py",
+      "tests/conformance/fixtures/branch_local_backreference_workflows.py",
       "tests/conformance/fixtures/conditional_group_exists_branch_local_backreference_workflows.py",
       "tests/conformance/fixtures/quantified_branch_local_backreference_workflows.json",
       "tests/conformance/fixtures/optional_group_workflows.py",
@@ -82885,7 +82885,7 @@
       "tests/conformance/fixtures/quantified_alternation_open_ended_workflows.py"
     ]
   },
-  "generated_at": "2026-03-14T09:58:42Z",
+  "generated_at": "2026-03-14T12:18:16Z",
   "generator": "python -m rebar_harness.correctness",
   "layers": {
     "match_behavior": {

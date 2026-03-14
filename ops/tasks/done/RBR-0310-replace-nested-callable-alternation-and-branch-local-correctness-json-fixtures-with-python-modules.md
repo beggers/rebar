@@ -1,6 +1,6 @@
 # RBR-0310: Replace the nested-callable, alternation, and branch-local correctness JSON fixtures with Python modules
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
 
@@ -42,3 +42,10 @@ Created: 2026-03-14
 - `.rebar/runtime/dashboard.md` still reports `tracked_json_blob_count: 103` and `tracked_json_blob_delta: 0`, but the live tracked baseline in this checkout is already `44`; verify the reduction with `git ls-files '*.json' | wc -l` rather than relying on the stale dashboard snapshot.
 - This is the remaining contiguous non-bootstrap JSON block inside `python/rebar_harness/correctness.py::DEFAULT_FIXTURE_PATHS` between the already-converted quantified nested-group replacement fixture and the already-converted conditional branch-local follow-on, so it burns down another sizable cluster without mixing in the parser/module-surface scaffolds.
 - The combined scorecard expectations already cover these manifest ids and representative case ids, and this checkout does not carry dedicated file-path regression tests for this batch; keep the coverage anchored in the shared scorecard and fixture-contract suites unless a real path assumption appears during execution.
+
+## Completion Notes
+- Repointed the six targeted `DEFAULT_FIXTURE_PATHS` entries in `python/rebar_harness/correctness.py` from `.json` to `.py` while keeping the shared `.json`/`.py` manifest loader and validation path unchanged.
+- Replaced the six targeted correctness JSON fixtures with one-manifest-per-file Python `MANIFEST` modules carrying the same manifest ids, suite ids, defaults, case ids, ordering, and callable-descriptor payload dicts, then deleted the JSON originals.
+- Regenerated `reports/correctness/latest.json`; the targeted manifests now resolve to `.py` fixture paths with case counts `8`, `3`, `6`, `8`, `8`, and `6`, and the combined report remains `779` executed / `779` passed / `0` failed / `0` unimplemented.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python python3 -m unittest tests.conformance.test_combined_correctness_scorecards tests.conformance.test_correctness_fixture_inventory_contract tests.conformance.test_python_fixture_manifest_contract`, and `PYTHONPATH=python python3 -m rebar_harness.correctness --report reports/correctness/latest.json`.
+- `python3 -m pytest ...` was not available because `pytest` is not installed in this checkout. In this dirty worktree, `git ls-files '*.json' | wc -l` still reports deleted tracked files until commit, so the live reduction was verified with `rg --files -g '*.json' | wc -l` as `44 -> 38`.

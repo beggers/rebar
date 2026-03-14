@@ -62,20 +62,20 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "nested_group_callable_replacement_workflows.json",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "literal_alternation_workflows.json",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_alternation_workflows.json",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_alternation_replacement_workflows.json",
+    / "nested_group_callable_replacement_workflows.py",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "literal_alternation_workflows.py",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_alternation_workflows.py",
+    REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_alternation_replacement_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "grouped_alternation_callable_replacement_workflows.json",
+    / "grouped_alternation_callable_replacement_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "branch_local_backreference_workflows.json",
+    / "branch_local_backreference_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
