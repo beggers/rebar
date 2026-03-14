@@ -9,78 +9,131 @@ import rebar
 
 
 @dataclass(frozen=True)
-class ParityCase:
+class Scenario:
     id: str
-    pattern: bytes
+    pattern: str
     max_group: int
     group_names: tuple[str, ...] = ()
-    search_matches: tuple[bytes, ...] = ()
-    search_misses: tuple[bytes, ...] = ()
-    fullmatch_matches: tuple[bytes, ...] = ()
-    fullmatch_misses: tuple[bytes, ...] = ()
+    search_matches: tuple[str, ...] = ()
+    search_misses: tuple[str, ...] = ()
+    fullmatch_matches: tuple[str, ...] = ()
+    fullmatch_misses: tuple[str, ...] = ()
 
 
-CASES = (
-    ParityCase(
-        id="broader-range-conditional-numbered-bytes",
-        pattern=rb"a((bc|de){1,4})?(?(1)d|e)",
+@dataclass(frozen=True)
+class ParityCase:
+    id: str
+    pattern: str | bytes
+    max_group: int
+    group_names: tuple[str, ...] = ()
+    search_matches: tuple[str | bytes, ...] = ()
+    search_misses: tuple[str | bytes, ...] = ()
+    fullmatch_matches: tuple[str | bytes, ...] = ()
+    fullmatch_misses: tuple[str | bytes, ...] = ()
+
+
+SCENARIOS = (
+    Scenario(
+        id="broader-range-conditional-numbered",
+        pattern=r"a((bc|de){1,4})?(?(1)d|e)",
         max_group=2,
         search_matches=(
-            b"zzaezz",
-            b"zzabcdzz",
-            b"zzadedzz",
-            b"zzabcdedededzz",
+            "zzaezz",
+            "zzabcdzz",
+            "zzadedzz",
+            "zzabcdedededzz",
         ),
         search_misses=(
-            b"zzadzz",
-            b"zzabcbcbcbcbcdzz",
+            "zzadzz",
+            "zzabcbcbcbcbcdzz",
         ),
         fullmatch_matches=(
-            b"ae",
-            b"abcded",
-            b"abcbcded",
-            b"abcdededed",
+            "ae",
+            "abcded",
+            "abcbcded",
+            "abcdededed",
         ),
         fullmatch_misses=(
-            b"ad",
-            b"abcdede",
-            b"abcbcbcbcbcd",
+            "ad",
+            "abcdede",
+            "abcbcbcbcbcd",
         ),
     ),
-    ParityCase(
-        id="broader-range-conditional-named-bytes",
-        pattern=rb"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
+    Scenario(
+        id="broader-range-conditional-named",
+        pattern=r"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
         max_group=2,
         group_names=("outer",),
         search_matches=(
-            b"zzaezz",
-            b"zzabcdzz",
-            b"zzadedzz",
-            b"zzabcdedededzz",
+            "zzaezz",
+            "zzabcdzz",
+            "zzadedzz",
+            "zzabcdedededzz",
         ),
         search_misses=(
-            b"zzadzz",
-            b"zzabcbcbcbcbcdzz",
+            "zzadzz",
+            "zzabcbcbcbcbcdzz",
         ),
         fullmatch_matches=(
-            b"ae",
-            b"abcded",
-            b"abcbcded",
-            b"abcdededed",
+            "ae",
+            "abcded",
+            "abcbcded",
+            "abcdededed",
         ),
         fullmatch_misses=(
-            b"ad",
-            b"abcdede",
-            b"abcbcbcbcbcd",
+            "ad",
+            "abcdede",
+            "abcbcbcbcbcd",
         ),
     ),
+)
+
+
+def _encode_values(values: tuple[str, ...]) -> tuple[bytes, ...]:
+    return tuple(value.encode("ascii") for value in values)
+
+
+def _parity_case(
+    scenario: Scenario,
+    *,
+    text_model: str,
+) -> ParityCase:
+    if text_model == "str":
+        return ParityCase(
+            id=f"{scenario.id}-str",
+            pattern=scenario.pattern,
+            max_group=scenario.max_group,
+            group_names=scenario.group_names,
+            search_matches=scenario.search_matches,
+            search_misses=scenario.search_misses,
+            fullmatch_matches=scenario.fullmatch_matches,
+            fullmatch_misses=scenario.fullmatch_misses,
+        )
+    if text_model == "bytes":
+        return ParityCase(
+            id=f"{scenario.id}-bytes",
+            pattern=scenario.pattern.encode("ascii"),
+            max_group=scenario.max_group,
+            group_names=scenario.group_names,
+            search_matches=_encode_values(scenario.search_matches),
+            search_misses=_encode_values(scenario.search_misses),
+            fullmatch_matches=_encode_values(scenario.fullmatch_matches),
+            fullmatch_misses=_encode_values(scenario.fullmatch_misses),
+        )
+    raise AssertionError(f"unsupported text_model {text_model!r}")
+
+
+CASES = tuple(
+    _parity_case(scenario, text_model=text_model)
+    for scenario in SCENARIOS
+    for text_model in ("str", "bytes")
 )
 
 
 def _assert_match_parity(
     backend_name: str,
     observed: object,
-    expected: re.Match[bytes],
+    expected: re.Match[str] | re.Match[bytes],
     *,
     max_group: int,
     group_names: tuple[str, ...],
