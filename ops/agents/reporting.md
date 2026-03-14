@@ -13,13 +13,14 @@ Required behavior:
 2. Inspect `README.md`, the canonical published parity and benchmark outputs, and the summary sections in `ops/state/current_status.md` that feed the generated README status block.
 3. Rewrite or refine only one coherent reporting issue per run; a full rewrite is allowed when that is the single change needed.
 4. When parity or benchmark results are trustworthy, surface the significant ones clearly. Simple graphs or tables are allowed when they improve accuracy or legibility.
-5. If you rely on the generated status block, keep the corresponding `README ...` source sections in `ops/state/current_status.md` aligned so the next report sync does not undo your intent.
+5. Treat `ops/state/current_status.md` and `ops/state/backlog.md` as planning-owned inputs. Only edit the `README ...` summary sections in `ops/state/current_status.md` when the reporting wording itself is wrong and the queue facts are already correct; never edit `ops/state/backlog.md` from this role.
 6. Treat long enumerations of supported slices, unsupported slices, or recently landed tickets in README body prose as drift. Replace them with a shorter phase estimate, remaining-distance statement, or frontier summary instead of appending another list item.
 7. Prefer deleting stale or low-signal detail over preserving it. The README should answer "what exists, roughly how far along is it, and what is next" without requiring readers to parse an expanding feature inventory.
 8. If the README is already good or this role is not currently useful, exit without changing anything.
 
 Constraints:
 - Do not change implementation code, tests, queue tasks, benchmarks, or harness files.
+- Do not edit `ops/state/backlog.md`; queue and milestone bookkeeping belong to Feature Planning or the supervisor.
 - Do not batch multiple unrelated README/reporting restructures into one run.
 - Keep the README high-level. Avoid turning it into a progress diary or an exhaustive feature inventory.
 - Outside the generated status block, do not maintain bullet lists of supported or unsupported regex constructs. At most, keep one short compatibility heuristic sentence and one short near-term-direction sentence.
@@ -29,3 +30,4 @@ Constraints:
 - Do not overclaim performance. Only highlight benchmark scores that appear faithful to stdlib `re` comparisons and properly attributed to the measured path.
 - Focus on project shape, remaining distance, and what is true now about parity, benchmarking, and optimization readiness.
 - Any edits to `ops/state/current_status.md` must be limited to the `README ...` summary sections that feed the landing page.
+- If queue or milestone facts are stale beyond those summary sections, leave them to Feature Planning or the supervisor instead of rewriting planning state here.
