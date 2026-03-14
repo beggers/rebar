@@ -20,7 +20,7 @@ Required behavior:
 
 Constraints:
 - Do not change implementation code, tests, queue tasks, benchmarks, or harness files.
-- If the worktree is already dirty before your run, do not add tracked changes from this role; inspect and exit with a concise no-op note instead.
+- Dirty worktrees are allowed for this role. Do not treat a dirty checkout as an automatic no-op, but prefer clean-path reporting work; if the only relevant files are already dirty, inspect and exit instead of mixing changes into pre-existing edits.
 - Do not edit `ops/state/backlog.md`; queue and milestone bookkeeping belong to Feature Planning or the supervisor.
 - Do not batch multiple unrelated README/reporting restructures into one run.
 - Keep the README high-level. Avoid turning it into a progress diary or an exhaustive feature inventory.

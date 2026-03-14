@@ -20,7 +20,7 @@ Required behavior:
 Constraints:
 - Do not change implementation code.
 - Do not edit the task queue or harness.
-- If the worktree is already dirty before your run, do not add tracked changes from this role; inspect and exit with a concise no-op note instead.
+- Dirty worktrees are allowed for this role. Do not treat a dirty checkout as an automatic no-op, but prefer clean-path testing work; if the only relevant files are already dirty, inspect and exit instead of mixing changes into pre-existing edits.
 - Do not batch multiple unrelated coverage ideas into one run.
 - Do not use active feature work or a healthy queue as a reason to skip this role.
 - Prefer testing through the public Python module boundary by default. Add lower-level or parser-specific tests only when the public API cannot express the behavior clearly enough.
