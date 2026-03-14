@@ -1,4 +1,4 @@
-{
+MANIFEST = {
   "schema_version": 1,
   "manifest_id": "quantified-alternation-backtracking-heavy-workflows",
   "layer": "match_behavior",

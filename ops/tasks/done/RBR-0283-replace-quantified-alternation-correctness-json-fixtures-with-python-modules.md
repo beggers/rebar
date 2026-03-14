@@ -1,6 +1,6 @@
 # RBR-0283: Replace the quantified-alternation correctness JSON fixtures with Python modules
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-14
 
@@ -42,3 +42,8 @@ Created: 2026-03-14
 - `.rebar/runtime/dashboard.md` still reports `tracked_json_blob_count: 129` and `tracked_json_blob_delta: 0`, but the live tracked baseline in this checkout is already `115` after `RBR-0281` and `RBR-0282`; verify the count with `git ls-files '*.json' | wc -l` instead of relying on the stale dashboard total.
 - `RBR-0274` already folded the base `quantified-alternation-workflows` manifest into `tests/conformance/test_combined_correctness_scorecards.py`, and the six follow-on quantified-alternation manifests already have dedicated correctness scorecard tests that assert manifest ids and representative cases rather than hard-coding `.json` path strings.
 - Keep the fixture model path-based so `python -m rebar_harness.correctness --fixtures ...` continues to accept explicit file paths without another discovery abstraction.
+
+## Completion
+- Completed 2026-03-14: converted the seven quantified-alternation correctness fixtures from standalone JSON files to one-manifest-per-file Python `MANIFEST` modules, repointed `DEFAULT_FIXTURE_PATHS` at the new `.py` files in the existing combined-order slot, and regenerated `reports/correctness/latest.json` with the same manifest ids, case counts, aggregate totals, and fixture ordering aside from the `.py` path extensions.
+- Verified with `env PYTHONPATH=python python3 -m rebar_harness.correctness --report reports/correctness/latest.json`, `cargo build -p rebar-cpython`, and `env PYTHONPATH=python:. python3 -m unittest tests.conformance.test_combined_correctness_scorecards tests.conformance.test_correctness_quantified_alternation_broader_range_workflows tests.conformance.test_correctness_quantified_alternation_open_ended_workflows tests.conformance.test_correctness_quantified_alternation_nested_branch_workflows tests.conformance.test_correctness_quantified_alternation_conditional_workflows tests.conformance.test_correctness_quantified_alternation_backtracking_heavy_workflows tests.conformance.test_correctness_quantified_alternation_branch_local_backreference_workflows`.
+- `tests.conformance.test_correctness_quantified_alternation_workflows` is no longer present in this checkout because `RBR-0274` folded the base `{1,2}` quantified-alternation manifest coverage into `tests.conformance.test_combined_correctness_scorecards.py`; the combined scorecard test now covers that manifest.

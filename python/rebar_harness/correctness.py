@@ -331,37 +331,37 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
-    / "quantified_alternation_conditional_workflows.json",
+    / "quantified_alternation_conditional_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "quantified_alternation_workflows.json",
+    / "quantified_alternation_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "quantified_alternation_branch_local_backreference_workflows.json",
+    / "quantified_alternation_branch_local_backreference_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "quantified_alternation_nested_branch_workflows.json",
+    / "quantified_alternation_nested_branch_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "quantified_alternation_backtracking_heavy_workflows.json",
+    / "quantified_alternation_backtracking_heavy_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "quantified_alternation_broader_range_workflows.json",
+    / "quantified_alternation_broader_range_workflows.py",
     REPO_ROOT
     / "tests"
     / "conformance"
     / "fixtures"
-    / "quantified_alternation_open_ended_workflows.json",
+    / "quantified_alternation_open_ended_workflows.py",
 )
 DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 PHASE_BY_LAYER = {

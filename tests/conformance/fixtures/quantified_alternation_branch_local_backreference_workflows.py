@@ -1,4 +1,4 @@
-{
+MANIFEST = {
   "schema_version": 1,
   "manifest_id": "quantified-alternation-branch-local-backreference-workflows",
   "layer": "match_behavior",
