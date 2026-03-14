@@ -1,8 +1,9 @@
 # RBR-0276: Add broader-range wider ranged-repeat quantified-group alternation backtracking-heavy parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-14
+Completed: 2026-03-14
 
 ## Goal
 - Convert the broader `{1,4}` wider-ranged-repeat grouped backtracking-heavy cases published by `RBR-0275` into real Rust-backed behavior without widening into open-ended grouped-conditionals, replacement workflows, or broader grouped backtracking execution.
@@ -30,3 +31,7 @@ Created: 2026-03-14
 ## Notes
 - Build on `RBR-0275`.
 - Keep the eventual benchmark catch-up on the existing `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.json` path rather than forking another benchmark family when this broader `{1,4}` grouped backtracking-heavy slice is later measured.
+
+## Completion
+- 2026-03-14: Extended the existing Rust grouped backtracking-heavy parser/executor path to accept the bounded `a((bc|b)c){1,4}d` / `a(?P<word>(bc|b)c){1,4}d` slice, added focused Rust coverage for the new compile/search/fullmatch/overflow cases, and republished `reports/correctness/latest.json`.
+- Verified the adjacent `{1,3}` grouped backtracking-heavy, broader `{1,4}` grouped-alternation, broader `{1,4}` grouped-conditional, and new broader `{1,4}` grouped backtracking-heavy manifests all report only `pass`; the combined correctness scorecard now stands at 729 executed, 729 passed, 0 failed, and 0 `unimplemented`.

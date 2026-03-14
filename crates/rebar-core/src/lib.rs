@@ -4004,7 +4004,14 @@ fn parse_wider_ranged_repeat_grouped_alternation_backtracking_heavy_pattern_str(
         return None;
     }
 
-    let suffix = outer_suffix_and_remainder[outer_close_offset + 1..].strip_prefix("{1,3}")?;
+    let (max_repeat, suffix) = if let Some(suffix) =
+        outer_suffix_and_remainder[outer_close_offset + 1..].strip_prefix("{1,3}")
+    {
+        (3, suffix)
+    } else {
+        let suffix = outer_suffix_and_remainder[outer_close_offset + 1..].strip_prefix("{1,4}")?;
+        (4, suffix)
+    };
     if suffix.is_empty() || suffix.chars().any(is_meta_character) {
         return None;
     }
@@ -4016,7 +4023,7 @@ fn parse_wider_ranged_repeat_grouped_alternation_backtracking_heavy_pattern_str(
             branches,
             repeated_suffix,
             suffix,
-            max_repeat: 3,
+            max_repeat,
         },
     )
 }
@@ -11333,6 +11340,121 @@ mod tests {
             FLAG_UNICODE,
             MatchMode::Fullmatch,
             PatternRef::Str("abcd"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::NoMatch);
+        assert_eq!(outcome.span, None);
+        assert!(outcome.group_spans.is_empty());
+        assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
+    fn compile_accepts_broader_range_wider_ranged_repeat_grouped_backtracking_heavy_cases() {
+        let numbered_outcome = compile(PatternRef::Str("a((bc|b)c){1,4}d"), 0).unwrap();
+        assert_eq!(numbered_outcome.status, CompileStatus::Compiled);
+        assert_eq!(numbered_outcome.normalized_flags, FLAG_UNICODE);
+        assert_eq!(numbered_outcome.group_count, 2);
+        assert!(numbered_outcome.named_groups.is_empty());
+
+        let named_outcome = compile(PatternRef::Str("a(?P<word>(bc|b)c){1,4}d"), 0).unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, FLAG_UNICODE);
+        assert_eq!(named_outcome.group_count, 2);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "word".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
+    fn broader_range_wider_ranged_repeat_grouped_backtracking_heavy_search_reports_short_branch_spans(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Str("a((bc|b)c){1,4}d"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabcdzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 6)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 5)), Some((3, 4))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn broader_range_wider_ranged_repeat_grouped_backtracking_heavy_search_reports_long_branch_spans(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Str("a((bc|b)c){1,4}d"),
+            FLAG_UNICODE,
+            MatchMode::Search,
+            PatternRef::Str("zzabccdzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 7)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 6)), Some((3, 5))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn broader_range_wider_ranged_repeat_grouped_backtracking_heavy_fullmatch_backtracks_to_short_final_branch(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Str("a((bc|b)c){1,4}d"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abccbcd"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 7)));
+        assert_eq!(outcome.group_spans, vec![Some((4, 6)), Some((4, 5))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn named_broader_range_wider_ranged_repeat_grouped_backtracking_heavy_fullmatch_reports_fourth_repetition(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Str("a(?P<word>(bc|b)c){1,4}d"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abcbccbccbcd"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 12)));
+        assert_eq!(outcome.group_spans, vec![Some((9, 11)), Some((9, 10))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn broader_range_wider_ranged_repeat_grouped_backtracking_heavy_fullmatch_rejects_overflow() {
+        let outcome = literal_match(
+            PatternRef::Str("a((bc|b)c){1,4}d"),
+            FLAG_UNICODE,
+            MatchMode::Fullmatch,
+            PatternRef::Str("abcbcbcbcbcd"),
             0,
             None,
         )

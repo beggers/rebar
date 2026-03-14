@@ -11,10 +11,10 @@ _This block reports the implemented slice and measurement coverage, not estimate
 
 | Signal | Value |
 | --- | --- |
-| Phase | Phase 3 is widening a bounded Rust-backed `re` slice; the fully passing frontier still stops at the broader `{1,4}` grouped-conditional slice while the adjacent broader `{1,4}` grouped backtracking-heavy pack is now published ahead of parity. |
-| Delivery estimate | Foundation and reporting are in place. The fully passing Rust-backed and benchmark-caught-up frontier still stops at the broader `{1,4}` grouped-conditional slice, while the published correctness surface is one bounded broader `{1,4}` grouped backtracking-heavy pack ahead with honest gaps. |
-| Current milestone | Milestone 2 has the adjacent broader `{1,4}` grouped backtracking-heavy correctness pack published; next up is converting that same bounded slice to Rust-backed parity and then catching it up on the Python-path benchmark surface. |
-| Work queue | `2` ready, `0` in progress, `279` done, `0` blocked |
+| Phase | Phase 3 is widening a bounded Rust-backed `re` slice; the fully passing Rust-backed frontier now reaches the broader `{1,4}` grouped backtracking-heavy slice, while the fully passing and benchmark-caught-up frontier still stops at the broader `{1,4}` grouped-conditional slice. |
+| Delivery estimate | Foundation and reporting are in place. The fully passing Rust-backed frontier now reaches the broader `{1,4}` grouped backtracking-heavy slice, while the benchmark-caught-up frontier still stops at the broader `{1,4}` grouped-conditional slice until `RBR-0278` lands. |
+| Current milestone | Milestone 2 has the broader `{1,4}` grouped backtracking-heavy slice at Rust-backed parity; next up is catching that same bounded workflow up on the Python-path benchmark surface. |
+| Work queue | `1` ready, `0` in progress, `280` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -22,13 +22,13 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Metric | Value |
 | --- | --- |
 | Published cases | `729` |
-| Passing in published slice | `715` |
+| Passing in published slice | `729` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `14` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `83` |
 | Source | [`reports/correctness/latest.json`](reports/correctness/latest.json) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Foundation and reporting are in place. The fully passing Rust-backed and benchmark-caught-up frontier still stops at the broader `{1,4}` grouped-conditional slice, while the published correctness surface is one bounded broader `{1,4}` grouped backtracking-heavy pack ahead with honest gaps._
+_These correctness counts cover only the published slice. Overall delivery estimate: Foundation and reporting are in place. The fully passing Rust-backed frontier now reaches the broader `{1,4}` grouped backtracking-heavy slice, while the benchmark-caught-up frontier still stops at the broader `{1,4}` grouped-conditional slice until `RBR-0278` lands._
 
 ### Benchmark Snapshot
 
@@ -47,12 +47,12 @@ _README speedup rollups stay omitted while only `436` of `467` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0276` to convert the published broader `{1,4}` grouped backtracking-heavy slice to Rust-backed parity, then land `RBR-0278` to catch that same bounded workflow up on the Python-path benchmark surface.
+- Land `RBR-0278` to catch the broader `{1,4}` grouped backtracking-heavy slice up on the Python-path benchmark surface.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published correctness frontier is one broader `{1,4}` grouped backtracking-heavy pack ahead of both Rust parity and benchmark catch-up, so the tracked slice is temporarily wider than the fully passing and fully measured frontier.
+- The newly landed broader `{1,4}` grouped backtracking-heavy slice is not yet on the published benchmark surface, so the fully passing and fully measured frontier still stops one bounded slice earlier.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
