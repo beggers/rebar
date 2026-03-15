@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice is now fully passing, but it is still narrow and the main benchmark report still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- Keep `RBR-0384` seeded so, once `RBR-0382` catches the open-ended `{1,}` nested-group replacement-template slice up on the existing Python-path benchmark surface, the same frontier reopens on correctness publication for the broader-range open-ended `{2,}` replacement-template workflows before parity, benchmark catch-up, broader template parsing, or deeper nested grouped execution broaden the queue.
+- Land `RBR-0384` so the broader-range open-ended `{2,}` nested-group replacement-template slice becomes the next published correctness frontier.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
