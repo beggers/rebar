@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now has `RBR-0354` seeded as the surviving follow-on so the bounded nested-group alternation plus branch-local-backreference callable-replacement correctness slice for `a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d` becomes the next published frontier once `RBR-0352` lands the adjacent quantified callback benchmark rows on the existing Python-path `nested_group_callable_replacement_boundary.py` surface, before quantified branch-local-backreference callbacks, broader counted repeats, or deeper nested grouped execution broaden the queue.
+Milestone 2 now has `RBR-0356` seeded as the surviving follow-on so the bounded nested-group alternation plus branch-local-backreference callable-replacement slice for `a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d` reaches Rust-backed parity after `RBR-0354` publishes the adjacent correctness pack, before benchmark catch-up, quantified branch-local-backreference callbacks, broader counted repeats, or deeper nested grouped execution broaden the queue.
 
 ## Ordered Work
-1. Land `RBR-0354` to extend `python/rebar_harness/correctness.py`, `tests/conformance/fixtures/nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py`, `tests/conformance/correctness_expectations.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py` so the published correctness surface records bounded numbered and named module/compiled-`Pattern` `sub()` and `subn()` callable-replacement observations for `a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d` without forking another harness layer.
+1. Land `RBR-0356` to extend `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_callable_replacement_parity_suite.py`, and `reports/correctness/latest.py` so the bounded numbered and named module/compiled-`Pattern` `sub()` and `subn()` callable-replacement workflows for `a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d` move from newly published coverage to real Rust-backed parity without forking another Python parity surface.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
