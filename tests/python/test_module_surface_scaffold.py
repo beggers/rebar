@@ -61,6 +61,33 @@ BYTES_CASES = [
     (b"a-b", b"a\\-b"),
 ]
 
+LITERAL_MODULE_REPLACEMENT_CASES = [
+    pytest.param("abc", "x", "zzz", 0, id="str-no-match"),
+    pytest.param("abc", "x", "zabczz", 0, id="str-single-match"),
+    pytest.param("abc", "x", "abcabc", 0, id="str-repeated-match"),
+    pytest.param("abc", "x", "abcabc", 1, id="str-count-one"),
+    pytest.param("abc", "x", "abcabc", -1, id="str-negative-count"),
+    pytest.param(b"abc", b"x", b"zzz", 0, id="bytes-no-match"),
+    pytest.param(b"abc", b"x", b"zabcabc", 0, id="bytes-repeated-match"),
+    pytest.param(b"abc", b"x", b"abcabc", 1, id="bytes-count-one"),
+]
+
+LITERAL_PATTERN_REPLACEMENT_CASES = [
+    pytest.param("abc", "x", "zzz", 0, id="str-no-match"),
+    pytest.param("abc", "x", "zabczz", 0, id="str-single-match"),
+    pytest.param("abc", "x", "abcabc", 0, id="str-repeated-match"),
+    pytest.param("abc", "x", "abcabc", 1, id="str-count-one"),
+    pytest.param("abc", "x", "abcabc", -1, id="str-negative-count"),
+    pytest.param(b"abc", b"x", b"abcabc", 0, id="bytes-repeated-match"),
+    pytest.param(b"abc", b"x", b"zabczz", 0, id="bytes-single-match"),
+]
+
+WHOLE_MATCH_TEMPLATE_REPLACEMENT_CASES = [
+    pytest.param("abc", r"\g<0>x", "abc", 0, id="single-match"),
+    pytest.param("abc", r"\g<0>x", "abcabc", 0, id="repeated-matches"),
+    pytest.param("abc", r"\g<0>x", "abcabc", 1, id="count-one"),
+]
+
 
 def _assert_placeholder_message(error: BaseException, expected_prefix: str) -> None:
     assert expected_prefix in str(error)
@@ -86,6 +113,47 @@ def _assert_match_contract(
     assert match.endpos == expected_endpos
     assert match.lastindex is None
     assert match.lastgroup is None
+
+
+def _assert_module_replacement_parity(
+    pattern: str | bytes,
+    repl: str | bytes,
+    string: str | bytes,
+    count: int,
+) -> None:
+    assert rebar.sub(pattern, repl, string, count=count) == re.sub(
+        pattern,
+        repl,
+        string,
+        count=count,
+    )
+    assert rebar.subn(pattern, repl, string, count=count) == re.subn(
+        pattern,
+        repl,
+        string,
+        count=count,
+    )
+
+
+def _assert_pattern_replacement_parity(
+    pattern: str | bytes,
+    repl: str | bytes,
+    string: str | bytes,
+    count: int,
+) -> None:
+    compiled = rebar.compile(pattern)
+    cpython_compiled = re.compile(pattern)
+
+    assert compiled.sub(repl, string, count=count) == cpython_compiled.sub(
+        repl,
+        string,
+        count=count,
+    )
+    assert compiled.subn(repl, string, count=count) == cpython_compiled.subn(
+        repl,
+        string,
+        count=count,
+    )
 
 
 def test_source_package_exports_helper_surface() -> None:
@@ -263,6 +331,58 @@ def test_source_package_pattern_literal_helpers_support_bytes_matches() -> None:
     assert pattern.fullmatch(b"abcz") is None
 
 
+@pytest.mark.parametrize(
+    ("pattern", "repl", "string", "count"),
+    LITERAL_MODULE_REPLACEMENT_CASES,
+)
+def test_source_package_module_literal_replacement_helpers_match_cpython(
+    pattern: str | bytes,
+    repl: str | bytes,
+    string: str | bytes,
+    count: int,
+) -> None:
+    _assert_module_replacement_parity(pattern, repl, string, count)
+
+
+@pytest.mark.parametrize(
+    ("pattern", "repl", "string", "count"),
+    LITERAL_PATTERN_REPLACEMENT_CASES,
+)
+def test_source_package_pattern_literal_replacement_helpers_match_cpython(
+    pattern: str | bytes,
+    repl: str | bytes,
+    string: str | bytes,
+    count: int,
+) -> None:
+    _assert_pattern_replacement_parity(pattern, repl, string, count)
+
+
+@pytest.mark.parametrize(
+    ("pattern", "repl", "string", "count"),
+    WHOLE_MATCH_TEMPLATE_REPLACEMENT_CASES,
+)
+def test_source_package_module_whole_match_template_replacement_matches_cpython(
+    pattern: str,
+    repl: str,
+    string: str,
+    count: int,
+) -> None:
+    _assert_module_replacement_parity(pattern, repl, string, count)
+
+
+@pytest.mark.parametrize(
+    ("pattern", "repl", "string", "count"),
+    WHOLE_MATCH_TEMPLATE_REPLACEMENT_CASES,
+)
+def test_source_package_pattern_whole_match_template_replacement_matches_cpython(
+    pattern: str,
+    repl: str,
+    string: str,
+    count: int,
+) -> None:
+    _assert_pattern_replacement_parity(pattern, repl, string, count)
+
+
 @pytest.mark.parametrize("method_name", ["group", "span", "start", "end"])
 def test_source_package_match_methods_reject_missing_groups(method_name: str) -> None:
     match = rebar.search("abc", "abc")
@@ -298,6 +418,36 @@ def test_source_package_matching_rejects_string_bytes_mismatch() -> None:
     )
 
 
+def test_source_package_literal_replacement_helpers_reject_string_bytes_mismatch() -> None:
+    with pytest.raises(TypeError) as string_pattern_error:
+        rebar.sub("abc", "x", b"abc")
+
+    assert str(string_pattern_error.value) == (
+        "cannot use a string pattern on a bytes-like object"
+    )
+
+    with pytest.raises(TypeError) as bytes_pattern_error:
+        rebar.sub(b"abc", b"x", "abc")
+
+    assert str(bytes_pattern_error.value) == (
+        "cannot use a bytes pattern on a string-like object"
+    )
+
+    with pytest.raises(
+        TypeError,
+        match=re.escape("expected str instance, bytes found"),
+    ):
+        rebar.sub("abc", b"x", "abc")
+
+    bytes_pattern = rebar.compile(b"abc")
+
+    with pytest.raises(
+        TypeError,
+        match=re.escape("expected a bytes-like object, str found"),
+    ):
+        bytes_pattern.sub("x", b"abc")
+
+
 def test_source_package_module_and_pattern_helpers_stay_loud_for_unsupported_cases() -> None:
     with pytest.raises(NotImplementedError) as module_flags:
         rebar.search("abc", "abc", rebar.IGNORECASE | rebar.ASCII)
@@ -325,6 +475,74 @@ def test_source_package_module_and_pattern_helpers_stay_loud_for_unsupported_cas
             bound_flags.value,
             f"rebar.Pattern.{method_name}() is a scaffold placeholder",
         )
+
+
+def test_source_package_module_literal_replacement_helpers_stay_loud_without_cache_mutation() -> None:
+    with pytest.raises(NotImplementedError) as module_template:
+        rebar.sub("abc", r"\1", "abc")
+
+    _assert_placeholder_message(
+        module_template.value,
+        "rebar.sub() is a scaffold placeholder",
+    )
+    assert rebar._COMPILE_CACHE == {}
+
+    with pytest.raises(NotImplementedError) as module_flags:
+        rebar.subn("abc", "x", "abc", flags=rebar.IGNORECASE)
+
+    _assert_placeholder_message(
+        module_flags.value,
+        "rebar.subn() is a scaffold placeholder",
+    )
+    assert rebar._COMPILE_CACHE == {}
+
+    with pytest.raises(NotImplementedError) as module_meta:
+        rebar.sub("[ab]c", "x", "abc")
+
+    _assert_placeholder_message(
+        module_meta.value,
+        "rebar.compile() is a scaffold placeholder",
+    )
+    assert rebar._COMPILE_CACHE == {}
+
+    with pytest.raises(NotImplementedError) as module_empty:
+        rebar.sub("", "x", "abc")
+
+    _assert_placeholder_message(
+        module_empty.value,
+        "rebar.sub() is a scaffold placeholder",
+    )
+    assert rebar._COMPILE_CACHE == {}
+
+
+def test_source_package_pattern_literal_replacement_helpers_stay_loud_for_unsupported_cases() -> None:
+    flagged_pattern = rebar.compile("abc", rebar.IGNORECASE)
+
+    with pytest.raises(NotImplementedError) as bound_flags:
+        flagged_pattern.sub("x", "abc")
+
+    _assert_placeholder_message(
+        bound_flags.value,
+        "rebar.Pattern.sub() is a scaffold placeholder",
+    )
+
+    empty_pattern = rebar.compile("")
+
+    with pytest.raises(NotImplementedError) as bound_empty:
+        empty_pattern.subn("x", "abc")
+
+    _assert_placeholder_message(
+        bound_empty.value,
+        "rebar.Pattern.subn() is a scaffold placeholder",
+    )
+
+    with pytest.raises(NotImplementedError) as bound_template:
+        rebar.compile("abc").sub(r"\1", "abc")
+
+    _assert_placeholder_message(
+        bound_template.value,
+        "rebar.Pattern.sub() is a scaffold placeholder",
+    )
 
 
 def test_source_package_compile_reuses_cached_patterns_for_supported_inputs() -> None:

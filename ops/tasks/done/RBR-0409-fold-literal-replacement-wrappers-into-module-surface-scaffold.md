@@ -1,8 +1,9 @@
 # RBR-0409: Fold literal replacement wrappers into the module scaffold owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Replace the remaining literal `sub()` / `subn()` scaffold wrappers with one pytest owner in `tests/python/test_module_surface_scaffold.py`, so the bounded source-tree replacement surface stops living across separate legacy `unittest` files with repeated repo bootstrap and overlapping placeholder assertions.
@@ -43,3 +44,13 @@ Created: 2026-03-15
 - The runtime dashboard is clean and current for `HEAD`, the ready queue is empty, and both tracked and live JSON counts are zero (`tracked_json_blob_count: 0`, `tracked_json_blob_delta: 0`, `git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), so this run should queue a post-JSON simplification instead of another JSON burn-down task.
 - `RBR-0408` is already reserved in `ops/state/backlog.md` and `ops/state/current_status.md` for the next feature-owned Rust parity slice, so this cleanup intentionally uses `RBR-0409`.
 - `tests/python/test_literal_replacement_helpers.py` and `tests/python/test_literal_replacement_variants.py` still account for `171` lines of separate source-tree wrapper coverage with repeated `REPO_ROOT` / `PYTHON_SOURCE` / `sys.path.insert(...)` bootstrap, while `tests/python/test_module_surface_scaffold.py` already owns the adjacent literal compile, match, cache, purge, escape, and exported-symbol scaffold assertions on the shared pytest path.
+
+## Completion
+- 2026-03-15: Folded the literal `sub()` / `subn()` scaffold coverage into `tests/python/test_module_surface_scaffold.py`, adding shared pytest-owned parity checks for the existing literal module and compiled-pattern replacement cases, the whole-match `\\g<0>x` template slice, mismatch `TypeError` cases, and the bounded placeholder/cache assertions that used to live in the two legacy `unittest` wrappers.
+- 2026-03-15: Deleted `tests/python/test_literal_replacement_helpers.py` and `tests/python/test_literal_replacement_variants.py` after consolidating their bounded wrapper coverage into the sole pytest owner file.
+
+## Verification
+- 2026-03-15: `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_module_surface_scaffold.py` (`59 passed`)
+- 2026-03-15: `rg --files tests/python | rg 'test_literal_replacement_(helpers|variants)\.py$'` (no matches)
+- 2026-03-15: `rg -n "import unittest|REPO_ROOT =|PYTHON_SOURCE =|sys\.path\.insert\(" tests/python/test_module_surface_scaffold.py` (no matches)
+- 2026-03-15: `git diff --name-status -- tests/python/test_module_surface_scaffold.py tests/python/test_literal_replacement_helpers.py tests/python/test_literal_replacement_variants.py` (`M` for the consolidated owner, `D` for both deleted legacy files)
