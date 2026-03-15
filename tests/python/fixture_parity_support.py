@@ -30,6 +30,12 @@ def case_pattern(case: FixtureCase) -> str | bytes:
     return pattern
 
 
+def str_case_pattern(case: FixtureCase) -> str:
+    pattern = case_pattern(case)
+    assert isinstance(pattern, str)
+    return pattern
+
+
 def compile_with_cpython_parity(
     backend_name: str,
     backend: object,
@@ -64,6 +70,8 @@ def assert_match_parity(
     backend_name: str,
     observed: object,
     expected: re.Match[str] | re.Match[bytes],
+    *,
+    check_regs: bool = False,
 ) -> None:
     if backend_name == "rebar":
         assert type(observed) is rebar.Match
@@ -96,6 +104,10 @@ def assert_match_parity(
     assert observed.end() == expected.end()
     assert observed.lastindex == expected.lastindex
     assert observed.lastgroup == expected.lastgroup
+    if check_regs:
+        assert hasattr(observed, "regs") == hasattr(expected, "regs")
+        if hasattr(expected, "regs"):
+            assert tuple(observed.regs) == tuple(expected.regs)
     assert_pattern_parity(backend_name, observed.re, expected.re)
 
     for group_name in expected.re.groupindex:
@@ -103,6 +115,26 @@ def assert_match_parity(
         assert observed.span(group_name) == expected.span(group_name)
         assert observed.start(group_name) == expected.start(group_name)
         assert observed.end(group_name) == expected.end(group_name)
+
+
+def assert_match_result_parity(
+    backend_name: str,
+    observed: object,
+    expected: re.Match[str] | re.Match[bytes] | None,
+    *,
+    check_regs: bool = False,
+) -> None:
+    if expected is None:
+        assert observed is None
+        return
+
+    assert observed is not None
+    assert_match_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=check_regs,
+    )
 
 
 def assert_match_convenience_api_parity(

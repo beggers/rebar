@@ -1,8 +1,9 @@
 # RBR-0373: Extract shared conditional parity-suite support for the fixture-backed pytest path
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Remove the repeated fixture-backed compile and match parity scaffolding that the conditional-group-exists parity suites still carry in parallel after `tests/python/fixture_parity_support.py` landed, while keeping each suite's published frontier and bounded supplements explicit.
@@ -37,3 +38,11 @@ Created: 2026-03-15
 - `tests/python/test_conditional_group_exists_parity_suite.py`, `tests/python/test_conditional_group_exists_nested_parity_suite.py`, `tests/python/test_conditional_group_exists_alternation_parity_suite.py`, and `tests/python/test_conditional_group_exists_quantified_parity_suite.py` still each embed the same `FixtureCase` pattern extraction plus compile and match parity helpers even though they already share the same fixture-backed suite shape.
 - Build directly on `RBR-0371`; the repo already has one thin local helper module for fixture-backed parity suites, so this task should reuse that path instead of introducing a second support abstraction.
 - Keep `tests/python/test_conditional_group_exists_replacement_parity_suite.py` out of scope for now because its replacement-specific assertions are a distinct surface.
+
+## Completion
+- Extended `tests/python/fixture_parity_support.py` with a shared `str_case_pattern(...)` helper, optional `regs` checking in the common match-parity assertions, and a shared `assert_match_result_parity(...)` entrypoint for `Match | None` rows.
+- Updated the four conditional parity suites to import the shared fixture-backed compile and match helpers instead of keeping suite-local `_case_pattern`, `_compile_with_cpython_parity`, `_assert_pattern_parity`, `_assert_match_parity`, or `_assert_match_result_parity` copies.
+- Kept all suite-local fixture bundles, manifest and case-id expectations, operation/helper counters, the nested empty-else case filtering, and the quantified suite's supplemental mixed-arm and miss cases explicit in their original files while preserving the quantified suite's stronger match metadata coverage.
+
+## Verification
+- `.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_parity_suite.py tests/python/test_conditional_group_exists_nested_parity_suite.py tests/python/test_conditional_group_exists_alternation_parity_suite.py tests/python/test_conditional_group_exists_quantified_parity_suite.py`
