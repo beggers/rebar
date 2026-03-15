@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from dataclasses import dataclass
 import re
 
 import pytest
@@ -46,44 +47,14 @@ EXPECTED_SINGLE_CAPTURE_MATCH_CASE_IDS = (
     "grouped-pattern-search-single-capture-str",
     "grouped-pattern-match-single-capture-str",
 )
-EXPECTED_GROUPED_ALTERNATION_CASE_IDS = (
-    "module-sub-template-grouped-alternation-str",
-    "module-subn-template-grouped-alternation-str",
-    "pattern-sub-template-grouped-alternation-str",
-    "pattern-subn-template-grouped-alternation-str",
-    "module-sub-template-named-grouped-alternation-str",
-    "module-subn-template-named-grouped-alternation-str",
-    "pattern-sub-template-named-grouped-alternation-str",
-    "pattern-subn-template-named-grouped-alternation-str",
-)
 EXPECTED_GROUPED_ALTERNATION_COMPILE_PATTERNS = {
     "a(b|c)d",
     "a(?P<word>b|c)d",
 }
-EXPECTED_NESTED_GROUP_REPLACEMENT_CASE_IDS = (
-    "module-sub-template-nested-group-numbered-str",
-    "module-subn-template-nested-group-numbered-str",
-    "pattern-sub-template-nested-group-numbered-str",
-    "pattern-subn-template-nested-group-numbered-str",
-    "module-sub-template-nested-group-named-str",
-    "module-subn-template-nested-group-named-str",
-    "pattern-sub-template-nested-group-named-str",
-    "pattern-subn-template-nested-group-named-str",
-)
 EXPECTED_NESTED_GROUP_REPLACEMENT_COMPILE_PATTERNS = {
     r"a((b))d",
     r"a(?P<outer>(?P<inner>b))d",
 }
-EXPECTED_QUANTIFIED_NESTED_GROUP_REPLACEMENT_CASE_IDS = (
-    "module-sub-template-quantified-nested-group-numbered-lower-bound-str",
-    "module-subn-template-quantified-nested-group-numbered-first-match-only-str",
-    "pattern-sub-template-quantified-nested-group-numbered-repeated-outer-capture-str",
-    "pattern-subn-template-quantified-nested-group-numbered-first-match-only-str",
-    "module-sub-template-quantified-nested-group-named-lower-bound-str",
-    "module-subn-template-quantified-nested-group-named-first-match-only-str",
-    "pattern-sub-template-quantified-nested-group-named-repeated-outer-capture-str",
-    "pattern-subn-template-quantified-nested-group-named-first-match-only-str",
-)
 EXPECTED_QUANTIFIED_NESTED_GROUP_REPLACEMENT_COMPILE_PATTERNS = {
     r"a((bc)+)d",
     r"a(?P<outer>(?P<inner>bc)+)d",
@@ -180,6 +151,14 @@ NESTED_GROUP_NO_MATCH_CASES = (
 )
 
 
+@dataclass(frozen=True)
+class ReplacementFixtureBundle:
+    manifest_id: str
+    cases: tuple[FixtureCase, ...]
+    expected_manifest_id: str
+    expected_compile_patterns: frozenset[str]
+
+
 def _fixture_case_by_id(
     cases: tuple[FixtureCase, ...] | list[FixtureCase],
     case_id: str,
@@ -201,6 +180,32 @@ GROUPED_ALTERNATION_REPLACEMENT_CASES = tuple(ALTERNATION_REPLACEMENT_FIXTURE_CA
 NESTED_GROUP_REPLACEMENT_CASES = tuple(NESTED_REPLACEMENT_FIXTURE_CASES)
 QUANTIFIED_NESTED_GROUP_REPLACEMENT_CASES = tuple(
     QUANTIFIED_NESTED_REPLACEMENT_FIXTURE_CASES
+)
+BUNDLED_GROUPED_REPLACEMENT_FIXTURES = (
+    ReplacementFixtureBundle(
+        manifest_id=ALTERNATION_REPLACEMENT_FIXTURE_MANIFEST.manifest_id,
+        cases=GROUPED_ALTERNATION_REPLACEMENT_CASES,
+        expected_manifest_id="grouped-alternation-replacement-workflows",
+        expected_compile_patterns=frozenset(
+            EXPECTED_GROUPED_ALTERNATION_COMPILE_PATTERNS
+        ),
+    ),
+    ReplacementFixtureBundle(
+        manifest_id=NESTED_REPLACEMENT_FIXTURE_MANIFEST.manifest_id,
+        cases=NESTED_GROUP_REPLACEMENT_CASES,
+        expected_manifest_id="nested-group-replacement-workflows",
+        expected_compile_patterns=frozenset(
+            EXPECTED_NESTED_GROUP_REPLACEMENT_COMPILE_PATTERNS
+        ),
+    ),
+    ReplacementFixtureBundle(
+        manifest_id=QUANTIFIED_NESTED_REPLACEMENT_FIXTURE_MANIFEST.manifest_id,
+        cases=QUANTIFIED_NESTED_GROUP_REPLACEMENT_CASES,
+        expected_manifest_id="quantified-nested-group-replacement-workflows",
+        expected_compile_patterns=frozenset(
+            EXPECTED_QUANTIFIED_NESTED_GROUP_REPLACEMENT_COMPILE_PATTERNS
+        ),
+    ),
 )
 FIXTURE_BACKED_GROUPED_REPLACEMENT_CASES = (
     GROUPED_ALTERNATION_REPLACEMENT_CASES
@@ -234,20 +239,74 @@ def _single_match_string(case: FixtureCase) -> str:
     return string
 
 
-def _assert_fixture_contract(
-    manifest_id: str,
-    cases: tuple[FixtureCase, ...],
-    *,
-    expected_manifest_id: str,
-    expected_case_ids: tuple[str, ...],
-    expected_compile_patterns: set[str],
-) -> None:
-    assert manifest_id == expected_manifest_id
-    assert tuple(case.case_id for case in cases) == expected_case_ids
-    assert {str_case_pattern(case) for case in cases} == expected_compile_patterns
-    assert Counter((case.operation, case.helper) for case in cases) == (
+def _compiled_pattern(case: FixtureCase) -> re.Pattern[str]:
+    return re.compile(str_case_pattern(case), case.flags or 0)
+
+
+def _group_kind(case: FixtureCase) -> str:
+    return "named" if _compiled_pattern(case).groupindex else "numbered"
+
+
+def _expected_replacement(case: FixtureCase) -> str:
+    compiled = _compiled_pattern(case)
+    target_group_index = 1 if case.helper == "sub" else compiled.groups
+    if compiled.groupindex:
+        group_names_by_index = {
+            index: group_name for group_name, index in compiled.groupindex.items()
+        }
+        return rf"\g<{group_names_by_index[target_group_index]}>x"
+    return rf"\{target_group_index}x"
+
+
+def _assert_replacement_fixture_bundle_contract(bundle: ReplacementFixtureBundle) -> None:
+    assert bundle.manifest_id == bundle.expected_manifest_id
+    assert len(bundle.cases) == 8
+    assert len({case.case_id for case in bundle.cases}) == len(bundle.cases)
+    assert {str_case_pattern(case) for case in bundle.cases} == (
+        bundle.expected_compile_patterns
+    )
+    assert {case.text_model for case in bundle.cases} == {"str"}
+    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
         EXPECTED_FIXTURE_REPLACEMENT_OPERATION_HELPER_COUNTS
     )
+    assert Counter(
+        (case.operation, case.helper, _group_kind(case)) for case in bundle.cases
+    ) == Counter(
+        {
+            ("module_call", "sub", "numbered"): 1,
+            ("module_call", "sub", "named"): 1,
+            ("module_call", "subn", "numbered"): 1,
+            ("module_call", "subn", "named"): 1,
+            ("pattern_call", "sub", "numbered"): 1,
+            ("pattern_call", "sub", "named"): 1,
+            ("pattern_call", "subn", "numbered"): 1,
+            ("pattern_call", "subn", "named"): 1,
+        }
+    )
+
+    for case in bundle.cases:
+        compiled = _compiled_pattern(case)
+        count_index = 3 if case.operation == "module_call" else 2
+
+        assert case.kwargs == {}
+        assert "replacement-template" in case.categories
+        assert "str" in case.categories
+        assert case.helper in {"sub", "subn"}
+        assert case.helper in case.categories
+        if case.operation == "module_call":
+            assert "module" in case.categories
+        else:
+            assert "pattern" in case.categories
+
+        if compiled.groupindex:
+            assert "named-group" in case.categories
+
+        assert _replacement(case) == _expected_replacement(case)
+        if case.helper == "sub":
+            assert len(case.args) == count_index
+        else:
+            assert len(case.args) == count_index + 1
+            assert case.args[count_index] == 1
 
 
 def test_grouped_literal_template_suite_stays_aligned_with_published_fixtures() -> None:
@@ -271,33 +330,15 @@ def test_grouped_literal_template_suite_stays_aligned_with_published_fixtures() 
         assert "gap" not in case.categories
 
 
-def test_grouped_alternation_template_suite_stays_aligned_with_published_fixtures() -> None:
-    _assert_fixture_contract(
-        ALTERNATION_REPLACEMENT_FIXTURE_MANIFEST.manifest_id,
-        GROUPED_ALTERNATION_REPLACEMENT_CASES,
-        expected_manifest_id="grouped-alternation-replacement-workflows",
-        expected_case_ids=EXPECTED_GROUPED_ALTERNATION_CASE_IDS,
-        expected_compile_patterns=EXPECTED_GROUPED_ALTERNATION_COMPILE_PATTERNS,
-    )
-
-
-def test_nested_group_template_suites_stay_aligned_with_published_fixtures() -> None:
-    _assert_fixture_contract(
-        NESTED_REPLACEMENT_FIXTURE_MANIFEST.manifest_id,
-        NESTED_GROUP_REPLACEMENT_CASES,
-        expected_manifest_id="nested-group-replacement-workflows",
-        expected_case_ids=EXPECTED_NESTED_GROUP_REPLACEMENT_CASE_IDS,
-        expected_compile_patterns=EXPECTED_NESTED_GROUP_REPLACEMENT_COMPILE_PATTERNS,
-    )
-    _assert_fixture_contract(
-        QUANTIFIED_NESTED_REPLACEMENT_FIXTURE_MANIFEST.manifest_id,
-        QUANTIFIED_NESTED_GROUP_REPLACEMENT_CASES,
-        expected_manifest_id="quantified-nested-group-replacement-workflows",
-        expected_case_ids=EXPECTED_QUANTIFIED_NESTED_GROUP_REPLACEMENT_CASE_IDS,
-        expected_compile_patterns=(
-            EXPECTED_QUANTIFIED_NESTED_GROUP_REPLACEMENT_COMPILE_PATTERNS
-        ),
-    )
+@pytest.mark.parametrize(
+    "bundle",
+    BUNDLED_GROUPED_REPLACEMENT_FIXTURES,
+    ids=lambda bundle: bundle.expected_manifest_id,
+)
+def test_grouped_template_fixture_bundles_stay_aligned_with_published_fixtures(
+    bundle: ReplacementFixtureBundle,
+) -> None:
+    _assert_replacement_fixture_bundle_contract(bundle)
 
 
 @pytest.mark.parametrize("pattern", COMPILE_PATTERNS)
