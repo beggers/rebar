@@ -20,6 +20,7 @@ use rebar_core::{
     literal_find_spans as core_literal_find_spans, literal_match as core_literal_match,
     nested_alternation_branch_local_backreference_find_spans_str as core_nested_alternation_branch_local_backreference_find_spans_str,
     nested_alternation_find_spans_str as core_nested_alternation_find_spans_str,
+    nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_str as core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_str,
     nested_capture_find_spans_str as core_nested_capture_find_spans_str,
     nested_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_str as core_nested_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_str,
     quantified_nested_capture_find_spans_str as core_quantified_nested_capture_find_spans_str,
@@ -843,12 +844,29 @@ fn boundary_literal_template_subn(
                                         0,
                                         None,
                                     );
-                                (
-                                    branch_local_outcome.status,
-                                    branch_local_outcome.matches,
-                                    compile_outcome.group_count,
-                                    compile_outcome.named_groups,
-                                )
+                                if branch_local_outcome.status != MatchStatus::Unsupported {
+                                    (
+                                        branch_local_outcome.status,
+                                        branch_local_outcome.matches,
+                                        compile_outcome.group_count,
+                                        compile_outcome.named_groups,
+                                    )
+                                } else {
+                                    let conditional_branch_local_outcome =
+                                        core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_str(
+                                            pattern_value,
+                                            flags,
+                                            string_value,
+                                            0,
+                                            None,
+                                        );
+                                    (
+                                        conditional_branch_local_outcome.status,
+                                        conditional_branch_local_outcome.matches,
+                                        compile_outcome.group_count,
+                                        compile_outcome.named_groups,
+                                    )
+                                }
                             }
                         }
                     }

@@ -20,6 +20,7 @@ from tests.python.fixture_parity_support import (
 EXPECTED_PUBLISHED_FIXTURE_NAMES = (
     "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
     "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+    "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
 )
 EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
     sorted(
@@ -330,6 +331,30 @@ FIXTURE_BUNDLES = (
             {
                 r"a((b|c){2,})\2d",
                 r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+            }
+        ),
+    ),
+    _fixture_bundle(
+        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
+        expected_manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-replacement-workflows"
+        ),
+        expected_case_ids=frozenset(
+            {
+                "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-lower-bound-b-branch-str",
+                "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-first-match-only-b-branch-str",
+                "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-mixed-branches-str",
+                "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-c-branch-first-match-only-str",
+                "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-mixed-branches-str",
+                "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-first-match-only-b-branch-str",
+                "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-lower-bound-c-branch-str",
+                "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a((b|c){2,})\2(?(2)d|e)",
+                r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
             }
         ),
     ),

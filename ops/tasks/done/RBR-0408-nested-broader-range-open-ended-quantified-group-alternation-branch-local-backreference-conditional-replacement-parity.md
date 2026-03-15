@@ -1,8 +1,9 @@
 # RBR-0408: Add broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional replacement-template parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Convert the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional replacement-template cases published by `RBR-0406` into real CPython-shaped behavior without claiming benchmark catch-up, callable replacement, broader template parsing, or deeper nested grouped execution support.
@@ -30,3 +31,13 @@ Created: 2026-03-15
 ## Notes
 - Build on `RBR-0406`, `RBR-0404`, `RBR-0388`, and the existing nested-group replacement parity surface.
 - Keep later benchmark catch-up on the existing `benchmarks/workloads/nested_group_replacement_boundary.py` path; do not fork another benchmark family when that follow-on is queued.
+
+## Completion
+- 2026-03-15: Added a dedicated Rust repeated-span collector for the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional replacement-template slice and wired the native template-substitution boundary through it when the existing non-conditional collector rejects the pattern.
+- 2026-03-15: Extended `tests/python/test_open_ended_quantified_group_replacement_template_parity_suite.py` to load and assert the published `nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py` fixture alongside the adjacent open-ended replacement-template packs.
+- 2026-03-15: Republished `reports/correctness/latest.py`; the tracked combined scorecard now reports `925` executed, `925` passed, `0` failed, and `0` unimplemented cases, so this bounded conditional replacement-template manifest no longer publishes honest gaps.
+
+## Verification
+- 2026-03-15: `cargo build -p rebar-cpython`
+- 2026-03-15: `PYTHONPATH=python ./.venv/bin/python -m pytest tests/python/test_open_ended_quantified_group_replacement_template_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardSuitesTest::test_runner_regenerates_open_ended_quantified_group_scorecards` (`161 passed`)
+- 2026-03-15: `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`{"executed_cases": 925, "failed_cases": 0, "passed_cases": 925, "skipped_cases": 0, "total_cases": 925, "unimplemented_cases": 0}`)
