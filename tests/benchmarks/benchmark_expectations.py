@@ -308,6 +308,9 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (
             "module-sub-callable-nested-group-alternation-cold-gap",
+            "pattern-subn-callable-numbered-nested-group-alternation-c-branch-first-match-only-purged-str",
+            "module-sub-callable-named-nested-group-alternation-c-branch-warm-str",
+            "pattern-subn-callable-named-nested-group-alternation-b-branch-first-match-only-purged-str",
             "module-sub-callable-numbered-quantified-nested-group-lower-bound-warm-str",
             "module-subn-callable-numbered-quantified-nested-group-first-match-only-warm-str",
             "pattern-sub-callable-named-quantified-nested-group-repeated-outer-purged-str",

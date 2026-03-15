@@ -1,6 +1,6 @@
 # RBR-0346: Catch nested-group alternation callable-replacement benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-14
 
@@ -29,3 +29,9 @@ Created: 2026-03-14
 - Build on `RBR-0344`.
 - Keep this follow-on on the existing `nested_group_callable_replacement_boundary.py` manifest path instead of forking another benchmark family.
 - Add only the directly adjacent numbered and named callable-replacement rows needed to publish this exact slice cleanly; quantified nested alternation callbacks, branch-local-backreference callbacks, replacement-template workflows, broader callback helpers, and deeper nested grouped execution stay explicit gaps or out of scope.
+
+## Completion Notes
+- Promoted the existing `module-sub-callable-nested-group-alternation-cold-gap` anchor into a measured former-gap row and added the three adjacent alternation rows needed to publish this exact bounded slice: one numbered compiled-`Pattern.subn()` first-match-only case, one named module-level outer-capture case, and one named compiled-`Pattern.subn()` first-match-only inner-capture case.
+- Tightened the combined benchmark assertions so the nested-group callable-replacement manifest now has explicit measured representatives for the new alternation rows and a focused combined-suite check for the bounded non-quantified alternation slice.
+- Republished the tracked benchmark scorecard at `reports/benchmarks/latest.py`; the published combined report now records 513 total workloads, 489 measured `rebar` timings, and 24 explicit known gaps, and the `nested-group-callable-replacement-boundary` manifest now reports 16 measured workloads with 0 remaining gaps.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest tests/python/test_callable_replacement_parity_suite.py`, `PYTHONPATH=python ./.venv/bin/python -m pytest tests/benchmarks/test_python_benchmark_manifest_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.

@@ -26,7 +26,18 @@ from tests.report_assertions import (
 )
 
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"
+NESTED_GROUP_CALLABLE_REPLACEMENT_MANIFEST_ID = "nested-group-callable-replacement-boundary"
 NESTED_GROUP_ALTERNATION_MANIFEST_ID = "nested-group-alternation-boundary"
+NESTED_GROUP_CALLABLE_REPLACEMENT_ALTERNATION_WORKLOAD_IDS = (
+    "module-sub-callable-nested-group-alternation-cold-gap",
+    "pattern-subn-callable-numbered-nested-group-alternation-c-branch-first-match-only-purged-str",
+    "module-sub-callable-named-nested-group-alternation-c-branch-warm-str",
+    "pattern-subn-callable-named-nested-group-alternation-b-branch-first-match-only-purged-str",
+)
+NESTED_GROUP_CALLABLE_REPLACEMENT_ALTERNATION_PATTERNS = {
+    r"a((b|c))d",
+    r"a(?P<outer>(?P<inner>b|c))d",
+}
 CALLABLE_REPLACEMENT_FORMER_GAP_CASES = (
     {
         "manifest_id": "grouped-alternation-callable-replacement-boundary",
@@ -397,6 +408,59 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     manifest_id=NESTED_GROUP_ALTERNATION_MANIFEST_ID,
                     workload_document=find_workload_document(
                         manifest_document,
+                        workload_id,
+                    ),
+                    expected_status="measured",
+                )
+
+    def test_nested_group_callable_replacement_manifest_covers_nested_alternation_slice(
+        self,
+    ) -> None:
+        case = source_tree_combined_case(NESTED_GROUP_CALLABLE_REPLACEMENT_MANIFEST_ID)
+        _, scorecard = run_source_tree_benchmark_scorecard(case["manifest_paths"])
+
+        manifest_summary = scorecard["manifests"][NESTED_GROUP_CALLABLE_REPLACEMENT_MANIFEST_ID]
+        self.assertEqual(manifest_summary["known_gap_count"], 0)
+
+        alternation_rows = [
+            workload
+            for workload in case["target_manifest"]["workloads"]
+            if "alternation" in workload["syntax_features"]
+            and "callable-replacement" in workload["syntax_features"]
+            and "quantifiers" not in workload["syntax_features"]
+        ]
+        self.assertEqual(
+            tuple(workload["id"] for workload in alternation_rows),
+            NESTED_GROUP_CALLABLE_REPLACEMENT_ALTERNATION_WORKLOAD_IDS,
+        )
+        self.assertEqual(
+            {workload["pattern"] for workload in alternation_rows},
+            NESTED_GROUP_CALLABLE_REPLACEMENT_ALTERNATION_PATTERNS,
+        )
+        self.assertEqual(
+            {workload["operation"] for workload in alternation_rows},
+            {"module.sub", "pattern.subn"},
+        )
+        self.assertEqual(
+            {
+                str(workload["haystack"])
+                for workload in alternation_rows
+                if workload.get("haystack") is not None
+            },
+            {"abdacd", "acdabd", "acd"},
+        )
+        for workload in alternation_rows:
+            for category in ("nested-group", "alternation", "replacement", "callable"):
+                self.assertIn(category, workload["categories"])
+
+        for workload_id in NESTED_GROUP_CALLABLE_REPLACEMENT_ALTERNATION_WORKLOAD_IDS:
+            with self.subTest(workload_id=workload_id):
+                assert_benchmark_workload_contract(
+                    self,
+                    find_workload_record(scorecard, workload_id),
+                    manifest_id=NESTED_GROUP_CALLABLE_REPLACEMENT_MANIFEST_ID,
+                    workload_document=find_workload_document(
+                        case["target_manifest"],
                         workload_id,
                     ),
                     expected_status="measured",
