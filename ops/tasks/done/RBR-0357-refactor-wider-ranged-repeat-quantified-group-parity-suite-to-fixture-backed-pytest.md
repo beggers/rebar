@@ -1,6 +1,6 @@
 # RBR-0357: Refactor the wider-ranged-repeat quantified-group parity suite onto the shared fixture-backed pytest path
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
 
@@ -36,3 +36,9 @@ Created: 2026-03-15
 ## Notes
 - Build on `RBR-0272`, which already consolidated this frontier into one suite, and on recent fixture-backed cleanup tasks such as `RBR-0355`, `RBR-0353`, and `RBR-0351`.
 - This cleanup exists because `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` is still one of the larger remaining parity-suite holdouts that duplicates published correctness cases in a bespoke local scenario table instead of consuming the standard fixture path directly.
+
+## Completion Notes
+- Replaced the file-local `Scenario` / `ParityCase` tables in `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` with fixture bundles loaded through `load_fixture_manifest(...)` and `FixtureCase` from the nine published wider-ranged-repeat grouped manifests named in this task.
+- Kept the two broader `{1,4}` grouped-conditional `bytes` supplements as small explicit add-ons with the existing `rebar` skip reason, and collapsed the broader-range plus nested broader-range backtracking branch-trace coverage onto one shared generator/helper path.
+- Preserved compile metadata parity plus match-object and convenience-API parity for the fixture-backed `search()` / compiled-`Pattern.fullmatch()` rows while keeping the suite as one backend-parameterized pytest module.
+- Verified with `.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (`904 passed, 10 skipped`).
