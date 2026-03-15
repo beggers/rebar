@@ -168,6 +168,31 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                     expected_status="measured",
                 )
 
+    def test_nested_group_replacement_scorecard_covers_open_ended_rows(
+        self,
+    ) -> None:
+        case = source_tree_scorecard_case("nested-group-replacement-boundary")
+        summary, scorecard = run_source_tree_benchmark_scorecard(case["manifest_paths"])
+
+        self.assertEqual(summary, case["expected_summary"])
+        self.assertEqual(case["representative_known_gap_workload_ids"], ())
+
+        for workload_id in case["representative_measured_workload_ids"]:
+            with self.subTest(workload_id=workload_id):
+                workload_record = find_workload_record(scorecard, workload_id)
+                manifest_id = workload_record["manifest_id"]
+                manifest_document = case["manifest_documents_by_id"][manifest_id]
+                assert_benchmark_workload_contract(
+                    self,
+                    workload_record,
+                    manifest_id=manifest_id,
+                    workload_document=find_workload_document(
+                        manifest_document,
+                        workload_id,
+                    ),
+                    expected_status="measured",
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -123,6 +123,30 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
             "pattern-search-ignorecase-ascii-warm-gap",
         ),
     },
+    "nested-group-replacement-boundary": {
+        "manifest_ids": ("nested-group-replacement-boundary",),
+        "selection_mode": "full",
+        "expected_summary": {
+            "known_gap_count": 0,
+            "measured_workloads": 16,
+            "module_workloads": 16,
+            "parser_workloads": 0,
+            "regression_workloads": 0,
+            "total_workloads": 16,
+        },
+        "manifest_expectations": {
+            "nested-group-replacement-boundary": {
+                "known_gap_count": 0,
+            },
+        },
+        "representative_measured_workload_ids": (
+            "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
+            "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
+            "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-c-branch-purged-str",
+            "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-str",
+        ),
+        "representative_known_gap_workload_ids": (),
+    },
     "nested-group-callable-replacement-boundary": {
         "manifest_ids": ("nested-group-callable-replacement-boundary",),
         "selection_mode": "full",
@@ -325,6 +349,10 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
             "module-subn-template-numbered-quantified-nested-group-replacement-first-match-only-warm-str",
             "pattern-sub-template-named-quantified-nested-group-replacement-repeated-outer-purged-str",
             "pattern-subn-template-named-quantified-nested-group-replacement-purged-gap",
+            "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
+            "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
+            "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-c-branch-purged-str",
+            "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-str",
         ),
     },
     "nested-group-callable-replacement-boundary": {
