@@ -1015,6 +1015,24 @@ def _native_callable_match_spans(
                 [tuple(match_group_spans) for match_group_spans in group_spans],
             )
 
+        status, normalized_pos, normalized_endpos, spans, group_spans = (
+            _native.boundary_quantified_nested_group_alternation_branch_local_backreference_finditer(
+                compiled_pattern.pattern,
+                compiled_pattern.flags,
+                compatible_string,
+                0,
+                None,
+            )
+        )
+        if status != "unsupported":
+            return (
+                status,
+                normalized_pos,
+                normalized_endpos,
+                spans,
+                [tuple(match_group_spans) for match_group_spans in group_spans],
+            )
+
         status, normalized_pos, normalized_endpos, spans, capture_1_spans = (
             _native.boundary_grouped_alternation_finditer(
                 compiled_pattern.pattern,

@@ -74,11 +74,7 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     }
 )
 MISSING_GROUP_DEFAULT = "<missing-group>"
-PENDING_REBAR_MANIFEST_IDS = frozenset(
-    {
-        "quantified-nested-group-alternation-branch-local-backreference-callable-replacement-workflows",
-    }
-)
+PENDING_REBAR_MANIFEST_IDS = frozenset()
 
 
 class CallbackExplosion(RuntimeError):

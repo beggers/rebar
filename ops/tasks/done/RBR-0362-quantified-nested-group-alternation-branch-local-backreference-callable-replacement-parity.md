@@ -1,6 +1,6 @@
 # RBR-0362: Add quantified nested-group alternation plus branch-local-backreference callable-replacement parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-15
 
@@ -30,3 +30,10 @@ Created: 2026-03-15
 - Build on `RBR-0360`, `RBR-0356`, `RBR-0350`, and `RBR-0332`.
 - The shared callable-replacement parity suite already discovers published `*callable_replacement_workflows.py` fixtures, so widen that existing pytest surface instead of creating another manifest-specific harness.
 - Keep later benchmark catch-up on the existing `benchmarks/workloads/nested_group_callable_replacement_boundary.py` path; the follow-on should add only the minimal quantified branch-local callback rows needed to publish this exact bounded slice.
+
+## Completion Notes
+- Added one native callable-replacement span-discovery path for `a((b|c)+)\\2d` and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d`, keeping the slice limited to the existing `+`-quantified branch-local-backreference workflows and explicitly rejecting the broader `{1,4}` branch-local callable shape.
+- Wired the new span path through `rebar._rebar` and the shared `_native_callable_match_spans()` dispatch, then removed the pending-manifest skip from `tests/python/test_callable_replacement_parity_suite.py` so the published shared callback snapshot suite now executes this manifest directly.
+- Republished the tracked combined correctness scorecard in `reports/correctness/latest.py`; the verified tracked summary is `857` total cases, `857` passes, `0` explicit failures, and `0` `unimplemented`, and `collection.replacement.quantified_nested_group_alternation_branch_local_backreference.callable` now reports `8` executed cases with `8` passes and `0` `unimplemented`.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py tests/python/test_quantified_nested_group_alternation_callable_replacement_parity.py tests/python/test_quantified_nested_group_alternation_branch_local_backreference_parity.py tests/python/test_nested_group_alternation_branch_local_backreference_parity.py`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k nested_group_callable_replacement_manifest`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/quantified_nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py --report /tmp/rbr0362-quantified-nested-group-alternation-branch-local-backreference-callable.json`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
+- Benchmark catch-up for this exact slice remains queued separately in `RBR-0364`; the existing nested-group callable benchmark anchor tests passed, but no new quantified branch-local callable benchmark rows were added in this task.

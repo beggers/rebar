@@ -6800,8 +6800,9 @@ pub fn nested_alternation_branch_local_backreference_find_spans_str(
     let string_chars: Vec<char> = string.chars().collect();
     let (normalized_pos, normalized_endpos) = normalize_bounds(string_chars.len(), pos, endpos);
     let Some(grouped_pattern) =
-        parse_nested_alternation_branch_local_numbered_backreference_pattern_str(pattern)
-            .or_else(|| parse_nested_alternation_branch_local_named_backreference_pattern_str(pattern))
+        parse_nested_alternation_branch_local_numbered_backreference_pattern_str(pattern).or_else(
+            || parse_nested_alternation_branch_local_named_backreference_pattern_str(pattern),
+        )
     else {
         return CapturedFindSpansOutcome {
             status: MatchStatus::Unsupported,
@@ -6985,6 +6986,74 @@ pub fn quantified_nested_group_alternation_find_spans_str(
         next_start,
         normalized_endpos,
     ) {
+        matches.push(CapturedMatchSpan { span, group_spans });
+        next_start = span.1;
+    }
+
+    CapturedFindSpansOutcome {
+        status: if matches.is_empty() {
+            MatchStatus::NoMatch
+        } else {
+            MatchStatus::Matched
+        },
+        pos: normalized_pos,
+        endpos: normalized_endpos,
+        matches,
+    }
+}
+
+/// Discover repeated spans for the bounded quantified nested-group alternation
+/// plus branch-local-backreference callable replacement slice while preserving
+/// capture spans for result marshalling.
+#[must_use]
+pub fn quantified_nested_group_alternation_branch_local_backreference_find_spans_str(
+    pattern: &str,
+    flags: i32,
+    string: &str,
+    pos: isize,
+    endpos: Option<isize>,
+) -> CapturedFindSpansOutcome {
+    let string_chars: Vec<char> = string.chars().collect();
+    let (normalized_pos, normalized_endpos) = normalize_bounds(string_chars.len(), pos, endpos);
+    let Some(grouped_pattern) =
+        parse_quantified_nested_group_alternation_branch_local_numbered_backreference_pattern_str(
+            pattern,
+        )
+        .or_else(|| {
+            parse_quantified_nested_group_alternation_branch_local_named_backreference_pattern_str(
+                pattern,
+            )
+        })
+        .filter(|grouped_pattern| grouped_pattern.max_repeat.is_none())
+    else {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    };
+    if flags != FLAG_UNICODE {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    }
+
+    let mut matches = Vec::new();
+    let mut next_start = normalized_pos;
+    while let Some((span, group_spans)) =
+        find_quantified_nested_group_alternation_branch_local_backreference_match_span_str(
+            &grouped_pattern,
+            flags,
+            MatchMode::Search,
+            &string_chars,
+            next_start,
+            normalized_endpos,
+        )
+    {
         matches.push(CapturedMatchSpan { span, group_spans });
         next_start = span.1;
     }
