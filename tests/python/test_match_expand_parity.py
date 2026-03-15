@@ -13,7 +13,7 @@ class ExpandCase:
     id: str
     pattern: str | bytes
     string: str | bytes
-    template: str | bytes
+    template: object
     helper: str = "search"
     use_compiled_pattern: bool = False
 
@@ -66,6 +66,19 @@ SUCCESS_CASES = (
         template=b"<\\\\>",
         use_compiled_pattern=True,
     ),
+    ExpandCase(
+        id="module-search-literal-whole-match-bytearray",
+        pattern=b"abc",
+        string=b"zzabczz",
+        template=bytearray(b"<\\g<0>>"),
+    ),
+    ExpandCase(
+        id="pattern-search-literal-escaped-backslash-memoryview",
+        pattern=b"abc",
+        string=b"zzabczz",
+        template=memoryview(b"<\\\\>"),
+        use_compiled_pattern=True,
+    ),
 )
 
 
@@ -115,6 +128,32 @@ ERROR_CASES = (
         string=b"abc",
         template=b"<\\g<0",
     ),
+    ExpandCase(
+        id="module-search-invalid-numbered-reference-bytearray",
+        pattern=b"abc",
+        string=b"abc",
+        template=bytearray(b"<\\1>"),
+    ),
+    ExpandCase(
+        id="pattern-search-unknown-group-name-memoryview",
+        pattern=b"abc",
+        string=b"abc",
+        template=memoryview(b"<\\g<missing>>"),
+        use_compiled_pattern=True,
+    ),
+    ExpandCase(
+        id="module-search-str-match-bytearray-type-error",
+        pattern="abc",
+        string="abc",
+        template=bytearray(b"<\\g<0>>"),
+    ),
+    ExpandCase(
+        id="pattern-search-str-match-memoryview-type-error",
+        pattern="abc",
+        string="abc",
+        template=memoryview(b"<\\g<0>>"),
+        use_compiled_pattern=True,
+    ),
 )
 
 
@@ -140,7 +179,7 @@ def _assert_match_type_parity(
         assert type(observed) is type(expected)
 
 
-def _capture_expand_error(match: object, template: str | bytes) -> BaseException:
+def _capture_expand_error(match: object, template: object) -> BaseException:
     try:
         match.expand(template)
     except BaseException as error:  # noqa: BLE001 - parity helper compares exception details.
