@@ -9,9 +9,12 @@ import pytest
 
 import rebar
 from rebar_harness.correctness import (
+    CpythonReAdapter,
     DEFAULT_FIXTURE_PATHS,
     FixtureCase,
     FixtureManifest,
+    RebarAdapter,
+    evaluate_case,
     load_fixture_manifest,
 )
 
@@ -301,9 +304,27 @@ def _assert_raw_callable_replacement_reference_is_valid(
         assert group_reference in compiled.groupindex
 
 
+def _live_unimplemented_callable_manifest_ids() -> frozenset[str]:
+    cpython_adapter = CpythonReAdapter()
+    rebar_adapter = RebarAdapter()
+    manifest_ids: set[str] = set()
+
+    for bundle in FIXTURE_BUNDLES:
+        for case in bundle.cases:
+            evaluation = evaluate_case(case, cpython_adapter, rebar_adapter)
+            if evaluation["comparison"] == "unimplemented":
+                manifest_ids.add(case.manifest_id)
+
+    return frozenset(manifest_ids)
+
+
 def test_callable_replacement_suite_discovers_all_published_callable_fixtures() -> None:
     assert CALLABLE_FIXTURE_PATHS
     assert CALLABLE_FIXTURE_PATHS == PUBLISHED_CALLABLE_FIXTURE_PATHS
+
+
+def test_pending_rebar_callable_manifest_ids_match_live_unimplemented_manifests() -> None:
+    assert _live_unimplemented_callable_manifest_ids() == PENDING_REBAR_MANIFEST_IDS
 
 
 @pytest.mark.parametrize(
