@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now has `RBR-0358` seeded as the surviving follow-on so the bounded nested-group alternation plus branch-local-backreference callable-replacement slice for `a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d` reaches the published Python-path benchmark surface on `benchmarks/workloads/nested_group_callable_replacement_boundary.py` after `RBR-0356` lands, before quantified branch-local-backreference callbacks, broader counted repeats, or deeper nested grouped execution broaden the queue.
+Milestone 2 now has `RBR-0360` seeded as the surviving follow-on so the quantified nested-group alternation plus branch-local-backreference callable-replacement slice for `a((b|c)+)\\2d` and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d` reaches the published correctness surface after `RBR-0358` closes the adjacent benchmark gap on `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, before broader counted repeats, replacement-template variants, or deeper nested grouped execution broaden the queue.
 
 ## Ordered Work
-1. Land `RBR-0358` to extend `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` so the bounded numbered and named module/compiled-`Pattern` `sub()` and `subn()` callable-replacement workflows for `a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d` move from newly landed parity to real published Python-path benchmark coverage without forking another benchmark family.
+1. Land `RBR-0360` to extend `python/rebar_harness/correctness.py`, `tests/conformance/fixtures/quantified_nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py`, `tests/conformance/correctness_expectations.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py` so the bounded numbered and named module/compiled-`Pattern` `sub()` and `subn()` callable-replacement workflows for `a((b|c)+)\\2d` and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d` move onto the published correctness surface without forking another callable-replacement harness.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
