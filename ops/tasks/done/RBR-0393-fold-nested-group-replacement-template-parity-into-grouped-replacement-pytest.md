@@ -1,6 +1,6 @@
 # RBR-0393: Fold nested-group replacement-template parity into the grouped replacement pytest module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
 
@@ -53,5 +53,10 @@ Created: 2026-03-15
 
 ## Notes
 - Both tracked and live JSON counts are zero in the current checkout (`tracked_json_blob_count: 0`, `tracked_json_blob_delta: 0`, `git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), so the next architecture priority is deleting duplicate Python parity plumbing rather than another JSON burn-down task.
-- `tests/python/test_nested_group_replacement_template_parity.py` is still a 288-line standalone fixture-backed wrapper with its own `FixtureBundle` dataclass, fixture loader, compile parity pass, and bounded no-match supplements, even though `tests/python/test_grouped_literal_replacement_template.py` already owns the adjacent grouped replacement-template surface through the same shared pytest information flow.
+- `tests/python/test_nested_group_replacement_template_parity.py` was a 288-line standalone fixture-backed wrapper with its own `FixtureBundle` dataclass, fixture loader, compile parity pass, and bounded no-match supplements, even though `tests/python/test_grouped_literal_replacement_template.py` already owned the adjacent grouped replacement-template surface through the same shared pytest information flow.
 - Build directly on `RBR-0355` and `RBR-0389`: the nested and quantified nested replacement rows are already fixture-backed, and the next simplification is to delete the extra wrapper rather than keep parallel grouped-replacement parity modules.
+
+## Completion
+- Folded the nested and quantified nested replacement-template fixture rows into `tests/python/test_grouped_literal_replacement_template.py`, including exact manifest-alignment assertions, shared compile/result parity coverage, and the preserved bounded nested no-match supplements.
+- Deleted `tests/python/test_nested_group_replacement_template_parity.py`.
+- Verified with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_grouped_literal_replacement_template.py` and confirmed `rg --files tests/python | rg 'test_nested_group_replacement_template_parity\\.py$'` returns no matches.
