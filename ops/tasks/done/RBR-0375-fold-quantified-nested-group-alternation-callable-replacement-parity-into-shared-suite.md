@@ -1,8 +1,9 @@
 # RBR-0375: Fold the quantified nested-group alternation callable-replacement parity module into the shared callable suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Replace `tests/python/test_quantified_nested_group_alternation_callable_replacement_parity.py` with one expanded shared suite in `tests/python/test_callable_replacement_parity_suite.py` so this callable frontier stops living across two parallel fixture loaders and near-duplicate parity harnesses.
@@ -37,6 +38,12 @@ Created: 2026-03-15
 - `tests/python/test_quantified_nested_group_alternation_callable_replacement_parity.py` is still a 245-line legacy singleton that repeats fixture loading, compile metadata assertions, module/pattern result parity, callback match-snapshot parity, and bounded no-match checks for one manifest the shared suite already executes.
 - Recent feature tasks such as `RBR-0362` and the current `RBR-0374` already treat the shared callable-replacement suite as the canonical parity surface for this frontier. This cleanup should bring the Python test shape in line with that direction instead of keeping one manifest-specific holdout alive.
 
+## Completion Notes
+- Expanded `tests/python/test_callable_replacement_parity_suite.py` with one explicit manifest-alignment assertion for `quantified-nested-group-alternation-callable-replacement-workflows`, covering the published case-id set, the exact numbered and named compile-pattern set, and the `Counter({(\"module_call\", \"sub\"): 2, (\"module_call\", \"subn\"): 2, (\"pattern_call\", \"sub\"): 2, (\"pattern_call\", \"subn\"): 2})` distribution that the deleted singleton had pinned.
+- Added focused near-miss callback no-op coverage for the legacy `zzadzz` too-short and `zzabedzz` invalid-branch misses across the module and compiled-pattern `sub()` / `subn()` variants, while leaving the existing shared compile metadata, callable result parity, callback match-snapshot parity, literal callable coverage, and other published callable manifests intact.
+- Deleted `tests/python/test_quantified_nested_group_alternation_callable_replacement_parity.py` so this manifest now lives only on the shared callable parity surface.
+
 ## Verification
 - `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py`
 - `rg --files tests/python | rg 'test_quantified_nested_group_alternation_callable_replacement_parity\\.py$'`
+- `git diff --name-status -- tests/python/test_callable_replacement_parity_suite.py tests/python/test_quantified_nested_group_alternation_callable_replacement_parity.py`

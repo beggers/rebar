@@ -27,6 +27,65 @@ FIXTURES_DIR = REPO_ROOT / "tests" / "conformance" / "fixtures"
 COLLECTION_REPLACEMENT_FIXTURE_PATH = (
     FIXTURES_DIR / "collection_replacement_workflows.py"
 )
+QUANTIFIED_NESTED_GROUP_ALTERNATION_CALLABLE_MANIFEST_ID = (
+    "quantified-nested-group-alternation-callable-replacement-workflows"
+)
+QUANTIFIED_NESTED_GROUP_ALTERNATION_EXPECTED_CASE_IDS = frozenset(
+    {
+        "module-sub-callable-quantified-nested-group-alternation-numbered-lower-bound-b-branch-str",
+        "module-subn-callable-quantified-nested-group-alternation-numbered-first-match-only-c-branch-str",
+        "pattern-sub-callable-quantified-nested-group-alternation-numbered-mixed-branches-str",
+        "pattern-subn-callable-quantified-nested-group-alternation-numbered-first-match-only-b-branch-str",
+        "module-sub-callable-quantified-nested-group-alternation-named-lower-bound-c-branch-str",
+        "module-subn-callable-quantified-nested-group-alternation-named-first-match-only-b-branch-str",
+        "pattern-sub-callable-quantified-nested-group-alternation-named-mixed-branches-str",
+        "pattern-subn-callable-quantified-nested-group-alternation-named-first-match-only-c-branch-str",
+    }
+)
+QUANTIFIED_NESTED_GROUP_ALTERNATION_EXPECTED_COMPILE_PATTERNS = frozenset(
+    {
+        r"a((b|c)+)d",
+        r"a(?P<outer>(?P<inner>b|c)+)d",
+    }
+)
+QUANTIFIED_NESTED_GROUP_ALTERNATION_NO_MATCH_CASES = (
+    pytest.param(
+        False,
+        r"a((b|c)+)d",
+        "sub",
+        "zzadzz",
+        0,
+        "zzadzz",
+        id="module-numbered-sub-no-match-too-short",
+    ),
+    pytest.param(
+        False,
+        r"a((b|c)+)d",
+        "subn",
+        "zzabedzz",
+        0,
+        ("zzabedzz", 0),
+        id="module-numbered-subn-no-match-invalid-branch",
+    ),
+    pytest.param(
+        True,
+        r"a(?P<outer>(?P<inner>b|c)+)d",
+        "sub",
+        "zzadzz",
+        0,
+        "zzadzz",
+        id="pattern-named-sub-no-match-too-short",
+    ),
+    pytest.param(
+        True,
+        r"a(?P<outer>(?P<inner>b|c)+)d",
+        "subn",
+        "zzabedzz",
+        0,
+        ("zzabedzz", 0),
+        id="pattern-named-subn-no-match-invalid-branch",
+    ),
+)
 
 
 @dataclass(frozen=True)
@@ -110,6 +169,14 @@ def _pending_rebar_compile_patterns() -> frozenset[str]:
         if bundle.manifest.manifest_id in PENDING_REBAR_MANIFEST_IDS
         for compile_pattern in bundle.compile_patterns
     )
+
+
+def _fixture_bundle_by_manifest_id(manifest_id: str) -> FixtureBundle:
+    bundles = [
+        bundle for bundle in FIXTURE_BUNDLES if bundle.manifest.manifest_id == manifest_id
+    ]
+    assert len(bundles) == 1
+    return bundles[0]
 
 
 def _fixture_bundle(path: pathlib.Path) -> FixtureBundle:
@@ -345,6 +412,26 @@ def test_literal_callable_case_stays_aligned_with_published_collection_fixture()
     assert raw_args[1] == {"type": "callable_constant", "value": "x"}
 
 
+def test_quantified_nested_group_alternation_callable_cases_stay_aligned_with_published_fixture() -> None:
+    bundle = _fixture_bundle_by_manifest_id(
+        QUANTIFIED_NESTED_GROUP_ALTERNATION_CALLABLE_MANIFEST_ID
+    )
+
+    assert bundle.manifest.manifest_id == (
+        QUANTIFIED_NESTED_GROUP_ALTERNATION_CALLABLE_MANIFEST_ID
+    )
+    assert len(bundle.cases) == len(QUANTIFIED_NESTED_GROUP_ALTERNATION_EXPECTED_CASE_IDS)
+    assert {case.case_id for case in bundle.cases} == (
+        QUANTIFIED_NESTED_GROUP_ALTERNATION_EXPECTED_CASE_IDS
+    )
+    assert bundle.compile_patterns == (
+        QUANTIFIED_NESTED_GROUP_ALTERNATION_EXPECTED_COMPILE_PATTERNS
+    )
+    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
+        EXPECTED_OPERATION_HELPER_COUNTS
+    )
+
+
 NO_MATCH_PATTERNS = tuple(sorted({*COMPILE_PATTERNS, _literal_callable_pattern()}))
 PENDING_REBAR_COMPILE_PATTERNS = _pending_rebar_compile_patterns()
 PENDING_REBAR_NO_MATCH_PATTERNS = PENDING_REBAR_COMPILE_PATTERNS
@@ -460,6 +547,54 @@ def test_callable_replacement_no_match_paths_leave_input_unchanged(
         use_compiled_pattern=use_compiled_pattern,
     )
     expected_result: object = string if helper == "sub" else (string, 0)
+
+    assert observed == expected == expected_result
+    assert callback_calls == []
+
+
+@pytest.mark.parametrize(
+    ("use_compiled_pattern", "pattern", "helper", "text", "count", "expected_result"),
+    QUANTIFIED_NESTED_GROUP_ALTERNATION_NO_MATCH_CASES,
+)
+def test_quantified_nested_group_alternation_callable_replacement_near_miss_paths_leave_input_unchanged(
+    regex_backend: tuple[str, object],
+    use_compiled_pattern: bool,
+    pattern: str,
+    helper: str,
+    text: str,
+    count: int,
+    expected_result: str | tuple[str, int],
+) -> None:
+    backend_name, backend = regex_backend
+    if backend_name == "rebar" and pattern in PENDING_REBAR_NO_MATCH_PATTERNS:
+        pytest.skip(
+            f"callable replacement parity for pattern {pattern!r} remains queued behind a later Rust-backed parity task"
+        )
+
+    callback_calls: list[object] = []
+
+    def replacement(match: object) -> str:
+        callback_calls.append(match)
+        return "X"
+
+    observed = _invoke_callable_replacement(
+        backend,
+        pattern=pattern,
+        helper=helper,
+        string=text,
+        count=count,
+        replacement=replacement,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+    expected = _invoke_callable_replacement(
+        re,
+        pattern=pattern,
+        helper=helper,
+        string=text,
+        count=count,
+        replacement=replacement,
+        use_compiled_pattern=use_compiled_pattern,
+    )
 
     assert observed == expected == expected_result
     assert callback_calls == []
