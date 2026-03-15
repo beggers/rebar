@@ -18,14 +18,26 @@ import rebar
 
 
 class _FakeNativeBoundary:
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        *,
+        str_compile_flags: int = 4098,
+        bytes_compile_flags: int = 2050,
+        native_placeholder_messages: bool = False,
+    ) -> None:
         self.calls: list[tuple[object, ...]] = []
+        self._str_compile_flags = str_compile_flags
+        self._bytes_compile_flags = bytes_compile_flags
+        self._native_placeholder_messages = native_placeholder_messages
 
     def boundary_compile(self, pattern: str | bytes, flags: int) -> tuple[str, int, bool]:
         self.calls.append(("compile", pattern, flags))
         if pattern == "boom":
             raise stdlib_re.error("native compile failure", pattern, 2)
-        return ("compiled", 4098 if isinstance(pattern, str) else 2050, True)
+        normalized_flags = (
+            self._bytes_compile_flags if isinstance(pattern, bytes) else self._str_compile_flags
+        )
+        return ("compiled", normalized_flags | flags, True)
 
     def boundary_literal_match(
         self,
@@ -41,6 +53,61 @@ class _FakeNativeBoundary:
             return ("unsupported", 0, len(string), None)
         return ("matched", 1, len(string) - 1, (1, 4))
 
+    def boundary_literal_split(
+        self,
+        pattern: str | bytes,
+        flags: int,
+        string: str | bytes,
+        maxsplit: int,
+    ) -> tuple[str, list[str] | list[bytes] | None]:
+        self.calls.append(("split", pattern, flags, string, maxsplit))
+        if isinstance(pattern, bytes):
+            return ("supported", [b"native-bytes-split"])
+        return ("supported", ["native-split"])
+
+    def boundary_literal_findall(
+        self,
+        pattern: str | bytes,
+        flags: int,
+        string: str | bytes,
+        pos: int,
+        endpos: int | None,
+    ) -> tuple[str, list[str] | list[bytes] | None]:
+        self.calls.append(("findall", pattern, flags, string, pos, endpos))
+        if pattern == "unsupported" or flags == int(rebar.IGNORECASE):
+            return ("unsupported", None)
+        if isinstance(pattern, bytes):
+            return ("supported", [b"native-bytes-findall"])
+        return ("supported", ["native-findall"])
+
+    def boundary_literal_finditer(
+        self,
+        pattern: str | bytes,
+        flags: int,
+        string: str | bytes,
+        pos: int,
+        endpos: int | None,
+    ) -> tuple[str, int, int, list[tuple[int, int]]]:
+        self.calls.append(("finditer", pattern, flags, string, pos, endpos))
+        if pattern == "unsupported":
+            return ("unsupported", 0, 0, [])
+        return ("supported", 1, 6, [(2, 5)])
+
+    def boundary_literal_subn(
+        self,
+        pattern: str | bytes,
+        flags: int,
+        repl: str | bytes,
+        string: str | bytes,
+        count: int,
+    ) -> tuple[str, str | bytes | None, int]:
+        self.calls.append(("subn", pattern, flags, repl, string, count))
+        if pattern == "unsupported":
+            return ("unsupported", None, 0)
+        if isinstance(pattern, bytes):
+            return ("supported", b"native-bytes-subn", 7)
+        return ("supported", "native-subn", 9)
+
     def boundary_escape(self, pattern: str | bytes) -> str | bytes:
         self.calls.append(("escape", pattern))
         if isinstance(pattern, bytes):
@@ -48,21 +115,25 @@ class _FakeNativeBoundary:
         return f"native:{pattern}"
 
     def scaffold_raise(self, helper_name: str) -> object:
-        raise NotImplementedError(f"native helper placeholder {helper_name}")
+        if self._native_placeholder_messages:
+            raise NotImplementedError(f"native helper placeholder {helper_name}")
+        raise NotImplementedError(rebar._placeholder_message(helper_name))
 
     def scaffold_pattern_raise(self, method_name: str) -> object:
-        raise NotImplementedError(f"native pattern placeholder {method_name}")
+        if self._native_placeholder_messages:
+            raise NotImplementedError(f"native pattern placeholder {method_name}")
+        raise NotImplementedError(rebar._pattern_placeholder_message(method_name))
 
     def scaffold_purge(self) -> None:
         self.calls.append(("purge",))
 
 
-class RebarRustCompileMatchBoundaryTest(unittest.TestCase):
+class RebarRustBoundaryHookTest(unittest.TestCase):
     def tearDown(self) -> None:
         rebar.purge()
 
     def test_compile_match_and_escape_use_native_boundary_hooks(self) -> None:
-        fake_native = _FakeNativeBoundary()
+        fake_native = _FakeNativeBoundary(native_placeholder_messages=True)
 
         with mock.patch.object(rebar, "_native", fake_native):
             rebar.purge()
@@ -92,7 +163,7 @@ class RebarRustCompileMatchBoundaryTest(unittest.TestCase):
         )
 
     def test_compile_surfaces_native_re_error(self) -> None:
-        fake_native = _FakeNativeBoundary()
+        fake_native = _FakeNativeBoundary(native_placeholder_messages=True)
 
         with mock.patch.object(rebar, "_native", fake_native):
             with self.assertRaises(rebar.error) as raised:
@@ -103,7 +174,7 @@ class RebarRustCompileMatchBoundaryTest(unittest.TestCase):
         self.assertEqual(fake_native.calls, [("compile", "boom", 0)])
 
     def test_pattern_placeholder_comes_from_native_boundary(self) -> None:
-        fake_native = _FakeNativeBoundary()
+        fake_native = _FakeNativeBoundary(native_placeholder_messages=True)
 
         with mock.patch.object(rebar, "_native", fake_native):
             compiled = rebar.compile("unsupported")
@@ -118,6 +189,85 @@ class RebarRustCompileMatchBoundaryTest(unittest.TestCase):
                 ("match", "unsupported", 4098, "search", "unsupported", 0, None),
             ],
         )
+
+    def test_collection_and_replacement_helpers_use_native_boundary_hooks(self) -> None:
+        fake_native = _FakeNativeBoundary(
+            str_compile_flags=8192,
+            bytes_compile_flags=4096,
+        )
+
+        with mock.patch.object(rebar, "_native", fake_native):
+            rebar.purge()
+
+            self.assertEqual(rebar.split("abc", "zzabczz", maxsplit=1), ["native-split"])
+
+            pattern = rebar.compile("abc")
+            self.assertEqual(pattern.flags, 8192)
+            self.assertEqual(pattern.findall("zzabczz", 2, 5), ["native-findall"])
+
+            iterator = rebar.finditer("abc", "zzabczz")
+            matches = list(iterator)
+            self.assertEqual([match.group(0) for match in matches], ["abc"])
+            self.assertEqual([match.span() for match in matches], [(2, 5)])
+            self.assertEqual([match.pos for match in matches], [1])
+            self.assertEqual([match.endpos for match in matches], [6])
+
+            self.assertEqual(pattern.sub("x", "abcabc"), "native-subn")
+            self.assertEqual(
+                rebar.subn("abc", "x", "abcabc", count=1),
+                ("native-subn", 9),
+            )
+
+            bytes_pattern = rebar.compile(b"abc")
+            self.assertEqual(bytes_pattern.split(b"zzabczz"), [b"native-bytes-split"])
+            self.assertEqual(
+                rebar.subn(b"abc", b"x", b"abcabc"),
+                (b"native-bytes-subn", 7),
+            )
+
+        self.assertEqual(
+            fake_native.calls,
+            [
+                ("purge",),
+                ("compile", "abc", 0),
+                ("split", "abc", 8192, "zzabczz", 1),
+                ("compile", "abc", 0),
+                ("findall", "abc", 8192, "zzabczz", 2, 5),
+                ("compile", "abc", 0),
+                ("finditer", "abc", 8192, "zzabczz", 0, None),
+                ("subn", "abc", 8192, "x", "abcabc", 0),
+                ("compile", "abc", 0),
+                ("subn", "abc", 8192, "x", "abcabc", 1),
+                ("compile", b"abc", 0),
+                ("split", b"abc", 4096, b"zzabczz", 0),
+                ("compile", b"abc", 0),
+                ("subn", b"abc", 4096, b"x", b"abcabc", 0),
+            ],
+        )
+
+    def test_module_and_pattern_placeholders_still_surface_for_unsupported_native_results(
+        self,
+    ) -> None:
+        fake_native = _FakeNativeBoundary(
+            str_compile_flags=8192,
+            bytes_compile_flags=4096,
+        )
+
+        with mock.patch.object(rebar, "_native", fake_native):
+            with self.assertRaises(NotImplementedError) as module_raised:
+                rebar.findall("unsupported", "unsupported")
+            self.assertIn(
+                "rebar.findall() is a scaffold placeholder",
+                str(module_raised.exception),
+            )
+
+            pattern = rebar.compile("unsupported")
+            with self.assertRaises(NotImplementedError) as pattern_raised:
+                list(pattern.finditer("unsupported"))
+            self.assertIn(
+                "rebar.Pattern.finditer() is a scaffold placeholder",
+                str(pattern_raised.exception),
+            )
 
 
 if __name__ == "__main__":
