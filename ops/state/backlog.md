@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now reopens on the bounded broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional slice for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)`; the surviving concrete follow-on is Rust-backed parity task `RBR-0402` on the shared branch-local-backreference pytest path.
+Milestone 2 now stays on the bounded broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional slice for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)`; the surviving concrete follow-on is Python-path benchmark catch-up task `RBR-0404` on `benchmarks/workloads/branch_local_backreference_boundary.py`.
 
 ## Ordered Work
-1. `RBR-0402`: convert the numbered and named compile/search/fullmatch slice for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)` behind `rebar._rebar` on `tests/python/test_branch_local_backreference_parity_suite.py`, then keep later benchmark catch-up on `benchmarks/workloads/branch_local_backreference_boundary.py`.
+1. `RBR-0404`: catch the numbered and named compile/search/fullmatch benchmark slice for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)` up on `benchmarks/workloads/branch_local_backreference_boundary.py` through the shared combined benchmark assertions once `RBR-0402` lands.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
