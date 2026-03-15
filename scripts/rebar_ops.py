@@ -2434,14 +2434,19 @@ def update_loop_state(
     if not isinstance(previous_json_blob_count, int):
         previous_json_blob_count = current_json_blob_count
 
+    # Reload the live registry so loop_state reflects supervisor retunes made earlier in
+    # the same cycle instead of the cycle-start agent snapshot.
+    current_agents = load_agent_specs(config)
+    current_agent_names = {agent.name for agent in current_agents}
+    result_agent_names = {result.agent_name for result in results}
+
     agent_state = state.get("agents")
     if not isinstance(agent_state, dict):
         agent_state = {}
-    live_agent_names = {agent.name for agent in agents}
     agent_state = {
         name: payload
         for name, payload in agent_state.items()
-        if name in live_agent_names and isinstance(payload, dict)
+        if name in current_agent_names | result_agent_names and isinstance(payload, dict)
     }
     for result in results:
         agent_state[result.agent_name] = {
@@ -2466,7 +2471,7 @@ def update_loop_state(
                     "dispatch_mode": agent.dispatch.get("mode", "every_cycle"),
                     "spec_path": relpath(agent.spec_path),
                 }
-                for agent in agents
+                for agent in current_agents
             ],
             "queue_counts": queue_counts(),
             "tracked_json_blob_count": current_json_blob_count,

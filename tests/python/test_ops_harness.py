@@ -435,6 +435,78 @@ Verified with `python -m unittest`.
         self.assertTrue(action["push_succeeded"])
         self.assertEqual(action["errors"], [])
 
+    def test_update_loop_state_uses_live_agent_registry_after_supervisor_retune(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        supervisor = rebar_ops.AgentSpec(
+            name="supervisor",
+            kind="supervisor",
+            description="",
+            enabled=True,
+            cycle_order=0,
+            spec_path=REPO_ROOT / "ops" / "agents" / "supervisor.py",
+            prompt_path=REPO_ROOT / "ops" / "agents" / "supervisor.md",
+            dispatch={"mode": "every_cycle"},
+            codex={},
+        )
+        reporting_cycle_start = rebar_ops.AgentSpec(
+            name="reporting",
+            kind="reporting_worker",
+            description="",
+            enabled=True,
+            cycle_order=70,
+            spec_path=REPO_ROOT / "ops" / "agents" / "reporting.py",
+            prompt_path=REPO_ROOT / "ops" / "agents" / "reporting.md",
+            dispatch={"mode": "every_cycle"},
+            codex={},
+        )
+        reporting_live = rebar_ops.AgentSpec(
+            name="reporting",
+            kind="reporting_worker",
+            description="",
+            enabled=True,
+            cycle_order=70,
+            spec_path=REPO_ROOT / "ops" / "agents" / "reporting.py",
+            prompt_path=REPO_ROOT / "ops" / "agents" / "reporting.md",
+            dispatch={"mode": "interval", "interval_seconds": 3600},
+            codex={},
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config = {"runtime": {"artifact_dir": temp_dir}}
+            with mock.patch.object(
+                rebar_ops,
+                "load_agent_specs",
+                return_value=[supervisor, reporting_live],
+            ), mock.patch.object(
+                rebar_ops,
+                "queue_counts",
+                return_value={"ready": 1, "in_progress": 0, "done": 374, "blocked": 0},
+            ), mock.patch.object(
+                rebar_ops,
+                "tracked_json_blob_count",
+                return_value=0,
+            ), mock.patch.object(
+                rebar_ops,
+                "build_anomalies",
+                return_value=[],
+            ), mock.patch.object(
+                rebar_ops,
+                "utcnow",
+                return_value="2026-03-15T08:00:00+00:00",
+            ):
+                state = rebar_ops.update_loop_state(
+                    config,
+                    [supervisor, reporting_cycle_start],
+                    [],
+                    [],
+                    [],
+                    {},
+                    {},
+                )
+
+        registry = {item["name"]: item for item in state["agent_registry"]}
+        self.assertEqual(registry["reporting"]["dispatch_mode"], "interval")
+
 
 if __name__ == "__main__":
     unittest.main()
