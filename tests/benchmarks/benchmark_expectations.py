@@ -319,6 +319,10 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
             "module-subn-callable-numbered-quantified-nested-group-alternation-c-branch-first-match-only-warm-str",
             "pattern-sub-callable-named-quantified-nested-group-alternation-repeated-mixed-purged-str",
             "pattern-subn-callable-named-quantified-nested-group-alternation-c-branch-first-match-only-purged-str",
+            "module-sub-callable-numbered-nested-group-alternation-branch-local-backreference-b-branch-warm-str",
+            "module-subn-callable-numbered-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
+            "pattern-sub-callable-named-nested-group-alternation-branch-local-backreference-c-branch-purged-str",
+            "pattern-subn-callable-named-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-str",
         ),
     },
     "branch-local-backreference-boundary": {
