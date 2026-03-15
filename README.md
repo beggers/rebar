@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | The published correctness slice is now fully passing, but it is still narrow and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 now has `RBR-0364` seeded as the surviving follow-on so, after the current quantified nested-group alternation plus branch-local-backreference callable-replacement parity step lands for `a((b|c)+)\\2d` and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d`, the same bounded slice reaches the existing `nested_group_callable_replacement_boundary.py` Python-path benchmark surface before broader counted repeats, replacement-template variants, or deeper nested grouped execution broaden the queue. |
-| Work queue | `1` ready, `0` in progress, `366` done, `0` blocked |
+| Current milestone | Milestone 2 now has `RBR-0366` seeded as the surviving follow-on so, once the queued quantified nested-group alternation plus branch-local-backreference callable-replacement benchmark catch-up drains for `a((b|c)+)\\2d` and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d`, the next bounded frontier reopens on a broader `{1,4}` callable-replacement correctness pack for `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d` before open-ended counted repeats, replacement-template variants, or deeper nested grouped execution broaden the queue. |
+| Work queue | `1` ready, `0` in progress, `368` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -35,19 +35,19 @@ _These correctness counts cover only the published slice. Overall delivery estim
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `521` |
-| Workloads with real `rebar` timings | `497` |
+| Published workloads | `525` |
+| Workloads with real `rebar` timings | `501` |
 | Known-gap workloads | `24` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native smoke and full-suite modes remain available for ad hoc runs and tests via `--native-smoke` and `--native-full` when you pass an explicit `--report` path._
 
-_README speedup rollups stay omitted while only `497` of `521` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `501` of `525` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- Keep `RBR-0364` queued so the now-zero-gap quantified callable-replacement slice for `a((b|c)+)\\2d` and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d` reaches the existing Python-path benchmark surface before the frontier broadens again.
+- Keep `RBR-0366` queued so, once the current quantified callable-replacement benchmark catch-up drains, the broader `{1,4}` callable-replacement slice for `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d` reopens the existing correctness frontier before open-ended counted repeats, replacement-template variants, or deeper nested grouped execution broaden the queue.
 
 ### Current Risks
 
