@@ -32,6 +32,8 @@ EXPECTED_PUBLISHED_FIXTURE_NAMES = (
     "named_group_workflows.py",
     "optional_group_workflows.py",
     "nested_group_workflows.py",
+    "nested_group_alternation_branch_local_backreference_workflows.py",
+    "quantified_alternation_branch_local_backreference_workflows.py",
 )
 EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
     sorted(
@@ -147,6 +149,50 @@ FIXTURE_BUNDLES = (
             {
                 r"a((b))d",
                 r"a(?P<outer>(?P<inner>b))d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 2,
+            }
+        ),
+    ),
+    _fixture_bundle(
+        "nested_group_alternation_branch_local_backreference_workflows.py",
+        selected_case_ids=(
+            "nested-group-alternation-branch-local-numbered-backreference-module-search-b-branch-str",
+            "nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-c-branch-str",
+            "nested-group-alternation-branch-local-named-backreference-module-search-c-branch-str",
+            "nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-b-branch-str",
+        ),
+        expected_manifest_id="nested-group-alternation-branch-local-backreference-workflows",
+        expected_patterns=frozenset(
+            {
+                r"a((b|c))\2d",
+                r"a(?P<outer>(?P<inner>b|c))(?P=inner)d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 2,
+            }
+        ),
+    ),
+    _fixture_bundle(
+        "quantified_alternation_branch_local_backreference_workflows.py",
+        selected_case_ids=(
+            "quantified-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
+            "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-second-repetition-b-branch-str",
+            "quantified-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-str",
+            "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-second-repetition-mixed-branches-str",
+        ),
+        expected_manifest_id="quantified-alternation-branch-local-backreference-workflows",
+        expected_patterns=frozenset(
+            {
+                r"a((b|c)\2){1,2}d",
+                r"a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d",
             }
         ),
         expected_operation_helper_counts=Counter(
