@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now has `RBR-0350` seeded as the surviving follow-on so the quantified nested-group alternation callable-replacement workflows for `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d` move behind Rust-backed parity once `RBR-0348` publishes the bounded correctness slice, before benchmark catch-up, broader counted repeats, branch-local-backreference callbacks, or deeper nested grouped execution broaden the queue.
+Milestone 2 now has `RBR-0352` seeded as the surviving follow-on so the quantified nested-group alternation callable-replacement benchmark slice for `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d` lands on the existing Python-path `nested_group_callable_replacement_boundary.py` surface once `RBR-0350` moves that bounded correctness slice behind Rust-backed parity, before broader counted repeats, branch-local-backreference callbacks, or deeper nested grouped execution broaden the queue.
 
 ## Ordered Work
-1. Land `RBR-0350` to convert the quantified nested-group alternation callable-replacement slice behind `rebar._rebar` through `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_quantified_nested_group_alternation_callable_replacement_parity.py`, and `reports/correctness/latest.py`, adding only the minimal Rust-backed callable-replacement behavior needed for the numbered and named `sub()` / `subn()` cases that `RBR-0348` publishes.
+1. Land `RBR-0352` to extend `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` so the existing Python-path benchmark publication records real timings for the bounded quantified nested-group alternation callable-replacement workflows from `RBR-0350` without forking another benchmark family.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
