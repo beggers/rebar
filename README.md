@@ -13,19 +13,19 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, keeping correctness and the published Python-path benchmark surface aligned at the current frontier. |
 | Delivery estimate | The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 now has `RBR-0360` seeded as the surviving follow-on so the quantified nested-group alternation plus branch-local-backreference callable-replacement slice for `a((b|c)+)\\2d` and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d` reaches the published correctness surface after `RBR-0358` closes the adjacent benchmark gap on `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, before broader counted repeats, replacement-template variants, or deeper nested grouped execution broaden the queue. |
-| Work queue | `1` ready, `0` in progress, `362` done, `0` blocked |
+| Current milestone | Milestone 2 now has `RBR-0362` seeded as the surviving follow-on so, once `RBR-0360` publishes the quantified nested-group alternation plus branch-local-backreference callable-replacement correctness pack for `a((b|c)+)\\2d` and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d`, the same bounded slice reaches Rust-backed parity before adjacent benchmark catch-up, broader counted repeats, replacement-template variants, or deeper nested grouped execution broaden the queue. |
+| Work queue | `1` ready, `0` in progress, `364` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `849` |
+| Published cases | `857` |
 | Passing in published slice | `849` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `94` |
+| Honest gaps (`unimplemented`) | `8` |
+| Covered manifests | `95` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
 _These correctness counts cover only the published slice. Overall delivery estimate: The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity._
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `497` of `521` published workloa
 
 ### Immediate Next Steps
 
-- Keep `RBR-0360` queued so, after `RBR-0358` closes the remaining benchmark gap for `a((b|c))\\2d` / `a(?P<outer>(?P<inner>b|c))(?P=inner)d` on `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, the adjacent quantified callable-replacement slice for `a((b|c)+)\\2d` and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d` reaches the published correctness surface.
+- Keep `RBR-0362` queued so the current quantified callable-replacement slice for `a((b|c)+)\\2d` and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d` reaches Rust-backed parity before adjacent benchmark catch-up.
 
 ### Current Risks
 
@@ -57,7 +57,7 @@ _README speedup rollups stay omitted while only `497` of `521` published workloa
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published correctness slice is still intentionally narrow, but it now passes cleanly within that bounded surface, so it is useful frontier signal rather than evidence of broad drop-in parity.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published correctness slice is still intentionally narrow and still carries eight explicit `unimplemented` callable-replacement cases at the frontier, so it is useful signal rather than evidence of broad drop-in parity.
 
 The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice: across eight published parser workloads it is about 2x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
