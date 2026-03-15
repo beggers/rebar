@@ -36,6 +36,152 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("pattern_call", "subn"): 2,
     }
 )
+SUPPLEMENTAL_NO_MATCH_CASES = (
+    pytest.param(
+        False,
+        "sub",
+        r"a((b|c){1,})\2d",
+        r"\1x",
+        "zzabdzz",
+        0,
+        id="module-open-ended-numbered-sub-no-match",
+    ),
+    pytest.param(
+        False,
+        "subn",
+        r"a((b|c){1,})\2d",
+        r"\2x",
+        "zzabdzz",
+        1,
+        id="module-open-ended-numbered-subn-no-match",
+    ),
+    pytest.param(
+        True,
+        "sub",
+        r"a((b|c){1,})\2d",
+        r"\1x",
+        "zzabdzz",
+        0,
+        id="pattern-open-ended-numbered-sub-no-match",
+    ),
+    pytest.param(
+        True,
+        "subn",
+        r"a((b|c){1,})\2d",
+        r"\2x",
+        "zzabdzz",
+        1,
+        id="pattern-open-ended-numbered-subn-no-match",
+    ),
+    pytest.param(
+        False,
+        "sub",
+        r"a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d",
+        r"\g<outer>x",
+        "zzabdzz",
+        0,
+        id="module-open-ended-named-sub-no-match",
+    ),
+    pytest.param(
+        False,
+        "subn",
+        r"a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d",
+        r"\g<inner>x",
+        "zzabdzz",
+        1,
+        id="module-open-ended-named-subn-no-match",
+    ),
+    pytest.param(
+        True,
+        "sub",
+        r"a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d",
+        r"\g<outer>x",
+        "zzabdzz",
+        0,
+        id="pattern-open-ended-named-sub-no-match",
+    ),
+    pytest.param(
+        True,
+        "subn",
+        r"a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d",
+        r"\g<inner>x",
+        "zzabdzz",
+        1,
+        id="pattern-open-ended-named-subn-no-match",
+    ),
+    pytest.param(
+        False,
+        "sub",
+        r"a((b|c){2,})\2d",
+        r"\1x",
+        "zzabbdzz",
+        0,
+        id="module-broader-range-numbered-sub-no-match",
+    ),
+    pytest.param(
+        False,
+        "subn",
+        r"a((b|c){2,})\2d",
+        r"\2x",
+        "zzabbdzz",
+        1,
+        id="module-broader-range-numbered-subn-no-match",
+    ),
+    pytest.param(
+        True,
+        "sub",
+        r"a((b|c){2,})\2d",
+        r"\1x",
+        "zzabbdzz",
+        0,
+        id="pattern-broader-range-numbered-sub-no-match",
+    ),
+    pytest.param(
+        True,
+        "subn",
+        r"a((b|c){2,})\2d",
+        r"\2x",
+        "zzabbdzz",
+        1,
+        id="pattern-broader-range-numbered-subn-no-match",
+    ),
+    pytest.param(
+        False,
+        "sub",
+        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        r"\g<outer>x",
+        "zzabbdzz",
+        0,
+        id="module-broader-range-named-sub-no-match",
+    ),
+    pytest.param(
+        False,
+        "subn",
+        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        r"\g<inner>x",
+        "zzabbdzz",
+        1,
+        id="module-broader-range-named-subn-no-match",
+    ),
+    pytest.param(
+        True,
+        "sub",
+        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        r"\g<outer>x",
+        "zzabbdzz",
+        0,
+        id="pattern-broader-range-named-sub-no-match",
+    ),
+    pytest.param(
+        True,
+        "subn",
+        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        r"\g<inner>x",
+        "zzabbdzz",
+        1,
+        id="pattern-broader-range-named-subn-no-match",
+    ),
+)
 
 
 @dataclass(frozen=True)
@@ -252,3 +398,39 @@ def test_replacement_match_capture_and_expand_matches_cpython(
 
     assert type(observed) is type(expected)
     assert observed == expected
+
+
+@pytest.mark.parametrize(
+    ("use_compiled_pattern", "helper", "pattern", "replacement", "string", "count"),
+    SUPPLEMENTAL_NO_MATCH_CASES,
+)
+def test_no_match_replacement_paths_match_cpython(
+    regex_backend: tuple[str, object],
+    use_compiled_pattern: bool,
+    helper: str,
+    pattern: str,
+    replacement: str,
+    string: str,
+    count: int,
+) -> None:
+    backend_name, backend = regex_backend
+
+    if use_compiled_pattern:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+        )
+        observed = getattr(observed_pattern, helper)(replacement, string, count=count)
+        expected = getattr(expected_pattern, helper)(replacement, string, count=count)
+    else:
+        observed = getattr(backend, helper)(pattern, replacement, string, count=count)
+        expected = getattr(re, helper)(pattern, replacement, string, count=count)
+
+    expected_result: str | tuple[str, int]
+    if helper == "sub":
+        expected_result = string
+    else:
+        expected_result = (string, 0)
+
+    assert observed == expected == expected_result
