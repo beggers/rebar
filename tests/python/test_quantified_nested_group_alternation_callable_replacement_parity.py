@@ -24,7 +24,7 @@ if str(PYTHON_SOURCE) not in sys.path:
 
 import rebar
 from rebar_harness.correctness import FixtureCase, load_fixture_manifest
-from tests.python.test_callable_replacement_parity_suite import (
+from tests.python.callable_replacement_support import (
     assert_callable_replacement_match_parity,
 )
 
