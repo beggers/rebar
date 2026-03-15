@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 import pathlib
 import re
 import sys
-import unittest
+
+import pytest
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -13,128 +15,114 @@ if str(PYTHON_SOURCE) not in sys.path:
     sys.path.insert(0, str(PYTHON_SOURCE))
 
 
-import rebar
+from tests.python.fixture_parity_support import (
+    assert_invalid_match_group_access_parity,
+    assert_match_convenience_api_parity,
+    assert_match_result_parity,
+    assert_valid_match_group_access_parity,
+    compile_with_cpython_parity,
+)
 
 
-class RebarOptionalGroupAlternationParityTest(unittest.TestCase):
-    def setUp(self) -> None:
-        rebar.purge()
+@dataclass(frozen=True)
+class OptionalGroupAlternationCase:
+    id: str
+    pattern: str
+    helper: str
+    string: str
+    use_compiled_pattern: bool = False
 
-    def tearDown(self) -> None:
-        rebar.purge()
 
-    def _assert_match_parity(
-        self,
-        observed: rebar.Match,
-        expected: re.Match[str],
-        *,
-        group_names: tuple[str, ...] = (),
-    ) -> None:
-        self.assertIs(type(observed), rebar.Match)
-        self.assertEqual(observed.group(0), expected.group(0))
-        self.assertEqual(observed.group(1), expected.group(1))
-        self.assertEqual(observed.groups(), expected.groups())
-        self.assertEqual(observed.groupdict(), expected.groupdict())
-        self.assertEqual(observed.span(), expected.span())
-        self.assertEqual(observed.span(1), expected.span(1))
-        self.assertEqual(observed.start(1), expected.start(1))
-        self.assertEqual(observed.end(1), expected.end(1))
-        self.assertEqual(observed.lastindex, expected.lastindex)
-        self.assertEqual(observed.lastgroup, expected.lastgroup)
-        for group_name in group_names:
-            self.assertEqual(observed.group(group_name), expected.group(group_name))
-            self.assertEqual(observed.span(group_name), expected.span(group_name))
+COMPILE_PATTERNS = (
+    "a(b|c)?d",
+    "a(?P<word>b|c)?d",
+)
 
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "optional-group alternation parity requires rebar._rebar",
+OPTIONAL_GROUP_ALTERNATION_CASES = (
+    OptionalGroupAlternationCase(
+        id="module-search-numbered-present",
+        pattern="a(b|c)?d",
+        helper="search",
+        string="zzacdzz",
+    ),
+    OptionalGroupAlternationCase(
+        id="pattern-fullmatch-numbered-absent",
+        pattern="a(b|c)?d",
+        helper="fullmatch",
+        string="ad",
+        use_compiled_pattern=True,
+    ),
+    OptionalGroupAlternationCase(
+        id="module-search-named-present",
+        pattern="a(?P<word>b|c)?d",
+        helper="search",
+        string="zzabdzz",
+    ),
+    OptionalGroupAlternationCase(
+        id="pattern-fullmatch-named-absent",
+        pattern="a(?P<word>b|c)?d",
+        helper="fullmatch",
+        string="ad",
+        use_compiled_pattern=True,
+    ),
+    OptionalGroupAlternationCase(
+        id="module-search-numbered-miss",
+        pattern="a(b|c)?d",
+        helper="search",
+        string="zzaedzz",
+    ),
+    OptionalGroupAlternationCase(
+        id="pattern-fullmatch-named-miss",
+        pattern="a(?P<word>b|c)?d",
+        helper="fullmatch",
+        string="ae",
+        use_compiled_pattern=True,
+    ),
+)
+
+
+@pytest.mark.parametrize("pattern", COMPILE_PATTERNS)
+def test_compile_matches_cpython_optional_group_alternation_metadata(
+    regex_backend: tuple[str, object],
+    pattern: str,
+) -> None:
+    backend_name, backend = regex_backend
+    compile_with_cpython_parity(backend_name, backend, pattern)
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPTIONAL_GROUP_ALTERNATION_CASES,
+    ids=lambda case: case.id,
+)
+def test_optional_group_alternation_match_paths_match_cpython(
+    regex_backend: tuple[str, object],
+    case: OptionalGroupAlternationCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    if case.use_compiled_pattern:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            case.pattern,
+        )
+        observed = getattr(observed_pattern, case.helper)(case.string)
+        expected = getattr(expected_pattern, case.helper)(case.string)
+    else:
+        observed = getattr(backend, case.helper)(case.pattern, case.string)
+        expected = getattr(re, case.helper)(case.pattern, case.string)
+
+    assert_match_result_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=True,
     )
-    def test_compile_matches_cpython_optional_group_alternation_metadata(self) -> None:
-        pattern = "a(b|c)?d"
-        observed = rebar.compile(pattern)
-        expected = re.compile(pattern)
 
-        self.assertIs(observed, rebar.compile(pattern))
-        self.assertEqual(observed.pattern, expected.pattern)
-        self.assertEqual(observed.flags, expected.flags)
-        self.assertEqual(observed.groups, expected.groups)
-        self.assertEqual(observed.groupindex, expected.groupindex)
+    if expected is None:
+        return
 
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "optional-group alternation parity requires rebar._rebar",
-    )
-    def test_module_search_matches_cpython_optional_group_alternation_present_behavior(self) -> None:
-        pattern = "a(b|c)?d"
-        observed = rebar.search(pattern, "zzacdzz")
-        expected = re.search(pattern, "zzacdzz")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "optional-group alternation parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_optional_group_alternation_absent_behavior(self) -> None:
-        pattern = "a(b|c)?d"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("ad")
-        expected = expected_pattern.fullmatch("ad")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "optional-group alternation parity requires rebar._rebar",
-    )
-    def test_compile_matches_cpython_named_optional_group_alternation_metadata(self) -> None:
-        pattern = "a(?P<word>b|c)?d"
-        observed = rebar.compile(pattern)
-        expected = re.compile(pattern)
-
-        self.assertIs(observed, rebar.compile(pattern))
-        self.assertEqual(observed.pattern, expected.pattern)
-        self.assertEqual(observed.flags, expected.flags)
-        self.assertEqual(observed.groups, expected.groups)
-        self.assertEqual(observed.groupindex, expected.groupindex)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "optional-group alternation parity requires rebar._rebar",
-    )
-    def test_module_search_matches_cpython_named_optional_group_alternation_present_behavior(self) -> None:
-        pattern = "a(?P<word>b|c)?d"
-        observed = rebar.search(pattern, "zzabdzz")
-        expected = re.search(pattern, "zzabdzz")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected, group_names=("word",))
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "optional-group alternation parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_named_optional_group_alternation_absent_behavior(
-        self,
-    ) -> None:
-        pattern = "a(?P<word>b|c)?d"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("ad")
-        expected = expected_pattern.fullmatch("ad")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected, group_names=("word",))
-
-
-if __name__ == "__main__":
-    unittest.main()
+    assert_match_convenience_api_parity(observed, expected)
+    assert_valid_match_group_access_parity(observed, expected)
+    assert_invalid_match_group_access_parity(observed, expected)
