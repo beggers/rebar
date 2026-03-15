@@ -1,8 +1,9 @@
 # RBR-0398: Fold the bounded-wildcard workflow wrapper into the fixture-backed parity suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Delete the last standalone bounded-wildcard workflow wrapper by moving its direct workflow and fake-native-boundary assertions onto `tests/python/test_bounded_wildcard_parity_suite.py`, so this surface lives on one backend-parameterized pytest path instead of split between a fixture-backed suite and a separate `unittest` bootstrap file.
@@ -38,3 +39,13 @@ Created: 2026-03-15
 - The runtime dashboard is clean and current for `HEAD`, the ready queue is empty, and both tracked and live JSON counts are zero (`tracked_json_blob_count: 0`, `tracked_json_blob_delta: 0`, `git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), so the next architecture priority is removing duplicate Python parity plumbing rather than another JSON burn-down.
 - `tests/python/test_bounded_wildcard_workflows.py` is still a 118-line legacy wrapper with its own repo bootstrap, cache management, and fake-native-boundary path even though `tests/python/test_bounded_wildcard_parity_suite.py` already owns the same bounded-wildcard feature family on the standard fixture-backed pytest path.
 - Follow the same consolidation pattern as `RBR-0396`: one readable owning pytest suite, no new manifest schema, and deletion of the superseded wrapper file when the absorbed assertions are preserved.
+
+## Completion
+- Folded the remaining bounded-wildcard wrapper coverage into `tests/python/test_bounded_wildcard_parity_suite.py`, keeping the suite pinned to the published `literal_flag_workflows.py::flag-unsupported-nonliteral-ignorecase-search` and `collection_replacement_workflows.py::module-findall-nonliteral-str` rows while adding the rebar-only direct workflow, placeholder-message, and fake-native-boundary observations from the deleted wrapper.
+- Preserved the direct `a.c` workflow coverage inside the owning pytest file by checking the module `findall()` parity case, the `IGNORECASE` module `search()` `Match` type plus `.group(0)` / `.span()` parity, cached `compile("a.c")` reuse plus compiled `findall()` hits, and the existing unsupported `[ab]c` / compiled `IGNORECASE` `findall()` placeholder messages.
+- Deleted `tests/python/test_bounded_wildcard_workflows.py` after moving its fake-native purge, compile/match/findall call-sequence assertions into the consolidated pytest suite.
+
+## Verification
+- `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_bounded_wildcard_parity_suite.py`
+- `rg --files tests/python | rg 'test_bounded_wildcard_workflows\\.py$'`
+- `git diff --name-status -- tests/python/test_bounded_wildcard_parity_suite.py tests/python/test_bounded_wildcard_workflows.py`

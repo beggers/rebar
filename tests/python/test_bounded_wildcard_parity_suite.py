@@ -6,6 +6,7 @@ import re
 
 import pytest
 
+import rebar
 from rebar_harness.correctness import (
     FixtureCase,
     FixtureManifest,
@@ -61,6 +62,47 @@ class PatternCase:
     flags: int = 0
     pos: int = 0
     endpos: int | None = None
+
+
+class _FakeNativeBoundary:
+    def __init__(self) -> None:
+        self.calls: list[tuple[object, ...]] = []
+
+    def boundary_compile(self, pattern: str | bytes, flags: int) -> tuple[str, int, bool]:
+        self.calls.append(("compile", pattern, flags))
+        return ("compiled", 34, False)
+
+    def boundary_literal_match(
+        self,
+        pattern: str | bytes,
+        flags: int,
+        mode: str,
+        string: str | bytes,
+        pos: int,
+        endpos: int | None,
+    ) -> tuple[str, int, int, tuple[int, int] | None]:
+        self.calls.append(("match", pattern, flags, mode, string, pos, endpos))
+        return ("matched", 0, len(string), (0, 3))
+
+    def boundary_literal_findall(
+        self,
+        pattern: str | bytes,
+        flags: int,
+        string: str | bytes,
+        pos: int,
+        endpos: int | None,
+    ) -> tuple[str, list[str] | list[bytes]]:
+        self.calls.append(("findall", pattern, flags, string, pos, endpos))
+        return ("supported", ["abc"])
+
+    def scaffold_raise(self, helper_name: str) -> object:
+        raise NotImplementedError(rebar._placeholder_message(helper_name))
+
+    def scaffold_pattern_raise(self, method_name: str) -> object:
+        raise NotImplementedError(rebar._pattern_placeholder_message(method_name))
+
+    def scaffold_purge(self) -> None:
+        self.calls.append(("purge",))
 
 
 def _fixture_bundle(
@@ -254,6 +296,38 @@ def test_module_findall_matches_cpython(
     assert observed == expected
 
 
+def test_rebar_bounded_wildcard_direct_workflow_matches_cpython() -> None:
+    assert rebar.findall("a.c", "abc") == re.findall("a.c", "abc")
+
+    observed = rebar.search("a.c", "ABC", rebar.IGNORECASE)
+    expected = re.search("a.c", "ABC", re.IGNORECASE)
+
+    assert expected is not None
+    assert observed is not None
+    assert type(observed) is rebar.Match
+    assert observed.group(0) == expected.group(0)
+    assert observed.span() == expected.span()
+
+    compiled = rebar.compile("a.c")
+    assert compiled is rebar.compile("a.c")
+    assert compiled.findall("zabcaxc") == ["abc", "axc"]
+
+
+def test_rebar_bounded_wildcard_unsupported_paths_keep_placeholder_messages() -> None:
+    with pytest.raises(
+        NotImplementedError,
+        match=r"rebar\.compile\(\) is a scaffold placeholder",
+    ):
+        rebar.search("[ab]c", "abc")
+
+    unsupported = rebar.compile("abc", rebar.IGNORECASE)
+    with pytest.raises(
+        NotImplementedError,
+        match=r"rebar\.Pattern\.findall\(\) is a scaffold placeholder",
+    ):
+        unsupported.findall("ABC")
+
+
 @pytest.mark.parametrize("case", PATTERN_MATCH_CASES, ids=lambda case: case.id)
 def test_pattern_match_helpers_match_cpython(
     regex_backend: tuple[str, object],
@@ -296,3 +370,28 @@ def test_pattern_collection_helpers_match_cpython(
         return
 
     assert observed == expected
+
+
+def test_fake_native_boundary_handles_bounded_wildcard_wrappers(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake_native = _FakeNativeBoundary()
+    monkeypatch.setattr(rebar, "_native", fake_native)
+
+    rebar.purge()
+
+    search_match = rebar.search("a.c", "ABC", rebar.IGNORECASE)
+
+    assert search_match is not None
+    assert type(search_match) is rebar.Match
+    assert search_match.group(0) == "ABC"
+    assert search_match.span() == (0, 3)
+    assert rebar.findall("a.c", "abc") == ["abc"]
+
+    assert fake_native.calls == [
+        ("purge",),
+        ("compile", "a.c", int(rebar.IGNORECASE)),
+        ("match", "a.c", 34, "search", "ABC", 0, None),
+        ("compile", "a.c", 0),
+        ("findall", "a.c", 34, "abc", 0, None),
+    ]
