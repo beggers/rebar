@@ -1,8 +1,9 @@
 # RBR-0379: Collapse exact and ranged counted-repeat quantified-group parity onto one fixture-backed pytest suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Delete the two remaining legacy `unittest` modules for the bounded exact `{2}` and ranged `{1,2}` quantified-group parity slice by replacing them with one backend-parameterized pytest suite that reads the already-published correctness fixtures and reuses the shared counted-repeat parity support.
@@ -42,3 +43,13 @@ Created: 2026-03-15
 - `tests/python/test_exact_repeat_quantified_group_parity.py` and `tests/python/test_ranged_repeat_quantified_group_parity.py` are still near-identical legacy holdouts at 138 lines each: both repeat repo bootstrap, native-module gating, cache-purge hooks, compile metadata checks, and the same file-local match-parity helper even though the same six-case frontiers already exist as ordinary Python fixtures.
 - Build on `RBR-0371`, which already extracted shared counted-repeat parity support for the fixture-backed pytest path, and keep this cleanup independent of the active feature queue.
 - Both tracked and live JSON counts are already zero in the current checkout, so deleting duplicated Python parity plumbing is the next-priority architecture cleanup.
+
+## Completion
+- Added `tests/python/test_counted_repeat_quantified_group_parity_suite.py` as one backend-parameterized fixture-backed pytest suite for the bounded exact `{2}` and ranged `{1,2}` counted-repeat quantified-group frontiers.
+- Kept one manifest-alignment assertion per published fixture by pinning each manifest id, exact case-id set, pattern set, and `Counter((operation, helper))` distribution before reusing the loaded `FixtureCase` rows for compile metadata, module `search()`, and compiled-`Pattern.fullmatch()` parity.
+- Deleted `tests/python/test_exact_repeat_quantified_group_parity.py` and `tests/python/test_ranged_repeat_quantified_group_parity.py`.
+
+## Verification
+- `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_counted_repeat_quantified_group_parity_suite.py`
+- `git diff --name-status -- tests/python/test_counted_repeat_quantified_group_parity_suite.py tests/python/test_exact_repeat_quantified_group_parity.py tests/python/test_ranged_repeat_quantified_group_parity.py`
+- `rg --files tests/python | rg 'test_(exact_repeat|ranged_repeat)_quantified_group_parity\\.py$'`
