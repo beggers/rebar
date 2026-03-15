@@ -50,43 +50,73 @@ SCORECARD_REPORT = ScorecardReportSpec(
     report_attribute="REPORT",
     scorecard_kind="benchmark",
 )
-DEFAULT_MANIFEST_PATHS = (
-    REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "pattern_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "collection_replacement_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "literal_flag_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "grouped_named_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "numbered_backreference_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "grouped_segment_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "literal_alternation_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_replacement_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_callable_replacement_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_alternation_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_callable_replacement_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "branch_local_backreference_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "exact_repeat_quantified_group_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "ranged_repeat_quantified_group_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "wider_ranged_repeat_quantified_group_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "quantified_alternation_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "optional_group_alternation_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_no_else_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_empty_else_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_empty_yes_else_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_fully_empty_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py",
-)
+BENCHMARK_WORKLOADS_ROOT = REPO_ROOT / "benchmarks" / "workloads"
+PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR = "published-full-suite"
+BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR = "built-native-smoke"
+COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR = "compile-smoke-provenance"
+_BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR = {
+    PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR: (
+        "compile_matrix.py",
+        "module_boundary.py",
+        "pattern_boundary.py",
+        "collection_replacement_boundary.py",
+        "literal_flag_boundary.py",
+        "grouped_named_boundary.py",
+        "numbered_backreference_boundary.py",
+        "grouped_segment_boundary.py",
+        "literal_alternation_boundary.py",
+        "grouped_alternation_boundary.py",
+        "grouped_alternation_replacement_boundary.py",
+        "grouped_alternation_callable_replacement_boundary.py",
+        "nested_group_boundary.py",
+        "nested_group_alternation_boundary.py",
+        "nested_group_replacement_boundary.py",
+        "nested_group_callable_replacement_boundary.py",
+        "branch_local_backreference_boundary.py",
+        "optional_group_boundary.py",
+        "exact_repeat_quantified_group_boundary.py",
+        "ranged_repeat_quantified_group_boundary.py",
+        "wider_ranged_repeat_quantified_group_boundary.py",
+        "open_ended_quantified_group_boundary.py",
+        "quantified_alternation_boundary.py",
+        "optional_group_alternation_boundary.py",
+        "conditional_group_exists_boundary.py",
+        "conditional_group_exists_no_else_boundary.py",
+        "conditional_group_exists_empty_else_boundary.py",
+        "conditional_group_exists_empty_yes_else_boundary.py",
+        "conditional_group_exists_fully_empty_boundary.py",
+        "regression_matrix.py",
+    ),
+    BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR: (
+        "pattern_boundary.py",
+        "collection_replacement_boundary.py",
+        "literal_flag_boundary.py",
+    ),
+    COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR: ("compile_smoke.py",),
+}
+
+
+def select_benchmark_manifest_paths(selector: str) -> tuple[pathlib.Path, ...]:
+    try:
+        manifest_filenames = _BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR[selector]
+    except KeyError as exc:
+        raise ValueError(f"unknown benchmark manifest selector {selector!r}") from exc
+    return tuple(BENCHMARK_WORKLOADS_ROOT / filename for filename in manifest_filenames)
+
+
+def select_benchmark_manifest_path(selector: str) -> pathlib.Path:
+    manifest_paths = select_benchmark_manifest_paths(selector)
+    if len(manifest_paths) != 1:
+        raise ValueError(
+            f"benchmark manifest selector {selector!r} does not resolve to exactly one path"
+        )
+    return manifest_paths[0]
+
+
+DEFAULT_MANIFEST_PATHS = select_benchmark_manifest_paths(PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR)
 DEFAULT_REPORT_PATH = SCORECARD_REPORT.published_path
-DEFAULT_NATIVE_SMOKE_MANIFEST_PATHS = (
-    REPO_ROOT / "benchmarks" / "workloads" / "pattern_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "collection_replacement_boundary.py",
-    REPO_ROOT / "benchmarks" / "workloads" / "literal_flag_boundary.py",
+DEFAULT_NATIVE_SMOKE_MANIFEST_PATHS = select_benchmark_manifest_paths(
+    BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR
 )
 SOURCE_TREE_SHIM_MODE = "source-tree-shim"
 BUILT_NATIVE_MODE = "built-native"
@@ -1440,8 +1470,11 @@ def run_benchmarks(
     adapter_mode: str = SOURCE_TREE_SHIM_MODE,
     allow_fallback: bool = True,
 ) -> dict[str, Any]:
+    default_manifest_paths = list(
+        select_benchmark_manifest_paths(PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR)
+    )
     resolved_manifest_paths = [
-        path.resolve() for path in (manifest_paths or list(DEFAULT_MANIFEST_PATHS))
+        path.resolve() for path in (manifest_paths or default_manifest_paths)
     ]
     resolved_report_path = (
         SCORECARD_REPORT.validate_path(report_path) if report_path is not None else None
@@ -1483,7 +1516,9 @@ def run_built_native_smoke_benchmarks(
     report_path: pathlib.Path | None = None,
 ) -> dict[str, Any]:
     return run_benchmarks(
-        manifest_paths=list(DEFAULT_NATIVE_SMOKE_MANIFEST_PATHS),
+        manifest_paths=list(
+            select_benchmark_manifest_paths(BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR)
+        ),
         report_path=report_path,
         smoke_only=True,
         adapter_mode=BUILT_NATIVE_MODE,
@@ -1495,7 +1530,9 @@ def run_built_native_full_benchmarks(
     report_path: pathlib.Path | None = None,
 ) -> dict[str, Any]:
     return run_benchmarks(
-        manifest_paths=list(DEFAULT_MANIFEST_PATHS),
+        manifest_paths=list(
+            select_benchmark_manifest_paths(PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR)
+        ),
         report_path=report_path,
         smoke_only=False,
         adapter_mode=BUILT_NATIVE_MODE,

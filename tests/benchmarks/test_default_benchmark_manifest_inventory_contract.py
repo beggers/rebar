@@ -7,12 +7,20 @@ import unittest
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-WORKLOADS_ROOT = REPO_ROOT / "benchmarks" / "workloads"
 PYTHON_SOURCE = REPO_ROOT / "python"
 if str(PYTHON_SOURCE) not in sys.path:
     sys.path.append(str(PYTHON_SOURCE))
 
-from rebar_harness.benchmarks import DEFAULT_MANIFEST_PATHS, load_manifest, load_manifests
+from rebar_harness.benchmarks import (
+    BENCHMARK_WORKLOADS_ROOT,
+    BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR,
+    COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR,
+    PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR,
+    load_manifest,
+    load_manifests,
+    select_benchmark_manifest_path,
+    select_benchmark_manifest_paths,
+)
 
 
 def _duplicates(counter: Counter[str]) -> list[str]:
@@ -20,22 +28,53 @@ def _duplicates(counter: Counter[str]) -> list[str]:
 
 
 class DefaultBenchmarkManifestInventoryContractTest(unittest.TestCase):
-    def test_default_manifest_paths_are_unique_and_supported(self) -> None:
-        self.assertEqual(len(DEFAULT_MANIFEST_PATHS), len(set(DEFAULT_MANIFEST_PATHS)))
+    def test_published_full_suite_manifest_selector_is_unique_and_supported(self) -> None:
+        published_manifest_paths = select_benchmark_manifest_paths(
+            PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
+        )
+        self.assertEqual(len(published_manifest_paths), len(set(published_manifest_paths)))
 
-        for path in DEFAULT_MANIFEST_PATHS:
+        for path in published_manifest_paths:
             with self.subTest(path=str(path.relative_to(REPO_ROOT))):
-                self.assertTrue(path.is_relative_to(WORKLOADS_ROOT))
+                self.assertTrue(path.is_relative_to(BENCHMARK_WORKLOADS_ROOT))
                 self.assertTrue(path.is_file())
                 self.assertEqual(path.suffix, ".py")
 
-    def test_default_manifest_inventory_has_unique_manifest_and_workload_ids(
+    def test_shared_manifest_selectors_keep_expected_inventory_shapes(self) -> None:
+        published_manifest_paths = select_benchmark_manifest_paths(
+            PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
+        )
+        native_smoke_manifest_paths = select_benchmark_manifest_paths(
+            BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR
+        )
+        compile_smoke_manifest_path = select_benchmark_manifest_path(
+            COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR
+        )
+
+        self.assertEqual(len(published_manifest_paths), 30)
+        self.assertEqual(
+            [path.name for path in native_smoke_manifest_paths],
+            [
+                "pattern_boundary.py",
+                "collection_replacement_boundary.py",
+                "literal_flag_boundary.py",
+            ],
+        )
+        self.assertTrue(set(native_smoke_manifest_paths).issubset(set(published_manifest_paths)))
+        self.assertEqual(compile_smoke_manifest_path.name, "compile_smoke.py")
+        self.assertTrue(compile_smoke_manifest_path.is_relative_to(BENCHMARK_WORKLOADS_ROOT))
+        self.assertNotIn(compile_smoke_manifest_path, published_manifest_paths)
+
+    def test_published_full_suite_manifest_inventory_has_unique_manifest_and_workload_ids(
         self,
     ) -> None:
+        published_manifest_paths = select_benchmark_manifest_paths(
+            PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
+        )
         expected_manifest_ids = [
-            str(load_manifest(path)[0]["manifest_id"]) for path in DEFAULT_MANIFEST_PATHS
+            str(load_manifest(path)[0]["manifest_id"]) for path in published_manifest_paths
         ]
-        raw_manifests, workloads = load_manifests(list(DEFAULT_MANIFEST_PATHS))
+        raw_manifests, workloads = load_manifests(list(published_manifest_paths))
 
         self.assertEqual(
             [str(manifest["manifest_id"]) for manifest in raw_manifests],

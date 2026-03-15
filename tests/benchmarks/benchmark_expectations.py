@@ -16,11 +16,14 @@ if str(PYTHON_SOURCE) not in sys.path:
     sys.path.append(str(PYTHON_SOURCE))
 
 from rebar_harness.benchmarks import (
-    DEFAULT_MANIFEST_PATHS,
+    COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR,
+    PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR,
     determine_phase,
     determine_runner_version,
     load_manifest,
     load_manifests,
+    select_benchmark_manifest_path,
+    select_benchmark_manifest_paths,
     select_workloads,
     workload_to_payload,
 )
@@ -553,13 +556,17 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
 
 
 def _compile_smoke_manifest_path() -> pathlib.Path:
-    return DEFAULT_MANIFEST_PATHS[0].with_name("compile_smoke.py")
+    return select_benchmark_manifest_path(COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR)
+
+
+def _published_full_suite_manifest_paths() -> tuple[pathlib.Path, ...]:
+    return select_benchmark_manifest_paths(PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR)
 
 
 @cache
 def _source_tree_manifest_records() -> dict[str, tuple[pathlib.Path, dict[str, Any]]]:
     records: dict[str, tuple[pathlib.Path, dict[str, Any]]] = {}
-    for path in (_compile_smoke_manifest_path(), *DEFAULT_MANIFEST_PATHS):
+    for path in (_compile_smoke_manifest_path(), *_published_full_suite_manifest_paths()):
         raw_manifest, _ = load_manifest(path)
         manifest_id = str(raw_manifest["manifest_id"])
         if manifest_id in records:
@@ -680,15 +687,15 @@ def source_tree_scorecard_case(case_id: str) -> dict[str, Any]:
 
 def source_tree_combined_target_manifest_ids() -> tuple[str, ...]:
     target_manifest_ids = tuple(
-        manifest_id_for_path(path)
-        for path in DEFAULT_MANIFEST_PATHS
-        if manifest_id_for_path(path) not in BASE_SOURCE_TREE_MANIFEST_IDS
+        manifest_id
+        for path in _published_full_suite_manifest_paths()
+        if (manifest_id := manifest_id_for_path(path)) not in BASE_SOURCE_TREE_MANIFEST_IDS
     )
     target_ids = set(target_manifest_ids)
     missing_expectations = target_ids - set(SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS)
     if missing_expectations:
         raise AssertionError(
-            "source-tree combined manifest expectations drifted from DEFAULT_MANIFEST_PATHS: "
+            "source-tree combined manifest expectations drifted from the published full-suite selector: "
             f"missing {sorted(missing_expectations)}"
         )
     return target_manifest_ids
@@ -696,15 +703,16 @@ def source_tree_combined_target_manifest_ids() -> tuple[str, ...]:
 
 def selected_manifest_paths_for_target_manifest(target_manifest_id: str) -> list[pathlib.Path]:
     manifest_paths: list[pathlib.Path] = []
+    published_manifest_paths = _published_full_suite_manifest_paths()
     regression_path = next(
         (
             path
-            for path in DEFAULT_MANIFEST_PATHS
+            for path in published_manifest_paths
             if manifest_id_for_path(path) == "regression-matrix"
         ),
         None,
     )
-    for path in DEFAULT_MANIFEST_PATHS:
+    for path in published_manifest_paths:
         manifest_id = manifest_id_for_path(path)
         if manifest_id == "regression-matrix":
             continue
@@ -713,11 +721,13 @@ def selected_manifest_paths_for_target_manifest(target_manifest_id: str) -> list
             break
     else:
         raise AssertionError(
-            f"target manifest {target_manifest_id!r} is not in DEFAULT_MANIFEST_PATHS"
+            f"target manifest {target_manifest_id!r} is not in the published full-suite selector"
         )
     if target_manifest_id != "module-boundary":
         if regression_path is None:
-            raise AssertionError("DEFAULT_MANIFEST_PATHS is missing the regression-matrix manifest")
+            raise AssertionError(
+                "the published full-suite selector is missing the regression-matrix manifest"
+            )
         manifest_paths.append(regression_path)
     return manifest_paths
 

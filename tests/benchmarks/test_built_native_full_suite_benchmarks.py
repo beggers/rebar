@@ -18,7 +18,7 @@ class BuiltNativeFullSuiteBenchmarkTest(unittest.TestCase):
         assert_native_runner_uses_optional_report_path(
             self,
             runner=benchmarks.run_built_native_full_benchmarks,
-            expected_manifest_paths=benchmarks.DEFAULT_MANIFEST_PATHS,
+            expected_manifest_selector=benchmarks.PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR,
             expected_smoke_only=False,
         )
 
@@ -42,7 +42,10 @@ class BuiltNativeFullSuiteBenchmarkTest(unittest.TestCase):
         "built-native full-suite benchmark requires a maturin executable on PATH",
     )
     def test_native_full_mode_writes_built_native_report_with_known_gaps(self) -> None:
-        _, selected_workloads = benchmarks.load_manifests(list(benchmarks.DEFAULT_MANIFEST_PATHS))
+        published_manifest_paths = benchmarks.select_benchmark_manifest_paths(
+            benchmarks.PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
+        )
+        _, selected_workloads = benchmarks.load_manifests(list(published_manifest_paths))
         expected_total = len(selected_workloads)
         expected_parser = sum(1 for workload in selected_workloads if workload.family == "parser")
         expected_module = sum(1 for workload in selected_workloads if workload.family == "module")
@@ -60,7 +63,7 @@ class BuiltNativeFullSuiteBenchmarkTest(unittest.TestCase):
             scorecard,
             expected_phase="phase3-regression-stability-suite",
             expected_selection_mode="full",
-            expected_manifest_count=len(benchmarks.DEFAULT_MANIFEST_PATHS),
+            expected_manifest_count=len(published_manifest_paths),
         )
         self.assertEqual(scorecard["summary"]["total_workloads"], expected_total)
         self.assertEqual(scorecard["summary"]["parser_workloads"], expected_parser)

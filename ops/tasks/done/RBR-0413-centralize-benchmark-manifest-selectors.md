@@ -1,8 +1,9 @@
 # RBR-0413: Centralize benchmark manifest selectors in the harness
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Replace the current benchmark inventory path arithmetic with one small shared selector surface in `python/rebar_harness/benchmarks.py`, so the source-tree scorecard helpers, built-native smoke/full tests, and compile-smoke provenance checks stop depending on tuple slot order or `with_name("compile_smoke.py")` hacks.
@@ -45,3 +46,11 @@ Created: 2026-03-15
   - `tests/benchmarks/benchmark_expectations.py` synthesizes the compile-smoke manifest path with `DEFAULT_MANIFEST_PATHS[0].with_name("compile_smoke.py")`;
   - `tests/benchmarks/test_benchmark_adapter_provenance.py` repeats the same path hack; and
   - the built-native smoke/full and default-inventory contract tests import raw path tuples directly instead of going through one named selector surface.
+
+## Completion
+- 2026-03-15: Added `BENCHMARK_WORKLOADS_ROOT` plus the shared selector API in `python/rebar_harness/benchmarks.py`, with named selectors for the published full-suite pack, the built-native smoke pack, and the standalone compile-smoke provenance manifest while preserving the existing full-suite ordering and smoke-subset membership.
+- 2026-03-15: Switched the source-tree benchmark expectation helpers, compile-smoke provenance test, built-native smoke/full runner assertions, and the default benchmark inventory contract coverage to the selector API so they no longer depend on tuple slot order or `with_name("compile_smoke.py")` path surgery.
+
+## Verification
+- 2026-03-15: `PYTHONPATH=python .venv/bin/python -m pytest -q tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_benchmark_adapter_provenance.py tests/benchmarks/test_built_native_benchmark_smoke.py tests/benchmarks/test_built_native_full_suite_benchmarks.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`29 passed, 3 skipped, 814 subtests passed`)
+- 2026-03-15: `rg -n 'with_name\("compile_smoke\.py"\)|DEFAULT_MANIFEST_PATHS\[0\]' tests/benchmarks tests/python python/rebar_harness/benchmarks.py` (no matches)

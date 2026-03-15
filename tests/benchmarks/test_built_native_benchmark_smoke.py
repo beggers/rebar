@@ -18,7 +18,7 @@ class BuiltNativeBenchmarkSmokeTest(unittest.TestCase):
         assert_native_runner_uses_optional_report_path(
             self,
             runner=benchmarks.run_built_native_smoke_benchmarks,
-            expected_manifest_paths=benchmarks.DEFAULT_NATIVE_SMOKE_MANIFEST_PATHS,
+            expected_manifest_selector=benchmarks.BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR,
             expected_smoke_only=True,
         )
 

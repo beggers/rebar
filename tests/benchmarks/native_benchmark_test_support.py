@@ -102,9 +102,12 @@ def assert_native_runner_uses_optional_report_path(
     testcase: unittest.TestCase,
     *,
     runner: Callable[..., dict[str, object]],
-    expected_manifest_paths: tuple[pathlib.Path, ...],
+    expected_manifest_selector: str,
     expected_smoke_only: bool,
 ) -> None:
+    expected_manifest_paths = benchmarks.select_benchmark_manifest_paths(
+        expected_manifest_selector
+    )
     scorecard = build_minimal_scorecard()
     explicit_report_path = REPO_ROOT / "reports" / "benchmarks" / "explicit-native-check.json"
 

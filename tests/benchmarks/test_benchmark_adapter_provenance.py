@@ -7,7 +7,9 @@ from unittest import mock
 
 from tests.benchmarks.native_benchmark_test_support import MATURIN, benchmarks
 
-MANIFEST_PATH = benchmarks.DEFAULT_MANIFEST_PATHS[0].with_name("compile_smoke.py")
+MANIFEST_PATH = benchmarks.select_benchmark_manifest_path(
+    benchmarks.COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR
+)
 
 
 class BenchmarkAdapterProvenanceTest(unittest.TestCase):
