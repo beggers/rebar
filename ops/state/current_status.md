@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 933 cases across 104 manifests, all matching CPython in the current slice; the main benchmark report still covers 558 workloads with 534 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- Once newly seeded Rust-backed parity task `RBR-0415` drains, land Python-path benchmark catch-up task `RBR-0417` on `benchmarks/workloads/nested_group_callable_replacement_boundary.py` for the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional callable-replacement `sub()` / `subn()` slice.
+- The currently seeded `RBR-0419` is the last pinned step on the bounded `{2,}` nested-group branch-local-backreference conditional callable-replacement benchmark gap in `benchmarks/workloads/nested_group_callable_replacement_boundary.py`; no concrete post-drain feature follow-on is pinned yet.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -313,7 +313,7 @@ The published slice is still narrow, is now fully passing across 933 published c
 - Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 104 manifests and 933 cases, all matching CPython in the current published slice, and that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree shim while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
-- A primary benchmark publication: `reports/benchmarks/latest.py` now covers 558 workloads across 30 manifests with 534 real `rebar` timings and 24 explicit known gaps, so the published benchmark surface is still bounded even after the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional replacement-template slice reached the shared `nested_group_replacement_boundary.py` path.
+- A primary benchmark publication: `reports/benchmarks/latest.py` now covers 558 workloads across 30 manifests with 534 real `rebar` timings and 24 explicit known gaps, so the published benchmark surface is still bounded even though the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional callable-replacement correctness slice now passes behind `rebar._rebar`.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.
@@ -329,7 +329,7 @@ The published slice is still narrow, is now fully passing across 933 published c
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Once newly seeded Rust-backed parity task `RBR-0415` drains, land Python-path benchmark catch-up task `RBR-0417` on `benchmarks/workloads/nested_group_callable_replacement_boundary.py` for the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional callable-replacement `sub()` / `subn()` slice.
+- The currently seeded `RBR-0419` is the last pinned step on the bounded `{2,}` nested-group branch-local-backreference conditional callable-replacement benchmark gap in `benchmarks/workloads/nested_group_callable_replacement_boundary.py`; no concrete post-drain feature follow-on is pinned yet.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
