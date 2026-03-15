@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now stays on the bounded broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional replacement-template slice for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)`; after the newly seeded correctness-publication task `RBR-0406` drains, the surviving concrete follow-on is Rust-backed parity task `RBR-0408` for the same numbered and named pattern pair through `sub()` / `subn()` workflows.
+Milestone 2 now stays on the bounded broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional replacement-template slice for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)`; after the newly seeded Rust-backed parity task `RBR-0408` drains, the surviving concrete follow-on is benchmark catch-up task `RBR-0410` for the same numbered and named pattern pair through `sub()` / `subn()` workloads on the existing `nested_group_replacement_boundary.py` path.
 
 ## Ordered Work
-1. `RBR-0408`: convert the numbered and named replacement-template `sub()` / `subn()` slice for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)` into real Rust-backed parity through `crates/rebar-core/src/lib.rs`, `tests/python/test_open_ended_quantified_group_replacement_template_parity_suite.py`, and `reports/correctness/latest.py` once `RBR-0406` publishes the bounded correctness pack.
+1. `RBR-0410`: catch the numbered and named replacement-template `sub()` / `subn()` slice for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)` up on `benchmarks/workloads/nested_group_replacement_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` once `RBR-0408` converts the bounded correctness pack into Rust-backed parity.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

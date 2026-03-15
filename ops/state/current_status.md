@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 925 cases with 917 passing and 8 honest `unimplemented` outcomes, and the main benchmark report now covers 554 workloads with 530 real `rebar` timings, but it still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- The surviving concrete follow-on is parity task `RBR-0408` for the same broader-range open-ended `{2,}` nested-group branch-local-backreference conditional replacement-template `sub()` / `subn()` slice.
+- After newly seeded parity task `RBR-0408` drains, the surviving concrete follow-on is benchmark catch-up task `RBR-0410` for the same broader-range open-ended `{2,}` nested-group branch-local-backreference conditional replacement-template `sub()` / `subn()` slice on the existing `nested_group_replacement_boundary.py` path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow, now includes 917 passing cases plus 8 hones
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The surviving concrete follow-on is parity task `RBR-0408` for the same broader-range open-ended `{2,}` nested-group branch-local-backreference conditional replacement-template `sub()` / `subn()` slice.
+- After newly seeded parity task `RBR-0408` drains, the surviving concrete follow-on is benchmark catch-up task `RBR-0410` for the same broader-range open-ended `{2,}` nested-group branch-local-backreference conditional replacement-template `sub()` / `subn()` slice on the existing `nested_group_replacement_boundary.py` path.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
