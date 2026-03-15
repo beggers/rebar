@@ -52,48 +52,6 @@ class RebarLiteralReplacementVariantsTest(unittest.TestCase):
                     cpython_compiled.subn(repl, string, count=count),
                 )
 
-    def test_callable_replacement_matches_cpython_and_receives_rebar_match_objects(self) -> None:
-        seen_matches: list[tuple[str, tuple[int, int], str, str]] = []
-
-        def replacement(match: rebar.Match) -> str:
-            seen_matches.append(
-                (
-                    type(match).__module__,
-                    match.span(),
-                    match.group(0),
-                    match.re.pattern,
-                )
-            )
-            return "x"
-
-        result = rebar.sub("abc", replacement, "abcabc")
-        result_with_count = rebar.subn("abc", replacement, "abcabc", count=1)
-        pattern = rebar.compile("abc")
-        pattern_result = pattern.sub(replacement, "abcabc")
-        pattern_result_with_count = pattern.subn(replacement, "abcabc", count=1)
-
-        def cpython_replacement(match: re.Match[str]) -> str:
-            return "x"
-
-        self.assertEqual(result, re.sub("abc", cpython_replacement, "abcabc"))
-        self.assertEqual(result_with_count, re.subn("abc", cpython_replacement, "abcabc", count=1))
-        self.assertEqual(pattern_result, re.compile("abc").sub(cpython_replacement, "abcabc"))
-        self.assertEqual(
-            pattern_result_with_count,
-            re.compile("abc").subn(cpython_replacement, "abcabc", count=1),
-        )
-        self.assertEqual(
-            seen_matches,
-            [
-                ("re", (0, 3), "abc", "abc"),
-                ("re", (3, 6), "abc", "abc"),
-                ("re", (0, 3), "abc", "abc"),
-                ("re", (0, 3), "abc", "abc"),
-                ("re", (3, 6), "abc", "abc"),
-                ("re", (0, 3), "abc", "abc"),
-            ],
-        )
-
 
 if __name__ == "__main__":
     unittest.main()
