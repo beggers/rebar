@@ -16,7 +16,7 @@ The repo now has real parity and benchmark publications, but they still cover a 
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded and carries 27 explicit known-gap workloads.
+- The published benchmark surface is still bounded and carries 24 explicit known-gap workloads.
 
 ## Compatibility Heuristic
 Early subset, still far from drop-in parity: the Rust boundary covers literals, captures, several bounded conditional and replacement workflows, quantified branch-local backreferences, and grouped alternation through bounded `{1,4}` plus open-ended `{1,}` and `{2,}` counted-repeat slices. The surviving post-drain follow-on is `RBR-0348`, which reopens correctness on the quantified nested-group alternation callable-replacement workflows `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d` before broader counted repeats, branch-local-backreference callbacks, or deeper nested grouped execution broaden the queue.
@@ -313,7 +313,7 @@ Early subset, still far from drop-in parity: the Rust boundary covers literals, 
 - Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 92 manifests and 833 cases with 833 passes, 0 explicit failures, and 0 honest `unimplemented` outcomes through the fully passing nested-group alternation callable-replacement slice, and that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree shim while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
-- A fully measured main benchmark publication: `reports/benchmarks/latest.py` now covers 510 workloads across 30 manifests with 483 real `rebar` timings and 27 explicit known gaps, so the published benchmark surface is still bounded; after the current benchmark head drains, the surviving follow-on is `RBR-0348` on quantified nested-group alternation callable-replacement correctness publication.
+- A primary benchmark publication: `reports/benchmarks/latest.py` now covers 513 workloads across 30 manifests with 489 real `rebar` timings and 24 explicit known gaps, so the published benchmark surface is still bounded; after the current benchmark head drains, the surviving follow-on is `RBR-0348` on quantified nested-group alternation callable-replacement correctness publication.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.
@@ -333,4 +333,4 @@ Early subset, still far from drop-in parity: the Rust boundary covers literals, 
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
-- The published benchmark surface still carries 27 explicit known-gap workloads, and after the current benchmark head drains the surviving queued follow-on is the narrow `RBR-0348` quantified nested-group alternation callable-replacement correctness task on the existing nested-group callback path.
+- The published benchmark surface still carries 24 explicit known-gap workloads, and after the current benchmark head drains the surviving queued follow-on is the narrow `RBR-0348` quantified nested-group alternation callable-replacement correctness task on the existing nested-group callback path.
