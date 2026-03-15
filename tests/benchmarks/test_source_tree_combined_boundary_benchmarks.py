@@ -109,6 +109,16 @@ NESTED_GROUP_CALLABLE_REPLACEMENT_OPEN_ENDED_BRANCH_LOCAL_PATTERNS = {
     r"a((b|c){1,})\2d",
     r"a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d",
 }
+NESTED_GROUP_CALLABLE_REPLACEMENT_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_WORKLOAD_IDS = (
+    "module-sub-callable-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-b-branch-warm-str",
+    "module-subn-callable-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-first-match-only-b-branch-warm-str",
+    "pattern-sub-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-c-branch-purged-str",
+    "pattern-subn-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-c-branch-first-match-only-purged-str",
+)
+NESTED_GROUP_CALLABLE_REPLACEMENT_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_PATTERNS = {
+    r"a((b|c){2,})\2d",
+    r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+}
 CALLABLE_REPLACEMENT_FORMER_GAP_CASES = (
     {
         "manifest_id": "grouped-alternation-callable-replacement-boundary",
@@ -805,6 +815,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             and "quantifiers" in workload["syntax_features"]
             and "counted-repeats" in workload["syntax_features"]
             and "ranged-repeats" not in workload["syntax_features"]
+            and "broader-range" not in workload["categories"]
         ]
         self.assertEqual(
             tuple(workload["id"] for workload in open_ended_branch_local_rows),
@@ -840,6 +851,77 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertIn(category, workload["categories"])
 
         for workload_id in NESTED_GROUP_CALLABLE_REPLACEMENT_OPEN_ENDED_BRANCH_LOCAL_WORKLOAD_IDS:
+            with self.subTest(workload_id=workload_id):
+                assert_benchmark_workload_contract(
+                    self,
+                    find_workload_record(scorecard, workload_id),
+                    manifest_id=NESTED_GROUP_CALLABLE_REPLACEMENT_MANIFEST_ID,
+                    workload_document=find_workload_document(
+                        case["target_manifest"],
+                        workload_id,
+                    ),
+                    expected_status="measured",
+                )
+
+    def test_nested_group_callable_replacement_manifest_covers_broader_range_open_ended_branch_local_backreference_slice(
+        self,
+    ) -> None:
+        case = source_tree_combined_case(NESTED_GROUP_CALLABLE_REPLACEMENT_MANIFEST_ID)
+        _, scorecard = run_source_tree_benchmark_scorecard(case["manifest_paths"])
+
+        manifest_summary = scorecard["manifests"][NESTED_GROUP_CALLABLE_REPLACEMENT_MANIFEST_ID]
+        self.assertEqual(manifest_summary["known_gap_count"], 0)
+
+        broader_range_open_ended_branch_local_rows = [
+            workload
+            for workload in case["target_manifest"]["workloads"]
+            if "branch-local-backreferences" in workload["syntax_features"]
+            and "callable-replacement" in workload["syntax_features"]
+            and "quantifiers" in workload["syntax_features"]
+            and "counted-repeats" in workload["syntax_features"]
+            and "ranged-repeats" not in workload["syntax_features"]
+            and "broader-range" in workload["categories"]
+        ]
+        self.assertEqual(
+            tuple(workload["id"] for workload in broader_range_open_ended_branch_local_rows),
+            NESTED_GROUP_CALLABLE_REPLACEMENT_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_WORKLOAD_IDS,
+        )
+        self.assertEqual(
+            {workload["pattern"] for workload in broader_range_open_ended_branch_local_rows},
+            NESTED_GROUP_CALLABLE_REPLACEMENT_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_PATTERNS,
+        )
+        self.assertEqual(
+            {
+                workload["operation"]
+                for workload in broader_range_open_ended_branch_local_rows
+            },
+            {"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        )
+        self.assertEqual(
+            {
+                str(workload["haystack"])
+                for workload in broader_range_open_ended_branch_local_rows
+                if workload.get("haystack") is not None
+            },
+            {"abbbd", "abbbdabcbccd", "zzacccdzz", "zzacccdabcbccdzz"},
+        )
+        for workload in broader_range_open_ended_branch_local_rows:
+            for category in (
+                "nested-group",
+                "alternation",
+                "replacement",
+                "callable",
+                "branch-local",
+                "quantified",
+                "counted-repeat",
+                "open-ended-repeat",
+                "broader-range",
+            ):
+                self.assertIn(category, workload["categories"])
+
+        for workload_id in (
+            NESTED_GROUP_CALLABLE_REPLACEMENT_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_WORKLOAD_IDS
+        ):
             with self.subTest(workload_id=workload_id):
                 assert_benchmark_workload_contract(
                     self,
