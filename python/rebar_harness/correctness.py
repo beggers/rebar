@@ -21,6 +21,7 @@ if str(PYTHON_SOURCE) not in sys.path:
     sys.path.insert(0, str(PYTHON_SOURCE))
 
 import rebar
+from rebar_harness.descriptor_values import materialize_descriptor_value
 from rebar_harness.metadata import build_cpython_baseline
 from rebar_harness.scorecard_io import (
     load_scorecard_report,
@@ -497,8 +498,14 @@ class FixtureCase:
                 )
             ),
             helper=_optional_string(raw_case.get("helper")),
-            args=_materialize_fixture_value(raw_case.get("args", defaults.get("args", []))),
-            kwargs=_materialize_fixture_value(raw_case.get("kwargs", defaults.get("kwargs", {}))),
+            args=materialize_descriptor_value(
+                raw_case.get("args", defaults.get("args", [])),
+                callback_module_name="rebar_harness.correctness",
+            ),
+            kwargs=materialize_descriptor_value(
+                raw_case.get("kwargs", defaults.get("kwargs", {})),
+                callback_module_name="rebar_harness.correctness",
+            ),
         )
 
     def pattern_payload(self) -> str | bytes:
@@ -527,49 +534,6 @@ def _optional_int(value: Any) -> int | None:
     if value is None:
         return None
     return int(value)
-
-
-def _materialize_fixture_value(value: Any) -> Any:
-    if isinstance(value, list):
-        return [_materialize_fixture_value(item) for item in value]
-    if isinstance(value, dict):
-        value_type = value.get("type")
-        if value_type == "bytes":
-            encoding = str(value.get("encoding", "latin-1"))
-            return str(value["value"]).encode(encoding)
-        if value_type == "callable_constant":
-            constant_value = _materialize_fixture_value(value.get("value"))
-
-            def _callable_constant(_match: Any, *, _value: Any = constant_value) -> Any:
-                return _value
-
-            _callable_constant.__module__ = "rebar_harness.correctness"
-            _callable_constant.__name__ = "callable_constant"
-            _callable_constant.__qualname__ = "callable_constant"
-            return _callable_constant
-        if value_type == "callable_match_group":
-            group_reference = value.get("group", 0)
-            prefix = _materialize_fixture_value(value.get("prefix", ""))
-            suffix = _materialize_fixture_value(value.get("suffix", ""))
-
-            def _callable_match_group(
-                match: Any,
-                *,
-                _group_reference: Any = group_reference,
-                _prefix: Any = prefix,
-                _suffix: Any = suffix,
-            ) -> Any:
-                return _prefix + match.group(_group_reference) + _suffix
-
-            _callable_match_group.__module__ = "rebar_harness.correctness"
-            _callable_match_group.__name__ = "callable_match_group"
-            _callable_match_group.__qualname__ = "callable_match_group"
-            return _callable_match_group
-        return {
-            str(key): _materialize_fixture_value(item_value)
-            for key, item_value in value.items()
-        }
-    return value
 
 
 def _load_python_fixture_manifest(path: pathlib.Path) -> dict[str, Any]:

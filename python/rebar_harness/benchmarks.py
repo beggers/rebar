@@ -28,6 +28,7 @@ PYTHON_SOURCE = REPO_ROOT / "python"
 if str(PYTHON_SOURCE) not in sys.path:
     sys.path.append(str(PYTHON_SOURCE))
 
+from rebar_harness.descriptor_values import materialize_descriptor_value
 from rebar_harness.metadata import build_cpython_baseline
 from rebar_harness.scorecard_io import (
     load_scorecard_report,
@@ -179,7 +180,11 @@ class Workload:
     def replacement_payload(self) -> Any:
         if self.replacement is None:
             raise ValueError(f"workload {self.workload_id!r} requires a replacement payload")
-        return materialize_workload_value(self.replacement, text_model=self.text_model)
+        return materialize_descriptor_value(
+            self.replacement,
+            text_model=self.text_model,
+            callback_module_name="rebar_harness.benchmarks",
+        )
 
 
 def normalize_workload_value(value: Any) -> Any:
@@ -193,53 +198,6 @@ def normalize_workload_value(value: Any) -> Any:
             for key, item_value in value.items()
         }
     raise ValueError(f"unsupported workload value {value!r}")
-
-
-def materialize_workload_value(value: Any, *, text_model: str) -> Any:
-    if isinstance(value, str):
-        if text_model == "str":
-            return value
-        if text_model == "bytes":
-            return value.encode("utf-8")
-        raise ValueError(f"unsupported text model {text_model!r}")
-    if isinstance(value, list):
-        return [materialize_workload_value(item, text_model=text_model) for item in value]
-    if isinstance(value, dict):
-        value_type = value.get("type")
-        if value_type == "bytes":
-            encoding = str(value.get("encoding", "latin-1"))
-            return str(value["value"]).encode(encoding)
-        if value_type == "callable_constant":
-            constant_value = materialize_workload_value(value.get("value"), text_model=text_model)
-
-            def _callable_constant(_match: Any, *, _value: Any = constant_value) -> Any:
-                return _value
-
-            _callable_constant.__name__ = "callable_constant"
-            _callable_constant.__qualname__ = "callable_constant"
-            return _callable_constant
-        if value_type == "callable_match_group":
-            group_reference = value.get("group", 0)
-            prefix = materialize_workload_value(value.get("prefix", ""), text_model=text_model)
-            suffix = materialize_workload_value(value.get("suffix", ""), text_model=text_model)
-
-            def _callable_match_group(
-                match: Any,
-                *,
-                _group_reference: Any = group_reference,
-                _prefix: Any = prefix,
-                _suffix: Any = suffix,
-            ) -> Any:
-                return _prefix + match.group(_group_reference) + _suffix
-
-            _callable_match_group.__name__ = "callable_match_group"
-            _callable_match_group.__qualname__ = "callable_match_group"
-            return _callable_match_group
-        return {
-            str(key): materialize_workload_value(item_value, text_model=text_model)
-            for key, item_value in value.items()
-        }
-    return value
 
 
 @dataclass
