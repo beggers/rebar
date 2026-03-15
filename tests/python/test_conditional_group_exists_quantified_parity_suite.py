@@ -9,8 +9,11 @@ import pytest
 
 from rebar_harness.correctness import FixtureCase, FixtureManifest, load_fixture_manifest
 from tests.python.fixture_parity_support import (
+    assert_invalid_match_group_access_parity,
+    assert_match_convenience_api_parity,
     assert_match_parity,
     assert_match_result_parity,
+    assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
     str_case_pattern,
 )
@@ -263,6 +266,31 @@ PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.ca
 COMPILE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "compile")
 MODULE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "module_call")
 PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pattern_call")
+MATCH_API_CASE_IDS = (
+    "conditional-group-exists-quantified-module-search-present-str",
+    "conditional-group-exists-quantified-module-fullmatch-absent-str",
+    "named-conditional-group-exists-quantified-module-search-present-str",
+    "named-conditional-group-exists-quantified-module-fullmatch-absent-str",
+    "conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
+    "conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
+    "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
+    "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
+)
+
+
+def _load_match_api_cases() -> tuple[FixtureCase, ...]:
+    case_by_id = {case.case_id: case for case in PUBLISHED_CASES}
+    missing_case_ids = tuple(case_id for case_id in MATCH_API_CASE_IDS if case_id not in case_by_id)
+    if missing_case_ids:
+        raise ValueError(
+            "quantified conditional match-api coverage is missing expected fixture rows: "
+            f"{missing_case_ids}"
+        )
+
+    return tuple(case_by_id[case_id] for case_id in MATCH_API_CASE_IDS)
+
+
+MATCH_API_CASES = _load_match_api_cases()
 
 # Preserve the extra module.fullmatch mixed-iteration checks that only lived in
 # the superseded singleton files and were never promoted into scorecard fixtures.
@@ -426,6 +454,29 @@ SUPPLEMENTAL_MISS_CASES = (
 )
 
 
+def _workflow_result_for_case(
+    backend_name: str,
+    backend: object,
+    case: FixtureCase,
+) -> tuple[object, re.Match[str] | None]:
+    assert case.helper is not None
+
+    if case.operation == "module_call":
+        observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
+        expected = getattr(re, case.helper)(*case.args, **case.kwargs)
+    else:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            str_case_pattern(case),
+            case.flags or 0,
+        )
+        observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
+        expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
+
+    return observed, expected
+
+
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
@@ -441,6 +492,11 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
         bundle.expected_operation_helper_counts
     )
+
+
+def test_match_api_cases_remain_published_quantified_conditional_matches() -> None:
+    assert tuple(case.case_id for case in MATCH_API_CASES) == MATCH_API_CASE_IDS
+    assert {case.text_model for case in MATCH_API_CASES} == {"str"}
 
 
 @pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
@@ -499,6 +555,27 @@ def test_pattern_fullmatch_matches_cpython(
         expected,
         check_regs=True,
     )
+
+
+@pytest.mark.parametrize("case", MATCH_API_CASES, ids=lambda case: case.case_id)
+def test_match_convenience_and_group_access_apis_match_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = _workflow_result_for_case(backend_name, backend, case)
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=True,
+    )
+    assert_match_convenience_api_parity(observed, expected)
+    assert_valid_match_group_access_parity(observed, expected)
+    assert_invalid_match_group_access_parity(observed, expected)
 
 
 @pytest.mark.parametrize(
