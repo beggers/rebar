@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 stays on the bounded two-arm conditional replacement-template family for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; once `RBR-0424` refreshes the now-live callable benchmark rows on `benchmarks/workloads/conditional_group_exists_boundary.py`, the concrete surviving follow-on is `RBR-0426`, which should publish the adjacent numbered and named replacement-template `sub()` / `subn()` correctness slice through the existing `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` anchor.
+Milestone 2 stays on the bounded two-arm conditional replacement-template family for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; once `RBR-0426` lands, the concrete surviving follow-on is `RBR-0428`, which should convert that same numbered and named replacement-template `sub()` / `subn()` slice to Rust-backed parity on the shared conditional replacement pytest path before benchmark catch-up reuses the existing `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` anchor.
 
 ## Ordered Work
-1. After `RBR-0424` refreshes the now-live callable rows on `benchmarks/workloads/conditional_group_exists_boundary.py`, `RBR-0426` should publish the bounded numbered and named replacement-template `sub()` / `subn()` correctness slice for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` on the ordinary correctness/parity path, so the existing `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` anchor stops being benchmark-only before parity and benchmark catch-up reopen this frontier.
+1. After `RBR-0426` publishes the bounded numbered and named replacement-template `sub()` / `subn()` correctness slice for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`, `RBR-0428` should convert that exact `\\1x` / `\\g<word>x` module and compiled-`Pattern` slice to Rust-backed parity on the shared conditional replacement pytest path before the existing benchmark anchor is repointed.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

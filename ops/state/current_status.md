@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 941 cases across 105 manifests, with 941 passes and no honest `unimplemented` gaps; the main benchmark report now covers 565 workloads with 542 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- The concrete surviving follow-on is `RBR-0426`, which should publish the matching numbered and named replacement-template `sub()` / `subn()` correctness slice for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` through the existing `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` anchor.
+- Once `RBR-0426` lands, the concrete surviving follow-on is `RBR-0428`, which should convert that same numbered and named replacement-template `sub()` / `subn()` slice for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` to Rust-backed parity on the shared conditional replacement pytest path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow, currently lands all 941 published cases, an
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The concrete surviving follow-on is `RBR-0426`, which should publish the matching numbered and named replacement-template `sub()` / `subn()` correctness slice for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` through the existing `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` anchor.
+- Once `RBR-0426` lands, the concrete surviving follow-on is `RBR-0428`, which should convert that same numbered and named replacement-template `sub()` / `subn()` slice for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` to Rust-backed parity on the shared conditional replacement pytest path.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
