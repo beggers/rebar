@@ -28,6 +28,17 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("pattern_call", "subn"): 2,
     }
 )
+NO_MATCH_TEXT_CANDIDATES = (
+    "zzz",
+    "",
+    "----",
+    "no-match",
+    "999",
+    "ffff",
+    "ac",
+    "ae",
+    "ad",
+)
 
 
 @dataclass(frozen=True)
@@ -238,16 +249,50 @@ FIXTURE_BUNDLES = (
 REPLACEMENT_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
 
 
-def _run_replacement_case(backend: object, case: FixtureCase) -> object:
+def _replacement_args(
+    case: FixtureCase,
+    *,
+    text: str | None = None,
+) -> tuple[object, ...]:
+    args = list(case.args)
+    if text is None:
+        return tuple(args)
+
+    text_index = 2 if case.operation == "module_call" else 1
+    args[text_index] = text
+    return tuple(args)
+
+
+def _no_match_text(case: FixtureCase) -> str:
+    compiled = re.compile(str_case_pattern(case), case.flags or 0)
+    for text in NO_MATCH_TEXT_CANDIDATES:
+        if compiled.search(text) is None:
+            return text
+
+    raise AssertionError(f"could not find a shared no-match text for {case.case_id!r}")
+
+
+def _run_replacement_case(
+    backend: object,
+    case: FixtureCase,
+    *,
+    text: str | None = None,
+) -> object:
     if case.helper is None:
         raise ValueError(f"case {case.case_id!r} requires a helper name")
 
     if case.operation == "module_call":
-        return getattr(backend, case.helper)(*case.args, **case.kwargs)
+        return getattr(backend, case.helper)(
+            *_replacement_args(case, text=text),
+            **case.kwargs,
+        )
 
     if case.operation == "pattern_call":
         compiled = backend.compile(case.pattern_payload(), case.flags or 0)
-        return getattr(compiled, case.helper)(*case.args, **case.kwargs)
+        return getattr(compiled, case.helper)(
+            *_replacement_args(case, text=text),
+            **case.kwargs,
+        )
 
     raise ValueError(f"unsupported replacement parity operation {case.operation!r}")
 
@@ -285,3 +330,23 @@ def test_replacement_matches_cpython(
     observed = _run_replacement_case(backend, case)
     expected = _run_replacement_case(re, case)
     assert observed == expected
+
+
+@pytest.mark.parametrize("case", REPLACEMENT_CASES, ids=lambda case: case.case_id)
+def test_replacement_no_match_paths_leave_input_unchanged(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    _, backend = regex_backend
+    assert case.helper is not None
+
+    text = _no_match_text(case)
+    observed = _run_replacement_case(backend, case, text=text)
+    expected = _run_replacement_case(re, case, text=text)
+    expected_result: str | tuple[str, int]
+    if case.helper == "sub":
+        expected_result = text
+    else:
+        expected_result = (text, 0)
+
+    assert observed == expected == expected_result
