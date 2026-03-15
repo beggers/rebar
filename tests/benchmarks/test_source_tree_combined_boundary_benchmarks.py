@@ -58,6 +58,16 @@ NESTED_GROUP_CALLABLE_REPLACEMENT_BRANCH_LOCAL_PATTERNS = {
     r"a((b|c))\2d",
     r"a(?P<outer>(?P<inner>b|c))(?P=inner)d",
 }
+NESTED_GROUP_CALLABLE_REPLACEMENT_QUANTIFIED_BRANCH_LOCAL_WORKLOAD_IDS = (
+    "module-sub-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
+    "module-subn-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
+    "pattern-sub-callable-named-quantified-nested-group-alternation-branch-local-backreference-mixed-branches-purged-str",
+    "pattern-subn-callable-named-quantified-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-str",
+)
+NESTED_GROUP_CALLABLE_REPLACEMENT_QUANTIFIED_BRANCH_LOCAL_PATTERNS = {
+    r"a((b|c)+)\2d",
+    r"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
+}
 CALLABLE_REPLACEMENT_FORMER_GAP_CASES = (
     {
         "manifest_id": "grouped-alternation-callable-replacement-boundary",
@@ -594,6 +604,68 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertIn(category, workload["categories"])
 
         for workload_id in NESTED_GROUP_CALLABLE_REPLACEMENT_BRANCH_LOCAL_WORKLOAD_IDS:
+            with self.subTest(workload_id=workload_id):
+                assert_benchmark_workload_contract(
+                    self,
+                    find_workload_record(scorecard, workload_id),
+                    manifest_id=NESTED_GROUP_CALLABLE_REPLACEMENT_MANIFEST_ID,
+                    workload_document=find_workload_document(
+                        case["target_manifest"],
+                        workload_id,
+                    ),
+                    expected_status="measured",
+                )
+
+    def test_nested_group_callable_replacement_manifest_covers_quantified_branch_local_backreference_slice(
+        self,
+    ) -> None:
+        case = source_tree_combined_case(NESTED_GROUP_CALLABLE_REPLACEMENT_MANIFEST_ID)
+        _, scorecard = run_source_tree_benchmark_scorecard(case["manifest_paths"])
+
+        manifest_summary = scorecard["manifests"][NESTED_GROUP_CALLABLE_REPLACEMENT_MANIFEST_ID]
+        self.assertEqual(manifest_summary["known_gap_count"], 0)
+
+        quantified_branch_local_rows = [
+            workload
+            for workload in case["target_manifest"]["workloads"]
+            if "branch-local-backreferences" in workload["syntax_features"]
+            and "callable-replacement" in workload["syntax_features"]
+            and "quantifiers" in workload["syntax_features"]
+        ]
+        self.assertEqual(
+            tuple(workload["id"] for workload in quantified_branch_local_rows),
+            NESTED_GROUP_CALLABLE_REPLACEMENT_QUANTIFIED_BRANCH_LOCAL_WORKLOAD_IDS,
+        )
+        self.assertEqual(
+            {workload["pattern"] for workload in quantified_branch_local_rows},
+            NESTED_GROUP_CALLABLE_REPLACEMENT_QUANTIFIED_BRANCH_LOCAL_PATTERNS,
+        )
+        self.assertEqual(
+            {workload["operation"] for workload in quantified_branch_local_rows},
+            {"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        )
+        self.assertEqual(
+            {
+                str(workload["haystack"])
+                for workload in quantified_branch_local_rows
+                if workload.get("haystack") is not None
+            },
+            {"abbd", "abbbdaccd", "zzabccdzz", "zzaccdabbbdzz"},
+        )
+        for workload in quantified_branch_local_rows:
+            for category in (
+                "nested-group",
+                "alternation",
+                "replacement",
+                "callable",
+                "branch-local",
+                "quantified",
+            ):
+                self.assertIn(category, workload["categories"])
+
+        for workload_id in (
+            NESTED_GROUP_CALLABLE_REPLACEMENT_QUANTIFIED_BRANCH_LOCAL_WORKLOAD_IDS
+        ):
             with self.subTest(workload_id=workload_id):
                 assert_benchmark_workload_contract(
                     self,
