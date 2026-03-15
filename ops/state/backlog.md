@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now has `RBR-0348` seeded as the surviving follow-on so the quantified nested-group alternation callable-replacement workflows for `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d` reopen the correctness frontier before broader counted repeats, branch-local-backreference callbacks, or deeper nested grouped execution broaden the queue.
+Milestone 2 now has `RBR-0350` seeded as the surviving follow-on so the quantified nested-group alternation callable-replacement workflows for `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d` move behind Rust-backed parity once `RBR-0348` publishes the bounded correctness slice, before benchmark catch-up, broader counted repeats, branch-local-backreference callbacks, or deeper nested grouped execution broaden the queue.
 
 ## Ordered Work
-1. Land `RBR-0348` to publish the quantified nested-group alternation callable-replacement slice through `python/rebar_harness/correctness.py`, `tests/conformance/fixtures/quantified_nested_group_alternation_callable_replacement_workflows.py`, `tests/conformance/correctness_expectations.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`, adding only the minimal numbered and named `sub()` / `subn()` cases needed to make this exact quantified callback slice the surviving correctness frontier.
+1. Land `RBR-0350` to convert the quantified nested-group alternation callable-replacement slice behind `rebar._rebar` through `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_quantified_nested_group_alternation_callable_replacement_parity.py`, and `reports/correctness/latest.py`, adding only the minimal Rust-backed callable-replacement behavior needed for the numbered and named `sub()` / `subn()` cases that `RBR-0348` publishes.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
