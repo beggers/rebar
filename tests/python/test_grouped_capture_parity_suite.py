@@ -16,6 +16,7 @@ from tests.python.fixture_parity_support import (
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
+    assert_match_result_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
     select_published_fixture_paths,
@@ -68,6 +69,15 @@ class SupplementalMissCase:
     module_misses: tuple[str, ...]
     pattern_case_id: str
     pattern_misses: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class BoundedPatternCase:
+    id: str
+    pattern_case_id: str
+    helper: str
+    string: str
+    bounds: tuple[int, ...]
 
 
 def _fixture_bundle(
@@ -457,6 +467,68 @@ REGS_PARITY_CASE_IDS = frozenset(
         "named-nested-group-alternation-pattern-fullmatch-str",
     }
 )
+GROUPED_SEGMENT_COMPILE_CASE_ID = "grouped-segment-compile-metadata-str"
+NAMED_OPTIONAL_GROUP_COMPILE_CASE_ID = "named-optional-group-compile-metadata-str"
+PATTERN_BOUNDS_MATCH_CASES = (
+    BoundedPatternCase(
+        id="grouped-segment-search-normalizes-negative-and-oversized-bounds",
+        pattern_case_id=GROUPED_SEGMENT_COMPILE_CASE_ID,
+        helper="search",
+        string="zzabczz",
+        bounds=(-100, 999),
+    ),
+    BoundedPatternCase(
+        id="grouped-segment-match-honors-narrowed-offset-window",
+        pattern_case_id=GROUPED_SEGMENT_COMPILE_CASE_ID,
+        helper="match",
+        string="zzabczz",
+        bounds=(2, 5),
+    ),
+    BoundedPatternCase(
+        id="named-optional-fullmatch-preserves-absent-group-metadata-in-window",
+        pattern_case_id=NAMED_OPTIONAL_GROUP_COMPILE_CASE_ID,
+        helper="fullmatch",
+        string="zzadzz",
+        bounds=(2, 4),
+    ),
+    BoundedPatternCase(
+        id="named-optional-fullmatch-preserves-present-group-metadata-in-window",
+        pattern_case_id=NAMED_OPTIONAL_GROUP_COMPILE_CASE_ID,
+        helper="fullmatch",
+        string="zzabdzz",
+        bounds=(2, 5),
+    ),
+    BoundedPatternCase(
+        id="named-optional-search-normalizes-negative-and-oversized-bounds",
+        pattern_case_id=NAMED_OPTIONAL_GROUP_COMPILE_CASE_ID,
+        helper="search",
+        string="zzabdzz",
+        bounds=(-100, 999),
+    ),
+)
+PATTERN_BOUNDS_NO_MATCH_CASES = (
+    BoundedPatternCase(
+        id="named-optional-search-skips-match-before-pos",
+        pattern_case_id=NAMED_OPTIONAL_GROUP_COMPILE_CASE_ID,
+        helper="search",
+        string="zzabdzz",
+        bounds=(3, 7),
+    ),
+    BoundedPatternCase(
+        id="grouped-segment-match-fails-when-endpos-truncates-the-subject",
+        pattern_case_id=GROUPED_SEGMENT_COMPILE_CASE_ID,
+        helper="match",
+        string="zzabczz",
+        bounds=(2, 4),
+    ),
+    BoundedPatternCase(
+        id="named-optional-fullmatch-does-not-expand-to-the-whole-string",
+        pattern_case_id=NAMED_OPTIONAL_GROUP_COMPILE_CASE_ID,
+        helper="fullmatch",
+        string="zzabdzz",
+        bounds=(-100, 999),
+    ),
+)
 
 
 def _load_match_group_access_cases() -> tuple[FixtureCase, ...]:
@@ -503,6 +575,14 @@ def _pattern_call_with_text(compiled_pattern: object, case: FixtureCase, text: s
     return getattr(compiled_pattern, case.helper)(text, *case.args[1:], **case.kwargs)
 
 
+def _bounded_pattern(case: BoundedPatternCase) -> str:
+    return str_case_pattern(CASES_BY_ID[case.pattern_case_id])
+
+
+def _invoke_bound_helper(pattern: object, case: BoundedPatternCase) -> object:
+    return getattr(pattern, case.helper)(case.string, *case.bounds)
+
+
 def _match_for_case(
     backend_name: str,
     backend: object,
@@ -531,6 +611,11 @@ def _match_for_case(
 def test_grouped_capture_parity_suite_uses_expected_published_fixture_paths() -> None:
     assert PUBLISHED_GROUPED_CAPTURE_FIXTURE_PATHS == EXPECTED_PUBLISHED_FIXTURE_PATHS
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
+
+
+def test_pattern_bounds_cases_stay_anchored_to_grouped_capture_patterns() -> None:
+    assert str_case_pattern(CASES_BY_ID[GROUPED_SEGMENT_COMPILE_CASE_ID]) == r"a(b)c"
+    assert str_case_pattern(CASES_BY_ID[NAMED_OPTIONAL_GROUP_COMPILE_CASE_ID]) == r"a(?P<word>b)?d"
 
 
 def test_match_group_access_rows_remain_on_grouped_capture_fixture_paths() -> None:
@@ -627,6 +712,30 @@ def test_pattern_helper_matches_cpython(
     )
 
 
+@pytest.mark.parametrize("case", PATTERN_BOUNDS_MATCH_CASES, ids=lambda case: case.id)
+def test_pattern_helper_bounds_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: BoundedPatternCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        _bounded_pattern(case),
+    )
+
+    observed = _invoke_bound_helper(observed_pattern, case)
+    expected = _invoke_bound_helper(expected_pattern, case)
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_parity(backend_name, observed, expected, check_regs=True)
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+    assert_match_convenience_api_parity(observed, expected)
+    assert_valid_match_group_access_parity(observed, expected)
+    assert_invalid_match_group_access_parity(observed, expected)
+
+
 @pytest.mark.parametrize("case", MATCH_GROUP_ACCESS_CASES, ids=lambda case: case.case_id)
 def test_match_group_accessors_match_cpython(
     regex_backend: tuple[str, object],
@@ -706,3 +815,23 @@ def test_pattern_helper_misses_match_cpython(
     for text in case.pattern_misses:
         assert _pattern_call_with_text(observed_pattern, pattern_case, text) is None
         assert _pattern_call_with_text(expected_pattern, pattern_case, text) is None
+
+
+@pytest.mark.parametrize("case", PATTERN_BOUNDS_NO_MATCH_CASES, ids=lambda case: case.id)
+def test_pattern_helper_bounds_no_match_paths_match_cpython(
+    regex_backend: tuple[str, object],
+    case: BoundedPatternCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        _bounded_pattern(case),
+    )
+
+    observed = _invoke_bound_helper(observed_pattern, case)
+    expected = _invoke_bound_helper(expected_pattern, case)
+
+    assert observed is None
+    assert expected is None
+    assert_match_result_parity(backend_name, observed, expected)
