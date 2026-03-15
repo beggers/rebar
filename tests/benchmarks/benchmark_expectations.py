@@ -123,6 +123,30 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
             "pattern-search-ignorecase-ascii-warm-gap",
         ),
     },
+    "nested-group-callable-replacement-boundary": {
+        "manifest_ids": ("nested-group-callable-replacement-boundary",),
+        "selection_mode": "full",
+        "expected_summary": {
+            "known_gap_count": 0,
+            "measured_workloads": 32,
+            "module_workloads": 32,
+            "parser_workloads": 0,
+            "regression_workloads": 0,
+            "total_workloads": 32,
+        },
+        "manifest_expectations": {
+            "nested-group-callable-replacement-boundary": {
+                "known_gap_count": 0,
+            },
+        },
+        "representative_measured_workload_ids": (
+            "module-sub-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
+            "module-subn-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-mixed-branches-first-match-only-warm-str",
+            "pattern-sub-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-all-c-purged-str",
+            "pattern-subn-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-c-branch-first-match-only-purged-str",
+        ),
+        "representative_known_gap_workload_ids": (),
+    },
     "regression-pack-full": {
         "manifest_ids": (
             "compile-matrix",
@@ -327,6 +351,10 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
             "module-subn-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
             "pattern-sub-callable-named-quantified-nested-group-alternation-branch-local-backreference-mixed-branches-purged-str",
             "pattern-subn-callable-named-quantified-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-str",
+            "module-sub-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
+            "module-subn-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-mixed-branches-first-match-only-warm-str",
+            "pattern-sub-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-all-c-purged-str",
+            "pattern-subn-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-c-branch-first-match-only-purged-str",
         ),
     },
     "branch-local-backreference-boundary": {

@@ -1,8 +1,9 @@
 # RBR-0370: Catch broader `{1,4}` nested-group alternation plus branch-local-backreference callable-replacement benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Extend the published benchmark surface so the bounded broader `{1,4}` nested-group alternation plus branch-local-backreference callable-replacement workflows supported by `RBR-0368` produce real `rebar` timings on the existing nested-group callable-replacement manifest instead of remaining correctness-only coverage.
@@ -30,3 +31,9 @@ Created: 2026-03-15
 - Build on `RBR-0368`.
 - Keep this follow-on on the existing `nested_group_callable_replacement_boundary.py` manifest path instead of forking another benchmark family.
 - Add only the directly adjacent broader `{1,4}` branch-local-backreference callable rows needed to publish this exact slice cleanly; open-ended counted repeats like `{1,}`, replacement-template workflows, broader callback helpers, and deeper nested grouped execution stay explicit gaps or out of scope.
+
+## Completion Notes
+- Extended `benchmarks/workloads/nested_group_callable_replacement_boundary.py` with the minimal four broader `{1,4}` branch-local-backreference callable rows needed to publish this slice: numbered `module.sub()` and `module.subn()` probes on `abbd` and `abcbccdabbd`, plus named `Pattern.sub()` and `Pattern.subn()` probes on `zzacccccdzz` and `zzacccccdabbbdzz`.
+- Updated the shared benchmark assertions so the existing `nested-group-callable-replacement-boundary` manifest now has a manifest-local scorecard case for these broader rows and a focused combined-suite check that locks this exact bounded `{1,4}` callback slice to the existing shared manifest path while keeping the earlier quantified-only check scoped away from counted-repeat rows.
+- Republished the tracked benchmark scorecard in `reports/benchmarks/latest.py`; the verified tracked summary is `529` total workloads, `505` measured `rebar` timings, and `24` known gaps, and the tracked `nested-group-callable-replacement-boundary` manifest now reports `32` workloads with `32` measured rows and `0` known gaps.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k nested_group_callable_replacement_manifest`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_callable_replacement_boundary.py --report /tmp/rbr0370-nested-group-callable-replacement-bench.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
