@@ -9,7 +9,7 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-The published correctness slice now covers 889 cases with 8 honest gaps, and the main benchmark report still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity.
+The published correctness slice now covers 889 cases with no honest gaps in that slice, but the main benchmark report still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
 - Land `RBR-0388` so the broader-range open-ended `{2,}` nested-group replacement-template slice reaches the shared Python-path benchmark surface once `RBR-0386` converts it to Rust-backed parity.
@@ -19,7 +19,7 @@ The published correctness slice now covers 889 cases with 8 honest gaps, and the
 - The published benchmark surface is still bounded and carries 24 explicit known-gap workloads.
 
 ## Compatibility Heuristic
-The published slice is still narrow, still carries 8 honest correctness gaps, and still benchmarks mainly through the source-tree shim.
+The published slice is still narrow, now passes that bounded slice cleanly, and still benchmarks mainly through the source-tree shim.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
