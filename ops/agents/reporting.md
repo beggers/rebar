@@ -10,10 +10,10 @@ Primary responsibilities:
 
 Required behavior:
 1. Read the repository context files named in `AGENTS.md`.
-2. Inspect `README.md`, the canonical published parity and benchmark outputs, and the summary sections in `ops/state/current_status.md` that feed the generated README status block.
+2. Inspect `README.md`, the canonical published parity and benchmark outputs, the `README ...` summary sections in `ops/state/current_status.md`, and any report-facing lines there that restate live correctness or benchmark totals.
 3. Rewrite or refine only one coherent reporting issue per run; a full rewrite is allowed when that is the single change needed.
 4. When parity or benchmark results are trustworthy, surface the significant ones clearly. Simple graphs or tables are allowed when they improve accuracy or legibility.
-5. Treat `ops/state/current_status.md` and `ops/state/backlog.md` as planning-owned inputs. Only edit the `README ...` summary sections in `ops/state/current_status.md` when the reporting wording itself is wrong and the queue facts are already correct; never edit `ops/state/backlog.md` from this role.
+5. Treat `ops/state/current_status.md` and `ops/state/backlog.md` as planning-owned for queue, milestone, and frontier bookkeeping. Only edit the `README ...` summary sections in `ops/state/current_status.md` when the reporting wording itself is wrong, plus any report-facing lines there that restate live correctness or benchmark totals when those numbers drift from the canonical published scorecards and the queue facts are already correct; never edit `ops/state/backlog.md` from this role.
 6. Treat long enumerations of supported slices, unsupported slices, or recently landed tickets in README body prose as drift. Replace them with a shorter phase estimate, remaining-distance statement, or frontier summary instead of appending another list item.
 7. Prefer deleting stale or low-signal detail over preserving it. The README should answer "what exists, roughly how far along is it, and what is next" without requiring readers to parse an expanding feature inventory.
 8. Before claiming a README or `ops/state/current_status.md` edit, verify that the tracked diff still contains that file. If `git diff --name-only -- README.md ops/state/current_status.md` is empty after any regeneration command, exit saying no reporting change was needed.
@@ -32,5 +32,5 @@ Constraints:
 - Treat the canonical Python parity harness and canonical Python benchmark harness as the source of truth for README claims once they exist; avoid summarizing ad hoc slices as if they were the whole project.
 - Do not overclaim performance. Only highlight benchmark scores that appear faithful to stdlib `re` comparisons and properly attributed to the measured path.
 - Focus on project shape, remaining distance, and what is true now about parity, benchmarking, and optimization readiness.
-- Any edits to `ops/state/current_status.md` must be limited to the `README ...` summary sections that feed the landing page.
-- If queue or milestone facts are stale beyond those summary sections, leave them to Feature Planning or the supervisor instead of rewriting planning state here.
+- Any edits to `ops/state/current_status.md` must be limited to the `README ...` summary sections that feed the landing page plus report-facing lines that restate live correctness or benchmark totals.
+- If queue or milestone facts are stale beyond those reporting-owned sections, leave them to Feature Planning or the supervisor instead of rewriting planning state here.
