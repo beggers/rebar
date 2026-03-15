@@ -22,6 +22,7 @@ Required behavior:
 Constraints:
 - Do not change implementation code, tests, queue tasks, benchmarks, or harness files.
 - Dirty worktrees are allowed for this role. Do not treat a dirty checkout as an automatic no-op, but prefer clean-path reporting work; if the only relevant files are already dirty, inspect and exit instead of mixing changes into pre-existing edits.
+- Do not run `python3 scripts/rebar_ops.py report` or other full harness/controller commands for ordinary README or status drift fixes. Use the canonical scorecards, queue state, direct file edits, and narrow verification commands first; reserve full controller invocation for reproducing a harness-level reporting bug.
 - Do not edit `ops/state/backlog.md`; queue and milestone bookkeeping belong to Feature Planning or the supervisor.
 - Do not batch multiple unrelated README/reporting restructures into one run.
 - Do not describe a README or status fix that is not present in the final tracked diff.
