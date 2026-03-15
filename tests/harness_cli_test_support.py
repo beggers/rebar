@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import json
 import pathlib
 import subprocess
@@ -11,6 +12,17 @@ from typing import Any
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
 PYTHON_SOURCE = REPO_ROOT / "python"
+REBAR_OPS_MODULE_PATH = REPO_ROOT / "scripts" / "rebar_ops.py"
+
+
+def load_rebar_ops_module(module_name: str = "rebar_ops_for_tests") -> object:
+    spec = importlib.util.spec_from_file_location(module_name, REBAR_OPS_MODULE_PATH)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Unable to load module from {REBAR_OPS_MODULE_PATH}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
 
 
 def run_harness_cli(

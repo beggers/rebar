@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from unittest import mock
 
-from tests.python.rebar_ops_test_support import REPO_ROOT, load_rebar_ops_module
+from tests.harness_cli_test_support import REPO_ROOT, load_rebar_ops_module
 
 
 def completed_process(*args: str, returncode: int = 0, stdout: str = "", stderr: str = ""):

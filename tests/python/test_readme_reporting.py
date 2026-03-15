@@ -3,8 +3,12 @@ from __future__ import annotations
 import json
 import unittest
 
-from tests.harness_cli_test_support import run_harness_cli, run_harness_scorecard
-from tests.python.rebar_ops_test_support import REPO_ROOT, load_rebar_ops_module
+from tests.harness_cli_test_support import (
+    REPO_ROOT,
+    load_rebar_ops_module,
+    run_harness_cli,
+    run_harness_scorecard,
+)
 
 CORRECTNESS_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
 LEGACY_CORRECTNESS_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
