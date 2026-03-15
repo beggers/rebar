@@ -11,12 +11,12 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
-    WholeManifestFixtureBundle,
-    assert_whole_manifest_fixture_bundle_contract,
+    FixtureBundle,
+    assert_fixture_bundle_contract,
     assert_match_parity,
     case_pattern,
     compile_with_cpython_parity,
-    load_whole_manifest_fixture_bundle,
+    load_fixture_bundle,
     published_fixture_paths_from_bundles,
 )
 
@@ -25,7 +25,7 @@ PUBLISHED_COUNTED_REPEAT_FIXTURE_PATHS = select_correctness_fixture_paths(
 )
 
 FIXTURE_BUNDLES = (
-    load_whole_manifest_fixture_bundle(
+    load_fixture_bundle(
         "exact_repeat_quantified_group_workflows.py",
         expected_manifest_id="exact-repeat-quantified-group-workflows",
         expected_case_ids=frozenset(
@@ -52,7 +52,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_whole_manifest_fixture_bundle(
+    load_fixture_bundle(
         "ranged_repeat_quantified_group_workflows.py",
         expected_manifest_id="ranged-repeat-quantified-group-workflows",
         expected_case_ids=frozenset(
@@ -99,9 +99,9 @@ def test_counted_repeat_quantified_group_suite_uses_expected_published_fixtures(
     ids=lambda bundle: bundle.expected_manifest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
-    bundle: WholeManifestFixtureBundle,
+    bundle: FixtureBundle,
 ) -> None:
-    assert_whole_manifest_fixture_bundle_contract(
+    assert_fixture_bundle_contract(
         bundle,
         pattern_extractor=case_pattern,
     )

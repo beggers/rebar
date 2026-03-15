@@ -7,16 +7,16 @@ import pytest
 
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
-    assert_expected_fixture_bundle_contract,
+    assert_fixture_bundle_contract,
     assert_match_result_parity,
     compile_with_cpython_parity,
-    load_expected_fixture_bundle,
+    load_fixture_bundle,
     str_case_pattern,
 )
 
 
 FIXTURE_BUNDLES = (
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "conditional_group_exists_alternation_workflows.py",
         expected_manifest_id="conditional-group-exists-alternation-workflows",
         expected_case_ids=frozenset(
@@ -47,7 +47,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "conditional_group_exists_no_else_alternation_workflows.py",
         expected_manifest_id="conditional-group-exists-no-else-alternation-workflows",
         expected_case_ids=frozenset(
@@ -76,7 +76,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "conditional_group_exists_empty_else_alternation_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-else-alternation-workflows",
         expected_case_ids=frozenset(
@@ -105,7 +105,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "conditional_group_exists_empty_yes_else_alternation_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-yes-else-alternation-workflows",
         expected_case_ids=frozenset(
@@ -134,7 +134,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "conditional_group_exists_fully_empty_alternation_workflows.py",
         expected_manifest_id="conditional-group-exists-fully-empty-alternation-workflows",
         expected_case_ids=frozenset(
@@ -191,7 +191,7 @@ PATTERN_CASES = tuple(
     ids=lambda bundle: bundle.expected_manifest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(bundle) -> None:
-    assert_expected_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
+    assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
 
 
 @pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)

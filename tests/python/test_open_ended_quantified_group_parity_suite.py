@@ -11,13 +11,13 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
-    WholeManifestFixtureBundle,
-    assert_whole_manifest_fixture_bundle_contract,
+    FixtureBundle,
+    assert_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_parity,
     case_pattern,
     compile_with_cpython_parity,
-    load_whole_manifest_fixture_bundle,
+    load_fixture_bundle,
     published_fixture_paths_from_bundles,
 )
 
@@ -26,7 +26,7 @@ PUBLISHED_OPEN_ENDED_FIXTURE_PATHS = select_correctness_fixture_paths(
 )
 
 FIXTURE_BUNDLES = (
-    load_whole_manifest_fixture_bundle(
+    load_fixture_bundle(
         "open_ended_quantified_group_alternation_workflows.py",
         expected_manifest_id="open-ended-quantified-group-alternation-workflows",
         expected_patterns=frozenset(
@@ -43,7 +43,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_whole_manifest_fixture_bundle(
+    load_fixture_bundle(
         "open_ended_quantified_group_alternation_conditional_workflows.py",
         expected_manifest_id="open-ended-quantified-group-alternation-conditional-workflows",
         expected_patterns=frozenset(
@@ -60,7 +60,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_whole_manifest_fixture_bundle(
+    load_fixture_bundle(
         "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
         expected_manifest_id="open-ended-quantified-group-alternation-backtracking-heavy-workflows",
         expected_patterns=frozenset(
@@ -77,7 +77,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_whole_manifest_fixture_bundle(
+    load_fixture_bundle(
         "broader_range_open_ended_quantified_group_alternation_workflows.py",
         expected_manifest_id="broader-range-open-ended-quantified-group-alternation-workflows",
         expected_patterns=frozenset(
@@ -94,7 +94,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_whole_manifest_fixture_bundle(
+    load_fixture_bundle(
         "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
         expected_manifest_id=(
             "broader-range-open-ended-quantified-group-alternation-conditional-workflows"
@@ -113,7 +113,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_whole_manifest_fixture_bundle(
+    load_fixture_bundle(
         "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
         expected_manifest_id=(
             "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows"
@@ -132,7 +132,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_whole_manifest_fixture_bundle(
+    load_fixture_bundle(
         "nested_open_ended_quantified_group_alternation_workflows.py",
         expected_manifest_id="nested-open-ended-quantified-group-alternation-workflows",
         expected_patterns=frozenset(
@@ -169,9 +169,9 @@ def test_open_ended_quantified_group_suite_uses_expected_published_fixture_paths
     ids=lambda bundle: bundle.expected_manifest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
-    bundle: WholeManifestFixtureBundle,
+    bundle: FixtureBundle,
 ) -> None:
-    assert_whole_manifest_fixture_bundle_contract(
+    assert_fixture_bundle_contract(
         bundle,
         pattern_extractor=case_pattern,
     )

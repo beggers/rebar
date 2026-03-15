@@ -9,11 +9,11 @@ import pytest
 import rebar
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
-    assert_expected_fixture_bundle_contract,
+    assert_fixture_bundle_contract,
     assert_match_result_parity,
     case_pattern,
     compile_with_cpython_parity,
-    load_expected_fixture_bundle,
+    load_fixture_bundle,
 )
 
 
@@ -128,7 +128,7 @@ TARGET_FIXTURE_CASE_IDS = (
     "module-finditer-str-repeated",
     "pattern-finditer-bytes-bounded",
 )
-COLLECTION_FIXTURE_BUNDLE = load_expected_fixture_bundle(
+COLLECTION_FIXTURE_BUNDLE = load_fixture_bundle(
     "collection_replacement_workflows.py",
     expected_manifest_id="collection-replacement-workflows",
     selected_case_ids=TARGET_FIXTURE_CASE_IDS,
@@ -290,7 +290,7 @@ UNSUPPORTED_CASES = (
 def test_literal_collection_suite_stays_aligned_with_published_fixture_rows() -> None:
     bundle = COLLECTION_FIXTURE_BUNDLE
 
-    assert_expected_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
+    assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
 
 
 @pytest.mark.parametrize("case", MODULE_SPLIT_CASES, ids=lambda case: case.id)

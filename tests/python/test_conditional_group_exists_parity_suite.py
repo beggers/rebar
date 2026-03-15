@@ -7,11 +7,11 @@ import pytest
 
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
-    WholeManifestFixtureBundle,
-    assert_whole_manifest_fixture_bundle_contract,
+    FixtureBundle,
+    assert_fixture_bundle_contract,
     assert_match_parity,
     compile_with_cpython_parity,
-    load_whole_manifest_fixture_bundle,
+    load_fixture_bundle,
     str_case_pattern,
 )
 
@@ -24,7 +24,7 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
 )
 
 FIXTURE_BUNDLES = (
-    load_whole_manifest_fixture_bundle(
+    load_fixture_bundle(
         "conditional_group_exists_workflows.py",
         expected_manifest_id="conditional-group-exists-workflows",
         expected_case_ids=frozenset(
@@ -45,7 +45,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    load_whole_manifest_fixture_bundle(
+    load_fixture_bundle(
         "conditional_group_exists_no_else_workflows.py",
         expected_manifest_id="conditional-group-exists-no-else-workflows",
         expected_case_ids=frozenset(
@@ -66,7 +66,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    load_whole_manifest_fixture_bundle(
+    load_fixture_bundle(
         "conditional_group_exists_empty_else_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-else-workflows",
         expected_case_ids=frozenset(
@@ -87,7 +87,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    load_whole_manifest_fixture_bundle(
+    load_fixture_bundle(
         "conditional_group_exists_empty_yes_else_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-yes-else-workflows",
         expected_case_ids=frozenset(
@@ -108,7 +108,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    load_whole_manifest_fixture_bundle(
+    load_fixture_bundle(
         "conditional_group_exists_fully_empty_workflows.py",
         expected_manifest_id="conditional-group-exists-fully-empty-workflows",
         expected_case_ids=frozenset(
@@ -156,9 +156,9 @@ PATTERN_CASES = tuple(
     ids=lambda bundle: bundle.expected_manifest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
-    bundle: WholeManifestFixtureBundle,
+    bundle: FixtureBundle,
 ) -> None:
-    assert_whole_manifest_fixture_bundle_contract(
+    assert_fixture_bundle_contract(
         bundle,
         pattern_extractor=str_case_pattern,
     )

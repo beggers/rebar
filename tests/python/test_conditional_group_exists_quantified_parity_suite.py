@@ -8,14 +8,14 @@ import pytest
 
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
-    assert_expected_fixture_bundle_contract,
+    assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
-    load_expected_fixture_bundle,
+    load_fixture_bundle,
     str_case_pattern,
 )
 QUANTIFIED_ALTERNATION_NUMBERED_PATTERN = r"a(b)?c(?(1)(de|df)|(eg|eh)){2}"
@@ -48,7 +48,7 @@ class SupplementalMissCase:
 
 
 FIXTURE_BUNDLES = (
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "conditional_group_exists_quantified_workflows.py",
         expected_manifest_id="conditional-group-exists-quantified-workflows",
         expected_case_ids=frozenset(
@@ -78,7 +78,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "conditional_group_exists_quantified_alternation_workflows.py",
         expected_manifest_id="conditional-group-exists-quantified-alternation-workflows",
         expected_case_ids=frozenset(
@@ -109,7 +109,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "conditional_group_exists_no_else_quantified_workflows.py",
         expected_manifest_id="conditional-group-exists-no-else-quantified-workflows",
         expected_case_ids=frozenset(
@@ -139,7 +139,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "conditional_group_exists_empty_else_quantified_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-else-quantified-workflows",
         expected_case_ids=frozenset(
@@ -169,7 +169,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "conditional_group_exists_empty_yes_else_quantified_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-yes-else-quantified-workflows",
         expected_case_ids=frozenset(
@@ -198,7 +198,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "conditional_group_exists_fully_empty_quantified_workflows.py",
         expected_manifest_id="conditional-group-exists-fully-empty-quantified-workflows",
         expected_case_ids=frozenset(
@@ -451,7 +451,7 @@ def _workflow_result_for_case(
     ids=lambda bundle: bundle.expected_manifest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(bundle) -> None:
-    assert_expected_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
+    assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
 
 
 def test_match_api_cases_remain_published_quantified_conditional_matches() -> None:

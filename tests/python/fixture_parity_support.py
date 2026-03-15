@@ -22,53 +22,26 @@ _MATCH_ACCESSOR_NAMES = ("group", "span", "start", "end", "getitem")
 
 
 @dataclass(frozen=True)
-class WholeManifestFixtureBundle:
+class FixtureBundle:
     manifest: FixtureManifest
     cases: tuple[FixtureCase, ...]
     expected_manifest_id: str
     expected_patterns: frozenset[str | bytes]
     expected_operation_helper_counts: Counter[tuple[str, str | None]]
     expected_case_ids: frozenset[str] | None = None
+    expected_text_models: frozenset[str] | None = None
 
 
-@dataclass(frozen=True)
-class ExpectedFixtureBundle:
-    manifest: FixtureManifest
-    cases: tuple[FixtureCase, ...]
-    expected_manifest_id: str
-    expected_case_ids: frozenset[str]
-    expected_patterns: frozenset[str | bytes]
-    expected_operation_helper_counts: Counter[tuple[str, str | None]]
-
-
-def load_whole_manifest_fixture_bundle(
+def load_fixture_bundle(
     fixture_name: str,
     *,
     expected_manifest_id: str,
-    expected_patterns: frozenset[str | bytes],
-    expected_operation_helper_counts: Counter[tuple[str, str | None]],
-    expected_case_ids: frozenset[str] | None = None,
-) -> WholeManifestFixtureBundle:
-    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
-    return WholeManifestFixtureBundle(
-        manifest=manifest,
-        cases=tuple(cases),
-        expected_manifest_id=expected_manifest_id,
-        expected_patterns=expected_patterns,
-        expected_operation_helper_counts=expected_operation_helper_counts,
-        expected_case_ids=expected_case_ids,
-    )
-
-
-def load_expected_fixture_bundle(
-    fixture_name: str,
-    *,
-    expected_manifest_id: str,
-    expected_case_ids: frozenset[str],
     expected_patterns: frozenset[str | bytes],
     expected_operation_helper_counts: Counter[tuple[str, str | None]],
     selected_case_ids: tuple[str, ...] | None = None,
-) -> ExpectedFixtureBundle:
+    expected_case_ids: frozenset[str] | None = None,
+    expected_text_models: frozenset[str] | None = None,
+) -> FixtureBundle:
     manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
     loaded_cases = tuple(cases)
     if selected_case_ids is None:
@@ -84,18 +57,21 @@ def load_expected_fixture_bundle(
             )
         bundle_cases = tuple(case_by_id[case_id] for case_id in selected_case_ids)
 
-    return ExpectedFixtureBundle(
+    return FixtureBundle(
         manifest=manifest,
         cases=bundle_cases,
         expected_manifest_id=expected_manifest_id,
-        expected_case_ids=expected_case_ids,
         expected_patterns=expected_patterns,
         expected_operation_helper_counts=expected_operation_helper_counts,
+        expected_case_ids=expected_case_ids,
+        expected_text_models=(
+            frozenset({"str"}) if selected_case_ids is None else expected_text_models
+        ),
     )
 
 
-def assert_whole_manifest_fixture_bundle_contract(
-    bundle: WholeManifestFixtureBundle,
+def assert_fixture_bundle_contract(
+    bundle: FixtureBundle,
     *,
     pattern_extractor: Callable[[FixtureCase], str | bytes],
 ) -> None:
@@ -106,28 +82,15 @@ def assert_whole_manifest_fixture_bundle_contract(
         assert len(bundle.cases) == len(bundle.expected_case_ids)
         assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
     assert {pattern_extractor(case) for case in bundle.cases} == bundle.expected_patterns
-    assert {case.text_model for case in bundle.cases} == {"str"}
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        bundle.expected_operation_helper_counts
-    )
-
-
-def assert_expected_fixture_bundle_contract(
-    bundle: ExpectedFixtureBundle,
-    *,
-    pattern_extractor: Callable[[FixtureCase], str | bytes],
-) -> None:
-    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
-    assert len(bundle.cases) == len(bundle.expected_case_ids)
-    assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
-    assert {pattern_extractor(case) for case in bundle.cases} == bundle.expected_patterns
+    if bundle.expected_text_models is not None:
+        assert {case.text_model for case in bundle.cases} == bundle.expected_text_models
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
         bundle.expected_operation_helper_counts
     )
 
 
 def published_fixture_paths_from_bundles(
-    bundles: Iterable[WholeManifestFixtureBundle | ExpectedFixtureBundle],
+    bundles: Iterable[FixtureBundle],
 ) -> tuple[pathlib.Path, ...]:
     return tuple(sorted((bundle.manifest.path for bundle in bundles), key=lambda path: path.name))
 

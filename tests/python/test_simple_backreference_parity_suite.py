@@ -12,14 +12,14 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
-    WholeManifestFixtureBundle,
-    assert_whole_manifest_fixture_bundle_contract,
+    FixtureBundle,
+    assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
-    load_whole_manifest_fixture_bundle,
+    load_fixture_bundle,
     published_fixture_paths_from_bundles,
     str_case_pattern,
 )
@@ -36,7 +36,7 @@ class SupplementalMissCase:
     misses: tuple[str, ...]
 
 FIXTURE_BUNDLES = (
-    load_whole_manifest_fixture_bundle(
+    load_fixture_bundle(
         "named_backreference_workflows.py",
         expected_manifest_id="named-backreference-workflows",
         expected_case_ids=frozenset(
@@ -55,7 +55,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_whole_manifest_fixture_bundle(
+    load_fixture_bundle(
         "numbered_backreference_workflows.py",
         expected_manifest_id="numbered-backreference-workflows",
         expected_case_ids=frozenset(
@@ -155,9 +155,9 @@ def test_simple_backreference_suite_uses_expected_published_fixture_paths() -> N
     ids=lambda bundle: bundle.expected_manifest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
-    bundle: WholeManifestFixtureBundle,
+    bundle: FixtureBundle,
 ) -> None:
-    assert_whole_manifest_fixture_bundle_contract(
+    assert_fixture_bundle_contract(
         bundle,
         pattern_extractor=str_case_pattern,
     )

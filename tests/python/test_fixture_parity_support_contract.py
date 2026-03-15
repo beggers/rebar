@@ -27,8 +27,7 @@ from rebar_harness.correctness import (
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
     _match_api_templates,
-    assert_expected_fixture_bundle_contract,
-    assert_whole_manifest_fixture_bundle_contract,
+    assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
@@ -36,8 +35,7 @@ from tests.python.fixture_parity_support import (
     assert_valid_match_group_access_parity,
     case_pattern,
     compile_with_cpython_parity,
-    load_expected_fixture_bundle,
-    load_whole_manifest_fixture_bundle,
+    load_fixture_bundle,
     published_fixture_paths_from_bundles,
     str_case_pattern,
 )
@@ -317,7 +315,7 @@ def test_case_pattern_helpers_extract_str_and_bytes_patterns_from_published_fixt
 
 
 def test_whole_manifest_bundle_contract_supports_exact_case_id_validation() -> None:
-    bundle = load_whole_manifest_fixture_bundle(
+    bundle = load_fixture_bundle(
         "named_backreference_workflows.py",
         expected_manifest_id="named-backreference-workflows",
         expected_case_ids=frozenset(
@@ -339,11 +337,11 @@ def test_whole_manifest_bundle_contract_supports_exact_case_id_validation() -> N
 
     assert bundle.manifest.path == FIXTURES_DIR / "named_backreference_workflows.py"
     assert bundle.expected_case_ids is not None
-    assert_whole_manifest_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
+    assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
 
 
 def test_expected_fixture_bundle_contract_supports_exact_case_id_validation() -> None:
-    bundle = load_expected_fixture_bundle(
+    bundle = load_fixture_bundle(
         "named_backreference_workflows.py",
         expected_manifest_id="named-backreference-workflows",
         expected_case_ids=frozenset(
@@ -364,7 +362,7 @@ def test_expected_fixture_bundle_contract_supports_exact_case_id_validation() ->
     )
 
     assert bundle.manifest.path == FIXTURES_DIR / "named_backreference_workflows.py"
-    assert_expected_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
+    assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
     assert published_fixture_paths_from_bundles((bundle,)) == (
         FIXTURES_DIR / "named_backreference_workflows.py",
     )
@@ -375,7 +373,7 @@ def test_expected_fixture_bundle_contract_supports_selected_case_loading() -> No
         "flag-unsupported-inline-flag-search",
         "flag-unsupported-locale-bytes-search",
     )
-    bundle = load_expected_fixture_bundle(
+    bundle = load_fixture_bundle(
         "literal_flag_workflows.py",
         expected_manifest_id="literal-flag-workflows",
         expected_case_ids=frozenset(selected_case_ids),
@@ -386,11 +384,11 @@ def test_expected_fixture_bundle_contract_supports_selected_case_loading() -> No
 
     assert bundle.manifest.path == FIXTURES_DIR / "literal_flag_workflows.py"
     assert tuple(case.case_id for case in bundle.cases) == selected_case_ids
-    assert_expected_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
+    assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
 
 
 def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_case_ids() -> None:
-    named_bundle = load_whole_manifest_fixture_bundle(
+    named_bundle = load_fixture_bundle(
         "named_backreference_workflows.py",
         expected_manifest_id="named-backreference-workflows",
         expected_case_ids=frozenset(
@@ -409,7 +407,7 @@ def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_ca
             }
         ),
     )
-    open_ended_bundle = load_whole_manifest_fixture_bundle(
+    open_ended_bundle = load_fixture_bundle(
         "open_ended_quantified_group_alternation_workflows.py",
         expected_manifest_id="open-ended-quantified-group-alternation-workflows",
         expected_patterns=frozenset(
@@ -428,7 +426,7 @@ def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_ca
     )
 
     assert open_ended_bundle.expected_case_ids is None
-    assert_whole_manifest_fixture_bundle_contract(
+    assert_fixture_bundle_contract(
         open_ended_bundle,
         pattern_extractor=case_pattern,
     )

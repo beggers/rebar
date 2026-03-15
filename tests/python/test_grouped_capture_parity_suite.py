@@ -14,14 +14,14 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
-    assert_expected_fixture_bundle_contract,
+    assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
-    load_expected_fixture_bundle,
+    load_fixture_bundle,
     published_fixture_paths_from_bundles,
     str_case_pattern,
 )
@@ -56,7 +56,7 @@ class BoundedPatternCase:
 
 
 FIXTURE_BUNDLES = (
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "grouped_match_workflows.py",
         expected_manifest_id="grouped-match-workflows",
         selected_case_ids=(
@@ -77,7 +77,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "named_group_workflows.py",
         expected_manifest_id="named-group-workflows",
         selected_case_ids=(
@@ -101,7 +101,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "grouped_segment_workflows.py",
         expected_manifest_id="grouped-segment-workflows",
         selected_case_ids=(
@@ -136,7 +136,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "grouped_alternation_workflows.py",
         expected_manifest_id="grouped-alternation-workflows",
         selected_case_ids=(
@@ -171,7 +171,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "optional_group_workflows.py",
         expected_manifest_id="optional-group-workflows",
         selected_case_ids=(
@@ -226,7 +226,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "optional_group_alternation_workflows.py",
         expected_manifest_id="optional-group-alternation-workflows",
         selected_case_ids=(
@@ -261,7 +261,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "nested_group_workflows.py",
         expected_manifest_id="nested-group-workflows",
         selected_case_ids=(
@@ -296,7 +296,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "nested_group_alternation_workflows.py",
         expected_manifest_id="nested-group-alternation-workflows",
         selected_case_ids=(
@@ -663,7 +663,7 @@ def test_match_group_access_rows_remain_on_grouped_capture_fixture_paths() -> No
     ids=lambda bundle: bundle.expected_manifest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(bundle) -> None:
-    assert_expected_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
+    assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
     assert {case.text_model for case in bundle.cases} == {"str"}
 
 

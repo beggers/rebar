@@ -13,12 +13,12 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
-    assert_expected_fixture_bundle_contract,
+    assert_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_result_parity,
     case_pattern,
     compile_with_cpython_parity,
-    load_expected_fixture_bundle,
+    load_fixture_bundle,
     published_fixture_paths_from_bundles,
 )
 PUBLISHED_BOUNDED_WILDCARD_FIXTURE_PATHS = select_correctness_fixture_paths(
@@ -86,7 +86,7 @@ class _FakeNativeBoundary:
 
 
 FIXTURE_BUNDLES = (
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "literal_flag_workflows.py",
         expected_manifest_id="literal-flag-workflows",
         selected_case_ids=("flag-unsupported-nonliteral-ignorecase-search",),
@@ -94,7 +94,7 @@ FIXTURE_BUNDLES = (
         expected_patterns=frozenset({"a.c"}),
         expected_operation_helper_counts=Counter({("module_call", "search"): 1}),
     ),
-    load_expected_fixture_bundle(
+    load_fixture_bundle(
         "collection_replacement_workflows.py",
         expected_manifest_id="collection-replacement-workflows",
         selected_case_ids=("module-findall-nonliteral-str",),
@@ -206,7 +206,7 @@ def test_bounded_wildcard_suite_uses_expected_published_fixture_paths() -> None:
     ids=lambda bundle: bundle.expected_manifest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(bundle) -> None:
-    assert_expected_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
+    assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
     assert {case.text_model for case in bundle.cases} == {"str"}
     assert all("bounded-wildcard" in case.categories for case in bundle.cases)
 
