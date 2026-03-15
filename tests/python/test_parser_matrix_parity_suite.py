@@ -23,6 +23,16 @@ PARSER_MATRIX_MANIFEST, PARSER_MATRIX_FIXTURE_CASES = load_fixture_manifest(
 PARSER_MATRIX_CASES_BY_ID = {
     case.case_id: case for case in PARSER_MATRIX_FIXTURE_CASES
 }
+CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_PATH = (
+    FIXTURES_DIR / "conditional_group_exists_assertion_diagnostics.py"
+)
+(
+    CONDITIONAL_ASSERTION_DIAGNOSTIC_MANIFEST,
+    CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_CASES,
+) = load_fixture_manifest(CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_PATH)
+CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES_BY_ID = {
+    case.case_id: case for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_CASES
+}
 
 EXPECTED_CASE_IDS = (
     "str-character-class-ignorecase-success",
@@ -40,6 +50,18 @@ EXPECTED_CASE_IDS = (
     "bytes-unicode-escape-error",
 )
 TARGET_CASES = tuple(PARSER_MATRIX_CASES_BY_ID[case_id] for case_id in EXPECTED_CASE_IDS)
+EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS = (
+    "conditional-group-exists-assertion-positive-lookahead-error-str",
+    "conditional-group-exists-assertion-negative-lookahead-error-str",
+)
+EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_PATTERNS = (
+    "a(?(?=b)b|c)d",
+    "a(?(?!b)b|c)d",
+)
+CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES = tuple(
+    CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES_BY_ID[case_id]
+    for case_id in EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS
+)
 
 COMPILE_METADATA_CASES = tuple(
     PARSER_MATRIX_CASES_BY_ID[case_id]
@@ -169,6 +191,28 @@ def test_parser_matrix_parity_suite_stays_aligned_with_published_correctness_fix
     assert {case.helper for case in TARGET_CASES} == {None}
 
 
+def test_conditional_assertion_diagnostic_fixture_stays_aligned_with_published_correctness_fixture() -> None:
+    assert (
+        CONDITIONAL_ASSERTION_DIAGNOSTIC_MANIFEST.path
+        == CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_PATH
+    )
+    assert (
+        CONDITIONAL_ASSERTION_DIAGNOSTIC_MANIFEST.manifest_id
+        == "conditional-group-exists-assertion-diagnostics"
+    )
+    assert len(CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES) == len(
+        EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS
+    )
+    assert {case.case_id for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES} == set(
+        EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS
+    )
+    assert {case.operation for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES} == {"compile"}
+    assert {case.helper for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES} == {None}
+    assert {case_pattern(case) for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES} == set(
+        EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_PATTERNS
+    )
+
+
 @pytest.mark.parametrize("case", COMPILE_METADATA_CASES, ids=lambda case: case.case_id)
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
@@ -294,6 +338,18 @@ def test_compile_diagnostics_match_cpython(
         assert actual_error.pos is None
         assert actual_error.lineno is None
         assert actual_error.colno is None
+
+
+@pytest.mark.parametrize(
+    "case",
+    CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_conditional_assertion_compile_diagnostics_match_cpython(
+    rebar_backend: object,
+    case: FixtureCase,
+) -> None:
+    _assert_compile_error_parity(rebar_backend, case)
 
 
 @pytest.mark.parametrize(
