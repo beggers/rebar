@@ -16,7 +16,7 @@ if str(PYTHON_SOURCE) not in sys.path:
 
 
 import rebar
-from tests.python.native_wheel_test_support import MATURIN, built_native_runtime
+from tests.benchmarks.native_benchmark_test_support import MATURIN, built_native_runtime
 
 
 STR_CASES = [

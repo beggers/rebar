@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 
-from tests.python.native_wheel_test_support import MATURIN, built_native_runtime
+from tests.benchmarks.native_benchmark_test_support import MATURIN, built_native_runtime
 
 
 class RebarNativeExtensionSmokeTest(unittest.TestCase):
