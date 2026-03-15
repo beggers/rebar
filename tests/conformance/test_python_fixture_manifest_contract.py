@@ -324,6 +324,137 @@ class PythonFixtureManifestContractTest(unittest.TestCase):
             },
         )
 
+    def test_python_fixture_manifest_defaults_suite_id_from_layer_and_operation(
+        self,
+    ) -> None:
+        manifest_cases = (
+            (
+                "parser_compile_default.py",
+                """
+                MANIFEST = {
+                    "schema_version": 1,
+                    "manifest_id": "parser-compile-default",
+                    "cases": [
+                        {
+                            "id": "compile-case",
+                            "pattern": "abc",
+                        },
+                    ],
+                }
+                """,
+                "parser.compile",
+                "parser_acceptance_and_diagnostics",
+                "compile",
+            ),
+            (
+                "module_workflow_default.py",
+                """
+                MANIFEST = {
+                    "schema_version": 1,
+                    "manifest_id": "module-workflow-default",
+                    "layer": "module_workflow",
+                    "defaults": {
+                        "operation": "module_call",
+                    },
+                    "cases": [
+                        {
+                            "id": "module-case",
+                        },
+                    ],
+                }
+                """,
+                "module-workflow-default",
+                "module_workflow",
+                "module_call",
+            ),
+            (
+                "parser_non_compile_default.py",
+                """
+                MANIFEST = {
+                    "schema_version": 1,
+                    "manifest_id": "parser-non-compile-default",
+                    "defaults": {
+                        "operation": "module_call",
+                    },
+                    "cases": [
+                        {
+                            "id": "parser-non-compile-case",
+                        },
+                    ],
+                }
+                """,
+                "parser-non-compile-default",
+                "parser_acceptance_and_diagnostics",
+                "module_call",
+            ),
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_root = pathlib.Path(temp_dir)
+            for (
+                filename,
+                source,
+                expected_suite_id,
+                expected_layer,
+                expected_operation,
+            ) in manifest_cases:
+                with self.subTest(filename=filename):
+                    fixture_path = self._write_fixture(temp_root, filename, source)
+                    manifest, cases = load_fixture_manifest(fixture_path)
+
+                    self.assertEqual(manifest.suite_id, expected_suite_id)
+                    self.assertEqual(manifest.layer, expected_layer)
+                    self.assertEqual(len(cases), 1)
+                    self.assertEqual(cases[0].suite_id, expected_suite_id)
+                    self.assertEqual(cases[0].layer, expected_layer)
+                    self.assertEqual(cases[0].operation, expected_operation)
+
+    def test_python_fixture_manifest_rejects_invalid_module_shape_details(self) -> None:
+        invalid_modules = (
+            (
+                "non_python_suffix.json",
+                """
+                MANIFEST = {
+                    "schema_version": 1,
+                    "manifest_id": "non-python-suffix",
+                    "cases": [],
+                }
+                """,
+                r"fixture manifests must be Python modules",
+            ),
+            (
+                "unsupported_schema.py",
+                """
+                MANIFEST = {
+                    "schema_version": 99,
+                    "manifest_id": "unsupported-schema",
+                    "cases": [],
+                }
+                """,
+                r"unsupported fixture schema version 99; expected 1",
+            ),
+            (
+                "non_dict_defaults.py",
+                """
+                MANIFEST = {
+                    "schema_version": 1,
+                    "manifest_id": "non-dict-defaults",
+                    "defaults": ["not-a-dict"],
+                    "cases": [],
+                }
+                """,
+                r"fixture manifest defaults must be an object",
+            ),
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_root = pathlib.Path(temp_dir)
+            for filename, source, error_pattern in invalid_modules:
+                with self.subTest(filename=filename):
+                    fixture_path = self._write_fixture(temp_root, filename, source)
+                    with self.assertRaisesRegex(ValueError, error_pattern):
+                        load_fixture_manifest(fixture_path)
+
     def test_python_fixture_manifest_rejects_missing_and_non_dict_manifest_values(
         self,
     ) -> None:
