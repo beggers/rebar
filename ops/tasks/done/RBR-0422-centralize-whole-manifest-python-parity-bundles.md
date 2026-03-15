@@ -1,8 +1,9 @@
 # RBR-0422: Centralize whole-manifest Python parity bundles
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Replace the repeated whole-manifest `FixtureBundle` loader and contract scaffolding in a first bounded set of Python parity suites with one shared helper in `tests/python/fixture_parity_support.py`, so those suites stop hand-maintaining identical dataclasses, manifest loading, selector-path sorting, and bundle-alignment assertions after selector centralization.
@@ -46,3 +47,13 @@ Created: 2026-03-15
 - The queue is empty, recent runtime artifacts show no inherited-dirty or post-commit bottleneck, and both tracked and live JSON counts are zero (`tracked_json_blob_count: 0`, `tracked_json_blob_delta: 0`, `git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), so this run should seed a post-JSON duplicate-fixture cleanup.
 - `RBR-0416` centralized correctness fixture selectors, but these four suites still each restate the same whole-manifest `FixtureBundle` dataclass, `load_fixture_manifest(FIXTURES_DIR / fixture_name)` loader, selector-path sorting, and bundle-alignment assertions.
 - Leave `tests/python/test_grouped_capture_parity_suite.py`, `tests/python/test_conditional_group_exists_*_parity_suite.py`, `tests/python/test_callable_replacement_parity_suite.py`, and the replacement-template helpers for later follow-ons because they carry extra case filtering or custom match and replacement scaffolding beyond this first helper cut.
+
+## Completion
+- 2026-03-15: Added shared whole-manifest parity-bundle support in `tests/python/fixture_parity_support.py` with one reusable bundle dataclass plus shared load, contract-assertion, and selector-path helpers.
+- 2026-03-15: Switched the counted-repeat, simple-backreference, open-ended quantified-group, and wider-ranged-repeat parity suites to the shared bundle helpers, removing their local `FixtureBundle` dataclasses, manifest loaders, and open-coded selector-path sorting.
+- 2026-03-15: Extended `tests/python/test_fixture_parity_support_contract.py` with focused whole-manifest helper coverage for both exact-case-id and count-only bundle modes.
+
+## Verification
+- 2026-03-15: `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_counted_repeat_quantified_group_parity_suite.py tests/python/test_simple_backreference_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (`1371 passed, 10 skipped`)
+- 2026-03-15: `rg -n 'class FixtureBundle|def _fixture_bundle\(' tests/python/test_counted_repeat_quantified_group_parity_suite.py tests/python/test_simple_backreference_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (no matches)
+- 2026-03-15: `rg -n 'sorted\(\(bundle\.manifest\.path for bundle in FIXTURE_BUNDLES\)' tests/python/test_counted_repeat_quantified_group_parity_suite.py tests/python/test_simple_backreference_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (no matches)

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import Counter
 import re
 
 import pytest
@@ -26,6 +27,7 @@ from rebar_harness.correctness import (
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
     _match_api_templates,
+    assert_whole_manifest_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
@@ -33,6 +35,8 @@ from tests.python.fixture_parity_support import (
     assert_valid_match_group_access_parity,
     case_pattern,
     compile_with_cpython_parity,
+    load_whole_manifest_fixture_bundle,
+    published_fixture_paths_from_bundles,
     str_case_pattern,
 )
 OPTIONAL_NAMED_GROUP_PATTERN = r"a(?P<word>b)?d"
@@ -308,6 +312,84 @@ def test_case_pattern_helpers_extract_str_and_bytes_patterns_from_published_fixt
     assert case_pattern(pattern_case) == r"(?P<word>abc)"
     assert str_case_pattern(pattern_case) == r"(?P<word>abc)"
     assert case_pattern(bytes_case) == b"abc"
+
+
+def test_whole_manifest_bundle_contract_supports_exact_case_id_validation() -> None:
+    bundle = load_whole_manifest_fixture_bundle(
+        "named_backreference_workflows.py",
+        expected_manifest_id="named-backreference-workflows",
+        expected_case_ids=frozenset(
+            {
+                "named-backreference-compile-metadata-str",
+                "named-backreference-module-search-str",
+                "named-backreference-pattern-search-str",
+            }
+        ),
+        expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 1,
+                ("module_call", "search"): 1,
+                ("pattern_call", "search"): 1,
+            }
+        ),
+    )
+
+    assert bundle.manifest.path == FIXTURES_DIR / "named_backreference_workflows.py"
+    assert bundle.expected_case_ids is not None
+    assert_whole_manifest_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
+
+
+def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_case_ids() -> None:
+    named_bundle = load_whole_manifest_fixture_bundle(
+        "named_backreference_workflows.py",
+        expected_manifest_id="named-backreference-workflows",
+        expected_case_ids=frozenset(
+            {
+                "named-backreference-compile-metadata-str",
+                "named-backreference-module-search-str",
+                "named-backreference-pattern-search-str",
+            }
+        ),
+        expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 1,
+                ("module_call", "search"): 1,
+                ("pattern_call", "search"): 1,
+            }
+        ),
+    )
+    open_ended_bundle = load_whole_manifest_fixture_bundle(
+        "open_ended_quantified_group_alternation_workflows.py",
+        expected_manifest_id="open-ended-quantified-group-alternation-workflows",
+        expected_patterns=frozenset(
+            {
+                r"a(bc|de){1,}d",
+                r"a(?P<word>bc|de){1,}d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 4,
+                ("pattern_call", "fullmatch"): 10,
+            }
+        ),
+    )
+
+    assert open_ended_bundle.expected_case_ids is None
+    assert_whole_manifest_fixture_bundle_contract(
+        open_ended_bundle,
+        pattern_extractor=case_pattern,
+    )
+    assert tuple(
+        path.name
+        for path in published_fixture_paths_from_bundles((open_ended_bundle, named_bundle))
+    ) == (
+        "named_backreference_workflows.py",
+        "open_ended_quantified_group_alternation_workflows.py",
+    )
 
 
 def test_match_api_templates_include_combined_named_group_templates() -> None:

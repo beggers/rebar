@@ -8,34 +8,25 @@ import pytest
 
 from rebar_harness.correctness import (
     FixtureCase,
-    FixtureManifest,
     SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR,
-    load_fixture_manifest,
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
+    WholeManifestFixtureBundle,
+    assert_whole_manifest_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
+    load_whole_manifest_fixture_bundle,
+    published_fixture_paths_from_bundles,
     str_case_pattern,
 )
+
 PUBLISHED_SIMPLE_BACKREFERENCE_FIXTURE_PATHS = select_correctness_fixture_paths(
     SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR
 )
-
-
-@dataclass(frozen=True)
-class FixtureBundle:
-    manifest: FixtureManifest
-    cases: tuple[FixtureCase, ...]
-    expected_manifest_id: str
-    expected_case_ids: frozenset[str]
-    expected_patterns: frozenset[str]
-    expected_operation_helper_counts: Counter[tuple[str, str | None]]
-
 
 @dataclass(frozen=True)
 class SupplementalMissCase:
@@ -44,28 +35,8 @@ class SupplementalMissCase:
     pattern_case_id: str
     misses: tuple[str, ...]
 
-
-def _fixture_bundle(
-    fixture_name: str,
-    *,
-    expected_manifest_id: str,
-    expected_case_ids: frozenset[str],
-    expected_patterns: frozenset[str],
-    expected_operation_helper_counts: Counter[tuple[str, str | None]],
-) -> FixtureBundle:
-    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
-    return FixtureBundle(
-        manifest=manifest,
-        cases=tuple(cases),
-        expected_manifest_id=expected_manifest_id,
-        expected_case_ids=expected_case_ids,
-        expected_patterns=expected_patterns,
-        expected_operation_helper_counts=expected_operation_helper_counts,
-    )
-
-
 FIXTURE_BUNDLES = (
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "named_backreference_workflows.py",
         expected_manifest_id="named-backreference-workflows",
         expected_case_ids=frozenset(
@@ -84,7 +55,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "numbered_backreference_workflows.py",
         expected_manifest_id="numbered-backreference-workflows",
         expected_case_ids=frozenset(
@@ -172,8 +143,8 @@ def _match_for_case(
 
 
 def test_simple_backreference_suite_uses_expected_published_fixture_paths() -> None:
-    assert PUBLISHED_SIMPLE_BACKREFERENCE_FIXTURE_PATHS == tuple(
-        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
+    assert PUBLISHED_SIMPLE_BACKREFERENCE_FIXTURE_PATHS == published_fixture_paths_from_bundles(
+        FIXTURE_BUNDLES
     )
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
@@ -184,15 +155,11 @@ def test_simple_backreference_suite_uses_expected_published_fixture_paths() -> N
     ids=lambda bundle: bundle.expected_manifest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
-    bundle: FixtureBundle,
+    bundle: WholeManifestFixtureBundle,
 ) -> None:
-    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
-    assert len(bundle.cases) == len(bundle.expected_case_ids)
-    assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
-    assert {str_case_pattern(case) for case in bundle.cases} == bundle.expected_patterns
-    assert {case.text_model for case in bundle.cases} == {"str"}
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        bundle.expected_operation_helper_counts
+    assert_whole_manifest_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=str_case_pattern,
     )
 
 

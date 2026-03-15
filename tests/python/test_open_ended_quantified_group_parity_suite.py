@@ -1,58 +1,32 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
 import re
 
 import pytest
 
 from rebar_harness.correctness import (
     FixtureCase,
-    FixtureManifest,
     OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
-    load_fixture_manifest,
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
+    WholeManifestFixtureBundle,
+    assert_whole_manifest_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_parity,
     case_pattern,
     compile_with_cpython_parity,
+    load_whole_manifest_fixture_bundle,
+    published_fixture_paths_from_bundles,
 )
+
 PUBLISHED_OPEN_ENDED_FIXTURE_PATHS = select_correctness_fixture_paths(
     OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR
 )
 
-
-@dataclass(frozen=True)
-class FixtureBundle:
-    manifest: FixtureManifest
-    cases: tuple[FixtureCase, ...]
-    expected_manifest_id: str
-    expected_patterns: frozenset[str]
-    expected_operation_helper_counts: Counter[tuple[str, str | None]]
-
-
-def _fixture_bundle(
-    fixture_name: str,
-    *,
-    expected_manifest_id: str,
-    expected_patterns: frozenset[str],
-    expected_operation_helper_counts: Counter[tuple[str, str | None]],
-) -> FixtureBundle:
-    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
-    return FixtureBundle(
-        manifest=manifest,
-        cases=tuple(cases),
-        expected_manifest_id=expected_manifest_id,
-        expected_patterns=expected_patterns,
-        expected_operation_helper_counts=expected_operation_helper_counts,
-    )
-
-
 FIXTURE_BUNDLES = (
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "open_ended_quantified_group_alternation_workflows.py",
         expected_manifest_id="open-ended-quantified-group-alternation-workflows",
         expected_patterns=frozenset(
@@ -69,7 +43,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "open_ended_quantified_group_alternation_conditional_workflows.py",
         expected_manifest_id="open-ended-quantified-group-alternation-conditional-workflows",
         expected_patterns=frozenset(
@@ -86,7 +60,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
         expected_manifest_id="open-ended-quantified-group-alternation-backtracking-heavy-workflows",
         expected_patterns=frozenset(
@@ -103,7 +77,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "broader_range_open_ended_quantified_group_alternation_workflows.py",
         expected_manifest_id="broader-range-open-ended-quantified-group-alternation-workflows",
         expected_patterns=frozenset(
@@ -120,7 +94,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
         expected_manifest_id=(
             "broader-range-open-ended-quantified-group-alternation-conditional-workflows"
@@ -139,7 +113,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
         expected_manifest_id=(
             "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows"
@@ -158,7 +132,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "nested_open_ended_quantified_group_alternation_workflows.py",
         expected_manifest_id="nested-open-ended-quantified-group-alternation-workflows",
         expected_patterns=frozenset(
@@ -183,8 +157,8 @@ PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pat
 
 
 def test_open_ended_quantified_group_suite_uses_expected_published_fixture_paths() -> None:
-    assert PUBLISHED_OPEN_ENDED_FIXTURE_PATHS == tuple(
-        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
+    assert PUBLISHED_OPEN_ENDED_FIXTURE_PATHS == published_fixture_paths_from_bundles(
+        FIXTURE_BUNDLES
     )
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
@@ -195,14 +169,11 @@ def test_open_ended_quantified_group_suite_uses_expected_published_fixture_paths
     ids=lambda bundle: bundle.expected_manifest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
-    bundle: FixtureBundle,
+    bundle: WholeManifestFixtureBundle,
 ) -> None:
-    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
-    assert len(bundle.cases) == sum(bundle.expected_operation_helper_counts.values())
-    assert {case_pattern(case) for case in bundle.cases} == bundle.expected_patterns
-    assert {case.text_model for case in bundle.cases} == {"str"}
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        bundle.expected_operation_helper_counts
+    assert_whole_manifest_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=case_pattern,
     )
 
 

@@ -9,18 +9,20 @@ import pytest
 
 from rebar_harness.correctness import (
     FixtureCase,
-    FixtureManifest,
     WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
-    load_fixture_manifest,
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
+    WholeManifestFixtureBundle,
+    assert_whole_manifest_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_parity,
     case_pattern,
     compile_with_cpython_parity,
+    load_whole_manifest_fixture_bundle,
+    published_fixture_paths_from_bundles,
 )
+
 PUBLISHED_WIDER_RANGED_REPEAT_FIXTURE_PATHS = select_correctness_fixture_paths(
     WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR
 )
@@ -32,15 +34,6 @@ BACKTRACKING_BRANCH_TEXT = {
     "short": "bc",
     "long": "bcc",
 }
-
-
-@dataclass(frozen=True)
-class FixtureBundle:
-    manifest: FixtureManifest
-    cases: tuple[FixtureCase, ...]
-    expected_manifest_id: str
-    expected_patterns: frozenset[str]
-    expected_operation_helper_counts: Counter[tuple[str, str | None]]
 
 
 @dataclass(frozen=True)
@@ -62,26 +55,8 @@ class BacktrackingTraceCase:
     search_text: str
     fullmatch_text: str
 
-
-def _fixture_bundle(
-    fixture_name: str,
-    *,
-    expected_manifest_id: str,
-    expected_patterns: frozenset[str],
-    expected_operation_helper_counts: Counter[tuple[str, str | None]],
-) -> FixtureBundle:
-    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
-    return FixtureBundle(
-        manifest=manifest,
-        cases=tuple(cases),
-        expected_manifest_id=expected_manifest_id,
-        expected_patterns=expected_patterns,
-        expected_operation_helper_counts=expected_operation_helper_counts,
-    )
-
-
 FIXTURE_BUNDLES = (
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "wider_ranged_repeat_quantified_group_workflows.py",
         expected_manifest_id="wider-ranged-repeat-quantified-group-workflows",
         expected_patterns=frozenset(
@@ -98,7 +73,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
         expected_manifest_id=(
             "wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
@@ -117,7 +92,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
         expected_manifest_id=(
             "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
@@ -136,7 +111,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
         expected_manifest_id=(
             "broader-range-wider-ranged-repeat-quantified-group-alternation-workflows"
@@ -155,7 +130,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
         expected_manifest_id=(
             "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
@@ -174,7 +149,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
         expected_manifest_id=(
             "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
@@ -193,7 +168,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
         expected_manifest_id=(
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-workflows"
@@ -212,7 +187,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
         expected_manifest_id=(
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
@@ -231,7 +206,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
         expected_manifest_id=(
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
@@ -321,8 +296,8 @@ BACKTRACKING_TRACE_CASES = (
 
 
 def test_parity_suite_uses_expected_published_fixture_paths() -> None:
-    assert PUBLISHED_WIDER_RANGED_REPEAT_FIXTURE_PATHS == tuple(
-        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
+    assert PUBLISHED_WIDER_RANGED_REPEAT_FIXTURE_PATHS == published_fixture_paths_from_bundles(
+        FIXTURE_BUNDLES
     )
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
@@ -333,14 +308,11 @@ def test_parity_suite_uses_expected_published_fixture_paths() -> None:
     ids=lambda bundle: bundle.expected_manifest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
-    bundle: FixtureBundle,
+    bundle: WholeManifestFixtureBundle,
 ) -> None:
-    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
-    assert len(bundle.cases) == sum(bundle.expected_operation_helper_counts.values())
-    assert {case_pattern(case) for case in bundle.cases} == bundle.expected_patterns
-    assert {case.text_model for case in bundle.cases} == {"str"}
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        bundle.expected_operation_helper_counts
+    assert_whole_manifest_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=case_pattern,
     )
 
 

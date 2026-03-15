@@ -1,15 +1,79 @@
 from __future__ import annotations
 
+from collections import Counter
+from collections.abc import Callable, Iterable
+from dataclasses import dataclass
+import pathlib
 import re
 
 import rebar
-from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
+from rebar_harness.correctness import (
+    CORRECTNESS_FIXTURES_ROOT,
+    FixtureCase,
+    FixtureManifest,
+    load_fixture_manifest,
+)
 
 
 FIXTURES_DIR = CORRECTNESS_FIXTURES_ROOT
 
 _MISSING_GROUP_DEFAULT = object()
 _MATCH_ACCESSOR_NAMES = ("group", "span", "start", "end", "getitem")
+
+
+@dataclass(frozen=True)
+class WholeManifestFixtureBundle:
+    manifest: FixtureManifest
+    cases: tuple[FixtureCase, ...]
+    expected_manifest_id: str
+    expected_patterns: frozenset[str | bytes]
+    expected_operation_helper_counts: Counter[tuple[str, str | None]]
+    expected_case_ids: frozenset[str] | None = None
+
+
+def load_whole_manifest_fixture_bundle(
+    fixture_name: str,
+    *,
+    expected_manifest_id: str,
+    expected_patterns: frozenset[str | bytes],
+    expected_operation_helper_counts: Counter[tuple[str, str | None]],
+    expected_case_ids: frozenset[str] | None = None,
+) -> WholeManifestFixtureBundle:
+    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
+    return WholeManifestFixtureBundle(
+        manifest=manifest,
+        cases=tuple(cases),
+        expected_manifest_id=expected_manifest_id,
+        expected_patterns=expected_patterns,
+        expected_operation_helper_counts=expected_operation_helper_counts,
+        expected_case_ids=expected_case_ids,
+    )
+
+
+def assert_whole_manifest_fixture_bundle_contract(
+    bundle: WholeManifestFixtureBundle,
+    *,
+    pattern_extractor: Callable[[FixtureCase], str | bytes],
+) -> None:
+    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
+    if bundle.expected_case_ids is None:
+        assert len(bundle.cases) == sum(bundle.expected_operation_helper_counts.values())
+    else:
+        assert len(bundle.cases) == len(bundle.expected_case_ids)
+        assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
+    assert {pattern_extractor(case) for case in bundle.cases} == bundle.expected_patterns
+    assert {case.text_model for case in bundle.cases} == {"str"}
+    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
+        bundle.expected_operation_helper_counts
+    )
+
+
+def published_fixture_paths_from_bundles(
+    bundles: Iterable[WholeManifestFixtureBundle],
+) -> tuple[pathlib.Path, ...]:
+    return tuple(sorted((bundle.manifest.path for bundle in bundles), key=lambda path: path.name))
+
+
 def case_pattern(case: FixtureCase) -> str | bytes:
     pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
     assert isinstance(pattern, (str, bytes))
