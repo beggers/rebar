@@ -9,17 +9,17 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-The published correctness slice widened again but is not fully closed: 865 of 873 published cases now pass, 8 open-ended nested-group callable cases remain explicit `unimplemented`, and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity.
+The published correctness slice now passes end to end, but it is still narrow and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- Keep `RBR-0376` queued so, once `RBR-0374` converts the explicit open-ended `{1,}` nested-group callback slice for `a((b|c){1,})\\2d` and `a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d`, the frontier turns immediately to Python-path benchmark catch-up for those callable-replacement forms.
+- Keep `RBR-0376` queued so, once `RBR-0374` converts the explicit open-ended `{1,}` nested-group callable-replacement slice for `a((b|c){1,})\\2d` and `a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d`, the frontier turns to Python-path benchmark catch-up for those forms.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
 - The published benchmark surface is still bounded and carries 24 explicit known-gap workloads.
 
 ## Compatibility Heuristic
-Passing 865 of 873 published cases with 8 explicit `unimplemented` open-ended nested-group callable workflows; coverage is still narrow and the main benchmark publication still measures the source-tree shim.
+The published slice now passes end to end, but it is still narrow and the main benchmark publication still measures the source-tree shim.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.

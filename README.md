@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice is now fully passing, but it is still narrow and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 now has `RBR-0372` seeded as the surviving follow-on so, once `RBR-0370` lands the broader `{1,4}` nested-group alternation plus branch-local-backreference callable-replacement benchmark catch-up for `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d`, the same shared callback frontier reopens on correctness publication for the explicit open-ended `{1,}` forms `a((b|c){1,})\\2d` and `a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d` before replacement-template variants or deeper nested grouped execution broaden the queue. |
-| Work queue | `1` ready, `0` in progress, `374` done, `0` blocked |
+| Delivery estimate | The published correctness slice now passes end to end, but it is still narrow and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
+| Current milestone | Milestone 2 now has `RBR-0376` seeded as the surviving follow-on so, once `RBR-0374` converts the explicit open-ended `{1,}` nested-group alternation plus branch-local-backreference callable-replacement workflows for `a((b|c){1,})\\2d` and `a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d` into Rust-backed parity, the same shared callback frontier turns immediately to Python-path benchmark catch-up for those forms before replacement-template variants, broader callback semantics, or deeper nested grouped execution broaden the queue. |
+| Work queue | `1` ready, `0` in progress, `378` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `865` |
-| Passing in published slice | `865` |
+| Published cases | `873` |
+| Passing in published slice | `873` |
 | Explicit failures | `0` |
 | Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `96` |
+| Covered manifests | `97` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice is now fully passing, but it is still narrow and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now passes end to end, but it is still narrow and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `505` of `529` published workloa
 
 ### Immediate Next Steps
 
-- Keep `RBR-0372` queued so, once `RBR-0370` catches the broader `{1,4}` nested-group callback slice up on the existing benchmark surface, the frontier reopens on the explicit open-ended `{1,}` callable-replacement forms `a((b|c){1,})\\2d` and `a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d`.
+- Keep `RBR-0376` queued so, once `RBR-0374` converts the explicit open-ended `{1,}` nested-group callable-replacement slice for `a((b|c){1,})\\2d` and `a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d`, the frontier turns to Python-path benchmark catch-up for those forms.
 
 ### Current Risks
 
