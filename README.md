@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | The published correctness slice now covers 897 cases with no honest gaps in that slice, but the main benchmark report still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 now has `RBR-0392` seeded as the surviving follow-on so, once `RBR-0390` publishes the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference callable-replacement workflows for `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d` on the shared correctness surface, the same bounded pattern pair reaches Rust-backed callback parity before Python-path benchmark catch-up, broader callback semantics, broader template parsing, or deeper nested grouped execution broaden the queue. |
-| Work queue | `1` ready, `0` in progress, `394` done, `0` blocked |
+| Current milestone | Milestone 2 currently has no surviving ready `feature-implementation` follow-on: stale task `RBR-0392` was retired after `RBR-0390`'s completion note and verification showed the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference callable-replacement workflows for `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d` already passing through the shared public `rebar` API, so the next planning pass needs to seed the next bounded frontier item. |
+| Work queue | `0` ready, `0` in progress, `396` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `517` of `541` published workloa
 
 ### Immediate Next Steps
 
-- Triage queued `RBR-0392`: it is still the only ready follow-on for the broader-range open-ended `{2,}` nested-group callable-replacement slice, but `RBR-0390`'s completion note says those published cases already pass and may already be ready for retirement.
+- Seed the next bounded feature follow-on: stale task `RBR-0392` has been retired because `RBR-0390` already showed the broader-range open-ended `{2,}` nested-group callable-replacement workflows passing through the public API, so no ready `feature-implementation` task currently survives.
 
 ### Current Risks
 
