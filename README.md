@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 897 cases with no honest gaps in that slice, and the main benchmark report now covers 545 workloads with 521 real `rebar` timings, but it still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 now queues `RBR-0395` to catch the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference callable-replacement slice up on the existing `benchmarks/workloads/nested_group_callable_replacement_boundary.py` path after `RBR-0390` showed the same public-API workflows already passing and stale task `RBR-0392` was retired. |
-| Work queue | `0` ready, `0` in progress, `398` done, `0` blocked |
+| Delivery estimate | The published correctness slice now covers 907 cases with no honest gaps in that slice, and the main benchmark report now covers 545 workloads with 521 real `rebar` timings, but it still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity. |
+| Current milestone | Milestone 2 now reopens the plain broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference surface through `RBR-0397` on `a((b|c){2,})\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d`; no concrete post-publication feature follow-on currently survives because the shared branch-local parity surface may show the same bounded slice already passing. |
+| Work queue | `0` ready, `0` in progress, `400` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `897` |
-| Passing in published slice | `897` |
+| Published cases | `907` |
+| Passing in published slice | `907` |
 | Explicit failures | `0` |
 | Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `100` |
+| Covered manifests | `101` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 897 cases with no honest gaps in that slice, and the main benchmark report now covers 545 workloads with 521 real `rebar` timings, but it still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 907 cases with no honest gaps in that slice, and the main benchmark report now covers 545 workloads with 521 real `rebar` timings, but it still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `521` of `545` published workloa
 
 ### Immediate Next Steps
 
-- Seed the next bounded feature follow-on: `RBR-0395` landed the adjacent benchmark catch-up on the shared nested-group callable-replacement manifest, so no ready `feature-implementation` task currently survives.
+- Re-triage the adjacent parity follow-on after `RBR-0397`; the shared branch-local suite may already cover that broader-range open-ended `{2,}` nested-group branch-local-backreference slice, so no ready `feature-implementation` task currently survives.
 
 ### Current Risks
 
