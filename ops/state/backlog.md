@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 stays on the bounded two-arm conditional callable-replacement family for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; the concrete surviving post-parity follow-on is `RBR-0424`, which should catch the same slice up on `benchmarks/workloads/conditional_group_exists_boundary.py` via the existing `pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap` row.
+Milestone 2 stays on the bounded two-arm conditional replacement-template family for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; once `RBR-0424` refreshes the now-live callable benchmark rows on `benchmarks/workloads/conditional_group_exists_boundary.py`, the concrete surviving follow-on is `RBR-0426`, which should publish the adjacent numbered and named replacement-template `sub()` / `subn()` correctness slice through the existing `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` anchor.
 
 ## Ordered Work
-1. After `conditional_group_exists_callable_replacement_workflows.py` moves behind `rebar._rebar`, `RBR-0424` should convert the adjacent `pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap` anchor into the minimal four real Python-path timings for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` on `benchmarks/workloads/conditional_group_exists_boundary.py`, with the usual source-tree benchmark expectation and combined-report refresh and no new benchmark family.
+1. After `RBR-0424` refreshes the now-live callable rows on `benchmarks/workloads/conditional_group_exists_boundary.py`, `RBR-0426` should publish the bounded numbered and named replacement-template `sub()` / `subn()` correctness slice for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` on the ordinary correctness/parity path, so the existing `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` anchor stops being benchmark-only before parity and benchmark catch-up reopen this frontier.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
