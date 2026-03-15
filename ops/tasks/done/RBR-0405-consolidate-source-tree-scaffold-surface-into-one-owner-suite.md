@@ -1,8 +1,9 @@
 # RBR-0405: Consolidate the source-tree scaffold surface into one owner suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Replace the remaining split source-tree scaffold wrappers with one owner in `tests/python/test_module_surface_scaffold.py`, so the bounded literal compile/match/cache/escape surface stops living across five legacy `unittest` modules with repeated repo bootstrap and overlapping helper assertions.
@@ -61,3 +62,13 @@ Created: 2026-03-15
 - The runtime dashboard is clean and current for `HEAD`, the ready queue is empty, and both tracked and live JSON counts are zero (`tracked_json_blob_count: 0`, `tracked_json_blob_delta: 0`, `git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), so this run should queue a post-JSON simplification instead of another JSON burn-down task.
 - `ops/state/backlog.md` and `ops/state/current_status.md` already reserve `RBR-0404` for the next feature benchmark catch-up on `benchmarks/workloads/branch_local_backreference_boundary.py`, so this cleanup intentionally uses `RBR-0405`.
 - The five targeted scaffold files total `407` lines and repeat the same `REPO_ROOT` / `PYTHON_SOURCE` / `sys.path.insert(...)` bootstrap in each file, while reasserting overlapping literal compile, match, purge, and escape behavior that can live on one standard pytest path.
+
+## Completion
+- 2026-03-15: Rewrote `tests/python/test_module_surface_scaffold.py` as the sole pytest owner for the source-tree scaffold surface, keeping the helper export and template placeholder checks while absorbing the literal compile metadata, literal module and compiled-pattern match flows, missing-group errors, mismatch `TypeError`s, unsupported placeholder paths, cache and purge assertions, and the full six-row `str` plus six-row `bytes` `escape()` tables.
+- 2026-03-15: Deleted `tests/python/test_pattern_object_scaffold.py`, `tests/python/test_compile_cache_scaffold.py`, `tests/python/test_literal_match_scaffold.py`, and `tests/python/test_escape_surface.py` after moving their bounded scaffold coverage into the consolidated owner file.
+
+## Verification
+- 2026-03-15: `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_module_surface_scaffold.py tests/python/test_native_extension_smoke.py tests/python/test_exported_symbol_surface.py` (`37 passed, 1 skipped, 26 subtests passed`)
+- 2026-03-15: `rg --files tests/python | rg 'test_(pattern_object_scaffold|compile_cache_scaffold|literal_match_scaffold|escape_surface)\.py$'` (no matches)
+- 2026-03-15: `rg -n "import unittest|REPO_ROOT =|PYTHON_SOURCE =|sys\.path\.insert\(" tests/python/test_module_surface_scaffold.py` (no matches)
+- 2026-03-15: `git diff --name-status -- tests/python/test_pattern_object_scaffold.py tests/python/test_compile_cache_scaffold.py tests/python/test_literal_match_scaffold.py tests/python/test_escape_surface.py` (`D` for all four deleted files)
