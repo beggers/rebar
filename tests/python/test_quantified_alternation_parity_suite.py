@@ -24,6 +24,7 @@ from tests.python.fixture_parity_support import (
 
 EXPECTED_PUBLISHED_FIXTURE_NAMES = (
     "exact_repeat_quantified_group_alternation_workflows.py",
+    "literal_alternation_workflows.py",
     "quantified_alternation_workflows.py",
     "quantified_alternation_backtracking_heavy_workflows.py",
     "quantified_alternation_broader_range_workflows.py",
@@ -38,7 +39,7 @@ EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
         key=lambda path: path.name,
     )
 )
-PUBLISHED_QUANTIFIED_ALTERNATION_FIXTURE_PATHS = select_published_fixture_paths(
+PUBLISHED_ALTERNATION_FIXTURE_PATHS = select_published_fixture_paths(
     EXPECTED_PUBLISHED_FIXTURE_PATHS
 )
 BACKTRACKING_BRANCH_TEXT = {
@@ -95,6 +96,25 @@ def _fixture_bundle(
 
 
 FIXTURE_BUNDLES = (
+    _fixture_bundle(
+        "literal_alternation_workflows.py",
+        expected_manifest_id="literal-alternation-workflows",
+        expected_case_ids=frozenset(
+            {
+                "literal-alternation-compile-metadata-str",
+                "literal-alternation-module-search-str",
+                "literal-alternation-pattern-fullmatch-str",
+            }
+        ),
+        expected_patterns=frozenset({"ab|ac"}),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 1,
+                ("module_call", "search"): 1,
+                ("pattern_call", "fullmatch"): 1,
+            }
+        ),
+    ),
     _fixture_bundle(
         "exact_repeat_quantified_group_alternation_workflows.py",
         expected_manifest_id="exact-repeat-quantified-group-alternation-workflows",
@@ -515,8 +535,8 @@ BACKTRACKING_TRACE_CASES = _build_backtracking_trace_cases()
 SUPPLEMENTAL_NO_MATCH_CASES = _build_supplemental_no_match_cases()
 
 
-def test_quantified_alternation_suite_uses_expected_published_fixtures() -> None:
-    assert PUBLISHED_QUANTIFIED_ALTERNATION_FIXTURE_PATHS == EXPECTED_PUBLISHED_FIXTURE_PATHS
+def test_alternation_parity_suite_uses_expected_published_fixtures() -> None:
+    assert PUBLISHED_ALTERNATION_FIXTURE_PATHS == EXPECTED_PUBLISHED_FIXTURE_PATHS
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
 

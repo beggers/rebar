@@ -1,6 +1,6 @@
 # RBR-0394: Fold literal-alternation parity into the quantified alternation pytest suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
 
@@ -44,3 +44,8 @@ Created: 2026-03-15
 - Both tracked and live JSON counts are zero in the current checkout (`tracked_json_blob_count: 0`, `tracked_json_blob_delta: 0`, `git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), so the next architecture priority is deleting duplicate Python parity plumbing rather than another JSON burn-down task.
 - `tests/python/test_literal_alternation_parity.py` is still an 81-line standalone `unittest` module with private `sys.path` bootstrapping, manual `rebar.purge()` setup/teardown, and a file-local match helper that restates the exact three workflows already published in `tests/conformance/fixtures/literal_alternation_workflows.py`.
 - `tests/python/test_quantified_alternation_parity_suite.py` already owns the adjacent alternation family through a shared fixture-backed pytest path, making it the natural home for this remaining literal-alternation wrapper.
+
+## Completion
+- Folded `tests/conformance/fixtures/literal_alternation_workflows.py` into `tests/python/test_quantified_alternation_parity_suite.py` by adding an explicit manifest-alignment bundle and letting the existing compile, module-search, pattern-fullmatch, and match-convenience pytest flows pick up the three published literal-alternation rows.
+- Deleted `tests/python/test_literal_alternation_parity.py`.
+- Verified with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py` and confirmed `rg --files tests/python | rg 'test_literal_alternation_parity\\.py$'` returns no matches.
