@@ -13,19 +13,19 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, keeping correctness and the published Python-path benchmark surface aligned at the current frontier. |
 | Delivery estimate | The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 now has `RBR-0354` seeded as the surviving follow-on so the bounded nested-group alternation plus branch-local-backreference callable-replacement correctness slice for `a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d` becomes the next published frontier once `RBR-0352` lands the adjacent quantified callback benchmark rows on the existing Python-path `nested_group_callable_replacement_boundary.py` surface, before quantified branch-local-backreference callbacks, broader counted repeats, or deeper nested grouped execution broaden the queue. |
-| Work queue | `1` ready, `0` in progress, `356` done, `0` blocked |
+| Current milestone | Milestone 2 now has `RBR-0356` seeded as the surviving follow-on so the bounded nested-group alternation plus branch-local-backreference callable-replacement slice for `a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d` reaches Rust-backed parity after `RBR-0354` publishes the adjacent correctness pack, before benchmark catch-up, quantified branch-local-backreference callbacks, broader counted repeats, or deeper nested grouped execution broaden the queue. |
+| Work queue | `1` ready, `0` in progress, `358` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `841` |
+| Published cases | `849` |
 | Passing in published slice | `841` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `93` |
+| Honest gaps (`unimplemented`) | `8` |
+| Covered manifests | `94` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
 _These correctness counts cover only the published slice. Overall delivery estimate: The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity._
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `493` of `517` published workloa
 
 ### Immediate Next Steps
 
-- Keep `RBR-0354` queued so the bounded `a((b|c))\\2d` / `a(?P<outer>(?P<inner>b|c))(?P=inner)d` callable-replacement slice becomes the next correctness frontier.
+- Keep `RBR-0356` queued so, after `RBR-0354` publishes the bounded `a((b|c))\\2d` / `a(?P<outer>(?P<inner>b|c))(?P=inner)d` callable-replacement workflows, the same slice reaches Rust-backed parity through the shared callable-replacement pytest surface.
 
 ### Current Risks
 
