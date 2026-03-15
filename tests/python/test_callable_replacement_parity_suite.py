@@ -19,6 +19,7 @@ from rebar_harness.correctness import (
 from tests.python.fixture_parity_support import (
     assert_match_convenience_api_parity,
     assert_match_parity,
+    str_case_pattern,
 )
 
 
@@ -486,12 +487,6 @@ def _literal_callable_string() -> str:
     return string
 
 
-def _case_pattern(case: FixtureCase) -> str:
-    pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
-    assert isinstance(pattern, str)
-    return pattern
-
-
 def _case_string(case: FixtureCase) -> str:
     string_index = 2 if case.operation == "module_call" else 1
     string = case.args[string_index]
@@ -510,7 +505,7 @@ def _case_count(case: FixtureCase) -> int:
 
 
 def _case_group_names(case: FixtureCase) -> tuple[str, ...]:
-    return tuple(re.compile(_case_pattern(case), case.flags or 0).groupindex)
+    return tuple(re.compile(str_case_pattern(case), case.flags or 0).groupindex)
 
 
 def _invoke_callable_replacement(
@@ -561,7 +556,7 @@ def _assert_raw_callable_replacement_reference_is_valid(
     assert isinstance(prefix, str)
     assert isinstance(suffix, str)
 
-    compiled = re.compile(_case_pattern(case), case.flags or 0)
+    compiled = re.compile(str_case_pattern(case), case.flags or 0)
     group_reference = replacement.get("group", 0)
     if isinstance(group_reference, int):
         assert 0 <= group_reference <= compiled.groups
@@ -1001,7 +996,7 @@ def test_module_callable_replacement_callback_match_objects_match_cpython(
         backend_name=backend_name,
         backend=backend,
         helper=case.helper,
-        pattern=_case_pattern(case),
+        pattern=str_case_pattern(case),
         string=_case_string(case),
         count=_case_count(case),
         group_names=_case_group_names(case),
@@ -1021,7 +1016,7 @@ def test_module_callable_replacement_callback_exception_matches_cpython(
         backend_name=backend_name,
         backend=backend,
         helper=case.helper,
-        pattern=_case_pattern(case),
+        pattern=str_case_pattern(case),
         string=_case_string(case),
         count=_case_count(case),
         group_names=_case_group_names(case),
@@ -1041,7 +1036,7 @@ def test_pattern_callable_replacement_callback_match_objects_match_cpython(
         backend_name=backend_name,
         backend=backend,
         helper=case.helper,
-        pattern=_case_pattern(case),
+        pattern=str_case_pattern(case),
         string=_case_string(case),
         count=_case_count(case),
         group_names=_case_group_names(case),
@@ -1062,7 +1057,7 @@ def test_pattern_callable_replacement_callback_exception_matches_cpython(
         backend_name=backend_name,
         backend=backend,
         helper=case.helper,
-        pattern=_case_pattern(case),
+        pattern=str_case_pattern(case),
         string=_case_string(case),
         count=_case_count(case),
         group_names=_case_group_names(case),

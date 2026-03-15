@@ -13,6 +13,7 @@ from rebar_harness.correctness import (
     FixtureManifest,
     load_fixture_manifest,
 )
+from tests.python.fixture_parity_support import str_case_pattern
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -257,12 +258,6 @@ FIXTURE_BUNDLES = (
 REPLACEMENT_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
 
 
-def _case_pattern(case: FixtureCase) -> str:
-    pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
-    assert isinstance(pattern, str)
-    return pattern
-
-
 def _run_replacement_case(backend: object, case: FixtureCase) -> object:
     if case.helper is None:
         raise ValueError(f"case {case.case_id!r} requires a helper name")
@@ -296,7 +291,7 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     assert bundle.manifest.manifest_id == bundle.expected_manifest_id
     assert len(bundle.cases) == len(bundle.expected_case_ids)
     assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
-    assert {_case_pattern(case) for case in bundle.cases} == bundle.expected_patterns
+    assert {str_case_pattern(case) for case in bundle.cases} == bundle.expected_patterns
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
         EXPECTED_OPERATION_HELPER_COUNTS
     )
