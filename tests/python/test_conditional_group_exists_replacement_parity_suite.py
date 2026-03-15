@@ -7,11 +7,38 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import FixtureCase, FixtureManifest, load_fixture_manifest
+from rebar_harness.correctness import (
+    DEFAULT_FIXTURE_PATHS,
+    FixtureCase,
+    FixtureManifest,
+    load_fixture_manifest,
+)
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 FIXTURES_DIR = REPO_ROOT / "tests" / "conformance" / "fixtures"
+EXPECTED_PUBLISHED_FIXTURE_NAMES = (
+    "conditional_group_exists_alternation_replacement_workflows.py",
+    "conditional_group_exists_empty_else_replacement_workflows.py",
+    "conditional_group_exists_empty_yes_else_replacement_workflows.py",
+    "conditional_group_exists_fully_empty_replacement_workflows.py",
+    "conditional_group_exists_nested_replacement_workflows.py",
+    "conditional_group_exists_no_else_replacement_workflows.py",
+    "conditional_group_exists_quantified_replacement_workflows.py",
+    "conditional_group_exists_replacement_workflows.py",
+)
+PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS = tuple(
+    sorted(
+        (
+            path
+            for path in DEFAULT_FIXTURE_PATHS
+            if path.parent == FIXTURES_DIR
+            and path.name.startswith("conditional_group_exists")
+            and path.name.endswith("_replacement_workflows.py")
+        ),
+        key=lambda path: path.name,
+    )
+)
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
         ("module_call", "sub"): 2,
@@ -248,6 +275,14 @@ def _run_replacement_case(backend: object, case: FixtureCase) -> object:
         return getattr(compiled, case.helper)(*case.args, **case.kwargs)
 
     raise ValueError(f"unsupported replacement parity operation {case.operation!r}")
+
+
+def test_replacement_parity_suite_discovers_all_published_correctness_fixtures() -> None:
+    assert PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS
+    assert PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS == tuple(
+        FIXTURES_DIR / fixture_name
+        for fixture_name in EXPECTED_PUBLISHED_FIXTURE_NAMES
+    )
 
 
 @pytest.mark.parametrize(
