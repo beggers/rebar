@@ -1,6 +1,6 @@
 # RBR-0353: Replace the quantified-alternation backtracking-heavy parity scenario table with published fixtures
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
 
@@ -34,3 +34,9 @@ Created: 2026-03-15
 ## Notes
 - `tests/python/test_quantified_alternation_backtracking_heavy_parity.py` is still a 214-line holdout from the earlier parity frontier work: it duplicates the same two quantified overlapping-branch patterns and most of the same visible success/no-match texts already published in `tests/conformance/fixtures/quantified_alternation_backtracking_heavy_workflows.py`.
 - This is the adjacent quantified-alternation cleanup after `RBR-0351`: published case selection should live with the correctness fixture, while the extra exhaustive backtracking-order checks can remain as a very small local derivation rather than a second private source of truth.
+
+## Completion Notes
+- Replaced the file-local `Scenario` / `SCENARIOS` table in `tests/python/test_quantified_alternation_backtracking_heavy_parity.py` with one published fixture load from `tests/conformance/fixtures/quantified_alternation_backtracking_heavy_workflows.py`, plus a manifest-alignment assertion that checks the exact case-id set, pattern set, and `compile` / module `search` / pattern `fullmatch` distribution.
+- Rebuilt compile metadata parity and the published workflow parity directly from `FixtureCase` rows, so the explicit lower-bound, mixed-order, repeated-branch, and `abccd` no-match checks now come from the published fixture instead of a second private table.
+- Kept the exhaustive one- and two-repetition branch-trace coverage, but now derive those trace cases only from the fixture-backed compile rows and the shared short/long branch text map; the remaining local miss coverage is limited to the extra zero-repetition and search-wrapped overlap-tail misses.
+- Verified with `./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_backtracking_heavy_parity.py` (`85 passed`).
