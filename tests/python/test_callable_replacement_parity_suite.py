@@ -74,7 +74,11 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     }
 )
 MISSING_GROUP_DEFAULT = "<missing-group>"
-PENDING_REBAR_MANIFEST_IDS = frozenset()
+PENDING_REBAR_MANIFEST_IDS = frozenset(
+    {
+        "quantified-nested-group-alternation-branch-local-backreference-callable-replacement-workflows",
+    }
+)
 
 
 def _skip_pending_rebar_callable_parity(
@@ -86,7 +90,7 @@ def _skip_pending_rebar_callable_parity(
         and case.manifest_id in PENDING_REBAR_MANIFEST_IDS
     ):
         pytest.skip(
-            "nested-group alternation branch-local-backreference callable parity remains queued in RBR-0356"
+            "quantified nested-group alternation branch-local-backreference callable parity remains queued in RBR-0362"
         )
 
 
