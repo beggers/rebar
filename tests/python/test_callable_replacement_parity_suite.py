@@ -153,6 +153,80 @@ QUANTIFIED_NESTED_GROUP_ALTERNATION_NO_MATCH_CASES = (
         id="pattern-named-subn-no-match-invalid-branch",
     ),
 )
+CONDITIONAL_GROUP_EXISTS_CALLABLE_NEAR_MISS_CASES = (
+    pytest.param(
+        False,
+        r"a(b)?c(?(1)d|e)",
+        "sub",
+        "zzabcezz",
+        0,
+        "zzabcezz",
+        id="module-numbered-sub-no-match-present-branch-rejects-no-arm",
+    ),
+    pytest.param(
+        False,
+        r"a(b)?c(?(1)d|e)",
+        "subn",
+        "zzacdzz",
+        1,
+        ("zzacdzz", 0),
+        id="module-numbered-subn-no-match-absent-branch-rejects-yes-arm",
+    ),
+    pytest.param(
+        True,
+        r"a(b)?c(?(1)d|e)",
+        "sub",
+        "zzabcezz",
+        0,
+        "zzabcezz",
+        id="pattern-numbered-sub-no-match-present-branch-rejects-no-arm",
+    ),
+    pytest.param(
+        True,
+        r"a(b)?c(?(1)d|e)",
+        "subn",
+        "zzacdzz",
+        1,
+        ("zzacdzz", 0),
+        id="pattern-numbered-subn-no-match-absent-branch-rejects-yes-arm",
+    ),
+    pytest.param(
+        False,
+        r"a(?P<word>b)?c(?(word)d|e)",
+        "sub",
+        "zzabcezz",
+        0,
+        "zzabcezz",
+        id="module-named-sub-no-match-present-branch-rejects-no-arm",
+    ),
+    pytest.param(
+        False,
+        r"a(?P<word>b)?c(?(word)d|e)",
+        "subn",
+        "zzacdzz",
+        1,
+        ("zzacdzz", 0),
+        id="module-named-subn-no-match-absent-branch-rejects-yes-arm",
+    ),
+    pytest.param(
+        True,
+        r"a(?P<word>b)?c(?(word)d|e)",
+        "sub",
+        "zzabcezz",
+        0,
+        "zzabcezz",
+        id="pattern-named-sub-no-match-present-branch-rejects-no-arm",
+    ),
+    pytest.param(
+        True,
+        r"a(?P<word>b)?c(?(word)d|e)",
+        "subn",
+        "zzacdzz",
+        1,
+        ("zzacdzz", 0),
+        id="pattern-named-subn-no-match-absent-branch-rejects-yes-arm",
+    ),
+)
 NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_NEAR_MISS_CASES = (
     pytest.param(
         False,
@@ -973,6 +1047,54 @@ def test_callable_replacement_no_match_paths_leave_input_unchanged(
         use_compiled_pattern=use_compiled_pattern,
     )
     expected_result: object = string if helper == "sub" else (string, 0)
+
+    assert observed == expected == expected_result
+    assert callback_calls == []
+
+
+@pytest.mark.parametrize(
+    ("use_compiled_pattern", "pattern", "helper", "text", "count", "expected_result"),
+    CONDITIONAL_GROUP_EXISTS_CALLABLE_NEAR_MISS_CASES,
+)
+def test_conditional_group_exists_callable_replacement_near_miss_paths_leave_input_unchanged(
+    regex_backend: tuple[str, object],
+    use_compiled_pattern: bool,
+    pattern: str,
+    helper: str,
+    text: str,
+    count: int,
+    expected_result: str | tuple[str, int],
+) -> None:
+    backend_name, backend = regex_backend
+    if backend_name == "rebar" and pattern in PENDING_REBAR_NO_MATCH_PATTERNS:
+        pytest.skip(
+            f"callable replacement parity for pattern {pattern!r} remains queued behind a later Rust-backed parity task"
+        )
+
+    callback_calls: list[object] = []
+
+    def replacement(match: object) -> str:
+        callback_calls.append(match)
+        return "X"
+
+    observed = _invoke_callable_replacement(
+        backend,
+        pattern=pattern,
+        helper=helper,
+        string=text,
+        count=count,
+        replacement=replacement,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+    expected = _invoke_callable_replacement(
+        re,
+        pattern=pattern,
+        helper=helper,
+        string=text,
+        count=count,
+        replacement=replacement,
+        use_compiled_pattern=use_compiled_pattern,
+    )
 
     assert observed == expected == expected_result
     assert callback_calls == []
