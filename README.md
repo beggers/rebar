@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | The published correctness slice now covers 889 cases with no honest gaps in that slice, but the main benchmark report still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 now has `RBR-0388` seeded as the surviving follow-on so, once `RBR-0386` converts the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference replacement-template workflows for `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d` into real Rust-backed behavior, the same nested-group replacement frontier advances to the shared Python-path benchmark surface before broader template parsing or deeper nested grouped execution broaden the queue. |
-| Work queue | `1` ready, `0` in progress, `390` done, `0` blocked |
+| Current milestone | Milestone 2 now has `RBR-0390` seeded as the surviving follow-on so, once `RBR-0388` catches the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference replacement-template workflows for `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d` up on the shared Python-path benchmark surface, the same bounded pattern pair reopens on correctness publication through callable replacements before broader callback semantics, broader template parsing, or deeper nested grouped execution broaden the queue. |
+| Work queue | `1` ready, `0` in progress, `392` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -35,19 +35,19 @@ _These correctness counts cover only the published slice. Overall delivery estim
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `537` |
-| Workloads with real `rebar` timings | `513` |
+| Published workloads | `541` |
+| Workloads with real `rebar` timings | `517` |
 | Known-gap workloads | `24` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native smoke and full-suite modes remain available for ad hoc runs and tests via `--native-smoke` and `--native-full` when you pass an explicit `--report` path._
 
-_README speedup rollups stay omitted while only `513` of `537` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `517` of `541` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- Land `RBR-0388` so the broader-range open-ended `{2,}` nested-group replacement-template slice reaches the shared Python-path benchmark surface once `RBR-0386` converts it to Rust-backed parity.
+- Land `RBR-0390` so the broader-range open-ended `{2,}` nested-group callable-replacement slice reopens on the shared correctness surface once `RBR-0388` catches the matching replacement-template workflows up on the Python-path benchmark frontier.
 
 ### Current Risks
 
