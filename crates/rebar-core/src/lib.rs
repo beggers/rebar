@@ -3055,6 +3055,10 @@ fn parse_quantified_nested_group_alternation_branch_local_numbered_backreference
     let (max_repeat, quantified_remainder) =
         if let Some(quantified_remainder) = quantifier_and_remainder.strip_prefix("+)") {
             (None, quantified_remainder)
+        } else if let Some(quantified_remainder) =
+            quantifier_and_remainder.strip_prefix("{1,})")
+        {
+            (None, quantified_remainder)
         } else {
             let quantified_remainder = quantifier_and_remainder.strip_prefix("{1,4})")?;
             (Some(4), quantified_remainder)
@@ -3113,6 +3117,10 @@ fn parse_quantified_nested_group_alternation_branch_local_named_backreference_pa
     let quantifier_and_remainder = &inner_body_and_remainder[inner_close_offset + 1..];
     let (max_repeat, quantified_remainder) =
         if let Some(quantified_remainder) = quantifier_and_remainder.strip_prefix("+)") {
+            (None, quantified_remainder)
+        } else if let Some(quantified_remainder) =
+            quantifier_and_remainder.strip_prefix("{1,})")
+        {
             (None, quantified_remainder)
         } else {
             let quantified_remainder = quantifier_and_remainder.strip_prefix("{1,4})")?;

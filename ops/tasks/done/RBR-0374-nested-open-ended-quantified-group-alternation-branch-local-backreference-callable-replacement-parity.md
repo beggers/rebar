@@ -1,6 +1,6 @@
 # RBR-0374: Add open-ended `{1,}` nested-group alternation plus branch-local-backreference callable-replacement parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-15
 
@@ -30,3 +30,11 @@ Created: 2026-03-15
 - Build on `RBR-0372`, `RBR-0370`, `RBR-0368`, and the existing shared callable-replacement fixture path.
 - Keep later benchmark catch-up on the existing `benchmarks/workloads/nested_group_callable_replacement_boundary.py` path instead of forking another benchmark family.
 - The shared callable-replacement parity suite already discovers published `*callable_replacement_workflows.py` fixtures, so this task should widen that existing parity coverage rather than creating another manifest-specific test harness.
+
+## Completion
+- Extended the existing Rust quantified nested-group alternation branch-local-backreference parser path to accept the exact open-ended `{1,}` numbered and named callable-replacement patterns, so the shared callable replacement machinery now compiles and executes `a((b|c){1,})\\2d` and `a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d` without adding a Python-only regex implementation path.
+- Removed this manifest from the shared callable parity suite's pending skip set instead of creating another manifest-specific parity module.
+- Republished `reports/correctness/latest.py`; the tracked published summary now reads 873 total cases, 873 passed, 0 failed, and 0 unimplemented across 97 manifests.
+- Verified with `./.venv/bin/python -m pytest tests/python/test_callable_replacement_parity_suite.py -q`, `./.venv/bin/python -m pytest tests/conformance/test_combined_correctness_scorecards.py -q -k open_ended_quantified_group_scorecards`, and `./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_benchmark_scorecards.py -q -k nested_group_callable_replacement_scorecard_covers_broader_range_rows`.
+- Ran a narrow scratch correctness publication for `tests/conformance/fixtures/nested_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py`, which completed at 8 executed / 8 passed / 0 unimplemented.
+- The direct Python-path benchmark catch-up for this exact `{1,}` callable slice remains queued separately in `RBR-0376`; this task did not change `reports/benchmarks/latest.py`.

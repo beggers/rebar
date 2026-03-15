@@ -141,11 +141,7 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("pattern_call", "subn"): 2,
     }
 )
-PENDING_REBAR_MANIFEST_IDS = frozenset(
-    {
-        "nested-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows",
-    }
-)
+PENDING_REBAR_MANIFEST_IDS = frozenset()
 NO_MATCH_TEXT_CANDIDATES = ("zzz", "", "no-match", "----", "999")
 
 
