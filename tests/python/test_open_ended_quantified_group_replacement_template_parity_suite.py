@@ -182,6 +182,80 @@ SUPPLEMENTAL_NO_MATCH_CASES = (
         id="pattern-broader-range-named-subn-no-match",
     ),
 )
+SUPPLEMENTAL_REPEATED_REPLACEMENT_CASES = (
+    pytest.param(
+        False,
+        "sub",
+        r"a((b|c){1,})\2d",
+        r"\1x",
+        "abbdabcbccd",
+        "bxbcbcx",
+        id="module-open-ended-numbered-sub-repeated-matches",
+    ),
+    pytest.param(
+        True,
+        "sub",
+        r"a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d",
+        r"\g<outer>x",
+        "abbdabcbccd",
+        "bxbcbcx",
+        id="pattern-open-ended-named-sub-repeated-matches",
+    ),
+    pytest.param(
+        False,
+        "subn",
+        r"a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d",
+        r"\g<inner>x",
+        "abbdabcbccd",
+        ("bxcx", 2),
+        id="module-open-ended-named-subn-repeated-matches",
+    ),
+    pytest.param(
+        True,
+        "subn",
+        r"a((b|c){1,})\2d",
+        r"\2x",
+        "abbdabcbccd",
+        ("bxcx", 2),
+        id="pattern-open-ended-numbered-subn-repeated-matches",
+    ),
+    pytest.param(
+        False,
+        "sub",
+        r"a((b|c){2,})\2d",
+        r"\1x",
+        "abbbdabcbccd",
+        "bbxbcbcx",
+        id="module-broader-range-numbered-sub-repeated-matches",
+    ),
+    pytest.param(
+        True,
+        "sub",
+        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        r"\g<outer>x",
+        "abbbdabcbccd",
+        "bbxbcbcx",
+        id="pattern-broader-range-named-sub-repeated-matches",
+    ),
+    pytest.param(
+        False,
+        "subn",
+        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        r"\g<inner>x",
+        "abbbdabcbccd",
+        ("bxcx", 2),
+        id="module-broader-range-named-subn-repeated-matches",
+    ),
+    pytest.param(
+        True,
+        "subn",
+        r"a((b|c){2,})\2d",
+        r"\2x",
+        "abbbdabcbccd",
+        ("bxcx", 2),
+        id="pattern-broader-range-numbered-subn-repeated-matches",
+    ),
+)
 
 
 @dataclass(frozen=True)
@@ -432,5 +506,35 @@ def test_no_match_replacement_paths_match_cpython(
         expected_result = string
     else:
         expected_result = (string, 0)
+
+    assert observed == expected == expected_result
+
+
+@pytest.mark.parametrize(
+    ("use_compiled_pattern", "helper", "pattern", "replacement", "string", "expected_result"),
+    SUPPLEMENTAL_REPEATED_REPLACEMENT_CASES,
+)
+def test_repeated_replacement_paths_match_cpython(
+    regex_backend: tuple[str, object],
+    use_compiled_pattern: bool,
+    helper: str,
+    pattern: str,
+    replacement: str,
+    string: str,
+    expected_result: str | tuple[str, int],
+) -> None:
+    backend_name, backend = regex_backend
+
+    if use_compiled_pattern:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+        )
+        observed = getattr(observed_pattern, helper)(replacement, string)
+        expected = getattr(expected_pattern, helper)(replacement, string)
+    else:
+        observed = getattr(backend, helper)(pattern, replacement, string)
+        expected = getattr(re, helper)(pattern, replacement, string)
 
     assert observed == expected == expected_result
