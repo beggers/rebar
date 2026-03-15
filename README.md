@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 897 cases with no honest gaps in that slice, but the main benchmark report still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 currently has no surviving ready `feature-implementation` follow-on: stale task `RBR-0392` was retired after `RBR-0390`'s completion note and verification showed the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference callable-replacement workflows for `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d` already passing through the shared public `rebar` API, so the next planning pass needs to seed the next bounded frontier item. |
-| Work queue | `0` ready, `0` in progress, `396` done, `0` blocked |
+| Delivery estimate | The published correctness slice now covers 897 cases with no honest gaps in that slice, and the main benchmark report now covers 545 workloads with 521 real `rebar` timings, but it still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity. |
+| Current milestone | Milestone 2 now queues `RBR-0395` to catch the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference callable-replacement slice up on the existing `benchmarks/workloads/nested_group_callable_replacement_boundary.py` path after `RBR-0390` showed the same public-API workflows already passing and stale task `RBR-0392` was retired. |
+| Work queue | `0` ready, `0` in progress, `398` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,31 +28,31 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `100` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 897 cases with no honest gaps in that slice, but the main benchmark report still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 897 cases with no honest gaps in that slice, and the main benchmark report now covers 545 workloads with 521 real `rebar` timings, but it still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `541` |
-| Workloads with real `rebar` timings | `517` |
+| Published workloads | `545` |
+| Workloads with real `rebar` timings | `521` |
 | Known-gap workloads | `24` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native smoke and full-suite modes remain available for ad hoc runs and tests via `--native-smoke` and `--native-full` when you pass an explicit `--report` path._
 
-_README speedup rollups stay omitted while only `517` of `541` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `521` of `545` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- Seed the next bounded feature follow-on: stale task `RBR-0392` has been retired because `RBR-0390` already showed the broader-range open-ended `{2,}` nested-group callable-replacement workflows passing through the public API, so no ready `feature-implementation` task currently survives.
+- Seed the next bounded feature follow-on: `RBR-0395` landed the adjacent benchmark catch-up on the shared nested-group callable-replacement manifest, so no ready `feature-implementation` task currently survives.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded and carries 24 explicit known-gap workloads.
+- The published benchmark surface is still bounded at 545 workloads and carries 24 explicit known-gap workloads.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
