@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 941 cases across 105 manifests, with 933 passes and 8 honest `unimplemented` gaps; the main benchmark report still covers 562 workloads with 538 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 now falls back to the bounded two-arm conditional callable-replacement publication slice for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` on the shared callable fixture/parity path; no concrete post-drain feature follow-on is pinned yet. |
-| Work queue | `0` ready, `0` in progress, `422` done, `0` blocked |
+| Delivery estimate | The published correctness slice now covers 941 cases across 105 manifests, with 941 passes and no honest `unimplemented` gaps; the main benchmark report still covers 562 workloads with 538 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity. |
+| Current milestone | Milestone 2 stays on the bounded two-arm conditional callable-replacement family for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; the concrete surviving post-parity follow-on is `RBR-0424`, which should catch the same slice up on `benchmarks/workloads/conditional_group_exists_boundary.py` via the existing `pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap` row. |
+| Work queue | `0` ready, `0` in progress, `424` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -22,13 +22,13 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Metric | Value |
 | --- | --- |
 | Published cases | `941` |
-| Passing in published slice | `933` |
+| Passing in published slice | `941` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `8` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `105` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 941 cases across 105 manifests, with 933 passes and 8 honest `unimplemented` gaps; the main benchmark report still covers 562 workloads with 538 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 941 cases across 105 manifests, with 941 passes and no honest `unimplemented` gaps; the main benchmark report still covers 562 workloads with 538 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `538` of `562` published workloa
 
 ### Immediate Next Steps
 
-- After the bounded two-arm conditional callable-replacement publication slice for `a(b)?c(?(1)d|e)` / `a(?P<word>b)?c(?(word)d|e)` on the shared callable fixture path, no concrete post-drain feature follow-on is pinned yet.
+- The concrete post-parity follow-on for `a(b)?c(?(1)d|e)` / `a(?P<word>b)?c(?(word)d|e)` is `RBR-0424`, which should catch the same callable-replacement slice up on `benchmarks/workloads/conditional_group_exists_boundary.py` through the existing `pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap` anchor.
 
 ### Current Risks
 
@@ -57,7 +57,7 @@ _README speedup rollups stay omitted while only `538` of `562` published workloa
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current published correctness slice is still intentionally narrow; the latest 941-case publication lands 933 cases and still carries 8 honest `unimplemented` gaps. That is useful evidence that the project can close one bounded frontier at a time, not evidence of broad drop-in parity.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current published correctness slice is still intentionally narrow even though the latest 941-case publication is fully green. That is useful evidence that the project can close one bounded frontier at a time, not evidence of broad drop-in parity.
 
 The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice: across eight published parser workloads it is about 2x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
