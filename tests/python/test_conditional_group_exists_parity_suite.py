@@ -1,18 +1,20 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
 import re
 
 import pytest
 
-from rebar_harness.correctness import FixtureCase, FixtureManifest, load_fixture_manifest
+from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
+    WholeManifestFixtureBundle,
+    assert_whole_manifest_fixture_bundle_contract,
     assert_match_parity,
     compile_with_cpython_parity,
+    load_whole_manifest_fixture_bundle,
     str_case_pattern,
 )
+
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
         ("compile", None): 2,
@@ -21,37 +23,8 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     }
 )
 
-
-@dataclass(frozen=True)
-class FixtureBundle:
-    manifest: FixtureManifest
-    cases: tuple[FixtureCase, ...]
-    expected_manifest_id: str
-    expected_case_ids: frozenset[str]
-    expected_compile_patterns: frozenset[str]
-    expected_operation_helper_counts: Counter[tuple[str, str | None]]
-
-
-def _fixture_bundle(
-    fixture_name: str,
-    *,
-    expected_manifest_id: str,
-    expected_case_ids: frozenset[str],
-    expected_compile_patterns: frozenset[str],
-) -> FixtureBundle:
-    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
-    return FixtureBundle(
-        manifest=manifest,
-        cases=tuple(cases),
-        expected_manifest_id=expected_manifest_id,
-        expected_case_ids=expected_case_ids,
-        expected_compile_patterns=expected_compile_patterns,
-        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
-    )
-
-
 FIXTURE_BUNDLES = (
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "conditional_group_exists_workflows.py",
         expected_manifest_id="conditional-group-exists-workflows",
         expected_case_ids=frozenset(
@@ -64,14 +37,15 @@ FIXTURE_BUNDLES = (
                 "named-conditional-group-exists-pattern-fullmatch-absent-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a(b)?c(?(1)d|e)",
                 r"a(?P<word>b)?c(?(word)d|e)",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "conditional_group_exists_no_else_workflows.py",
         expected_manifest_id="conditional-group-exists-no-else-workflows",
         expected_case_ids=frozenset(
@@ -84,14 +58,15 @@ FIXTURE_BUNDLES = (
                 "named-conditional-group-exists-no-else-pattern-fullmatch-absent-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a(b)?c(?(1)d)",
                 r"a(?P<word>b)?c(?(word)d)",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "conditional_group_exists_empty_else_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-else-workflows",
         expected_case_ids=frozenset(
@@ -104,14 +79,15 @@ FIXTURE_BUNDLES = (
                 "named-conditional-group-exists-empty-else-pattern-fullmatch-absent-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a(b)?c(?(1)d|)",
                 r"a(?P<word>b)?c(?(word)d|)",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "conditional_group_exists_empty_yes_else_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-yes-else-workflows",
         expected_case_ids=frozenset(
@@ -124,14 +100,15 @@ FIXTURE_BUNDLES = (
                 "named-conditional-group-exists-empty-yes-else-pattern-fullmatch-absent-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a(b)?c(?(1)|e)",
                 r"a(?P<word>b)?c(?(word)|e)",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    _fixture_bundle(
+    load_whole_manifest_fixture_bundle(
         "conditional_group_exists_fully_empty_workflows.py",
         expected_manifest_id="conditional-group-exists-fully-empty-workflows",
         expected_case_ids=frozenset(
@@ -144,12 +121,13 @@ FIXTURE_BUNDLES = (
                 "named-conditional-group-exists-fully-empty-pattern-fullmatch-absent-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a(b)?c(?(1)|)",
                 r"a(?P<word>b)?c(?(word)|)",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
 )
 COMPILE_CASES = tuple(
@@ -178,14 +156,11 @@ PATTERN_CASES = tuple(
     ids=lambda bundle: bundle.expected_manifest_id,
 )
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
-    bundle: FixtureBundle,
+    bundle: WholeManifestFixtureBundle,
 ) -> None:
-    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
-    assert len(bundle.cases) == len(bundle.expected_case_ids)
-    assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
-    assert {str_case_pattern(case) for case in bundle.cases} == bundle.expected_compile_patterns
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        bundle.expected_operation_helper_counts
+    assert_whole_manifest_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=str_case_pattern,
     )
 
 
