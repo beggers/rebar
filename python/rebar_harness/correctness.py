@@ -257,6 +257,11 @@ _PUBLISHED_FULL_SUITE_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
+    / "conditional_group_exists_replacement_template_workflows.py",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
     / "conditional_group_exists_alternation_replacement_workflows.py",
     REPO_ROOT
     / "tests"
