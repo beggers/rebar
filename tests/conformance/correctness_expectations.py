@@ -499,6 +499,14 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "pattern-subn-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
         ),
     },
+    "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
+            "pattern-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
+            "module-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
+            "pattern-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+        ),
+    },
 }
 
 
@@ -1189,6 +1197,18 @@ OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "module-subn-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-str",
             "pattern-sub-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
             "pattern-subn-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+        ),
+    },
+    "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
+            "module-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
+            "pattern-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
+            "pattern-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-str",
+            "module-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
+            "module-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-str",
+            "pattern-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
+            "pattern-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
         ),
     },
     "broader-range-open-ended-quantified-group-alternation-workflows": {
