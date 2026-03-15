@@ -16,9 +16,9 @@ from rebar_harness.correctness import (
     evaluate_case,
     load_fixture_manifest,
 )
-from tests.python.callable_replacement_support import (
-    assert_callable_replacement_exception_parity,
-    assert_callable_replacement_match_parity,
+from tests.python.fixture_parity_support import (
+    assert_match_convenience_api_parity,
+    assert_match_parity,
 )
 
 
@@ -86,6 +86,153 @@ QUANTIFIED_NESTED_GROUP_ALTERNATION_NO_MATCH_CASES = (
         id="pattern-named-subn-no-match-invalid-branch",
     ),
 )
+
+
+class CallbackExplosion(RuntimeError):
+    pass
+
+
+def _assert_callback_match_sequence_parity(
+    *,
+    backend_name: str,
+    observed_matches: list[object],
+    expected_matches: list[re.Match[str]],
+) -> None:
+    assert len(observed_matches) == len(expected_matches)
+
+    for observed, expected in zip(observed_matches, expected_matches, strict=True):
+        assert_match_parity(
+            backend_name,
+            observed,
+            expected,
+            check_regs=True,
+        )
+        assert_match_convenience_api_parity(observed, expected)
+
+
+def assert_callable_replacement_match_parity(
+    *,
+    backend_name: str,
+    backend: object,
+    helper: str,
+    pattern: str,
+    string: str,
+    count: int,
+    group_names: tuple[str, ...] = (),
+    use_compiled_pattern: bool = False,
+) -> None:
+    observed_matches: list[object] = []
+    expected_matches: list[re.Match[str]] = []
+
+    def observed_replacement(match: object) -> str:
+        observed_matches.append(match)
+        return "X"
+
+    def expected_replacement(match: re.Match[str]) -> str:
+        expected_matches.append(match)
+        return "X"
+
+    if use_compiled_pattern:
+        observed_target = backend.compile(pattern)
+        expected_target = re.compile(pattern)
+        observed = getattr(observed_target, helper)(
+            observed_replacement,
+            string,
+            count=count,
+        )
+        expected = getattr(expected_target, helper)(
+            expected_replacement,
+            string,
+            count=count,
+        )
+    else:
+        observed = getattr(backend, helper)(
+            pattern,
+            observed_replacement,
+            string,
+            count=count,
+        )
+        expected = getattr(re, helper)(
+            pattern,
+            expected_replacement,
+            string,
+            count=count,
+        )
+
+    assert observed == expected
+    _assert_callback_match_sequence_parity(
+        backend_name=backend_name,
+        observed_matches=observed_matches,
+        expected_matches=expected_matches,
+    )
+
+
+def assert_callable_replacement_exception_parity(
+    *,
+    backend_name: str,
+    backend: object,
+    helper: str,
+    pattern: str,
+    string: str,
+    count: int,
+    group_names: tuple[str, ...] = (),
+    use_compiled_pattern: bool = False,
+) -> None:
+    observed_matches: list[object] = []
+    expected_matches: list[re.Match[str]] = []
+    marker_message = "callable replacement callback exploded"
+    observed_marker = CallbackExplosion(marker_message)
+    expected_marker = CallbackExplosion(marker_message)
+
+    def observed_replacement(match: object) -> str:
+        observed_matches.append(match)
+        raise observed_marker
+
+    def expected_replacement(match: re.Match[str]) -> str:
+        expected_matches.append(match)
+        raise expected_marker
+
+    with pytest.raises(CallbackExplosion) as observed_error:
+        if use_compiled_pattern:
+            observed_target = backend.compile(pattern)
+            getattr(observed_target, helper)(
+                observed_replacement,
+                string,
+                count=count,
+            )
+        else:
+            getattr(backend, helper)(
+                pattern,
+                observed_replacement,
+                string,
+                count=count,
+            )
+
+    with pytest.raises(CallbackExplosion) as expected_error:
+        if use_compiled_pattern:
+            expected_target = re.compile(pattern)
+            getattr(expected_target, helper)(
+                expected_replacement,
+                string,
+                count=count,
+            )
+        else:
+            getattr(re, helper)(
+                pattern,
+                expected_replacement,
+                string,
+                count=count,
+            )
+
+    assert observed_error.value is observed_marker
+    assert expected_error.value is expected_marker
+    assert observed_error.value.args == expected_error.value.args == (marker_message,)
+    _assert_callback_match_sequence_parity(
+        backend_name=backend_name,
+        observed_matches=observed_matches,
+        expected_matches=expected_matches,
+    )
+    assert len(observed_matches) == 1
 
 
 @dataclass(frozen=True)
