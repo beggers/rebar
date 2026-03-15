@@ -1,8 +1,9 @@
 # RBR-0368: Add broader `{1,4}` nested-group alternation plus branch-local-backreference callable-replacement parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Convert the broader `{1,4}` nested-group alternation plus branch-local-backreference callable-replacement cases from `RBR-0366` into real Rust-backed behavior without claiming open-ended counted-repeat grouped callbacks, replacement-template variants, later benchmark rows, or deeper nested grouped execution support.
@@ -30,3 +31,10 @@ Created: 2026-03-15
 - Build on `RBR-0366`, `RBR-0362`, `RBR-0356`, and `RBR-0338`.
 - Keep later benchmark catch-up on the existing `benchmarks/workloads/nested_group_callable_replacement_boundary.py` path instead of forking another benchmark family.
 - The shared callable-replacement parity suite already discovers published `*callable_replacement_workflows.py` fixtures, so this task should widen that existing parity coverage rather than creating another manifest-specific test harness.
+
+## Completion Notes
+- Enabled the existing Rust-backed quantified nested-group alternation plus branch-local-backreference callable span collector for bounded `{1,4}` forms by removing the last core-side filter that rejected `max_repeat = Some(4)` after the parser had already accepted `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d`.
+- Cleared the stale pending-manifest skip in `tests/python/test_callable_replacement_parity_suite.py`; the shared callable parity suite now executes this broader `{1,4}` manifest directly. No source edits were needed in `crates/rebar-cpython/src/lib.rs` or `python/rebar/__init__.py` because the existing `rebar._rebar` export and `_native_callable_match_spans()` dispatch already routed this slice once the Rust core stopped rejecting it.
+- Republished the tracked combined correctness scorecard in `reports/correctness/latest.py`; the verified tracked summary is `865` total cases, `865` passes, `0` explicit failures, and `0` `unimplemented`, and `collection.replacement.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference.callable` now reports `8` executed cases with `8` passes and `0` `unimplemented`.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest tests/python/test_callable_replacement_parity_suite.py -q`, `PYTHONPATH=python ./.venv/bin/python -m pytest tests/python/test_branch_local_backreference_parity_suite.py -k broader-range -q`, `PYTHONPATH=python ./.venv/bin/python -m pytest tests/conformance/test_combined_correctness_scorecards.py -k nested_broader_range_wider_ranged_repeat_quantified_group_alternation -q`, `PYTHONPATH=python ./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k nested_group_callable_replacement_manifest -q`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
+- Later benchmark catch-up for this exact broader `{1,4}` callable slice remains queued separately in `RBR-0370`; the existing nested-group callable benchmark-anchor expectations stayed green, but this task did not add new broader-range callable benchmark rows.

@@ -7024,7 +7024,6 @@ pub fn quantified_nested_group_alternation_branch_local_backreference_find_spans
                 pattern,
             )
         })
-        .filter(|grouped_pattern| grouped_pattern.max_repeat.is_none())
     else {
         return CapturedFindSpansOutcome {
             status: MatchStatus::Unsupported,
