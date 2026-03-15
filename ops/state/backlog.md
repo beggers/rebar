@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now stays on the bounded broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional callable-replacement frontier; the currently seeded Python-path benchmark catch-up task `RBR-0419` closes `benchmarks/workloads/nested_group_callable_replacement_boundary.py` for the same numbered and named `sub()` / `subn()` slice, and no concrete post-drain feature follow-on is pinned yet.
+Milestone 2 now falls back to the bounded two-arm conditional callable-replacement publication slice for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` on the shared callable fixture/parity path; no concrete post-drain feature follow-on is pinned yet.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives after `RBR-0419`; the adjacent `*conditional_callable_replacement_workflows.py` correctness fixture family and `benchmarks/workloads/nested_group_callable_replacement_boundary.py` benchmark path both stop at this bounded `{2,}` conditional callable-replacement slice, so the next exact feature follow-on still needs fresh re-triage before it can be queued safely.
+1. No ready feature follow-on currently survives after the bounded two-arm conditional callable-replacement publication slice; `tests/python/test_callable_replacement_parity_suite.py` can absorb a new `conditional_group_exists_callable_replacement_workflows.py` manifest for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`, and the adjacent `pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap` row in `benchmarks/workloads/conditional_group_exists_boundary.py` remains the post-parity Python-path benchmark anchor if that slice lands cleanly.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

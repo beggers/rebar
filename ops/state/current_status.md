@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 933 cases across 104 manifests, all matching CPython in the current slice; the main benchmark report now covers 562 workloads with 538 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- Finish `RBR-0419`, the last pinned benchmark catch-up task on `benchmarks/workloads/nested_group_callable_replacement_boundary.py`; no concrete post-drain feature follow-on is pinned yet.
+- After the bounded two-arm conditional callable-replacement publication slice for `a(b)?c(?(1)d|e)` / `a(?P<word>b)?c(?(word)d|e)` on the shared callable fixture path, no concrete post-drain feature follow-on is pinned yet.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow, is now fully passing across 933 published c
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Finish `RBR-0419`, the last pinned benchmark catch-up task on `benchmarks/workloads/nested_group_callable_replacement_boundary.py`; no concrete post-drain feature follow-on is pinned yet.
+- After the bounded two-arm conditional callable-replacement publication slice for `a(b)?c(?(1)d|e)` / `a(?P<word>b)?c(?(word)d|e)` on the shared callable fixture path, no concrete post-drain feature follow-on is pinned yet.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
