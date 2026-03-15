@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice is now fully passing, but it is still narrow and the main benchmark report still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 now has `RBR-0384` seeded as the surviving follow-on so, once `RBR-0382` catches the explicit open-ended `{1,}` nested-group alternation plus branch-local-backreference replacement-template workflows for `a((b|c){1,})\\2d` and `a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d` up on the existing Python-path benchmark surface, the same nested-group replacement frontier reopens on correctness publication for the broader-range open-ended `{2,}` workflows `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d` before Rust-backed parity, benchmark catch-up, broader template parsing, or deeper nested grouped execution broaden the queue. |
-| Work queue | `1` ready, `0` in progress, `386` done, `0` blocked |
+| Delivery estimate | The published correctness slice now covers 889 cases with 8 honest gaps, and the main benchmark report still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity. |
+| Current milestone | Milestone 2 now has `RBR-0386` seeded as the surviving follow-on so, once `RBR-0384` publishes the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference replacement-template workflows for `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d` on the ordinary correctness path, the same nested-group replacement frontier advances to Rust-backed parity before benchmark catch-up, broader template parsing, or deeper nested grouped execution broaden the queue. |
+| Work queue | `1` ready, `0` in progress, `388` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `881` |
+| Published cases | `889` |
 | Passing in published slice | `881` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `98` |
+| Honest gaps (`unimplemented`) | `8` |
+| Covered manifests | `99` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice is now fully passing, but it is still narrow and the main benchmark report still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 889 cases with 8 honest gaps, and the main benchmark report still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `513` of `537` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0384` so the broader-range open-ended `{2,}` nested-group replacement-template slice becomes the next published correctness frontier.
+- Land `RBR-0386` so the broader-range open-ended `{2,}` nested-group replacement-template slice reaches Rust-backed parity once `RBR-0384` publishes it on the correctness path.
 
 ### Current Risks
 
@@ -57,7 +57,7 @@ _README speedup rollups stay omitted while only `513` of `537` published workloa
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current published correctness slice is still intentionally narrow, but the published scorecard is now fully passing within that slice. That is useful evidence that the project can close one bounded frontier at a time, not evidence of broad drop-in parity.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current published correctness slice is still intentionally narrow, and it still carries a small number of honest gaps inside that slice. That is useful evidence that the project can close one bounded frontier at a time, not evidence of broad drop-in parity.
 
 The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice: across eight published parser workloads it is about 2x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
