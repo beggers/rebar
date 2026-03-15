@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now has `RBR-0356` seeded as the surviving follow-on so the bounded nested-group alternation plus branch-local-backreference callable-replacement slice for `a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d` reaches Rust-backed parity after `RBR-0354` publishes the adjacent correctness pack, before benchmark catch-up, quantified branch-local-backreference callbacks, broader counted repeats, or deeper nested grouped execution broaden the queue.
+Milestone 2 now has `RBR-0358` seeded as the surviving follow-on so the bounded nested-group alternation plus branch-local-backreference callable-replacement slice for `a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d` reaches the published Python-path benchmark surface on `benchmarks/workloads/nested_group_callable_replacement_boundary.py` after `RBR-0356` lands, before quantified branch-local-backreference callbacks, broader counted repeats, or deeper nested grouped execution broaden the queue.
 
 ## Ordered Work
-1. Land `RBR-0356` to extend `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_callable_replacement_parity_suite.py`, and `reports/correctness/latest.py` so the bounded numbered and named module/compiled-`Pattern` `sub()` and `subn()` callable-replacement workflows for `a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d` move from newly published coverage to real Rust-backed parity without forking another Python parity surface.
+1. Land `RBR-0358` to extend `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` so the bounded numbered and named module/compiled-`Pattern` `sub()` and `subn()` callable-replacement workflows for `a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d` move from newly landed parity to real published Python-path benchmark coverage without forking another benchmark family.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
