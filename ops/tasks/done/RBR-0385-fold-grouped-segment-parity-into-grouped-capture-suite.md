@@ -1,8 +1,9 @@
 # RBR-0385: Fold grouped-segment parity into the grouped-capture suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Remove `tests/python/test_grouped_segment_parity.py` as a standalone parity surface by folding its bounded grouped-segment coverage into `tests/python/test_grouped_capture_parity_suite.py`, so the grouped-capture family no longer lives across two fixture-backed pytest modules with nearly identical compile, match, accessor, and miss scaffolding.
@@ -44,3 +45,13 @@ Created: 2026-03-15
 - Both tracked and live JSON counts are zero in the current checkout, so the next architecture priority is deleting duplicate Python parity plumbing rather than another JSON burn-down task.
 - `tests/python/test_grouped_segment_parity.py` is still a 299-line singleton that repeats the same fixture bundle structure, compile path, `_match_for_case(...)` shape, accessor assertions, convenience-API checks, and bounded miss helpers that already exist in `tests/python/test_grouped_capture_parity_suite.py`.
 - The grouped-capture suite is now the natural owner for this slice: it already carries grouped, named-group, optional-group, and nested-group capture coverage, and grouped-segment is the remaining single-capture literal-prefix/suffix holdout on a separate file.
+
+## Completion Notes
+- Expanded `tests/python/test_grouped_capture_parity_suite.py` to load `grouped_segment_workflows.py` through the existing fixture-bundle path, pinning the grouped-segment manifest id, exact six published case ids, compile patterns, and operation/helper counts alongside the rest of the grouped-capture family.
+- Folded the standalone grouped-segment parity depth into the shared suite by adding the numbered and named grouped-segment rows to the existing match-group-access parameterization, adding the grouped-segment module-search and `Pattern.fullmatch()` miss cases to the shared supplemental miss table, and reusing `tests/python/fixture_parity_support.py` for compile, match, and convenience parity checks instead of keeping another local helper block.
+- Deleted `tests/python/test_grouped_segment_parity.py`.
+
+## Verification
+- `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py` (`215 passed`)
+- `rg --files tests/python | rg 'test_grouped_segment_parity\\.py$'` (no matches)
+- `git diff --name-status -- tests/python/test_grouped_capture_parity_suite.py tests/python/test_grouped_segment_parity.py` (`M` / `D`)
