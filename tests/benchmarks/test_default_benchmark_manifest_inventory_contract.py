@@ -24,6 +24,17 @@ def _duplicates(counter: Counter[str]) -> list[str]:
 
 
 class DefaultBenchmarkManifestInventoryContractTest(unittest.TestCase):
+    def test_unknown_manifest_selector_raises_clear_error(self) -> None:
+        with self.assertRaisesRegex(ValueError, "unknown benchmark manifest selector"):
+            select_benchmark_manifest_paths("missing-selector")
+
+    def test_single_manifest_selector_helper_rejects_multi_manifest_selectors(self) -> None:
+        with self.assertRaisesRegex(
+            ValueError,
+            "benchmark manifest selector 'published-full-suite' does not resolve to exactly one path",
+        ):
+            select_benchmark_manifest_path(PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR)
+
     def test_published_full_suite_manifest_selector_is_unique_and_supported(self) -> None:
         published_manifest_paths = select_benchmark_manifest_paths(
             PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
