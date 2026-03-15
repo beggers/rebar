@@ -208,23 +208,29 @@ def _match_api_templates(
 
 def _valid_match_group_references(
     expected: re.Match[str] | re.Match[bytes],
-) -> tuple[int | str, ...]:
-    return (*range(expected.re.groups + 1), *expected.re.groupindex)
+) -> tuple[object, ...]:
+    references: list[object] = list(range(expected.re.groups + 1))
+    # CPython accepts bools here because they are int subclasses.
+    references.append(False)
+    if expected.re.groups >= 1:
+        references.append(True)
+    references.extend(expected.re.groupindex)
+    return tuple(references)
 
 
 def _invalid_match_group_references(
     expected: re.Match[str] | re.Match[bytes],
-) -> tuple[int | str, ...]:
+) -> tuple[object, ...]:
     missing_name = "missing"
     while missing_name in expected.re.groupindex:
         missing_name += "_group"
-    return (-1, expected.re.groups + 1, missing_name)
+    return (-1, expected.re.groups + 1, None, (1,), 1.0, b"missing", missing_name)
 
 
 def _apply_match_accessor(
     match: object,
     accessor_name: str,
-    reference: int | str,
+    reference: object,
 ) -> object:
     if accessor_name == "group":
         return match.group(reference)
@@ -242,7 +248,7 @@ def _apply_match_accessor(
 def _capture_match_accessor_error(
     match: object,
     accessor_name: str,
-    reference: int | str,
+    reference: object,
 ) -> BaseException:
     try:
         _apply_match_accessor(match, accessor_name, reference)
