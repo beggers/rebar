@@ -2,22 +2,22 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass
-import pathlib
 import re
 
 import pytest
 
 from rebar_harness.correctness import (
-    DEFAULT_FIXTURE_PATHS,
     FixtureCase,
     FixtureManifest,
     load_fixture_manifest,
 )
-from tests.python.fixture_parity_support import str_case_pattern
+from tests.python.fixture_parity_support import (
+    FIXTURES_DIR,
+    select_published_fixture_paths,
+    str_case_pattern,
+)
 
 
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-FIXTURES_DIR = REPO_ROOT / "tests" / "conformance" / "fixtures"
 EXPECTED_PUBLISHED_FIXTURE_NAMES = (
     "conditional_group_exists_alternation_replacement_workflows.py",
     "conditional_group_exists_empty_else_replacement_workflows.py",
@@ -28,17 +28,14 @@ EXPECTED_PUBLISHED_FIXTURE_NAMES = (
     "conditional_group_exists_quantified_replacement_workflows.py",
     "conditional_group_exists_replacement_workflows.py",
 )
-PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS = tuple(
+EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
     sorted(
-        (
-            path
-            for path in DEFAULT_FIXTURE_PATHS
-            if path.parent == FIXTURES_DIR
-            and path.name.startswith("conditional_group_exists")
-            and path.name.endswith("_replacement_workflows.py")
-        ),
+        (FIXTURES_DIR / fixture_name for fixture_name in EXPECTED_PUBLISHED_FIXTURE_NAMES),
         key=lambda path: path.name,
     )
+)
+PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS = select_published_fixture_paths(
+    EXPECTED_PUBLISHED_FIXTURE_PATHS
 )
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
@@ -274,10 +271,7 @@ def _run_replacement_case(backend: object, case: FixtureCase) -> object:
 
 def test_replacement_parity_suite_discovers_all_published_correctness_fixtures() -> None:
     assert PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS
-    assert PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS == tuple(
-        FIXTURES_DIR / fixture_name
-        for fixture_name in EXPECTED_PUBLISHED_FIXTURE_NAMES
-    )
+    assert PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS == EXPECTED_PUBLISHED_FIXTURE_PATHS
 
 
 @pytest.mark.parametrize(

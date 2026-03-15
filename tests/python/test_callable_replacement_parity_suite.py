@@ -9,7 +9,6 @@ import pytest
 
 from rebar_harness.correctness import (
     CpythonReAdapter,
-    DEFAULT_FIXTURE_PATHS,
     FixtureCase,
     FixtureManifest,
     RebarAdapter,
@@ -17,14 +16,14 @@ from rebar_harness.correctness import (
     load_fixture_manifest,
 )
 from tests.python.fixture_parity_support import (
+    FIXTURES_DIR,
     assert_match_convenience_api_parity,
     assert_match_parity,
+    select_published_fixture_paths,
     str_case_pattern,
 )
 
 
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-FIXTURES_DIR = REPO_ROOT / "tests" / "conformance" / "fixtures"
 COLLECTION_REPLACEMENT_FIXTURE_PATH = (
     FIXTURES_DIR / "collection_replacement_workflows.py"
 )
@@ -353,16 +352,8 @@ CALLABLE_FIXTURE_PATHS = tuple(
         key=lambda path: path.name,
     )
 )
-PUBLISHED_CALLABLE_FIXTURE_PATHS = tuple(
-    sorted(
-        (
-            path
-            for path in DEFAULT_FIXTURE_PATHS
-            if path.parent == FIXTURES_DIR
-            and path.name.endswith("callable_replacement_workflows.py")
-        ),
-        key=lambda path: path.name,
-    )
+PUBLISHED_CALLABLE_FIXTURE_PATHS = select_published_fixture_paths(
+    CALLABLE_FIXTURE_PATHS
 )
 LITERAL_CALLABLE_PARITY_VARIANTS = (
     pytest.param("sub", 0, False, id="literal-module-sub-replace-all"),
