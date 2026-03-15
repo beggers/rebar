@@ -48,6 +48,27 @@ QUANTIFIED_NESTED_GROUP_ALTERNATION_EXPECTED_COMPILE_PATTERNS = frozenset(
         r"a(?P<outer>(?P<inner>b|c)+)d",
     }
 )
+NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_MANIFEST_ID = (
+    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+)
+NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_EXPECTED_CASE_IDS = frozenset(
+    {
+        "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
+        "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
+        "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
+        "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-str",
+        "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
+        "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-str",
+        "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
+        "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+    }
+)
+NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_EXPECTED_COMPILE_PATTERNS = frozenset(
+    {
+        r"a((b|c){2,})\2d",
+        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+    }
+)
 QUANTIFIED_NESTED_GROUP_ALTERNATION_NO_MATCH_CASES = (
     pytest.param(
         False,
@@ -569,6 +590,29 @@ def test_quantified_nested_group_alternation_callable_cases_stay_aligned_with_pu
     )
     assert bundle.compile_patterns == (
         QUANTIFIED_NESTED_GROUP_ALTERNATION_EXPECTED_COMPILE_PATTERNS
+    )
+    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
+        EXPECTED_OPERATION_HELPER_COUNTS
+    )
+
+
+def test_nested_broader_range_open_ended_callable_cases_stay_aligned_with_published_fixture(
+) -> None:
+    bundle = _fixture_bundle_by_manifest_id(
+        NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_MANIFEST_ID
+    )
+
+    assert bundle.manifest.manifest_id == (
+        NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_MANIFEST_ID
+    )
+    assert len(bundle.cases) == len(
+        NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_EXPECTED_CASE_IDS
+    )
+    assert {case.case_id for case in bundle.cases} == (
+        NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_EXPECTED_CASE_IDS
+    )
+    assert bundle.compile_patterns == (
+        NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_EXPECTED_COMPILE_PATTERNS
     )
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
         EXPECTED_OPERATION_HELPER_COUNTS
