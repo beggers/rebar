@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 925 cases with all 925 matching CPython, and the main benchmark report now covers 558 workloads with 534 real `rebar` timings, but it still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 now stays on the bounded broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional replacement frontier; after newly seeded benchmark catch-up task `RBR-0410` drains on `nested_group_replacement_boundary.py`, the surviving concrete follow-on is correctness-publication task `RBR-0412` for the matching numbered and named conditional callable-replacement `sub()` / `subn()` slice on the shared callable fixture/parity surface. |
-| Work queue | `0` ready, `0` in progress, `414` done, `0` blocked |
+| Delivery estimate | The published correctness slice now covers 933 cases across 104 manifests, with 925 matching CPython and 8 explicit `unimplemented` gaps still open; the main benchmark report still covers 558 workloads with 534 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity. |
+| Current milestone | Milestone 2 now stays on the bounded broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional callable-replacement frontier; after newly seeded correctness-publication task `RBR-0414` drains on the shared callable fixture/parity surface, the surviving concrete follow-on is Rust-backed parity task `RBR-0415` for the same numbered and named `sub()` / `subn()` slice. |
+| Work queue | `0` ready, `0` in progress, `416` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `925` |
+| Published cases | `933` |
 | Passing in published slice | `925` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `103` |
+| Honest gaps (`unimplemented`) | `8` |
+| Covered manifests | `104` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 925 cases with all 925 matching CPython, and the main benchmark report now covers 558 workloads with 534 real `rebar` timings, but it still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 933 cases across 104 manifests, with 925 matching CPython and 8 explicit `unimplemented` gaps still open; the main benchmark report still covers 558 workloads with 534 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `534` of `558` published workloa
 
 ### Immediate Next Steps
 
-- After newly seeded benchmark catch-up task `RBR-0410` drains, the surviving concrete follow-on is correctness-publication task `RBR-0412` for the same broader-range open-ended `{2,}` nested-group branch-local-backreference conditional callable-replacement `sub()` / `subn()` slice on the shared callable parity surface.
+- Land Rust-backed parity task `RBR-0415` for the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional callable-replacement `sub()` / `subn()` slice that `RBR-0414` has now published.
 
 ### Current Risks
 
@@ -57,7 +57,7 @@ _README speedup rollups stay omitted while only `534` of `558` published workloa
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current published correctness slice is still intentionally narrow: the latest publication widened it to 925 cases, and all 925 now match CPython. That is useful evidence that the project can close one bounded frontier at a time, not evidence of broad drop-in parity.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current published correctness slice is still intentionally narrow: the latest publication widened it to 933 cases, with 925 matching CPython and 8 explicit `unimplemented` gaps. That is useful evidence that the project can close one bounded frontier at a time, not evidence of broad drop-in parity.
 
 The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice: across eight published parser workloads it is about 2x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
