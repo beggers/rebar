@@ -28,6 +28,7 @@ EXPECTED_PUBLISHED_FIXTURE_NAMES = (
     "grouped_match_workflows.py",
     "grouped_segment_workflows.py",
     "named_group_workflows.py",
+    "nested_group_alternation_workflows.py",
     "optional_group_alternation_workflows.py",
     "optional_group_workflows.py",
     "nested_group_workflows.py",
@@ -263,6 +264,31 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
+    _fixture_bundle(
+        "nested_group_alternation_workflows.py",
+        selected_case_ids=(
+            "nested-group-alternation-compile-metadata-str",
+            "nested-group-alternation-module-search-str",
+            "nested-group-alternation-pattern-fullmatch-str",
+            "named-nested-group-alternation-compile-metadata-str",
+            "named-nested-group-alternation-module-search-str",
+            "named-nested-group-alternation-pattern-fullmatch-str",
+        ),
+        expected_manifest_id="nested-group-alternation-workflows",
+        expected_patterns=frozenset(
+            {
+                r"a((b|c))d",
+                r"a(?P<outer>(?P<inner>b|c))d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 2,
+            }
+        ),
+    ),
 )
 
 
@@ -374,6 +400,20 @@ SUPPLEMENTAL_MISS_CASES = (
         pattern_case_id="named-nested-group-pattern-fullmatch-str",
         pattern_misses=("abdd",),
     ),
+    SupplementalMissCase(
+        id="numbered-nested-group-alternation-search-and-fullmatch",
+        module_case_id="nested-group-alternation-module-search-str",
+        module_misses=("zzadzz", "zzabbdzz"),
+        pattern_case_id="nested-group-alternation-pattern-fullmatch-str",
+        pattern_misses=("ad", "abbd"),
+    ),
+    SupplementalMissCase(
+        id="named-nested-group-alternation-search-and-fullmatch",
+        module_case_id="named-nested-group-alternation-module-search-str",
+        module_misses=("zzadzz", "zzaccddzz"),
+        pattern_case_id="named-nested-group-alternation-pattern-fullmatch-str",
+        pattern_misses=("ad", "accd"),
+    ),
 )
 MATCH_GROUP_ACCESS_CASE_IDS = (
     "grouped-module-search-single-capture-str",
@@ -400,6 +440,10 @@ MATCH_GROUP_ACCESS_CASE_IDS = (
     "nested-group-pattern-fullmatch-str",
     "named-nested-group-module-search-str",
     "named-nested-group-pattern-fullmatch-str",
+    "nested-group-alternation-module-search-str",
+    "nested-group-alternation-pattern-fullmatch-str",
+    "named-nested-group-alternation-module-search-str",
+    "named-nested-group-alternation-pattern-fullmatch-str",
 )
 REGS_PARITY_CASE_IDS = frozenset(
     {
@@ -407,6 +451,10 @@ REGS_PARITY_CASE_IDS = frozenset(
         "optional-group-alternation-pattern-fullmatch-absent-str",
         "named-optional-group-alternation-module-search-present-str",
         "named-optional-group-alternation-pattern-fullmatch-absent-str",
+        "nested-group-alternation-module-search-str",
+        "nested-group-alternation-pattern-fullmatch-str",
+        "named-nested-group-alternation-module-search-str",
+        "named-nested-group-alternation-pattern-fullmatch-str",
     }
 )
 

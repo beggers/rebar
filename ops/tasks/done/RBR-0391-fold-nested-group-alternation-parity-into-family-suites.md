@@ -1,8 +1,9 @@
 # RBR-0391: Fold nested-group alternation parity into the existing family suites
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Delete `tests/python/test_nested_group_alternation_parity.py` by moving its two published fixture slices onto the family suites that already own those correctness surfaces, so nested-group alternation no longer lives on a third overlapping parity module with private repo bootstrapping and file-local pattern/match helper copies.
@@ -70,3 +71,14 @@ Created: 2026-03-15
 - The current runtime dashboard is clean and current for `HEAD` `07daedb1309dd7884c0639710f3a3ec66e2dfaae`, and both reported and live JSON counts are already zero (`tracked_json_blob_count: 0`, `tracked_json_blob_delta: 0`, `git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), so the next architecture priority is deleting duplicate Python parity plumbing rather than another JSON burn-down task.
 - `tests/python/test_nested_group_alternation_parity.py` is still a 380-line standalone parity module with private `sys.path` bootstrapping plus file-local `_case_pattern(...)`, `_assert_pattern_parity(...)`, and `_assert_match_parity(...)` helpers that duplicate the shared fixture-backed information flow already used by the destination suites.
 - `tests/python/test_grouped_capture_parity_suite.py` already owns the adjacent grouped, named-group, optional-group, grouped-alternation, and nested-group capture rows, while `tests/python/test_quantified_alternation_parity_suite.py` already owns the exact-repeat, ranged, broader-range, open-ended, conditional, and nested-branch alternation rows, making them the natural homes for the two absorbed manifests.
+
+## Completion
+- Completed 2026-03-15.
+- Folded `nested_group_alternation_workflows.py` into `tests/python/test_grouped_capture_parity_suite.py` as one explicit six-case bundle, then extended that suite's existing supplemental miss, match-group-access, and `.regs` parity paths to cover the numbered and named nested-group alternation search/fullmatch rows.
+- Folded `quantified_nested_group_alternation_workflows.py` into `tests/python/test_quantified_alternation_parity_suite.py` as one explicit six-case bundle, added `.regs` parity for its published workflow rows, and widened the suite's existing supplemental no-match path to cover the numbered and named too-short and invalid-branch misses.
+- Deleted `tests/python/test_nested_group_alternation_parity.py` so both absorbed manifests now live only on the grouped-capture and quantified-alternation family suites.
+
+## Verification
+- `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py tests/python/test_quantified_alternation_parity_suite.py` (`755 passed`)
+- `rg --files tests/python | rg 'test_nested_group_alternation_parity\\.py$'` (no matches)
+- `git diff --name-status -- tests/python/test_nested_group_alternation_parity.py` reported `D	tests/python/test_nested_group_alternation_parity.py`

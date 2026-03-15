@@ -28,6 +28,7 @@ EXPECTED_PUBLISHED_FIXTURE_NAMES = (
     "quantified_alternation_backtracking_heavy_workflows.py",
     "quantified_alternation_broader_range_workflows.py",
     "quantified_alternation_conditional_workflows.py",
+    "quantified_nested_group_alternation_workflows.py",
     "quantified_alternation_open_ended_workflows.py",
     "quantified_alternation_nested_branch_workflows.py",
 )
@@ -67,7 +68,7 @@ class BacktrackingTraceCase:
 
 
 @dataclass(frozen=True)
-class BacktrackingNoMatchCase:
+class SupplementalNoMatchCase:
     id: str
     target: str
     pattern: str
@@ -142,6 +143,33 @@ FIXTURE_BUNDLES = (
             {
                 r"a(b|c){1,2}d",
                 r"a(?P<word>b|c){1,2}d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 2,
+            }
+        ),
+    ),
+    _fixture_bundle(
+        "quantified_nested_group_alternation_workflows.py",
+        expected_manifest_id="quantified-nested-group-alternation-workflows",
+        expected_case_ids=frozenset(
+            {
+                "quantified-nested-group-alternation-numbered-compile-metadata-str",
+                "quantified-nested-group-alternation-numbered-module-search-lower-bound-b-str",
+                "quantified-nested-group-alternation-numbered-pattern-fullmatch-repeated-mixed-str",
+                "quantified-nested-group-alternation-named-compile-metadata-str",
+                "quantified-nested-group-alternation-named-module-search-lower-bound-c-str",
+                "quantified-nested-group-alternation-named-pattern-fullmatch-repeated-mixed-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a((b|c)+)d",
+                r"a(?P<outer>(?P<inner>b|c)+)d",
             }
         ),
         expected_operation_helper_counts=Counter(
@@ -340,6 +368,15 @@ PATTERN_CASES = tuple(
     for case in PUBLISHED_CASES
     if case.operation == "pattern_call"
 )
+COMPILE_CASES_BY_ID = {case.case_id: case for case in COMPILE_CASES}
+REGS_PARITY_CASE_IDS = frozenset(
+    {
+        "quantified-nested-group-alternation-numbered-module-search-lower-bound-b-str",
+        "quantified-nested-group-alternation-numbered-pattern-fullmatch-repeated-mixed-str",
+        "quantified-nested-group-alternation-named-module-search-lower-bound-c-str",
+        "quantified-nested-group-alternation-named-pattern-fullmatch-repeated-mixed-str",
+    }
+)
 BACKTRACKING_HEAVY_BUNDLE = next(
     bundle
     for bundle in FIXTURE_BUNDLES
@@ -378,27 +415,33 @@ def _build_backtracking_trace_cases() -> tuple[BacktrackingTraceCase, ...]:
     return tuple(cases)
 
 
-def _build_backtracking_no_match_cases() -> tuple[BacktrackingNoMatchCase, ...]:
-    cases: list[BacktrackingNoMatchCase] = []
+def _compile_pattern(case_id: str) -> str:
+    pattern = case_pattern(COMPILE_CASES_BY_ID[case_id])
+    assert isinstance(pattern, str)
+    return pattern
+
+
+def _build_supplemental_no_match_cases() -> tuple[SupplementalNoMatchCase, ...]:
+    cases: list[SupplementalNoMatchCase] = []
     for case in BACKTRACKING_HEAVY_COMPILE_CASES:
         pattern = case_pattern(case)
         assert isinstance(pattern, str)
         prefix = _compile_case_prefix(case)
         cases.extend(
             [
-                BacktrackingNoMatchCase(
+                SupplementalNoMatchCase(
                     id=f"{prefix}-module-search-miss-zero-repetition",
                     target="module",
                     pattern=pattern,
                     text=f"zz{ZERO_REPETITION_NO_MATCH_TEXT}zz",
                 ),
-                BacktrackingNoMatchCase(
+                SupplementalNoMatchCase(
                     id=f"{prefix}-module-search-miss-overlap-tail",
                     target="module",
                     pattern=pattern,
                     text=f"zz{OVERLAP_TAIL_NO_MATCH_TEXT}zz",
                 ),
-                BacktrackingNoMatchCase(
+                SupplementalNoMatchCase(
                     id=f"{prefix}-pattern-fullmatch-miss-zero-repetition",
                     target="pattern",
                     pattern=pattern,
@@ -406,11 +449,70 @@ def _build_backtracking_no_match_cases() -> tuple[BacktrackingNoMatchCase, ...]:
                 ),
             ]
         )
+
+    numbered_pattern = _compile_pattern(
+        "quantified-nested-group-alternation-numbered-compile-metadata-str"
+    )
+    named_pattern = _compile_pattern(
+        "quantified-nested-group-alternation-named-compile-metadata-str"
+    )
+    cases.extend(
+        [
+            SupplementalNoMatchCase(
+                id="quantified-nested-group-alternation-numbered-module-search-miss-too-short",
+                target="module",
+                pattern=numbered_pattern,
+                text="zzadzz",
+            ),
+            SupplementalNoMatchCase(
+                id="quantified-nested-group-alternation-numbered-module-search-miss-invalid-branch",
+                target="module",
+                pattern=numbered_pattern,
+                text="zzabedzz",
+            ),
+            SupplementalNoMatchCase(
+                id="quantified-nested-group-alternation-numbered-pattern-fullmatch-miss-too-short",
+                target="pattern",
+                pattern=numbered_pattern,
+                text="ad",
+            ),
+            SupplementalNoMatchCase(
+                id="quantified-nested-group-alternation-numbered-pattern-fullmatch-miss-invalid-branch",
+                target="pattern",
+                pattern=numbered_pattern,
+                text="abed",
+            ),
+            SupplementalNoMatchCase(
+                id="quantified-nested-group-alternation-named-module-search-miss-too-short",
+                target="module",
+                pattern=named_pattern,
+                text="zzadzz",
+            ),
+            SupplementalNoMatchCase(
+                id="quantified-nested-group-alternation-named-module-search-miss-invalid-branch",
+                target="module",
+                pattern=named_pattern,
+                text="zzabedzz",
+            ),
+            SupplementalNoMatchCase(
+                id="quantified-nested-group-alternation-named-pattern-fullmatch-miss-too-short",
+                target="pattern",
+                pattern=named_pattern,
+                text="ad",
+            ),
+            SupplementalNoMatchCase(
+                id="quantified-nested-group-alternation-named-pattern-fullmatch-miss-invalid-branch",
+                target="pattern",
+                pattern=named_pattern,
+                text="abed",
+            ),
+        ]
+    )
     return tuple(cases)
 
 
 BACKTRACKING_TRACE_CASES = _build_backtracking_trace_cases()
-BACKTRACKING_NO_MATCH_CASES = _build_backtracking_no_match_cases()
+SUPPLEMENTAL_NO_MATCH_CASES = _build_supplemental_no_match_cases()
 
 
 def test_quantified_alternation_suite_uses_expected_published_fixtures() -> None:
@@ -460,7 +562,12 @@ def test_module_search_matches_cpython(
     if expected is None:
         return
 
-    assert_match_parity(backend_name, observed, expected)
+    assert_match_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=case.case_id in REGS_PARITY_CASE_IDS,
+    )
 
 
 @pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
@@ -502,7 +609,12 @@ def test_pattern_fullmatch_matches_cpython(
     if expected is None:
         return
 
-    assert_match_parity(backend_name, observed, expected)
+    assert_match_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=case.case_id in REGS_PARITY_CASE_IDS,
+    )
 
 
 @pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
@@ -564,10 +676,10 @@ def test_backtracking_heavy_pattern_fullmatch_branch_traces_match_cpython(
     assert_match_parity(backend_name, observed, expected)
 
 
-@pytest.mark.parametrize("case", BACKTRACKING_NO_MATCH_CASES, ids=lambda case: case.id)
-def test_backtracking_heavy_extra_no_match_paths_match_cpython(
+@pytest.mark.parametrize("case", SUPPLEMENTAL_NO_MATCH_CASES, ids=lambda case: case.id)
+def test_supplemental_no_match_paths_match_cpython(
     regex_backend: tuple[str, object],
-    case: BacktrackingNoMatchCase,
+    case: SupplementalNoMatchCase,
 ) -> None:
     backend_name, backend = regex_backend
 
