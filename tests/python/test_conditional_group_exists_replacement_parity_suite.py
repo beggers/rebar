@@ -11,7 +11,10 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
+    assert_match_convenience_api_parity,
+    assert_match_parity,
     assert_expected_fixture_bundle_contract,
+    compile_with_cpython_parity,
     load_expected_fixture_bundle,
     published_fixture_paths_from_bundles,
     str_case_pattern,
@@ -230,6 +233,13 @@ FIXTURE_BUNDLES = (
 REPLACEMENT_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
 
 
+def _case_string(case: FixtureCase) -> str:
+    text_index = 2 if case.operation == "module_call" else 1
+    string = case.args[text_index]
+    assert isinstance(string, str)
+    return string
+
+
 def _replacement_args(
     case: FixtureCase,
     *,
@@ -251,6 +261,34 @@ def _no_match_text(case: FixtureCase) -> str:
             return text
 
     raise AssertionError(f"could not find a shared no-match text for {case.case_id!r}")
+
+
+def _search_match_for_case(
+    backend_name: str,
+    backend: object,
+    case: FixtureCase,
+) -> tuple[object, re.Match[str]]:
+    pattern = str_case_pattern(case)
+    string = _case_string(case)
+
+    if case.operation == "module_call":
+        observed = backend.search(pattern, string, case.flags or 0)
+        expected = re.search(pattern, string, case.flags or 0)
+    elif case.operation == "pattern_call":
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+            case.flags or 0,
+        )
+        observed = observed_pattern.search(string)
+        expected = expected_pattern.search(string)
+    else:
+        raise ValueError(f"unsupported replacement parity operation {case.operation!r}")
+
+    assert observed is not None
+    assert expected is not None
+    return observed, expected
 
 
 def _run_replacement_case(
@@ -303,6 +341,27 @@ def test_replacement_matches_cpython(
     observed = _run_replacement_case(backend, case)
     expected = _run_replacement_case(re, case)
     assert observed == expected
+
+
+@pytest.mark.parametrize("case", REPLACEMENT_CASES, ids=lambda case: case.case_id)
+def test_replacement_match_capture_and_expand_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_match, expected_match = _search_match_for_case(
+        backend_name,
+        backend,
+        case,
+    )
+
+    assert_match_parity(
+        backend_name,
+        observed_match,
+        expected_match,
+        check_regs=True,
+    )
+    assert_match_convenience_api_parity(observed_match, expected_match)
 
 
 @pytest.mark.parametrize("case", REPLACEMENT_CASES, ids=lambda case: case.case_id)
