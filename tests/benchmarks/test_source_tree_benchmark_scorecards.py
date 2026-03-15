@@ -143,7 +143,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                         any(note_substring in note for note in workload_record["notes"])
                     )
 
-    def test_nested_group_callable_replacement_scorecard_covers_broader_range_rows(
+    def test_nested_group_callable_replacement_scorecard_covers_open_ended_rows(
         self,
     ) -> None:
         case = source_tree_scorecard_case("nested-group-callable-replacement-boundary")

@@ -1,6 +1,6 @@
 # RBR-0376: Catch open-ended `{1,}` nested-group alternation plus branch-local-backreference callable-replacement benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-15
 
@@ -30,3 +30,9 @@ Created: 2026-03-15
 - Build on `RBR-0374`.
 - Keep this follow-on on the existing `nested_group_callable_replacement_boundary.py` manifest path instead of forking another benchmark family.
 - Add only the directly adjacent open-ended `{1,}` branch-local-backreference callable rows needed to publish this exact slice cleanly; replacement-template workflows, broader callback helpers, broader lower bounds like `{2,}`, and deeper nested grouped execution stay explicit gaps or out of scope.
+
+## Completion
+- Added four measured open-ended `{1,}` callable benchmark rows to `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, keeping this slice on the shared nested-group callable manifest while covering the numbered lower-bound and first-match-only workflows plus the named outer-capture and first-match-only workflows for `a((b|c){1,})\\2d` and `a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d`.
+- Updated the shared benchmark expectations and combined benchmark assertions so `nested-group-callable-replacement-boundary` now expects 36 measured workloads and explicitly validates the new open-ended branch-local-backreference rows without reviving a manifest-specific wrapper.
+- Republished `reports/benchmarks/latest.py`; the tracked combined report now shows 533 total workloads, 509 measured `rebar` timings, and 24 explicit known gaps, and the `nested-group-callable-replacement-boundary` manifest now reports 36 measured workloads with 0 gaps.
+- Verified with `./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_benchmark_scorecards.py -q`, `./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -q`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
