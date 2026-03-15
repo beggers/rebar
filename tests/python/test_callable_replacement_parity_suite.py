@@ -81,6 +81,10 @@ PENDING_REBAR_MANIFEST_IDS = frozenset(
 )
 
 
+class CallbackExplosion(RuntimeError):
+    pass
+
+
 def _skip_pending_rebar_callable_parity(
     backend_name: str,
     case: FixtureCase,
@@ -211,6 +215,79 @@ def assert_callable_replacement_match_parity(
 
     assert observed == expected
     assert observed_matches == expected_matches
+
+
+def assert_callable_replacement_exception_parity(
+    *,
+    backend_name: str,
+    backend: object,
+    helper: str,
+    pattern: str,
+    string: str,
+    count: int,
+    group_names: tuple[str, ...] = (),
+    use_compiled_pattern: bool = False,
+) -> None:
+    observed_matches: list[dict[str, object]] = []
+    expected_matches: list[dict[str, object]] = []
+    marker_message = "callable replacement callback exploded"
+    observed_marker = CallbackExplosion(marker_message)
+    expected_marker = CallbackExplosion(marker_message)
+
+    def observed_replacement(match: object) -> str:
+        if backend_name == "rebar":
+            assert type(match) is rebar.Match
+        else:
+            assert type(match) is re.Match
+        observed_matches.append(
+            _callback_match_snapshot(match, group_names=group_names)
+        )
+        raise observed_marker
+
+    def expected_replacement(match: re.Match[str]) -> str:
+        assert type(match) is re.Match
+        expected_matches.append(
+            _callback_match_snapshot(match, group_names=group_names)
+        )
+        raise expected_marker
+
+    with pytest.raises(CallbackExplosion) as observed_error:
+        if use_compiled_pattern:
+            observed_target = backend.compile(pattern)
+            getattr(observed_target, helper)(
+                observed_replacement,
+                string,
+                count=count,
+            )
+        else:
+            getattr(backend, helper)(
+                pattern,
+                observed_replacement,
+                string,
+                count=count,
+            )
+
+    with pytest.raises(CallbackExplosion) as expected_error:
+        if use_compiled_pattern:
+            expected_target = re.compile(pattern)
+            getattr(expected_target, helper)(
+                expected_replacement,
+                string,
+                count=count,
+            )
+        else:
+            getattr(re, helper)(
+                pattern,
+                expected_replacement,
+                string,
+                count=count,
+            )
+
+    assert observed_error.value is observed_marker
+    assert expected_error.value is expected_marker
+    assert observed_error.value.args == expected_error.value.args == (marker_message,)
+    assert observed_matches == expected_matches
+    assert len(observed_matches) == 1
 
 
 def _fixture_bundle(path: pathlib.Path) -> FixtureBundle:
@@ -538,6 +615,29 @@ def test_literal_callable_replacement_callback_match_objects_match_cpython(
     )
 
 
+@pytest.mark.parametrize(
+    ("helper", "count", "use_compiled_pattern"),
+    LITERAL_CALLABLE_PARITY_VARIANTS,
+)
+def test_literal_callable_replacement_callback_exception_matches_cpython(
+    regex_backend: tuple[str, object],
+    helper: str,
+    count: int,
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+
+    assert_callable_replacement_exception_parity(
+        backend_name=backend_name,
+        backend=backend,
+        helper=helper,
+        pattern=_literal_callable_pattern(),
+        string=_literal_callable_string(),
+        count=count,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+
 @pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
 def test_module_callable_replacement_callback_match_objects_match_cpython(
     regex_backend: tuple[str, object],
@@ -558,6 +658,26 @@ def test_module_callable_replacement_callback_match_objects_match_cpython(
     )
 
 
+@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
+def test_module_callable_replacement_callback_exception_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+
+    _skip_pending_rebar_callable_parity(backend_name, case)
+    assert_callable_replacement_exception_parity(
+        backend_name=backend_name,
+        backend=backend,
+        helper=case.helper,
+        pattern=_case_pattern(case),
+        string=_case_string(case),
+        count=_case_count(case),
+        group_names=_case_group_names(case),
+    )
+
+
 @pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
 def test_pattern_callable_replacement_callback_match_objects_match_cpython(
     regex_backend: tuple[str, object],
@@ -568,6 +688,27 @@ def test_pattern_callable_replacement_callback_match_objects_match_cpython(
 
     _skip_pending_rebar_callable_parity(backend_name, case)
     assert_callable_replacement_match_parity(
+        backend_name=backend_name,
+        backend=backend,
+        helper=case.helper,
+        pattern=_case_pattern(case),
+        string=_case_string(case),
+        count=_case_count(case),
+        group_names=_case_group_names(case),
+        use_compiled_pattern=True,
+    )
+
+
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
+def test_pattern_callable_replacement_callback_exception_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+
+    _skip_pending_rebar_callable_parity(backend_name, case)
+    assert_callable_replacement_exception_parity(
         backend_name=backend_name,
         backend=backend,
         helper=case.helper,
