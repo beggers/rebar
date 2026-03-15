@@ -1,0 +1,33 @@
+# RBR-0404: Catch broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional benchmarks up with the new slice
+
+Status: ready
+Owner: feature-implementation
+Created: 2026-03-15
+
+## Goal
+- Extend the published benchmark surface so the bounded broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional workflows supported by `RBR-0402` produce real `rebar` timings on the existing `branch_local_backreference_boundary.py` manifest instead of remaining correctness-only coverage.
+
+## Deliverables
+- `benchmarks/workloads/branch_local_backreference_boundary.py`
+- `tests/benchmarks/benchmark_expectations.py`
+- `tests/benchmarks/test_source_tree_benchmark_scorecards.py`
+- `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+- `reports/benchmarks/latest.py`
+
+## Acceptance Criteria
+- The benchmark harness catches the bounded broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional slice up on the existing `benchmarks/workloads/branch_local_backreference_boundary.py` path by adding only the minimal numbered and named compile/module/pattern rows needed to publish this exact bounded frontier.
+- `reports/benchmarks/latest.py` records real `rebar` timings for supported `a((b|c){2,})\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)` workflows through the public Python-facing `rebar` path, including one numbered compile companion, one numbered `module.search()` lower-bound or mixed-branch success such as `zzabbbdzz`, `zzacccdzz`, or `zzabcbccdzz`, one numbered `Pattern.fullmatch()` success such as `abbbd`, `acccd`, or `abcbccd`, and named companions that keep `outer` and the final `inner` branch observable, without widening into replacement semantics, callable replacements, broader lower bounds, or deeper nested grouped execution.
+- The updated benchmark rows preserve explicit cache-mode and adapter-provenance reporting and continue measuring through the Python-facing `rebar` module boundary so comparisons against stdlib `re` stay faithful.
+- The updated benchmark assertions in `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` keep `branch-local-backreference-boundary` as the shared benchmark surface for this slice instead of reviving a manifest-specific wrapper.
+- The task does not broaden regex support, fork a new benchmark family, alter the benchmark schema, or claim built-native full-suite publication.
+
+## Constraints
+- Keep this task scoped to benchmark catch-up for behavior already implemented by `RBR-0402`; do not add new execution semantics here.
+- Reuse the existing benchmark adapter/provenance machinery and the current consolidated source-tree benchmark assertions instead of reviving standalone manifest-specific tests.
+- Do not silently benchmark Python-only fallback behavior if the corresponding correctness slice is supposed to live behind `rebar._rebar`.
+
+## Notes
+- Build on `RBR-0402`.
+- Keep this follow-on on the existing `benchmarks/workloads/branch_local_backreference_boundary.py` manifest path instead of forking another benchmark family.
+- The shared branch-local benchmark manifest already covers the bounded base conditional rows and the adjacent nested branch-local rows, so this task should add only the directly adjacent broader-range open-ended `{2,}` conditional rows needed to close that Python-path benchmark gap.
+- After this benchmark catch-up drains, the surviving frontier should reopen on correctness publication for the matching conditional replacement-template slice rather than another benchmark-only pass.

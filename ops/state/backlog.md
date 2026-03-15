@@ -1,10 +1,11 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now stays on the bounded broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional slice for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)`; the surviving concrete follow-on is Python-path benchmark catch-up task `RBR-0404` on `benchmarks/workloads/branch_local_backreference_boundary.py`.
+Milestone 2 now stays on the bounded broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional slice for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)`; after `RBR-0404` closes the Python-path benchmark gap on `benchmarks/workloads/branch_local_backreference_boundary.py`, the surviving concrete follow-on is correctness-publication task `RBR-0406` for the same numbered and named pattern pair through replacement-template `sub()` / `subn()` workflows.
 
 ## Ordered Work
-1. `RBR-0404`: catch the numbered and named compile/search/fullmatch benchmark slice for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)` up on `benchmarks/workloads/branch_local_backreference_boundary.py` through the shared combined benchmark assertions once `RBR-0402` lands.
+1. `RBR-0404`: catch the numbered and named compile/search/fullmatch benchmark slice for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)` up on `benchmarks/workloads/branch_local_backreference_boundary.py` through the shared combined benchmark assertions now that `RBR-0402` landed.
+2. `RBR-0406`: publish the numbered and named replacement-template `sub()` / `subn()` correctness slice for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)` through `tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py`, `tests/python/test_open_ended_quantified_group_replacement_template_parity_suite.py`, and the shared combined correctness assertions once `RBR-0404` lands.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

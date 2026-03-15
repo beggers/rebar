@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 917 cases with 917 passing and 0 honest `unimplemented` outcomes, and the main benchmark report now covers 548 workloads with 524 real `rebar` timings, but it still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- Keep the post-parity frontier on Python-path benchmark catch-up task `RBR-0404` for the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional slice on `benchmarks/workloads/branch_local_backreference_boundary.py`.
+- After `RBR-0404` closes the Python-path benchmark gap on `benchmarks/workloads/branch_local_backreference_boundary.py`, reopen the surviving frontier on correctness-publication follow-on `RBR-0406` for the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional replacement-template `sub()` / `subn()` slice.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow, now includes 917 passes plus 0 honest `unim
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Keep the post-parity frontier on Python-path benchmark catch-up task `RBR-0404` for the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional slice on `benchmarks/workloads/branch_local_backreference_boundary.py`.
+- After `RBR-0404` closes the Python-path benchmark gap on `benchmarks/workloads/branch_local_backreference_boundary.py`, reopen the surviving frontier on correctness-publication follow-on `RBR-0406` for the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional replacement-template `sub()` / `subn()` slice.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
