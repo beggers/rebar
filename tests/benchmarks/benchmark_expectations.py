@@ -539,13 +539,6 @@ def manifest_path_for_id(manifest_id: str) -> pathlib.Path:
         raise AssertionError(f"unknown benchmark manifest id {manifest_id!r}") from exc
 
 
-def manifest_document_for_id(manifest_id: str) -> dict[str, Any]:
-    try:
-        return _source_tree_manifest_records()[manifest_id][1]
-    except KeyError as exc:
-        raise AssertionError(f"unknown benchmark manifest id {manifest_id!r}") from exc
-
-
 def relative_manifest_path(path: pathlib.Path) -> str:
     return str(path.relative_to(REPO_ROOT))
 
