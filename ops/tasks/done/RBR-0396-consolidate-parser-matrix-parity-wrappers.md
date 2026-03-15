@@ -1,8 +1,9 @@
 # RBR-0396: Consolidate the parser-matrix parity wrappers into one fixture-backed pytest suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Delete the five remaining legacy parser-matrix parity wrappers by replacing them with one fixture-backed pytest suite tied directly to `tests/conformance/fixtures/parser_matrix.py`, so this compile-only parser surface stops living across repeated `unittest` classes, repeated repo bootstrap code, repeated cache-purge hooks, and repeated file-local CPython parity helpers.
@@ -65,3 +66,13 @@ Created: 2026-03-15
 - The current runtime dashboard is clean and current for `HEAD`, the ready queue is empty, and both tracked and live JSON counts are already zero (`tracked_json_blob_count: 0`, `tracked_json_blob_delta: 0`, `git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), so the next architecture priority is deleting duplicate Python parity plumbing rather than another JSON burn-down task.
 - The five targeted parser wrappers still total 373 lines of repeated repo bootstrap, manual cache management, compile metadata assertions, and direct CPython comparison even though the same bounded surface already lives as ordinary Python data in `tests/conformance/fixtures/parser_matrix.py`.
 - This cleanup should follow the same repo shape as the recent parity consolidations: one fixture-backed pytest suite, one explicit manifest-alignment assertion for the absorbed subset, and no new helper layer unless a generic addition to `tests/python/fixture_parity_support.py` clearly reduces duplication.
+
+## Completion
+- Added `tests/python/test_parser_matrix_parity_suite.py` as one fixture-backed pytest suite that loads the bounded parser subset directly from `tests/conformance/fixtures/parser_matrix.py` and keeps the absorbed manifest ids and case ids pinned in one manifest-alignment assertion.
+- Preserved the compile-only parser coverage inside the shared pytest flow by keeping compile metadata parity, scaffold `Pattern.search(...)` placeholder checks, rebar cache/purge observations, nested-set warning parity plus warning re-emission, compile diagnostic parity, and the rebar no-stdlib-delegation checks for the same bounded parser rows covered by the deleted wrappers.
+- Deleted `tests/python/test_parser_character_class_parity.py`, `tests/python/test_parser_construct_compile_parity.py`, `tests/python/test_parser_diagnostic_parity.py`, `tests/python/test_parser_inline_flag_parity.py`, and `tests/python/test_parser_lookbehind_parity.py`.
+
+## Verification
+- `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_parser_matrix_parity_suite.py`
+- `git diff --name-status -- tests/python/test_parser_character_class_parity.py tests/python/test_parser_construct_compile_parity.py tests/python/test_parser_diagnostic_parity.py tests/python/test_parser_inline_flag_parity.py tests/python/test_parser_lookbehind_parity.py tests/python/test_parser_matrix_parity_suite.py`
+- `rg --files tests/python | rg 'test_parser_(character_class|construct_compile|diagnostic|inline_flag|lookbehind)_parity\\.py$'`
