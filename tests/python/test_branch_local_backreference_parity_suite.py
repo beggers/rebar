@@ -26,6 +26,10 @@ from tests.python.fixture_parity_support import (
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 FIXTURES_DIR = REPO_ROOT / "tests" / "conformance" / "fixtures"
+NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REBAR_SKIP_REASON = (
+    "rebar parity for the broader-range open-ended nested branch-local conditional "
+    "slice remains queued in RBR-0402"
+)
 EXPECTED_PUBLISHED_FIXTURE_NAMES = (
     "branch_local_backreference_workflows.py",
     "quantified_branch_local_backreference_workflows.py",
@@ -36,6 +40,7 @@ EXPECTED_PUBLISHED_FIXTURE_NAMES = (
     "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
     "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
     "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
+    "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
 )
 EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
     sorted(
@@ -57,6 +62,8 @@ class FixtureBundle:
     expected_compile_patterns: frozenset[str]
     expected_operation_helper_counts: Counter[tuple[str, str | None]]
     assert_match_convenience_api: bool = False
+    unsupported_backends: tuple[str, ...] = ()
+    unsupported_backend_reason: str | None = None
 
 
 @dataclass(frozen=True)
@@ -76,6 +83,8 @@ def _fixture_bundle(
     expected_compile_patterns: frozenset[str],
     expected_operation_helper_counts: Counter[tuple[str, str | None]],
     assert_match_convenience_api: bool = False,
+    unsupported_backends: tuple[str, ...] = (),
+    unsupported_backend_reason: str | None = None,
 ) -> FixtureBundle:
     manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
     return FixtureBundle(
@@ -86,6 +95,8 @@ def _fixture_bundle(
         expected_compile_patterns=expected_compile_patterns,
         expected_operation_helper_counts=expected_operation_helper_counts,
         assert_match_convenience_api=assert_match_convenience_api,
+        unsupported_backends=unsupported_backends,
+        unsupported_backend_reason=unsupported_backend_reason,
     )
 
 
@@ -367,9 +378,57 @@ FIXTURE_BUNDLES = (
         ),
         assert_match_convenience_api=True,
     ),
+    _fixture_bundle(
+        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
+        expected_manifest_id="nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows",
+        expected_case_ids=frozenset(
+            {
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-compile-metadata-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-module-search-lower-bound-b-branch-workflow-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-lower-bound-c-branch-workflow-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-mixed-branches-workflow-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-no-match-missing-conditional-d-workflow-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-compile-metadata-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-module-search-lower-bound-c-branch-workflow-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-lower-bound-b-branch-workflow-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-mixed-branches-workflow-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-no-match-below-lower-bound-workflow-str",
+            }
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a((b|c){2,})\2(?(2)d|e)",
+                r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 6,
+            }
+        ),
+        assert_match_convenience_api=True,
+        unsupported_backends=("rebar",),
+        unsupported_backend_reason=(
+            NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REBAR_SKIP_REASON
+        ),
+    ),
 )
 PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
+UNSUPPORTED_BACKENDS_BY_CASE_ID = {
+    case.case_id: bundle.unsupported_backends
+    for bundle in FIXTURE_BUNDLES
+    for case in bundle.cases
+    if bundle.unsupported_backends
+}
+UNSUPPORTED_BACKEND_REASONS_BY_CASE_ID = {
+    case.case_id: bundle.unsupported_backend_reason
+    for bundle in FIXTURE_BUNDLES
+    for case in bundle.cases
+    if bundle.unsupported_backends
+}
 COMPILE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "compile")
 WORKFLOW_CASES = tuple(case for case in PUBLISHED_CASES if case.operation != "compile")
 MATCH_CONVENIENCE_CASE_IDS = frozenset(
@@ -531,6 +590,16 @@ SUPPLEMENTAL_MISS_CASES = (
         text="accccccd",
     ),
 )
+
+
+def _skip_unsupported_backend(case_id: str, backend_name: str) -> None:
+    unsupported_backends = UNSUPPORTED_BACKENDS_BY_CASE_ID.get(case_id, ())
+    if backend_name not in unsupported_backends:
+        return
+    reason = UNSUPPORTED_BACKEND_REASONS_BY_CASE_ID.get(case_id)
+    if reason is None:
+        reason = f"{backend_name} backend unsupported for this branch-local parity case"
+    pytest.skip(reason)
 def _assert_branch_local_match_expand_templates(
     observed: object,
     expected: re.Match[str],
@@ -615,6 +684,7 @@ def test_compile_metadata_matches_cpython(
     case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
+    _skip_unsupported_backend(case.case_id, backend_name)
     compile_with_cpython_parity(
         backend_name,
         backend,
@@ -629,6 +699,7 @@ def test_published_workflows_match_cpython(
     case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
+    _skip_unsupported_backend(case.case_id, backend_name)
     observed, expected = _workflow_result_for_case(backend_name, backend, case)
 
     assert_match_result_parity(backend_name, observed, expected, check_regs=True)

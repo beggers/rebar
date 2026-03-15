@@ -469,6 +469,11 @@ DEFAULT_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
+    / "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
     / "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
     REPO_ROOT
     / "tests"
