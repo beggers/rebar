@@ -28,6 +28,7 @@ EXPECTED_PUBLISHED_FIXTURE_NAMES = (
     "grouped_match_workflows.py",
     "grouped_segment_workflows.py",
     "named_group_workflows.py",
+    "optional_group_alternation_workflows.py",
     "optional_group_workflows.py",
     "nested_group_workflows.py",
 )
@@ -213,6 +214,31 @@ FIXTURE_BUNDLES = (
         ),
     ),
     _fixture_bundle(
+        "optional_group_alternation_workflows.py",
+        selected_case_ids=(
+            "optional-group-alternation-compile-metadata-str",
+            "optional-group-alternation-module-search-present-str",
+            "optional-group-alternation-pattern-fullmatch-absent-str",
+            "named-optional-group-alternation-compile-metadata-str",
+            "named-optional-group-alternation-module-search-present-str",
+            "named-optional-group-alternation-pattern-fullmatch-absent-str",
+        ),
+        expected_manifest_id="optional-group-alternation-workflows",
+        expected_patterns=frozenset(
+            {
+                r"a(b|c)?d",
+                r"a(?P<word>b|c)?d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 2,
+            }
+        ),
+    ),
+    _fixture_bundle(
         "nested_group_workflows.py",
         selected_case_ids=(
             "nested-group-compile-metadata-str",
@@ -321,6 +347,20 @@ SUPPLEMENTAL_MISS_CASES = (
         pattern_misses=("abdd",),
     ),
     SupplementalMissCase(
+        id="numbered-optional-group-alternation-search-and-fullmatch",
+        module_case_id="optional-group-alternation-module-search-present-str",
+        module_misses=("zzaedzz",),
+        pattern_case_id="optional-group-alternation-pattern-fullmatch-absent-str",
+        pattern_misses=("ae",),
+    ),
+    SupplementalMissCase(
+        id="named-optional-group-alternation-search-and-fullmatch",
+        module_case_id="named-optional-group-alternation-module-search-present-str",
+        module_misses=("zzaedzz",),
+        pattern_case_id="named-optional-group-alternation-pattern-fullmatch-absent-str",
+        pattern_misses=("ae",),
+    ),
+    SupplementalMissCase(
         id="numbered-nested-group-search-and-fullmatch",
         module_case_id="nested-group-module-search-str",
         module_misses=("zzz",),
@@ -352,10 +392,22 @@ MATCH_GROUP_ACCESS_CASE_IDS = (
     "systematic-optional-group-numbered-pattern-fullmatch-absent-str",
     "systematic-optional-group-named-module-search-absent-str",
     "systematic-optional-group-named-pattern-fullmatch-absent-str",
+    "optional-group-alternation-module-search-present-str",
+    "optional-group-alternation-pattern-fullmatch-absent-str",
+    "named-optional-group-alternation-module-search-present-str",
+    "named-optional-group-alternation-pattern-fullmatch-absent-str",
     "nested-group-module-search-str",
     "nested-group-pattern-fullmatch-str",
     "named-nested-group-module-search-str",
     "named-nested-group-pattern-fullmatch-str",
+)
+REGS_PARITY_CASE_IDS = frozenset(
+    {
+        "optional-group-alternation-module-search-present-str",
+        "optional-group-alternation-pattern-fullmatch-absent-str",
+        "named-optional-group-alternation-module-search-present-str",
+        "named-optional-group-alternation-pattern-fullmatch-absent-str",
+    }
 )
 
 
@@ -479,7 +531,12 @@ def test_module_helper_matches_cpython(
 
     assert observed is not None
     assert expected is not None
-    assert_match_parity(backend_name, observed, expected)
+    assert_match_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=case.case_id in REGS_PARITY_CASE_IDS,
+    )
 
 
 @pytest.mark.parametrize("case", SUPPLEMENTAL_MISS_CASES, ids=lambda case: case.id)
@@ -514,7 +571,12 @@ def test_pattern_helper_matches_cpython(
 
     assert observed is not None
     assert expected is not None
-    assert_match_parity(backend_name, observed, expected)
+    assert_match_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=case.case_id in REGS_PARITY_CASE_IDS,
+    )
 
 
 @pytest.mark.parametrize("case", MATCH_GROUP_ACCESS_CASES, ids=lambda case: case.case_id)
