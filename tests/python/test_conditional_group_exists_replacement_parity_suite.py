@@ -1,180 +1,278 @@
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass
+import pathlib
 import re
 
 import pytest
-import rebar
+
+from rebar_harness.correctness import FixtureCase, FixtureManifest, load_fixture_manifest
 
 
-REPLACEMENT = "X"
-pytestmark = pytest.mark.skipif(
-    not rebar.native_module_loaded(),
-    reason="conditional group-exists replacement parity requires rebar._rebar",
+REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
+FIXTURES_DIR = REPO_ROOT / "tests" / "conformance" / "fixtures"
+EXPECTED_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("module_call", "sub"): 2,
+        ("module_call", "subn"): 2,
+        ("pattern_call", "sub"): 2,
+        ("pattern_call", "subn"): 2,
+    }
 )
 
 
 @dataclass(frozen=True)
-class ProbeSpec:
-    id: str
-    string: str
-    count: int
-    helpers: tuple[str, ...] = ("sub", "subn")
+class FixtureBundle:
+    manifest: FixtureManifest
+    cases: tuple[FixtureCase, ...]
+    expected_manifest_id: str
+    expected_case_ids: frozenset[str]
+    expected_patterns: frozenset[str]
 
 
-@dataclass(frozen=True)
-class Scenario:
-    id: str
-    numbered_pattern: str
-    named_pattern: str
-    probes: tuple[ProbeSpec, ...]
-
-
-@dataclass(frozen=True)
-class ReplacementCase:
-    id: str
-    pattern: str
-    helper: str
-    string: str
-    count: int
-
-
-SCENARIOS = (
-    Scenario(
-        id="conditional-group-exists-replacement",
-        numbered_pattern=r"a(b)?c(?(1)d|e)",
-        named_pattern=r"a(?P<word>b)?c(?(word)d|e)",
-        probes=(
-            ProbeSpec(id="present", string="zzabcdzz", count=0),
-            ProbeSpec(id="absent", string="zzacezz", count=1),
-        ),
-    ),
-    Scenario(
-        id="conditional-group-exists-no-else-replacement",
-        numbered_pattern=r"a(b)?c(?(1)d)",
-        named_pattern=r"a(?P<word>b)?c(?(word)d)",
-        probes=(
-            ProbeSpec(id="present", string="zzabcdzz", count=0),
-            ProbeSpec(id="absent", string="zzaczz", count=1),
-        ),
-    ),
-    Scenario(
-        id="conditional-group-exists-empty-else-replacement",
-        numbered_pattern=r"a(b)?c(?(1)d|)",
-        named_pattern=r"a(?P<word>b)?c(?(word)d|)",
-        probes=(
-            ProbeSpec(id="present", string="zzabcdzz", count=0),
-            ProbeSpec(id="absent", string="zzaczz", count=1),
-        ),
-    ),
-    Scenario(
-        id="conditional-group-exists-empty-yes-else-replacement",
-        numbered_pattern=r"a(b)?c(?(1)|e)",
-        named_pattern=r"a(?P<word>b)?c(?(word)|e)",
-        probes=(
-            ProbeSpec(id="present", string="zzabczz", count=0),
-            ProbeSpec(id="absent", string="zzacezz", count=1),
-        ),
-    ),
-    Scenario(
-        id="conditional-group-exists-fully-empty-replacement",
-        numbered_pattern=r"a(b)?c(?(1)|)",
-        named_pattern=r"a(?P<word>b)?c(?(word)|)",
-        probes=(
-            ProbeSpec(id="present", string="zzabczz", count=0),
-            ProbeSpec(id="absent", string="zzaczz", count=1),
-        ),
-    ),
-    Scenario(
-        id="conditional-group-exists-alternation-replacement",
-        numbered_pattern=r"a(b)?c(?(1)(de|df)|(eg|eh))",
-        named_pattern=r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
-        probes=(
-            ProbeSpec(id="yes-arm-first", string="zzabcdezz", count=0, helpers=("sub",)),
-            ProbeSpec(id="yes-arm-second", string="zzabcdfzz", count=1, helpers=("subn",)),
-            ProbeSpec(id="no-arm-first", string="zzacegzz", count=0, helpers=("sub",)),
-            ProbeSpec(id="no-arm-second", string="zzacehzz", count=1, helpers=("subn",)),
-        ),
-    ),
-    Scenario(
-        id="conditional-group-exists-nested-replacement",
-        numbered_pattern=r"a(b)?c(?(1)(?(1)d|e)|f)",
-        named_pattern=r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
-        probes=(
-            ProbeSpec(id="present", string="zzabcdzz", count=0, helpers=("sub",)),
-            ProbeSpec(id="absent", string="zzacfzz", count=1, helpers=("subn",)),
-        ),
-    ),
-    Scenario(
-        id="conditional-group-exists-quantified-replacement",
-        numbered_pattern=r"a(b)?c(?(1)d|e){2}",
-        named_pattern=r"a(?P<word>b)?c(?(word)d|e){2}",
-        probes=(
-            ProbeSpec(id="present", string="zzabcddzz", count=0, helpers=("sub",)),
-            ProbeSpec(id="absent", string="zzaceezz", count=1, helpers=("subn",)),
-        ),
-    ),
-)
-
-
-def _build_cases() -> tuple[ReplacementCase, ...]:
-    return tuple(
-        ReplacementCase(
-            id=f"{scenario.id}-{variant}-{probe.id}-{helper}",
-            pattern=pattern,
-            helper=helper,
-            string=probe.string,
-            count=probe.count,
-        )
-        for scenario in SCENARIOS
-        for variant, pattern in (
-            ("numbered", scenario.numbered_pattern),
-            ("named", scenario.named_pattern),
-        )
-        for probe in scenario.probes
-        for helper in probe.helpers
-    )
-
-
-CASES = _build_cases()
-
-
-def _replacement_result(
-    backend: object,
-    case: ReplacementCase,
+def _fixture_bundle(
+    fixture_name: str,
     *,
-    compiled_pattern: bool,
-) -> object:
-    if compiled_pattern:
-        compiled = backend.compile(case.pattern)
-        return getattr(compiled, case.helper)(
-            REPLACEMENT,
-            case.string,
-            count=case.count,
-        )
-
-    return getattr(backend, case.helper)(
-        case.pattern,
-        REPLACEMENT,
-        case.string,
-        count=case.count,
+    expected_manifest_id: str,
+    expected_case_ids: frozenset[str],
+    expected_patterns: frozenset[str],
+) -> FixtureBundle:
+    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
+    return FixtureBundle(
+        manifest=manifest,
+        cases=tuple(cases),
+        expected_manifest_id=expected_manifest_id,
+        expected_case_ids=expected_case_ids,
+        expected_patterns=expected_patterns,
     )
 
 
-@pytest.mark.parametrize("compiled_pattern", (False, True), ids=("module", "pattern"))
-@pytest.mark.parametrize("case", CASES, ids=lambda case: case.id)
-def test_replacement_matches_cpython(
-    case: ReplacementCase,
-    compiled_pattern: bool,
+FIXTURE_BUNDLES = (
+    _fixture_bundle(
+        "conditional_group_exists_replacement_workflows.py",
+        expected_manifest_id="conditional-group-exists-replacement-workflows",
+        expected_case_ids=frozenset(
+            {
+                "module-sub-conditional-group-exists-replacement-present-str",
+                "module-subn-conditional-group-exists-replacement-absent-str",
+                "pattern-sub-conditional-group-exists-replacement-present-str",
+                "pattern-subn-conditional-group-exists-replacement-absent-str",
+                "module-sub-named-conditional-group-exists-replacement-present-str",
+                "module-subn-named-conditional-group-exists-replacement-absent-str",
+                "pattern-sub-named-conditional-group-exists-replacement-present-str",
+                "pattern-subn-named-conditional-group-exists-replacement-absent-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)d|e)",
+                r"a(?P<word>b)?c(?(word)d|e)",
+            }
+        ),
+    ),
+    _fixture_bundle(
+        "conditional_group_exists_no_else_replacement_workflows.py",
+        expected_manifest_id="conditional-group-exists-no-else-replacement-workflows",
+        expected_case_ids=frozenset(
+            {
+                "module-sub-conditional-group-exists-no-else-replacement-present-str",
+                "module-subn-conditional-group-exists-no-else-replacement-absent-str",
+                "pattern-sub-conditional-group-exists-no-else-replacement-present-str",
+                "pattern-subn-conditional-group-exists-no-else-replacement-absent-str",
+                "module-sub-named-conditional-group-exists-no-else-replacement-present-str",
+                "module-subn-named-conditional-group-exists-no-else-replacement-absent-str",
+                "pattern-sub-named-conditional-group-exists-no-else-replacement-present-str",
+                "pattern-subn-named-conditional-group-exists-no-else-replacement-absent-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)d)",
+                r"a(?P<word>b)?c(?(word)d)",
+            }
+        ),
+    ),
+    _fixture_bundle(
+        "conditional_group_exists_empty_else_replacement_workflows.py",
+        expected_manifest_id="conditional-group-exists-empty-else-replacement-workflows",
+        expected_case_ids=frozenset(
+            {
+                "module-sub-conditional-group-exists-empty-else-replacement-present-str",
+                "module-subn-conditional-group-exists-empty-else-replacement-absent-str",
+                "pattern-sub-conditional-group-exists-empty-else-replacement-present-str",
+                "pattern-subn-conditional-group-exists-empty-else-replacement-absent-str",
+                "module-sub-named-conditional-group-exists-empty-else-replacement-present-str",
+                "module-subn-named-conditional-group-exists-empty-else-replacement-absent-str",
+                "pattern-sub-named-conditional-group-exists-empty-else-replacement-present-str",
+                "pattern-subn-named-conditional-group-exists-empty-else-replacement-absent-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)d|)",
+                r"a(?P<word>b)?c(?(word)d|)",
+            }
+        ),
+    ),
+    _fixture_bundle(
+        "conditional_group_exists_empty_yes_else_replacement_workflows.py",
+        expected_manifest_id="conditional-group-exists-empty-yes-else-replacement-workflows",
+        expected_case_ids=frozenset(
+            {
+                "module-sub-conditional-group-exists-empty-yes-else-replacement-present-str",
+                "module-subn-conditional-group-exists-empty-yes-else-replacement-absent-str",
+                "pattern-sub-conditional-group-exists-empty-yes-else-replacement-present-str",
+                "pattern-subn-conditional-group-exists-empty-yes-else-replacement-absent-str",
+                "module-sub-named-conditional-group-exists-empty-yes-else-replacement-present-str",
+                "module-subn-named-conditional-group-exists-empty-yes-else-replacement-absent-str",
+                "pattern-sub-named-conditional-group-exists-empty-yes-else-replacement-present-str",
+                "pattern-subn-named-conditional-group-exists-empty-yes-else-replacement-absent-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)|e)",
+                r"a(?P<word>b)?c(?(word)|e)",
+            }
+        ),
+    ),
+    _fixture_bundle(
+        "conditional_group_exists_fully_empty_replacement_workflows.py",
+        expected_manifest_id="conditional-group-exists-fully-empty-replacement-workflows",
+        expected_case_ids=frozenset(
+            {
+                "module-sub-conditional-group-exists-fully-empty-replacement-present-str",
+                "module-subn-conditional-group-exists-fully-empty-replacement-absent-str",
+                "pattern-sub-conditional-group-exists-fully-empty-replacement-present-str",
+                "pattern-subn-conditional-group-exists-fully-empty-replacement-absent-str",
+                "module-sub-named-conditional-group-exists-fully-empty-replacement-present-str",
+                "module-subn-named-conditional-group-exists-fully-empty-replacement-absent-str",
+                "pattern-sub-named-conditional-group-exists-fully-empty-replacement-present-str",
+                "pattern-subn-named-conditional-group-exists-fully-empty-replacement-absent-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)|)",
+                r"a(?P<word>b)?c(?(word)|)",
+            }
+        ),
+    ),
+    _fixture_bundle(
+        "conditional_group_exists_alternation_replacement_workflows.py",
+        expected_manifest_id="conditional-group-exists-alternation-replacement-workflows",
+        expected_case_ids=frozenset(
+            {
+                "module-sub-conditional-group-exists-alternation-replacement-present-first-arm-str",
+                "module-subn-conditional-group-exists-alternation-replacement-present-second-arm-str",
+                "pattern-sub-conditional-group-exists-alternation-replacement-absent-first-arm-str",
+                "pattern-subn-conditional-group-exists-alternation-replacement-absent-second-arm-str",
+                "module-sub-named-conditional-group-exists-alternation-replacement-present-first-arm-str",
+                "module-subn-named-conditional-group-exists-alternation-replacement-present-second-arm-str",
+                "pattern-sub-named-conditional-group-exists-alternation-replacement-absent-first-arm-str",
+                "pattern-subn-named-conditional-group-exists-alternation-replacement-absent-second-arm-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)(de|df)|(eg|eh))",
+                r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+            }
+        ),
+    ),
+    _fixture_bundle(
+        "conditional_group_exists_nested_replacement_workflows.py",
+        expected_manifest_id="conditional-group-exists-nested-replacement-workflows",
+        expected_case_ids=frozenset(
+            {
+                "module-sub-conditional-group-exists-nested-replacement-present-str",
+                "module-subn-conditional-group-exists-nested-replacement-absent-str",
+                "pattern-sub-conditional-group-exists-nested-replacement-present-str",
+                "pattern-subn-conditional-group-exists-nested-replacement-absent-str",
+                "module-sub-named-conditional-group-exists-nested-replacement-present-str",
+                "module-subn-named-conditional-group-exists-nested-replacement-absent-str",
+                "pattern-sub-named-conditional-group-exists-nested-replacement-present-str",
+                "pattern-subn-named-conditional-group-exists-nested-replacement-absent-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)(?(1)d|e)|f)",
+                r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            }
+        ),
+    ),
+    _fixture_bundle(
+        "conditional_group_exists_quantified_replacement_workflows.py",
+        expected_manifest_id="conditional-group-exists-quantified-replacement-workflows",
+        expected_case_ids=frozenset(
+            {
+                "module-sub-conditional-group-exists-quantified-replacement-present-str",
+                "module-subn-conditional-group-exists-quantified-replacement-absent-str",
+                "pattern-sub-conditional-group-exists-quantified-replacement-present-str",
+                "pattern-subn-conditional-group-exists-quantified-replacement-absent-str",
+                "module-sub-named-conditional-group-exists-quantified-replacement-present-str",
+                "module-subn-named-conditional-group-exists-quantified-replacement-absent-str",
+                "pattern-sub-named-conditional-group-exists-quantified-replacement-present-str",
+                "pattern-subn-named-conditional-group-exists-quantified-replacement-absent-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)d|e){2}",
+                r"a(?P<word>b)?c(?(word)d|e){2}",
+            }
+        ),
+    ),
+)
+
+REPLACEMENT_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
+
+
+def _case_pattern(case: FixtureCase) -> str:
+    pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
+    assert isinstance(pattern, str)
+    return pattern
+
+
+def _run_replacement_case(backend: object, case: FixtureCase) -> object:
+    if case.helper is None:
+        raise ValueError(f"case {case.case_id!r} requires a helper name")
+
+    if case.operation == "module_call":
+        return getattr(backend, case.helper)(*case.args, **case.kwargs)
+
+    if case.operation == "pattern_call":
+        compiled = backend.compile(case.pattern_payload(), case.flags or 0)
+        return getattr(compiled, case.helper)(*case.args, **case.kwargs)
+
+    raise ValueError(f"unsupported replacement parity operation {case.operation!r}")
+
+
+@pytest.mark.parametrize(
+    "bundle",
+    FIXTURE_BUNDLES,
+    ids=lambda bundle: bundle.expected_manifest_id,
+)
+def test_parity_suite_stays_aligned_with_published_correctness_fixture(
+    bundle: FixtureBundle,
 ) -> None:
-    observed = _replacement_result(
-        rebar,
-        case,
-        compiled_pattern=compiled_pattern,
+    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
+    assert len(bundle.cases) == len(bundle.expected_case_ids)
+    assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
+    assert {_case_pattern(case) for case in bundle.cases} == bundle.expected_patterns
+    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
+        EXPECTED_OPERATION_HELPER_COUNTS
     )
-    expected = _replacement_result(
-        re,
-        case,
-        compiled_pattern=compiled_pattern,
-    )
+
+
+@pytest.mark.parametrize("case", REPLACEMENT_CASES, ids=lambda case: case.case_id)
+def test_replacement_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    _, backend = regex_backend
+    observed = _run_replacement_case(backend, case)
+    expected = _run_replacement_case(re, case)
     assert observed == expected

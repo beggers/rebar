@@ -1,6 +1,6 @@
 # RBR-0349: Replace the conditional replacement parity scenario table with published fixtures
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
 
@@ -43,3 +43,8 @@ Created: 2026-03-15
 ## Notes
 - The current suite is only one file, but it still restates all 16 numbered and named replacement patterns already published across the eight conditional replacement fixtures, which is now the wrong side of the repo’s “one parity harness, one source of fixture truth” direction.
 - `tests/python/test_conditional_group_exists_parity_suite.py` is the nearest existing shape to copy: it already shows how this exact regex family can stay fixture-backed while keeping manifest-alignment assertions explicit.
+
+## Completion Notes
+- Reworked `tests/python/test_conditional_group_exists_replacement_parity_suite.py` to load exactly the eight published conditional replacement fixture modules through `load_fixture_manifest(...)` and `FixtureCase`, with one manifest-alignment assertion per fixture covering the manifest id, case-id set, numbered/named pattern set, and shared `sub` / `subn` module-versus-pattern distribution.
+- Removed the file-local `ProbeSpec`, `Scenario`, and `ReplacementCase` tables plus the private native-module gate; replacement parity now runs directly from published fixture cases through the shared `regex_backend` fixture in `tests/python/conftest.py`.
+- Verified with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_replacement_parity_suite.py` (`136 passed`).
