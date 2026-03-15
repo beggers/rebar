@@ -9,7 +9,9 @@ import pytest
 from rebar_harness.correctness import (
     FixtureCase,
     FixtureManifest,
+    OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
     load_fixture_manifest,
+    select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
@@ -17,27 +19,9 @@ from tests.python.fixture_parity_support import (
     assert_match_parity,
     case_pattern,
     compile_with_cpython_parity,
-    select_published_fixture_paths,
 )
-
-
-EXPECTED_PUBLISHED_FIXTURE_NAMES = (
-    "open_ended_quantified_group_alternation_workflows.py",
-    "open_ended_quantified_group_alternation_conditional_workflows.py",
-    "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
-    "broader_range_open_ended_quantified_group_alternation_workflows.py",
-    "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
-    "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
-    "nested_open_ended_quantified_group_alternation_workflows.py",
-)
-EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
-    sorted(
-        (FIXTURES_DIR / fixture_name for fixture_name in EXPECTED_PUBLISHED_FIXTURE_NAMES),
-        key=lambda path: path.name,
-    )
-)
-PUBLISHED_OPEN_ENDED_FIXTURE_PATHS = select_published_fixture_paths(
-    EXPECTED_PUBLISHED_FIXTURE_PATHS
+PUBLISHED_OPEN_ENDED_FIXTURE_PATHS = select_correctness_fixture_paths(
+    OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR
 )
 
 
@@ -199,7 +183,9 @@ PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pat
 
 
 def test_open_ended_quantified_group_suite_uses_expected_published_fixture_paths() -> None:
-    assert PUBLISHED_OPEN_ENDED_FIXTURE_PATHS == EXPECTED_PUBLISHED_FIXTURE_PATHS
+    assert PUBLISHED_OPEN_ENDED_FIXTURE_PATHS == tuple(
+        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
+    )
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
 

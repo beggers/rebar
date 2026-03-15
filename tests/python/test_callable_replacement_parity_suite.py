@@ -8,18 +8,19 @@ import re
 import pytest
 
 from rebar_harness.correctness import (
+    CALLABLE_REPLACEMENT_FIXTURE_SELECTOR,
     CpythonReAdapter,
     FixtureCase,
     FixtureManifest,
     RebarAdapter,
     evaluate_case,
     load_fixture_manifest,
+    select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
     assert_match_convenience_api_parity,
     assert_match_parity,
-    select_published_fixture_paths,
     str_case_pattern,
 )
 
@@ -369,14 +370,8 @@ class FixtureBundle:
         return frozenset(patterns)
 
 
-CALLABLE_FIXTURE_PATHS = tuple(
-    sorted(
-        FIXTURES_DIR.glob("*callable_replacement_workflows.py"),
-        key=lambda path: path.name,
-    )
-)
-PUBLISHED_CALLABLE_FIXTURE_PATHS = select_published_fixture_paths(
-    CALLABLE_FIXTURE_PATHS
+CALLABLE_FIXTURE_PATHS = select_correctness_fixture_paths(
+    CALLABLE_REPLACEMENT_FIXTURE_SELECTOR
 )
 LITERAL_CALLABLE_PARITY_VARIANTS = (
     pytest.param("sub", 0, False, id="literal-module-sub-replace-all"),
@@ -599,7 +594,9 @@ def _live_unimplemented_callable_manifest_ids() -> frozenset[str]:
 
 def test_callable_replacement_suite_discovers_all_published_callable_fixtures() -> None:
     assert CALLABLE_FIXTURE_PATHS
-    assert CALLABLE_FIXTURE_PATHS == PUBLISHED_CALLABLE_FIXTURE_PATHS
+    assert CALLABLE_FIXTURE_PATHS == tuple(
+        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
+    )
 
 
 def test_pending_rebar_callable_manifest_ids_match_live_unimplemented_manifests() -> None:

@@ -10,7 +10,9 @@ import rebar
 from rebar_harness.correctness import (
     FixtureCase,
     FixtureManifest,
+    LITERAL_FLAG_FIXTURE_SELECTOR,
     load_fixture_manifest,
+    select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
@@ -19,7 +21,6 @@ from tests.python.fixture_parity_support import (
     assert_pattern_parity,
     case_pattern,
     compile_with_cpython_parity,
-    select_published_fixture_paths,
 )
 
 
@@ -29,15 +30,8 @@ ASCII_FLAGS = int(rebar.ASCII)
 LOCALE_FLAGS = int(rebar.LOCALE)
 IGNORECASE_UNICODE_FLAGS = IGNORECASE_FLAGS | UNICODE_FLAGS
 
-EXPECTED_PUBLISHED_FIXTURE_NAMES = ("literal_flag_workflows.py",)
-EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
-    sorted(
-        (FIXTURES_DIR / fixture_name for fixture_name in EXPECTED_PUBLISHED_FIXTURE_NAMES),
-        key=lambda path: path.name,
-    )
-)
-PUBLISHED_LITERAL_FLAG_FIXTURE_PATHS = select_published_fixture_paths(
-    EXPECTED_PUBLISHED_FIXTURE_PATHS
+PUBLISHED_LITERAL_FLAG_FIXTURE_PATHS = select_correctness_fixture_paths(
+    LITERAL_FLAG_FIXTURE_SELECTOR
 )
 
 
@@ -413,7 +407,7 @@ FAKE_BOUNDARY_CASES = (
 def test_literal_flag_suite_stays_aligned_with_published_correctness_fixture() -> None:
     bundle = LITERAL_FLAG_FIXTURE_BUNDLE
 
-    assert PUBLISHED_LITERAL_FLAG_FIXTURE_PATHS == EXPECTED_PUBLISHED_FIXTURE_PATHS
+    assert PUBLISHED_LITERAL_FLAG_FIXTURE_PATHS == (bundle.manifest.path,)
     assert bundle.manifest.path == FIXTURES_DIR / "literal_flag_workflows.py"
     assert bundle.manifest.manifest_id == bundle.expected_manifest_id
     assert len(bundle.cases) == len(bundle.expected_case_ids)

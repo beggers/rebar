@@ -10,7 +10,9 @@ import pytest
 from rebar_harness.correctness import (
     FixtureCase,
     FixtureManifest,
+    QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR,
     load_fixture_manifest,
+    select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
@@ -18,29 +20,9 @@ from tests.python.fixture_parity_support import (
     assert_match_parity,
     case_pattern,
     compile_with_cpython_parity,
-    select_published_fixture_paths,
 )
-
-
-EXPECTED_PUBLISHED_FIXTURE_NAMES = (
-    "exact_repeat_quantified_group_alternation_workflows.py",
-    "literal_alternation_workflows.py",
-    "quantified_alternation_workflows.py",
-    "quantified_alternation_backtracking_heavy_workflows.py",
-    "quantified_alternation_broader_range_workflows.py",
-    "quantified_alternation_conditional_workflows.py",
-    "quantified_nested_group_alternation_workflows.py",
-    "quantified_alternation_open_ended_workflows.py",
-    "quantified_alternation_nested_branch_workflows.py",
-)
-EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
-    sorted(
-        (FIXTURES_DIR / fixture_name for fixture_name in EXPECTED_PUBLISHED_FIXTURE_NAMES),
-        key=lambda path: path.name,
-    )
-)
-PUBLISHED_ALTERNATION_FIXTURE_PATHS = select_published_fixture_paths(
-    EXPECTED_PUBLISHED_FIXTURE_PATHS
+PUBLISHED_ALTERNATION_FIXTURE_PATHS = select_correctness_fixture_paths(
+    QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR
 )
 BACKTRACKING_BRANCH_TEXT = {
     "short": "b",
@@ -536,7 +518,9 @@ SUPPLEMENTAL_NO_MATCH_CASES = _build_supplemental_no_match_cases()
 
 
 def test_alternation_parity_suite_uses_expected_published_fixtures() -> None:
-    assert PUBLISHED_ALTERNATION_FIXTURE_PATHS == EXPECTED_PUBLISHED_FIXTURE_PATHS
+    assert PUBLISHED_ALTERNATION_FIXTURE_PATHS == tuple(
+        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
+    )
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
 

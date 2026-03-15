@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass
-import pathlib
 import re
 
 import pytest
@@ -10,32 +9,21 @@ import pytest
 from rebar_harness.correctness import (
     FixtureCase,
     FixtureManifest,
+    SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR,
     load_fixture_manifest,
+    select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
+    FIXTURES_DIR,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
-    select_published_fixture_paths,
     str_case_pattern,
 )
-
-
-FIXTURES_DIR = pathlib.Path(__file__).resolve().parents[1] / "conformance" / "fixtures"
-EXPECTED_PUBLISHED_FIXTURE_NAMES = (
-    "named_backreference_workflows.py",
-    "numbered_backreference_workflows.py",
-)
-EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
-    sorted(
-        (FIXTURES_DIR / fixture_name for fixture_name in EXPECTED_PUBLISHED_FIXTURE_NAMES),
-        key=lambda path: path.name,
-    )
-)
-PUBLISHED_SIMPLE_BACKREFERENCE_FIXTURE_PATHS = select_published_fixture_paths(
-    EXPECTED_PUBLISHED_FIXTURE_PATHS
+PUBLISHED_SIMPLE_BACKREFERENCE_FIXTURE_PATHS = select_correctness_fixture_paths(
+    SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR
 )
 
 
@@ -184,7 +172,9 @@ def _match_for_case(
 
 
 def test_simple_backreference_suite_uses_expected_published_fixture_paths() -> None:
-    assert PUBLISHED_SIMPLE_BACKREFERENCE_FIXTURE_PATHS == EXPECTED_PUBLISHED_FIXTURE_PATHS
+    assert PUBLISHED_SIMPLE_BACKREFERENCE_FIXTURE_PATHS == tuple(
+        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
+    )
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
 

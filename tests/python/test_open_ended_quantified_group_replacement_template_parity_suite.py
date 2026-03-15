@@ -6,29 +6,23 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import FixtureCase, FixtureManifest, load_fixture_manifest
+from rebar_harness.correctness import (
+    FixtureCase,
+    FixtureManifest,
+    OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR,
+    load_fixture_manifest,
+    select_correctness_fixture_paths,
+)
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
     assert_match_convenience_api_parity,
     assert_match_parity,
     case_pattern,
     compile_with_cpython_parity,
-    select_published_fixture_paths,
 )
-
-
-EXPECTED_PUBLISHED_FIXTURE_NAMES = (
-    "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
-    "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
-    "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
+PUBLISHED_FIXTURE_PATHS = select_correctness_fixture_paths(
+    OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR
 )
-EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
-    sorted(
-        (FIXTURES_DIR / fixture_name for fixture_name in EXPECTED_PUBLISHED_FIXTURE_NAMES),
-        key=lambda path: path.name,
-    )
-)
-PUBLISHED_FIXTURE_PATHS = select_published_fixture_paths(EXPECTED_PUBLISHED_FIXTURE_PATHS)
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
         ("module_call", "sub"): 2,
@@ -406,7 +400,9 @@ def _search_match_for_case(
 
 
 def test_replacement_template_parity_suite_uses_expected_published_fixture_paths() -> None:
-    assert PUBLISHED_FIXTURE_PATHS == EXPECTED_PUBLISHED_FIXTURE_PATHS
+    assert PUBLISHED_FIXTURE_PATHS == tuple(
+        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
+    )
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
 

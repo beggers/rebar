@@ -10,7 +10,9 @@ import pytest
 from rebar_harness.correctness import (
     FixtureCase,
     FixtureManifest,
+    WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
     load_fixture_manifest,
+    select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
@@ -18,29 +20,9 @@ from tests.python.fixture_parity_support import (
     assert_match_parity,
     case_pattern,
     compile_with_cpython_parity,
-    select_published_fixture_paths,
 )
-
-
-EXPECTED_PUBLISHED_FIXTURE_NAMES = (
-    "wider_ranged_repeat_quantified_group_workflows.py",
-    "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-    "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-    "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
-    "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-    "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-    "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
-    "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-    "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-)
-EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
-    sorted(
-        (FIXTURES_DIR / fixture_name for fixture_name in EXPECTED_PUBLISHED_FIXTURE_NAMES),
-        key=lambda path: path.name,
-    )
-)
-PUBLISHED_WIDER_RANGED_REPEAT_FIXTURE_PATHS = select_published_fixture_paths(
-    EXPECTED_PUBLISHED_FIXTURE_PATHS
+PUBLISHED_WIDER_RANGED_REPEAT_FIXTURE_PATHS = select_correctness_fixture_paths(
+    WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR
 )
 BROADER_RANGE_BYTES_SKIP_REASON = (
     "rebar does not yet support broader-range wider-ranged-repeat "
@@ -339,7 +321,9 @@ BACKTRACKING_TRACE_CASES = (
 
 
 def test_parity_suite_uses_expected_published_fixture_paths() -> None:
-    assert PUBLISHED_WIDER_RANGED_REPEAT_FIXTURE_PATHS == EXPECTED_PUBLISHED_FIXTURE_PATHS
+    assert PUBLISHED_WIDER_RANGED_REPEAT_FIXTURE_PATHS == tuple(
+        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
+    )
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
 

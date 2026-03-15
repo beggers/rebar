@@ -7,9 +7,11 @@ import re
 import pytest
 
 from rebar_harness.correctness import (
+    BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR,
     FixtureCase,
     FixtureManifest,
     load_fixture_manifest,
+    select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
@@ -19,29 +21,10 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
-    select_published_fixture_paths,
     str_case_pattern,
 )
-EXPECTED_PUBLISHED_FIXTURE_NAMES = (
-    "branch_local_backreference_workflows.py",
-    "quantified_branch_local_backreference_workflows.py",
-    "optional_group_alternation_branch_local_backreference_workflows.py",
-    "conditional_group_exists_branch_local_backreference_workflows.py",
-    "nested_group_alternation_branch_local_backreference_workflows.py",
-    "quantified_alternation_branch_local_backreference_workflows.py",
-    "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
-    "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
-    "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
-    "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
-)
-EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
-    sorted(
-        (FIXTURES_DIR / fixture_name for fixture_name in EXPECTED_PUBLISHED_FIXTURE_NAMES),
-        key=lambda path: path.name,
-    )
-)
-PUBLISHED_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATHS = select_published_fixture_paths(
-    EXPECTED_PUBLISHED_FIXTURE_PATHS
+PUBLISHED_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATHS = select_correctness_fixture_paths(
+    BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR
 )
 
 
@@ -721,7 +704,9 @@ def _workflow_result_for_case(
 
 
 def test_expected_branch_local_backreference_fixtures_remain_published() -> None:
-    assert PUBLISHED_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATHS == EXPECTED_PUBLISHED_FIXTURE_PATHS
+    assert PUBLISHED_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATHS == tuple(
+        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
+    )
 
 
 def test_match_group_access_rows_remain_on_branch_local_fixture_paths() -> None:

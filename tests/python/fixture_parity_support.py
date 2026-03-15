@@ -1,30 +1,15 @@
 from __future__ import annotations
 
-import pathlib
 import re
 
 import rebar
-from rebar_harness.correctness import DEFAULT_FIXTURE_PATHS, FixtureCase
+from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
 
 
-FIXTURES_DIR = pathlib.Path(__file__).resolve().parents[1] / "conformance" / "fixtures"
+FIXTURES_DIR = CORRECTNESS_FIXTURES_ROOT
 
 _MISSING_GROUP_DEFAULT = object()
 _MATCH_ACCESSOR_NAMES = ("group", "span", "start", "end", "getitem")
-
-
-def select_published_fixture_paths(
-    expected_paths: tuple[pathlib.Path, ...],
-) -> tuple[pathlib.Path, ...]:
-    expected_path_set = frozenset(expected_paths)
-    return tuple(
-        sorted(
-            (path for path in DEFAULT_FIXTURE_PATHS if path in expected_path_set),
-            key=lambda path: path.name,
-        )
-    )
-
-
 def case_pattern(case: FixtureCase) -> str | bytes:
     pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
     assert isinstance(pattern, (str, bytes))

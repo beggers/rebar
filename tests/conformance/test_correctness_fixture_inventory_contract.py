@@ -13,6 +13,10 @@ if str(PYTHON_SOURCE) not in sys.path:
     sys.path.append(str(PYTHON_SOURCE))
 
 from rebar_harness.correctness import DEFAULT_FIXTURE_PATHS, load_fixture_manifests
+from rebar_harness.correctness import (
+    PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR,
+    select_correctness_fixture_paths,
+)
 
 
 def _duplicates(counter: Counter[str]) -> list[str]:
@@ -20,21 +24,30 @@ def _duplicates(counter: Counter[str]) -> list[str]:
 
 
 class DefaultCorrectnessFixtureInventoryContractTest(unittest.TestCase):
-    def test_default_fixture_paths_are_unique_and_supported(self) -> None:
-        self.assertEqual(len(DEFAULT_FIXTURE_PATHS), len(set(DEFAULT_FIXTURE_PATHS)))
+    def test_published_full_suite_fixture_selector_is_unique_and_supported(self) -> None:
+        published_fixture_paths = select_correctness_fixture_paths(
+            PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
+        )
 
-        for path in DEFAULT_FIXTURE_PATHS:
+        self.assertEqual(DEFAULT_FIXTURE_PATHS, published_fixture_paths)
+        self.assertEqual(len(published_fixture_paths), 104)
+        self.assertEqual(len(published_fixture_paths), len(set(published_fixture_paths)))
+
+        for path in published_fixture_paths:
             with self.subTest(path=str(path.relative_to(REPO_ROOT))):
                 self.assertTrue(path.is_relative_to(FIXTURES_ROOT))
                 self.assertTrue(path.is_file())
                 self.assertEqual(path.suffix, ".py")
 
     def test_default_fixture_inventory_has_unique_manifest_case_and_suite_ids(self) -> None:
-        manifests, cases = load_fixture_manifests(DEFAULT_FIXTURE_PATHS)
+        published_fixture_paths = select_correctness_fixture_paths(
+            PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
+        )
+        manifests, cases = load_fixture_manifests(published_fixture_paths)
 
         self.assertEqual(
             [manifest.path for manifest in manifests],
-            list(DEFAULT_FIXTURE_PATHS),
+            list(published_fixture_paths),
         )
 
         manifest_counts = Counter(manifest.manifest_id for manifest in manifests)

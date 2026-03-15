@@ -9,7 +9,9 @@ import pytest
 from rebar_harness.correctness import (
     FixtureCase,
     FixtureManifest,
+    GROUPED_CAPTURE_FIXTURE_SELECTOR,
     load_fixture_manifest,
+    select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
@@ -19,29 +21,10 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
-    select_published_fixture_paths,
     str_case_pattern,
 )
-
-
-EXPECTED_PUBLISHED_FIXTURE_NAMES = (
-    "grouped_alternation_workflows.py",
-    "grouped_match_workflows.py",
-    "grouped_segment_workflows.py",
-    "named_group_workflows.py",
-    "nested_group_alternation_workflows.py",
-    "optional_group_alternation_workflows.py",
-    "optional_group_workflows.py",
-    "nested_group_workflows.py",
-)
-EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
-    sorted(
-        (FIXTURES_DIR / fixture_name for fixture_name in EXPECTED_PUBLISHED_FIXTURE_NAMES),
-        key=lambda path: path.name,
-    )
-)
-PUBLISHED_GROUPED_CAPTURE_FIXTURE_PATHS = select_published_fixture_paths(
-    EXPECTED_PUBLISHED_FIXTURE_PATHS
+PUBLISHED_GROUPED_CAPTURE_FIXTURE_PATHS = select_correctness_fixture_paths(
+    GROUPED_CAPTURE_FIXTURE_SELECTOR
 )
 
 
@@ -609,7 +592,9 @@ def _match_for_case(
 
 
 def test_grouped_capture_parity_suite_uses_expected_published_fixture_paths() -> None:
-    assert PUBLISHED_GROUPED_CAPTURE_FIXTURE_PATHS == EXPECTED_PUBLISHED_FIXTURE_PATHS
+    assert PUBLISHED_GROUPED_CAPTURE_FIXTURE_PATHS == tuple(
+        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
+    )
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
 

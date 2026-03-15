@@ -43,7 +43,7 @@ SCORECARD_REPORT = ScorecardReportSpec(
     report_attribute="REPORT",
     scorecard_kind="correctness",
 )
-DEFAULT_FIXTURE_PATHS = (
+_PUBLISHED_FULL_SUITE_FIXTURE_PATHS = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "public_api_surface.py",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "match_behavior_smoke.py",
@@ -488,6 +488,167 @@ DEFAULT_FIXTURE_PATHS = (
     / "conformance"
     / "fixtures"
     / "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
+)
+
+CORRECTNESS_FIXTURES_ROOT = REPO_ROOT / "tests" / "conformance" / "fixtures"
+PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR = "published-full-suite"
+COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR = "counted-repeat-quantified-group"
+QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR = "quantified-alternation"
+BOUNDED_WILDCARD_FIXTURE_SELECTOR = "bounded-wildcard"
+SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR = "simple-backreference"
+CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR = (
+    "conditional-group-exists-replacement"
+)
+GROUPED_CAPTURE_FIXTURE_SELECTOR = "grouped-capture"
+WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR = (
+    "wider-ranged-repeat-quantified-group"
+)
+BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR = "branch-local-backreference"
+LITERAL_FLAG_FIXTURE_SELECTOR = "literal-flag"
+CALLABLE_REPLACEMENT_FIXTURE_SELECTOR = "callable-replacement"
+OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR = (
+    "open-ended-quantified-group-replacement-template"
+)
+OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR = "open-ended-quantified-group"
+
+
+def _sorted_published_fixture_subset(
+    *fixture_filenames: str,
+) -> tuple[pathlib.Path, ...]:
+    expected_filenames = frozenset(fixture_filenames)
+    selected_paths = tuple(
+        sorted(
+            (
+                path
+                for path in _PUBLISHED_FULL_SUITE_FIXTURE_PATHS
+                if path.name in expected_filenames
+            ),
+            key=lambda path: path.name,
+        )
+    )
+    missing_filenames = expected_filenames - {path.name for path in selected_paths}
+    if missing_filenames:
+        raise ValueError(
+            "unknown published correctness fixture filename(s): "
+            f"{sorted(missing_filenames)}"
+        )
+    return selected_paths
+
+
+def _published_callable_replacement_fixture_paths() -> tuple[pathlib.Path, ...]:
+    return tuple(
+        sorted(
+            (
+                path
+                for path in _PUBLISHED_FULL_SUITE_FIXTURE_PATHS
+                if path.name.endswith("_callable_replacement_workflows.py")
+            ),
+            key=lambda path: path.name,
+        )
+    )
+
+
+_CORRECTNESS_FIXTURE_PATHS_BY_SELECTOR = {
+    PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR: _PUBLISHED_FULL_SUITE_FIXTURE_PATHS,
+    COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        "exact_repeat_quantified_group_workflows.py",
+        "ranged_repeat_quantified_group_workflows.py",
+    ),
+    QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        "exact_repeat_quantified_group_alternation_workflows.py",
+        "literal_alternation_workflows.py",
+        "quantified_alternation_workflows.py",
+        "quantified_alternation_backtracking_heavy_workflows.py",
+        "quantified_alternation_broader_range_workflows.py",
+        "quantified_alternation_conditional_workflows.py",
+        "quantified_nested_group_alternation_workflows.py",
+        "quantified_alternation_open_ended_workflows.py",
+        "quantified_alternation_nested_branch_workflows.py",
+    ),
+    BOUNDED_WILDCARD_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        "collection_replacement_workflows.py",
+        "literal_flag_workflows.py",
+    ),
+    SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        "named_backreference_workflows.py",
+        "numbered_backreference_workflows.py",
+    ),
+    CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        "conditional_group_exists_alternation_replacement_workflows.py",
+        "conditional_group_exists_empty_else_replacement_workflows.py",
+        "conditional_group_exists_empty_yes_else_replacement_workflows.py",
+        "conditional_group_exists_fully_empty_replacement_workflows.py",
+        "conditional_group_exists_nested_replacement_workflows.py",
+        "conditional_group_exists_no_else_replacement_workflows.py",
+        "conditional_group_exists_quantified_replacement_workflows.py",
+        "conditional_group_exists_replacement_workflows.py",
+    ),
+    GROUPED_CAPTURE_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        "grouped_alternation_workflows.py",
+        "grouped_match_workflows.py",
+        "grouped_segment_workflows.py",
+        "named_group_workflows.py",
+        "nested_group_alternation_workflows.py",
+        "optional_group_alternation_workflows.py",
+        "optional_group_workflows.py",
+        "nested_group_workflows.py",
+    ),
+    WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        "wider_ranged_repeat_quantified_group_workflows.py",
+        "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+        "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
+        "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+        "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
+        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+    ),
+    BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        "branch_local_backreference_workflows.py",
+        "quantified_branch_local_backreference_workflows.py",
+        "optional_group_alternation_branch_local_backreference_workflows.py",
+        "conditional_group_exists_branch_local_backreference_workflows.py",
+        "nested_group_alternation_branch_local_backreference_workflows.py",
+        "quantified_alternation_branch_local_backreference_workflows.py",
+        "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
+        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
+        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
+        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
+    ),
+    LITERAL_FLAG_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        "literal_flag_workflows.py",
+    ),
+    CALLABLE_REPLACEMENT_FIXTURE_SELECTOR: _published_callable_replacement_fixture_paths(),
+    OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR: (
+        _sorted_published_fixture_subset(
+            "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
+        )
+    ),
+    OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+        "open_ended_quantified_group_alternation_workflows.py",
+        "open_ended_quantified_group_alternation_conditional_workflows.py",
+        "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+        "broader_range_open_ended_quantified_group_alternation_workflows.py",
+        "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
+        "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+        "nested_open_ended_quantified_group_alternation_workflows.py",
+    ),
+}
+
+
+def select_correctness_fixture_paths(selector: str) -> tuple[pathlib.Path, ...]:
+    try:
+        fixture_paths = _CORRECTNESS_FIXTURE_PATHS_BY_SELECTOR[selector]
+    except KeyError as exc:
+        raise ValueError(f"unknown correctness fixture selector {selector!r}") from exc
+    return tuple(CORRECTNESS_FIXTURES_ROOT / path.name for path in fixture_paths)
+
+
+DEFAULT_FIXTURE_PATHS = select_correctness_fixture_paths(
+    PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
 )
 DEFAULT_REPORT_PATH = SCORECARD_REPORT.published_path
 PHASE_BY_LAYER = {

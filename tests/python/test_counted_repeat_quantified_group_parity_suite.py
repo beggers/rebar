@@ -7,31 +7,20 @@ import re
 import pytest
 
 from rebar_harness.correctness import (
+    COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
     FixtureCase,
     FixtureManifest,
     load_fixture_manifest,
+    select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
     assert_match_parity,
     case_pattern,
     compile_with_cpython_parity,
-    select_published_fixture_paths,
 )
-
-
-EXPECTED_PUBLISHED_FIXTURE_NAMES = (
-    "exact_repeat_quantified_group_workflows.py",
-    "ranged_repeat_quantified_group_workflows.py",
-)
-EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
-    sorted(
-        (FIXTURES_DIR / fixture_name for fixture_name in EXPECTED_PUBLISHED_FIXTURE_NAMES),
-        key=lambda path: path.name,
-    )
-)
-PUBLISHED_COUNTED_REPEAT_FIXTURE_PATHS = select_published_fixture_paths(
-    EXPECTED_PUBLISHED_FIXTURE_PATHS
+PUBLISHED_COUNTED_REPEAT_FIXTURE_PATHS = select_correctness_fixture_paths(
+    COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR
 )
 
 
@@ -127,7 +116,9 @@ PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pat
 
 
 def test_counted_repeat_quantified_group_suite_uses_expected_published_fixtures() -> None:
-    assert PUBLISHED_COUNTED_REPEAT_FIXTURE_PATHS == EXPECTED_PUBLISHED_FIXTURE_PATHS
+    assert PUBLISHED_COUNTED_REPEAT_FIXTURE_PATHS == tuple(
+        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
+    )
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
 

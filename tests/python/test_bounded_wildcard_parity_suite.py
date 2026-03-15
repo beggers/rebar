@@ -8,9 +8,11 @@ import pytest
 
 import rebar
 from rebar_harness.correctness import (
+    BOUNDED_WILDCARD_FIXTURE_SELECTOR,
     FixtureCase,
     FixtureManifest,
     load_fixture_manifest,
+    select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
@@ -18,22 +20,9 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     case_pattern,
     compile_with_cpython_parity,
-    select_published_fixture_paths,
 )
-
-
-EXPECTED_PUBLISHED_FIXTURE_NAMES = (
-    "collection_replacement_workflows.py",
-    "literal_flag_workflows.py",
-)
-EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
-    sorted(
-        (FIXTURES_DIR / fixture_name for fixture_name in EXPECTED_PUBLISHED_FIXTURE_NAMES),
-        key=lambda path: path.name,
-    )
-)
-PUBLISHED_BOUNDED_WILDCARD_FIXTURE_PATHS = select_published_fixture_paths(
-    EXPECTED_PUBLISHED_FIXTURE_PATHS
+PUBLISHED_BOUNDED_WILDCARD_FIXTURE_PATHS = select_correctness_fixture_paths(
+    BOUNDED_WILDCARD_FIXTURE_SELECTOR
 )
 
 
@@ -237,7 +226,9 @@ def _assert_finditer_parity(
 
 
 def test_bounded_wildcard_suite_uses_expected_published_fixture_paths() -> None:
-    assert PUBLISHED_BOUNDED_WILDCARD_FIXTURE_PATHS == EXPECTED_PUBLISHED_FIXTURE_PATHS
+    assert PUBLISHED_BOUNDED_WILDCARD_FIXTURE_PATHS == tuple(
+        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
+    )
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
 

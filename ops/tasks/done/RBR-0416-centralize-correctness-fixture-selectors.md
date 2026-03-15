@@ -1,8 +1,9 @@
 # RBR-0416: Centralize correctness fixture selectors in the harness
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Replace the current correctness-fixture inventory path arithmetic with one small shared selector surface in `python/rebar_harness/correctness.py`, so the default scorecard harness and the focused Python parity suites stop hand-maintaining sorted filename tuples, path filtering, and callable-fixture globbing.
@@ -50,3 +51,11 @@ Created: 2026-03-15
 ## Notes
 - This is the correctness-side mirror of `RBR-0413`: benchmarks now have named inventory selectors, but correctness still leaks published fixture membership into a dozen `tests/python` modules through repeated `EXPECTED_PUBLISHED_FIXTURE_NAMES` blocks and one-off filtering.
 - The runtime dashboard is clean and both tracked and live JSON counts are zero (`tracked_json_blob_count: 0`, `tracked_json_blob_delta: 0`, `git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), so this run should seed a post-JSON duplicate-plumbing cleanup rather than another JSON burn-down task.
+
+## Completion
+- 2026-03-15: Added named correctness fixture selectors in `python/rebar_harness/correctness.py`, re-rooted selector results through `CORRECTNESS_FIXTURES_ROOT`, and derived `DEFAULT_FIXTURE_PATHS` from the published full-suite selector while preserving the existing default full-suite ordering.
+- 2026-03-15: Removed published-fixture selection from `tests/python/fixture_parity_support.py`, switched the targeted parity suites to the shared selector API, and replaced the old helper contract with centralized selector coverage plus an unknown-selector failure check.
+
+## Verification
+- 2026-03-15: `PYTHONPATH=python .venv/bin/python -m pytest -q tests/conformance/test_correctness_fixture_inventory_contract.py tests/python/test_fixture_parity_support_contract.py tests/python/test_counted_repeat_quantified_group_parity_suite.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_bounded_wildcard_parity_suite.py tests/python/test_simple_backreference_parity_suite.py tests/python/test_conditional_group_exists_replacement_parity_suite.py tests/python/test_grouped_capture_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_literal_flag_parity_suite.py tests/python/test_callable_replacement_parity_suite.py tests/python/test_open_ended_quantified_group_replacement_template_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py` (`3575 passed, 44 skipped, 1141 subtests passed`)
+- 2026-03-15: `rg -n 'select_published_fixture_paths|EXPECTED_PUBLISHED_FIXTURE_NAMES|glob\("\*callable_replacement_workflows\.py"\)' tests/python python/rebar_harness/correctness.py` (no matches)
