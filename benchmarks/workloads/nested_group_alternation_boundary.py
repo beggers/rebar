@@ -10,13 +10,14 @@ MANIFEST = {'schema_version': 1,
            'the quantified `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d` '
            'lower-bound module.search and repeated-branch Pattern.fullmatch probes, '
            'one exact nested-group branch-local-backreference follow-on for '
-           '`a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d`, and one '
+           '`a((b|c))\\2d` and `a(?P<outer>(?P<inner>b|c))(?P=inner)d`, one '
            'bounded quantified same-branch replay follow-on for `a((b|c)+)\\2d` '
-           'and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d`, plus one broader `{1,4}` '
+           'and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d`, one broader `{1,4}` '
            'counted-repeat follow-on for `a((b|c){1,4})\\2d` and '
-           '`a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d`, while open-ended counted '
-           'repeats, replacement semantics, and deeper nested grouped execution '
-           'stay out of scope.'],
+           '`a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d`, plus one broader-range '
+           'open-ended `{2,}` counted-repeat follow-on for `a((b|c){2,})\\2d` and '
+           '`a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d`, while replacement '
+           'semantics and deeper nested grouped execution stay out of scope.'],
  'defaults': {'warmup_iterations': 2, 'sample_iterations': 5, 'timed_samples': 7},
  'workloads': [{'id': 'module-compile-nested-group-alternation-cold-str',
                 'bucket': 'module-compile',
@@ -585,8 +586,124 @@ MANIFEST = {'schema_version': 1,
                                     'counted-repeats',
                                     'ranged-repeats',
                                     'cache-purge'],
-                'notes': ['Purged-cache Pattern.fullmatch probe for the broader named '
+               'notes': ['Purged-cache Pattern.fullmatch probe for the broader named '
                           '`{1,4}` nested-group alternation branch-local '
                           'backreference upper-bound success path on `acccccd`, so '
                           'the visible `outer` capture plus final `inner` replay stay '
-                          'observable at the four-iteration boundary.']}]}
+                          'observable at the four-iteration boundary.']},
+               {'id': 'module-search-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-lower-bound-b-branch-warm-str',
+                'bucket': 'module-search',
+                'family': 'module',
+                'operation': 'module.search',
+                'pattern': 'a((b|c){2,})\\2d',
+                'haystack': 'zzabbbdzz',
+                'flags': 0,
+                'text_model': 'str',
+                'cache_mode': 'warm',
+                'timing_scope': 'module-helper-call',
+                'categories': ['grouped',
+                               'nested-group',
+                               'alternation',
+                               'numbered-backreference',
+                               'branch-local',
+                               'quantified',
+                               'counted-repeat',
+                               'open-ended-repeat',
+                               'broader-range',
+                               'search',
+                               'module',
+                               'lower-bound',
+                               'b-branch',
+                               'warm-cache'],
+                'syntax_features': ['module-search',
+                                    'grouping-forms',
+                                    'nested-groups',
+                                    'alternation',
+                                    'numbered-backreferences',
+                                    'branch-local-backreferences',
+                                    'quantifiers',
+                                    'counted-repeats'],
+                'notes': ['Warm module.search helper path for the broader-range '
+                          'open-ended `{2,}` numbered nested-group alternation '
+                          'branch-local backreference lower-bound success case on '
+                          '`abbbd`, so the shifted two-repetition floor plus '
+                          'same-branch replay stay visible through the public module '
+                          'helper.']},
+               {'id': 'module-compile-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-warm-str',
+                'bucket': 'module-compile',
+                'family': 'module',
+                'operation': 'module.compile',
+                'pattern': 'a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d',
+                'flags': 0,
+                'text_model': 'str',
+                'cache_mode': 'warm',
+                'timing_scope': 'module-helper-call',
+                'categories': ['compile',
+                               'grouped',
+                               'nested-group',
+                               'alternation',
+                               'named-group',
+                               'named-backreference',
+                               'branch-local',
+                               'quantified',
+                               'counted-repeat',
+                               'open-ended-repeat',
+                               'broader-range',
+                               'warm-cache'],
+                'syntax_features': ['module-compile',
+                                    'grouping-forms',
+                                    'nested-groups',
+                                    'alternation',
+                                    'named-groups',
+                                    'named-backreferences',
+                                    'branch-local-backreferences',
+                                    'quantifiers',
+                                    'counted-repeats'],
+                'notes': ['Warm module.compile path for the broader-range '
+                          'open-ended named `{2,}` nested-group alternation '
+                          'branch-local backreference slice so shifted-floor named '
+                          'counted-repeat compile metadata lands beside the new '
+                          'runtime rows.']},
+               {'id': 'pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-lower-bound-c-branch-purged-str',
+                'bucket': 'pattern-fullmatch',
+                'family': 'module',
+                'operation': 'pattern.fullmatch',
+                'pattern': 'a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d',
+                'haystack': 'acccd',
+                'flags': 0,
+                'text_model': 'str',
+                'cache_mode': 'purged',
+                'timing_scope': 'pattern-helper-call',
+                'categories': ['pattern',
+                               'grouped',
+                               'nested-group',
+                               'alternation',
+                               'named-group',
+                               'named-backreference',
+                               'branch-local',
+                               'quantified',
+                               'counted-repeat',
+                               'open-ended-repeat',
+                               'broader-range',
+                               'fullmatch',
+                               'outer-capture',
+                               'final-inner-capture',
+                               'lower-bound',
+                               'c-branch',
+                               'purged-cache'],
+                'syntax_features': ['pattern-fullmatch',
+                                    'grouping-forms',
+                                    'nested-groups',
+                                    'alternation',
+                                    'named-groups',
+                                    'named-backreferences',
+                                    'branch-local-backreferences',
+                                    'quantifiers',
+                                    'counted-repeats',
+                                    'cache-purge'],
+                'notes': ['Purged-cache Pattern.fullmatch probe for the '
+                          'broader-range open-ended named `{2,}` nested-group '
+                          'alternation branch-local backreference lower-bound '
+                          'success path on `acccd`, so the visible `outer` capture '
+                          'plus final `inner` replay stay observable at the shifted '
+                          'two-repetition floor.']}]}

@@ -1,6 +1,6 @@
 # RBR-0399: Catch broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-15
 
@@ -30,3 +30,9 @@ Created: 2026-03-15
 - Build on `RBR-0397`.
 - Keep this follow-on on the existing `nested_group_alternation_boundary.py` manifest path instead of forking another benchmark family.
 - The shared nested-group alternation benchmark manifest already covers the exact, quantified `+`, and broader `{1,4}` branch-local-backreference rows, so this task should add only the directly adjacent broader-range open-ended `{2,}` measured rows needed to close that Python-path benchmark gap.
+
+## Completion
+- Added the minimal broader-range open-ended `{2,}` branch-local trio on `benchmarks/workloads/nested_group_alternation_boundary.py`: one numbered `module.search()` lower-bound success on `zzabbbdzz`, one named `module.compile()` companion, and one named `Pattern.fullmatch()` lower-bound success on `acccd`.
+- Updated the shared combined benchmark expectations so `nested-group-alternation-boundary` now treats the new `{2,}` rows as a fourth measured branch-local slice distinct from the existing non-quantified, `+`, and `{1,4}` rows.
+- Republished `reports/benchmarks/latest.py`; the tracked combined scorecard now reports `548` total workloads, `524` measured `rebar` timings, and `24` explicit known gaps, while the tracked `nested-group-alternation-boundary` manifest reports `22` workloads with `22` measured rows and `0` gaps.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_alternation_boundary.py --report /tmp/rbr0399-nested-group-alternation.json`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k nested_group_alternation_manifest`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
