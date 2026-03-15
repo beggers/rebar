@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 917 cases with 917 passing and 0 honest `unimplemented` outcomes, and the main benchmark report now covers 554 workloads with 530 real `rebar` timings, but it still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- The surviving ready follow-on is correctness-publication task `RBR-0406` for the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional replacement-template `sub()` / `subn()` slice.
+- After the newly queued correctness-publication task `RBR-0406` drains, the surviving concrete follow-on is parity task `RBR-0408` for the same broader-range open-ended `{2,}` nested-group branch-local-backreference conditional replacement-template `sub()` / `subn()` slice.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow, now includes 917 passes plus 0 honest `unim
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The surviving ready follow-on is correctness-publication task `RBR-0406` for the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional replacement-template `sub()` / `subn()` slice.
+- After the newly queued correctness-publication task `RBR-0406` drains, the surviving concrete follow-on is parity task `RBR-0408` for the same broader-range open-ended `{2,}` nested-group branch-local-backreference conditional replacement-template `sub()` / `subn()` slice.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
