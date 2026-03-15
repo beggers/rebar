@@ -8,6 +8,8 @@ import pytest
 from rebar_harness.correctness import FixtureCase, load_fixture_manifest
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
+    assert_match_convenience_api_parity,
+    assert_match_parity,
     case_pattern,
     compile_with_cpython_parity,
     select_published_fixture_paths,
@@ -48,6 +50,46 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
 COMPILE_PATTERNS = tuple(sorted({case_pattern(case) for case in PUBLISHED_CASES}))
 MODULE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "module_call")
 PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pattern_call")
+
+
+def _case_template_and_string(case: FixtureCase) -> tuple[str, str]:
+    if case.operation == "module_call":
+        template = case.args[1]
+        string = case.args[2]
+    else:
+        template = case.args[0]
+        string = case.args[1]
+
+    assert isinstance(template, str)
+    assert isinstance(string, str)
+    return template, string
+
+
+def _search_match_for_case(
+    backend_name: str,
+    backend: object,
+    case: FixtureCase,
+) -> tuple[object, re.Match[str]]:
+    pattern = case_pattern(case)
+    assert isinstance(pattern, str)
+    _, string = _case_template_and_string(case)
+
+    if case.operation == "module_call":
+        observed = backend.search(pattern, string, case.flags or 0)
+        expected = re.search(pattern, string, case.flags or 0)
+    else:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+            case.flags or 0,
+        )
+        observed = observed_pattern.search(string)
+        expected = expected_pattern.search(string)
+
+    assert expected is not None
+    assert observed is not None
+    return observed, expected
 
 
 def test_parity_suite_stays_aligned_with_published_correctness_fixture() -> None:
@@ -103,4 +145,32 @@ def test_pattern_replacement_matches_cpython(
     observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
     expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
 
+    assert observed == expected
+
+
+@pytest.mark.parametrize("case", PUBLISHED_CASES, ids=lambda case: case.case_id)
+def test_replacement_match_capture_and_expand_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    template, _ = _case_template_and_string(case)
+    observed_match, expected_match = _search_match_for_case(
+        backend_name,
+        backend,
+        case,
+    )
+
+    assert_match_parity(
+        backend_name,
+        observed_match,
+        expected_match,
+        check_regs=True,
+    )
+    assert_match_convenience_api_parity(observed_match, expected_match)
+
+    observed = observed_match.expand(template)
+    expected = expected_match.expand(template)
+
+    assert type(observed) is type(expected)
     assert observed == expected
