@@ -1,8 +1,9 @@
 # RBR-0367: Consolidate the branch-local-backreference parity modules into one fixture-backed pytest suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Replace the seven landed branch-local-backreference parity modules with one backend-parameterized pytest suite so this frontier stops living across repeated fixture loading, repeated `sys.path` setup, repeated compile/workflow/no-match assertions, and two leftover `unittest` classes.
@@ -57,3 +58,11 @@ Created: 2026-03-15
 ## Notes
 - These seven modules total 1,632 lines and currently split one coherent parity frontier across five near-duplicate pytest files plus two older `unittest` classes.
 - `ops/tasks/done/RBR-0337-consolidate-remaining-branch-local-backreference-correctness-scorecards.md` already collapsed the scorecard side of this family onto shared expectations; this task brings the Python parity surface up to the same shape instead of leaving branch-local checks scattered across singleton modules.
+
+## Completion
+- Added `tests/python/test_branch_local_backreference_parity_suite.py`, a single fixture-backed pytest suite that loads the eight published branch-local-backreference manifests through `load_fixture_manifest(...)`, keeps one manifest-alignment assertion per fixture, and routes backend coverage through the shared `regex_backend` fixture instead of repeated bootstrap, cache handling, and `unittest` skips.
+- Preserved the prior parity surface for compile metadata, match metadata, named-group access, and match convenience APIs where the old pytest modules asserted them, while keeping the explicit supplemental miss cases for mismatched replay, cross-branch replay, missing replay, and broader-range overflow paths.
+- Deleted the seven superseded parity modules so the branch-local-backreference Python parity frontier now lives in one shared suite.
+
+## Verification
+- `.venv/bin/python -m pytest tests/python/test_branch_local_backreference_parity_suite.py -q`
