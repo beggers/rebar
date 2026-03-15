@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass
-import pathlib
 import re
 
 import pytest
 
 from rebar_harness.correctness import FixtureCase, FixtureManifest, load_fixture_manifest
 from tests.python.fixture_parity_support import (
+    FIXTURES_DIR,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
@@ -17,10 +17,6 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     str_case_pattern,
 )
-
-
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-FIXTURES_DIR = REPO_ROOT / "tests" / "conformance" / "fixtures"
 QUANTIFIED_ALTERNATION_NUMBERED_PATTERN = r"a(b)?c(?(1)(de|df)|(eg|eh)){2}"
 QUANTIFIED_ALTERNATION_NAMED_PATTERN = (
     r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}"

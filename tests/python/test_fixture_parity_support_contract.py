@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import pathlib
 import re
 
 import pytest
 
 from rebar_harness.correctness import FixtureCase, load_fixture_manifest
 from tests.python.fixture_parity_support import (
+    FIXTURES_DIR,
     _match_api_templates,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -18,10 +18,6 @@ from tests.python.fixture_parity_support import (
     select_published_fixture_paths,
     str_case_pattern,
 )
-
-
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-FIXTURES_DIR = REPO_ROOT / "tests" / "conformance" / "fixtures"
 OPTIONAL_NAMED_GROUP_PATTERN = r"a(?P<word>b)?d"
 BYTES_LITERAL_PATTERN = b"abc"
 

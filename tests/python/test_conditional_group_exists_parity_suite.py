@@ -2,21 +2,17 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass
-import pathlib
 import re
 
 import pytest
 
 from rebar_harness.correctness import FixtureCase, FixtureManifest, load_fixture_manifest
 from tests.python.fixture_parity_support import (
+    FIXTURES_DIR,
     assert_match_parity,
     compile_with_cpython_parity,
     str_case_pattern,
 )
-
-
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-FIXTURES_DIR = REPO_ROOT / "tests" / "conformance" / "fixtures"
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
         ("compile", None): 2,
