@@ -1,6 +1,6 @@
 # RBR-0361: Refactor the grouped-capture parity suite onto the shared fixture-backed pytest path
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
 
@@ -30,3 +30,9 @@ Created: 2026-03-15
 ## Notes
 - `tests/python/test_grouped_capture_parity_suite.py` is now the clearest remaining grouped parity holdout that still duplicates published fixture data in a bespoke local case table instead of consuming the standard manifest path directly.
 - `tests/conformance/fixtures/grouped_match_workflows.py` already carries the bounded `(ab)(c)` multi-capture fullmatch rows that the suite asserts today, while the named, optional, and nested grouped shapes are already published through their dedicated manifests.
+
+## Completion Notes
+- Replaced the file-local `ParityCase` table in `tests/python/test_grouped_capture_parity_suite.py` with four fixture bundles loaded through `load_fixture_manifest(...)` and `FixtureCase` from the grouped, named-group, optional-group, and nested-group manifests named in this task.
+- Kept the suite footprint narrow by selecting only the existing grouped-capture rows it already exercised, including the non-systematic optional-group subset, while deriving compile metadata coverage from the loaded fixture-backed patterns.
+- Preserved the current match-object and convenience-API parity depth and kept the remaining miss-only observations as a small explicit supplement keyed by loaded fixture case ids instead of another pattern/helper frontier table.
+- Verified with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py` (`89 passed`).
