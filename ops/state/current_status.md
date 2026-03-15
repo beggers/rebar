@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 907 cases with no honest gaps in that slice, and the main benchmark report now covers 548 workloads with 524 real `rebar` timings, but it still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- Re-triage the next bounded feature frontier now that the broader-range open-ended `{2,}` nested-group branch-local-backreference slice is caught up on the shared `nested_group_alternation_boundary.py` benchmark path; no ready feature follow-on currently survives.
+- Land surviving parity follow-on `RBR-0402` for the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional slice `a((b|c){2,})\2(?(2)d|e)` / `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow, now passes that bounded slice cleanly, and 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Re-triage the next bounded feature frontier now that the broader-range open-ended `{2,}` nested-group branch-local-backreference slice is caught up on the shared `nested_group_alternation_boundary.py` benchmark path; no ready feature follow-on currently survives.
+- Land surviving parity follow-on `RBR-0402` for the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional slice `a((b|c){2,})\2(?(2)d|e)` / `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
