@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now queues `RBR-0395` to catch the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference callable-replacement slice up on the existing `benchmarks/workloads/nested_group_callable_replacement_boundary.py` path after `RBR-0390` showed the same public-API workflows already passing and stale task `RBR-0392` was retired.
+Milestone 2 now reopens the plain broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference surface through `RBR-0397` on `a((b|c){2,})\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d`; no concrete post-publication feature follow-on currently survives because the shared branch-local parity surface may show the same bounded slice already passing.
 
 ## Ordered Work
-1. Drain `RBR-0395` to add the missing broader-range open-ended `{2,}` numbered and named callable-replacement benchmark rows for `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d` on the shared `nested_group_callable_replacement_boundary.py` manifest.
+1. Let `RBR-0397` publish the bounded compile, `module.search()`, and compiled-`Pattern.fullmatch()` correctness pack for `a((b|c){2,})\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d`, then re-triage whether a Rust-boundary parity task still survives or whether that exact follow-on is stale.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 897 cases with no honest gaps in that slice, and the main benchmark report now covers 545 workloads with 521 real `rebar` timings, but it still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- Seed the next bounded feature follow-on: `RBR-0395` landed the adjacent benchmark catch-up on the shared nested-group callable-replacement manifest, so no ready `feature-implementation` task currently survives.
+- After `RBR-0397` publishes the plain broader-range open-ended `{2,}` nested-group branch-local-backreference pack, no concrete post-publication `feature-implementation` follow-on currently survives because the shared branch-local parity surface may already satisfy the same bounded slice.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -313,7 +313,7 @@ The published slice is still narrow, now passes that bounded slice cleanly, and 
 - Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 100 manifests and 897 cases with 897 passes, 0 explicit failures, and 0 `unimplemented` outcomes in the current published slice, and that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree shim while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
-- A primary benchmark publication: `reports/benchmarks/latest.py` now covers 545 workloads across 30 manifests with 521 real `rebar` timings and 24 explicit known gaps, so the published benchmark surface is still bounded and the next bounded follow-on still needs to be seeded.
+- A primary benchmark publication: `reports/benchmarks/latest.py` now covers 545 workloads across 30 manifests with 521 real `rebar` timings and 24 explicit known gaps, so the published benchmark surface is still bounded and no concrete post-publication feature follow-on currently survives beyond the dispatched `RBR-0397` correctness slice.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.
@@ -329,8 +329,8 @@ The published slice is still narrow, now passes that bounded slice cleanly, and 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Seed the next bounded feature follow-on: `RBR-0395` has already landed the adjacent broader-range open-ended `{2,}` nested-group callable-replacement benchmark rows on the shared `benchmarks/workloads/nested_group_callable_replacement_boundary.py` path, so no ready task currently survives.
+- After `RBR-0397` publishes the plain broader-range open-ended `{2,}` nested-group branch-local-backreference pack, no concrete post-publication feature follow-on currently survives because the shared branch-local parity suite may already satisfy the same bounded numbered and named workflows.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
-- The published benchmark surface still carries 24 explicit known-gap workloads, and no ready feature follow-on currently survives to close the next adjacent gap until planning seeds one.
+- The published benchmark surface still carries 24 explicit known-gap workloads, and no concrete post-publication feature follow-on currently survives beyond `RBR-0397` until planning can confirm whether the adjacent parity step is real work or stale.
