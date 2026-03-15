@@ -127,6 +127,7 @@ class PythonBenchmarkManifestContractTest(unittest.TestCase):
         self.assertEqual(numbered_workload.haystack_payload(), "zzabcbcdzz")
         numbered_replacement = numbered_workload.replacement_payload()
         self.assertTrue(callable(numbered_replacement))
+        self.assertEqual(numbered_replacement.__module__, "rebar_harness.benchmarks")
         self.assertEqual(numbered_replacement.__qualname__, "callable_match_group")
         numbered_match = re.search(
             numbered_workload.pattern_payload(),
@@ -148,6 +149,7 @@ class PythonBenchmarkManifestContractTest(unittest.TestCase):
         self.assertEqual(named_workload.timing_scope, "pattern-helper-call")
         named_replacement = named_workload.replacement_payload()
         self.assertTrue(callable(named_replacement))
+        self.assertEqual(named_replacement.__module__, "rebar_harness.benchmarks")
         self.assertEqual(named_replacement.__qualname__, "callable_match_group")
         named_match = re.search(
             named_workload.pattern_payload(),
@@ -171,6 +173,10 @@ class PythonBenchmarkManifestContractTest(unittest.TestCase):
         self.assertEqual(constant_bytes_workload.haystack_payload(), b"zzabcbcdzz")
         constant_bytes_replacement = constant_bytes_workload.replacement_payload()
         self.assertTrue(callable(constant_bytes_replacement))
+        self.assertEqual(
+            constant_bytes_replacement.__module__,
+            "rebar_harness.benchmarks",
+        )
         self.assertEqual(constant_bytes_replacement.__qualname__, "callable_constant")
         constant_bytes_match = re.search(
             constant_bytes_workload.pattern_payload(),
@@ -189,6 +195,154 @@ class PythonBenchmarkManifestContractTest(unittest.TestCase):
                 },
             },
         )
+
+    def test_python_benchmark_manifest_materializes_nested_constant_bytes_without_aliasing(
+        self,
+    ) -> None:
+        manifest_source = """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "python-benchmark-nested-constant-contract",
+            "defaults": {
+                "warmup_iterations": 2,
+                "sample_iterations": 3,
+                "timed_samples": 4,
+                "text_model": "bytes",
+            },
+            "workloads": [
+                {
+                    "id": "module-sub-callable-nested-constant-contract-bytes",
+                    "bucket": "module-sub",
+                    "family": "module",
+                    "operation": "module.sub",
+                    "pattern": r"(abc)",
+                    "text_model": "bytes",
+                    "replacement": {
+                        "type": "callable_constant",
+                        "value": {
+                            "literal": "literal",
+                            "sequence": [
+                                "inner",
+                                {
+                                    "type": "bytes",
+                                    "value": "XYZ",
+                                    "encoding": "ascii",
+                                },
+                                {"nested": "value"},
+                            ],
+                        },
+                    },
+                    "haystack": "abc",
+                    "categories": ["replacement", "callable", "constant", "bytes"],
+                },
+            ],
+        }
+        """
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            manifest_path = self._write_manifest(
+                pathlib.Path(temp_dir),
+                "python_benchmark_nested_constant_contract.py",
+                manifest_source,
+            )
+            manifest, workloads = load_manifest(manifest_path)
+
+        self.assertEqual(manifest["manifest_id"], "python-benchmark-nested-constant-contract")
+        self.assertEqual([workload.workload_id for workload in workloads], [
+            "module-sub-callable-nested-constant-contract-bytes",
+        ])
+
+        workload = workloads[0]
+        self.assertEqual(workload.text_model, "bytes")
+        self.assertEqual(
+            workload_to_payload(workload)["replacement"],
+            {
+                "type": "callable_constant",
+                "value": {
+                    "literal": "literal",
+                    "sequence": [
+                        "inner",
+                        {
+                            "type": "bytes",
+                            "value": "XYZ",
+                            "encoding": "ascii",
+                        },
+                        {"nested": "value"},
+                    ],
+                },
+            },
+        )
+
+        replacement = workload.replacement_payload()
+        self.assertTrue(callable(replacement))
+        self.assertEqual(replacement.__module__, "rebar_harness.benchmarks")
+        self.assertEqual(replacement.__qualname__, "callable_constant")
+
+        raw_replacement = workload.replacement
+        assert isinstance(raw_replacement, dict)
+        raw_value = raw_replacement["value"]
+        assert isinstance(raw_value, dict)
+        raw_sequence = raw_value["sequence"]
+        assert isinstance(raw_sequence, list)
+        raw_bytes_descriptor = raw_sequence[1]
+        assert isinstance(raw_bytes_descriptor, dict)
+        raw_nested_mapping = raw_sequence[2]
+        assert isinstance(raw_nested_mapping, dict)
+
+        raw_value["literal"] = "mutated"
+        raw_sequence[0] = "changed"
+        raw_bytes_descriptor["value"] = "CHANGED"
+        raw_nested_mapping["nested"] = "changed"
+
+        match = re.search(workload.pattern_payload(), workload.haystack_payload())
+        self.assertIsNotNone(match)
+        self.assertEqual(
+            replacement(match),
+            {
+                "literal": b"literal",
+                "sequence": [
+                    b"inner",
+                    b"XYZ",
+                    {"nested": b"value"},
+                ],
+            },
+        )
+
+    def test_python_benchmark_manifest_replacement_payload_rejects_unsupported_text_model(
+        self,
+    ) -> None:
+        manifest_source = """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "python-benchmark-invalid-text-model-contract",
+            "workloads": [
+                {
+                    "id": "module-sub-callable-invalid-text-model",
+                    "bucket": "module-sub",
+                    "family": "module",
+                    "operation": "module.sub",
+                    "pattern": "abc",
+                    "replacement": {
+                        "type": "callable_constant",
+                        "value": "CONST",
+                    },
+                    "haystack": "abc",
+                    "text_model": "utf-16",
+                },
+            ],
+        }
+        """
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            manifest_path = self._write_manifest(
+                pathlib.Path(temp_dir),
+                "python_benchmark_invalid_text_model_contract.py",
+                manifest_source,
+            )
+            _, workloads = load_manifest(manifest_path)
+
+        with self.assertRaisesRegex(ValueError, r"unsupported text model 'utf-16'"):
+            workloads[0].replacement_payload()
 
     def test_python_benchmark_manifest_rejects_missing_and_non_dict_manifest_values(
         self,
