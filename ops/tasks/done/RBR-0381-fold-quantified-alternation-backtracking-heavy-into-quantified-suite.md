@@ -1,8 +1,9 @@
 # RBR-0381: Fold quantified-alternation backtracking-heavy parity into the existing quantified suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Delete the standalone `tests/python/test_quantified_alternation_backtracking_heavy_parity.py` wrapper by moving its published fixture coverage and bounded supplemental trace checks onto `tests/python/test_quantified_alternation_parity_suite.py`, so the quantified-alternation parity frontier lives on one legible fixture-backed pytest path instead of two near-duplicate modules.
@@ -36,3 +37,13 @@ Created: 2026-03-15
 - `tests/python/test_quantified_alternation_parity_suite.py` already owns the rest of the quantified-alternation family, and `tests/python/test_quantified_alternation_backtracking_heavy_parity.py` is the remaining adjacent holdout still carrying another fixture load, compile helper, and match-parity block for the same family shape.
 - Build on `RBR-0351`, `RBR-0353`, and `RBR-0369`: the fixture-backed suite already exists, the backtracking-heavy file already reads the published manifest, and the next simplification is to delete the extra wrapper rather than keep parallel quantified-alternation parity paths.
 - Both tracked and live JSON blob counts are already zero in the current checkout, so this is the next-priority architecture cleanup: reduce duplicate parity harness structure instead of seeding another JSON-only task.
+
+## Completion
+- Expanded `tests/python/test_quantified_alternation_parity_suite.py` to load `quantified_alternation_backtracking_heavy_workflows.py` through the existing `FixtureBundle` path, keeping the manifest-id, exact case-id, compile-pattern, and operation/helper alignment assertions alongside the already-owned quantified alternation bundles.
+- Folded the standalone module's bounded supplemental coverage into the shared suite by adding exhaustive numbered and named branch-order trace cases for every one- and two-repetition `b`/`bc` ordering on both module `search()` and compiled `Pattern.fullmatch()`, plus the derived zero-repetition and overlap-tail miss paths from the fixture-backed compile patterns.
+- Deleted `tests/python/test_quantified_alternation_backtracking_heavy_parity.py` so the quantified-alternation parity frontier now lives on one shared fixture-backed suite.
+
+## Verification
+- `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py`
+- `rg --files tests/python | rg 'test_quantified_alternation_backtracking_heavy_parity\\.py$'`
+- `git diff --name-status -- tests/python/test_quantified_alternation_parity_suite.py tests/python/test_quantified_alternation_backtracking_heavy_parity.py`

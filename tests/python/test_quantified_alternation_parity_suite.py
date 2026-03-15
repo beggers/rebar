@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass
+from itertools import product
 import re
 
 import pytest
@@ -24,6 +25,7 @@ from tests.python.fixture_parity_support import (
 EXPECTED_PUBLISHED_FIXTURE_NAMES = (
     "exact_repeat_quantified_group_alternation_workflows.py",
     "quantified_alternation_workflows.py",
+    "quantified_alternation_backtracking_heavy_workflows.py",
     "quantified_alternation_broader_range_workflows.py",
     "quantified_alternation_conditional_workflows.py",
     "quantified_alternation_open_ended_workflows.py",
@@ -38,6 +40,12 @@ EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
 PUBLISHED_QUANTIFIED_ALTERNATION_FIXTURE_PATHS = select_published_fixture_paths(
     EXPECTED_PUBLISHED_FIXTURE_PATHS
 )
+BACKTRACKING_BRANCH_TEXT = {
+    "short": "b",
+    "long": "bc",
+}
+ZERO_REPETITION_NO_MATCH_TEXT = "ad"
+OVERLAP_TAIL_NO_MATCH_TEXT = "abccd"
 
 
 @dataclass(frozen=True)
@@ -48,6 +56,22 @@ class FixtureBundle:
     expected_case_ids: frozenset[str]
     expected_patterns: frozenset[str]
     expected_operation_helper_counts: Counter[tuple[str, str | None]]
+
+
+@dataclass(frozen=True)
+class BacktrackingTraceCase:
+    id: str
+    pattern: str
+    search_text: str
+    fullmatch_text: str
+
+
+@dataclass(frozen=True)
+class BacktrackingNoMatchCase:
+    id: str
+    target: str
+    pattern: str
+    text: str
 
 
 def _fixture_bundle(
@@ -125,6 +149,39 @@ FIXTURE_BUNDLES = (
                 ("compile", None): 2,
                 ("module_call", "search"): 2,
                 ("pattern_call", "fullmatch"): 2,
+            }
+        ),
+    ),
+    _fixture_bundle(
+        "quantified_alternation_backtracking_heavy_workflows.py",
+        expected_manifest_id="quantified-alternation-backtracking-heavy-workflows",
+        expected_case_ids=frozenset(
+            {
+                "quantified-alternation-backtracking-heavy-numbered-compile-metadata-str",
+                "quantified-alternation-backtracking-heavy-numbered-module-search-lower-bound-b-branch-str",
+                "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-lower-bound-bc-branch-str",
+                "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-b-then-bc-str",
+                "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-bc-then-b-str",
+                "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-bc-then-bc-str",
+                "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-no-match-str",
+                "quantified-alternation-backtracking-heavy-named-compile-metadata-str",
+                "quantified-alternation-backtracking-heavy-named-module-search-lower-bound-bc-branch-str",
+                "quantified-alternation-backtracking-heavy-named-pattern-fullmatch-second-repetition-b-then-b-str",
+                "quantified-alternation-backtracking-heavy-named-pattern-fullmatch-second-repetition-bc-then-b-str",
+                "quantified-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b|bc){1,2}d",
+                r"a(?P<word>b|bc){1,2}d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 8,
             }
         ),
     ),
@@ -283,6 +340,77 @@ PATTERN_CASES = tuple(
     for case in PUBLISHED_CASES
     if case.operation == "pattern_call"
 )
+BACKTRACKING_HEAVY_BUNDLE = next(
+    bundle
+    for bundle in FIXTURE_BUNDLES
+    if bundle.expected_manifest_id == "quantified-alternation-backtracking-heavy-workflows"
+)
+BACKTRACKING_HEAVY_COMPILE_CASES = tuple(
+    case for case in BACKTRACKING_HEAVY_BUNDLE.cases if case.operation == "compile"
+)
+
+
+def _compile_case_prefix(case: FixtureCase) -> str:
+    suffix = "-compile-metadata-str"
+    assert case.case_id.endswith(suffix)
+    return case.case_id.removesuffix(suffix)
+
+
+def _build_backtracking_trace_cases() -> tuple[BacktrackingTraceCase, ...]:
+    cases: list[BacktrackingTraceCase] = []
+    for case in BACKTRACKING_HEAVY_COMPILE_CASES:
+        pattern = case_pattern(case)
+        assert isinstance(pattern, str)
+        prefix = _compile_case_prefix(case)
+        for repetition_count in range(1, 3):
+            for branch_order in product(("short", "long"), repeat=repetition_count):
+                body = "".join(BACKTRACKING_BRANCH_TEXT[branch] for branch in branch_order)
+                branch_id = "-".join(branch_order)
+                fullmatch_text = f"a{body}d"
+                cases.append(
+                    BacktrackingTraceCase(
+                        id=f"{prefix}-{branch_id}",
+                        pattern=pattern,
+                        search_text=f"zz{fullmatch_text}zz",
+                        fullmatch_text=fullmatch_text,
+                    )
+                )
+    return tuple(cases)
+
+
+def _build_backtracking_no_match_cases() -> tuple[BacktrackingNoMatchCase, ...]:
+    cases: list[BacktrackingNoMatchCase] = []
+    for case in BACKTRACKING_HEAVY_COMPILE_CASES:
+        pattern = case_pattern(case)
+        assert isinstance(pattern, str)
+        prefix = _compile_case_prefix(case)
+        cases.extend(
+            [
+                BacktrackingNoMatchCase(
+                    id=f"{prefix}-module-search-miss-zero-repetition",
+                    target="module",
+                    pattern=pattern,
+                    text=f"zz{ZERO_REPETITION_NO_MATCH_TEXT}zz",
+                ),
+                BacktrackingNoMatchCase(
+                    id=f"{prefix}-module-search-miss-overlap-tail",
+                    target="module",
+                    pattern=pattern,
+                    text=f"zz{OVERLAP_TAIL_NO_MATCH_TEXT}zz",
+                ),
+                BacktrackingNoMatchCase(
+                    id=f"{prefix}-pattern-fullmatch-miss-zero-repetition",
+                    target="pattern",
+                    pattern=pattern,
+                    text=ZERO_REPETITION_NO_MATCH_TEXT,
+                ),
+            ]
+        )
+    return tuple(cases)
+
+
+BACKTRACKING_TRACE_CASES = _build_backtracking_trace_cases()
+BACKTRACKING_NO_MATCH_CASES = _build_backtracking_no_match_cases()
 
 
 def test_quantified_alternation_suite_uses_expected_published_fixtures() -> None:
@@ -399,3 +527,61 @@ def test_pattern_fullmatch_match_convenience_api_matches_cpython(
         return
 
     assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize("case", BACKTRACKING_TRACE_CASES, ids=lambda case: case.id)
+def test_backtracking_heavy_module_search_branch_traces_match_cpython(
+    regex_backend: tuple[str, object],
+    case: BacktrackingTraceCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    observed = backend.search(case.pattern, case.search_text)
+    expected = re.search(case.pattern, case.search_text)
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_parity(backend_name, observed, expected)
+
+
+@pytest.mark.parametrize("case", BACKTRACKING_TRACE_CASES, ids=lambda case: case.id)
+def test_backtracking_heavy_pattern_fullmatch_branch_traces_match_cpython(
+    regex_backend: tuple[str, object],
+    case: BacktrackingTraceCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    observed = observed_pattern.fullmatch(case.fullmatch_text)
+    expected = expected_pattern.fullmatch(case.fullmatch_text)
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_parity(backend_name, observed, expected)
+
+
+@pytest.mark.parametrize("case", BACKTRACKING_NO_MATCH_CASES, ids=lambda case: case.id)
+def test_backtracking_heavy_extra_no_match_paths_match_cpython(
+    regex_backend: tuple[str, object],
+    case: BacktrackingNoMatchCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    if case.target == "module":
+        observed = backend.search(case.pattern, case.text)
+        expected = re.search(case.pattern, case.text)
+    else:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            case.pattern,
+        )
+        observed = observed_pattern.fullmatch(case.text)
+        expected = expected_pattern.fullmatch(case.text)
+
+    assert observed is None
+    assert expected is None
