@@ -22,6 +22,7 @@ from tests.python.fixture_parity_support import (
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 FIXTURES_DIR = REPO_ROOT / "tests" / "conformance" / "fixtures"
 OPTIONAL_NAMED_GROUP_PATTERN = r"a(?P<word>b)?d"
+BYTES_LITERAL_PATTERN = b"abc"
 
 
 def _fixture_cases(fixture_name: str) -> dict[str, FixtureCase]:
@@ -54,6 +55,30 @@ def _optional_named_group_match(
     return (
         backend.fullmatch(OPTIONAL_NAMED_GROUP_PATTERN, text),
         re.fullmatch(OPTIONAL_NAMED_GROUP_PATTERN, text),
+    )
+
+
+def _bytes_literal_search_match(
+    backend_name: str,
+    backend: object,
+    text: bytes,
+    *,
+    use_compiled_pattern: bool,
+) -> tuple[object, re.Match[bytes] | None]:
+    if use_compiled_pattern:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            BYTES_LITERAL_PATTERN,
+        )
+        return (
+            observed_pattern.search(text),
+            expected_pattern.search(text),
+        )
+
+    return (
+        backend.search(BYTES_LITERAL_PATTERN, text),
+        re.search(BYTES_LITERAL_PATTERN, text),
     )
 
 
@@ -159,6 +184,35 @@ def test_match_parity_helpers_cover_match_object_contracts(
 @pytest.mark.parametrize(
     "use_compiled_pattern",
     (
+        pytest.param(False, id="module-search"),
+        pytest.param(True, id="pattern-search"),
+    ),
+)
+def test_match_parity_helpers_cover_bytes_match_object_contracts(
+    regex_backend: tuple[str, object],
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = _bytes_literal_search_match(
+        backend_name,
+        backend,
+        b"zzabczz",
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+    assert observed is not None
+    assert expected is not None
+
+    assert_match_parity(backend_name, observed, expected, check_regs=True)
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+    assert_match_convenience_api_parity(observed, expected)
+    assert_valid_match_group_access_parity(observed, expected)
+    assert_invalid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (
         pytest.param(False, id="module-fullmatch"),
         pytest.param(True, id="pattern-fullmatch"),
     ),
@@ -172,6 +226,30 @@ def test_match_result_parity_accepts_shared_no_match_paths(
         backend_name,
         backend,
         "zz",
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+    assert observed is None
+    assert expected is None
+    assert_match_result_parity(backend_name, observed, expected)
+
+
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (
+        pytest.param(False, id="module-search"),
+        pytest.param(True, id="pattern-search"),
+    ),
+)
+def test_match_result_parity_accepts_shared_bytes_no_match_paths(
+    regex_backend: tuple[str, object],
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = _bytes_literal_search_match(
+        backend_name,
+        backend,
+        b"zzz",
         use_compiled_pattern=use_compiled_pattern,
     )
 
