@@ -1,14 +1,10 @@
 from __future__ import annotations
 
 import pathlib
-import sys
 import unittest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-PYTHON_SOURCE = REPO_ROOT / "python"
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
-if str(PYTHON_SOURCE) not in sys.path:
-    sys.path.append(str(PYTHON_SOURCE))
 
 from tests.benchmarks.benchmark_expectations import (
     representative_measured_workload_ids,

@@ -2,16 +2,10 @@ from __future__ import annotations
 
 import pathlib
 import re
-import sys
 import tempfile
 import textwrap
 import unittest
 
-
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-PYTHON_SOURCE = REPO_ROOT / "python"
-if str(PYTHON_SOURCE) not in sys.path:
-    sys.path.insert(0, str(PYTHON_SOURCE))
 
 from rebar_harness.benchmarks import load_manifest, load_manifests, workload_to_payload
 

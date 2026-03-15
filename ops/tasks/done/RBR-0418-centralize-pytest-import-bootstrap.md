@@ -1,8 +1,9 @@
 # RBR-0418: Centralize pytest import bootstrap under `tests/conftest.py`
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Make one root `tests/conftest.py` the sole pytest-owned import-path bootstrap for the repo, so benchmark, conformance, and the remaining source-tree wrapper tests stop open-coding `sys.path` mutation before importing `rebar_harness` or `rebar`.
@@ -48,3 +49,12 @@ Created: 2026-03-15
 - `tests/python/conftest.py` already acts as the shared pytest bootstrap for the parity suites, but the same repo-path wiring is still duplicated across benchmark and conformance helpers plus a couple remaining python wrapper tests.
 - Current `rg -n "sys\\.path\\.(append|insert)\\(" tests` hits the same bootstrap pattern in `tests/conformance/correctness_expectations.py`, `tests/conformance/test_correctness_fixture_inventory_contract.py`, `tests/conformance/test_python_fixture_manifest_contract.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/native_benchmark_test_support.py`, `tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py`, `tests/benchmarks/test_python_benchmark_manifest_contract.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `tests/python/conftest.py`, `tests/python/test_rust_compile_match_boundary.py`, and `tests/python/test_readme_reporting.py`.
 - This task extends the existing single-owner pytest pattern to the rest of the repo without inventing another registry or helper abstraction.
+
+## Completion
+- 2026-03-15: Added root `tests/conftest.py` as the sole pytest-owned import bootstrap, deriving `REPO_ROOT` / `PYTHON_SOURCE` once and inserting the repo `python/` tree onto `sys.path` for collection.
+- 2026-03-15: Removed file-local `sys.path` mutation from the listed conformance, benchmark, and python test helpers; kept local `PYTHON_SOURCE` constants only in modules that still assemble subprocess `PYTHONPATH` environments.
+- 2026-03-15: Trimmed `tests/python/conftest.py` down to cache-purge and backend-selection fixtures so it no longer owns repo-root bootstrap plumbing.
+
+## Verification
+- 2026-03-15: `rg -n "sys\\.path\\.(append|insert)\\(" tests | rg -v '^tests/conftest.py:'` (no matches)
+- 2026-03-15: `PYTHONPATH=python .venv/bin/python -m pytest -q tests/conformance/test_correctness_fixture_inventory_contract.py tests/conformance/test_python_fixture_manifest_contract.py tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_python_benchmark_manifest_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_adapter_provenance.py tests/benchmarks/test_built_native_benchmark_modes.py tests/python/test_rust_compile_match_boundary.py tests/python/test_readme_reporting.py` (`61 passed, 3 skipped, 2979 subtests passed`)

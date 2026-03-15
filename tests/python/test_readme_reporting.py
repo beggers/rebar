@@ -15,8 +15,6 @@ BENCHMARK_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 LEGACY_BENCHMARK_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
 PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py"
 PYTHON_SOURCE = REPO_ROOT / "python"
-if str(PYTHON_SOURCE) not in sys.path:
-    sys.path.append(str(PYTHON_SOURCE))
 
 from rebar_harness.benchmarks import SCORECARD_REPORT as BENCHMARK_SCORECARD_REPORT
 from rebar_harness.correctness import (

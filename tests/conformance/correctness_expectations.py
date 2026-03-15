@@ -12,8 +12,6 @@ from functools import lru_cache
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYTHON_SOURCE = REPO_ROOT / "python"
-if str(PYTHON_SOURCE) not in sys.path:
-    sys.path.append(str(PYTHON_SOURCE))
 
 from rebar_harness.correctness import (
     DEFAULT_FIXTURE_PATHS,

@@ -2,15 +2,11 @@ from __future__ import annotations
 
 from collections import Counter
 import pathlib
-import sys
 import unittest
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 FIXTURES_ROOT = REPO_ROOT / "tests" / "conformance" / "fixtures"
-PYTHON_SOURCE = REPO_ROOT / "python"
-if str(PYTHON_SOURCE) not in sys.path:
-    sys.path.append(str(PYTHON_SOURCE))
 
 from rebar_harness.correctness import DEFAULT_FIXTURE_PATHS, load_fixture_manifests
 from rebar_harness.correctness import (

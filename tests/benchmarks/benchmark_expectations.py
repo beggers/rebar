@@ -12,8 +12,6 @@ from typing import Any
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYTHON_SOURCE = REPO_ROOT / "python"
-if str(PYTHON_SOURCE) not in sys.path:
-    sys.path.append(str(PYTHON_SOURCE))
 
 from rebar_harness.benchmarks import (
     COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR,

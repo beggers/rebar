@@ -2,14 +2,10 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 import pathlib
-import sys
 import unittest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-PYTHON_SOURCE = REPO_ROOT / "python"
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
-if str(PYTHON_SOURCE) not in sys.path:
-    sys.path.append(str(PYTHON_SOURCE))
 
 from rebar_harness.correctness import (
     CpythonReAdapter,
