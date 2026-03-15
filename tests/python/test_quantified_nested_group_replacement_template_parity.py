@@ -1,31 +1,19 @@
 from __future__ import annotations
 
 from collections import Counter
-import pathlib
 import re
-import sys
 
 import pytest
 
-
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-PYTHON_SOURCE = REPO_ROOT / "python"
-FIXTURE_PATH = (
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "quantified_nested_group_replacement_workflows.py"
+from rebar_harness.correctness import FixtureCase, load_fixture_manifest
+from tests.python.fixture_parity_support import (
+    FIXTURES_DIR,
+    compile_with_cpython_parity,
+    str_case_pattern,
 )
 
-if str(PYTHON_SOURCE) not in sys.path:
-    sys.path.insert(0, str(PYTHON_SOURCE))
 
-
-import rebar
-from rebar_harness.correctness import FixtureCase, load_fixture_manifest
-
-
+FIXTURE_PATH = FIXTURES_DIR / "quantified_nested_group_replacement_workflows.py"
 FIXTURE_MANIFEST, PUBLISHED_CASES = load_fixture_manifest(FIXTURE_PATH)
 EXPECTED_CASE_IDS = {
     "module-sub-template-quantified-nested-group-numbered-lower-bound-str",
@@ -49,33 +37,9 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("pattern_call", "subn"): 2,
     }
 )
-
-
-def _case_pattern(case: FixtureCase) -> str:
-    pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
-    assert isinstance(pattern, str)
-    return pattern
-
-
-COMPILE_PATTERNS = tuple(sorted({_case_pattern(case) for case in PUBLISHED_CASES}))
+COMPILE_PATTERNS = tuple(sorted({str_case_pattern(case) for case in PUBLISHED_CASES}))
 MODULE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "module_call")
 PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pattern_call")
-
-
-def _assert_pattern_parity(
-    backend_name: str,
-    observed: object,
-    expected: re.Pattern[str],
-) -> None:
-    if backend_name == "rebar":
-        assert type(observed) is rebar.Pattern
-    else:
-        assert type(observed) is type(expected)
-
-    assert observed.pattern == expected.pattern
-    assert observed.flags == expected.flags
-    assert observed.groups == expected.groups
-    assert observed.groupindex == expected.groupindex
 
 
 def test_parity_suite_stays_aligned_with_published_correctness_fixture() -> None:
@@ -94,12 +58,7 @@ def test_compile_metadata_matches_cpython(
     pattern: str,
 ) -> None:
     backend_name, backend = regex_backend
-
-    observed = backend.compile(pattern)
-    expected = re.compile(pattern)
-
-    assert observed is backend.compile(pattern)
-    _assert_pattern_parity(backend_name, observed, expected)
+    compile_with_cpython_parity(backend_name, backend, pattern)
 
 
 @pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
@@ -124,9 +83,12 @@ def test_pattern_replacement_matches_cpython(
     backend_name, backend = regex_backend
     assert case.helper is not None
 
-    observed_pattern = backend.compile(case.pattern_payload(), case.flags or 0)
-    expected_pattern = re.compile(case.pattern_payload(), case.flags or 0)
-    _assert_pattern_parity(backend_name, observed_pattern, expected_pattern)
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern_payload(),
+        case.flags or 0,
+    )
 
     observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
     expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
