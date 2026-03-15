@@ -107,6 +107,80 @@ QUANTIFIED_NESTED_GROUP_ALTERNATION_NO_MATCH_CASES = (
         id="pattern-named-subn-no-match-invalid-branch",
     ),
 )
+NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_NEAR_MISS_CASES = (
+    pytest.param(
+        False,
+        r"a((b|c){2,})\2d",
+        "sub",
+        "zzabbdzz",
+        0,
+        "zzabbdzz",
+        id="module-numbered-sub-no-match-missing-replay-broader-range",
+    ),
+    pytest.param(
+        False,
+        r"a((b|c){2,})\2d",
+        "subn",
+        "zzabbdzz",
+        1,
+        ("zzabbdzz", 0),
+        id="module-numbered-subn-no-match-missing-replay-broader-range",
+    ),
+    pytest.param(
+        True,
+        r"a((b|c){2,})\2d",
+        "sub",
+        "zzabbdzz",
+        0,
+        "zzabbdzz",
+        id="pattern-numbered-sub-no-match-missing-replay-broader-range",
+    ),
+    pytest.param(
+        True,
+        r"a((b|c){2,})\2d",
+        "subn",
+        "zzabbdzz",
+        1,
+        ("zzabbdzz", 0),
+        id="pattern-numbered-subn-no-match-missing-replay-broader-range",
+    ),
+    pytest.param(
+        False,
+        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        "sub",
+        "zzabbdzz",
+        0,
+        "zzabbdzz",
+        id="module-named-sub-no-match-missing-replay-broader-range",
+    ),
+    pytest.param(
+        False,
+        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        "subn",
+        "zzabbdzz",
+        1,
+        ("zzabbdzz", 0),
+        id="module-named-subn-no-match-missing-replay-broader-range",
+    ),
+    pytest.param(
+        True,
+        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        "sub",
+        "zzabbdzz",
+        0,
+        "zzabbdzz",
+        id="pattern-named-sub-no-match-missing-replay-broader-range",
+    ),
+    pytest.param(
+        True,
+        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        "subn",
+        "zzabbdzz",
+        1,
+        ("zzabbdzz", 0),
+        id="pattern-named-subn-no-match-missing-replay-broader-range",
+    ),
+)
 
 
 class CallbackExplosion(RuntimeError):
@@ -744,6 +818,54 @@ def test_callable_replacement_no_match_paths_leave_input_unchanged(
     QUANTIFIED_NESTED_GROUP_ALTERNATION_NO_MATCH_CASES,
 )
 def test_quantified_nested_group_alternation_callable_replacement_near_miss_paths_leave_input_unchanged(
+    regex_backend: tuple[str, object],
+    use_compiled_pattern: bool,
+    pattern: str,
+    helper: str,
+    text: str,
+    count: int,
+    expected_result: str | tuple[str, int],
+) -> None:
+    backend_name, backend = regex_backend
+    if backend_name == "rebar" and pattern in PENDING_REBAR_NO_MATCH_PATTERNS:
+        pytest.skip(
+            f"callable replacement parity for pattern {pattern!r} remains queued behind a later Rust-backed parity task"
+        )
+
+    callback_calls: list[object] = []
+
+    def replacement(match: object) -> str:
+        callback_calls.append(match)
+        return "X"
+
+    observed = _invoke_callable_replacement(
+        backend,
+        pattern=pattern,
+        helper=helper,
+        string=text,
+        count=count,
+        replacement=replacement,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+    expected = _invoke_callable_replacement(
+        re,
+        pattern=pattern,
+        helper=helper,
+        string=text,
+        count=count,
+        replacement=replacement,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+    assert observed == expected == expected_result
+    assert callback_calls == []
+
+
+@pytest.mark.parametrize(
+    ("use_compiled_pattern", "pattern", "helper", "text", "count", "expected_result"),
+    NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_NEAR_MISS_CASES,
+)
+def test_nested_broader_range_open_ended_callable_replacement_near_miss_paths_leave_input_unchanged(
     regex_backend: tuple[str, object],
     use_compiled_pattern: bool,
     pattern: str,
