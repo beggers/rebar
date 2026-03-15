@@ -1,6 +1,6 @@
 # RBR-0359: Refactor the open-ended quantified-group parity suite onto the shared fixture-backed pytest path
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
 
@@ -32,3 +32,9 @@ Created: 2026-03-15
 ## Notes
 - Build on `RBR-0263`, which already consolidated this frontier into one pytest suite, and on recent fixture-backed cleanup tasks such as `RBR-0351`, `RBR-0355`, and `RBR-0357`.
 - This cleanup exists because `tests/python/test_open_ended_quantified_group_parity_suite.py` still carries a large local frontier table even though the same bounded open-ended grouped slice is already published through standard correctness fixtures.
+
+## Completion Notes
+- Replaced the file-local `ParityCase` frontier table in `tests/python/test_open_ended_quantified_group_parity_suite.py` with fixture bundles loaded through `load_fixture_manifest(...)` and `FixtureCase` from the seven published open-ended grouped manifests named in this task.
+- Kept the suite as one backend-parameterized pytest module and preserved compile metadata parity plus the existing match-object and convenience-API assertions for fixture-backed `module.search()` and compiled-`Pattern.fullmatch()` rows.
+- Confirmed the current suite footprint is fully represented by the published fixture rows, so no supplemental miss-only table remains.
+- Verified with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py` (`376 passed`).

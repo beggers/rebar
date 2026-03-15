@@ -1,165 +1,245 @@
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass
+import pathlib
 import re
 
 import pytest
 
 import rebar
+from rebar_harness.correctness import (
+    DEFAULT_FIXTURE_PATHS,
+    FixtureCase,
+    FixtureManifest,
+    load_fixture_manifest,
+)
 
 
-_MISSING_GROUP_DEFAULT = object()
+REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
+FIXTURES_DIR = REPO_ROOT / "tests" / "conformance" / "fixtures"
+EXPECTED_PUBLISHED_FIXTURE_NAMES = (
+    "open_ended_quantified_group_alternation_workflows.py",
+    "open_ended_quantified_group_alternation_conditional_workflows.py",
+    "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+    "broader_range_open_ended_quantified_group_alternation_workflows.py",
+    "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
+    "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+    "nested_open_ended_quantified_group_alternation_workflows.py",
+)
+EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
+    sorted(
+        (FIXTURES_DIR / fixture_name for fixture_name in EXPECTED_PUBLISHED_FIXTURE_NAMES),
+        key=lambda path: path.name,
+    )
+)
+PUBLISHED_OPEN_ENDED_FIXTURE_PATHS = tuple(
+    sorted(
+        (
+            path
+            for path in DEFAULT_FIXTURE_PATHS
+            if path in EXPECTED_PUBLISHED_FIXTURE_PATHS
+        ),
+        key=lambda path: path.name,
+    )
+)
+MISSING_GROUP_DEFAULT = object()
 
 
 @dataclass(frozen=True)
-class ParityCase:
-    id: str
-    pattern: str
-    max_group: int
-    group_names: tuple[str, ...] = ()
-    search_matches: tuple[str, ...] = ()
-    search_misses: tuple[str, ...] = ()
-    fullmatch_matches: tuple[str, ...] = ()
-    fullmatch_misses: tuple[str, ...] = ()
+class FixtureBundle:
+    manifest: FixtureManifest
+    cases: tuple[FixtureCase, ...]
+    expected_manifest_id: str
+    expected_patterns: frozenset[str]
+    expected_operation_helper_counts: Counter[tuple[str, str | None]]
 
 
-CASES = (
-    ParityCase(
-        id="open-ended-alternation-numbered",
-        pattern=r"a(bc|de){1,}d",
-        max_group=1,
-        search_matches=("zzabcdzz", "zzadedzz"),
-        fullmatch_matches=("abcbcd", "abcbcded"),
-        fullmatch_misses=("ad", "abed"),
+def _fixture_bundle(
+    fixture_name: str,
+    *,
+    expected_manifest_id: str,
+    expected_patterns: frozenset[str],
+    expected_operation_helper_counts: Counter[tuple[str, str | None]],
+) -> FixtureBundle:
+    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
+    return FixtureBundle(
+        manifest=manifest,
+        cases=tuple(cases),
+        expected_manifest_id=expected_manifest_id,
+        expected_patterns=expected_patterns,
+        expected_operation_helper_counts=expected_operation_helper_counts,
+    )
+
+
+FIXTURE_BUNDLES = (
+    _fixture_bundle(
+        "open_ended_quantified_group_alternation_workflows.py",
+        expected_manifest_id="open-ended-quantified-group-alternation-workflows",
+        expected_patterns=frozenset(
+            {
+                r"a(bc|de){1,}d",
+                r"a(?P<word>bc|de){1,}d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 4,
+                ("pattern_call", "fullmatch"): 10,
+            }
+        ),
     ),
-    ParityCase(
-        id="open-ended-alternation-named",
-        pattern=r"a(?P<word>bc|de){1,}d",
-        max_group=1,
-        group_names=("word",),
-        search_matches=("zzabcdzz", "zzadedzz"),
-        fullmatch_matches=("abcded", "abcbcded", "adededed"),
-        fullmatch_misses=("ad", "abed"),
+    _fixture_bundle(
+        "open_ended_quantified_group_alternation_conditional_workflows.py",
+        expected_manifest_id="open-ended-quantified-group-alternation-conditional-workflows",
+        expected_patterns=frozenset(
+            {
+                r"a((bc|de){1,})?(?(1)d|e)",
+                r"a(?P<outer>(bc|de){1,})?(?(outer)d|e)",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 6,
+                ("pattern_call", "fullmatch"): 5,
+            }
+        ),
     ),
-    ParityCase(
-        id="open-ended-conditional-numbered",
-        pattern=r"a((bc|de){1,})?(?(1)d|e)",
-        max_group=2,
-        search_matches=("zzaezz", "zzabcdzz", "zzadedzz"),
-        fullmatch_matches=("abcded", "abcbcded"),
-        fullmatch_misses=("abcde",),
+    _fixture_bundle(
+        "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+        expected_manifest_id="open-ended-quantified-group-alternation-backtracking-heavy-workflows",
+        expected_patterns=frozenset(
+            {
+                r"a((bc|b)c){1,}d",
+                r"a(?P<word>(bc|b)c){1,}d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 5,
+                ("pattern_call", "fullmatch"): 5,
+            }
+        ),
     ),
-    ParityCase(
-        id="open-ended-conditional-named",
-        pattern=r"a(?P<outer>(bc|de){1,})?(?(outer)d|e)",
-        max_group=2,
-        group_names=("outer",),
-        search_matches=("zzaezz", "zzadedzz", "zzadedededzz"),
-        fullmatch_matches=("abcbcded",),
-        fullmatch_misses=("ad",),
+    _fixture_bundle(
+        "broader_range_open_ended_quantified_group_alternation_workflows.py",
+        expected_manifest_id="broader-range-open-ended-quantified-group-alternation-workflows",
+        expected_patterns=frozenset(
+            {
+                r"a(bc|de){2,}d",
+                r"a(?P<word>bc|de){2,}d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 4,
+                ("pattern_call", "fullmatch"): 10,
+            }
+        ),
     ),
-    ParityCase(
-        id="open-ended-backtracking-numbered",
-        pattern=r"a((bc|b)c){1,}d",
-        max_group=2,
-        search_matches=("zzabcdzz",),
-        fullmatch_matches=("abccd", "abcbcd", "abcbccd"),
-        fullmatch_misses=("abcccd",),
+    _fixture_bundle(
+        "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
+        expected_manifest_id=(
+            "broader-range-open-ended-quantified-group-alternation-conditional-workflows"
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a((bc|de){2,})?(?(1)d|e)",
+                r"a(?P<outer>(bc|de){2,})?(?(outer)d|e)",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 6,
+                ("pattern_call", "fullmatch"): 6,
+            }
+        ),
     ),
-    ParityCase(
-        id="open-ended-backtracking-named",
-        pattern=r"a(?P<word>(bc|b)c){1,}d",
-        max_group=2,
-        group_names=("word",),
-        search_matches=("zzabccdzz", "zzabcbccbcdzz", "zzabccbcdzz"),
-        search_misses=("zzabccbdzz",),
-        fullmatch_matches=("abcbcbcbcd",),
+    _fixture_bundle(
+        "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+        expected_manifest_id=(
+            "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows"
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a((bc|b)c){2,}d",
+                r"a(?P<word>(bc|b)c){2,}d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 6,
+                ("pattern_call", "fullmatch"): 6,
+            }
+        ),
     ),
-    ParityCase(
-        id="broader-range-open-ended-alternation-numbered",
-        pattern=r"a(bc|de){2,}d",
-        max_group=1,
-        search_matches=("zzabcbcdzz", "zzadededzz"),
-        fullmatch_matches=("abcded", "abcbcded", "adededed"),
-        fullmatch_misses=("abcd", "ad"),
-    ),
-    ParityCase(
-        id="broader-range-open-ended-alternation-named",
-        pattern=r"a(?P<word>bc|de){2,}d",
-        max_group=1,
-        group_names=("word",),
-        search_matches=("zzabcbcdzz", "zzadededzz"),
-        fullmatch_matches=("abcded", "abcbcded", "adededed"),
-        fullmatch_misses=("abcd", "ad"),
-    ),
-    ParityCase(
-        id="broader-range-open-ended-conditional-numbered",
-        pattern=r"a((bc|de){2,})?(?(1)d|e)",
-        max_group=2,
-        search_matches=("zzaezz", "zzabcbcdzz", "zzadededzz"),
-        fullmatch_matches=("abcded", "abcbcded"),
-        fullmatch_misses=("abcdede", "abcd"),
-    ),
-    ParityCase(
-        id="broader-range-open-ended-conditional-named",
-        pattern=r"a(?P<outer>(bc|de){2,})?(?(outer)d|e)",
-        max_group=2,
-        group_names=("outer",),
-        search_matches=("zzaezz", "zzadededzz", "zzadedededzz"),
-        fullmatch_matches=("abcbcded",),
-        fullmatch_misses=("ad",),
-    ),
-    ParityCase(
-        id="broader-range-open-ended-backtracking-numbered",
-        pattern=r"a((bc|b)c){2,}d",
-        max_group=2,
-        search_matches=("zzabcbcdzz", "zzabcbccdzz"),
-        fullmatch_matches=("abccbcd", "abcbcbcbcd"),
-        fullmatch_misses=("abcd", "abccbd"),
-    ),
-    ParityCase(
-        id="broader-range-open-ended-backtracking-named",
-        pattern=r"a(?P<word>(bc|b)c){2,}d",
-        max_group=2,
-        group_names=("word",),
-        search_matches=("zzabccbcdzz", "zzabcbcbcbcdzz"),
-        search_misses=("zzabccbdzz",),
-        fullmatch_matches=("abcbccd",),
-        fullmatch_misses=("abcd",),
-    ),
-    ParityCase(
-        id="nested-open-ended-alternation-numbered",
-        pattern=r"a((bc|de){1,})d",
-        max_group=2,
-        search_matches=("zzabcdzz", "zzadedzz"),
-        fullmatch_matches=("abcbcded", "adededed"),
-        fullmatch_misses=("ae", "abcbcdede"),
-    ),
-    ParityCase(
-        id="nested-open-ended-alternation-named",
-        pattern=r"a(?P<outer>(bc|de){1,})d",
-        max_group=2,
-        group_names=("outer",),
-        search_matches=("zzabcdzz", "zzadedzz"),
-        fullmatch_matches=("abcbcded", "adededed"),
-        fullmatch_misses=("ae", "abcbcdede"),
+    _fixture_bundle(
+        "nested_open_ended_quantified_group_alternation_workflows.py",
+        expected_manifest_id="nested-open-ended-quantified-group-alternation-workflows",
+        expected_patterns=frozenset(
+            {
+                r"a((bc|de){1,})d",
+                r"a(?P<outer>(bc|de){1,})d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 4,
+                ("pattern_call", "fullmatch"): 8,
+            }
+        ),
     ),
 )
+PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
+COMPILE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "compile")
+MODULE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "module_call")
+PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pattern_call")
+
+
+def _case_pattern(case: FixtureCase) -> str:
+    pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
+    assert isinstance(pattern, str)
+    return pattern
+
+
+def _compile_with_cpython_parity(
+    backend_name: str,
+    backend: object,
+    pattern: str,
+    flags: int = 0,
+) -> tuple[object, re.Pattern[str]]:
+    observed = backend.compile(pattern, flags)
+    expected = re.compile(pattern, flags)
+
+    assert observed is backend.compile(pattern, flags)
+    _assert_pattern_parity(backend_name, observed, expected)
+    return observed, expected
 
 
 def _match_api_templates(
     *,
-    max_group: int,
+    group_count: int,
     group_names: tuple[str, ...],
 ) -> tuple[str, ...]:
     templates = [r"<\g<0>>"]
-    if max_group >= 1:
+    if group_count >= 1:
         templates.append(
-            "<" + "|".join(f"\\{group_index}" for group_index in range(1, max_group + 1)) + ">"
+            "<"
+            + "|".join(
+                f"\\{group_index}" for group_index in range(1, group_count + 1)
+            )
+            + ">"
         )
         templates.append(
             "<"
-            + "|".join(f"\\g<{group_index}>" for group_index in range(max_group + 1))
+            + "|".join(f"\\g<{group_index}>" for group_index in range(group_count + 1))
             + ">"
         )
     for group_name in group_names:
@@ -167,34 +247,48 @@ def _match_api_templates(
     return tuple(templates)
 
 
+def _assert_pattern_parity(
+    backend_name: str,
+    observed: object,
+    expected: re.Pattern[str],
+) -> None:
+    if backend_name == "rebar":
+        assert type(observed) is rebar.Pattern
+    else:
+        assert type(observed) is type(expected)
+
+    assert observed.pattern == expected.pattern
+    assert observed.flags == expected.flags
+    assert observed.groups == expected.groups
+    assert observed.groupindex == expected.groupindex
+
+
 def _assert_match_parity(
     backend_name: str,
     observed: object,
     expected: re.Match[str],
-    *,
-    max_group: int,
-    group_names: tuple[str, ...],
 ) -> None:
     if backend_name == "rebar":
         assert type(observed) is rebar.Match
     else:
         assert type(observed) is type(expected)
 
-    group_indexes = tuple(range(max_group + 1))
+    group_indexes = tuple(range(expected.re.groups + 1))
+    group_names = tuple(expected.re.groupindex)
 
     assert observed.group(0) == expected.group(0)
     assert observed.group(*group_indexes) == expected.group(*group_indexes)
-    for group_index in range(1, max_group + 1):
+    for group_index in range(1, expected.re.groups + 1):
         assert observed.group(group_index) == expected.group(group_index)
         assert observed.span(group_index) == expected.span(group_index)
         assert observed.start(group_index) == expected.start(group_index)
         assert observed.end(group_index) == expected.end(group_index)
 
     assert observed.groups() == expected.groups()
-    assert observed.groups(_MISSING_GROUP_DEFAULT) == expected.groups(_MISSING_GROUP_DEFAULT)
+    assert observed.groups(MISSING_GROUP_DEFAULT) == expected.groups(MISSING_GROUP_DEFAULT)
     assert observed.groupdict() == expected.groupdict()
-    assert observed.groupdict(_MISSING_GROUP_DEFAULT) == expected.groupdict(
-        _MISSING_GROUP_DEFAULT
+    assert observed.groupdict(MISSING_GROUP_DEFAULT) == expected.groupdict(
+        MISSING_GROUP_DEFAULT
     )
     assert observed.string == expected.string
     assert observed.pos == expected.pos
@@ -204,10 +298,7 @@ def _assert_match_parity(
     assert observed.end() == expected.end()
     assert observed.lastindex == expected.lastindex
     assert observed.lastgroup == expected.lastgroup
-    assert observed.re.pattern == expected.re.pattern
-    assert observed.re.flags == expected.re.flags
-    assert observed.re.groups == expected.re.groups
-    assert observed.re.groupindex == expected.re.groupindex
+    _assert_pattern_parity(backend_name, observed.re, expected.re)
 
     for group_name in group_names:
         assert observed.group(group_name) == expected.group(group_name)
@@ -219,133 +310,135 @@ def _assert_match_parity(
 def _assert_match_convenience_api_parity(
     observed: object,
     expected: re.Match[str],
-    *,
-    max_group: int,
-    group_names: tuple[str, ...],
 ) -> None:
-    for group_index in range(max_group + 1):
+    group_names = tuple(expected.re.groupindex)
+
+    for group_index in range(expected.re.groups + 1):
         assert observed[group_index] == expected[group_index]
 
     for group_name in group_names:
         assert observed[group_name] == expected[group_name]
 
     for template in _match_api_templates(
-        max_group=max_group,
+        group_count=expected.re.groups,
         group_names=group_names,
     ):
         assert observed.expand(template) == expected.expand(template)
 
 
-@pytest.mark.parametrize("case", CASES, ids=lambda case: case.id)
+def test_open_ended_quantified_group_suite_uses_expected_published_fixture_paths() -> None:
+    assert PUBLISHED_OPEN_ENDED_FIXTURE_PATHS == EXPECTED_PUBLISHED_FIXTURE_PATHS
+    assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
+
+
+@pytest.mark.parametrize(
+    "bundle",
+    FIXTURE_BUNDLES,
+    ids=lambda bundle: bundle.expected_manifest_id,
+)
+def test_parity_suite_stays_aligned_with_published_correctness_fixture(
+    bundle: FixtureBundle,
+) -> None:
+    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
+    assert len(bundle.cases) == sum(bundle.expected_operation_helper_counts.values())
+    assert {_case_pattern(case) for case in bundle.cases} == bundle.expected_patterns
+    assert {case.text_model for case in bundle.cases} == {"str"}
+    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
+        bundle.expected_operation_helper_counts
+    )
+
+
+@pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
-    case: ParityCase,
+    case: FixtureCase,
 ) -> None:
-    _, backend = regex_backend
+    backend_name, backend = regex_backend
+    pattern = case.pattern_payload()
+    assert isinstance(pattern, str)
 
-    observed = backend.compile(case.pattern)
-    expected = re.compile(case.pattern)
-
-    assert observed is backend.compile(case.pattern)
-    assert observed.pattern == expected.pattern
-    assert observed.flags == expected.flags
-    assert observed.groups == expected.groups
-    assert observed.groupindex == expected.groupindex
+    _compile_with_cpython_parity(backend_name, backend, pattern, case.flags or 0)
 
 
-@pytest.mark.parametrize("case", CASES, ids=lambda case: case.id)
+@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
 def test_module_search_matches_cpython(
     regex_backend: tuple[str, object],
-    case: ParityCase,
+    case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
+    assert case.helper == "search"
 
-    for text in case.search_matches:
-        observed = backend.search(case.pattern, text)
-        expected = re.search(case.pattern, text)
+    observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
+    expected = getattr(re, case.helper)(*case.args, **case.kwargs)
 
-        assert observed is not None
-        assert expected is not None
-        _assert_match_parity(
-            backend_name,
-            observed,
-            expected,
-            max_group=case.max_group,
-            group_names=case.group_names,
-        )
+    assert (observed is None) == (expected is None)
+    if expected is None:
+        return
 
-    for text in case.search_misses:
-        assert backend.search(case.pattern, text) is None
-        assert re.search(case.pattern, text) is None
+    _assert_match_parity(backend_name, observed, expected)
 
 
-@pytest.mark.parametrize("case", CASES, ids=lambda case: case.id)
+@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
 def test_module_search_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
-    case: ParityCase,
+    case: FixtureCase,
 ) -> None:
     _, backend = regex_backend
+    assert case.helper == "search"
 
-    for text in case.search_matches:
-        observed = backend.search(case.pattern, text)
-        expected = re.search(case.pattern, text)
+    observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
+    expected = getattr(re, case.helper)(*case.args, **case.kwargs)
 
-        assert observed is not None
-        assert expected is not None
-        _assert_match_convenience_api_parity(
-            observed,
-            expected,
-            max_group=case.max_group,
-            group_names=case.group_names,
-        )
+    assert (observed is None) == (expected is None)
+    if expected is None:
+        return
+
+    _assert_match_convenience_api_parity(observed, expected)
 
 
-@pytest.mark.parametrize("case", CASES, ids=lambda case: case.id)
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
 def test_pattern_fullmatch_matches_cpython(
     regex_backend: tuple[str, object],
-    case: ParityCase,
+    case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
-    observed_pattern = backend.compile(case.pattern)
-    expected_pattern = re.compile(case.pattern)
+    assert case.helper == "fullmatch"
 
-    for text in case.fullmatch_matches:
-        observed = observed_pattern.fullmatch(text)
-        expected = expected_pattern.fullmatch(text)
+    observed_pattern, expected_pattern = _compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern_payload(),
+        case.flags or 0,
+    )
+    observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
+    expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
 
-        assert observed is not None
-        assert expected is not None
-        _assert_match_parity(
-            backend_name,
-            observed,
-            expected,
-            max_group=case.max_group,
-            group_names=case.group_names,
-        )
+    assert (observed is None) == (expected is None)
+    if expected is None:
+        return
 
-    for text in case.fullmatch_misses:
-        assert observed_pattern.fullmatch(text) is None
-        assert expected_pattern.fullmatch(text) is None
+    _assert_match_parity(backend_name, observed, expected)
 
 
-@pytest.mark.parametrize("case", CASES, ids=lambda case: case.id)
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
 def test_pattern_fullmatch_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
-    case: ParityCase,
+    case: FixtureCase,
 ) -> None:
-    _, backend = regex_backend
-    observed_pattern = backend.compile(case.pattern)
-    expected_pattern = re.compile(case.pattern)
+    backend_name, backend = regex_backend
+    assert case.helper == "fullmatch"
 
-    for text in case.fullmatch_matches:
-        observed = observed_pattern.fullmatch(text)
-        expected = expected_pattern.fullmatch(text)
+    observed_pattern, expected_pattern = _compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern_payload(),
+        case.flags or 0,
+    )
+    observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
+    expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
 
-        assert observed is not None
-        assert expected is not None
-        _assert_match_convenience_api_parity(
-            observed,
-            expected,
-            max_group=case.max_group,
-            group_names=case.group_names,
-        )
+    assert (observed is None) == (expected is None)
+    if expected is None:
+        return
+
+    _assert_match_convenience_api_parity(observed, expected)
