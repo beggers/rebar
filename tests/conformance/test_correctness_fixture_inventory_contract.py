@@ -26,7 +26,7 @@ class DefaultCorrectnessFixtureInventoryContractTest(unittest.TestCase):
         )
 
         self.assertEqual(DEFAULT_FIXTURE_PATHS, published_fixture_paths)
-        self.assertEqual(len(published_fixture_paths), 104)
+        self.assertEqual(len(published_fixture_paths), 105)
         self.assertEqual(len(published_fixture_paths), len(set(published_fixture_paths)))
 
         for path in published_fixture_paths:

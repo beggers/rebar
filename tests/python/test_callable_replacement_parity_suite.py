@@ -15,6 +15,7 @@ from rebar_harness.correctness import (
     RebarAdapter,
     evaluate_case,
     load_fixture_manifest,
+    normalize_exception,
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
@@ -27,6 +28,27 @@ from tests.python.fixture_parity_support import (
 
 COLLECTION_REPLACEMENT_FIXTURE_PATH = (
     FIXTURES_DIR / "collection_replacement_workflows.py"
+)
+CONDITIONAL_GROUP_EXISTS_CALLABLE_MANIFEST_ID = (
+    "conditional-group-exists-callable-replacement-workflows"
+)
+CONDITIONAL_GROUP_EXISTS_CALLABLE_EXPECTED_CASE_IDS = frozenset(
+    {
+        "module-sub-callable-conditional-group-exists-present-str",
+        "module-subn-callable-conditional-group-exists-absent-str",
+        "pattern-sub-callable-conditional-group-exists-present-str",
+        "pattern-subn-callable-conditional-group-exists-absent-str",
+        "module-sub-callable-named-conditional-group-exists-present-str",
+        "module-subn-callable-named-conditional-group-exists-absent-str",
+        "pattern-sub-callable-named-conditional-group-exists-present-str",
+        "pattern-subn-callable-named-conditional-group-exists-absent-str",
+    }
+)
+CONDITIONAL_GROUP_EXISTS_CALLABLE_EXPECTED_COMPILE_PATTERNS = frozenset(
+    {
+        r"a(b)?c(?(1)d|e)",
+        r"a(?P<word>b)?c(?(word)d|e)",
+    }
 )
 QUANTIFIED_NESTED_GROUP_ALTERNATION_CALLABLE_MANIFEST_ID = (
     "quantified-nested-group-alternation-callable-replacement-workflows"
@@ -437,7 +459,11 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("pattern_call", "subn"): 2,
     }
 )
-PENDING_REBAR_MANIFEST_IDS = frozenset()
+PENDING_REBAR_MANIFEST_IDS = frozenset(
+    {
+        CONDITIONAL_GROUP_EXISTS_CALLABLE_MANIFEST_ID,
+    }
+)
 NO_MATCH_TEXT_CANDIDATES = ("zzz", "", "no-match", "----", "999")
 
 
@@ -602,6 +628,27 @@ def _invoke_callable_replacement(
     return getattr(backend, helper)(pattern, replacement, string, count=count)
 
 
+def _invoke_published_callable_case(backend: object, case: FixtureCase) -> object:
+    if case.helper is None:
+        raise ValueError(f"case {case.case_id!r} requires a helper name")
+
+    if case.operation == "module_call":
+        return getattr(backend, case.helper)(*case.args, **case.kwargs)
+
+    if case.operation == "pattern_call":
+        compiled = backend.compile(case.pattern_payload(), case.flags or 0)
+        return getattr(compiled, case.helper)(*case.args, **case.kwargs)
+
+    raise ValueError(f"unsupported callable replacement operation {case.operation!r}")
+
+
+def _observe_published_callable_case(backend: object, case: FixtureCase) -> tuple[str, object]:
+    try:
+        return ("result", _invoke_published_callable_case(backend, case))
+    except Exception as exc:
+        return ("exception", normalize_exception(exc))
+
+
 def _callable_no_match_text(pattern: str, flags: int = 0) -> str:
     compiled = re.compile(pattern, flags)
     for text in NO_MATCH_TEXT_CANDIDATES:
@@ -738,6 +785,23 @@ def test_quantified_nested_group_alternation_callable_cases_stay_aligned_with_pu
     )
     assert bundle.compile_patterns == (
         QUANTIFIED_NESTED_GROUP_ALTERNATION_EXPECTED_COMPILE_PATTERNS
+    )
+    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
+        EXPECTED_OPERATION_HELPER_COUNTS
+    )
+
+
+def test_conditional_group_exists_callable_cases_stay_aligned_with_published_fixture(
+) -> None:
+    bundle = _fixture_bundle_by_manifest_id(CONDITIONAL_GROUP_EXISTS_CALLABLE_MANIFEST_ID)
+
+    assert bundle.manifest.manifest_id == CONDITIONAL_GROUP_EXISTS_CALLABLE_MANIFEST_ID
+    assert len(bundle.cases) == len(CONDITIONAL_GROUP_EXISTS_CALLABLE_EXPECTED_CASE_IDS)
+    assert {case.case_id for case in bundle.cases} == (
+        CONDITIONAL_GROUP_EXISTS_CALLABLE_EXPECTED_CASE_IDS
+    )
+    assert bundle.compile_patterns == (
+        CONDITIONAL_GROUP_EXISTS_CALLABLE_EXPECTED_COMPILE_PATTERNS
     )
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
         EXPECTED_OPERATION_HELPER_COUNTS
@@ -1023,8 +1087,8 @@ def test_module_callable_replacement_matches_cpython(
     assert case.helper is not None
 
     _skip_pending_rebar_callable_parity(backend_name, case)
-    observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
-    expected = getattr(re, case.helper)(*case.args, **case.kwargs)
+    observed = _observe_published_callable_case(backend, case)
+    expected = _observe_published_callable_case(re, case)
 
     assert observed == expected
 
@@ -1038,11 +1102,8 @@ def test_pattern_callable_replacement_matches_cpython(
     assert case.helper is not None
 
     _skip_pending_rebar_callable_parity(backend_name, case)
-    observed_pattern = backend.compile(case.pattern_payload(), case.flags or 0)
-    expected_pattern = re.compile(case.pattern_payload(), case.flags or 0)
-
-    observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
-    expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
+    observed = _observe_published_callable_case(backend, case)
+    expected = _observe_published_callable_case(re, case)
 
     assert observed == expected
 

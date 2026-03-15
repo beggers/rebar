@@ -548,6 +548,14 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-str",
         ),
     },
+    "conditional-group-exists-callable-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-callable-conditional-group-exists-present-str",
+            "pattern-subn-callable-conditional-group-exists-absent-str",
+            "module-sub-callable-named-conditional-group-exists-present-str",
+            "pattern-subn-callable-named-conditional-group-exists-absent-str",
+        ),
+    },
 }
 
 

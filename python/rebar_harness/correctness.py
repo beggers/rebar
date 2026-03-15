@@ -488,6 +488,11 @@ _PUBLISHED_FULL_SUITE_FIXTURE_PATHS = (
     / "conformance"
     / "fixtures"
     / "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
+    / "conditional_group_exists_callable_replacement_workflows.py",
 )
 
 CORRECTNESS_FIXTURES_ROOT = REPO_ROOT / "tests" / "conformance" / "fixtures"

@@ -144,6 +144,7 @@ SELECTOR_EXPECTATIONS = (
     pytest.param(
         CALLABLE_REPLACEMENT_FIXTURE_SELECTOR,
         (
+            "conditional_group_exists_callable_replacement_workflows.py",
             "grouped_alternation_callable_replacement_workflows.py",
             "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
             "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
