@@ -157,6 +157,23 @@ Verified with `python -m unittest`.
             "Seeded RBR-0350 as the next feature-implementation task",
         )
 
+    def test_commit_summary_text_skips_changed_heading_variant(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+
+        summary = rebar_ops.commit_summary_text(
+            """**Changed**
+Centralized correctness fixture selection in [correctness.py](/tmp/correctness.py).
+
+**Verification**
+- `pytest -q`
+"""
+        )
+
+        self.assertEqual(
+            summary,
+            "Centralized correctness fixture selection in correctness.py",
+        )
+
     def test_commit_summary_text_keeps_bolded_action_line(self) -> None:
         rebar_ops = load_rebar_ops_module()
 

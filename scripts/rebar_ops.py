@@ -2014,11 +2014,14 @@ def result_last_message_text(result: RunResult) -> str:
 def commit_summary_text(text: str) -> str | None:
     section_labels = {
         "change",
+        "changed",
         "changes",
         "details",
         "summary",
         "test",
         "tests",
+        "update",
+        "updated",
         "verification",
         "verified",
     }
