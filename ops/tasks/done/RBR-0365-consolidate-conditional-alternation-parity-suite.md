@@ -1,6 +1,6 @@
 # RBR-0365: Consolidate the alternation-heavy conditional group-exists parity modules into one fixture-backed pytest suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
 
@@ -49,3 +49,8 @@ Created: 2026-03-15
 - The five targeted singleton modules total 928 lines and are near-identical aside from pattern strings, capture depth, helper selection, present-versus-absent haystacks, and named-group coverage.
 - `ops/tasks/done/RBR-0347-consolidate-base-conditional-group-exists-parity-suite.md` and `ops/tasks/done/RBR-0363-consolidate-nested-conditional-group-exists-parity-suite.md` are the exact shape to follow here: one backend-parameterized suite, one manifest-alignment assertion per published fixture, and no new helper module.
 - The published correctness-scorecard side for this family already lives in the combined expectation path after `ops/tasks/done/RBR-0333-consolidate-conditional-alternation-correctness-scorecards.md`; this task brings the Python parity surface up to the same repo shape instead of leaving the alternation-bearing conditional checks scattered across singleton modules.
+
+## Completion Notes
+- Added `tests/python/test_conditional_group_exists_alternation_parity_suite.py`, loading the five published alternation-heavy conditional fixture manifests through `load_fixture_manifest(...)` and asserting each manifest id, published case-id set, numbered and named compile patterns, and the exact `compile` / module-helper / pattern-helper split each fixture publishes today, including the fully-empty family's module `fullmatch()` rows.
+- Replaced the repeated `unittest` classes with one backend-parameterized pytest suite that keeps compile identity, compile metadata, dynamic numeric capture parity through each pattern's highest group index, named-group access parity, and `None` parity for the fully-empty extra-suffix rejection rows on the shared `regex_backend` path.
+- Deleted the five superseded singleton parity modules and verified with `.venv/bin/python -m pytest tests/python/test_conditional_group_exists_alternation_parity_suite.py -q` (`89 passed`), `git diff --name-status -- ...` reporting `D` for all five removed files, and `rg --files tests/python | rg 'test_conditional_group_exists(_no_else|_empty_else|_empty_yes_else|_fully_empty)?_alternation_parity\\.py$'` returning no matches.
