@@ -9,7 +9,7 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-The published correctness slice now covers 925 cases with 917 passing and 8 honest `unimplemented` outcomes, and the main benchmark report now covers 554 workloads with 530 real `rebar` timings, but it still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity.
+The published correctness slice now covers 925 cases with all 925 matching CPython, and the main benchmark report now covers 554 workloads with 530 real `rebar` timings, but it still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
 - After newly seeded parity task `RBR-0408` drains, the surviving concrete follow-on is benchmark catch-up task `RBR-0410` for the same broader-range open-ended `{2,}` nested-group branch-local-backreference conditional replacement-template `sub()` / `subn()` slice on the existing `nested_group_replacement_boundary.py` path.
@@ -19,7 +19,7 @@ The published correctness slice now covers 925 cases with 917 passing and 8 hone
 - The published benchmark surface is still bounded at 554 workloads and carries 24 explicit known-gap workloads.
 
 ## Compatibility Heuristic
-The published slice is still narrow, now includes 917 passing cases plus 8 honest `unimplemented` outcomes in the newest replacement-template pack, and still benchmarks mainly through the source-tree shim.
+The published slice is still narrow, now shows 925 passing cases with no remaining correctness gaps in the current publication, and still benchmarks mainly through the source-tree shim.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -310,7 +310,7 @@ The published slice is still narrow, now includes 917 passing cases plus 8 hones
 - Tracked state, task queue directories, and seeded ready tasks under `ops/`.
 
 ## What Does Not Exist Yet
-- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 103 manifests and 925 cases with 917 passes, 0 explicit failures, and 8 `unimplemented` outcomes in the current published slice, and that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
+- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 103 manifests and 925 cases with 925 passes, 0 explicit failures, and 0 `unimplemented` outcomes in the current published slice, and that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree shim while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
 - A primary benchmark publication: `reports/benchmarks/latest.py` now covers 554 workloads across 30 manifests with 530 real `rebar` timings and 24 explicit known gaps, so the published benchmark surface is still bounded even after the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional slice reached the shared `branch_local_backreference_boundary.py` path.
