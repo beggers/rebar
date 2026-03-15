@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now has `RBR-0362` seeded as the surviving follow-on so, once `RBR-0360` publishes the quantified nested-group alternation plus branch-local-backreference callable-replacement correctness pack for `a((b|c)+)\\2d` and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d`, the same bounded slice reaches Rust-backed parity before adjacent benchmark catch-up, broader counted repeats, replacement-template variants, or deeper nested grouped execution broaden the queue.
+Milestone 2 now has `RBR-0364` seeded as the surviving follow-on so, after the current quantified nested-group alternation plus branch-local-backreference callable-replacement parity step lands for `a((b|c)+)\\2d` and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d`, the same bounded slice reaches the existing `nested_group_callable_replacement_boundary.py` Python-path benchmark surface before broader counted repeats, replacement-template variants, or deeper nested grouped execution broaden the queue.
 
 ## Ordered Work
-1. Land `RBR-0362` to extend `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_callable_replacement_parity_suite.py`, and `reports/correctness/latest.py` so the bounded numbered and named module/compiled-`Pattern` `sub()` and `subn()` callable-replacement workflows for `a((b|c)+)\\2d` and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d` stop reporting `unimplemented` once `RBR-0360` lands, without forking another callable-replacement parity harness.
+1. Land `RBR-0364` to extend `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` so the bounded numbered and named module/compiled-`Pattern` `sub()` and `subn()` callable-replacement workflows for `a((b|c)+)\\2d` and `a(?P<outer>(?P<inner>b|c)+)(?P=inner)d` publish real `rebar` timings on the existing nested-group callback benchmark path once the current parity step drains, without forking another callable-replacement benchmark family.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
