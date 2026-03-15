@@ -13,6 +13,11 @@ from rebar_harness.correctness import FixtureCase, FixtureManifest, load_fixture
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 FIXTURES_DIR = REPO_ROOT / "tests" / "conformance" / "fixtures"
+MISSING_GROUP_DEFAULT = object()
+QUANTIFIED_ALTERNATION_NUMBERED_PATTERN = r"a(b)?c(?(1)(de|df)|(eg|eh)){2}"
+QUANTIFIED_ALTERNATION_NAMED_PATTERN = (
+    r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}"
+)
 
 
 @dataclass(frozen=True)
@@ -29,6 +34,22 @@ class FixtureBundle:
 class SupplementalModuleFullmatchCase:
     id: str
     pattern: str
+    text: str
+
+
+@dataclass(frozen=True)
+class SupplementalPatternFullmatchCase:
+    id: str
+    pattern: str
+    text: str
+
+
+@dataclass(frozen=True)
+class SupplementalMissCase:
+    id: str
+    target: str
+    pattern: str
+    helper: str
     text: str
 
 
@@ -79,6 +100,37 @@ FIXTURE_BUNDLES = (
                 ("module_call", "search"): 2,
                 ("module_call", "fullmatch"): 2,
                 ("pattern_call", "fullmatch"): 2,
+            }
+        ),
+    ),
+    _fixture_bundle(
+        "conditional_group_exists_quantified_alternation_workflows.py",
+        expected_manifest_id="conditional-group-exists-quantified-alternation-workflows",
+        expected_case_ids=frozenset(
+            {
+                "conditional-group-exists-quantified-alternation-compile-metadata-str",
+                "conditional-group-exists-quantified-alternation-module-search-present-first-arm-str",
+                "conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
+                "conditional-group-exists-quantified-alternation-module-search-absent-first-arm-str",
+                "conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
+                "named-conditional-group-exists-quantified-alternation-compile-metadata-str",
+                "named-conditional-group-exists-quantified-alternation-module-search-present-first-arm-str",
+                "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
+                "named-conditional-group-exists-quantified-alternation-module-search-absent-first-arm-str",
+                "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
+            }
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+                QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 4,
+                ("pattern_call", "fullmatch"): 4,
             }
         ),
     ),
@@ -232,6 +284,142 @@ SUPPLEMENTAL_MODULE_FULLMATCH_CASES = (
         text="abcac",
     ),
 )
+SUPPLEMENTAL_PATTERN_FULLMATCH_CASES = (
+    SupplementalPatternFullmatchCase(
+        id="conditional-group-exists-quantified-alternation-numbered-pattern-fullmatch-mixed-arms",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        text="abcdedf",
+    ),
+    SupplementalPatternFullmatchCase(
+        id="conditional-group-exists-quantified-alternation-numbered-pattern-fullmatch-mixed-else-arms",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        text="acegeh",
+    ),
+    SupplementalPatternFullmatchCase(
+        id="conditional-group-exists-quantified-alternation-named-pattern-fullmatch-mixed-arms",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        text="abcdedf",
+    ),
+    SupplementalPatternFullmatchCase(
+        id="conditional-group-exists-quantified-alternation-named-pattern-fullmatch-mixed-else-arms",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        text="acegeh",
+    ),
+)
+SUPPLEMENTAL_MISS_CASES = (
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-module-numbered-search-miss-partial-present-second-arm",
+        target="module",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        helper="search",
+        text="zzabcdehzz",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-module-numbered-search-miss-partial-absent-second-arm",
+        target="module",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        helper="search",
+        text="zzacegedzz",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-module-numbered-search-miss-too-short",
+        target="module",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        helper="search",
+        text="zzadzz",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-module-numbered-search-miss-wrong-arm",
+        target="module",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        helper="search",
+        text="zzabcegzz",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-pattern-numbered-fullmatch-miss-partial-present-second-arm",
+        target="pattern",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        helper="fullmatch",
+        text="abcdeh",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-pattern-numbered-fullmatch-miss-partial-absent-second-arm",
+        target="pattern",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        helper="fullmatch",
+        text="aceged",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-pattern-numbered-fullmatch-miss-too-short",
+        target="pattern",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        helper="fullmatch",
+        text="ad",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-pattern-numbered-fullmatch-miss-wrong-arm",
+        target="pattern",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        helper="fullmatch",
+        text="abceg",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-module-named-search-miss-partial-present-second-arm",
+        target="module",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        helper="search",
+        text="zzabcdehzz",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-module-named-search-miss-partial-absent-second-arm",
+        target="module",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        helper="search",
+        text="zzacegedzz",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-module-named-search-miss-too-short",
+        target="module",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        helper="search",
+        text="zzadzz",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-module-named-search-miss-wrong-arm",
+        target="module",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        helper="search",
+        text="zzabcegzz",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-pattern-named-fullmatch-miss-partial-present-second-arm",
+        target="pattern",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        helper="fullmatch",
+        text="abcdeh",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-pattern-named-fullmatch-miss-partial-absent-second-arm",
+        target="pattern",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        helper="fullmatch",
+        text="aceged",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-pattern-named-fullmatch-miss-too-short",
+        target="pattern",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        helper="fullmatch",
+        text="ad",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-pattern-named-fullmatch-miss-wrong-arm",
+        target="pattern",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        helper="fullmatch",
+        text="abceg",
+    ),
+)
 
 
 def _case_pattern(case: FixtureCase) -> str:
@@ -256,6 +444,20 @@ def _assert_pattern_parity(
     assert observed.groupindex == expected.groupindex
 
 
+def _compile_with_cpython_parity(
+    backend_name: str,
+    backend: object,
+    pattern: str,
+    flags: int = 0,
+) -> tuple[object, re.Pattern[str]]:
+    observed = backend.compile(pattern, flags)
+    expected = re.compile(pattern, flags)
+
+    assert observed is backend.compile(pattern, flags)
+    _assert_pattern_parity(backend_name, observed, expected)
+    return observed, expected
+
+
 def _assert_match_parity(
     backend_name: str,
     observed: object,
@@ -266,20 +468,40 @@ def _assert_match_parity(
     else:
         assert type(observed) is type(expected)
 
+    group_indexes = tuple(range(expected.re.groups + 1))
+
     assert observed.group(0) == expected.group(0)
-    assert observed.group(1) == expected.group(1)
+    assert observed.group(*group_indexes) == expected.group(*group_indexes)
+
+    for group_index in range(1, expected.re.groups + 1):
+        assert observed.group(group_index) == expected.group(group_index)
+        assert observed.span(group_index) == expected.span(group_index)
+        assert observed.start(group_index) == expected.start(group_index)
+        assert observed.end(group_index) == expected.end(group_index)
+
     assert observed.groups() == expected.groups()
+    assert observed.groups(MISSING_GROUP_DEFAULT) == expected.groups(MISSING_GROUP_DEFAULT)
     assert observed.groupdict() == expected.groupdict()
+    assert observed.groupdict(MISSING_GROUP_DEFAULT) == expected.groupdict(
+        MISSING_GROUP_DEFAULT
+    )
+    assert observed.string == expected.string
+    assert observed.pos == expected.pos
+    assert observed.endpos == expected.endpos
     assert observed.span() == expected.span()
-    assert observed.span(1) == expected.span(1)
-    assert observed.start(1) == expected.start(1)
-    assert observed.end(1) == expected.end(1)
     assert observed.lastindex == expected.lastindex
     assert observed.lastgroup == expected.lastgroup
+    assert hasattr(observed, "regs") == hasattr(expected, "regs")
+    if hasattr(expected, "regs"):
+        assert tuple(observed.regs) == tuple(expected.regs)
+
+    _assert_pattern_parity(backend_name, observed.re, expected.re)
 
     for group_name in expected.re.groupindex:
         assert observed.group(group_name) == expected.group(group_name)
         assert observed.span(group_name) == expected.span(group_name)
+        assert observed.start(group_name) == expected.start(group_name)
+        assert observed.end(group_name) == expected.end(group_name)
 
 
 def _assert_match_result_parity(
@@ -321,11 +543,7 @@ def test_compile_metadata_matches_cpython(
     pattern = case.pattern_payload()
     assert isinstance(pattern, str)
 
-    observed = backend.compile(pattern, case.flags or 0)
-    expected = re.compile(pattern, case.flags or 0)
-
-    assert observed is backend.compile(pattern, case.flags or 0)
-    _assert_pattern_parity(backend_name, observed, expected)
+    _compile_with_cpython_parity(backend_name, backend, pattern, case.flags or 0)
 
 
 @pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
@@ -350,8 +568,12 @@ def test_pattern_fullmatch_matches_cpython(
     backend_name, backend = regex_backend
     assert case.helper == "fullmatch"
 
-    observed_pattern = backend.compile(case.pattern_payload(), case.flags or 0)
-    expected_pattern = re.compile(case.pattern_payload(), case.flags or 0)
+    observed_pattern, expected_pattern = _compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern_payload(),
+        case.flags or 0,
+    )
     observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
     expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
 
@@ -373,3 +595,50 @@ def test_supplemental_module_fullmatch_workflows_match_cpython(
     expected = re.fullmatch(case.pattern, case.text)
 
     _assert_match_result_parity(backend_name, observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    SUPPLEMENTAL_PATTERN_FULLMATCH_CASES,
+    ids=lambda case: case.id,
+)
+def test_supplemental_pattern_fullmatch_workflows_match_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalPatternFullmatchCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = _compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    observed = observed_pattern.fullmatch(case.text)
+    expected = expected_pattern.fullmatch(case.text)
+
+    assert observed is not None
+    assert expected is not None
+    _assert_match_parity(backend_name, observed, expected)
+
+
+@pytest.mark.parametrize("case", SUPPLEMENTAL_MISS_CASES, ids=lambda case: case.id)
+def test_supplemental_negative_paths_match_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalMissCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    if case.target == "module":
+        observed = getattr(backend, case.helper)(case.pattern, case.text)
+        expected = getattr(re, case.helper)(case.pattern, case.text)
+    else:
+        observed_pattern, expected_pattern = _compile_with_cpython_parity(
+            backend_name,
+            backend,
+            case.pattern,
+        )
+        observed = getattr(observed_pattern, case.helper)(case.text)
+        expected = getattr(expected_pattern, case.helper)(case.text)
+
+    assert observed is None
+    assert expected is None

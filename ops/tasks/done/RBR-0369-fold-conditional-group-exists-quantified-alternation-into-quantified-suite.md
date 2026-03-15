@@ -1,8 +1,9 @@
 # RBR-0369: Fold the quantified alternation conditional-group-exists parity module into the quantified fixture-backed suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Replace `tests/python/test_conditional_group_exists_quantified_alternation_parity.py` with one expanded backend-parameterized suite in `tests/python/test_conditional_group_exists_quantified_parity_suite.py` so the quantified conditional family stops living across two near-duplicate fixture loaders and parity harnesses.
@@ -28,3 +29,13 @@ Created: 2026-03-15
 - `tests/python/test_conditional_group_exists_quantified_parity_suite.py` already carries the non-alternation quantified two-arm, no-else, empty-else, empty-yes-else, and fully-empty families. The standalone alternation file is the remaining quantified conditional holdout.
 - `rg --files tests/python | rg 'test_conditional_group_exists.*parity\\.py$'` currently leaves only this quantified alternation module plus the separate assertion-diagnostic file outside the consolidated suite naming pattern.
 - The standalone file is 321 lines and duplicates the same fixture loading, manifest-shape assertions, compile parity, and match parity machinery already present in the quantified suite; this task should delete that split rather than adding more shared abstraction.
+
+## Completion
+- Expanded `tests/python/test_conditional_group_exists_quantified_parity_suite.py` to load `conditional_group_exists_quantified_alternation_workflows.py` through the existing `FixtureBundle` path, keeping the manifest-id, case-id, compile-pattern, and operation/helper alignment assertion alongside the already-landed quantified conditional bundles.
+- Preserved the deleted module's parity depth by widening the shared match assertions to cover dynamic numeric groups, `groups(default)`, `groupdict(default)`, `string`, `pos`, `endpos`, `span()`, `span(n)`, `start(n)`, `end(n)`, `lastindex`, `lastgroup`, `regs`, and named-group access, while keeping repeated `compile()` identity and compile metadata parity on the consolidated suite.
+- Folded the standalone supplemental coverage into the shared suite: mixed-arm quantified alternation `Pattern.fullmatch()` traces for numbered and named patterns plus explicit module-search and pattern-fullmatch no-match rows for partial-second-arm, too-short, and wrong-arm miss paths.
+- Deleted `tests/python/test_conditional_group_exists_quantified_alternation_parity.py` so the quantified conditional parity frontier now lives in one shared suite.
+
+## Verification
+- `.venv/bin/python -m pytest tests/python/test_conditional_group_exists_quantified_parity_suite.py -q`
+- `rg --files tests/python | rg 'test_conditional_group_exists_quantified_alternation\\.py$'`
