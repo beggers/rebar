@@ -521,7 +521,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "conditional-group-exists-boundary": {
-        "known_gap_count": 2,
+        "known_gap_count": 1,
         "representative_known_gap_workload_ids": (
             "module-sub-template-numbered-conditional-group-exists-replacement-warm-gap",
         ),
@@ -555,6 +555,573 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
 }
+
+
+def _combined_slice_expectation(
+    *,
+    manifest_id: str,
+    slice_id: str,
+    required_syntax_features: tuple[str, ...] = (),
+    excluded_syntax_features: tuple[str, ...] = (),
+    required_categories: tuple[str, ...] = (),
+    excluded_categories: tuple[str, ...] = (),
+    required_id_suffix: str | None = None,
+    expected_workload_ids: tuple[str, ...],
+    expected_patterns: set[str],
+    expected_operations: set[str],
+    expected_haystacks: set[str],
+    required_row_categories: tuple[str, ...],
+) -> dict[str, Any]:
+    return {
+        "expected_haystacks": expected_haystacks,
+        "expected_operations": expected_operations,
+        "expected_patterns": expected_patterns,
+        "expected_workload_ids": expected_workload_ids,
+        "excluded_categories": excluded_categories,
+        "excluded_syntax_features": excluded_syntax_features,
+        "manifest_id": manifest_id,
+        "required_categories": required_categories,
+        "required_id_suffix": required_id_suffix,
+        "required_row_categories": required_row_categories,
+        "required_syntax_features": required_syntax_features,
+        "slice_id": slice_id,
+    }
+
+
+SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
+    _combined_slice_expectation(
+        manifest_id="branch-local-backreference-boundary",
+        slice_id="broader-range-open-ended-conditional-branch-local-backreference",
+        required_syntax_features=(
+            "branch-local-backreferences",
+            "conditionals",
+            "nested-groups",
+            "counted-repeats",
+        ),
+        required_categories=("open-ended-repeat", "broader-range"),
+        expected_workload_ids=(
+            "module-compile-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-cold-str",
+            "module-search-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-str",
+            "pattern-fullmatch-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-mixed-branches-purged-str",
+            "module-compile-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-warm-str",
+            "module-search-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-warm-str",
+            "pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-purged-str",
+        ),
+        expected_patterns={
+            r"a((b|c){2,})\2(?(2)d|e)",
+            r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+        },
+        expected_operations={"module.compile", "module.search", "pattern.fullmatch"},
+        expected_haystacks={"zzabbbdzz", "abcbccd", "zzacccdzz", "abbbd"},
+        required_row_categories=(
+            "grouped",
+            "nested-group",
+            "alternation",
+            "branch-local",
+            "conditional",
+            "quantified",
+            "counted-repeat",
+            "open-ended-repeat",
+            "broader-range",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-alternation-boundary",
+        slice_id="non-quantified-branch-local-backreference",
+        required_syntax_features=("branch-local-backreferences",),
+        excluded_syntax_features=("quantifiers",),
+        expected_workload_ids=(
+            "module-search-numbered-nested-group-branch-local-backreference-b-branch-warm-str",
+            "module-compile-named-nested-group-branch-local-backreference-warm-str",
+            "pattern-fullmatch-named-nested-group-branch-local-backreference-purged-gap",
+        ),
+        expected_patterns={
+            r"a((b|c))\2d",
+            r"a(?P<outer>(?P<inner>b|c))(?P=inner)d",
+        },
+        expected_operations={"module.compile", "module.search", "pattern.fullmatch"},
+        expected_haystacks={"zzabbdzz", "accd"},
+        required_row_categories=(
+            "nested-group",
+            "alternation",
+            "branch-local",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-alternation-boundary",
+        slice_id="quantified-branch-local-backreference",
+        required_syntax_features=("branch-local-backreferences", "quantifiers"),
+        excluded_syntax_features=("counted-repeats",),
+        expected_workload_ids=(
+            "module-search-numbered-quantified-nested-group-branch-local-backreference-lower-bound-b-branch-warm-str",
+            "module-compile-named-quantified-nested-group-branch-local-backreference-warm-str",
+            "pattern-fullmatch-named-quantified-nested-group-branch-local-backreference-repeated-mixed-purged-str",
+        ),
+        expected_patterns={
+            r"a((b|c)+)\2d",
+            r"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
+        },
+        expected_operations={"module.compile", "module.search", "pattern.fullmatch"},
+        expected_haystacks={"zzabbdzz", "abccd"},
+        required_row_categories=(
+            "nested-group",
+            "alternation",
+            "branch-local",
+            "quantified",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-alternation-boundary",
+        slice_id="broader-range-branch-local-backreference",
+        required_syntax_features=(
+            "branch-local-backreferences",
+            "counted-repeats",
+            "ranged-repeats",
+        ),
+        expected_workload_ids=(
+            "module-search-numbered-wider-ranged-repeat-quantified-nested-group-branch-local-backreference-lower-bound-b-branch-warm-str",
+            "module-compile-named-wider-ranged-repeat-quantified-nested-group-branch-local-backreference-warm-str",
+            "pattern-fullmatch-named-wider-ranged-repeat-quantified-nested-group-branch-local-backreference-upper-bound-all-c-purged-str",
+        ),
+        expected_patterns={
+            r"a((b|c){1,4})\2d",
+            r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
+        },
+        expected_operations={"module.compile", "module.search", "pattern.fullmatch"},
+        expected_haystacks={"zzabbdzz", "acccccd"},
+        required_row_categories=(
+            "nested-group",
+            "alternation",
+            "branch-local",
+            "quantified",
+            "ranged-repeat",
+            "counted-repeat",
+            "broader-range",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-alternation-boundary",
+        slice_id="broader-range-open-ended-branch-local-backreference",
+        required_syntax_features=("branch-local-backreferences", "counted-repeats"),
+        excluded_syntax_features=("ranged-repeats",),
+        required_categories=("open-ended-repeat", "broader-range"),
+        expected_workload_ids=(
+            "module-search-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-lower-bound-b-branch-warm-str",
+            "module-compile-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-warm-str",
+            "pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-lower-bound-c-branch-purged-str",
+        ),
+        expected_patterns={
+            r"a((b|c){2,})\2d",
+            r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        },
+        expected_operations={"module.compile", "module.search", "pattern.fullmatch"},
+        expected_haystacks={"zzabbbdzz", "acccd"},
+        required_row_categories=(
+            "nested-group",
+            "alternation",
+            "branch-local",
+            "quantified",
+            "counted-repeat",
+            "open-ended-repeat",
+            "broader-range",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-callable-replacement-boundary",
+        slice_id="nested-alternation",
+        required_syntax_features=("alternation", "callable-replacement"),
+        excluded_syntax_features=("branch-local-backreferences", "quantifiers"),
+        expected_workload_ids=(
+            "module-sub-callable-nested-group-alternation-cold-gap",
+            "pattern-subn-callable-numbered-nested-group-alternation-c-branch-first-match-only-purged-str",
+            "module-sub-callable-named-nested-group-alternation-c-branch-warm-str",
+            "pattern-subn-callable-named-nested-group-alternation-b-branch-first-match-only-purged-str",
+        ),
+        expected_patterns={
+            r"a((b|c))d",
+            r"a(?P<outer>(?P<inner>b|c))d",
+        },
+        expected_operations={"module.sub", "pattern.subn"},
+        expected_haystacks={"abdacd", "acdabd", "acd"},
+        required_row_categories=(
+            "nested-group",
+            "alternation",
+            "replacement",
+            "callable",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-callable-replacement-boundary",
+        slice_id="quantified-nested-alternation",
+        required_syntax_features=("alternation", "callable-replacement", "quantifiers"),
+        excluded_syntax_features=("branch-local-backreferences",),
+        expected_workload_ids=(
+            "module-sub-callable-numbered-quantified-nested-group-alternation-lower-bound-b-branch-warm-str",
+            "module-subn-callable-numbered-quantified-nested-group-alternation-c-branch-first-match-only-warm-str",
+            "pattern-sub-callable-named-quantified-nested-group-alternation-repeated-mixed-purged-str",
+            "pattern-subn-callable-named-quantified-nested-group-alternation-c-branch-first-match-only-purged-str",
+        ),
+        expected_patterns={
+            r"a((b|c)+)d",
+            r"a(?P<outer>(?P<inner>b|c)+)d",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"zzabdzz", "zzabccdacbbdzz", "zzabccdzz"},
+        required_row_categories=(
+            "nested-group",
+            "alternation",
+            "replacement",
+            "callable",
+            "quantified",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-callable-replacement-boundary",
+        slice_id="branch-local-backreference",
+        required_syntax_features=("branch-local-backreferences", "callable-replacement"),
+        excluded_syntax_features=("quantifiers",),
+        expected_workload_ids=(
+            "module-sub-callable-numbered-nested-group-alternation-branch-local-backreference-b-branch-warm-str",
+            "module-subn-callable-numbered-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
+            "pattern-sub-callable-named-nested-group-alternation-branch-local-backreference-c-branch-purged-str",
+            "pattern-subn-callable-named-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-str",
+        ),
+        expected_patterns={
+            r"a((b|c))\2d",
+            r"a(?P<outer>(?P<inner>b|c))(?P=inner)d",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"abbd", "abbdaccd", "accd", "accdabbd"},
+        required_row_categories=(
+            "nested-group",
+            "alternation",
+            "replacement",
+            "callable",
+            "branch-local",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-callable-replacement-boundary",
+        slice_id="quantified-branch-local-backreference",
+        required_syntax_features=(
+            "branch-local-backreferences",
+            "callable-replacement",
+            "quantifiers",
+        ),
+        excluded_syntax_features=("counted-repeats", "ranged-repeats"),
+        expected_workload_ids=(
+            "module-sub-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
+            "module-subn-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
+            "pattern-sub-callable-named-quantified-nested-group-alternation-branch-local-backreference-mixed-branches-purged-str",
+            "pattern-subn-callable-named-quantified-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-str",
+        ),
+        expected_patterns={
+            r"a((b|c)+)\2d",
+            r"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"abbd", "abbbdaccd", "zzabccdzz", "zzaccdabbbdzz"},
+        required_row_categories=(
+            "nested-group",
+            "alternation",
+            "replacement",
+            "callable",
+            "branch-local",
+            "quantified",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-callable-replacement-boundary",
+        slice_id="broader-range-branch-local-backreference",
+        required_syntax_features=(
+            "branch-local-backreferences",
+            "callable-replacement",
+            "quantifiers",
+            "counted-repeats",
+            "ranged-repeats",
+        ),
+        expected_workload_ids=(
+            "module-sub-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
+            "module-subn-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-mixed-branches-first-match-only-warm-str",
+            "pattern-sub-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-all-c-purged-str",
+            "pattern-subn-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-c-branch-first-match-only-purged-str",
+        ),
+        expected_patterns={
+            r"a((b|c){1,4})\2d",
+            r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"abbd", "abcbccdabbd", "zzacccccdzz", "zzacccccdabbbdzz"},
+        required_row_categories=(
+            "nested-group",
+            "alternation",
+            "replacement",
+            "callable",
+            "branch-local",
+            "quantified",
+            "ranged-repeat",
+            "counted-repeat",
+            "broader-range",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-callable-replacement-boundary",
+        slice_id="open-ended-branch-local-backreference",
+        required_syntax_features=(
+            "branch-local-backreferences",
+            "callable-replacement",
+            "quantifiers",
+            "counted-repeats",
+        ),
+        excluded_syntax_features=("conditionals", "ranged-repeats"),
+        excluded_categories=("broader-range",),
+        expected_workload_ids=(
+            "module-sub-callable-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
+            "module-subn-callable-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
+            "pattern-sub-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-c-branch-purged-str",
+            "pattern-subn-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-str",
+        ),
+        expected_patterns={
+            r"a((b|c){1,})\2d",
+            r"a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"abbd", "abbbdaccd", "zzaccdzz", "zzaccdabcbccdzz"},
+        required_row_categories=(
+            "nested-group",
+            "alternation",
+            "replacement",
+            "callable",
+            "branch-local",
+            "quantified",
+            "counted-repeat",
+            "open-ended-repeat",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-callable-replacement-boundary",
+        slice_id="broader-range-open-ended-branch-local-backreference",
+        required_syntax_features=(
+            "branch-local-backreferences",
+            "callable-replacement",
+            "quantifiers",
+            "counted-repeats",
+        ),
+        excluded_syntax_features=("conditionals", "ranged-repeats"),
+        required_categories=("broader-range",),
+        expected_workload_ids=(
+            "module-sub-callable-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-b-branch-warm-str",
+            "module-subn-callable-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-first-match-only-b-branch-warm-str",
+            "pattern-sub-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-c-branch-purged-str",
+            "pattern-subn-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-c-branch-first-match-only-purged-str",
+        ),
+        expected_patterns={
+            r"a((b|c){2,})\2d",
+            r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"abbbd", "abbbdabcbccd", "zzacccdzz", "zzacccdabcbccdzz"},
+        required_row_categories=(
+            "nested-group",
+            "alternation",
+            "replacement",
+            "callable",
+            "branch-local",
+            "quantified",
+            "counted-repeat",
+            "open-ended-repeat",
+            "broader-range",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-callable-replacement-boundary",
+        slice_id="broader-range-open-ended-conditional-branch-local-backreference",
+        required_syntax_features=(
+            "branch-local-backreferences",
+            "callable-replacement",
+            "quantifiers",
+            "counted-repeats",
+            "conditionals",
+        ),
+        excluded_syntax_features=("ranged-repeats",),
+        required_categories=("broader-range",),
+        expected_workload_ids=(
+            "module-sub-callable-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-str",
+            "module-subn-callable-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-first-match-only-b-branch-warm-str",
+            "pattern-sub-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-purged-str",
+            "pattern-subn-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-c-branch-first-match-only-purged-str",
+        ),
+        expected_patterns={
+            r"a((b|c){2,})\2(?(2)d|e)",
+            r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"abbbd", "abbbdabcbccd", "zzacccdzz", "zzacccdabcbccdzz"},
+        required_row_categories=(
+            "nested-group",
+            "alternation",
+            "replacement",
+            "callable",
+            "branch-local",
+            "conditional",
+            "group-exists",
+            "quantified",
+            "counted-repeat",
+            "open-ended-repeat",
+            "broader-range",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-replacement-boundary",
+        slice_id="open-ended-branch-local-backreference",
+        required_syntax_features=(
+            "branch-local-backreferences",
+            "replacement-template",
+            "quantifiers",
+            "counted-repeats",
+        ),
+        excluded_syntax_features=("conditionals", "ranged-repeats"),
+        excluded_categories=("broader-range",),
+        expected_workload_ids=(
+            "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
+            "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
+            "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-c-branch-purged-str",
+            "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-str",
+        ),
+        expected_patterns={
+            r"a((b|c){1,})\2d",
+            r"a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"abbd", "abbbdaccd", "zzaccdzz", "zzaccdabcbccdzz"},
+        required_row_categories=(
+            "nested-group",
+            "alternation",
+            "replacement",
+            "template",
+            "branch-local",
+            "quantified",
+            "counted-repeat",
+            "open-ended-repeat",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-replacement-boundary",
+        slice_id="broader-range-open-ended-branch-local-backreference",
+        required_syntax_features=(
+            "branch-local-backreferences",
+            "replacement-template",
+            "quantifiers",
+            "counted-repeats",
+        ),
+        excluded_syntax_features=("conditionals", "ranged-repeats"),
+        required_categories=("broader-range",),
+        expected_workload_ids=(
+            "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-b-branch-warm-str",
+            "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-first-match-only-b-branch-warm-str",
+            "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-c-branch-purged-str",
+            "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-c-branch-first-match-only-purged-str",
+        ),
+        expected_patterns={
+            r"a((b|c){2,})\2d",
+            r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"abbbd", "abbbdabcbccd", "zzacccdzz", "zzacccdabcbccdzz"},
+        required_row_categories=(
+            "nested-group",
+            "alternation",
+            "replacement",
+            "template",
+            "branch-local",
+            "quantified",
+            "counted-repeat",
+            "open-ended-repeat",
+            "broader-range",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-replacement-boundary",
+        slice_id="broader-range-open-ended-conditional-branch-local-backreference",
+        required_syntax_features=(
+            "branch-local-backreferences",
+            "replacement-template",
+            "quantifiers",
+            "counted-repeats",
+            "conditionals",
+        ),
+        excluded_syntax_features=("ranged-repeats",),
+        required_categories=("broader-range",),
+        expected_workload_ids=(
+            "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-str",
+            "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-first-match-only-b-branch-warm-str",
+            "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-purged-str",
+            "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-c-branch-first-match-only-purged-str",
+        ),
+        expected_patterns={
+            r"a((b|c){2,})\2(?(2)d|e)",
+            r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"abbbd", "abbbdabcbccd", "zzacccdzz", "zzacccdabcbccdzz"},
+        required_row_categories=(
+            "nested-group",
+            "alternation",
+            "replacement",
+            "template",
+            "branch-local",
+            "conditional",
+            "group-exists",
+            "quantified",
+            "counted-repeat",
+            "open-ended-repeat",
+            "broader-range",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="grouped-alternation-callable-replacement-boundary",
+        slice_id="former-gap-callable-replacement-rows",
+        required_syntax_features=("callable-replacement",),
+        required_id_suffix="gap",
+        expected_workload_ids=(
+            "module-sub-callable-nested-grouped-alternation-cold-gap",
+            "pattern-subn-callable-named-nested-grouped-alternation-purged-gap",
+        ),
+        expected_patterns={
+            r"a((b|c))d",
+            r"a(?P<outer>(b|c))d",
+        },
+        expected_operations={"module.sub", "pattern.subn"},
+        expected_haystacks={"abdacd", "acdabd"},
+        required_row_categories=(
+            "alternation",
+            "replacement",
+            "callable",
+            "gap",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-callable-replacement-boundary",
+        slice_id="former-gap-callable-replacement-rows",
+        required_syntax_features=("callable-replacement",),
+        required_id_suffix="gap",
+        expected_workload_ids=(
+            "module-sub-callable-nested-group-alternation-cold-gap",
+            "pattern-subn-callable-named-quantified-nested-group-purged-gap",
+        ),
+        expected_patterns={
+            r"a((b|c))d",
+            r"a(?P<outer>(?P<inner>bc)+)d",
+        },
+        expected_operations={"module.sub", "pattern.subn"},
+        expected_haystacks={"abdacd", "zzabcbcdabcbcdzz"},
+        required_row_categories=(
+            "nested-group",
+            "replacement",
+            "callable",
+        ),
+    ),
+)
 
 
 def _compile_smoke_manifest_path() -> pathlib.Path:
@@ -812,3 +1379,66 @@ def source_tree_combined_case(target_manifest_id: str) -> dict[str, Any]:
         "selection_mode": "full",
         "target_manifest": target_manifest,
     }
+
+
+def source_tree_combined_slice_manifest_ids() -> tuple[str, ...]:
+    manifest_ids_with_expectations = {
+        expectation["manifest_id"] for expectation in SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
+    }
+    combined_target_ids = source_tree_combined_target_manifest_ids()
+    missing_manifest_ids = manifest_ids_with_expectations - set(combined_target_ids)
+    if missing_manifest_ids:
+        raise AssertionError(
+            "source-tree combined slice expectations reference manifest ids outside the "
+            f"published combined selector: {sorted(missing_manifest_ids)}"
+        )
+    return tuple(
+        manifest_id
+        for manifest_id in combined_target_ids
+        if manifest_id in manifest_ids_with_expectations
+    )
+
+
+def source_tree_combined_slice_expectations(
+    manifest_id: str,
+) -> tuple[dict[str, Any], ...]:
+    expectations = tuple(
+        expectation
+        for expectation in SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
+        if expectation["manifest_id"] == manifest_id
+    )
+    if not expectations:
+        raise AssertionError(
+            f"unknown source-tree combined slice expectation manifest {manifest_id!r}"
+        )
+    return expectations
+
+
+def _workload_matches_source_tree_combined_slice(
+    workload: dict[str, Any],
+    expectation: dict[str, Any],
+) -> bool:
+    workload_id = str(workload["id"])
+    required_id_suffix = expectation["required_id_suffix"]
+    if required_id_suffix is not None and not workload_id.endswith(required_id_suffix):
+        return False
+
+    syntax_features = set(str(value) for value in workload["syntax_features"])
+    categories = set(str(value) for value in workload["categories"])
+    return (
+        set(expectation["required_syntax_features"]).issubset(syntax_features)
+        and syntax_features.isdisjoint(expectation["excluded_syntax_features"])
+        and set(expectation["required_categories"]).issubset(categories)
+        and categories.isdisjoint(expectation["excluded_categories"])
+    )
+
+
+def select_source_tree_combined_slice_rows(
+    manifest_document: dict[str, Any],
+    expectation: dict[str, Any],
+) -> list[dict[str, Any]]:
+    return [
+        workload
+        for workload in manifest_document["workloads"]
+        if _workload_matches_source_tree_combined_slice(workload, expectation)
+    ]

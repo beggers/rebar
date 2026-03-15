@@ -1,8 +1,9 @@
 # RBR-0425: Centralize combined source-tree benchmark slice expectations
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Replace the remaining constant-heavy slice assertions in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with shared expectation data plus one reusable assertion path, so the combined source-tree benchmark suite stops hand-maintaining hundreds of lines of bespoke row-filter scaffolding after the earlier scorecard/support cleanup.
@@ -52,3 +53,4 @@ Created: 2026-03-15
 - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` is still a 1,554-line one-off suite, while `tests/benchmarks/benchmark_expectations.py` already owns the ordinary source-tree scorecard cases and selector/report plumbing.
 - The ready queue is empty, recent runtime artifacts show no inherited-dirty or post-commit stall, and JSON counts are fully burned down in both runtime and live filesystem views (`tracked_json_blob_count: 0`, `tracked_json_blob_delta: 0`, `git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), so the next architecture pass should stay in the post-JSON duplicate-test-plumbing lane.
 - `RBR-0424` is already reserved in tracked backlog/status for the next feature benchmark catch-up, so this cleanup follow-on starts at `RBR-0425`.
+- Completed 2026-03-15: centralized the targeted combined-suite slice expectations in `tests/benchmarks/benchmark_expectations.py`, rewrote `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to drive those slices through one shared manifest-slice assertion path while leaving the wider-ranged-repeat shape coverage separate, corrected the stale combined `conditional-group-exists-boundary` `known_gap_count` expectation from `2` to `1`, confirmed the task's two `rg` checks return no matches, and verified `PYTHONPATH=python .venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`4 passed`, `291 subtests passed`).
