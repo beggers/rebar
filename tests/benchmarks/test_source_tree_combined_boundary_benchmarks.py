@@ -201,7 +201,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 _, scorecard = run_source_tree_benchmark_scorecard(case["manifest_paths"])
 
                 manifest_summary = scorecard["manifests"][manifest_id]
-                self.assertEqual(manifest_summary["known_gap_count"], 0)
+                self.assertEqual(
+                    manifest_summary["known_gap_count"],
+                    case["manifest_expectation"]["known_gap_count"],
+                )
 
                 for expectation in source_tree_combined_slice_expectations(manifest_id):
                     with self.subTest(slice_id=expectation["slice_id"]):

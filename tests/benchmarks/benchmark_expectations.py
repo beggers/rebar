@@ -210,6 +210,32 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
         ),
         "representative_known_gap_workload_ids": (),
     },
+    "conditional-group-exists-boundary": {
+        "manifest_ids": ("conditional-group-exists-boundary",),
+        "selection_mode": "full",
+        "expected_summary": {
+            "known_gap_count": 1,
+            "measured_workloads": 52,
+            "module_workloads": 53,
+            "parser_workloads": 0,
+            "regression_workloads": 0,
+            "total_workloads": 53,
+        },
+        "manifest_expectations": {
+            "conditional-group-exists-boundary": {
+                "known_gap_count": 1,
+            },
+        },
+        "representative_measured_workload_ids": (
+            "module-sub-callable-numbered-conditional-group-exists-replacement-warm-str",
+            "module-subn-callable-numbered-conditional-group-exists-replacement-first-match-only-warm-str",
+            "pattern-sub-callable-named-conditional-group-exists-replacement-purged-str",
+            "pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap",
+        ),
+        "representative_known_gap_workload_ids": (
+            "module-sub-template-numbered-conditional-group-exists-replacement-warm-gap",
+        ),
+    },
     "regression-pack-full": {
         "manifest_ids": (
             "compile-matrix",
@@ -525,7 +551,12 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_known_gap_workload_ids": (
             "module-sub-template-numbered-conditional-group-exists-replacement-warm-gap",
         ),
-        "representative_measured_workload_ids": (),
+        "representative_measured_workload_ids": (
+            "module-sub-callable-numbered-conditional-group-exists-replacement-warm-str",
+            "module-subn-callable-numbered-conditional-group-exists-replacement-first-match-only-warm-str",
+            "pattern-sub-callable-named-conditional-group-exists-replacement-purged-str",
+            "pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap",
+        ),
     },
     "conditional-group-exists-no-else-boundary": {
         "known_gap_count": 0,
@@ -1117,6 +1148,33 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         expected_haystacks={"abdacd", "zzabcbcdabcbcdzz"},
         required_row_categories=(
             "nested-group",
+            "replacement",
+            "callable",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="conditional-group-exists-boundary",
+        slice_id="minimal-callable-replacement-rows",
+        required_syntax_features=("conditionals", "callable-replacement"),
+        excluded_syntax_features=("quantifiers",),
+        excluded_categories=("alternation", "nested-group", "quantified", "unsupported"),
+        expected_workload_ids=(
+            "module-sub-callable-numbered-conditional-group-exists-replacement-warm-str",
+            "module-subn-callable-numbered-conditional-group-exists-replacement-first-match-only-warm-str",
+            "pattern-sub-callable-named-conditional-group-exists-replacement-purged-str",
+            "pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap",
+        ),
+        expected_patterns={
+            r"a(b)?c(?(1)d|e)",
+            r"a(?P<word>b)?c(?(word)d|e)",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"zzabcdzz", "zzabcdacezz"},
+        required_row_categories=(
+            "grouped",
+            "optional-group",
+            "conditional",
+            "group-exists",
             "replacement",
             "callable",
         ),

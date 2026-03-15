@@ -7,7 +7,7 @@ MANIFEST = {
   ],
   "notes": [
     "Conditional group-exists boundary workloads keep one optional capture, one conditional site, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported bounded two-arm conditional slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch plus constant-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the bounded alternation-heavy replacement `a(b)?c(?(1)(de|df)|(eg|eh))` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the bounded nested two-arm `a(b)?c(?(1)(?(1)d|e)|f)` / `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` module-search, Pattern.fullmatch, and constant-replacement `sub()`/`subn()` probes through module and compiled-`Pattern` entrypoints, one bounded quantified `{2}` Pattern.fullmatch companion for each numbered and named spelling, the bounded quantified two-arm replacement `a(b)?c(?(1)d|e){2}` / `a(?P<word>b)?c(?(word)d|e){2}` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, and the bounded quantified alternation-heavy `a(b)?c(?(1)(de|df)|(eg|eh)){2}` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` module-search and Pattern.fullmatch probes, while replacement templates that read captures, callable replacements, alternation-heavy quantified replacement arms, deeper nested replacement-conditioned shapes, branch-local-backreference-conditioned flows, and broader backtracking-heavy conditional shapes stay explicit gap rows instead of being silently omitted here."
+    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch plus constant-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, one numbered `module.sub()` present-capture callable path, one numbered `module.subn()` first-match-only callable companion, one named `Pattern.sub()` present-capture callable path, one named `Pattern.subn()` first-match-only callable companion through the existing `callable_match_group` helper, the bounded alternation-heavy replacement `a(b)?c(?(1)(de|df)|(eg|eh))` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the bounded nested two-arm `a(b)?c(?(1)(?(1)d|e)|f)` / `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` module-search, Pattern.fullmatch, and constant-replacement `sub()`/`subn()` probes through module and compiled-`Pattern` entrypoints, one bounded quantified `{2}` Pattern.fullmatch companion for each numbered and named spelling, the bounded quantified two-arm replacement `a(b)?c(?(1)d|e){2}` / `a(?P<word>b)?c(?(word)d|e){2}` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, and the bounded quantified alternation-heavy `a(b)?c(?(1)(de|df)|(eg|eh)){2}` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` module-search and Pattern.fullmatch probes, while replacement templates that read captures, callable exception probes on absent first matches, alternation-heavy quantified replacement arms, deeper nested replacement-conditioned shapes, branch-local-backreference-conditioned flows, and broader backtracking-heavy conditional shapes stay explicit gap rows or later benchmark slices instead of being silently omitted here."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -527,12 +527,138 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-sub-callable-numbered-conditional-group-exists-replacement-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "prefix": "<",
+        "suffix": ">"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "sub",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded numbered two-arm conditional callable replacement workflow when the optional capture is present and the callback reads `match.group(1)` after the yes-arm `d` extends the matched span."
+      ]
+    },
+    {
+      "id": "module-subn-callable-numbered-conditional-group-exists-replacement-first-match-only-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzabcdacezz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": 1,
+        "prefix": "<",
+        "suffix": ">"
+      },
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "subn",
+        "module",
+        "first-match-only",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "callable-replacement"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded numbered two-arm conditional callable replacement first-match-only companion on `zzabcdacezz`, so the leading present-capture match is measured while the later absent-capture match stays untouched under `count=1`."
+      ]
+    },
+    {
+      "id": "pattern-sub-callable-named-conditional-group-exists-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": {
+        "type": "callable_match_group",
+        "group": "word",
+        "prefix": "<",
+        "suffix": ">"
+      },
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "callable",
+        "named-group",
+        "sub",
+        "present",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "callable-replacement",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded named two-arm conditional callable replacement workflow when the optional named capture is present and the callback reads `match.group(\"word\")`."
+      ]
+    },
+    {
       "id": "pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap",
       "bucket": "pattern-subn",
       "family": "module",
       "operation": "pattern.subn",
       "pattern": "a(?P<word>b)?c(?(word)d|e)",
-      "haystack": "zzabcdzz",
+      "haystack": "zzabcdacezz",
       "replacement": {
         "type": "callable_match_group",
         "group": "word",
@@ -551,9 +677,10 @@ MANIFEST = {
         "conditional",
         "group-exists",
         "replacement",
-        "callable-replacement",
+        "callable",
         "named-group",
-        "unsupported",
+        "subn",
+        "first-match-only",
         "purged-cache"
       ],
       "syntax_features": [
@@ -566,7 +693,7 @@ MANIFEST = {
         "cache-purge"
       ],
       "notes": [
-        "Explicit callable replacement gap row so bound `Pattern.subn()` helpers that read the named conditional capture stay visible until callable replacement semantics reach this slice."
+        "This former named compiled-entrypoint callable gap anchor now benchmarks the bounded first-match-only companion on `zzabcdacezz`, so the leading present-capture callback is measured while the later absent-capture match stays untouched under `count=1`."
       ]
     },
     {
