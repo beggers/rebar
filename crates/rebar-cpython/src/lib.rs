@@ -21,6 +21,7 @@ use rebar_core::{
     nested_alternation_branch_local_backreference_find_spans_str as core_nested_alternation_branch_local_backreference_find_spans_str,
     nested_alternation_find_spans_str as core_nested_alternation_find_spans_str,
     nested_capture_find_spans_str as core_nested_capture_find_spans_str,
+    nested_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_str as core_nested_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_str,
     quantified_nested_capture_find_spans_str as core_quantified_nested_capture_find_spans_str,
     quantified_nested_group_alternation_branch_local_backreference_find_spans_str as core_quantified_nested_group_alternation_branch_local_backreference_find_spans_str,
     quantified_nested_group_alternation_find_spans_str as core_quantified_nested_group_alternation_find_spans_str,
@@ -819,19 +820,36 @@ fn boundary_literal_template_subn(
                                     0,
                                     None,
                                 );
-                            (
-                                grouped_alternation_outcome.status,
-                                grouped_alternation_outcome
-                                    .matches
-                                    .into_iter()
-                                    .map(|matched| CapturedMatchSpan {
-                                        span: matched.span,
-                                        group_spans: vec![Some(matched.group_1_span)],
-                                    })
-                                    .collect(),
-                                compile_outcome.group_count,
-                                compile_outcome.named_groups,
-                            )
+                            if grouped_alternation_outcome.status != MatchStatus::Unsupported {
+                                (
+                                    grouped_alternation_outcome.status,
+                                    grouped_alternation_outcome
+                                        .matches
+                                        .into_iter()
+                                        .map(|matched| CapturedMatchSpan {
+                                            span: matched.span,
+                                            group_spans: vec![Some(matched.group_1_span)],
+                                        })
+                                        .collect(),
+                                    compile_outcome.group_count,
+                                    compile_outcome.named_groups,
+                                )
+                            } else {
+                                let branch_local_outcome =
+                                    core_nested_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_str(
+                                        pattern_value,
+                                        flags,
+                                        string_value,
+                                        0,
+                                        None,
+                                    );
+                                (
+                                    branch_local_outcome.status,
+                                    branch_local_outcome.matches,
+                                    compile_outcome.group_count,
+                                    compile_outcome.named_groups,
+                                )
+                            }
                         }
                     }
                 }

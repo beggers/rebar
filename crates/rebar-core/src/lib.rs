@@ -3055,9 +3055,7 @@ fn parse_quantified_nested_group_alternation_branch_local_numbered_backreference
     let (max_repeat, quantified_remainder) =
         if let Some(quantified_remainder) = quantifier_and_remainder.strip_prefix("+)") {
             (None, quantified_remainder)
-        } else if let Some(quantified_remainder) =
-            quantifier_and_remainder.strip_prefix("{1,})")
-        {
+        } else if let Some(quantified_remainder) = quantifier_and_remainder.strip_prefix("{1,})") {
             (None, quantified_remainder)
         } else {
             let quantified_remainder = quantifier_and_remainder.strip_prefix("{1,4})")?;
@@ -3118,9 +3116,7 @@ fn parse_quantified_nested_group_alternation_branch_local_named_backreference_pa
     let (max_repeat, quantified_remainder) =
         if let Some(quantified_remainder) = quantifier_and_remainder.strip_prefix("+)") {
             (None, quantified_remainder)
-        } else if let Some(quantified_remainder) =
-            quantifier_and_remainder.strip_prefix("{1,})")
-        {
+        } else if let Some(quantified_remainder) = quantifier_and_remainder.strip_prefix("{1,})") {
             (None, quantified_remainder)
         } else {
             let quantified_remainder = quantifier_and_remainder.strip_prefix("{1,4})")?;
@@ -3147,6 +3143,105 @@ fn parse_quantified_nested_group_alternation_branch_local_named_backreference_pa
             branches,
             suffix,
             max_repeat,
+        },
+    )
+}
+
+fn parse_open_ended_quantified_nested_group_alternation_branch_local_numbered_backreference_pattern_str(
+    pattern: &str,
+) -> Option<QuantifiedNestedGroupAlternationBranchLocalBackreferencePattern<'_>> {
+    let open_offset = pattern.find('(')?;
+    let prefix = &pattern[..open_offset];
+    if prefix.is_empty() || prefix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let remainder = &pattern[open_offset + 1..];
+    let inner_remainder = remainder.strip_prefix('(')?;
+    if inner_remainder.starts_with("?P<") {
+        return None;
+    }
+
+    let inner_close_offset = inner_remainder.find(')')?;
+    let inner_body = &inner_remainder[..inner_close_offset];
+    let branches: Vec<&str> = inner_body.split('|').collect();
+    if branches.as_slice() != ["b", "c"] {
+        return None;
+    }
+
+    let quantified_remainder = inner_remainder[inner_close_offset + 1..].strip_prefix("{1,})")?;
+    let suffix = quantified_remainder.strip_prefix(r"\2")?;
+    if suffix.is_empty() || suffix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    Some(
+        QuantifiedNestedGroupAlternationBranchLocalBackreferencePattern {
+            prefix,
+            outer_name: None,
+            inner_name: None,
+            branches,
+            suffix,
+            max_repeat: None,
+        },
+    )
+}
+
+fn parse_open_ended_quantified_nested_group_alternation_branch_local_named_backreference_pattern_str(
+    pattern: &str,
+) -> Option<QuantifiedNestedGroupAlternationBranchLocalBackreferencePattern<'_>> {
+    let open_offset = pattern.find('(')?;
+    let prefix = &pattern[..open_offset];
+    if prefix.is_empty() || prefix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    let remainder = &pattern[open_offset + 1..];
+    let outer_remainder = remainder.strip_prefix("?P<")?;
+    let outer_name_end = outer_remainder.find('>')?;
+    let outer_name = &outer_remainder[..outer_name_end];
+    if !is_supported_group_name(outer_name) {
+        return None;
+    }
+
+    let outer_body = &outer_remainder[outer_name_end + 1..];
+    let inner_remainder = outer_body.strip_prefix("(?P<")?;
+    let inner_name_end = inner_remainder.find('>')?;
+    let inner_name = &inner_remainder[..inner_name_end];
+    if !is_supported_group_name(inner_name) {
+        return None;
+    }
+
+    let inner_body_and_remainder = &inner_remainder[inner_name_end + 1..];
+    let inner_close_offset = inner_body_and_remainder.find(')')?;
+    let inner_body = &inner_body_and_remainder[..inner_close_offset];
+    let branches: Vec<&str> = inner_body.split('|').collect();
+    if branches.as_slice() != ["b", "c"] {
+        return None;
+    }
+
+    let quantified_remainder =
+        inner_body_and_remainder[inner_close_offset + 1..].strip_prefix("{1,})")?;
+    let backreference = quantified_remainder.strip_prefix("(?P=")?;
+    let reference_close_offset = backreference.find(')')?;
+    let reference_name = &backreference[..reference_close_offset];
+    if reference_name != inner_name {
+        return None;
+    }
+
+    let suffix = &backreference[reference_close_offset + 1..];
+    if suffix.is_empty() || suffix.chars().any(is_meta_character) {
+        return None;
+    }
+
+    Some(
+        QuantifiedNestedGroupAlternationBranchLocalBackreferencePattern {
+            prefix,
+            outer_name: Some(outer_name),
+            inner_name: Some(inner_name),
+            branches,
+            suffix,
+            max_repeat: None,
         },
     )
 }
@@ -7029,6 +7124,73 @@ pub fn quantified_nested_group_alternation_branch_local_backreference_find_spans
         )
         .or_else(|| {
             parse_quantified_nested_group_alternation_branch_local_named_backreference_pattern_str(
+                pattern,
+            )
+        })
+    else {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    };
+    if flags != FLAG_UNICODE {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    }
+
+    let mut matches = Vec::new();
+    let mut next_start = normalized_pos;
+    while let Some((span, group_spans)) =
+        find_quantified_nested_group_alternation_branch_local_backreference_match_span_str(
+            &grouped_pattern,
+            flags,
+            MatchMode::Search,
+            &string_chars,
+            next_start,
+            normalized_endpos,
+        )
+    {
+        matches.push(CapturedMatchSpan { span, group_spans });
+        next_start = span.1;
+    }
+
+    CapturedFindSpansOutcome {
+        status: if matches.is_empty() {
+            MatchStatus::NoMatch
+        } else {
+            MatchStatus::Matched
+        },
+        pos: normalized_pos,
+        endpos: normalized_endpos,
+        matches,
+    }
+}
+
+/// Discover repeated spans for the published open-ended `{1,}` nested-group
+/// alternation plus branch-local-backreference replacement slice while
+/// preserving capture spans for result marshalling.
+#[must_use]
+pub fn nested_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_str(
+    pattern: &str,
+    flags: i32,
+    string: &str,
+    pos: isize,
+    endpos: Option<isize>,
+) -> CapturedFindSpansOutcome {
+    let string_chars: Vec<char> = string.chars().collect();
+    let (normalized_pos, normalized_endpos) = normalize_bounds(string_chars.len(), pos, endpos);
+    let Some(grouped_pattern) =
+        parse_open_ended_quantified_nested_group_alternation_branch_local_numbered_backreference_pattern_str(
+            pattern,
+        )
+        .or_else(|| {
+            parse_open_ended_quantified_nested_group_alternation_branch_local_named_backreference_pattern_str(
                 pattern,
             )
         })
