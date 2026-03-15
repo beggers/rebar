@@ -1,6 +1,6 @@
 # RBR-0387: Fold grouped-alternation parity into the grouped-capture suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
 
@@ -43,3 +43,9 @@ Created: 2026-03-15
 - Both tracked and live JSON counts are zero in the current checkout, so the next architecture priority is deleting duplicate Python parity plumbing rather than another JSON burn-down task.
 - `tests/python/test_grouped_alternation_parity.py` is still a 109-line standalone unittest module with local `sys.path` bootstrapping, manual `setUp`/`tearDown` cache purges, and a private match-parity helper for a six-case published fixture slice that already fits the grouped-capture suite's compile/match/access/convenience structure.
 - `tests/python/test_grouped_capture_parity_suite.py` already owns the adjacent grouped, named-group, grouped-segment, optional-group, and nested-group capture rows through the shared fixture-backed harness, making it the natural home for this remaining top-level grouped alternation wrapper.
+
+## Completion
+- Completed 2026-03-15.
+- Folded `grouped_alternation_workflows.py` into `tests/python/test_grouped_capture_parity_suite.py` as one explicit six-case bundle, extended the suite's existing match-group accessor coverage to the numbered and named grouped-alternation search/fullmatch rows, and added grouped-alternation no-match checks through the suite's existing supplemental miss path.
+- Deleted `tests/python/test_grouped_alternation_parity.py`.
+- Verified with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py` (`260 passed`) and `rg --files tests/python | rg 'test_grouped_alternation_parity\\.py$'` (no matches).

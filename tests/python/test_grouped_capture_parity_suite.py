@@ -24,6 +24,7 @@ from tests.python.fixture_parity_support import (
 
 
 EXPECTED_PUBLISHED_FIXTURE_NAMES = (
+    "grouped_alternation_workflows.py",
     "grouped_match_workflows.py",
     "grouped_segment_workflows.py",
     "named_group_workflows.py",
@@ -152,6 +153,31 @@ FIXTURE_BUNDLES = (
         ),
     ),
     _fixture_bundle(
+        "grouped_alternation_workflows.py",
+        selected_case_ids=(
+            "grouped-alternation-compile-metadata-str",
+            "grouped-alternation-module-search-str",
+            "grouped-alternation-pattern-fullmatch-str",
+            "named-grouped-alternation-compile-metadata-str",
+            "named-grouped-alternation-module-search-str",
+            "named-grouped-alternation-pattern-fullmatch-str",
+        ),
+        expected_manifest_id="grouped-alternation-workflows",
+        expected_patterns=frozenset(
+            {
+                r"a(b|c)d",
+                r"a(?P<word>b|c)d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 2,
+            }
+        ),
+    ),
+    _fixture_bundle(
         "optional_group_workflows.py",
         selected_case_ids=(
             "optional-group-compile-metadata-str",
@@ -260,6 +286,20 @@ SUPPLEMENTAL_MISS_CASES = (
         pattern_misses=("abcz",),
     ),
     SupplementalMissCase(
+        id="numbered-grouped-alternation-search-and-fullmatch",
+        module_case_id="grouped-alternation-module-search-str",
+        module_misses=("zzz",),
+        pattern_case_id="grouped-alternation-pattern-fullmatch-str",
+        pattern_misses=("abdd",),
+    ),
+    SupplementalMissCase(
+        id="named-grouped-alternation-search-and-fullmatch",
+        module_case_id="named-grouped-alternation-module-search-str",
+        module_misses=("zzz",),
+        pattern_case_id="named-grouped-alternation-pattern-fullmatch-str",
+        pattern_misses=("acdd",),
+    ),
+    SupplementalMissCase(
         id="named-single-capture-search",
         module_case_id="named-group-module-search-metadata-str",
         module_misses=("zzz",),
@@ -300,10 +340,14 @@ MATCH_GROUP_ACCESS_CASE_IDS = (
     "grouped-pattern-search-single-capture-str",
     "grouped-segment-module-search-str",
     "grouped-segment-pattern-fullmatch-str",
+    "grouped-alternation-module-search-str",
+    "grouped-alternation-pattern-fullmatch-str",
     "named-group-module-search-metadata-str",
     "named-group-pattern-search-metadata-str",
     "named-grouped-segment-module-search-str",
     "named-grouped-segment-pattern-fullmatch-str",
+    "named-grouped-alternation-module-search-str",
+    "named-grouped-alternation-pattern-fullmatch-str",
     "systematic-optional-group-numbered-module-search-absent-str",
     "systematic-optional-group-numbered-pattern-fullmatch-absent-str",
     "systematic-optional-group-named-module-search-absent-str",
