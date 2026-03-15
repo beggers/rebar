@@ -7,7 +7,12 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import FixtureCase, FixtureManifest, load_fixture_manifest
+from rebar_harness.correctness import (
+    DEFAULT_FIXTURE_PATHS,
+    FixtureCase,
+    FixtureManifest,
+    load_fixture_manifest,
+)
 from tests.python.callable_replacement_callback_support import (
     assert_callable_replacement_match_parity,
 )
@@ -21,159 +26,70 @@ FIXTURES_DIR = REPO_ROOT / "tests" / "conformance" / "fixtures"
 class FixtureBundle:
     manifest: FixtureManifest
     cases: tuple[FixtureCase, ...]
-    expected_case_ids: frozenset[str]
-    expected_compile_patterns: frozenset[str]
-    expected_operation_helper_counts: Counter[tuple[str, str]]
+    raw_cases_by_id: dict[str, dict[str, object]]
+
+    @property
+    def compile_patterns(self) -> frozenset[str]:
+        patterns: set[str] = set()
+        for case in self.cases:
+            pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
+            assert isinstance(pattern, str)
+            patterns.add(pattern)
+        return frozenset(patterns)
 
 
-def _fixture_bundle(
-    fixture_name: str,
-    *,
-    expected_manifest_id: str,
-    expected_case_ids: frozenset[str],
-    expected_compile_patterns: frozenset[str],
-    expected_operation_helper_counts: Counter[tuple[str, str]],
-) -> FixtureBundle:
-    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
-    assert manifest.manifest_id == expected_manifest_id
+CALLABLE_FIXTURE_PATHS = tuple(
+    sorted(
+        FIXTURES_DIR.glob("*callable_replacement_workflows.py"),
+        key=lambda path: path.name,
+    )
+)
+PUBLISHED_CALLABLE_FIXTURE_PATHS = tuple(
+    sorted(
+        (
+            path
+            for path in DEFAULT_FIXTURE_PATHS
+            if path.parent == FIXTURES_DIR
+            and path.name.endswith("callable_replacement_workflows.py")
+        ),
+        key=lambda path: path.name,
+    )
+)
+EXPECTED_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("module_call", "sub"): 2,
+        ("module_call", "subn"): 2,
+        ("pattern_call", "sub"): 2,
+        ("pattern_call", "subn"): 2,
+    }
+)
+
+
+def _fixture_bundle(path: pathlib.Path) -> FixtureBundle:
+    manifest, cases = load_fixture_manifest(path)
+    raw_cases = manifest.raw.get("cases", [])
+    assert isinstance(raw_cases, list)
     return FixtureBundle(
         manifest=manifest,
         cases=tuple(cases),
-        expected_case_ids=expected_case_ids,
-        expected_compile_patterns=expected_compile_patterns,
-        expected_operation_helper_counts=expected_operation_helper_counts,
+        raw_cases_by_id={
+            str(raw_case["id"]): raw_case
+            for raw_case in raw_cases
+            if isinstance(raw_case, dict) and "id" in raw_case
+        },
     )
 
 
 FIXTURE_BUNDLES = (
-    _fixture_bundle(
-        "nested_group_callable_replacement_workflows.py",
-        expected_manifest_id="nested-group-callable-replacement-workflows",
-        expected_case_ids=frozenset(
-            {
-                "module-sub-callable-nested-group-numbered-str",
-                "module-subn-callable-nested-group-numbered-str",
-                "pattern-sub-callable-nested-group-numbered-str",
-                "pattern-subn-callable-nested-group-numbered-str",
-                "module-sub-callable-nested-group-named-str",
-                "module-subn-callable-nested-group-named-str",
-                "pattern-sub-callable-nested-group-named-str",
-                "pattern-subn-callable-nested-group-named-str",
-            }
-        ),
-        expected_compile_patterns=frozenset(
-            {
-                r"a((b))d",
-                r"a(?P<outer>(?P<inner>b))d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("module_call", "sub"): 2,
-                ("module_call", "subn"): 2,
-                ("pattern_call", "sub"): 2,
-                ("pattern_call", "subn"): 2,
-            }
-        ),
-    ),
-    _fixture_bundle(
-        "grouped_alternation_callable_replacement_workflows.py",
-        expected_manifest_id="grouped-alternation-callable-replacement-workflows",
-        expected_case_ids=frozenset(
-            {
-                "module-sub-callable-grouped-alternation-str",
-                "module-subn-callable-grouped-alternation-str",
-                "pattern-sub-callable-grouped-alternation-str",
-                "pattern-subn-callable-grouped-alternation-str",
-                "module-sub-callable-named-grouped-alternation-str",
-                "module-subn-callable-named-grouped-alternation-str",
-                "pattern-sub-callable-named-grouped-alternation-str",
-                "pattern-subn-callable-named-grouped-alternation-str",
-            }
-        ),
-        expected_compile_patterns=frozenset(
-            {
-                r"a(b|c)d",
-                r"a(?P<word>b|c)d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("module_call", "sub"): 2,
-                ("module_call", "subn"): 2,
-                ("pattern_call", "sub"): 2,
-                ("pattern_call", "subn"): 2,
-            }
-        ),
-    ),
-    _fixture_bundle(
-        "quantified_nested_group_callable_replacement_workflows.py",
-        expected_manifest_id="quantified-nested-group-callable-replacement-workflows",
-        expected_case_ids=frozenset(
-            {
-                "module-sub-callable-quantified-nested-group-numbered-lower-bound-str",
-                "module-subn-callable-quantified-nested-group-numbered-first-match-only-str",
-                "pattern-sub-callable-quantified-nested-group-numbered-repeated-outer-capture-str",
-                "pattern-subn-callable-quantified-nested-group-numbered-first-match-only-str",
-                "module-sub-callable-quantified-nested-group-named-lower-bound-str",
-                "module-subn-callable-quantified-nested-group-named-first-match-only-str",
-                "pattern-sub-callable-quantified-nested-group-named-repeated-outer-capture-str",
-                "pattern-subn-callable-quantified-nested-group-named-first-match-only-str",
-            }
-        ),
-        expected_compile_patterns=frozenset(
-            {
-                r"a((bc)+)d",
-                r"a(?P<outer>(?P<inner>bc)+)d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("module_call", "sub"): 2,
-                ("module_call", "subn"): 2,
-                ("pattern_call", "sub"): 2,
-                ("pattern_call", "subn"): 2,
-            }
-        ),
-    ),
-    _fixture_bundle(
-        "nested_group_alternation_callable_replacement_workflows.py",
-        expected_manifest_id="nested-group-alternation-callable-replacement-workflows",
-        expected_case_ids=frozenset(
-            {
-                "module-sub-callable-nested-group-alternation-numbered-b-branch-str",
-                "module-subn-callable-nested-group-alternation-numbered-first-match-only-str",
-                "pattern-sub-callable-nested-group-alternation-numbered-mixed-branches-str",
-                "pattern-subn-callable-nested-group-alternation-numbered-c-branch-first-match-only-str",
-                "module-sub-callable-nested-group-alternation-named-c-branch-str",
-                "module-subn-callable-nested-group-alternation-named-first-match-only-str",
-                "pattern-sub-callable-nested-group-alternation-named-mixed-branches-str",
-                "pattern-subn-callable-nested-group-alternation-named-b-branch-first-match-only-str",
-            }
-        ),
-        expected_compile_patterns=frozenset(
-            {
-                r"a((b|c))d",
-                r"a(?P<outer>(?P<inner>b|c))d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("module_call", "sub"): 2,
-                ("module_call", "subn"): 2,
-                ("pattern_call", "sub"): 2,
-                ("pattern_call", "subn"): 2,
-            }
-        ),
-    ),
+    *(_fixture_bundle(path) for path in CALLABLE_FIXTURE_PATHS),
 )
 
 COMPILE_PATTERNS = tuple(
     sorted(
         {
-            pattern
+            compile_pattern
             for bundle in FIXTURE_BUNDLES
-            for pattern in bundle.expected_compile_patterns
+            for compile_pattern in bundle.compile_patterns
         }
     )
 )
@@ -218,20 +134,78 @@ def _case_group_names(case: FixtureCase) -> tuple[str, ...]:
     return tuple(re.compile(_case_pattern(case), case.flags or 0).groupindex)
 
 
+def _raw_callable_replacement(bundle: FixtureBundle, case: FixtureCase) -> dict[str, object]:
+    raw_case = bundle.raw_cases_by_id[case.case_id]
+    raw_args = raw_case.get("args", [])
+    assert isinstance(raw_args, list)
+    replacement_index = 1 if case.operation == "module_call" else 0
+    replacement = raw_args[replacement_index]
+    assert isinstance(replacement, dict)
+    return replacement
+
+
+def _assert_raw_callable_replacement_reference_is_valid(
+    bundle: FixtureBundle,
+    case: FixtureCase,
+) -> None:
+    replacement = _raw_callable_replacement(bundle, case)
+    assert replacement.get("type") == "callable_match_group"
+
+    prefix = replacement.get("prefix", "")
+    suffix = replacement.get("suffix", "")
+    assert isinstance(prefix, str)
+    assert isinstance(suffix, str)
+
+    compiled = re.compile(_case_pattern(case), case.flags or 0)
+    group_reference = replacement.get("group", 0)
+    if isinstance(group_reference, int):
+        assert 0 <= group_reference <= compiled.groups
+    else:
+        assert isinstance(group_reference, str)
+        assert group_reference in compiled.groupindex
+
+
+def test_callable_replacement_suite_discovers_all_published_callable_fixtures() -> None:
+    assert CALLABLE_FIXTURE_PATHS
+    assert CALLABLE_FIXTURE_PATHS == PUBLISHED_CALLABLE_FIXTURE_PATHS
+
+
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
     ids=lambda bundle: bundle.manifest.manifest_id,
 )
-def test_parity_suite_stays_aligned_with_published_correctness_fixture(
+def test_callable_replacement_fixture_shape_contract(
     bundle: FixtureBundle,
 ) -> None:
-    assert len(bundle.cases) == len(bundle.expected_case_ids)
-    assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
-    assert {_case_pattern(case) for case in bundle.cases} == bundle.expected_compile_patterns
+    assert bundle.manifest.manifest_id.endswith("-callable-replacement-workflows")
+    assert bundle.manifest.layer == "module_workflow"
+    assert bundle.manifest.defaults.get("text_model") == "str"
+    assert len(bundle.cases) == 8
+    assert len(bundle.raw_cases_by_id) == len(bundle.cases)
+    assert {case.case_id for case in bundle.cases} == set(bundle.raw_cases_by_id)
+    assert {case.text_model for case in bundle.cases} == {"str"}
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        bundle.expected_operation_helper_counts
+        EXPECTED_OPERATION_HELPER_COUNTS
     )
+    assert len(bundle.compile_patterns) == 2
+
+    has_named_pattern = False
+    has_numbered_pattern = False
+    for pattern in bundle.compile_patterns:
+        compiled = re.compile(pattern)
+        if compiled.groupindex:
+            has_named_pattern = True
+        else:
+            has_numbered_pattern = True
+
+    assert has_named_pattern
+    assert has_numbered_pattern
+
+    for case in bundle.cases:
+        assert "callable-replacement" in case.categories
+        assert "str" in case.categories
+        _assert_raw_callable_replacement_reference_is_valid(bundle, case)
 
 
 @pytest.mark.parametrize("pattern", COMPILE_PATTERNS)
