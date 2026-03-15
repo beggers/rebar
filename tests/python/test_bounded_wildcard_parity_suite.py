@@ -10,29 +10,20 @@ import rebar
 from rebar_harness.correctness import (
     BOUNDED_WILDCARD_FIXTURE_SELECTOR,
     FixtureCase,
-    FixtureManifest,
-    load_fixture_manifest,
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
+    assert_expected_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_result_parity,
     case_pattern,
     compile_with_cpython_parity,
+    load_expected_fixture_bundle,
+    published_fixture_paths_from_bundles,
 )
 PUBLISHED_BOUNDED_WILDCARD_FIXTURE_PATHS = select_correctness_fixture_paths(
     BOUNDED_WILDCARD_FIXTURE_SELECTOR
 )
-
-
-@dataclass(frozen=True)
-class FixtureBundle:
-    manifest: FixtureManifest
-    cases: tuple[FixtureCase, ...]
-    expected_manifest_id: str
-    expected_patterns: frozenset[str]
-    expected_operation_helper_counts: Counter[tuple[str, str | None]]
 
 
 @dataclass(frozen=True)
@@ -94,43 +85,20 @@ class _FakeNativeBoundary:
         self.calls.append(("purge",))
 
 
-def _fixture_bundle(
-    fixture_name: str,
-    *,
-    selected_case_ids: tuple[str, ...],
-    expected_manifest_id: str,
-    expected_patterns: frozenset[str],
-    expected_operation_helper_counts: Counter[tuple[str, str | None]],
-) -> FixtureBundle:
-    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
-    case_by_id = {case.case_id: case for case in cases}
-    missing_case_ids = tuple(case_id for case_id in selected_case_ids if case_id not in case_by_id)
-    if missing_case_ids:
-        raise ValueError(
-            f"{fixture_name} is missing expected bounded-wildcard fixture rows: {missing_case_ids}"
-        )
-
-    return FixtureBundle(
-        manifest=manifest,
-        cases=tuple(case_by_id[case_id] for case_id in selected_case_ids),
-        expected_manifest_id=expected_manifest_id,
-        expected_patterns=expected_patterns,
-        expected_operation_helper_counts=expected_operation_helper_counts,
-    )
-
-
 FIXTURE_BUNDLES = (
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "literal_flag_workflows.py",
-        selected_case_ids=("flag-unsupported-nonliteral-ignorecase-search",),
         expected_manifest_id="literal-flag-workflows",
+        selected_case_ids=("flag-unsupported-nonliteral-ignorecase-search",),
+        expected_case_ids=frozenset({"flag-unsupported-nonliteral-ignorecase-search"}),
         expected_patterns=frozenset({"a.c"}),
         expected_operation_helper_counts=Counter({("module_call", "search"): 1}),
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "collection_replacement_workflows.py",
-        selected_case_ids=("module-findall-nonliteral-str",),
         expected_manifest_id="collection-replacement-workflows",
+        selected_case_ids=("module-findall-nonliteral-str",),
+        expected_case_ids=frozenset({"module-findall-nonliteral-str"}),
         expected_patterns=frozenset({"a.c"}),
         expected_operation_helper_counts=Counter({("module_call", "findall"): 1}),
     ),
@@ -226,8 +194,8 @@ def _assert_finditer_parity(
 
 
 def test_bounded_wildcard_suite_uses_expected_published_fixture_paths() -> None:
-    assert PUBLISHED_BOUNDED_WILDCARD_FIXTURE_PATHS == tuple(
-        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
+    assert PUBLISHED_BOUNDED_WILDCARD_FIXTURE_PATHS == published_fixture_paths_from_bundles(
+        FIXTURE_BUNDLES
     )
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
@@ -237,17 +205,10 @@ def test_bounded_wildcard_suite_uses_expected_published_fixture_paths() -> None:
     FIXTURE_BUNDLES,
     ids=lambda bundle: bundle.expected_manifest_id,
 )
-def test_parity_suite_stays_aligned_with_published_correctness_fixture(
-    bundle: FixtureBundle,
-) -> None:
-    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
-    assert len(bundle.cases) == sum(bundle.expected_operation_helper_counts.values())
-    assert {case_pattern(case) for case in bundle.cases} == bundle.expected_patterns
+def test_parity_suite_stays_aligned_with_published_correctness_fixture(bundle) -> None:
+    assert_expected_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
     assert {case.text_model for case in bundle.cases} == {"str"}
     assert all("bounded-wildcard" in case.categories for case in bundle.cases)
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        bundle.expected_operation_helper_counts
-    )
 
 
 @pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.id)

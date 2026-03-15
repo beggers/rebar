@@ -1,8 +1,9 @@
 # RBR-0427: Route selected-case parity suites through shared fixture bundles
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Replace the repeated selected-case `FixtureBundle` dataclass, `_fixture_bundle(...)` loader, and manifest-alignment assertion blocks in a bounded set of Python parity suites with the existing helpers in `tests/python/fixture_parity_support.py`, so those suites stop hand-maintaining identical fixture-bundle plumbing after `RBR-0422`.
@@ -56,3 +57,13 @@ Created: 2026-03-15
 - The ready queue is empty, recent runtime artifacts show no inherited-dirty or post-task refresh stall, and both tracked and live JSON counts are zero (`tracked_json_blob_count: 0`, `git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), so this run should seed one post-JSON duplicate-plumbing cleanup rather than no-op.
 - `RBR-0422` already introduced shared whole-manifest and selected-case fixture-bundle helpers in `tests/python/fixture_parity_support.py`, but these four suites still each define a local `FixtureBundle` and `_fixture_bundle(...)` wrapper on top of the same manifest-loading path.
 - `RBR-0426` is already reserved in tracked backlog/current-status text for the next feature-owned conditional replacement-template correctness slice, so this architecture follow-on starts at `RBR-0427`.
+
+## Completion
+- 2026-03-15: Extended `tests/python/fixture_parity_support.py` so `load_expected_fixture_bundle(...)` can reuse the existing helper surface for selected-case bundles by loading only caller-selected case ids when requested, while preserving the prior exact-manifest mode for existing callers.
+- 2026-03-15: Switched `tests/python/test_bounded_wildcard_parity_suite.py`, `tests/python/test_grouped_capture_parity_suite.py`, `tests/python/test_literal_flag_parity_suite.py`, and `tests/python/test_literal_collection_helpers.py` to `load_expected_fixture_bundle(...)` plus `assert_expected_fixture_bundle_contract(...)`, removing their local `FixtureBundle` dataclasses, `_fixture_bundle(...)` loaders, and open-coded bundle-alignment assertions.
+- 2026-03-15: Routed the bounded-wildcard and grouped-capture selector/path checks through `published_fixture_paths_from_bundles(...)`, and added shared-helper pattern-set validation for the literal-flag and literal-collection selected bundles without changing their selected case ids or supplemental parity coverage.
+- 2026-03-15: Added focused contract coverage in `tests/python/test_fixture_parity_support_contract.py` for selected-case bundle loading on top of the existing exact-manifest helper coverage.
+
+## Verification
+- 2026-03-15: `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_bounded_wildcard_parity_suite.py tests/python/test_grouped_capture_parity_suite.py tests/python/test_literal_flag_parity_suite.py tests/python/test_literal_collection_helpers.py` (`526 passed`)
+- 2026-03-15: `rg -n 'class FixtureBundle|def _fixture_bundle\(' tests/python/test_bounded_wildcard_parity_suite.py tests/python/test_grouped_capture_parity_suite.py tests/python/test_literal_flag_parity_suite.py tests/python/test_literal_collection_helpers.py` (no matches)

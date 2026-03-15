@@ -370,6 +370,25 @@ def test_expected_fixture_bundle_contract_supports_exact_case_id_validation() ->
     )
 
 
+def test_expected_fixture_bundle_contract_supports_selected_case_loading() -> None:
+    selected_case_ids = (
+        "flag-unsupported-inline-flag-search",
+        "flag-unsupported-locale-bytes-search",
+    )
+    bundle = load_expected_fixture_bundle(
+        "literal_flag_workflows.py",
+        expected_manifest_id="literal-flag-workflows",
+        expected_case_ids=frozenset(selected_case_ids),
+        expected_patterns=frozenset({"(?i)abc", b"abc"}),
+        expected_operation_helper_counts=Counter({("module_call", "search"): 2}),
+        selected_case_ids=selected_case_ids,
+    )
+
+    assert bundle.manifest.path == FIXTURES_DIR / "literal_flag_workflows.py"
+    assert tuple(case.case_id for case in bundle.cases) == selected_case_ids
+    assert_expected_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
+
+
 def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_case_ids() -> None:
     named_bundle = load_whole_manifest_fixture_bundle(
         "named_backreference_workflows.py",

@@ -9,18 +9,18 @@ import pytest
 import rebar
 from rebar_harness.correctness import (
     FixtureCase,
-    FixtureManifest,
     LITERAL_FLAG_FIXTURE_SELECTOR,
-    load_fixture_manifest,
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
+    assert_expected_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_result_parity,
     assert_pattern_parity,
     case_pattern,
     compile_with_cpython_parity,
+    load_expected_fixture_bundle,
 )
 
 
@@ -33,15 +33,6 @@ IGNORECASE_UNICODE_FLAGS = IGNORECASE_FLAGS | UNICODE_FLAGS
 PUBLISHED_LITERAL_FLAG_FIXTURE_PATHS = select_correctness_fixture_paths(
     LITERAL_FLAG_FIXTURE_SELECTOR
 )
-
-
-@dataclass(frozen=True)
-class FixtureBundle:
-    manifest: FixtureManifest
-    cases: tuple[FixtureCase, ...]
-    expected_manifest_id: str
-    expected_case_ids: frozenset[str]
-    expected_operation_helper_counts: Counter[tuple[str, str | None]]
 
 
 @dataclass(frozen=True)
@@ -72,32 +63,6 @@ class FakeBoundaryCase:
     flags: int
     compiled_flags: int
     expected_calls: tuple[tuple[object, ...], ...]
-
-
-def _fixture_bundle(
-    fixture_name: str,
-    *,
-    selected_case_ids: tuple[str, ...],
-    expected_manifest_id: str,
-    expected_operation_helper_counts: Counter[tuple[str, str | None]],
-) -> FixtureBundle:
-    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
-    case_by_id = {case.case_id: case for case in cases}
-    missing_case_ids = tuple(
-        case_id for case_id in selected_case_ids if case_id not in case_by_id
-    )
-    if missing_case_ids:
-        raise ValueError(
-            f"{fixture_name} is missing expected literal-flag fixture rows: {missing_case_ids}"
-        )
-
-    return FixtureBundle(
-        manifest=manifest,
-        cases=tuple(case_by_id[case_id] for case_id in selected_case_ids),
-        expected_manifest_id=expected_manifest_id,
-        expected_case_ids=frozenset(selected_case_ids),
-        expected_operation_helper_counts=expected_operation_helper_counts,
-    )
 
 
 def _module_case_from_fixture(case: FixtureCase) -> ModuleCallCase:
@@ -219,10 +184,12 @@ TARGET_FIXTURE_CASE_IDS = (
     "flag-unsupported-inline-flag-search",
     "flag-unsupported-locale-bytes-search",
 )
-LITERAL_FLAG_FIXTURE_BUNDLE = _fixture_bundle(
+LITERAL_FLAG_FIXTURE_BUNDLE = load_expected_fixture_bundle(
     "literal_flag_workflows.py",
-    selected_case_ids=TARGET_FIXTURE_CASE_IDS,
     expected_manifest_id="literal-flag-workflows",
+    selected_case_ids=TARGET_FIXTURE_CASE_IDS,
+    expected_case_ids=frozenset(TARGET_FIXTURE_CASE_IDS),
+    expected_patterns=frozenset({"abc", "AbC", "(?i)abc", b"abc", b"AbC"}),
     expected_operation_helper_counts=Counter(
         {
             ("module_call", "search"): 4,
@@ -409,12 +376,7 @@ def test_literal_flag_suite_stays_aligned_with_published_correctness_fixture() -
 
     assert PUBLISHED_LITERAL_FLAG_FIXTURE_PATHS == (bundle.manifest.path,)
     assert bundle.manifest.path == FIXTURES_DIR / "literal_flag_workflows.py"
-    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
-    assert len(bundle.cases) == len(bundle.expected_case_ids)
-    assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        bundle.expected_operation_helper_counts
-    )
+    assert_expected_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
 
 
 @pytest.mark.parametrize("case", MODULE_IGNORECASE_CASES, ids=lambda case: case.id)

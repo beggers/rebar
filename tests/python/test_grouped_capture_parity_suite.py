@@ -8,34 +8,26 @@ import pytest
 
 from rebar_harness.correctness import (
     FixtureCase,
-    FixtureManifest,
     GROUPED_CAPTURE_FIXTURE_SELECTOR,
     load_fixture_manifest,
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
+    assert_expected_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
+    load_expected_fixture_bundle,
+    published_fixture_paths_from_bundles,
     str_case_pattern,
 )
 PUBLISHED_GROUPED_CAPTURE_FIXTURE_PATHS = select_correctness_fixture_paths(
     GROUPED_CAPTURE_FIXTURE_SELECTOR
 )
-
-
-@dataclass(frozen=True)
-class FixtureBundle:
-    manifest: FixtureManifest
-    cases: tuple[FixtureCase, ...]
-    expected_manifest_id: str
-    expected_case_ids: frozenset[str]
-    expected_patterns: frozenset[str]
-    expected_operation_helper_counts: Counter[tuple[str, str | None]]
 
 
 @dataclass(frozen=True)
@@ -63,40 +55,20 @@ class BoundedPatternCase:
     bounds: tuple[int, ...]
 
 
-def _fixture_bundle(
-    fixture_name: str,
-    *,
-    selected_case_ids: tuple[str, ...],
-    expected_manifest_id: str,
-    expected_patterns: frozenset[str],
-    expected_operation_helper_counts: Counter[tuple[str, str | None]],
-) -> FixtureBundle:
-    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
-    case_by_id = {case.case_id: case for case in cases}
-    missing_case_ids = tuple(case_id for case_id in selected_case_ids if case_id not in case_by_id)
-    if missing_case_ids:
-        raise ValueError(
-            f"{fixture_name} is missing expected grouped-capture fixture rows: {missing_case_ids}"
-        )
-
-    return FixtureBundle(
-        manifest=manifest,
-        cases=tuple(case_by_id[case_id] for case_id in selected_case_ids),
-        expected_manifest_id=expected_manifest_id,
-        expected_case_ids=frozenset(selected_case_ids),
-        expected_patterns=expected_patterns,
-        expected_operation_helper_counts=expected_operation_helper_counts,
-    )
-
-
 FIXTURE_BUNDLES = (
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "grouped_match_workflows.py",
+        expected_manifest_id="grouped-match-workflows",
         selected_case_ids=(
             "grouped-module-fullmatch-two-capture-gap-str",
             "grouped-pattern-fullmatch-two-capture-gap-str",
         ),
-        expected_manifest_id="grouped-match-workflows",
+        expected_case_ids=frozenset(
+            {
+                "grouped-module-fullmatch-two-capture-gap-str",
+                "grouped-pattern-fullmatch-two-capture-gap-str",
+            }
+        ),
         expected_patterns=frozenset({r"(ab)(c)"}),
         expected_operation_helper_counts=Counter(
             {
@@ -105,14 +77,21 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "named_group_workflows.py",
+        expected_manifest_id="named-group-workflows",
         selected_case_ids=(
             "named-group-compile-metadata-str",
             "named-group-module-search-metadata-str",
             "named-group-pattern-search-metadata-str",
         ),
-        expected_manifest_id="named-group-workflows",
+        expected_case_ids=frozenset(
+            {
+                "named-group-compile-metadata-str",
+                "named-group-module-search-metadata-str",
+                "named-group-pattern-search-metadata-str",
+            }
+        ),
         expected_patterns=frozenset({r"(?P<word>abc)"}),
         expected_operation_helper_counts=Counter(
             {
@@ -122,8 +101,9 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "grouped_segment_workflows.py",
+        expected_manifest_id="grouped-segment-workflows",
         selected_case_ids=(
             "grouped-segment-compile-metadata-str",
             "grouped-segment-module-search-str",
@@ -132,7 +112,16 @@ FIXTURE_BUNDLES = (
             "named-grouped-segment-module-search-str",
             "named-grouped-segment-pattern-fullmatch-str",
         ),
-        expected_manifest_id="grouped-segment-workflows",
+        expected_case_ids=frozenset(
+            {
+                "grouped-segment-compile-metadata-str",
+                "grouped-segment-module-search-str",
+                "grouped-segment-pattern-fullmatch-str",
+                "named-grouped-segment-compile-metadata-str",
+                "named-grouped-segment-module-search-str",
+                "named-grouped-segment-pattern-fullmatch-str",
+            }
+        ),
         expected_patterns=frozenset(
             {
                 r"a(b)c",
@@ -147,8 +136,9 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "grouped_alternation_workflows.py",
+        expected_manifest_id="grouped-alternation-workflows",
         selected_case_ids=(
             "grouped-alternation-compile-metadata-str",
             "grouped-alternation-module-search-str",
@@ -157,7 +147,16 @@ FIXTURE_BUNDLES = (
             "named-grouped-alternation-module-search-str",
             "named-grouped-alternation-pattern-fullmatch-str",
         ),
-        expected_manifest_id="grouped-alternation-workflows",
+        expected_case_ids=frozenset(
+            {
+                "grouped-alternation-compile-metadata-str",
+                "grouped-alternation-module-search-str",
+                "grouped-alternation-pattern-fullmatch-str",
+                "named-grouped-alternation-compile-metadata-str",
+                "named-grouped-alternation-module-search-str",
+                "named-grouped-alternation-pattern-fullmatch-str",
+            }
+        ),
         expected_patterns=frozenset(
             {
                 r"a(b|c)d",
@@ -172,8 +171,9 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "optional_group_workflows.py",
+        expected_manifest_id="optional-group-workflows",
         selected_case_ids=(
             "optional-group-compile-metadata-str",
             "optional-group-module-search-present-str",
@@ -192,7 +192,26 @@ FIXTURE_BUNDLES = (
             "systematic-optional-group-named-pattern-fullmatch-present-str",
             "systematic-optional-group-named-pattern-fullmatch-absent-str",
         ),
-        expected_manifest_id="optional-group-workflows",
+        expected_case_ids=frozenset(
+            {
+                "optional-group-compile-metadata-str",
+                "optional-group-module-search-present-str",
+                "optional-group-pattern-fullmatch-absent-str",
+                "named-optional-group-compile-metadata-str",
+                "named-optional-group-module-search-absent-str",
+                "named-optional-group-pattern-fullmatch-present-str",
+                "systematic-optional-group-numbered-compile-metadata-str",
+                "systematic-optional-group-numbered-module-search-present-str",
+                "systematic-optional-group-numbered-module-search-absent-str",
+                "systematic-optional-group-numbered-pattern-fullmatch-present-str",
+                "systematic-optional-group-numbered-pattern-fullmatch-absent-str",
+                "systematic-optional-group-named-compile-metadata-str",
+                "systematic-optional-group-named-module-search-present-str",
+                "systematic-optional-group-named-module-search-absent-str",
+                "systematic-optional-group-named-pattern-fullmatch-present-str",
+                "systematic-optional-group-named-pattern-fullmatch-absent-str",
+            }
+        ),
         expected_patterns=frozenset(
             {
                 r"a(b)?d",
@@ -207,8 +226,9 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "optional_group_alternation_workflows.py",
+        expected_manifest_id="optional-group-alternation-workflows",
         selected_case_ids=(
             "optional-group-alternation-compile-metadata-str",
             "optional-group-alternation-module-search-present-str",
@@ -217,7 +237,16 @@ FIXTURE_BUNDLES = (
             "named-optional-group-alternation-module-search-present-str",
             "named-optional-group-alternation-pattern-fullmatch-absent-str",
         ),
-        expected_manifest_id="optional-group-alternation-workflows",
+        expected_case_ids=frozenset(
+            {
+                "optional-group-alternation-compile-metadata-str",
+                "optional-group-alternation-module-search-present-str",
+                "optional-group-alternation-pattern-fullmatch-absent-str",
+                "named-optional-group-alternation-compile-metadata-str",
+                "named-optional-group-alternation-module-search-present-str",
+                "named-optional-group-alternation-pattern-fullmatch-absent-str",
+            }
+        ),
         expected_patterns=frozenset(
             {
                 r"a(b|c)?d",
@@ -232,8 +261,9 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "nested_group_workflows.py",
+        expected_manifest_id="nested-group-workflows",
         selected_case_ids=(
             "nested-group-compile-metadata-str",
             "nested-group-module-search-str",
@@ -242,7 +272,16 @@ FIXTURE_BUNDLES = (
             "named-nested-group-module-search-str",
             "named-nested-group-pattern-fullmatch-str",
         ),
-        expected_manifest_id="nested-group-workflows",
+        expected_case_ids=frozenset(
+            {
+                "nested-group-compile-metadata-str",
+                "nested-group-module-search-str",
+                "nested-group-pattern-fullmatch-str",
+                "named-nested-group-compile-metadata-str",
+                "named-nested-group-module-search-str",
+                "named-nested-group-pattern-fullmatch-str",
+            }
+        ),
         expected_patterns=frozenset(
             {
                 r"a((b))d",
@@ -257,8 +296,9 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "nested_group_alternation_workflows.py",
+        expected_manifest_id="nested-group-alternation-workflows",
         selected_case_ids=(
             "nested-group-alternation-compile-metadata-str",
             "nested-group-alternation-module-search-str",
@@ -267,7 +307,16 @@ FIXTURE_BUNDLES = (
             "named-nested-group-alternation-module-search-str",
             "named-nested-group-alternation-pattern-fullmatch-str",
         ),
-        expected_manifest_id="nested-group-alternation-workflows",
+        expected_case_ids=frozenset(
+            {
+                "nested-group-alternation-compile-metadata-str",
+                "nested-group-alternation-module-search-str",
+                "nested-group-alternation-pattern-fullmatch-str",
+                "named-nested-group-alternation-compile-metadata-str",
+                "named-nested-group-alternation-module-search-str",
+                "named-nested-group-alternation-pattern-fullmatch-str",
+            }
+        ),
         expected_patterns=frozenset(
             {
                 r"a((b|c))d",
@@ -592,8 +641,8 @@ def _match_for_case(
 
 
 def test_grouped_capture_parity_suite_uses_expected_published_fixture_paths() -> None:
-    assert PUBLISHED_GROUPED_CAPTURE_FIXTURE_PATHS == tuple(
-        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
+    assert PUBLISHED_GROUPED_CAPTURE_FIXTURE_PATHS == published_fixture_paths_from_bundles(
+        FIXTURE_BUNDLES
     )
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
@@ -613,17 +662,9 @@ def test_match_group_access_rows_remain_on_grouped_capture_fixture_paths() -> No
     FIXTURE_BUNDLES,
     ids=lambda bundle: bundle.expected_manifest_id,
 )
-def test_parity_suite_stays_aligned_with_published_correctness_fixture(
-    bundle: FixtureBundle,
-) -> None:
-    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
-    assert len(bundle.cases) == len(bundle.expected_case_ids)
-    assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
-    assert {str_case_pattern(case) for case in bundle.cases} == bundle.expected_patterns
+def test_parity_suite_stays_aligned_with_published_correctness_fixture(bundle) -> None:
+    assert_expected_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
     assert {case.text_model for case in bundle.cases} == {"str"}
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        bundle.expected_operation_helper_counts
-    )
 
 
 @pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.id)

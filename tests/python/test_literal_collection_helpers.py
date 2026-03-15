@@ -7,22 +7,14 @@ import re
 import pytest
 
 import rebar
-from rebar_harness.correctness import FixtureCase, FixtureManifest, load_fixture_manifest
+from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
+    assert_expected_fixture_bundle_contract,
     assert_match_result_parity,
     case_pattern,
     compile_with_cpython_parity,
+    load_expected_fixture_bundle,
 )
-
-
-@dataclass(frozen=True)
-class FixtureBundle:
-    manifest: FixtureManifest
-    cases: tuple[FixtureCase, ...]
-    expected_manifest_id: str
-    expected_case_ids: frozenset[str]
-    expected_operation_helper_counts: Counter[tuple[str, str | None]]
 
 
 @dataclass(frozen=True)
@@ -51,33 +43,6 @@ class TypeErrorCase:
     pattern: str | bytes
     string: str | bytes
     compiled: bool = False
-
-
-def _fixture_bundle(
-    fixture_name: str,
-    *,
-    selected_case_ids: tuple[str, ...],
-    expected_manifest_id: str,
-    expected_operation_helper_counts: Counter[tuple[str, str | None]],
-) -> FixtureBundle:
-    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
-    case_by_id = {case.case_id: case for case in cases}
-    missing_case_ids = tuple(
-        case_id for case_id in selected_case_ids if case_id not in case_by_id
-    )
-    if missing_case_ids:
-        raise ValueError(
-            f"{fixture_name} is missing expected literal collection fixture rows: "
-            f"{missing_case_ids}"
-        )
-
-    return FixtureBundle(
-        manifest=manifest,
-        cases=tuple(case_by_id[case_id] for case_id in selected_case_ids),
-        expected_manifest_id=expected_manifest_id,
-        expected_case_ids=frozenset(selected_case_ids),
-        expected_operation_helper_counts=expected_operation_helper_counts,
-    )
 
 
 def _module_case_from_fixture(case: FixtureCase) -> ModuleCollectionCase:
@@ -163,10 +128,12 @@ TARGET_FIXTURE_CASE_IDS = (
     "module-finditer-str-repeated",
     "pattern-finditer-bytes-bounded",
 )
-COLLECTION_FIXTURE_BUNDLE = _fixture_bundle(
+COLLECTION_FIXTURE_BUNDLE = load_expected_fixture_bundle(
     "collection_replacement_workflows.py",
-    selected_case_ids=TARGET_FIXTURE_CASE_IDS,
     expected_manifest_id="collection-replacement-workflows",
+    selected_case_ids=TARGET_FIXTURE_CASE_IDS,
+    expected_case_ids=frozenset(TARGET_FIXTURE_CASE_IDS),
+    expected_patterns=frozenset({"abc", b"abc"}),
     expected_operation_helper_counts=Counter(
         {
             ("module_call", "split"): 2,
@@ -323,12 +290,7 @@ UNSUPPORTED_CASES = (
 def test_literal_collection_suite_stays_aligned_with_published_fixture_rows() -> None:
     bundle = COLLECTION_FIXTURE_BUNDLE
 
-    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
-    assert len(bundle.cases) == len(bundle.expected_case_ids)
-    assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        bundle.expected_operation_helper_counts
-    )
+    assert_expected_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
 
 
 @pytest.mark.parametrize("case", MODULE_SPLIT_CASES, ids=lambda case: case.id)

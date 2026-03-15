@@ -67,11 +67,26 @@ def load_expected_fixture_bundle(
     expected_case_ids: frozenset[str],
     expected_patterns: frozenset[str | bytes],
     expected_operation_helper_counts: Counter[tuple[str, str | None]],
+    selected_case_ids: tuple[str, ...] | None = None,
 ) -> ExpectedFixtureBundle:
     manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
+    loaded_cases = tuple(cases)
+    if selected_case_ids is None:
+        bundle_cases = loaded_cases
+    else:
+        case_by_id = {case.case_id: case for case in loaded_cases}
+        missing_case_ids = tuple(
+            case_id for case_id in selected_case_ids if case_id not in case_by_id
+        )
+        if missing_case_ids:
+            raise ValueError(
+                f"{fixture_name} is missing expected fixture rows: {missing_case_ids}"
+            )
+        bundle_cases = tuple(case_by_id[case_id] for case_id in selected_case_ids)
+
     return ExpectedFixtureBundle(
         manifest=manifest,
-        cases=tuple(cases),
+        cases=bundle_cases,
         expected_manifest_id=expected_manifest_id,
         expected_case_ids=expected_case_ids,
         expected_patterns=expected_patterns,
