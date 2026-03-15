@@ -9,7 +9,7 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-The published correctness slice is still narrow and carries a small explicit `unimplemented` tail, while the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity.
+The published correctness slice is now fully passing, but it is still narrow and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
 - Keep `RBR-0370` queued so, once `RBR-0368` lands the broader `{1,4}` callable-replacement parity slice for `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d`, the same bounded slice reaches the existing Python-path benchmark surface before open-ended counted repeats, replacement-template variants, or deeper nested grouped execution broaden the queue.
@@ -19,7 +19,7 @@ The published correctness slice is still narrow and carries a small explicit `un
 - The published benchmark surface is still bounded and carries 24 explicit known-gap workloads.
 
 ## Compatibility Heuristic
-High pass rate within the current published slice, still far from drop-in parity overall: a small explicit `unimplemented` tail remains and the main benchmark publication still measures the source-tree shim.
+Fully passing within the current published slice, still far from drop-in parity overall: coverage is still narrow and the main benchmark publication still measures the source-tree shim.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.

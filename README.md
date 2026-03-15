@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice is still narrow and carries a small explicit `unimplemented` tail, while the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 now has `RBR-0368` seeded as the surviving follow-on so, once `RBR-0366` publishes the broader `{1,4}` nested-group alternation plus branch-local-backreference callable-replacement correctness pack for `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d`, the same bounded slice reaches Rust-backed parity before later benchmark catch-up, open-ended counted repeats, replacement-template variants, or deeper nested grouped execution broaden the queue. |
-| Work queue | `1` ready, `0` in progress, `370` done, `0` blocked |
+| Delivery estimate | The published correctness slice is now fully passing, but it is still narrow and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity. |
+| Current milestone | Milestone 2 now has `RBR-0370` seeded as the surviving follow-on so, once `RBR-0368` lands the broader `{1,4}` nested-group alternation plus branch-local-backreference callable-replacement parity slice for `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d`, the same bounded slice reaches the existing Python-path benchmark surface before open-ended counted repeats, replacement-template variants, or deeper nested grouped execution broaden the queue. |
+| Work queue | `1` ready, `0` in progress, `372` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -22,13 +22,13 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Metric | Value |
 | --- | --- |
 | Published cases | `865` |
-| Passing in published slice | `857` |
+| Passing in published slice | `865` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `8` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `96` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice is still narrow and carries a small explicit `unimplemented` tail, while the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice is now fully passing, but it is still narrow and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `501` of `525` published workloa
 
 ### Immediate Next Steps
 
-- Keep `RBR-0368` queued so, once `RBR-0366` publishes the broader `{1,4}` callable-replacement slice for `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d`, the same bounded slice reaches Rust-backed parity before later benchmark catch-up, open-ended counted repeats, replacement-template variants, or deeper nested grouped execution broaden the queue.
+- Keep `RBR-0370` queued so, once `RBR-0368` lands the broader `{1,4}` callable-replacement parity slice for `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d`, the same bounded slice reaches the existing Python-path benchmark surface before open-ended counted repeats, replacement-template variants, or deeper nested grouped execution broaden the queue.
 
 ### Current Risks
 
@@ -57,7 +57,7 @@ _README speedup rollups stay omitted while only `501` of `525` published workloa
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current published correctness slice is still intentionally narrow and still carries a small explicit gap tail, so it is useful signal that the present frontier is being landed honestly rather than evidence of broad drop-in parity.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current published correctness slice is still intentionally narrow, but it now passes end to end within that bounded surface. That is useful evidence that a real Rust-backed slice can close cleanly, not evidence of broad drop-in parity.
 
 The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice: across eight published parser workloads it is about 2x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
