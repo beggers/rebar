@@ -22,6 +22,7 @@ from tests.python.fixture_parity_support import (
 
 
 EXPECTED_PUBLISHED_FIXTURE_NAMES = (
+    "exact_repeat_quantified_group_alternation_workflows.py",
     "quantified_alternation_workflows.py",
     "quantified_alternation_broader_range_workflows.py",
     "quantified_alternation_conditional_workflows.py",
@@ -69,6 +70,37 @@ def _fixture_bundle(
 
 
 FIXTURE_BUNDLES = (
+    _fixture_bundle(
+        "exact_repeat_quantified_group_alternation_workflows.py",
+        expected_manifest_id="exact-repeat-quantified-group-alternation-workflows",
+        expected_case_ids=frozenset(
+            {
+                "exact-repeat-quantified-group-alternation-numbered-compile-metadata-str",
+                "exact-repeat-quantified-group-alternation-numbered-module-search-bc-bc-str",
+                "exact-repeat-quantified-group-alternation-numbered-module-search-bc-de-str",
+                "exact-repeat-quantified-group-alternation-numbered-pattern-fullmatch-de-de-str",
+                "exact-repeat-quantified-group-alternation-numbered-pattern-fullmatch-no-match-short-str",
+                "exact-repeat-quantified-group-alternation-named-compile-metadata-str",
+                "exact-repeat-quantified-group-alternation-named-module-search-bc-bc-str",
+                "exact-repeat-quantified-group-alternation-named-module-search-bc-de-str",
+                "exact-repeat-quantified-group-alternation-named-pattern-fullmatch-de-de-str",
+                "exact-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-extra-repetition-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(bc|de){2}d",
+                r"a(?P<word>bc|de){2}d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 4,
+                ("pattern_call", "fullmatch"): 4,
+            }
+        ),
+    ),
     _fixture_bundle(
         "quantified_alternation_workflows.py",
         expected_manifest_id="quantified-alternation-workflows",
