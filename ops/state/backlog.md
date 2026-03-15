@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now has `RBR-0346` seeded as the surviving follow-on so the bounded nested-group alternation callable-replacement workflows for `a((b|c))d` and `a(?P<outer>(?P<inner>b|c))d` reach the existing Python-path benchmark surface on `nested_group_callable_replacement_boundary.py` before broader callback behavior or deeper nested grouped execution broadens the queue.
+Milestone 2 now has `RBR-0348` seeded as the surviving follow-on so the quantified nested-group alternation callable-replacement workflows for `a((b|c)+)d` and `a(?P<outer>(?P<inner>b|c)+)d` reopen the correctness frontier before broader counted repeats, branch-local-backreference callbacks, or deeper nested grouped execution broaden the queue.
 
 ## Ordered Work
-1. Land `RBR-0346` to catch the bounded nested-group alternation callable-replacement slice up on `benchmarks/workloads/nested_group_callable_replacement_boundary.py` through `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, promoting the current `module-sub-callable-nested-group-alternation-cold-gap` anchor plus only the minimal adjacent numbered and named `sub()` / `subn()` rows needed to publish this exact slice.
+1. Land `RBR-0348` to publish the quantified nested-group alternation callable-replacement slice through `python/rebar_harness/correctness.py`, `tests/conformance/fixtures/quantified_nested_group_alternation_callable_replacement_workflows.py`, `tests/conformance/correctness_expectations.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`, adding only the minimal numbered and named `sub()` / `subn()` cases needed to make this exact quantified callback slice the surviving correctness frontier.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
