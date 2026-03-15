@@ -1,6 +1,6 @@
 # RBR-0389: Fold grouped-alternation replacement-template parity into the grouped replacement pytest module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
 
@@ -44,3 +44,9 @@ Created: 2026-03-15
 - Both tracked and live JSON counts are zero in the current checkout (`tracked_json_blob_count: 0`, `tracked_json_blob_delta: 0`, `git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), so the next architecture priority is deleting duplicate Python parity plumbing rather than another JSON burn-down task.
 - `tests/python/test_grouped_alternation_replacement_template_parity.py` is still a 76-line standalone `unittest` module with local `sys.path` bootstrapping, manual cache purges, and hand-maintained numbered and named replacement cases that restate the exact workflows already published in `tests/conformance/fixtures/grouped_alternation_replacement_workflows.py`.
 - `tests/python/test_grouped_literal_replacement_template.py` already owns the adjacent grouped literal replacement-template and grouped single-capture match surface through a shared fixture-backed pytest path, making it the natural home for this remaining grouped replacement wrapper.
+
+## Completion
+- Completed 2026-03-15.
+- Folded the grouped-alternation replacement-template rows from `tests/conformance/fixtures/grouped_alternation_replacement_workflows.py` into `tests/python/test_grouped_literal_replacement_template.py`, adding one manifest-alignment assertion for the exact eight published case ids plus compile-pattern and operation/helper-count coverage, and reusing the shared `regex_backend` pytest path for compile, module, and compiled-`Pattern` parity checks.
+- Removed the superseded `tests/python/test_grouped_alternation_replacement_template_parity.py` standalone `unittest` wrapper.
+- Verified with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_grouped_literal_replacement_template.py` (`44 passed`) and `rg --files tests/python | rg 'test_grouped_alternation_replacement_template_parity\.py$'` (no matches).
