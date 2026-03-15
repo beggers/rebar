@@ -1,6 +1,6 @@
 # RBR-0386: Add broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference replacement-template parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-15
 
@@ -30,3 +30,16 @@ Created: 2026-03-15
 ## Notes
 - Build on `RBR-0384`, `RBR-0380`, `RBR-0378`, and the existing nested-group replacement boundary.
 - Keep later benchmark catch-up on the existing `benchmarks/workloads/nested_group_replacement_boundary.py` path; do not fork another benchmark family when that follow-on is seeded.
+
+## Completion
+- Extended the Rust nested branch-local backreference parser/matcher to recognize the broader-range open-ended `{2,}` lower bound for `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d`, while keeping the replacement-template span path limited to explicit open-ended counted repeats.
+- Expanded `tests/python/test_open_ended_quantified_group_replacement_template_parity_suite.py` so the existing ordinary backend-parameterized parity module now covers both the landed `{1,}` fixture and the new `{2,}` published fixture directly from `tests/conformance/fixtures/`.
+- Republished `reports/correctness/latest.py`; the tracked combined scorecard is now `889` total cases, `889` passed, `0` failed, and `0` unimplemented, and the `{2,}` replacement manifest now records `8` passes with `0` gaps.
+- The existing CPython bridge and Python wrapper marshalling paths were already sufficient once the Rust core recognized and executed the new slice, so no changes were needed in `crates/rebar-cpython/src/lib.rs` or `python/rebar/__init__.py`.
+
+## Verification
+- `cargo build -p rebar-cpython`
+- `PYTHONPATH=python ./.venv/bin/python -m pytest tests/python/test_open_ended_quantified_group_replacement_template_parity_suite.py -q`
+- `PYTHONPATH=python ./.venv/bin/python -m pytest tests/conformance/test_combined_correctness_scorecards.py -k open_ended_quantified_group_scorecards -q`
+- `PYTHONPATH=python ./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_benchmark_scorecards.py::SourceTreeBenchmarkScorecardTest::test_nested_group_replacement_scorecard_covers_open_ended_rows tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeCombinedBoundaryBenchmarkSuiteTest::test_nested_group_replacement_manifest_covers_open_ended_branch_local_backreference_slice -q`
+- `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

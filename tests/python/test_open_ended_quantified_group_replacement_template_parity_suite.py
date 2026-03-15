@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from collections import Counter
+from dataclasses import dataclass
 import re
 
 import pytest
 
-from rebar_harness.correctness import FixtureCase, load_fixture_manifest
+from rebar_harness.correctness import FixtureCase, FixtureManifest, load_fixture_manifest
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
     assert_match_convenience_api_parity,
@@ -16,27 +17,17 @@ from tests.python.fixture_parity_support import (
 )
 
 
-FIXTURE_PATH = (
-    FIXTURES_DIR
-    / "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py"
+EXPECTED_PUBLISHED_FIXTURE_NAMES = (
+    "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+    "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
 )
-EXPECTED_PUBLISHED_FIXTURE_PATHS = (FIXTURE_PATH,)
+EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
+    sorted(
+        (FIXTURES_DIR / fixture_name for fixture_name in EXPECTED_PUBLISHED_FIXTURE_NAMES),
+        key=lambda path: path.name,
+    )
+)
 PUBLISHED_FIXTURE_PATHS = select_published_fixture_paths(EXPECTED_PUBLISHED_FIXTURE_PATHS)
-FIXTURE_MANIFEST, PUBLISHED_CASES = load_fixture_manifest(FIXTURE_PATH)
-EXPECTED_CASE_IDS = {
-    "module-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
-    "module-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
-    "pattern-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
-    "pattern-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-str",
-    "module-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
-    "module-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-str",
-    "pattern-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
-    "pattern-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
-}
-EXPECTED_COMPILE_PATTERNS = {
-    r"a((b|c){1,})\2d",
-    r"a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d",
-}
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
         ("module_call", "sub"): 2,
@@ -47,6 +38,83 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
 )
 
 
+@dataclass(frozen=True)
+class FixtureBundle:
+    manifest: FixtureManifest
+    cases: tuple[FixtureCase, ...]
+    expected_manifest_id: str
+    expected_case_ids: frozenset[str]
+    expected_patterns: frozenset[str]
+
+
+def _fixture_bundle(
+    fixture_name: str,
+    *,
+    expected_manifest_id: str,
+    expected_case_ids: frozenset[str],
+    expected_patterns: frozenset[str],
+) -> FixtureBundle:
+    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
+    return FixtureBundle(
+        manifest=manifest,
+        cases=tuple(cases),
+        expected_manifest_id=expected_manifest_id,
+        expected_case_ids=expected_case_ids,
+        expected_patterns=expected_patterns,
+    )
+
+
+FIXTURE_BUNDLES = (
+    _fixture_bundle(
+        "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+        expected_manifest_id=(
+            "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows"
+        ),
+        expected_case_ids=frozenset(
+            {
+                "module-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
+                "module-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
+                "pattern-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
+                "pattern-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-str",
+                "module-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
+                "module-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-str",
+                "pattern-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
+                "pattern-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a((b|c){1,})\2d",
+                r"a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d",
+            }
+        ),
+    ),
+    _fixture_bundle(
+        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+        expected_manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows"
+        ),
+        expected_case_ids=frozenset(
+            {
+                "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
+                "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
+                "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
+                "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-str",
+                "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
+                "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-str",
+                "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
+                "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a((b|c){2,})\2d",
+                r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+            }
+        ),
+    ),
+)
+PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
 COMPILE_PATTERNS = tuple(sorted({case_pattern(case) for case in PUBLISHED_CASES}))
 MODULE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "module_call")
 PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pattern_call")
@@ -92,15 +160,25 @@ def _search_match_for_case(
     return observed, expected
 
 
-def test_parity_suite_stays_aligned_with_published_correctness_fixture() -> None:
+def test_replacement_template_parity_suite_uses_expected_published_fixture_paths() -> None:
     assert PUBLISHED_FIXTURE_PATHS == EXPECTED_PUBLISHED_FIXTURE_PATHS
-    assert FIXTURE_MANIFEST.manifest_id == (
-        "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows"
-    )
-    assert len(PUBLISHED_CASES) == len(EXPECTED_CASE_IDS)
-    assert {case.case_id for case in PUBLISHED_CASES} == EXPECTED_CASE_IDS
-    assert set(COMPILE_PATTERNS) == EXPECTED_COMPILE_PATTERNS
-    assert Counter((case.operation, case.helper) for case in PUBLISHED_CASES) == (
+    assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
+
+
+@pytest.mark.parametrize(
+    "bundle",
+    FIXTURE_BUNDLES,
+    ids=lambda bundle: bundle.expected_manifest_id,
+)
+def test_parity_suite_stays_aligned_with_published_correctness_fixture(
+    bundle: FixtureBundle,
+) -> None:
+    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
+    assert len(bundle.cases) == len(bundle.expected_case_ids)
+    assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
+    assert {case_pattern(case) for case in bundle.cases} == bundle.expected_patterns
+    assert {case.text_model for case in bundle.cases} == {"str"}
+    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
         EXPECTED_OPERATION_HELPER_COUNTS
     )
 

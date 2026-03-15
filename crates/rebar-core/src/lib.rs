@@ -471,6 +471,7 @@ struct QuantifiedNestedGroupAlternationBranchLocalBackreferencePattern<'a> {
     inner_name: Option<&'a str>,
     branches: Vec<&'a str>,
     suffix: &'a str,
+    min_repeat: usize,
     max_repeat: Option<usize>,
 }
 
@@ -3052,15 +3053,10 @@ fn parse_quantified_nested_group_alternation_branch_local_numbered_backreference
     }
 
     let quantifier_and_remainder = &inner_remainder[inner_close_offset + 1..];
-    let (max_repeat, quantified_remainder) =
-        if let Some(quantified_remainder) = quantifier_and_remainder.strip_prefix("+)") {
-            (None, quantified_remainder)
-        } else if let Some(quantified_remainder) = quantifier_and_remainder.strip_prefix("{1,})") {
-            (None, quantified_remainder)
-        } else {
-            let quantified_remainder = quantifier_and_remainder.strip_prefix("{1,4})")?;
-            (Some(4), quantified_remainder)
-        };
+    let (min_repeat, max_repeat, quantified_remainder) =
+        parse_quantified_nested_group_alternation_branch_local_backreference_quantifier_str(
+            quantifier_and_remainder,
+        )?;
 
     let suffix = quantified_remainder.strip_prefix(r"\2")?;
     if suffix.is_empty() || suffix.chars().any(is_meta_character) {
@@ -3074,6 +3070,7 @@ fn parse_quantified_nested_group_alternation_branch_local_numbered_backreference
             inner_name: None,
             branches,
             suffix,
+            min_repeat,
             max_repeat,
         },
     )
@@ -3113,15 +3110,10 @@ fn parse_quantified_nested_group_alternation_branch_local_named_backreference_pa
     }
 
     let quantifier_and_remainder = &inner_body_and_remainder[inner_close_offset + 1..];
-    let (max_repeat, quantified_remainder) =
-        if let Some(quantified_remainder) = quantifier_and_remainder.strip_prefix("+)") {
-            (None, quantified_remainder)
-        } else if let Some(quantified_remainder) = quantifier_and_remainder.strip_prefix("{1,})") {
-            (None, quantified_remainder)
-        } else {
-            let quantified_remainder = quantifier_and_remainder.strip_prefix("{1,4})")?;
-            (Some(4), quantified_remainder)
-        };
+    let (min_repeat, max_repeat, quantified_remainder) =
+        parse_quantified_nested_group_alternation_branch_local_backreference_quantifier_str(
+            quantifier_and_remainder,
+        )?;
 
     let backreference = quantified_remainder.strip_prefix("(?P=")?;
     let reference_close_offset = backreference.find(')')?;
@@ -3142,9 +3134,36 @@ fn parse_quantified_nested_group_alternation_branch_local_named_backreference_pa
             inner_name: Some(inner_name),
             branches,
             suffix,
+            min_repeat,
             max_repeat,
         },
     )
+}
+
+fn parse_quantified_nested_group_alternation_branch_local_backreference_quantifier_str(
+    quantifier_and_remainder: &str,
+) -> Option<(usize, Option<usize>, &str)> {
+    if let Some(quantified_remainder) = quantifier_and_remainder.strip_prefix("+)") {
+        Some((1, None, quantified_remainder))
+    } else if let Some(quantified_remainder) = quantifier_and_remainder.strip_prefix("{1,})") {
+        Some((1, None, quantified_remainder))
+    } else if let Some(quantified_remainder) = quantifier_and_remainder.strip_prefix("{2,})") {
+        Some((2, None, quantified_remainder))
+    } else {
+        let quantified_remainder = quantifier_and_remainder.strip_prefix("{1,4})")?;
+        Some((1, Some(4), quantified_remainder))
+    }
+}
+
+fn parse_open_ended_quantified_nested_group_alternation_branch_local_backreference_quantifier_str(
+    quantifier_and_remainder: &str,
+) -> Option<(usize, &str)> {
+    if let Some(quantified_remainder) = quantifier_and_remainder.strip_prefix("{1,})") {
+        Some((1, quantified_remainder))
+    } else {
+        let quantified_remainder = quantifier_and_remainder.strip_prefix("{2,})")?;
+        Some((2, quantified_remainder))
+    }
 }
 
 fn parse_open_ended_quantified_nested_group_alternation_branch_local_numbered_backreference_pattern_str(
@@ -3169,7 +3188,10 @@ fn parse_open_ended_quantified_nested_group_alternation_branch_local_numbered_ba
         return None;
     }
 
-    let quantified_remainder = inner_remainder[inner_close_offset + 1..].strip_prefix("{1,})")?;
+    let (min_repeat, quantified_remainder) =
+        parse_open_ended_quantified_nested_group_alternation_branch_local_backreference_quantifier_str(
+            &inner_remainder[inner_close_offset + 1..],
+        )?;
     let suffix = quantified_remainder.strip_prefix(r"\2")?;
     if suffix.is_empty() || suffix.chars().any(is_meta_character) {
         return None;
@@ -3182,6 +3204,7 @@ fn parse_open_ended_quantified_nested_group_alternation_branch_local_numbered_ba
             inner_name: None,
             branches,
             suffix,
+            min_repeat,
             max_repeat: None,
         },
     )
@@ -3220,8 +3243,10 @@ fn parse_open_ended_quantified_nested_group_alternation_branch_local_named_backr
         return None;
     }
 
-    let quantified_remainder =
-        inner_body_and_remainder[inner_close_offset + 1..].strip_prefix("{1,})")?;
+    let (min_repeat, quantified_remainder) =
+        parse_open_ended_quantified_nested_group_alternation_branch_local_backreference_quantifier_str(
+            &inner_body_and_remainder[inner_close_offset + 1..],
+        )?;
     let backreference = quantified_remainder.strip_prefix("(?P=")?;
     let reference_close_offset = backreference.find(')')?;
     let reference_name = &backreference[..reference_close_offset];
@@ -3241,6 +3266,7 @@ fn parse_open_ended_quantified_nested_group_alternation_branch_local_named_backr
             inner_name: Some(inner_name),
             branches,
             suffix,
+            min_repeat,
             max_repeat: None,
         },
     )
@@ -7172,9 +7198,9 @@ pub fn quantified_nested_group_alternation_branch_local_backreference_find_spans
     }
 }
 
-/// Discover repeated spans for the published open-ended `{1,}` nested-group
-/// alternation plus branch-local-backreference replacement slice while
-/// preserving capture spans for result marshalling.
+/// Discover repeated spans for the published explicit open-ended counted-repeat
+/// nested-group alternation plus branch-local-backreference replacement slice
+/// while preserving capture spans for result marshalling.
 #[must_use]
 pub fn nested_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_str(
     pattern: &str,
@@ -10487,11 +10513,11 @@ fn quantified_nested_group_alternation_branch_local_backreference_matches_at_str
     let max_repeat = pattern.max_repeat.map_or(max_repeat, |bounded_max_repeat| {
         usize::min(bounded_max_repeat, max_repeat)
     });
-    if max_repeat == 0 {
+    if max_repeat < pattern.min_repeat {
         return None;
     }
 
-    for candidate_count in (1..=max_repeat).rev() {
+    for candidate_count in (pattern.min_repeat..=max_repeat).rev() {
         if let Some((inner_span, match_end)) =
             quantified_nested_group_alternation_branch_local_backreference_matches_exact_repeats(
                 pattern.branches.as_slice(),
