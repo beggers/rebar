@@ -1,8 +1,9 @@
 # RBR-0377: Fold match-group-access parity into the existing family suites
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Delete the cross-cutting `tests/python/test_match_group_access_parity.py` wrapper by moving its valid and invalid match-group accessor assertions onto the family suites that already own those published fixtures, so grouped-capture and branch-local-backreference parity stay on one legible fixture-backed path instead of a third overlapping suite.
@@ -49,3 +50,14 @@ Created: 2026-03-15
 ## Notes
 - `tests/python/test_match_group_access_parity.py` is a 327-line duplicate wrapper over six fixtures already owned by `tests/python/test_grouped_capture_parity_suite.py` and `tests/python/test_branch_local_backreference_parity_suite.py`; it redefines `FixtureBundle`, fixture selection, compile execution, and accessor-error helpers only to add assertions that belong with those family suites.
 - Both tracked and live JSON counts are already zero in the current checkout, so this is the next-priority architecture cleanup: delete duplicate parity plumbing instead of seeding another feature task or another helper layer.
+
+## Completion
+- Added generic valid/invalid match-group accessor parity helpers to `tests/python/fixture_parity_support.py` so the grouped-capture and branch-local suites can share the accessor comparison logic without copying the deleted wrapper's helper block.
+- Folded the grouped-capture accessor rows into `tests/python/test_grouped_capture_parity_suite.py` by loading the existing published fixture rows directly from the suite's published fixture paths, then added accessor-parity tests there for the grouped, named, optional-group, and nested-group cases listed above.
+- Folded the branch-local accessor rows into `tests/python/test_branch_local_backreference_parity_suite.py` by selecting the existing published workflow cases already owned by that suite and adding the same valid/invalid accessor-parity assertions there.
+- Deleted `tests/python/test_match_group_access_parity.py` after the owning suites covered its valid and invalid accessor assertions.
+
+## Verification
+- `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py`
+- `git diff --name-status -- tests/python/test_match_group_access_parity.py` reported `D	tests/python/test_match_group_access_parity.py`
+- `rg --files tests/python | rg 'test_match_group_access_parity\.py$'` returned no matches

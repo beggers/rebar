@@ -14,6 +14,10 @@ from rebar_harness.correctness import (
     FixtureManifest,
     load_fixture_manifest,
 )
+from tests.python.fixture_parity_support import (
+    assert_invalid_match_group_access_parity,
+    assert_valid_match_group_access_parity,
+)
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -332,6 +336,7 @@ FIXTURE_BUNDLES = (
     ),
 )
 PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
+CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
 COMPILE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "compile")
 WORKFLOW_CASES = tuple(case for case in PUBLISHED_CASES if case.operation != "compile")
 MATCH_CONVENIENCE_CASE_IDS = frozenset(
@@ -340,6 +345,16 @@ MATCH_CONVENIENCE_CASE_IDS = frozenset(
     if bundle.assert_match_convenience_api
     for case in bundle.cases
     if case.operation != "compile"
+)
+MATCH_GROUP_ACCESS_CASE_IDS = (
+    "nested-group-alternation-branch-local-numbered-backreference-module-search-b-branch-str",
+    "nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-c-branch-str",
+    "nested-group-alternation-branch-local-named-backreference-module-search-c-branch-str",
+    "nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-b-branch-str",
+    "quantified-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
+    "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-second-repetition-b-branch-str",
+    "quantified-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-str",
+    "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-second-repetition-mixed-branches-str",
 )
 SUPPLEMENTAL_MISS_CASES = (
     SupplementalMissCase(
@@ -592,8 +607,51 @@ def _compile_with_cpython_parity(
     return observed, expected
 
 
+def _load_match_group_access_cases() -> tuple[FixtureCase, ...]:
+    missing_case_ids = tuple(
+        case_id for case_id in MATCH_GROUP_ACCESS_CASE_IDS if case_id not in CASES_BY_ID
+    )
+    if missing_case_ids:
+        raise ValueError(
+            "branch-local match-group-access coverage is missing expected fixture rows: "
+            f"{missing_case_ids}"
+        )
+    return tuple(CASES_BY_ID[case_id] for case_id in MATCH_GROUP_ACCESS_CASE_IDS)
+
+
+MATCH_GROUP_ACCESS_CASES = _load_match_group_access_cases()
+
+
+def _workflow_result_for_case(
+    backend_name: str,
+    backend: object,
+    case: FixtureCase,
+) -> tuple[object, re.Match[str] | None]:
+    assert case.helper is not None
+
+    if case.operation == "module_call":
+        observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
+        expected = getattr(re, case.helper)(*case.args, **case.kwargs)
+    else:
+        observed_pattern, expected_pattern = _compile_with_cpython_parity(
+            backend_name,
+            backend,
+            case.pattern_payload(),
+            case.flags or 0,
+        )
+        observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
+        expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
+
+    return observed, expected
+
+
 def test_expected_branch_local_backreference_fixtures_remain_published() -> None:
     assert PUBLISHED_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATHS == EXPECTED_PUBLISHED_FIXTURE_PATHS
+
+
+def test_match_group_access_rows_remain_on_branch_local_fixture_paths() -> None:
+    assert tuple(case.case_id for case in MATCH_GROUP_ACCESS_CASES) == MATCH_GROUP_ACCESS_CASE_IDS
+    assert {case.text_model for case in MATCH_GROUP_ACCESS_CASES} == {"str"}
 
 
 @pytest.mark.parametrize("bundle", FIXTURE_BUNDLES, ids=lambda bundle: bundle.expected_manifest_id)
@@ -630,20 +688,7 @@ def test_published_workflows_match_cpython(
     case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
-    assert case.helper is not None
-
-    if case.operation == "module_call":
-        observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
-        expected = getattr(re, case.helper)(*case.args, **case.kwargs)
-    else:
-        observed_pattern, expected_pattern = _compile_with_cpython_parity(
-            backend_name,
-            backend,
-            case.pattern_payload(),
-            case.flags or 0,
-        )
-        observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
-        expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
+    observed, expected = _workflow_result_for_case(backend_name, backend, case)
 
     assert (observed is None) == (expected is None)
     if expected is None:
@@ -652,6 +697,34 @@ def test_published_workflows_match_cpython(
     _assert_match_parity(backend_name, observed, expected)
     if case.case_id in MATCH_CONVENIENCE_CASE_IDS:
         _assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize("case", MATCH_GROUP_ACCESS_CASES, ids=lambda case: case.case_id)
+def test_match_group_accessors_match_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = _workflow_result_for_case(backend_name, backend, case)
+
+    assert observed is not None
+    assert expected is not None
+    _assert_match_parity(backend_name, observed, expected)
+    assert_valid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize("case", MATCH_GROUP_ACCESS_CASES, ids=lambda case: case.case_id)
+def test_invalid_match_group_access_errors_match_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = _workflow_result_for_case(backend_name, backend, case)
+
+    assert observed is not None
+    assert expected is not None
+    _assert_match_parity(backend_name, observed, expected)
+    assert_invalid_match_group_access_parity(observed, expected)
 
 
 @pytest.mark.parametrize("miss_case", SUPPLEMENTAL_MISS_CASES, ids=lambda case: case.id)

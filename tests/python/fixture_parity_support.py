@@ -10,6 +10,7 @@ from rebar_harness.correctness import DEFAULT_FIXTURE_PATHS, FixtureCase
 FIXTURES_DIR = pathlib.Path(__file__).resolve().parents[1] / "conformance" / "fixtures"
 
 _MISSING_GROUP_DEFAULT = object()
+_MATCH_ACCESSOR_NAMES = ("group", "span", "start", "end", "getitem")
 
 
 def select_published_fixture_paths(
@@ -157,6 +158,30 @@ def assert_match_convenience_api_parity(
         assert observed.expand(template) == expected.expand(template)
 
 
+def assert_valid_match_group_access_parity(
+    observed: object,
+    expected: re.Match[str] | re.Match[bytes],
+) -> None:
+    for reference in _valid_match_group_references(expected):
+        for accessor_name in _MATCH_ACCESSOR_NAMES:
+            assert _apply_match_accessor(observed, accessor_name, reference) == (
+                _apply_match_accessor(expected, accessor_name, reference)
+            )
+
+
+def assert_invalid_match_group_access_parity(
+    observed: object,
+    expected: re.Match[str] | re.Match[bytes],
+) -> None:
+    for reference in _invalid_match_group_references(expected):
+        for accessor_name in _MATCH_ACCESSOR_NAMES:
+            expected_error = _capture_match_accessor_error(expected, accessor_name, reference)
+            observed_error = _capture_match_accessor_error(observed, accessor_name, reference)
+
+            assert type(observed_error) is type(expected_error)
+            assert observed_error.args == expected_error.args
+
+
 def _match_api_templates(
     pattern: str | bytes,
     *,
@@ -179,3 +204,50 @@ def _match_api_templates(
     if isinstance(pattern, bytes):
         return tuple(template.encode("ascii") for template in templates)
     return tuple(templates)
+
+
+def _valid_match_group_references(
+    expected: re.Match[str] | re.Match[bytes],
+) -> tuple[int | str, ...]:
+    return (*range(expected.re.groups + 1), *expected.re.groupindex)
+
+
+def _invalid_match_group_references(
+    expected: re.Match[str] | re.Match[bytes],
+) -> tuple[int | str, ...]:
+    missing_name = "missing"
+    while missing_name in expected.re.groupindex:
+        missing_name += "_group"
+    return (-1, expected.re.groups + 1, missing_name)
+
+
+def _apply_match_accessor(
+    match: object,
+    accessor_name: str,
+    reference: int | str,
+) -> object:
+    if accessor_name == "group":
+        return match.group(reference)
+    if accessor_name == "span":
+        return match.span(reference)
+    if accessor_name == "start":
+        return match.start(reference)
+    if accessor_name == "end":
+        return match.end(reference)
+    if accessor_name == "getitem":
+        return match[reference]
+    raise AssertionError(f"unknown accessor {accessor_name!r}")
+
+
+def _capture_match_accessor_error(
+    match: object,
+    accessor_name: str,
+    reference: int | str,
+) -> BaseException:
+    try:
+        _apply_match_accessor(match, accessor_name, reference)
+    except BaseException as error:  # noqa: BLE001 - parity helper compares exception details.
+        return error
+    raise AssertionError(
+        f"expected {accessor_name}({reference!r}) to raise for {match.re.pattern!r}"
+    )

@@ -14,6 +14,10 @@ from rebar_harness.correctness import (
     FixtureManifest,
     load_fixture_manifest,
 )
+from tests.python.fixture_parity_support import (
+    assert_invalid_match_group_access_parity,
+    assert_valid_match_group_access_parity,
+)
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -249,6 +253,20 @@ SUPPLEMENTAL_MISS_CASES = (
         pattern_misses=("abdd",),
     ),
 )
+MATCH_GROUP_ACCESS_CASE_IDS = (
+    "grouped-module-search-single-capture-str",
+    "grouped-pattern-search-single-capture-str",
+    "named-group-module-search-metadata-str",
+    "named-group-pattern-search-metadata-str",
+    "systematic-optional-group-numbered-module-search-absent-str",
+    "systematic-optional-group-numbered-pattern-fullmatch-absent-str",
+    "systematic-optional-group-named-module-search-absent-str",
+    "systematic-optional-group-named-pattern-fullmatch-absent-str",
+    "nested-group-module-search-str",
+    "nested-group-pattern-fullmatch-str",
+    "named-nested-group-module-search-str",
+    "named-nested-group-pattern-fullmatch-str",
+)
 
 
 def _compile_with_cpython_parity(
@@ -262,6 +280,56 @@ def _compile_with_cpython_parity(
 
     assert observed is backend.compile(pattern, flags)
     _assert_pattern_parity(backend_name, observed, expected)
+    return observed, expected
+
+
+def _load_match_group_access_cases() -> tuple[FixtureCase, ...]:
+    expected_case_ids = frozenset(MATCH_GROUP_ACCESS_CASE_IDS)
+    case_by_id: dict[str, FixtureCase] = {}
+
+    for path in PUBLISHED_GROUPED_CAPTURE_FIXTURE_PATHS:
+        _, cases = load_fixture_manifest(path)
+        for case in cases:
+            if case.case_id in expected_case_ids:
+                case_by_id.setdefault(case.case_id, case)
+
+    missing_case_ids = tuple(
+        case_id for case_id in MATCH_GROUP_ACCESS_CASE_IDS if case_id not in case_by_id
+    )
+    if missing_case_ids:
+        raise ValueError(
+            "grouped-capture match-group-access coverage is missing expected fixture rows: "
+            f"{missing_case_ids}"
+        )
+
+    return tuple(case_by_id[case_id] for case_id in MATCH_GROUP_ACCESS_CASE_IDS)
+
+
+MATCH_GROUP_ACCESS_CASES = _load_match_group_access_cases()
+
+
+def _match_for_case(
+    backend_name: str,
+    backend: object,
+    case: FixtureCase,
+) -> tuple[object, re.Match[str]]:
+    assert case.helper is not None
+
+    if case.operation == "module_call":
+        observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
+        expected = getattr(re, case.helper)(*case.args, **case.kwargs)
+    else:
+        observed_pattern, expected_pattern = _compile_with_cpython_parity(
+            backend_name,
+            backend,
+            case.pattern_payload(),
+            case.flags or 0,
+        )
+        observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
+        expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
+
+    assert observed is not None
+    assert expected is not None
     return observed, expected
 
 
@@ -376,6 +444,11 @@ def test_grouped_capture_parity_suite_uses_expected_published_fixture_paths() ->
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
 
+def test_match_group_access_rows_remain_on_grouped_capture_fixture_paths() -> None:
+    assert tuple(case.case_id for case in MATCH_GROUP_ACCESS_CASES) == MATCH_GROUP_ACCESS_CASE_IDS
+    assert {case.text_model for case in MATCH_GROUP_ACCESS_CASES} == {"str"}
+
+
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
@@ -453,6 +526,30 @@ def test_pattern_helper_matches_cpython(
     assert observed is not None
     assert expected is not None
     _assert_match_parity(backend_name, observed, expected)
+
+
+@pytest.mark.parametrize("case", MATCH_GROUP_ACCESS_CASES, ids=lambda case: case.case_id)
+def test_match_group_accessors_match_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = _match_for_case(backend_name, backend, case)
+
+    _assert_match_parity(backend_name, observed, expected)
+    assert_valid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize("case", MATCH_GROUP_ACCESS_CASES, ids=lambda case: case.case_id)
+def test_invalid_match_group_access_errors_match_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = _match_for_case(backend_name, backend, case)
+
+    _assert_match_parity(backend_name, observed, expected)
+    assert_invalid_match_group_access_parity(observed, expected)
 
 
 @pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
