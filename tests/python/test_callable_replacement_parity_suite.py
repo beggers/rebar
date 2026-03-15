@@ -354,6 +354,50 @@ def assert_callable_replacement_exception_parity(
     assert len(observed_matches) == 1
 
 
+def assert_pattern_callable_replacement_return_type_error_parity(
+    *,
+    backend_name: str,
+    backend: object,
+    helper: str,
+    pattern: str,
+    string: str,
+    count: int,
+) -> None:
+    observed_matches: list[object] = []
+    expected_matches: list[re.Match[str]] = []
+
+    def observed_replacement(match: object) -> bytes:
+        observed_matches.append(match)
+        return b"X"
+
+    def expected_replacement(match: re.Match[str]) -> bytes:
+        expected_matches.append(match)
+        return b"X"
+
+    expected_target = re.compile(pattern)
+    with pytest.raises(TypeError) as expected_error:
+        getattr(expected_target, helper)(
+            expected_replacement,
+            string,
+            count=count,
+        )
+
+    observed_target = backend.compile(pattern)
+    with pytest.raises(TypeError) as observed_error:
+        getattr(observed_target, helper)(
+            observed_replacement,
+            string,
+            count=count,
+        )
+
+    assert observed_error.value.args == expected_error.value.args
+    _assert_callback_match_sequence_parity(
+        backend_name=backend_name,
+        observed_matches=observed_matches,
+        expected_matches=expected_matches,
+    )
+
+
 @dataclass(frozen=True)
 class FixtureBundle:
     manifest: FixtureManifest
@@ -467,6 +511,30 @@ PATTERN_CASES = tuple(
     for bundle in FIXTURE_BUNDLES
     for case in bundle.cases
     if case.operation == "pattern_call"
+)
+CALLABLE_RETURN_TYPE_ERROR_MANIFEST_KEYWORDS = (
+    "quantified",
+    "broader-range",
+    "open-ended",
+)
+PATTERN_RETURN_TYPE_ERROR_EXPECTED_MANIFEST_IDS = frozenset(
+    {
+        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows",
+        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows",
+        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows",
+        "nested-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows",
+        "quantified-nested-group-alternation-branch-local-backreference-callable-replacement-workflows",
+        "quantified-nested-group-alternation-callable-replacement-workflows",
+        "quantified-nested-group-callable-replacement-workflows",
+    }
+)
+PATTERN_RETURN_TYPE_ERROR_CASES = tuple(
+    case
+    for case in PATTERN_CASES
+    if any(
+        keyword in case.manifest_id
+        for keyword in CALLABLE_RETURN_TYPE_ERROR_MANIFEST_KEYWORDS
+    )
 )
 
 
@@ -720,6 +788,14 @@ def test_nested_broader_range_open_ended_conditional_callable_cases_stay_aligned
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
         EXPECTED_OPERATION_HELPER_COUNTS
     )
+
+
+def test_pattern_callable_replacement_return_type_error_cases_cover_quantified_callable_fixture_frontier(
+) -> None:
+    assert PATTERN_RETURN_TYPE_ERROR_CASES
+    assert {
+        case.manifest_id for case in PATTERN_RETURN_TYPE_ERROR_CASES
+    } == PATTERN_RETURN_TYPE_ERROR_EXPECTED_MANIFEST_IDS
 
 
 NO_MATCH_PATTERNS = tuple(sorted({*COMPILE_PATTERNS, _literal_callable_pattern()}))
@@ -1096,4 +1172,27 @@ def test_pattern_callable_replacement_callback_exception_matches_cpython(
         count=_case_count(case),
         group_names=_case_group_names(case),
         use_compiled_pattern=True,
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
+    PATTERN_RETURN_TYPE_ERROR_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_pattern_callable_replacement_wrong_return_type_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+
+    _skip_pending_rebar_callable_parity(backend_name, case)
+    assert_pattern_callable_replacement_return_type_error_parity(
+        backend_name=backend_name,
+        backend=backend,
+        helper=case.helper,
+        pattern=str_case_pattern(case),
+        string=_case_string(case),
+        count=_case_count(case),
     )
