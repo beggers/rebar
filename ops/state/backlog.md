@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now stays on the bounded broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional callable-replacement frontier; after newly seeded correctness-publication task `RBR-0414` drains on the shared callable fixture/parity surface, the surviving concrete follow-on is Rust-backed parity task `RBR-0415` for the same numbered and named `sub()` / `subn()` slice.
+Milestone 2 now stays on the bounded broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional callable-replacement frontier; after newly seeded Rust-backed parity task `RBR-0415` drains on the shared callable fixture/parity surface, the surviving concrete follow-on is Python-path benchmark catch-up task `RBR-0417` on `benchmarks/workloads/nested_group_callable_replacement_boundary.py` for the same numbered and named `sub()` / `subn()` slice.
 
 ## Ordered Work
-1. `RBR-0415`: land Rust-backed numbered and named conditional callable-replacement parity for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)` on `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_callable_replacement_parity_suite.py`, and `reports/correctness/latest.py`, keeping the callback shape bounded to the existing `callable_match_group` helper and leaving later Python-path benchmark catch-up on `benchmarks/workloads/nested_group_callable_replacement_boundary.py`.
+1. `RBR-0417`: catch the same numbered and named conditional callable-replacement slice up on `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` by adding the minimal four measured rows for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)` through the Python-facing `rebar` path after `RBR-0415` closes the shared callable parity gap.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

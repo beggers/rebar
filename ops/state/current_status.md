@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 933 cases across 104 manifests, with 925 matching CPython and 8 explicit `unimplemented` gaps still open; the main benchmark report still covers 558 workloads with 534 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- Land Rust-backed parity task `RBR-0415` for the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional callable-replacement `sub()` / `subn()` slice that `RBR-0414` has now published.
+- Once newly seeded Rust-backed parity task `RBR-0415` drains, land Python-path benchmark catch-up task `RBR-0417` on `benchmarks/workloads/nested_group_callable_replacement_boundary.py` for the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional callable-replacement `sub()` / `subn()` slice.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow, now shows 925 passing cases plus 8 explicit
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Land Rust-backed parity task `RBR-0415` for the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional callable-replacement `sub()` / `subn()` slice that `RBR-0414` has now published.
+- Once newly seeded Rust-backed parity task `RBR-0415` drains, land Python-path benchmark catch-up task `RBR-0417` on `benchmarks/workloads/nested_group_callable_replacement_boundary.py` for the broader-range open-ended `{2,}` nested-group branch-local-backreference conditional callable-replacement `sub()` / `subn()` slice.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
