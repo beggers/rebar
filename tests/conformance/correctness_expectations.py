@@ -330,6 +330,14 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "pattern-subn-callable-nested-group-alternation-named-b-branch-first-match-only-str",
         ),
     },
+    "quantified-nested-group-alternation-callable-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-callable-quantified-nested-group-alternation-numbered-lower-bound-b-branch-str",
+            "pattern-sub-callable-quantified-nested-group-alternation-numbered-mixed-branches-str",
+            "module-sub-callable-quantified-nested-group-alternation-named-lower-bound-c-branch-str",
+            "pattern-subn-callable-quantified-nested-group-alternation-named-first-match-only-c-branch-str",
+        ),
+    },
     "optional-group-alternation-workflows": {
         "representative_case_ids": (
             "optional-group-alternation-compile-metadata-str",
