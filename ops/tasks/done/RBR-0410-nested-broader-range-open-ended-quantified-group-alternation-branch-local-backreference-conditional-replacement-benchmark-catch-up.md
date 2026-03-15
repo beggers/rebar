@@ -1,8 +1,9 @@
 # RBR-0410: Catch broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional replacement-template benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Extend the published benchmark surface so the bounded broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional replacement-template workflows supported by `RBR-0408` produce real `rebar` timings on the existing nested-group replacement manifest instead of remaining correctness-only coverage.
@@ -31,3 +32,13 @@ Created: 2026-03-15
 - Keep this follow-on on the existing `nested_group_replacement_boundary.py` manifest path instead of forking another benchmark family.
 - The shared nested-group replacement manifest already covers the exact, quantified, open-ended `{1,}`, and broader-range `{2,}` non-conditional branch-local-backreference replacement rows, so this task should add only the directly adjacent conditional rows needed to close that Python-path benchmark gap.
 - After this benchmark catch-up drains, the surviving concrete follow-on should reopen on correctness publication for the matching conditional callable-replacement slice rather than another benchmark-only pass.
+
+## Completion
+- 2026-03-15: Added four measured broader-range open-ended `{2,}` conditional replacement-template workloads to `benchmarks/workloads/nested_group_replacement_boundary.py`, keeping the existing shared manifest, cache-mode split, and module-numbered versus pattern-named coverage shape intact.
+- 2026-03-15: Updated the source-tree benchmark expectations and combined-boundary assertions so `nested-group-replacement-boundary` now expects `24` measured workloads, including the new conditional numbered lower-bound / first-match-only and named lower-bound / first-match-only rows.
+- 2026-03-15: Republished `reports/benchmarks/latest.py`; the tracked combined benchmark scorecard now reports `558` total workloads with `534` real `rebar` timings and `24` explicit known gaps, and `nested-group-replacement-boundary` now reports `24` measured workloads with `0` known gaps.
+
+## Verification
+- 2026-03-15: `./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_benchmark_scorecards.py -q` (`1 passed, 56 subtests passed`)
+- 2026-03-15: `./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -q -k "nested_group_replacement_manifest_covers_broader_range_open_ended"` (`2 passed, 16 deselected, 8 subtests passed`)
+- 2026-03-15: `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` (`{"known_gap_count": 24, "measured_workloads": 534, "module_workloads": 550, "parser_workloads": 8, "regression_workloads": 5, "total_workloads": 558}`)
