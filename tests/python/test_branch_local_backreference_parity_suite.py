@@ -35,6 +35,7 @@ EXPECTED_PUBLISHED_FIXTURE_NAMES = (
     "quantified_alternation_branch_local_backreference_workflows.py",
     "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
     "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
+    "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
 )
 EXPECTED_PUBLISHED_FIXTURE_PATHS = tuple(
     sorted(
@@ -330,6 +331,38 @@ FIXTURE_BUNDLES = (
                 ("compile", None): 2,
                 ("module_call", "search"): 4,
                 ("pattern_call", "fullmatch"): 8,
+            }
+        ),
+        assert_match_convenience_api=True,
+    ),
+    _fixture_bundle(
+        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
+        expected_manifest_id="nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-workflows",
+        expected_case_ids=frozenset(
+            {
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-compile-metadata-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-lower-bound-c-branch-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-fourth-repetition-mixed-branches-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-one-repetition-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-compile-metadata-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-lower-bound-b-branch-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-third-repetition-mixed-branches-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-one-repetition-str",
+            }
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a((b|c){2,})\2d",
+                r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 6,
             }
         ),
         assert_match_convenience_api=True,
