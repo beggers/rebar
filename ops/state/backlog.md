@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 currently has no surviving ready `feature-implementation` follow-on: stale task `RBR-0392` was retired after `RBR-0390`'s completion note and verification showed the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference callable-replacement workflows for `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d` already passing through the shared public `rebar` API, so the next planning pass needs to seed the next bounded frontier item.
+Milestone 2 now queues `RBR-0395` to catch the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference callable-replacement slice up on the existing `benchmarks/workloads/nested_group_callable_replacement_boundary.py` path after `RBR-0390` showed the same public-API workflows already passing and stale task `RBR-0392` was retired.
 
 ## Ordered Work
-1. Seed the next bounded `feature-implementation` follow-on. After retiring stale `RBR-0392`, no ready task remains for the already-passing broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference callable-replacement slice.
+1. Drain `RBR-0395` to add the missing broader-range open-ended `{2,}` numbered and named callable-replacement benchmark rows for `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d` on the shared `nested_group_callable_replacement_boundary.py` manifest.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
