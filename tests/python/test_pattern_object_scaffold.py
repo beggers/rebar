@@ -1,10 +1,7 @@
 from __future__ import annotations
 
-import json
 import pathlib
-import subprocess
 import sys
-import tempfile
 import unittest
 
 
@@ -16,7 +13,6 @@ if str(PYTHON_SOURCE) not in sys.path:
 
 
 import rebar
-from tests.benchmarks.native_benchmark_test_support import MATURIN, built_native_runtime
 
 
 class RebarPatternObjectScaffoldTest(unittest.TestCase):
@@ -79,73 +75,6 @@ class RebarPatternObjectScaffoldTest(unittest.TestCase):
                     f"rebar.Pattern.{method_name}() is a scaffold placeholder",
                     str(raised.exception),
                 )
-
-    @unittest.skipUnless(
-        MATURIN is not None,
-        "native pattern scaffold smoke requires a maturin executable on PATH",
-    )
-    def test_built_wheel_keeps_pattern_scaffold_contract(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="rebar-pattern-scaffold-") as temp_dir:
-            temp_root = pathlib.Path(temp_dir)
-            with built_native_runtime(self) as (python_bin, env):
-
-                probe = """
-import json
-import rebar
-
-compiled = rebar.compile("abc", rebar.IGNORECASE)
-
-result = {
-    "native_module_loaded": rebar.native_module_loaded(),
-    "pattern_type_name": type(compiled).__name__,
-    "pattern_type_module": type(compiled).__module__,
-    "pattern_value": compiled.pattern,
-    "flags": compiled.flags,
-    "groups": compiled.groups,
-    "groupindex": compiled.groupindex,
-}
-
-try:
-    compiled.search("abc")
-except Exception as exc:
-    result["search_exception_type"] = type(exc).__name__
-    result["search_exception_message"] = str(exc)
-else:
-    result["search_exception_type"] = None
-    result["search_exception_message"] = None
-    result["search_result"] = {
-        "type_name": type(compiled.search("abc")).__name__,
-        "group0": compiled.search("abc").group(0),
-    }
-
-print(json.dumps(result))
-"""
-                completed = subprocess.run(
-                    [str(python_bin), "-c", probe],
-                    cwd=temp_root,
-                    check=True,
-                    capture_output=True,
-                    text=True,
-                    env=env,
-                )
-            result = json.loads(completed.stdout)
-
-            self.assertTrue(result["native_module_loaded"])
-            self.assertEqual(result["pattern_type_name"], "Pattern")
-            self.assertEqual(result["pattern_type_module"], "re")
-            self.assertEqual(result["pattern_value"], "abc")
-            self.assertEqual(result["flags"], int(rebar.IGNORECASE | rebar.UNICODE))
-            self.assertEqual(result["groups"], 0)
-            self.assertEqual(result["groupindex"], {})
-            self.assertIsNone(result["search_exception_type"])
-            self.assertIsNone(result["search_exception_message"])
-            self.assertEqual(
-                result["search_result"],
-                {
-                    "type_name": "Match",
-                    "group0": "abc",
-                },
-            )
 
 
 if __name__ == "__main__":

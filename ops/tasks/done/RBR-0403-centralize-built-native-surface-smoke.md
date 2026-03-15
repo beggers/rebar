@@ -1,8 +1,9 @@
 # RBR-0403: Centralize built-native surface smoke into one owner test
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Remove the repeated built-native subprocess smoke plumbing from the source-surface tests so the built-wheel contract for module helpers, compiled patterns, and `escape()` lives in one dedicated owner instead of four separate `unittest` files with near-identical `TemporaryDirectory` / `built_native_runtime(...)` / `subprocess.run(...)` / `json.loads(...)` scaffolding.
@@ -40,3 +41,12 @@ Created: 2026-03-15
 - The runtime dashboard is clean and current for `HEAD`, the ready queue is empty, and both tracked and live JSON counts are zero (`tracked_json_blob_count: 0`, `git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), so this run should queue a post-JSON simplification rather than another JSON burn-down task.
 - `ops/state/backlog.md` already earmarks `RBR-0402` for the next feature follow-on, so this architecture cleanup intentionally uses `RBR-0403`.
 - `rg -n "built_native_runtime|TemporaryDirectory|subprocess.run\\(|json.loads\\(|probe =" tests/python` shows the built-native surface smoke duplicated across the dedicated native smoke file plus `test_module_surface_scaffold.py`, `test_pattern_object_scaffold.py`, and `test_escape_surface.py`, even though those three files otherwise own only source-tree shim behavior.
+
+## Completion
+- 2026-03-15: Expanded `tests/python/test_native_extension_smoke.py` into the single built-native smoke owner, keeping one `built_native_runtime(...)` call while consolidating the native import signal, scaffold metadata, compiled-pattern search contract, module helper outputs, purge, template placeholder, and the existing str/bytes `escape()` examples into one subprocess probe.
+- 2026-03-15: Removed the duplicate built-native smoke methods and their smoke-only imports from `tests/python/test_module_surface_scaffold.py`, `tests/python/test_pattern_object_scaffold.py`, and `tests/python/test_escape_surface.py`, leaving those files responsible only for source-tree shim assertions.
+
+## Verification
+- 2026-03-15: `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_native_extension_smoke.py tests/python/test_module_surface_scaffold.py tests/python/test_pattern_object_scaffold.py tests/python/test_escape_surface.py` (`13 passed, 1 skipped, 16 subtests passed`)
+- 2026-03-15: `rg -n "built_native_runtime|TemporaryDirectory|subprocess\\.run\\(|json\\.loads\\(" tests/python/test_module_surface_scaffold.py tests/python/test_pattern_object_scaffold.py tests/python/test_escape_surface.py` (no matches)
+- 2026-03-15: `rg -n "built_native_runtime" tests/python/test_native_extension_smoke.py` (exactly one match)

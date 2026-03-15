@@ -1,10 +1,7 @@
 from __future__ import annotations
 
-import json
 import pathlib
-import subprocess
 import sys
-import tempfile
 import unittest
 
 
@@ -16,7 +13,6 @@ if str(PYTHON_SOURCE) not in sys.path:
 
 
 import rebar
-from tests.benchmarks.native_benchmark_test_support import MATURIN, built_native_runtime
 
 
 STR_CASES = [
@@ -52,41 +48,6 @@ class RebarEscapeSurfaceTest(unittest.TestCase):
                 escaped = rebar.escape(raw)
                 self.assertIs(type(escaped), bytes)
                 self.assertEqual(escaped, expected)
-
-    @unittest.skipUnless(
-        MATURIN is not None,
-        "native extension surface smoke requires a maturin executable on PATH",
-    )
-    def test_built_wheel_keeps_escape_behavior(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="rebar-escape-surface-") as temp_dir:
-            temp_root = pathlib.Path(temp_dir)
-            with built_native_runtime(self) as (python_bin, env):
-
-                probe = r"""
-import json
-import rebar
-
-result = {
-    "native_module_loaded": rebar.native_module_loaded(),
-    "escaped_str": rebar.escape(' !"#%&,/:;<=>@`~'),
-    "escaped_bytes": rebar.escape(b'a-b.c'),
-}
-
-print(json.dumps(result))
-"""
-                completed = subprocess.run(
-                    [str(python_bin), "-c", probe],
-                    cwd=temp_root,
-                    check=True,
-                    capture_output=True,
-                    text=True,
-                    env=env,
-                )
-            result = json.loads(completed.stdout)
-
-            self.assertTrue(result["native_module_loaded"])
-            self.assertEqual(result["escaped_str"], '\\ !"\\#%\\&,/:;<=>@`\\~')
-            self.assertEqual(result["escaped_bytes"], "a\\-b\\.c")
 
 
 if __name__ == "__main__":

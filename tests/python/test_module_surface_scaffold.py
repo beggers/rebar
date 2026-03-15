@@ -1,10 +1,7 @@
 from __future__ import annotations
 
-import json
 import pathlib
-import subprocess
 import sys
-import tempfile
 import unittest
 
 
@@ -16,7 +13,6 @@ if str(PYTHON_SOURCE) not in sys.path:
 
 
 import rebar
-from tests.benchmarks.native_benchmark_test_support import MATURIN, built_native_runtime
 
 
 PLACEHOLDER_CASES = [
@@ -94,168 +90,6 @@ class RebarModuleSurfaceScaffoldTest(unittest.TestCase):
     def test_source_package_purge_is_safe_noop(self) -> None:
         self.assertIsNone(rebar.purge())
         self.assertIsNone(rebar.purge())
-
-    @unittest.skipUnless(
-        MATURIN is not None,
-        "native extension surface smoke requires a maturin executable on PATH",
-    )
-    def test_built_wheel_keeps_surface_and_native_signal(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="rebar-module-surface-") as temp_dir:
-            temp_root = pathlib.Path(temp_dir)
-            with built_native_runtime(self) as (python_bin, env):
-
-                probe = """
-import json
-import rebar
-
-placeholder_cases = {
-    "template": [["abc"], {}],
-}
-
-result = {
-    "native_module_loaded": rebar.native_module_loaded(),
-    "native_scaffold_status": rebar.native_scaffold_status(),
-    "exported_helpers_present": all(
-        hasattr(rebar, name)
-        for name in ["search", "match", "fullmatch", "split", "findall", "finditer"]
-        + sorted(placeholder_cases)
-        + ["purge"]
-    ),
-    "purge_result": rebar.purge(),
-}
-
-compiled = rebar.compile("abc", rebar.IGNORECASE)
-result["compiled_pattern"] = {
-    "type_name": type(compiled).__name__,
-    "type_module": type(compiled).__module__,
-    "pattern": compiled.pattern,
-    "flags": compiled.flags,
-    "groups": compiled.groups,
-    "groupindex": compiled.groupindex,
-}
-
-search_match = rebar.search("abc", "zzabczz")
-result["literal_search"] = {
-    "type_name": type(search_match).__name__,
-    "group0": search_match.group(0),
-    "span": list(search_match.span()),
-}
-
-result["literal_match_none"] = rebar.match("abc", "zabc")
-full_match = rebar.fullmatch("abc", "abc")
-result["literal_fullmatch"] = {
-    "type_name": type(full_match).__name__,
-    "group0": full_match.group(0),
-    "span": list(full_match.span()),
-}
-
-result["literal_split"] = rebar.split("abc", "abcabc", 1)
-result["literal_findall"] = rebar.findall("abc", "zabcabc")
-result["literal_finditer"] = [
-    {
-        "type_name": type(match).__name__,
-        "group0": match.group(0),
-        "span": list(match.span()),
-    }
-    for match in rebar.finditer("abc", "zabcabc")
-]
-
-result["escape_outputs"] = {
-    "str": rebar.escape("a-b.c"),
-    "bytes": rebar.escape(b"a-b.c").decode("latin-1"),
-}
-
-exceptions = {}
-for name, (args, kwargs) in placeholder_cases.items():
-    helper = getattr(rebar, name)
-    try:
-        helper(*args, **kwargs)
-    except Exception as exc:
-        exceptions[name] = {
-            "type": type(exc).__name__,
-            "message": str(exc),
-        }
-    else:
-        exceptions[name] = None
-
-result["exceptions"] = exceptions
-print(json.dumps(result))
-"""
-                completed = subprocess.run(
-                    [str(python_bin), "-c", probe],
-                    cwd=temp_root,
-                    check=True,
-                    capture_output=True,
-                    text=True,
-                    env=env,
-                )
-            result = json.loads(completed.stdout)
-
-            self.assertTrue(result["native_module_loaded"])
-            self.assertEqual(result["native_scaffold_status"], "scaffold-only")
-            self.assertTrue(result["exported_helpers_present"])
-            self.assertIsNone(result["purge_result"])
-            self.assertEqual(
-                result["literal_search"],
-                {
-                    "type_name": "Match",
-                    "group0": "abc",
-                    "span": [2, 5],
-                },
-            )
-            self.assertIsNone(result["literal_match_none"])
-            self.assertEqual(
-                result["literal_fullmatch"],
-                {
-                    "type_name": "Match",
-                    "group0": "abc",
-                    "span": [0, 3],
-                },
-            )
-            self.assertEqual(result["literal_split"], ["", "abc"])
-            self.assertEqual(result["literal_findall"], ["abc", "abc"])
-            self.assertEqual(
-                result["literal_finditer"],
-                [
-                    {
-                        "type_name": "Match",
-                        "group0": "abc",
-                        "span": [1, 4],
-                    },
-                    {
-                        "type_name": "Match",
-                        "group0": "abc",
-                        "span": [4, 7],
-                    },
-                ],
-            )
-            self.assertEqual(
-                result["escape_outputs"],
-                {
-                    "str": "a\\-b\\.c",
-                    "bytes": "a\\-b\\.c",
-                },
-            )
-            self.assertEqual(
-                result["compiled_pattern"],
-                {
-                    "type_name": "Pattern",
-                    "type_module": "re",
-                    "pattern": "abc",
-                    "flags": int(rebar.IGNORECASE | rebar.UNICODE),
-                    "groups": 0,
-                    "groupindex": {},
-                },
-            )
-
-            for helper_name in {"template"}:
-                with self.subTest(helper=helper_name):
-                    exception_payload = result["exceptions"][helper_name]
-                    self.assertEqual(exception_payload["type"], "NotImplementedError")
-                    self.assertIn(
-                        f"rebar.{helper_name}() is a scaffold placeholder",
-                        exception_payload["message"],
-                    )
 
 
 if __name__ == "__main__":
