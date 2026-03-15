@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from dataclasses import dataclass
 import pathlib
 import re
 import sys
@@ -10,35 +11,16 @@ import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYTHON_SOURCE = REPO_ROOT / "python"
-FIXTURE_PATH = (
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_group_alternation_workflows.py"
-)
+FIXTURES_DIR = REPO_ROOT / "tests" / "conformance" / "fixtures"
 
 if str(PYTHON_SOURCE) not in sys.path:
     sys.path.insert(0, str(PYTHON_SOURCE))
 
 
 import rebar
-from rebar_harness.correctness import FixtureCase, load_fixture_manifest
+from rebar_harness.correctness import FixtureCase, FixtureManifest, load_fixture_manifest
 
 
-FIXTURE_MANIFEST, PUBLISHED_CASES = load_fixture_manifest(FIXTURE_PATH)
-EXPECTED_CASE_IDS = {
-    "nested-group-alternation-compile-metadata-str",
-    "nested-group-alternation-module-search-str",
-    "nested-group-alternation-pattern-fullmatch-str",
-    "named-nested-group-alternation-compile-metadata-str",
-    "named-nested-group-alternation-module-search-str",
-    "named-nested-group-alternation-pattern-fullmatch-str",
-}
-EXPECTED_COMPILE_PATTERNS = {
-    r"a((b|c))d",
-    r"a(?P<outer>(?P<inner>b|c))d",
-}
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
         ("compile", None): 2,
@@ -46,67 +28,210 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("pattern_call", "fullmatch"): 2,
     }
 )
-COMPILE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "compile")
-WORKFLOW_CASES = tuple(case for case in PUBLISHED_CASES if case.operation != "compile")
-NEGATIVE_CASES = (
-    pytest.param(
-        "module",
-        r"a((b|c))d",
-        "search",
-        "zzadzz",
-        id="module-numbered-search-miss-too-short",
+MISSING_GROUP_DEFAULT = object()
+
+
+@dataclass(frozen=True)
+class FixtureBundle:
+    manifest: FixtureManifest
+    cases: tuple[FixtureCase, ...]
+    expected_manifest_id: str
+    expected_case_ids: frozenset[str]
+    expected_compile_patterns: frozenset[str]
+    negative_cases: tuple[tuple[str, str, str, str, str], ...]
+
+
+def _fixture_bundle(
+    fixture_name: str,
+    *,
+    expected_manifest_id: str,
+    expected_case_ids: frozenset[str],
+    expected_compile_patterns: frozenset[str],
+    negative_cases: tuple[tuple[str, str, str, str, str], ...],
+) -> FixtureBundle:
+    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
+    return FixtureBundle(
+        manifest=manifest,
+        cases=tuple(cases),
+        expected_manifest_id=expected_manifest_id,
+        expected_case_ids=expected_case_ids,
+        expected_compile_patterns=expected_compile_patterns,
+        negative_cases=negative_cases,
+    )
+
+
+FIXTURE_BUNDLES = (
+    _fixture_bundle(
+        "nested_group_alternation_workflows.py",
+        expected_manifest_id="nested-group-alternation-workflows",
+        expected_case_ids=frozenset(
+            {
+                "nested-group-alternation-compile-metadata-str",
+                "nested-group-alternation-module-search-str",
+                "nested-group-alternation-pattern-fullmatch-str",
+                "named-nested-group-alternation-compile-metadata-str",
+                "named-nested-group-alternation-module-search-str",
+                "named-nested-group-alternation-pattern-fullmatch-str",
+            }
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a((b|c))d",
+                r"a(?P<outer>(?P<inner>b|c))d",
+            }
+        ),
+        negative_cases=(
+            (
+                "module-numbered-search-miss-too-short",
+                "module",
+                r"a((b|c))d",
+                "search",
+                "zzadzz",
+            ),
+            (
+                "module-numbered-search-miss-extra-branch",
+                "module",
+                r"a((b|c))d",
+                "search",
+                "zzabbdzz",
+            ),
+            (
+                "pattern-numbered-fullmatch-miss-too-short",
+                "pattern",
+                r"a((b|c))d",
+                "fullmatch",
+                "ad",
+            ),
+            (
+                "pattern-numbered-fullmatch-miss-extra-branch",
+                "pattern",
+                r"a((b|c))d",
+                "fullmatch",
+                "abbd",
+            ),
+            (
+                "module-named-search-miss-too-short",
+                "module",
+                r"a(?P<outer>(?P<inner>b|c))d",
+                "search",
+                "zzadzz",
+            ),
+            (
+                "module-named-search-miss-extra-branch",
+                "module",
+                r"a(?P<outer>(?P<inner>b|c))d",
+                "search",
+                "zzaccddzz",
+            ),
+            (
+                "pattern-named-fullmatch-miss-too-short",
+                "pattern",
+                r"a(?P<outer>(?P<inner>b|c))d",
+                "fullmatch",
+                "ad",
+            ),
+            (
+                "pattern-named-fullmatch-miss-extra-branch",
+                "pattern",
+                r"a(?P<outer>(?P<inner>b|c))d",
+                "fullmatch",
+                "accd",
+            ),
+        ),
     ),
-    pytest.param(
-        "module",
-        r"a((b|c))d",
-        "search",
-        "zzabbdzz",
-        id="module-numbered-search-miss-extra-branch",
-    ),
-    pytest.param(
-        "pattern",
-        r"a((b|c))d",
-        "fullmatch",
-        "ad",
-        id="pattern-numbered-fullmatch-miss-too-short",
-    ),
-    pytest.param(
-        "pattern",
-        r"a((b|c))d",
-        "fullmatch",
-        "abbd",
-        id="pattern-numbered-fullmatch-miss-extra-branch",
-    ),
-    pytest.param(
-        "module",
-        r"a(?P<outer>(?P<inner>b|c))d",
-        "search",
-        "zzadzz",
-        id="module-named-search-miss-too-short",
-    ),
-    pytest.param(
-        "module",
-        r"a(?P<outer>(?P<inner>b|c))d",
-        "search",
-        "zzaccddzz",
-        id="module-named-search-miss-extra-branch",
-    ),
-    pytest.param(
-        "pattern",
-        r"a(?P<outer>(?P<inner>b|c))d",
-        "fullmatch",
-        "ad",
-        id="pattern-named-fullmatch-miss-too-short",
-    ),
-    pytest.param(
-        "pattern",
-        r"a(?P<outer>(?P<inner>b|c))d",
-        "fullmatch",
-        "accd",
-        id="pattern-named-fullmatch-miss-extra-branch",
+    _fixture_bundle(
+        "quantified_nested_group_alternation_workflows.py",
+        expected_manifest_id="quantified-nested-group-alternation-workflows",
+        expected_case_ids=frozenset(
+            {
+                "quantified-nested-group-alternation-numbered-compile-metadata-str",
+                "quantified-nested-group-alternation-numbered-module-search-lower-bound-b-str",
+                "quantified-nested-group-alternation-numbered-pattern-fullmatch-repeated-mixed-str",
+                "quantified-nested-group-alternation-named-compile-metadata-str",
+                "quantified-nested-group-alternation-named-module-search-lower-bound-c-str",
+                "quantified-nested-group-alternation-named-pattern-fullmatch-repeated-mixed-str",
+            }
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a((b|c)+)d",
+                r"a(?P<outer>(?P<inner>b|c)+)d",
+            }
+        ),
+        negative_cases=(
+            (
+                "module-numbered-search-miss-too-short",
+                "module",
+                r"a((b|c)+)d",
+                "search",
+                "zzadzz",
+            ),
+            (
+                "module-numbered-search-miss-invalid-branch",
+                "module",
+                r"a((b|c)+)d",
+                "search",
+                "zzabedzz",
+            ),
+            (
+                "pattern-numbered-fullmatch-miss-too-short",
+                "pattern",
+                r"a((b|c)+)d",
+                "fullmatch",
+                "ad",
+            ),
+            (
+                "pattern-numbered-fullmatch-miss-invalid-branch",
+                "pattern",
+                r"a((b|c)+)d",
+                "fullmatch",
+                "abed",
+            ),
+            (
+                "module-named-search-miss-too-short",
+                "module",
+                r"a(?P<outer>(?P<inner>b|c)+)d",
+                "search",
+                "zzadzz",
+            ),
+            (
+                "module-named-search-miss-invalid-branch",
+                "module",
+                r"a(?P<outer>(?P<inner>b|c)+)d",
+                "search",
+                "zzabedzz",
+            ),
+            (
+                "pattern-named-fullmatch-miss-too-short",
+                "pattern",
+                r"a(?P<outer>(?P<inner>b|c)+)d",
+                "fullmatch",
+                "ad",
+            ),
+            (
+                "pattern-named-fullmatch-miss-invalid-branch",
+                "pattern",
+                r"a(?P<outer>(?P<inner>b|c)+)d",
+                "fullmatch",
+                "abed",
+            ),
+        ),
     ),
 )
-MISSING_GROUP_DEFAULT = object()
+PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
+COMPILE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "compile")
+WORKFLOW_CASES = tuple(case for case in PUBLISHED_CASES if case.operation != "compile")
+NEGATIVE_CASES = tuple(
+    pytest.param(
+        target,
+        pattern,
+        helper,
+        text,
+        id=f"{bundle.expected_manifest_id}-{case_id}",
+    )
+    for bundle in FIXTURE_BUNDLES
+    for case_id, target, pattern, helper, text in bundle.negative_cases
+)
 
 
 def _case_pattern(case: FixtureCase) -> str | bytes:
@@ -177,12 +302,19 @@ def _assert_match_parity(
         assert observed.end(group_name) == expected.end(group_name)
 
 
-def test_parity_suite_stays_aligned_with_published_correctness_fixture() -> None:
-    assert FIXTURE_MANIFEST.manifest_id == "nested-group-alternation-workflows"
-    assert len(PUBLISHED_CASES) == len(EXPECTED_CASE_IDS)
-    assert {case.case_id for case in PUBLISHED_CASES} == EXPECTED_CASE_IDS
-    assert {_case_pattern(case) for case in PUBLISHED_CASES} == EXPECTED_COMPILE_PATTERNS
-    assert Counter((case.operation, case.helper) for case in PUBLISHED_CASES) == (
+@pytest.mark.parametrize(
+    "bundle",
+    FIXTURE_BUNDLES,
+    ids=lambda bundle: bundle.expected_manifest_id,
+)
+def test_parity_suite_stays_aligned_with_published_correctness_fixture(
+    bundle: FixtureBundle,
+) -> None:
+    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
+    assert len(bundle.cases) == len(bundle.expected_case_ids)
+    assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
+    assert {_case_pattern(case) for case in bundle.cases} == bundle.expected_compile_patterns
+    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
         EXPECTED_OPERATION_HELPER_COUNTS
     )
 
