@@ -8,11 +8,13 @@ MANIFEST = {'schema_version': 1,
            'Measured rows cover the bounded `a((b))d` plus `\\\\1x` or `\\\\2x`, '
            '`a(?P<outer>(?P<inner>b))d` plus `\\\\g<outer>x` or `\\\\g<inner>x`, '
            'the quantified `a((bc)+)d` / `a(?P<outer>(?P<inner>bc)+)d` '
-           '`sub()`/`subn()` flows, and the open-ended branch-local-backreference '
-           '`a((b|c){1,})\\\\2d` / `a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d` '
+           '`sub()`/`subn()` flows, the open-ended branch-local-backreference '
+           '`a((b|c){1,})\\\\2d` / `a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d`, '
+           'and the broader-range open-ended branch-local-backreference '
+           '`a((b|c){2,})\\\\2d` / `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d` '
            '`sub()`/`subn()` flows through module and compiled-`Pattern` '
            'entrypoints at representative lower-bound, repeated-branch, outer-'
-           'capture, and first-match-only haystacks.'],
+           'capture, first-match-only, and doubled-haystack workflows.'],
  'defaults': {'warmup_iterations': 2, 'sample_iterations': 5, 'timed_samples': 7},
  'workloads': [{'id': 'module-sub-template-nested-group-numbered-warm-str',
                 'bucket': 'module-sub',
@@ -539,10 +541,201 @@ MANIFEST = {'schema_version': 1,
                                     'counted-repeats',
                                     'replacement-template',
                                     'cache-purge'],
-                'notes': ['Purged-cache Pattern.subn helper path for the bounded '
+               'notes': ['Purged-cache Pattern.subn helper path for the bounded '
                           'open-ended `{1,}` named nested-group alternation '
                           'branch-local backreference replacement-template '
                           'first-match-only workflow on `zzaccdabcbccdzz`, so '
                           'the leading named inner `c` branch stays observable '
                           'while the trailing mixed-branch replay remains '
-                          'untouched.']}]}
+                          'untouched.']},
+               {'id': 'module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-b-branch-warm-str',
+                'bucket': 'module-sub',
+                'family': 'module',
+                'operation': 'module.sub',
+                'pattern': 'a((b|c){2,})\\2d',
+                'replacement': '\\1x',
+                'haystack': 'abbbd',
+                'flags': 0,
+                'count': 0,
+                'text_model': 'str',
+                'cache_mode': 'warm',
+                'timing_scope': 'module-helper-call',
+                'categories': ['grouped',
+                               'nested-group',
+                               'alternation',
+                               'replacement',
+                               'template',
+                               'numbered-group',
+                               'numbered-backreference',
+                               'branch-local',
+                               'quantified',
+                               'counted-repeat',
+                               'open-ended-repeat',
+                               'broader-range',
+                               'outer-capture',
+                               'lower-bound',
+                               'b-branch',
+                               'sub',
+                               'module',
+                               'warm-cache'],
+                'syntax_features': ['module-sub',
+                                    'grouping-forms',
+                                    'nested-groups',
+                                    'alternation',
+                                    'numbered-backreferences',
+                                    'branch-local-backreferences',
+                                    'quantifiers',
+                                    'counted-repeats',
+                                    'replacement-template'],
+                'notes': ['Warm module.sub helper path for the bounded '
+                          'broader-range open-ended `{2,}` numbered nested-'
+                          'group alternation branch-local backreference '
+                          'replacement-template lower-bound workflow on '
+                          '`abbbd`, so the visible outer capture stays '
+                          'observable through `\\\\1x` at the shifted two-'
+                          'repetition `b` branch.']},
+               {'id': 'module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-first-match-only-b-branch-warm-str',
+                'bucket': 'module-subn',
+                'family': 'module',
+                'operation': 'module.subn',
+                'pattern': 'a((b|c){2,})\\2d',
+                'replacement': '\\2x',
+                'haystack': 'abbbdabcbccd',
+                'flags': 0,
+                'count': 1,
+                'text_model': 'str',
+                'cache_mode': 'warm',
+                'timing_scope': 'module-helper-call',
+                'categories': ['grouped',
+                               'nested-group',
+                               'alternation',
+                               'replacement',
+                               'template',
+                               'numbered-group',
+                               'numbered-backreference',
+                               'branch-local',
+                               'quantified',
+                               'counted-repeat',
+                               'open-ended-repeat',
+                               'broader-range',
+                               'final-inner-capture',
+                               'first-match-only',
+                               'repeated-branch',
+                               'b-branch',
+                               'subn',
+                               'module',
+                               'count',
+                               'warm-cache'],
+                'syntax_features': ['module-subn',
+                                    'grouping-forms',
+                                    'nested-groups',
+                                    'alternation',
+                                    'numbered-backreferences',
+                                    'branch-local-backreferences',
+                                    'quantifiers',
+                                    'counted-repeats',
+                                    'replacement-template'],
+                'notes': ['Warm module.subn helper path for the bounded '
+                          'broader-range open-ended `{2,}` numbered nested-'
+                          'group alternation branch-local backreference '
+                          'replacement-template first-match-only workflow on '
+                          '`abbbdabcbccd`, so the leading shifted-lower-bound '
+                          '`b`-branch match keeps the final inner capture '
+                          'observable while the trailing mixed-branch replay '
+                          'remains untouched.']},
+               {'id': 'pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-c-branch-purged-str',
+                'bucket': 'pattern-sub',
+                'family': 'module',
+                'operation': 'pattern.sub',
+                'pattern': 'a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d',
+                'replacement': '\\g<outer>x',
+                'haystack': 'zzacccdzz',
+                'flags': 0,
+                'count': 0,
+                'text_model': 'str',
+                'cache_mode': 'purged',
+                'timing_scope': 'pattern-helper-call',
+                'categories': ['pattern',
+                               'grouped',
+                               'nested-group',
+                               'alternation',
+                               'replacement',
+                               'template',
+                               'named-group',
+                               'named-backreference',
+                               'branch-local',
+                               'quantified',
+                               'counted-repeat',
+                               'open-ended-repeat',
+                               'broader-range',
+                               'outer-capture',
+                               'lower-bound',
+                               'c-branch',
+                               'sub',
+                               'purged-cache'],
+                'syntax_features': ['pattern-sub',
+                                    'grouping-forms',
+                                    'nested-groups',
+                                    'alternation',
+                                    'named-groups',
+                                    'named-backreferences',
+                                    'branch-local-backreferences',
+                                    'quantifiers',
+                                    'counted-repeats',
+                                    'replacement-template',
+                                    'cache-purge'],
+                'notes': ['Purged-cache Pattern.sub helper path for the bounded '
+                          'broader-range open-ended `{2,}` named nested-group '
+                          'alternation branch-local backreference replacement-'
+                          'template lower-bound workflow on `acccd`, so the '
+                          'visible `outer` capture remains explicit at the '
+                          'shifted two-repetition `c` branch.']},
+               {'id': 'pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-c-branch-first-match-only-purged-str',
+                'bucket': 'pattern-subn',
+                'family': 'module',
+                'operation': 'pattern.subn',
+                'pattern': 'a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d',
+                'replacement': '\\g<inner>x',
+                'haystack': 'zzacccdabcbccdzz',
+                'flags': 0,
+                'count': 1,
+                'text_model': 'str',
+                'cache_mode': 'purged',
+                'timing_scope': 'pattern-helper-call',
+                'categories': ['pattern',
+                               'grouped',
+                               'nested-group',
+                               'alternation',
+                               'replacement',
+                               'template',
+                               'named-group',
+                               'named-backreference',
+                               'branch-local',
+                               'quantified',
+                               'counted-repeat',
+                               'open-ended-repeat',
+                               'broader-range',
+                               'final-inner-capture',
+                               'first-match-only',
+                               'c-branch',
+                               'subn',
+                               'count',
+                               'purged-cache'],
+                'syntax_features': ['pattern-subn',
+                                    'grouping-forms',
+                                    'nested-groups',
+                                    'alternation',
+                                    'named-groups',
+                                    'named-backreferences',
+                                    'branch-local-backreferences',
+                                    'quantifiers',
+                                    'counted-repeats',
+                                    'replacement-template',
+                                    'cache-purge'],
+                'notes': ['Purged-cache Pattern.subn helper path for the '
+                          'bounded broader-range open-ended `{2,}` named '
+                          'nested-group alternation branch-local backreference '
+                          'replacement-template first-match-only workflow on '
+                          '`zzacccdabcbccdzz`, so the leading named inner `c` '
+                          'branch stays observable while the trailing mixed-'
+                          'branch replay remains untouched.']}]}

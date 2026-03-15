@@ -1,6 +1,6 @@
 # RBR-0388: Catch broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference replacement-template benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-15
 
@@ -30,3 +30,12 @@ Created: 2026-03-15
 - Build on `RBR-0386`.
 - Keep this follow-on on the existing `nested_group_replacement_boundary.py` manifest path instead of forking another benchmark family.
 - Add only the directly adjacent broader-range open-ended `{2,}` branch-local-backreference replacement-template rows needed to publish this exact slice cleanly; callable-replacement variants, broader template parsing, and deeper nested grouped execution stay explicit gaps or out of scope.
+
+## Completion
+- Extended `benchmarks/workloads/nested_group_replacement_boundary.py` with four measured broader-range open-ended `{2,}` replacement-template rows for `a((b|c){2,})\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d`, keeping the slice on the existing nested-group replacement benchmark manifest and preserving the prior `{1,}` rows.
+- Updated the scorecard and combined-boundary benchmark assertions so the older `{1,}` open-ended slice remains explicit while the new `{2,}` broader-range slice gets its own measured-row coverage through the shared source-tree benchmark path.
+- Republished `reports/benchmarks/latest.py`; the tracked combined benchmark scorecard is now `541` total workloads, `517` measured workloads, and `24` known gaps, and `nested-group-replacement-boundary` now records `20` measured workloads with `0` gaps.
+
+## Verification
+- `PYTHONPATH=python ./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_benchmark_scorecards.py::SourceTreeBenchmarkScorecardTest::test_nested_group_replacement_scorecard_covers_open_ended_rows tests/benchmarks/test_source_tree_benchmark_scorecards.py::SourceTreeBenchmarkScorecardTest::test_nested_group_replacement_scorecard_covers_broader_range_open_ended_rows tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeCombinedBoundaryBenchmarkSuiteTest::test_nested_group_replacement_manifest_covers_open_ended_branch_local_backreference_slice tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeCombinedBoundaryBenchmarkSuiteTest::test_nested_group_replacement_manifest_covers_broader_range_open_ended_branch_local_backreference_slice -q`
+- `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
