@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import importlib
-import importlib.util
 import json
 import math
 import os
@@ -31,6 +30,7 @@ if str(PYTHON_SOURCE) not in sys.path:
 from rebar_harness.descriptor_values import materialize_descriptor_value
 from rebar_harness.metadata import build_cpython_baseline
 from rebar_harness.scorecard_io import (
+    load_python_dict_attribute,
     load_scorecard_report,
     remove_scorecard_sidecar,
     validate_scorecard_report_path,
@@ -270,19 +270,14 @@ def workload_from_payload(payload: dict[str, Any]) -> Workload:
 
 
 def _load_python_manifest(path: pathlib.Path) -> dict[str, Any]:
-    module_name = f"_rebar_benchmark_manifest_{path.stem}".replace("-", "_")
-    spec = importlib.util.spec_from_file_location(module_name, path)
-    if spec is None or spec.loader is None:
-        raise ValueError(f"unable to load Python benchmark manifest from {path}")
-
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    if not hasattr(module, "MANIFEST"):
-        raise ValueError(f"Python benchmark manifest module {path} is missing a MANIFEST value")
-    raw_manifest = getattr(module, "MANIFEST")
-    if not isinstance(raw_manifest, dict):
-        raise ValueError(f"benchmark manifest in {path} must be a dict")
-    return raw_manifest
+    return load_python_dict_attribute(
+        path,
+        module_name_prefix="_rebar_benchmark_manifest",
+        attribute_name="MANIFEST",
+        load_error_label="Python benchmark manifest",
+        missing_error_label="Python benchmark manifest module",
+        type_error_label="benchmark manifest",
+    )
 
 
 def _load_raw_manifest(path: pathlib.Path) -> dict[str, Any]:
@@ -290,11 +285,7 @@ def _load_raw_manifest(path: pathlib.Path) -> dict[str, Any]:
         raise ValueError(
             f"unsupported benchmark manifest extension {path.suffix!r} for {path}"
         )
-    raw_manifest = _load_python_manifest(path)
-
-    if not isinstance(raw_manifest, dict):
-        raise ValueError(f"benchmark manifest in {path} must be an object")
-    return raw_manifest
+    return _load_python_manifest(path)
 
 
 def load_manifest(path: pathlib.Path) -> tuple[dict[str, Any], list[Workload]]:

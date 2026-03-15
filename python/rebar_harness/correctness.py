@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import pathlib
 import re as cpython_re
@@ -24,6 +23,7 @@ import rebar
 from rebar_harness.descriptor_values import materialize_descriptor_value
 from rebar_harness.metadata import build_cpython_baseline
 from rebar_harness.scorecard_io import (
+    load_python_dict_attribute,
     load_scorecard_report,
     remove_scorecard_sidecar,
     validate_scorecard_report_path,
@@ -537,19 +537,14 @@ def _optional_int(value: Any) -> int | None:
 
 
 def _load_python_fixture_manifest(path: pathlib.Path) -> dict[str, Any]:
-    module_name = f"_rebar_fixture_{path.stem}".replace("-", "_")
-    spec = importlib.util.spec_from_file_location(module_name, path)
-    if spec is None or spec.loader is None:
-        raise ValueError(f"unable to load Python fixture module from {path}")
-
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    if not hasattr(module, "MANIFEST"):
-        raise ValueError(f"Python fixture module {path} is missing a MANIFEST value")
-    raw_manifest = getattr(module, "MANIFEST")
-    if not isinstance(raw_manifest, dict):
-        raise ValueError(f"fixture manifest in {path} must be a dict")
-    return raw_manifest
+    return load_python_dict_attribute(
+        path,
+        module_name_prefix="_rebar_fixture",
+        attribute_name="MANIFEST",
+        load_error_label="Python fixture module",
+        missing_error_label="Python fixture module",
+        type_error_label="fixture manifest",
+    )
 
 
 def load_fixture_manifest(path: pathlib.Path) -> tuple[FixtureManifest, list[FixtureCase]]:

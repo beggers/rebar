@@ -37,6 +37,33 @@ def format_python_scorecard_module(
     return f"{report_attribute} = {payload_literal}\n"
 
 
+def load_python_dict_attribute(
+    path: pathlib.Path,
+    *,
+    module_name_prefix: str,
+    attribute_name: str,
+    load_error_label: str,
+    missing_error_label: str,
+    type_error_label: str,
+) -> dict[str, Any]:
+    module_name = f"{module_name_prefix}_{path.stem}".replace("-", "_")
+    spec = importlib.util.spec_from_file_location(module_name, path)
+    if spec is None or spec.loader is None:
+        raise ValueError(f"unable to load {load_error_label} from {path}")
+
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    if not hasattr(module, attribute_name):
+        raise ValueError(
+            f"{missing_error_label} {path} is missing a {attribute_name} value"
+        )
+
+    payload = getattr(module, attribute_name)
+    if not isinstance(payload, dict):
+        raise ValueError(f"{type_error_label} in {path} must be a dict")
+    return payload
+
+
 def load_python_scorecard_module(
     path: pathlib.Path,
     *,
@@ -44,21 +71,14 @@ def load_python_scorecard_module(
     report_attribute: str,
     scorecard_kind: str,
 ) -> dict[str, Any]:
-    module_name = f"{module_name_prefix}_{path.stem}".replace("-", "_")
-    spec = importlib.util.spec_from_file_location(module_name, path)
-    if spec is None or spec.loader is None:
-        raise ValueError(f"unable to load Python {scorecard_kind} scorecard from {path}")
-
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    if not hasattr(module, report_attribute):
-        raise ValueError(
-            f"Python {scorecard_kind} scorecard module {path} is missing a {report_attribute} value"
-        )
-    payload = getattr(module, report_attribute)
-    if not isinstance(payload, dict):
-        raise ValueError(f"{scorecard_kind} scorecard in {path} must be a dict")
-    return payload
+    return load_python_dict_attribute(
+        path,
+        module_name_prefix=module_name_prefix,
+        attribute_name=report_attribute,
+        load_error_label=f"Python {scorecard_kind} scorecard",
+        missing_error_label=f"Python {scorecard_kind} scorecard module",
+        type_error_label=f"{scorecard_kind} scorecard",
+    )
 
 
 def load_scorecard_report(
