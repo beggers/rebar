@@ -1,6 +1,6 @@
 # RBR-0347: Consolidate the base conditional group-exists parity modules into one fixture-backed pytest suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
 
@@ -46,3 +46,8 @@ Created: 2026-03-15
 ## Notes
 - The five targeted modules total 730 lines and are near-identical aside from pattern strings, present/absent haystacks, and named-group coverage.
 - `tests/python/test_conditional_group_exists_replacement_parity_suite.py`, `tests/python/test_open_ended_quantified_group_parity_suite.py`, `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`, and `tests/python/test_callable_replacement_parity_suite.py` already demonstrate the intended repo shape for this kind of backend-parameterized parity coverage.
+
+## Completion Notes
+- Added `tests/python/test_conditional_group_exists_parity_suite.py`, loading the five published conditional-group-exists fixture manifests through `load_fixture_manifest(...)` and asserting manifest id, case ids, compile patterns, and the `compile` / module `search` / pattern `fullmatch` split for each bundle.
+- Deleted the five superseded singleton parity modules and kept the parity depth scoped to compile identity, compile metadata, core match-result fields, and named-group access parity.
+- Verified with `.venv/bin/python -m pytest tests/python/test_conditional_group_exists_parity_suite.py -q` (`65 passed`) and confirmed `rg --files tests/python | rg 'test_conditional_group_exists(_no_else|_empty_else|_empty_yes_else|_fully_empty)?_parity\\.py$'` returns no matches while `git diff --name-status -- tests/python/...` reports `D` for all five removed modules.
