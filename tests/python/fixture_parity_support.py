@@ -31,6 +31,16 @@ class WholeManifestFixtureBundle:
     expected_case_ids: frozenset[str] | None = None
 
 
+@dataclass(frozen=True)
+class ExpectedFixtureBundle:
+    manifest: FixtureManifest
+    cases: tuple[FixtureCase, ...]
+    expected_manifest_id: str
+    expected_case_ids: frozenset[str]
+    expected_patterns: frozenset[str | bytes]
+    expected_operation_helper_counts: Counter[tuple[str, str | None]]
+
+
 def load_whole_manifest_fixture_bundle(
     fixture_name: str,
     *,
@@ -47,6 +57,25 @@ def load_whole_manifest_fixture_bundle(
         expected_patterns=expected_patterns,
         expected_operation_helper_counts=expected_operation_helper_counts,
         expected_case_ids=expected_case_ids,
+    )
+
+
+def load_expected_fixture_bundle(
+    fixture_name: str,
+    *,
+    expected_manifest_id: str,
+    expected_case_ids: frozenset[str],
+    expected_patterns: frozenset[str | bytes],
+    expected_operation_helper_counts: Counter[tuple[str, str | None]],
+) -> ExpectedFixtureBundle:
+    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
+    return ExpectedFixtureBundle(
+        manifest=manifest,
+        cases=tuple(cases),
+        expected_manifest_id=expected_manifest_id,
+        expected_case_ids=expected_case_ids,
+        expected_patterns=expected_patterns,
+        expected_operation_helper_counts=expected_operation_helper_counts,
     )
 
 
@@ -68,8 +97,22 @@ def assert_whole_manifest_fixture_bundle_contract(
     )
 
 
+def assert_expected_fixture_bundle_contract(
+    bundle: ExpectedFixtureBundle,
+    *,
+    pattern_extractor: Callable[[FixtureCase], str | bytes],
+) -> None:
+    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
+    assert len(bundle.cases) == len(bundle.expected_case_ids)
+    assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
+    assert {pattern_extractor(case) for case in bundle.cases} == bundle.expected_patterns
+    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
+        bundle.expected_operation_helper_counts
+    )
+
+
 def published_fixture_paths_from_bundles(
-    bundles: Iterable[WholeManifestFixtureBundle],
+    bundles: Iterable[WholeManifestFixtureBundle | ExpectedFixtureBundle],
 ) -> tuple[pathlib.Path, ...]:
     return tuple(sorted((bundle.manifest.path for bundle in bundles), key=lambda path: path.name))
 

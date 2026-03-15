@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
 import re
 
 import pytest
@@ -9,12 +8,12 @@ import pytest
 from rebar_harness.correctness import (
     CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR,
     FixtureCase,
-    FixtureManifest,
-    load_fixture_manifest,
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
+    assert_expected_fixture_bundle_contract,
+    load_expected_fixture_bundle,
+    published_fixture_paths_from_bundles,
     str_case_pattern,
 )
 PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS = select_correctness_fixture_paths(
@@ -41,34 +40,8 @@ NO_MATCH_TEXT_CANDIDATES = (
 )
 
 
-@dataclass(frozen=True)
-class FixtureBundle:
-    manifest: FixtureManifest
-    cases: tuple[FixtureCase, ...]
-    expected_manifest_id: str
-    expected_case_ids: frozenset[str]
-    expected_patterns: frozenset[str]
-
-
-def _fixture_bundle(
-    fixture_name: str,
-    *,
-    expected_manifest_id: str,
-    expected_case_ids: frozenset[str],
-    expected_patterns: frozenset[str],
-) -> FixtureBundle:
-    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
-    return FixtureBundle(
-        manifest=manifest,
-        cases=tuple(cases),
-        expected_manifest_id=expected_manifest_id,
-        expected_case_ids=expected_case_ids,
-        expected_patterns=expected_patterns,
-    )
-
-
 FIXTURE_BUNDLES = (
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "conditional_group_exists_replacement_workflows.py",
         expected_manifest_id="conditional-group-exists-replacement-workflows",
         expected_case_ids=frozenset(
@@ -89,8 +62,9 @@ FIXTURE_BUNDLES = (
                 r"a(?P<word>b)?c(?(word)d|e)",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "conditional_group_exists_no_else_replacement_workflows.py",
         expected_manifest_id="conditional-group-exists-no-else-replacement-workflows",
         expected_case_ids=frozenset(
@@ -111,8 +85,9 @@ FIXTURE_BUNDLES = (
                 r"a(?P<word>b)?c(?(word)d)",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "conditional_group_exists_empty_else_replacement_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-else-replacement-workflows",
         expected_case_ids=frozenset(
@@ -133,8 +108,9 @@ FIXTURE_BUNDLES = (
                 r"a(?P<word>b)?c(?(word)d|)",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "conditional_group_exists_empty_yes_else_replacement_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-yes-else-replacement-workflows",
         expected_case_ids=frozenset(
@@ -155,8 +131,9 @@ FIXTURE_BUNDLES = (
                 r"a(?P<word>b)?c(?(word)|e)",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "conditional_group_exists_fully_empty_replacement_workflows.py",
         expected_manifest_id="conditional-group-exists-fully-empty-replacement-workflows",
         expected_case_ids=frozenset(
@@ -177,8 +154,9 @@ FIXTURE_BUNDLES = (
                 r"a(?P<word>b)?c(?(word)|)",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "conditional_group_exists_alternation_replacement_workflows.py",
         expected_manifest_id="conditional-group-exists-alternation-replacement-workflows",
         expected_case_ids=frozenset(
@@ -199,8 +177,9 @@ FIXTURE_BUNDLES = (
                 r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "conditional_group_exists_nested_replacement_workflows.py",
         expected_manifest_id="conditional-group-exists-nested-replacement-workflows",
         expected_case_ids=frozenset(
@@ -221,8 +200,9 @@ FIXTURE_BUNDLES = (
                 r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "conditional_group_exists_quantified_replacement_workflows.py",
         expected_manifest_id="conditional-group-exists-quantified-replacement-workflows",
         expected_case_ids=frozenset(
@@ -243,6 +223,7 @@ FIXTURE_BUNDLES = (
                 r"a(?P<word>b)?c(?(word)d|e){2}",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
 )
 
@@ -299,8 +280,8 @@ def _run_replacement_case(
 
 def test_replacement_parity_suite_discovers_all_published_correctness_fixtures() -> None:
     assert PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS
-    assert PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS == tuple(
-        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
+    assert PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS == published_fixture_paths_from_bundles(
+        FIXTURE_BUNDLES
     )
 
 
@@ -309,16 +290,8 @@ def test_replacement_parity_suite_discovers_all_published_correctness_fixtures()
     FIXTURE_BUNDLES,
     ids=lambda bundle: bundle.expected_manifest_id,
 )
-def test_parity_suite_stays_aligned_with_published_correctness_fixture(
-    bundle: FixtureBundle,
-) -> None:
-    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
-    assert len(bundle.cases) == len(bundle.expected_case_ids)
-    assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
-    assert {str_case_pattern(case) for case in bundle.cases} == bundle.expected_patterns
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        EXPECTED_OPERATION_HELPER_COUNTS
-    )
+def test_parity_suite_stays_aligned_with_published_correctness_fixture(bundle) -> None:
+    assert_expected_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
 
 
 @pytest.mark.parametrize("case", REPLACEMENT_CASES, ids=lambda case: case.case_id)

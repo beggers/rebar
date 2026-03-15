@@ -27,6 +27,7 @@ from rebar_harness.correctness import (
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
     _match_api_templates,
+    assert_expected_fixture_bundle_contract,
     assert_whole_manifest_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -35,6 +36,7 @@ from tests.python.fixture_parity_support import (
     assert_valid_match_group_access_parity,
     case_pattern,
     compile_with_cpython_parity,
+    load_expected_fixture_bundle,
     load_whole_manifest_fixture_bundle,
     published_fixture_paths_from_bundles,
     str_case_pattern,
@@ -338,6 +340,34 @@ def test_whole_manifest_bundle_contract_supports_exact_case_id_validation() -> N
     assert bundle.manifest.path == FIXTURES_DIR / "named_backreference_workflows.py"
     assert bundle.expected_case_ids is not None
     assert_whole_manifest_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
+
+
+def test_expected_fixture_bundle_contract_supports_exact_case_id_validation() -> None:
+    bundle = load_expected_fixture_bundle(
+        "named_backreference_workflows.py",
+        expected_manifest_id="named-backreference-workflows",
+        expected_case_ids=frozenset(
+            {
+                "named-backreference-compile-metadata-str",
+                "named-backreference-module-search-str",
+                "named-backreference-pattern-search-str",
+            }
+        ),
+        expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 1,
+                ("module_call", "search"): 1,
+                ("pattern_call", "search"): 1,
+            }
+        ),
+    )
+
+    assert bundle.manifest.path == FIXTURES_DIR / "named_backreference_workflows.py"
+    assert_expected_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
+    assert published_fixture_paths_from_bundles((bundle,)) == (
+        FIXTURES_DIR / "named_backreference_workflows.py",
+    )
 
 
 def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_case_ids() -> None:

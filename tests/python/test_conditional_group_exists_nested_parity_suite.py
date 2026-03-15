@@ -1,16 +1,16 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
 import re
 
 import pytest
 
-from rebar_harness.correctness import FixtureCase, FixtureManifest, load_fixture_manifest
+from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
+    assert_expected_fixture_bundle_contract,
     assert_match_result_parity,
     compile_with_cpython_parity,
+    load_expected_fixture_bundle,
     str_case_pattern,
 )
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
@@ -31,55 +31,8 @@ SYSTEMATIC_EMPTY_ELSE_OPERATION_HELPER_COUNTS = Counter(
 )
 
 
-@dataclass(frozen=True)
-class FixtureBundle:
-    manifest: FixtureManifest
-    cases: tuple[FixtureCase, ...]
-    expected_manifest_id: str
-    expected_case_ids: frozenset[str]
-    expected_compile_patterns: frozenset[str]
-    expected_operation_helper_counts: Counter[tuple[str, str | None]]
-
-
-def _fixture_bundle(
-    fixture_name: str,
-    *,
-    expected_manifest_id: str,
-    expected_case_ids: frozenset[str],
-    expected_compile_patterns: frozenset[str],
-    selected_case_ids: tuple[str, ...] | None = None,
-    expected_operation_helper_counts: Counter[tuple[str, str | None]]
-    | None = None,
-) -> FixtureBundle:
-    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
-    if selected_case_ids is None:
-        selected_cases = tuple(cases)
-    else:
-        case_by_id = {case.case_id: case for case in cases}
-        missing_case_ids = tuple(case_id for case_id in selected_case_ids if case_id not in case_by_id)
-        if missing_case_ids:
-            raise ValueError(
-                f"{fixture_name} is missing expected nested conditional fixture rows: "
-                f"{missing_case_ids}"
-            )
-        selected_cases = tuple(case_by_id[case_id] for case_id in selected_case_ids)
-
-    return FixtureBundle(
-        manifest=manifest,
-        cases=selected_cases,
-        expected_manifest_id=expected_manifest_id,
-        expected_case_ids=expected_case_ids,
-        expected_compile_patterns=expected_compile_patterns,
-        expected_operation_helper_counts=(
-            EXPECTED_OPERATION_HELPER_COUNTS
-            if expected_operation_helper_counts is None
-            else expected_operation_helper_counts
-        ),
-    )
-
-
 FIXTURE_BUNDLES = (
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "conditional_group_exists_nested_workflows.py",
         expected_manifest_id="conditional-group-exists-nested-workflows",
         expected_case_ids=frozenset(
@@ -94,14 +47,15 @@ FIXTURE_BUNDLES = (
                 "named-conditional-group-exists-nested-pattern-fullmatch-unreachable-inner-else-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a(b)?c(?(1)(?(1)d|e)|f)",
                 r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "conditional_group_exists_no_else_nested_workflows.py",
         expected_manifest_id="conditional-group-exists-no-else-nested-workflows",
         expected_case_ids=frozenset(
@@ -116,14 +70,15 @@ FIXTURE_BUNDLES = (
                 "named-conditional-group-exists-no-else-nested-pattern-fullmatch-absent-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a(b)?c(?(1)(?(1)d))",
                 r"a(?P<word>b)?c(?(word)(?(word)d))",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "conditional_group_exists_empty_else_nested_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-else-nested-workflows",
         expected_case_ids=frozenset(
@@ -146,7 +101,7 @@ FIXTURE_BUNDLES = (
                 "systematic-conditional-group-exists-empty-else-nested-named-pattern-fullmatch-absent-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a(b)?c(?(1)(?(1)d)|)",
                 r"a(?P<word>b)?c(?(word)(?(word)d)|)",
@@ -154,7 +109,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=SYSTEMATIC_EMPTY_ELSE_OPERATION_HELPER_COUNTS,
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "conditional_group_exists_empty_yes_else_nested_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-yes-else-nested-workflows",
         expected_case_ids=frozenset(
@@ -169,14 +124,15 @@ FIXTURE_BUNDLES = (
                 "named-conditional-group-exists-empty-yes-else-nested-pattern-fullmatch-absent-failure-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a(b)?c(?(1)|(?(1)e|f))",
                 r"a(?P<word>b)?c(?(word)|(?(word)e|f))",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    _fixture_bundle(
+    load_expected_fixture_bundle(
         "conditional_group_exists_fully_empty_nested_workflows.py",
         expected_manifest_id="conditional-group-exists-fully-empty-nested-workflows",
         expected_case_ids=frozenset(
@@ -191,12 +147,13 @@ FIXTURE_BUNDLES = (
                 "named-conditional-group-exists-fully-empty-nested-pattern-fullmatch-extra-suffix-failure-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a(b)?c(?(1)|(?(1)|))",
                 r"a(?P<word>b)?c(?(word)|(?(word)|))",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
 )
 COMPILE_CASES = tuple(
@@ -224,16 +181,8 @@ PATTERN_CASES = tuple(
     FIXTURE_BUNDLES,
     ids=lambda bundle: bundle.expected_manifest_id,
 )
-def test_parity_suite_stays_aligned_with_published_correctness_fixture(
-    bundle: FixtureBundle,
-) -> None:
-    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
-    assert len(bundle.cases) == len(bundle.expected_case_ids)
-    assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
-    assert {str_case_pattern(case) for case in bundle.cases} == bundle.expected_compile_patterns
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        bundle.expected_operation_helper_counts
-    )
+def test_parity_suite_stays_aligned_with_published_correctness_fixture(bundle) -> None:
+    assert_expected_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
 
 
 @pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
