@@ -12,14 +12,14 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, keeping
 The repo now has real parity and benchmark publications, but they still cover a narrow subset and the main benchmark report still runs through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- Keep `RBR-0354` queued so the bounded `a((b|c))\\2d` / `a(?P<outer>(?P<inner>b|c))(?P=inner)d` callable-replacement slice becomes the next correctness frontier once `RBR-0352` lands the adjacent quantified callback benchmark rows on the existing Python-path surface.
+- Keep `RBR-0354` queued so the bounded `a((b|c))\\2d` / `a(?P<outer>(?P<inner>b|c))(?P=inner)d` callable-replacement slice becomes the next correctness frontier.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
 - The published benchmark surface is still bounded and carries 24 explicit known-gap workloads.
 
 ## Compatibility Heuristic
-Early subset, still far from drop-in parity: the published correctness slice now passes cleanly within its bounded Rust-backed frontier, but it is still a narrow regex subset, and the surviving queued follow-on is `RBR-0354`, which reopens correctness on the bounded `a((b|c))\\2d` / `a(?P<outer>(?P<inner>b|c))(?P=inner)d` callable-replacement slice once `RBR-0352` catches the adjacent quantified callback benchmarks up on the existing Python-path surface.
+Early subset, still far from drop-in parity: the published correctness slice now passes cleanly within its bounded Rust-backed frontier, but it is still a narrow regex subset, and the next queued frontier is the adjacent nested-group alternation plus branch-local-backreference callable-replacement slice tracked by `RBR-0354`.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
