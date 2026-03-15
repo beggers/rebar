@@ -1,6 +1,6 @@
 # RBR-0351: Replace the quantified alternation parity scenario table with published fixtures
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
 
@@ -50,3 +50,9 @@ Created: 2026-03-15
 ## Notes
 - This suite is now the clearest remaining example of a Python parity test restating published correctness data in a second private table: the same bounded, broader-range, conditional, open-ended, and nested-branch patterns and example texts already live in the five quantified-alternation fixture modules above.
 - `tests/python/test_conditional_group_exists_parity_suite.py` and `tests/python/test_conditional_group_exists_replacement_parity_suite.py` are the nearest existing shapes to copy: both stay fixture-backed while keeping per-manifest alignment assertions explicit.
+
+## Completion Notes
+- Replaced the file-local `ParityCase` table in `tests/python/test_quantified_alternation_parity_suite.py` with five explicit fixture bundles loaded through `load_fixture_manifest(...)`, keeping only manifest-shape expectations in the suite.
+- Kept one manifest-alignment assertion per quantified-alternation fixture, covering the exact manifest id, case-id set, numbered and named pattern set, and the published `compile` / module `search` / pattern `fullmatch` distribution for each bundle.
+- Rebuilt compile, module `search()`, and compiled-pattern `fullmatch()` parity from `FixtureCase` objects, deriving numbered and named group checks from the compiled CPython pattern so the suite no longer duplicates fixture haystacks or no-match rows in a second private table.
+- Verified with `.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py` (`126 passed`).
