@@ -6,7 +6,8 @@ SPEC = {
     "cycle_order": 70,
     "prompt_path": "ops/agents/reporting.md",
     "dispatch": {
-        "mode": "every_cycle",
+        "mode": "interval",
+        "interval_seconds": 3600,
         "allow_dirty_worktree": True,
         "timeout_seconds": 1800,
     },
