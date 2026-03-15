@@ -1,6 +1,6 @@
 # RBR-0402: Add broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-15
 
@@ -30,3 +30,12 @@ Created: 2026-03-15
 - Build on `RBR-0401`, `RBR-0399`, and the existing shared branch-local-backreference parity suite.
 - Keep later benchmark catch-up on the existing `benchmarks/workloads/branch_local_backreference_boundary.py` path instead of forking another benchmark family.
 - The shared branch-local parity suite already discovers published `*branch_local_backreference_workflows.py` fixtures, so this task should widen that existing parity coverage rather than creating another manifest-specific test harness.
+
+## Completion
+- Added a narrow Rust parser/match path in `crates/rebar-core/src/lib.rs` for the exact broader-range open-ended `{2,}` conditional spelling `a((b|c){2,})\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)`, reusing the existing open-ended nested branch-local-backreference matcher because the conditional yes-arm is the only reachable arm for this bounded slice.
+- Removed the temporary `rebar` backend skip from `tests/python/test_branch_local_backreference_parity_suite.py`; no `crates/rebar-cpython/src/lib.rs` or `python/rebar/__init__.py` source changes were required because the existing native compile/match entrypoints already picked up the new core support.
+- Verified the shared parity surface with `./.venv/bin/python -m pytest tests/python/test_branch_local_backreference_parity_suite.py -q` (`285 passed`).
+- Verified the fixture-local correctness slice with `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py --report /tmp/rbr0402-after-fixture.json`, which reported `10` executed cases, `10` passes, `0` failures, and `0` unimplemented cases.
+- Republished the tracked combined correctness report in `reports/correctness/latest.py`; the tracked summary is `917` executed cases, `917` passes, `0` failures, and `0` unimplemented cases.
+- Verified the branch-local correctness scorecard path with `./.venv/bin/python -m pytest tests/conformance/test_combined_correctness_scorecards.py -k branch_local_backreference -q` (`1 passed`, `8 deselected`, `38` subtests passed).
+- The remaining follow-on for this frontier is benchmark catch-up task `RBR-0404` on `benchmarks/workloads/branch_local_backreference_boundary.py`.

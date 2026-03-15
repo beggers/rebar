@@ -26,10 +26,6 @@ from tests.python.fixture_parity_support import (
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 FIXTURES_DIR = REPO_ROOT / "tests" / "conformance" / "fixtures"
-NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REBAR_SKIP_REASON = (
-    "rebar parity for the broader-range open-ended nested branch-local conditional "
-    "slice remains queued in RBR-0402"
-)
 EXPECTED_PUBLISHED_FIXTURE_NAMES = (
     "branch_local_backreference_workflows.py",
     "quantified_branch_local_backreference_workflows.py",
@@ -418,10 +414,6 @@ FIXTURE_BUNDLES = (
             }
         ),
         assert_match_convenience_api=True,
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REBAR_SKIP_REASON
-        ),
     ),
 )
 PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
