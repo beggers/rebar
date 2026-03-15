@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 941 cases across 105 manifests, with 933 passes and 8 honest `unimplemented` gaps; the main benchmark report still covers 562 workloads with 538 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- After the bounded two-arm conditional callable-replacement publication slice for `a(b)?c(?(1)d|e)` / `a(?P<word>b)?c(?(word)d|e)` on the shared callable fixture path, no concrete post-drain feature follow-on is pinned yet.
+- The concrete post-parity follow-on for `a(b)?c(?(1)d|e)` / `a(?P<word>b)?c(?(word)d|e)` is `RBR-0424`, which should catch the same callable-replacement slice up on `benchmarks/workloads/conditional_group_exists_boundary.py` through the existing `pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap` anchor.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow, currently lands 933 of 941 published cases 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- After the bounded two-arm conditional callable-replacement publication slice for `a(b)?c(?(1)d|e)` / `a(?P<word>b)?c(?(word)d|e)` on the shared callable fixture path, no concrete post-drain feature follow-on is pinned yet.
+- The concrete post-parity follow-on for `a(b)?c(?(1)d|e)` / `a(?P<word>b)?c(?(word)d|e)` is `RBR-0424`, which should catch the same callable-replacement slice up on `benchmarks/workloads/conditional_group_exists_boundary.py` through the existing `pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap` anchor.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

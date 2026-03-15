@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now falls back to the bounded two-arm conditional callable-replacement publication slice for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` on the shared callable fixture/parity path; no concrete post-drain feature follow-on is pinned yet.
+Milestone 2 stays on the bounded two-arm conditional callable-replacement family for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; the concrete surviving post-parity follow-on is `RBR-0424`, which should catch the same slice up on `benchmarks/workloads/conditional_group_exists_boundary.py` via the existing `pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap` row.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives after the bounded two-arm conditional callable-replacement publication slice; `tests/python/test_callable_replacement_parity_suite.py` can absorb a new `conditional_group_exists_callable_replacement_workflows.py` manifest for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`, and the adjacent `pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap` row in `benchmarks/workloads/conditional_group_exists_boundary.py` remains the post-parity Python-path benchmark anchor if that slice lands cleanly.
+1. After `conditional_group_exists_callable_replacement_workflows.py` moves behind `rebar._rebar`, `RBR-0424` should convert the adjacent `pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap` anchor into the minimal four real Python-path timings for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` on `benchmarks/workloads/conditional_group_exists_boundary.py`, with the usual source-tree benchmark expectation and combined-report refresh and no new benchmark family.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
