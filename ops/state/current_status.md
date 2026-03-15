@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 925 cases with all 925 matching CPython, and the main benchmark report now covers 558 workloads with 534 real `rebar` timings, but it still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- After newly seeded benchmark catch-up task `RBR-0410` drains, the surviving concrete follow-on is correctness-publication task `RBR-0412` for the same broader-range open-ended `{2,}` nested-group branch-local-backreference conditional callable-replacement `sub()` / `subn()` slice on the shared callable parity surface.
+- After newly seeded correctness-publication task `RBR-0414` drains, the surviving concrete follow-on is Rust-backed parity task `RBR-0415` for the same broader-range open-ended `{2,}` nested-group branch-local-backreference conditional callable-replacement `sub()` / `subn()` slice on the shared callable parity surface.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow, now shows 925 passing cases with no remaini
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- After newly seeded benchmark catch-up task `RBR-0410` drains, the surviving concrete follow-on is correctness-publication task `RBR-0412` for the same broader-range open-ended `{2,}` nested-group branch-local-backreference conditional callable-replacement `sub()` / `subn()` slice on the shared callable parity surface.
+- After newly seeded correctness-publication task `RBR-0414` drains, the surviving concrete follow-on is Rust-backed parity task `RBR-0415` for the same broader-range open-ended `{2,}` nested-group branch-local-backreference conditional callable-replacement `sub()` / `subn()` slice on the shared callable parity surface.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now stays on the bounded broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional replacement frontier; after newly seeded benchmark catch-up task `RBR-0410` drains on `nested_group_replacement_boundary.py`, the surviving concrete follow-on is correctness-publication task `RBR-0412` for the matching numbered and named conditional callable-replacement `sub()` / `subn()` slice on the shared callable fixture/parity surface.
+Milestone 2 now stays on the bounded broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional callable-replacement frontier; after newly seeded correctness-publication task `RBR-0414` drains on the shared callable fixture/parity surface, the surviving concrete follow-on is Rust-backed parity task `RBR-0415` for the same numbered and named `sub()` / `subn()` slice.
 
 ## Ordered Work
-1. `RBR-0412`: publish the numbered and named conditional callable-replacement `sub()` / `subn()` slice for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)` on `python/rebar_harness/correctness.py`, `tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py`, `tests/conformance/correctness_expectations.py`, `tests/conformance/test_combined_correctness_scorecards.py`, `tests/python/test_callable_replacement_parity_suite.py`, and `reports/correctness/latest.py`, keeping the callback shape bounded to the existing `callable_match_group` helper until later parity or benchmark catch-up is queued explicitly.
+1. `RBR-0415`: land Rust-backed numbered and named conditional callable-replacement parity for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)` on `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_callable_replacement_parity_suite.py`, and `reports/correctness/latest.py`, keeping the callback shape bounded to the existing `callable_match_group` helper and leaving later Python-path benchmark catch-up on `benchmarks/workloads/nested_group_callable_replacement_boundary.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
