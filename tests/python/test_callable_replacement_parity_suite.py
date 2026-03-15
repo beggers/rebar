@@ -65,11 +65,7 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     }
 )
 MISSING_GROUP_DEFAULT = "<missing-group>"
-PENDING_REBAR_MANIFEST_IDS = frozenset(
-    {
-        "nested-group-alternation-branch-local-backreference-callable-replacement-workflows",
-    }
-)
+PENDING_REBAR_MANIFEST_IDS = frozenset()
 
 
 def _skip_pending_rebar_callable_parity(
