@@ -1,6 +1,6 @@
 # RBR-0355: Refactor quantified nested-group replacement-template parity onto the shared fixture-backed pytest path
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
 
@@ -38,3 +38,9 @@ Created: 2026-03-15
 ## Notes
 - `tests/python/test_quantified_nested_group_replacement_template_parity.py` is a remaining standalone native-backed parity holdout from `RBR-0305`: it duplicates all eight published numbered and named `sub()` / `subn()` workflows already tracked in `tests/conformance/fixtures/quantified_nested_group_replacement_workflows.py`.
 - This is the same simplification pattern already used by `RBR-0347`, `RBR-0351`, and `RBR-0353`: keep the Python parity surface anchored to the published fixture frontier instead of maintaining a second hand-written source of truth.
+
+## Completion Notes
+- Replaced the file-local `ReplacementCase` / `CASES` `unittest` table in `tests/python/test_quantified_nested_group_replacement_template_parity.py` with one fixture-backed pytest module that loads `FixtureCase` rows directly from `tests/conformance/fixtures/quantified_nested_group_replacement_workflows.py`.
+- Kept one manifest-alignment assertion covering the exact manifest id, case-id set, numbered and named pattern set, and the published module/pattern `sub()` / `subn()` distribution, with compile metadata parity now driven from the fixture-derived pattern set.
+- Rebuilt the module and compiled-pattern replacement-template parity checks from the loaded fixture rows, preserving the bounded lower-bound, repeated-outer-capture, and first-match-only `subn()` coverage without broadening scope.
+- Verified with `.venv/bin/python -m pytest -q tests/python/test_quantified_nested_group_replacement_template_parity.py` (`21 passed`).
