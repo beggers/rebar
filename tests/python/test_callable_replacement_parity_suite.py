@@ -21,6 +21,9 @@ from rebar_harness.correctness import (
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 FIXTURES_DIR = REPO_ROOT / "tests" / "conformance" / "fixtures"
+COLLECTION_REPLACEMENT_FIXTURE_PATH = (
+    FIXTURES_DIR / "collection_replacement_workflows.py"
+)
 
 
 @dataclass(frozen=True)
@@ -55,6 +58,12 @@ PUBLISHED_CALLABLE_FIXTURE_PATHS = tuple(
         ),
         key=lambda path: path.name,
     )
+)
+LITERAL_CALLABLE_PARITY_VARIANTS = (
+    pytest.param("sub", 0, False, id="literal-module-sub-replace-all"),
+    pytest.param("subn", 1, False, id="literal-module-subn-first-match-only"),
+    pytest.param("sub", 0, True, id="literal-pattern-sub-replace-all"),
+    pytest.param("subn", 1, True, id="literal-pattern-subn-first-match-only"),
 )
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
@@ -215,6 +224,7 @@ def _fixture_bundle(path: pathlib.Path) -> FixtureBundle:
     )
 
 
+COLLECTION_REPLACEMENT_BUNDLE = _fixture_bundle(COLLECTION_REPLACEMENT_FIXTURE_PATH)
 FIXTURE_BUNDLES = (
     *(_fixture_bundle(path) for path in CALLABLE_FIXTURE_PATHS),
 )
@@ -240,6 +250,32 @@ PATTERN_CASES = tuple(
     for case in bundle.cases
     if case.operation == "pattern_call"
 )
+
+
+def _literal_callable_case() -> FixtureCase:
+    cases = [
+        case
+        for case in COLLECTION_REPLACEMENT_BUNDLE.cases
+        if case.case_id == "module-sub-callable-str"
+    ]
+    assert len(cases) == 1
+    return cases[0]
+
+
+def _literal_callable_raw_case() -> dict[str, object]:
+    return COLLECTION_REPLACEMENT_BUNDLE.raw_cases_by_id["module-sub-callable-str"]
+
+
+def _literal_callable_pattern() -> str:
+    pattern = _literal_callable_case().args[0]
+    assert isinstance(pattern, str)
+    return pattern
+
+
+def _literal_callable_string() -> str:
+    string = _literal_callable_case().args[2]
+    assert isinstance(string, str)
+    return string
 
 
 def _case_pattern(case: FixtureCase) -> str:
@@ -361,6 +397,25 @@ def test_callable_replacement_fixture_shape_contract(
         _assert_raw_callable_replacement_reference_is_valid(bundle, case)
 
 
+def test_literal_callable_case_stays_aligned_with_published_collection_fixture() -> None:
+    case = _literal_callable_case()
+    raw_case = _literal_callable_raw_case()
+    raw_args = raw_case.get("args", [])
+
+    assert COLLECTION_REPLACEMENT_BUNDLE.manifest.manifest_id == (
+        "collection-replacement-workflows"
+    )
+    assert case.operation == "module_call"
+    assert case.helper == "sub"
+    assert _literal_callable_pattern() == "abc"
+    assert _literal_callable_string() == "abcabc"
+    assert callable(case.args[1])
+    assert "callable-replacement" in case.categories
+    assert "str" in case.categories
+    assert isinstance(raw_args, list)
+    assert raw_args[1] == {"type": "callable_constant", "value": "x"}
+
+
 @pytest.mark.parametrize("pattern", COMPILE_PATTERNS)
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
@@ -376,6 +431,51 @@ def test_compile_metadata_matches_cpython(
     assert observed.flags == expected.flags
     assert observed.groups == expected.groups
     assert observed.groupindex == expected.groupindex
+
+
+@pytest.mark.parametrize(
+    ("helper", "count", "use_compiled_pattern"),
+    LITERAL_CALLABLE_PARITY_VARIANTS,
+)
+def test_literal_callable_replacement_matches_cpython(
+    regex_backend: tuple[str, object],
+    helper: str,
+    count: int,
+    use_compiled_pattern: bool,
+) -> None:
+    _, backend = regex_backend
+
+    def replacement(_match: object) -> str:
+        return "x"
+
+    if use_compiled_pattern:
+        observed_target = backend.compile(_literal_callable_pattern())
+        expected_target = re.compile(_literal_callable_pattern())
+        observed = getattr(observed_target, helper)(
+            replacement,
+            _literal_callable_string(),
+            count=count,
+        )
+        expected = getattr(expected_target, helper)(
+            replacement,
+            _literal_callable_string(),
+            count=count,
+        )
+    else:
+        observed = getattr(backend, helper)(
+            _literal_callable_pattern(),
+            replacement,
+            _literal_callable_string(),
+            count=count,
+        )
+        expected = getattr(re, helper)(
+            _literal_callable_pattern(),
+            replacement,
+            _literal_callable_string(),
+            count=count,
+        )
+
+    assert observed == expected
 
 
 @pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
@@ -409,6 +509,29 @@ def test_pattern_callable_replacement_matches_cpython(
     expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
 
     assert observed == expected
+
+
+@pytest.mark.parametrize(
+    ("helper", "count", "use_compiled_pattern"),
+    LITERAL_CALLABLE_PARITY_VARIANTS,
+)
+def test_literal_callable_replacement_callback_match_objects_match_cpython(
+    regex_backend: tuple[str, object],
+    helper: str,
+    count: int,
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+
+    assert_callable_replacement_match_parity(
+        backend_name=backend_name,
+        backend=backend,
+        helper=helper,
+        pattern=_literal_callable_pattern(),
+        string=_literal_callable_string(),
+        count=count,
+        use_compiled_pattern=use_compiled_pattern,
+    )
 
 
 @pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
