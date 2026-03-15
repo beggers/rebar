@@ -2752,45 +2752,26 @@ def load_correctness_harness_module() -> Any:
 
 def expected_correctness_manifest_ids(correctness_harness: Any) -> list[str]:
     fixture_paths = tuple(Path(path) for path in correctness_harness.DEFAULT_FIXTURE_PATHS)
-    load_fixture_manifests = getattr(correctness_harness, "load_fixture_manifests", None)
-    if callable(load_fixture_manifests):
-        manifests, _ = load_fixture_manifests(fixture_paths)
-        return [
-            manifest_id
-            for manifest_id in (
-                str(getattr(manifest, "manifest_id", "") or "").strip()
-                for manifest in manifests
-            )
-            if manifest_id
-        ]
-
-    manifest_ids: list[str] = []
-    for fixture_path in fixture_paths:
-        raw_manifest = read_json(fixture_path, default={})
-        if not isinstance(raw_manifest, dict):
-            continue
-        manifest_id = str(raw_manifest.get("manifest_id") or "").strip()
-        if manifest_id:
-            manifest_ids.append(manifest_id)
-    return manifest_ids
+    manifests, _ = correctness_harness.load_fixture_manifests(fixture_paths)
+    return [
+        manifest_id
+        for manifest_id in (
+            str(getattr(manifest, "manifest_id", "") or "").strip() for manifest in manifests
+        )
+        if manifest_id
+    ]
 
 
 def published_correctness_report_needs_refresh(correctness_harness: Any) -> bool:
-    if Path(correctness_harness.LEGACY_REPORT_PATH).exists():
+    if correctness_harness.SCORECARD_REPORT.legacy_path.exists():
         return True
 
-    scorecard_report = getattr(correctness_harness, "SCORECARD_REPORT", None)
-    if scorecard_report is not None:
-        try:
-            payload = scorecard_report.load(Path(correctness_harness.DEFAULT_REPORT_PATH))
-        except (ImportError, OSError, SyntaxError, TypeError, ValueError, json.JSONDecodeError):
-            return True
-    else:
-        payload = read_structured_dict(
-            Path(correctness_harness.DEFAULT_REPORT_PATH),
-            default=None,
-            label="correctness scorecard",
+    try:
+        payload = correctness_harness.SCORECARD_REPORT.load(
+            Path(correctness_harness.DEFAULT_REPORT_PATH)
         )
+    except (ImportError, OSError, SyntaxError, TypeError, ValueError, json.JSONDecodeError):
+        return True
     if not isinstance(payload, dict):
         return True
 
@@ -2814,15 +2795,9 @@ def refresh_published_correctness_scorecard() -> dict[str, Any] | None:
     removed_legacy_report = bool(correctness_harness.SCORECARD_REPORT.remove_legacy_sidecar())
     if not published_correctness_report_needs_refresh(correctness_harness):
         if removed_legacy_report:
-            scorecard_report = getattr(correctness_harness, "SCORECARD_REPORT", None)
-            if scorecard_report is not None:
-                return scorecard_report.load(Path(correctness_harness.DEFAULT_REPORT_PATH))
-            payload = read_structured_dict(
-                Path(correctness_harness.DEFAULT_REPORT_PATH),
-                default=None,
-                label="correctness scorecard",
+            return correctness_harness.SCORECARD_REPORT.load(
+                Path(correctness_harness.DEFAULT_REPORT_PATH)
             )
-            return payload if isinstance(payload, dict) else None
         return None
     scorecard = correctness_harness.run_correctness_harness()
     correctness_harness.SCORECARD_REPORT.remove_legacy_sidecar()

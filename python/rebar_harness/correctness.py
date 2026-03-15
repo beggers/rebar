@@ -43,7 +43,6 @@ SCORECARD_REPORT = ScorecardReportSpec(
     report_attribute="REPORT",
     scorecard_kind="correctness",
 )
-LEGACY_REPORT_PATH = SCORECARD_REPORT.legacy_path
 DEFAULT_FIXTURE_PATHS = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "public_api_surface.py",

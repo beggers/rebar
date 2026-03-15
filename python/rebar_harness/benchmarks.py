@@ -50,7 +50,6 @@ SCORECARD_REPORT = ScorecardReportSpec(
     report_attribute="REPORT",
     scorecard_kind="benchmark",
 )
-LEGACY_REPORT_PATH = SCORECARD_REPORT.legacy_path
 DEFAULT_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py",
     REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.py",
