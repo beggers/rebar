@@ -13,7 +13,7 @@ PYTHON_SOURCE = REPO_ROOT / "python"
 if str(PYTHON_SOURCE) not in sys.path:
     sys.path.insert(0, str(PYTHON_SOURCE))
 
-from rebar_harness.correctness import load_fixture_manifest
+from rebar_harness.correctness import load_fixture_manifest, load_fixture_manifests
 
 
 class PythonFixtureManifestContractTest(unittest.TestCase):
@@ -347,6 +347,85 @@ class PythonFixtureManifestContractTest(unittest.TestCase):
                     fixture_path = self._write_fixture(temp_root, filename, source)
                     with self.assertRaisesRegex(ValueError, error_pattern):
                         load_fixture_manifest(fixture_path)
+
+    def test_python_fixture_manifest_loader_rejects_duplicate_ids(self) -> None:
+        duplicate_modules = (
+            (
+                (
+                    "duplicate_fixture_manifest_a.py",
+                    """
+                    MANIFEST = {
+                        "schema_version": 1,
+                        "manifest_id": "duplicate-correctness-manifest-id",
+                        "cases": [
+                            {
+                                "id": "compile-case-a",
+                                "pattern": "abc",
+                            },
+                        ],
+                    }
+                    """,
+                ),
+                (
+                    "duplicate_fixture_manifest_b.py",
+                    """
+                    MANIFEST = {
+                        "schema_version": 1,
+                        "manifest_id": "duplicate-correctness-manifest-id",
+                        "cases": [
+                            {
+                                "id": "compile-case-b",
+                                "pattern": "def",
+                            },
+                        ],
+                    }
+                    """,
+                ),
+                r"duplicate fixture manifest id .*duplicate-correctness-manifest-id",
+            ),
+            (
+                (
+                    "duplicate_fixture_case_a.py",
+                    """
+                    MANIFEST = {
+                        "schema_version": 1,
+                        "manifest_id": "correctness-duplicate-case-a",
+                        "cases": [
+                            {
+                                "id": "duplicate-correctness-case-id",
+                                "pattern": "abc",
+                            },
+                        ],
+                    }
+                    """,
+                ),
+                (
+                    "duplicate_fixture_case_b.py",
+                    """
+                    MANIFEST = {
+                        "schema_version": 1,
+                        "manifest_id": "correctness-duplicate-case-b",
+                        "cases": [
+                            {
+                                "id": "duplicate-correctness-case-id",
+                                "pattern": "def",
+                            },
+                        ],
+                    }
+                    """,
+                ),
+                r"duplicate fixture case id .*duplicate-correctness-case-id",
+            ),
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_root = pathlib.Path(temp_dir)
+            for first_module, second_module, error_pattern in duplicate_modules:
+                with self.subTest(error_pattern=error_pattern):
+                    first_path = self._write_fixture(temp_root, *first_module)
+                    second_path = self._write_fixture(temp_root, *second_module)
+                    with self.assertRaisesRegex(ValueError, error_pattern):
+                        load_fixture_manifests([first_path, second_path])
 
 
 if __name__ == "__main__":

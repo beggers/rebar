@@ -13,7 +13,7 @@ PYTHON_SOURCE = REPO_ROOT / "python"
 if str(PYTHON_SOURCE) not in sys.path:
     sys.path.insert(0, str(PYTHON_SOURCE))
 
-from rebar_harness.benchmarks import load_manifest, workload_to_payload
+from rebar_harness.benchmarks import load_manifest, load_manifests, workload_to_payload
 
 
 class PythonBenchmarkManifestContractTest(unittest.TestCase):
@@ -219,6 +219,93 @@ class PythonBenchmarkManifestContractTest(unittest.TestCase):
                     manifest_path = self._write_manifest(temp_root, filename, source)
                     with self.assertRaisesRegex(ValueError, error_pattern):
                         load_manifest(manifest_path)
+
+    def test_python_benchmark_manifest_loader_rejects_duplicate_ids(self) -> None:
+        duplicate_modules = (
+            (
+                (
+                    "duplicate_benchmark_manifest_a.py",
+                    """
+                    MANIFEST = {
+                        "schema_version": 1,
+                        "manifest_id": "duplicate-benchmark-manifest-id",
+                        "workloads": [
+                            {
+                                "id": "benchmark-workload-a",
+                                "operation": "module.search",
+                                "pattern": "abc",
+                                "haystack": "abc",
+                            },
+                        ],
+                    }
+                    """,
+                ),
+                (
+                    "duplicate_benchmark_manifest_b.py",
+                    """
+                    MANIFEST = {
+                        "schema_version": 1,
+                        "manifest_id": "duplicate-benchmark-manifest-id",
+                        "workloads": [
+                            {
+                                "id": "benchmark-workload-b",
+                                "operation": "module.search",
+                                "pattern": "def",
+                                "haystack": "def",
+                            },
+                        ],
+                    }
+                    """,
+                ),
+                r"duplicate benchmark manifest id .*duplicate-benchmark-manifest-id",
+            ),
+            (
+                (
+                    "duplicate_benchmark_workload_a.py",
+                    """
+                    MANIFEST = {
+                        "schema_version": 1,
+                        "manifest_id": "duplicate-benchmark-workload-a",
+                        "workloads": [
+                            {
+                                "id": "duplicate-benchmark-workload-id",
+                                "operation": "module.search",
+                                "pattern": "abc",
+                                "haystack": "abc",
+                            },
+                        ],
+                    }
+                    """,
+                ),
+                (
+                    "duplicate_benchmark_workload_b.py",
+                    """
+                    MANIFEST = {
+                        "schema_version": 1,
+                        "manifest_id": "duplicate-benchmark-workload-b",
+                        "workloads": [
+                            {
+                                "id": "duplicate-benchmark-workload-id",
+                                "operation": "module.search",
+                                "pattern": "def",
+                                "haystack": "def",
+                            },
+                        ],
+                    }
+                    """,
+                ),
+                r"duplicate benchmark workload id .*duplicate-benchmark-workload-id",
+            ),
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_root = pathlib.Path(temp_dir)
+            for first_module, second_module, error_pattern in duplicate_modules:
+                with self.subTest(error_pattern=error_pattern):
+                    first_path = self._write_manifest(temp_root, *first_module)
+                    second_path = self._write_manifest(temp_root, *second_module)
+                    with self.assertRaisesRegex(ValueError, error_pattern):
+                        load_manifests([first_path, second_path])
 
 
 if __name__ == "__main__":
