@@ -459,11 +459,7 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("pattern_call", "subn"): 2,
     }
 )
-PENDING_REBAR_MANIFEST_IDS = frozenset(
-    {
-        CONDITIONAL_GROUP_EXISTS_CALLABLE_MANIFEST_ID,
-    }
-)
+PENDING_REBAR_MANIFEST_IDS = frozenset()
 NO_MATCH_TEXT_CANDIDATES = ("zzz", "", "no-match", "----", "999")
 
 

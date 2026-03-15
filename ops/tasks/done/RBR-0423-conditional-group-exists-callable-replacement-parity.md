@@ -1,8 +1,9 @@
 # RBR-0423: Add bounded two-arm conditional callable-replacement parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Convert the bounded two-arm conditional callable-replacement cases published by `RBR-0421` into real Rust-backed behavior without widening into alternation-heavy arms, nested or quantified conditionals, replacement-template variants, or broader callback helpers.
@@ -31,3 +32,17 @@ Created: 2026-03-15
 - Build on `RBR-0421`, `RBR-0193`, and the existing shared callable-replacement parity surface.
 - Keep later benchmark catch-up on the existing `benchmarks/workloads/conditional_group_exists_boundary.py` path instead of forking another benchmark family.
 - The adjacent post-parity benchmark anchor is the existing `pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap` row in `benchmarks/workloads/conditional_group_exists_boundary.py`.
+
+## Completion
+- Exposed the existing Rust-backed bounded two-arm conditional capture-span collector on the native callable-replacement path, so `module.sub()`, `module.subn()`, `Pattern.sub()`, and `Pattern.subn()` now build callback `Match` objects for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` instead of reporting this manifest as `unimplemented`.
+- Dropped `conditional-group-exists-callable-replacement-workflows` from the shared pending-manifest skip set in `tests/python/test_callable_replacement_parity_suite.py`, keeping the slice on the shared callable parity surface instead of adding another manifest-specific test module.
+- Republished `reports/correctness/latest.py`; the tracked scorecard now reports `941` executed cases, `941` passing cases, `0` explicit failures, and `0` unimplemented cases.
+- Left benchmark publication and expectation files untouched. The existing direct benchmark expectation module now fails only because the already-queued `RBR-0424` follow-on is due: the former callable gap `pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap` now measures successfully, while the adjacent template gap remains the lone known gap on `conditional_group_exists_boundary.py`.
+
+## Verification
+- `cargo build -p rebar-cpython` (`Finished dev profile build successfully`)
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`957 passed, 1015 subtests passed`)
+- `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_callable_replacement_workflows.py --report .rebar/tmp/rbr-0423-conditional-callable.py` (`{"executed_cases": 8, "failed_cases": 0, "passed_cases": 8, "skipped_cases": 0, "total_cases": 8, "unimplemented_cases": 0}`)
+- `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`{"executed_cases": 941, "failed_cases": 0, "passed_cases": 941, "skipped_cases": 0, "total_cases": 941, "unimplemented_cases": 0}`)
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeCombinedBoundaryBenchmarkSuiteTest::test_runner_regenerates_combined_source_tree_boundary_scorecards` (`5 failed, 958 passed, 1038 subtests passed`; the stored benchmark expectations still assume `24` known gaps / `538` measured workloads in the full combined suite, but the callable anchor is now measured at runtime and the already-queued `RBR-0424` benchmark catch-up should refresh those expectations)
+- `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/rbr-0423-conditional-bench.py` (`{"known_gap_count": 1, "measured_workloads": 49, "module_workloads": 50, "parser_workloads": 0, "regression_workloads": 0, "total_workloads": 50}`)
