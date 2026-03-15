@@ -29,7 +29,7 @@ class DefaultCorrectnessFixtureInventoryContractTest(unittest.TestCase):
                 self.assertTrue(path.is_file())
                 self.assertEqual(path.suffix, ".py")
 
-    def test_default_fixture_inventory_has_unique_manifest_and_case_ids(self) -> None:
+    def test_default_fixture_inventory_has_unique_manifest_case_and_suite_ids(self) -> None:
         manifests, cases = load_fixture_manifests(DEFAULT_FIXTURE_PATHS)
 
         self.assertEqual(
@@ -44,6 +44,13 @@ class DefaultCorrectnessFixtureInventoryContractTest(unittest.TestCase):
             "default correctness manifests must keep globally unique manifest ids",
         )
 
+        suite_counts = Counter(manifest.suite_id for manifest in manifests)
+        self.assertEqual(
+            _duplicates(suite_counts),
+            [],
+            "default correctness manifests must keep globally unique suite ids",
+        )
+
         case_counts = Counter(case.case_id for case in cases)
         self.assertEqual(
             _duplicates(case_counts),
@@ -51,9 +58,18 @@ class DefaultCorrectnessFixtureInventoryContractTest(unittest.TestCase):
             "default correctness manifests must keep globally unique case ids",
         )
 
+        cases_by_manifest = Counter(case.manifest_id for case in cases)
         manifest_ids = {manifest.manifest_id for manifest in manifests}
+        for manifest in manifests:
+            with self.subTest(manifest_id=manifest.manifest_id):
+                self.assertGreater(
+                    cases_by_manifest[manifest.manifest_id],
+                    0,
+                    "default correctness manifests should contribute at least one case",
+                )
+
         for case in cases:
-            with self.subTest(case_id=case.case_id):
+            with self.subTest(case_id=case.case_id, manifest_id=case.manifest_id):
                 self.assertIn(case.manifest_id, manifest_ids)
 
 
