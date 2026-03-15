@@ -1,8 +1,9 @@
 # RBR-0420: Centralize scorecard CLI test support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Replace the remaining duplicated subprocess/report plumbing for CLI-driven correctness and benchmark scorecard tests with one shared test-support path, so the harness-facing tests stop open-coding the same `cwd`, `PYTHONPATH`, temp-report, and JSON-loading flow in multiple places.
@@ -38,3 +39,4 @@ Created: 2026-03-15
 ## Notes
 - This is a post-JSON duplicate-plumbing follow-on after `RBR-0413`, `RBR-0416`, and `RBR-0418`: selector and pytest bootstrap cleanup landed, but the scorecard-facing tests still duplicate the same subprocess/report wiring when they drive the harness through its CLI boundary.
 - The runtime dashboard is one commit behind `HEAD` in this checkout (`dashboard.md` reports `708758b04c994263c3936d9f3deb72feec611313`, while current `HEAD` is `2b5136842ec763b1ca3c5e6aad7d5ee8a6976ed5`), so its JSON count is slightly stale as reporting metadata; the live filesystem counts still show zero JSON files (`git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), which keeps this run in the post-JSON simplification lane.
+- Completed 2026-03-15: added `tests/harness_cli_test_support.py`, routed correctness/benchmark scorecard reruns and README reporting CLI checks through it, confirmed the duplicate `PYTHONPATH`/`python -m rebar_harness.*` plumbing no longer appears in the targeted test files, and verified `PYTHONPATH=python .venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/python/test_readme_reporting.py` (`36 passed`, `1214 subtests passed`).

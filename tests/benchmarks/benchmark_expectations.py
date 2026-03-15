@@ -1,17 +1,12 @@
 from __future__ import annotations
 
-import json
 import pathlib
-import subprocess
-import sys
-import tempfile
 from collections.abc import Iterable
 from functools import cache
 from typing import Any
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-PYTHON_SOURCE = REPO_ROOT / "python"
 
 from rebar_harness.benchmarks import (
     COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR,
@@ -25,6 +20,7 @@ from rebar_harness.benchmarks import (
     select_workloads,
     workload_to_payload,
 )
+from tests.harness_cli_test_support import run_harness_scorecard
 
 
 BASE_SOURCE_TREE_MANIFEST_IDS = frozenset({"compile-matrix", "regression-matrix"})
@@ -605,27 +601,17 @@ def run_source_tree_benchmark_scorecard(
     *,
     smoke: bool = False,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    with tempfile.TemporaryDirectory() as temp_dir:
-        report_path = pathlib.Path(temp_dir) / "benchmarks.json"
-        command = [sys.executable, "-m", "rebar_harness.benchmarks"]
-        for manifest_path in manifest_paths:
-            command.extend(("--manifest", str(manifest_path)))
-        if smoke:
-            command.append("--smoke")
-        command.extend(("--report", str(report_path)))
+    command = []
+    for manifest_path in manifest_paths:
+        command.extend(("--manifest", str(manifest_path)))
+    if smoke:
+        command.append("--smoke")
 
-        result = subprocess.run(
-            command,
-            check=True,
-            cwd=REPO_ROOT,
-            env={"PYTHONPATH": str(PYTHON_SOURCE)},
-            capture_output=True,
-            text=True,
-        )
-        summary = json.loads(result.stdout.strip())
-        scorecard = json.loads(report_path.read_text(encoding="utf-8"))
-
-    return summary, scorecard
+    return run_harness_scorecard(
+        "rebar_harness.benchmarks",
+        command,
+        report_name="benchmarks.json",
+    )
 
 
 def ordered_operations(workloads: list[dict[str, Any]]) -> list[str]:

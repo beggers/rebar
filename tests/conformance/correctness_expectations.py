@@ -1,17 +1,13 @@
 from __future__ import annotations
 
-import json
 import pathlib
 import subprocess
-import sys
-import tempfile
 from collections.abc import Iterable
 from dataclasses import dataclass
 from functools import lru_cache
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-PYTHON_SOURCE = REPO_ROOT / "python"
 
 from rebar_harness.correctness import (
     DEFAULT_FIXTURE_PATHS,
@@ -20,6 +16,7 @@ from rebar_harness.correctness import (
     determine_phase,
     load_fixture_manifest,
 )
+from tests.harness_cli_test_support import run_harness_scorecard
 
 
 @lru_cache(maxsize=1)
@@ -36,28 +33,14 @@ def build_rebar_extension() -> None:
 def run_correctness_scorecard(
     fixture_paths: Iterable[pathlib.Path],
 ) -> tuple[dict[str, object], dict[str, object]]:
-    with tempfile.TemporaryDirectory() as temp_dir:
-        report_path = pathlib.Path(temp_dir) / "correctness.json"
-        command = [
-            sys.executable,
-            "-m",
-            "rebar_harness.correctness",
+    return run_harness_scorecard(
+        "rebar_harness.correctness",
+        [
             "--fixtures",
             *(str(path) for path in fixture_paths),
-            "--report",
-            str(report_path),
-        ]
-        result = subprocess.run(
-            command,
-            check=True,
-            cwd=REPO_ROOT,
-            env={"PYTHONPATH": str(PYTHON_SOURCE)},
-            capture_output=True,
-            text=True,
-        )
-        summary = json.loads(result.stdout.strip())
-        scorecard = json.loads(report_path.read_text(encoding="utf-8"))
-    return summary, scorecard
+        ],
+        report_name="correctness.json",
+    )
 
 
 COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {

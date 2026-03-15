@@ -1,12 +1,9 @@
 from __future__ import annotations
 
 import json
-import pathlib
-import subprocess
-import sys
-import tempfile
 import unittest
 
+from tests.harness_cli_test_support import run_harness_cli, run_harness_scorecard
 from tests.python.rebar_ops_test_support import REPO_ROOT, load_rebar_ops_module
 
 CORRECTNESS_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
@@ -14,7 +11,6 @@ LEGACY_CORRECTNESS_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest
 BENCHMARK_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 LEGACY_BENCHMARK_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
 PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py"
-PYTHON_SOURCE = REPO_ROOT / "python"
 
 from rebar_harness.benchmarks import SCORECARD_REPORT as BENCHMARK_SCORECARD_REPORT
 from rebar_harness.correctness import (
@@ -24,21 +20,15 @@ from rebar_harness.correctness import (
 
 class ReadmeReportingTest(unittest.TestCase):
     def test_correctness_cli_rejects_legacy_tracked_json_path(self) -> None:
-        result = subprocess.run(
+        result = run_harness_cli(
+            "rebar_harness.correctness",
             [
-                sys.executable,
-                "-m",
-                "rebar_harness.correctness",
                 "--fixtures",
                 str(PARSER_FIXTURES_PATH),
                 "--report",
                 str(LEGACY_CORRECTNESS_REPORT_PATH),
             ],
             check=False,
-            cwd=REPO_ROOT,
-            env={"PYTHONPATH": str(PYTHON_SOURCE)},
-            capture_output=True,
-            text=True,
         )
 
         self.assertEqual(result.returncode, 2)
@@ -48,19 +38,13 @@ class ReadmeReportingTest(unittest.TestCase):
         self.assertFalse(LEGACY_CORRECTNESS_REPORT_PATH.exists())
 
     def test_benchmark_cli_rejects_legacy_tracked_json_path(self) -> None:
-        result = subprocess.run(
+        result = run_harness_cli(
+            "rebar_harness.benchmarks",
             [
-                sys.executable,
-                "-m",
-                "rebar_harness.benchmarks",
                 "--report",
                 str(LEGACY_BENCHMARK_REPORT_PATH),
             ],
             check=False,
-            cwd=REPO_ROOT,
-            env={"PYTHONPATH": str(PYTHON_SOURCE)},
-            capture_output=True,
-            text=True,
         )
 
         self.assertEqual(result.returncode, 2)
@@ -99,42 +83,32 @@ class ReadmeReportingTest(unittest.TestCase):
         original_payload = CORRECTNESS_REPORT_PATH.read_text(encoding="utf-8")
 
         try:
-            with tempfile.TemporaryDirectory() as temp_dir:
-                narrowed_report_path = pathlib.Path(temp_dir) / "parser-only.json"
-                subprocess.run(
-                    [
-                        sys.executable,
-                        "-m",
-                        "rebar_harness.correctness",
-                        "--fixtures",
-                        str(PARSER_FIXTURES_PATH),
-                        "--report",
-                        str(narrowed_report_path),
-                    ],
-                    check=True,
-                    cwd=REPO_ROOT,
-                    env={"PYTHONPATH": str(PYTHON_SOURCE)},
-                    capture_output=True,
-                    text=True,
-                )
+            _, narrowed_scorecard = run_harness_scorecard(
+                "rebar_harness.correctness",
+                [
+                    "--fixtures",
+                    str(PARSER_FIXTURES_PATH),
+                ],
+                report_name="parser-only.json",
+            )
 
-                CORRECTNESS_SCORECARD_REPORT.write(
-                    json.loads(narrowed_report_path.read_text(encoding="utf-8")),
-                    CORRECTNESS_REPORT_PATH,
-                )
+            CORRECTNESS_SCORECARD_REPORT.write(
+                narrowed_scorecard,
+                CORRECTNESS_REPORT_PATH,
+            )
 
-                refreshed = rebar_ops.refresh_published_correctness_scorecard()
-                self.assertIsInstance(refreshed, dict)
+            refreshed = rebar_ops.refresh_published_correctness_scorecard()
+            self.assertIsInstance(refreshed, dict)
 
-                repaired_payload = CORRECTNESS_SCORECARD_REPORT.load(CORRECTNESS_REPORT_PATH)
-                expected_manifest_ids = rebar_ops.expected_correctness_manifest_ids(
-                    rebar_ops.load_correctness_harness_module()
-                )
-                self.assertEqual(
-                    repaired_payload["fixtures"]["manifest_count"], len(expected_manifest_ids)
-                )
-                self.assertEqual(repaired_payload["fixtures"]["manifest_ids"], expected_manifest_ids)
-                self.assertEqual(repaired_payload["summary"], refreshed["summary"])
+            repaired_payload = CORRECTNESS_SCORECARD_REPORT.load(CORRECTNESS_REPORT_PATH)
+            expected_manifest_ids = rebar_ops.expected_correctness_manifest_ids(
+                rebar_ops.load_correctness_harness_module()
+            )
+            self.assertEqual(
+                repaired_payload["fixtures"]["manifest_count"], len(expected_manifest_ids)
+            )
+            self.assertEqual(repaired_payload["fixtures"]["manifest_ids"], expected_manifest_ids)
+            self.assertEqual(repaired_payload["summary"], refreshed["summary"])
         finally:
             CORRECTNESS_REPORT_PATH.write_text(original_payload, encoding="utf-8")
 
