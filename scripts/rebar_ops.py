@@ -2774,10 +2774,10 @@ def published_correctness_report_needs_refresh(correctness_harness: Any) -> bool
     if Path(correctness_harness.LEGACY_REPORT_PATH).exists():
         return True
 
-    load_scorecard = getattr(correctness_harness, "load_scorecard", None)
-    if callable(load_scorecard):
+    scorecard_report = getattr(correctness_harness, "SCORECARD_REPORT", None)
+    if scorecard_report is not None:
         try:
-            payload = load_scorecard(Path(correctness_harness.DEFAULT_REPORT_PATH))
+            payload = scorecard_report.load(Path(correctness_harness.DEFAULT_REPORT_PATH))
         except (ImportError, OSError, SyntaxError, TypeError, ValueError, json.JSONDecodeError):
             return True
     else:
@@ -2806,12 +2806,12 @@ def published_correctness_report_needs_refresh(correctness_harness: Any) -> bool
 
 def refresh_published_correctness_scorecard() -> dict[str, Any] | None:
     correctness_harness = load_correctness_harness_module()
-    removed_legacy_report = bool(correctness_harness.remove_legacy_report_sidecar())
+    removed_legacy_report = bool(correctness_harness.SCORECARD_REPORT.remove_legacy_sidecar())
     if not published_correctness_report_needs_refresh(correctness_harness):
         if removed_legacy_report:
-            load_scorecard = getattr(correctness_harness, "load_scorecard", None)
-            if callable(load_scorecard):
-                return load_scorecard(Path(correctness_harness.DEFAULT_REPORT_PATH))
+            scorecard_report = getattr(correctness_harness, "SCORECARD_REPORT", None)
+            if scorecard_report is not None:
+                return scorecard_report.load(Path(correctness_harness.DEFAULT_REPORT_PATH))
             payload = read_structured_dict(
                 Path(correctness_harness.DEFAULT_REPORT_PATH),
                 default=None,
@@ -2820,7 +2820,7 @@ def refresh_published_correctness_scorecard() -> dict[str, Any] | None:
             return payload if isinstance(payload, dict) else None
         return None
     scorecard = correctness_harness.run_correctness_harness()
-    correctness_harness.remove_legacy_report_sidecar()
+    correctness_harness.SCORECARD_REPORT.remove_legacy_sidecar()
     return scorecard
 
 

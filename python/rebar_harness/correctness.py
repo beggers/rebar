@@ -23,25 +23,28 @@ import rebar
 from rebar_harness.descriptor_values import materialize_descriptor_value
 from rebar_harness.metadata import build_cpython_baseline
 from rebar_harness.scorecard_io import (
+    ScorecardReportSpec,
     load_python_dict_attribute,
-    load_scorecard_report,
-    remove_scorecard_sidecar,
-    validate_scorecard_report_path,
-    write_scorecard_report,
 )
 
 
 TARGET_CPYTHON_SERIES = "3.12.x"
 REPORT_SCHEMA_VERSION = "1.0"
-REPORT_ATTRIBUTE = "REPORT"
 FIXTURE_SCHEMA_VERSION = 1
-PUBLISHED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
-LEGACY_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
-LEGACY_REPORT_PATH_ERROR = (
-    "reports/correctness/latest.json is a retired legacy published scorecard path; "
-    "use reports/correctness/latest.py for the tracked published scorecard or a "
-    "non-tracked temporary .json path for scratch output."
+SCORECARD_REPORT = ScorecardReportSpec(
+    published_path=REPO_ROOT / "reports" / "correctness" / "latest.py",
+    legacy_path=REPO_ROOT / "reports" / "correctness" / "latest.json",
+    legacy_path_error=(
+        "reports/correctness/latest.json is a retired legacy published scorecard path; "
+        "use reports/correctness/latest.py for the tracked published scorecard or a "
+        "non-tracked temporary .json path for scratch output."
+    ),
+    module_name_prefix="_rebar_correctness_scorecard",
+    report_attribute="REPORT",
+    scorecard_kind="correctness",
 )
+PUBLISHED_REPORT_PATH = SCORECARD_REPORT.published_path
+LEGACY_REPORT_PATH = SCORECARD_REPORT.legacy_path
 DEFAULT_FIXTURE_PATHS = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py",
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "public_api_surface.py",
@@ -1638,53 +1641,20 @@ def build_scorecard(
         "cases": case_results,
     }
 
-
-def validate_report_path(report_path: pathlib.Path) -> pathlib.Path:
-    return validate_scorecard_report_path(
-        report_path,
-        legacy_path=LEGACY_REPORT_PATH,
-        legacy_path_error=LEGACY_REPORT_PATH_ERROR,
-    )
-
-
-def load_scorecard(report_path: pathlib.Path) -> dict[str, Any]:
-    return load_scorecard_report(
-        report_path,
-        module_name_prefix="_rebar_correctness_scorecard",
-        report_attribute=REPORT_ATTRIBUTE,
-        scorecard_kind="correctness",
-    )
-
-
-def write_scorecard(scorecard: dict[str, Any], report_path: pathlib.Path) -> None:
-    report_path = validate_report_path(report_path)
-    report_path.parent.mkdir(parents=True, exist_ok=True)
-    write_scorecard_report(
-        scorecard,
-        report_path,
-        report_attribute=REPORT_ATTRIBUTE,
-        scorecard_kind="correctness",
-    )
-
-
-def remove_legacy_report_sidecar() -> bool:
-    return remove_scorecard_sidecar(LEGACY_REPORT_PATH)
-
-
 def run_correctness_harness(
     fixture_paths: Sequence[pathlib.Path] = DEFAULT_FIXTURE_PATHS,
     report_path: pathlib.Path = DEFAULT_REPORT_PATH,
 ) -> dict[str, Any]:
     resolved_fixture_paths = [path.resolve() for path in fixture_paths]
-    report_path = validate_report_path(report_path)
+    report_path = SCORECARD_REPORT.validate_path(report_path)
     manifests, cases = load_fixture_manifests(resolved_fixture_paths)
     cpython_adapter = CpythonReAdapter()
     rebar_adapter = RebarAdapter()
     case_results = [evaluate_case(case, cpython_adapter, rebar_adapter) for case in cases]
     scorecard = build_scorecard(manifests=manifests, case_results=case_results)
-    write_scorecard(scorecard, report_path)
+    SCORECARD_REPORT.write(scorecard, report_path)
     if report_path == DEFAULT_REPORT_PATH:
-        remove_legacy_report_sidecar()
+        SCORECARD_REPORT.remove_legacy_sidecar()
     return scorecard
 
 
@@ -1709,7 +1679,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     try:
-        report_path = validate_report_path(args.report)
+        report_path = SCORECARD_REPORT.validate_path(args.report)
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2

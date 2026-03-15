@@ -19,10 +19,9 @@ PYTHON_SOURCE = REPO_ROOT / "python"
 if str(PYTHON_SOURCE) not in sys.path:
     sys.path.append(str(PYTHON_SOURCE))
 
-from rebar_harness.benchmarks import load_scorecard as load_benchmark_scorecard
+from rebar_harness.benchmarks import SCORECARD_REPORT as BENCHMARK_SCORECARD_REPORT
 from rebar_harness.correctness import (
-    load_scorecard as load_correctness_scorecard,
-    write_scorecard as write_correctness_scorecard,
+    SCORECARD_REPORT as CORRECTNESS_SCORECARD_REPORT,
 )
 
 
@@ -98,7 +97,7 @@ class ReadmeReportingTest(unittest.TestCase):
             self.assertIsInstance(refreshed, dict)
             self.assertFalse(LEGACY_CORRECTNESS_REPORT_PATH.exists())
 
-            repaired_payload = load_correctness_scorecard(CORRECTNESS_REPORT_PATH)
+            repaired_payload = CORRECTNESS_SCORECARD_REPORT.load(CORRECTNESS_REPORT_PATH)
             expected_manifest_ids = rebar_ops.expected_correctness_manifest_ids(
                 rebar_ops.load_correctness_harness_module()
             )
@@ -132,7 +131,7 @@ class ReadmeReportingTest(unittest.TestCase):
                     text=True,
                 )
 
-                write_correctness_scorecard(
+                CORRECTNESS_SCORECARD_REPORT.write(
                     json.loads(narrowed_report_path.read_text(encoding="utf-8")),
                     CORRECTNESS_REPORT_PATH,
                 )
@@ -140,7 +139,7 @@ class ReadmeReportingTest(unittest.TestCase):
                 refreshed = rebar_ops.refresh_published_correctness_scorecard()
                 self.assertIsInstance(refreshed, dict)
 
-                repaired_payload = load_correctness_scorecard(CORRECTNESS_REPORT_PATH)
+                repaired_payload = CORRECTNESS_SCORECARD_REPORT.load(CORRECTNESS_REPORT_PATH)
                 expected_manifest_ids = rebar_ops.expected_correctness_manifest_ids(
                     rebar_ops.load_correctness_harness_module()
                 )
@@ -155,7 +154,7 @@ class ReadmeReportingTest(unittest.TestCase):
     def test_correctness_scorecard_uses_tracked_summary_shape(self) -> None:
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
-        payload = load_correctness_scorecard(CORRECTNESS_REPORT_PATH)
+        payload = CORRECTNESS_SCORECARD_REPORT.load(CORRECTNESS_REPORT_PATH)
         summary = payload["summary"]
 
         expected_total = summary.get("cases_total", summary.get("total_cases"))
@@ -227,7 +226,7 @@ class ReadmeReportingTest(unittest.TestCase):
         self.assertNotIn("reports/benchmarks/latest.json", rendered)
 
     def test_benchmark_harness_loads_tracked_python_scorecard(self) -> None:
-        payload = load_benchmark_scorecard(BENCHMARK_REPORT_PATH)
+        payload = BENCHMARK_SCORECARD_REPORT.load(BENCHMARK_REPORT_PATH)
 
         self.assertIsInstance(payload, dict)
         self.assertEqual(payload["suite"], "benchmarks")

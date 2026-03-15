@@ -30,25 +30,28 @@ if str(PYTHON_SOURCE) not in sys.path:
 from rebar_harness.descriptor_values import materialize_descriptor_value
 from rebar_harness.metadata import build_cpython_baseline
 from rebar_harness.scorecard_io import (
+    ScorecardReportSpec,
     load_python_dict_attribute,
-    load_scorecard_report,
-    remove_scorecard_sidecar,
-    validate_scorecard_report_path,
-    write_scorecard_report,
 )
 
 
 TARGET_CPYTHON_SERIES = "3.12.x"
 REPORT_SCHEMA_VERSION = "1.0"
-REPORT_ATTRIBUTE = "REPORT"
 MANIFEST_SCHEMA_VERSION = 1
-PUBLISHED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
-LEGACY_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
-LEGACY_REPORT_PATH_ERROR = (
-    "reports/benchmarks/latest.json is a retired legacy published scorecard path; "
-    "use reports/benchmarks/latest.py for the tracked published scorecard or a "
-    "non-tracked temporary .json path for scratch output."
+SCORECARD_REPORT = ScorecardReportSpec(
+    published_path=REPO_ROOT / "reports" / "benchmarks" / "latest.py",
+    legacy_path=REPO_ROOT / "reports" / "benchmarks" / "latest.json",
+    legacy_path_error=(
+        "reports/benchmarks/latest.json is a retired legacy published scorecard path; "
+        "use reports/benchmarks/latest.py for the tracked published scorecard or a "
+        "non-tracked temporary .json path for scratch output."
+    ),
+    module_name_prefix="_rebar_benchmark_scorecard",
+    report_attribute="REPORT",
+    scorecard_kind="benchmark",
 )
+PUBLISHED_REPORT_PATH = SCORECARD_REPORT.published_path
+LEGACY_REPORT_PATH = SCORECARD_REPORT.legacy_path
 DEFAULT_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py",
     REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.py",
@@ -1431,39 +1434,6 @@ def build_scorecard(
         ),
     }
 
-
-def validate_report_path(report_path: pathlib.Path) -> pathlib.Path:
-    return validate_scorecard_report_path(
-        report_path,
-        legacy_path=LEGACY_REPORT_PATH,
-        legacy_path_error=LEGACY_REPORT_PATH_ERROR,
-    )
-
-
-def load_scorecard(report_path: pathlib.Path) -> dict[str, Any]:
-    return load_scorecard_report(
-        report_path,
-        module_name_prefix="_rebar_benchmark_scorecard",
-        report_attribute=REPORT_ATTRIBUTE,
-        scorecard_kind="benchmark",
-    )
-
-
-def write_scorecard(scorecard: dict[str, Any], report_path: pathlib.Path) -> None:
-    report_path = validate_report_path(report_path)
-    report_path.parent.mkdir(parents=True, exist_ok=True)
-    write_scorecard_report(
-        scorecard,
-        report_path,
-        report_attribute=REPORT_ATTRIBUTE,
-        scorecard_kind="benchmark",
-    )
-
-
-def remove_legacy_report_sidecar() -> bool:
-    return remove_scorecard_sidecar(LEGACY_REPORT_PATH)
-
-
 def run_benchmarks(
     manifest_paths: list[pathlib.Path] | None = None,
     report_path: pathlib.Path | None = DEFAULT_REPORT_PATH,
@@ -1476,7 +1446,7 @@ def run_benchmarks(
         path.resolve() for path in (manifest_paths or list(DEFAULT_MANIFEST_PATHS))
     ]
     resolved_report_path = (
-        validate_report_path(report_path) if report_path is not None else None
+        SCORECARD_REPORT.validate_path(report_path) if report_path is not None else None
     )
     raw_manifests, manifest_workloads = load_manifests(resolved_manifest_paths)
     selected_manifest_workloads = select_workloads(manifest_workloads, smoke_only=smoke_only)
@@ -1503,9 +1473,9 @@ def run_benchmarks(
             execution_model=run_context.execution_model,
         )
         if resolved_report_path is not None:
-            write_scorecard(scorecard, resolved_report_path)
+            SCORECARD_REPORT.write(scorecard, resolved_report_path)
             if resolved_report_path == DEFAULT_REPORT_PATH:
-                remove_legacy_report_sidecar()
+                SCORECARD_REPORT.remove_legacy_sidecar()
         return scorecard
     finally:
         run_context.cleanup()
