@@ -269,8 +269,12 @@ def workload_from_payload(payload: dict[str, Any]) -> Workload:
     )
 
 
-def _load_python_manifest(path: pathlib.Path) -> dict[str, Any]:
-    return load_python_dict_attribute(
+def load_manifest(path: pathlib.Path) -> tuple[dict[str, Any], list[Workload]]:
+    if path.suffix != ".py":
+        raise ValueError(
+            f"unsupported benchmark manifest extension {path.suffix!r} for {path}"
+        )
+    raw_manifest = load_python_dict_attribute(
         path,
         module_name_prefix="_rebar_benchmark_manifest",
         attribute_name="MANIFEST",
@@ -278,18 +282,6 @@ def _load_python_manifest(path: pathlib.Path) -> dict[str, Any]:
         missing_error_label="Python benchmark manifest module",
         type_error_label="benchmark manifest",
     )
-
-
-def _load_raw_manifest(path: pathlib.Path) -> dict[str, Any]:
-    if path.suffix != ".py":
-        raise ValueError(
-            f"unsupported benchmark manifest extension {path.suffix!r} for {path}"
-        )
-    return _load_python_manifest(path)
-
-
-def load_manifest(path: pathlib.Path) -> tuple[dict[str, Any], list[Workload]]:
-    raw_manifest = _load_raw_manifest(path)
     schema_version = raw_manifest.get("schema_version")
     if schema_version != MANIFEST_SCHEMA_VERSION:
         raise ValueError(

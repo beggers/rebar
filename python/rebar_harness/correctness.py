@@ -551,8 +551,10 @@ def _optional_int(value: Any) -> int | None:
     return int(value)
 
 
-def _load_python_fixture_manifest(path: pathlib.Path) -> dict[str, Any]:
-    return load_python_dict_attribute(
+def load_fixture_manifest(path: pathlib.Path) -> tuple[FixtureManifest, list[FixtureCase]]:
+    if path.suffix != ".py":
+        raise ValueError(f"fixture manifests must be Python modules; got {path}")
+    raw_manifest = load_python_dict_attribute(
         path,
         module_name_prefix="_rebar_fixture",
         attribute_name="MANIFEST",
@@ -560,12 +562,6 @@ def _load_python_fixture_manifest(path: pathlib.Path) -> dict[str, Any]:
         missing_error_label="Python fixture module",
         type_error_label="fixture manifest",
     )
-
-
-def load_fixture_manifest(path: pathlib.Path) -> tuple[FixtureManifest, list[FixtureCase]]:
-    if path.suffix != ".py":
-        raise ValueError(f"fixture manifests must be Python modules; got {path}")
-    raw_manifest = _load_python_fixture_manifest(path)
     schema_version = raw_manifest.get("schema_version")
     if schema_version != FIXTURE_SCHEMA_VERSION:
         raise ValueError(
