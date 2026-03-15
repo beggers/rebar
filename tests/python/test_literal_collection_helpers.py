@@ -1,44 +1,47 @@
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass
-import pathlib
 import re
-import sys
 
 import pytest
 
-
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-PYTHON_SOURCE = REPO_ROOT / "python"
-
-if str(PYTHON_SOURCE) not in sys.path:
-    sys.path.insert(0, str(PYTHON_SOURCE))
-
-
 import rebar
-
-
-BACKENDS = (
-    pytest.param("stdlib", re, id="stdlib"),
-    pytest.param("rebar", rebar, id="rebar"),
+from rebar_harness.correctness import FixtureCase, FixtureManifest, load_fixture_manifest
+from tests.python.fixture_parity_support import (
+    FIXTURES_DIR,
+    assert_match_result_parity,
+    case_pattern,
+    compile_with_cpython_parity,
 )
 
 
 @dataclass(frozen=True)
-class LiteralCase:
-    id: str
-    pattern: str | bytes
-    string: str | bytes
-    maxsplit: int = 0
+class FixtureBundle:
+    manifest: FixtureManifest
+    cases: tuple[FixtureCase, ...]
+    expected_manifest_id: str
+    expected_case_ids: frozenset[str]
+    expected_operation_helper_counts: Counter[tuple[str, str | None]]
 
 
 @dataclass(frozen=True)
-class BoundedCollectionCase:
+class ModuleCollectionCase:
     id: str
+    helper: str
     pattern: str | bytes
     string: str | bytes
-    pos: int
-    endpos: int
+    extra_args: tuple[object, ...] = ()
+
+
+@dataclass(frozen=True)
+class PatternCollectionCase:
+    id: str
+    helper: str
+    pattern: str | bytes
+    string: str | bytes
+    extra_args: tuple[object, ...] = ()
+    flags: int = 0
 
 
 @dataclass(frozen=True)
@@ -50,44 +53,213 @@ class TypeErrorCase:
     compiled: bool = False
 
 
-MODULE_SPLIT_CASES = (
-    LiteralCase("module-split-str-no-match", "abc", "zzz"),
-    LiteralCase("module-split-str-repeated-leading-trailing", "abc", "abczzabc"),
-    LiteralCase("module-split-str-maxsplit-one", "abc", "abcabc", 1),
-    LiteralCase("module-split-str-negative-maxsplit", "abc", "abcabc", -1),
-    LiteralCase("module-split-bytes-maxsplit-one", b"abc", b"zzabczzabc", 1),
+def _fixture_bundle(
+    fixture_name: str,
+    *,
+    selected_case_ids: tuple[str, ...],
+    expected_manifest_id: str,
+    expected_operation_helper_counts: Counter[tuple[str, str | None]],
+) -> FixtureBundle:
+    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
+    case_by_id = {case.case_id: case for case in cases}
+    missing_case_ids = tuple(
+        case_id for case_id in selected_case_ids if case_id not in case_by_id
+    )
+    if missing_case_ids:
+        raise ValueError(
+            f"{fixture_name} is missing expected literal collection fixture rows: "
+            f"{missing_case_ids}"
+        )
+
+    return FixtureBundle(
+        manifest=manifest,
+        cases=tuple(case_by_id[case_id] for case_id in selected_case_ids),
+        expected_manifest_id=expected_manifest_id,
+        expected_case_ids=frozenset(selected_case_ids),
+        expected_operation_helper_counts=expected_operation_helper_counts,
+    )
+
+
+def _module_case_from_fixture(case: FixtureCase) -> ModuleCollectionCase:
+    assert case.operation == "module_call"
+    assert case.helper is not None
+    assert not case.kwargs
+    assert len(case.args) >= 2
+
+    pattern = case.args[0]
+    string = case.args[1]
+    extra_args = tuple(case.args[2:])
+
+    assert isinstance(pattern, (str, bytes))
+    assert isinstance(string, (str, bytes))
+    return ModuleCollectionCase(
+        id=case.case_id,
+        helper=case.helper,
+        pattern=pattern,
+        string=string,
+        extra_args=extra_args,
+    )
+
+
+def _pattern_case_from_fixture(case: FixtureCase) -> PatternCollectionCase:
+    assert case.operation == "pattern_call"
+    assert case.helper is not None
+    assert not case.kwargs
+    assert len(case.args) >= 1
+
+    string = case.args[0]
+    extra_args = tuple(case.args[1:])
+    assert isinstance(string, (str, bytes))
+
+    return PatternCollectionCase(
+        id=case.case_id,
+        helper=case.helper,
+        pattern=case_pattern(case),
+        string=string,
+        extra_args=extra_args,
+        flags=case.flags or 0,
+    )
+
+
+def _call_module_helper(regex_api: object, case: ModuleCollectionCase) -> object:
+    return getattr(regex_api, case.helper)(case.pattern, case.string, *case.extra_args)
+
+
+def _call_pattern_helper(pattern: object, case: PatternCollectionCase) -> object:
+    return getattr(pattern, case.helper)(case.string, *case.extra_args)
+
+
+def _assert_finditer_parity(
+    backend_name: str,
+    observed_iter: object,
+    expected_iter: object,
+) -> None:
+    observed_matches = list(observed_iter)
+    expected_matches = list(expected_iter)
+
+    assert len(observed_matches) == len(expected_matches)
+    for observed, expected in zip(observed_matches, expected_matches):
+        assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+
+    assert next(observed_iter, None) is None
+    assert next(expected_iter, None) is None
+
+
+def _invoke_collection_helper(regex_api: object, case: TypeErrorCase) -> object:
+    target = regex_api.compile(case.pattern) if case.compiled else regex_api
+    args = (case.string,) if case.compiled else (case.pattern, case.string)
+    result = getattr(target, case.helper)(*args)
+    if case.helper == "finditer":
+        return list(result)
+    return result
+
+
+TARGET_FIXTURE_CASE_IDS = (
+    "module-split-str-leading-trailing",
+    "module-split-str-no-match",
+    "pattern-split-bytes-maxsplit",
+    "module-findall-bytes-repeated",
+    "pattern-findall-str-no-match",
+    "module-finditer-str-repeated",
+    "pattern-finditer-bytes-bounded",
+)
+COLLECTION_FIXTURE_BUNDLE = _fixture_bundle(
+    "collection_replacement_workflows.py",
+    selected_case_ids=TARGET_FIXTURE_CASE_IDS,
+    expected_manifest_id="collection-replacement-workflows",
+    expected_operation_helper_counts=Counter(
+        {
+            ("module_call", "split"): 2,
+            ("pattern_call", "split"): 1,
+            ("module_call", "findall"): 1,
+            ("pattern_call", "findall"): 1,
+            ("module_call", "finditer"): 1,
+            ("pattern_call", "finditer"): 1,
+        }
+    ),
+)
+PUBLISHED_MODULE_CASES = tuple(
+    _module_case_from_fixture(case)
+    for case in COLLECTION_FIXTURE_BUNDLE.cases
+    if case.operation == "module_call"
+)
+PUBLISHED_PATTERN_CASES = tuple(
+    _pattern_case_from_fixture(case)
+    for case in COLLECTION_FIXTURE_BUNDLE.cases
+    if case.operation == "pattern_call"
 )
 
-PATTERN_SPLIT_CASES = (
-    LiteralCase("pattern-split-str-no-match", "abc", "zzz"),
-    LiteralCase("pattern-split-str-repeated", "abc", "abcabc"),
-    LiteralCase("pattern-split-str-maxsplit-one", "abc", "abcabc", 1),
-    LiteralCase("pattern-split-str-negative-maxsplit", "abc", "abcabc", -1),
-    LiteralCase("pattern-split-bytes-maxsplit-one", b"abc", b"zzabczzabc", 1),
+MODULE_SPLIT_CASES = tuple(
+    case for case in PUBLISHED_MODULE_CASES if case.helper == "split"
+) + (
+    ModuleCollectionCase("module-split-str-maxsplit-one", "split", "abc", "abcabc", (1,)),
+    ModuleCollectionCase("module-split-str-negative-maxsplit", "split", "abc", "abcabc", (-1,)),
+    ModuleCollectionCase(
+        "module-split-bytes-maxsplit-one",
+        "split",
+        b"abc",
+        b"zzabczzabc",
+        (1,),
+    ),
+)
+PATTERN_SPLIT_CASES = tuple(
+    case for case in PUBLISHED_PATTERN_CASES if case.helper == "split"
+) + (
+    PatternCollectionCase("pattern-split-str-no-match", "split", "abc", "zzz"),
+    PatternCollectionCase("pattern-split-str-repeated", "split", "abc", "abcabc"),
+    PatternCollectionCase("pattern-split-str-maxsplit-one", "split", "abc", "abcabc", (1,)),
+    PatternCollectionCase(
+        "pattern-split-str-negative-maxsplit",
+        "split",
+        "abc",
+        "abcabc",
+        (-1,),
+    ),
 )
 
-MODULE_FINDALL_CASES = (
-    LiteralCase("module-findall-str-repeated", "abc", "abcabc"),
-    LiteralCase("module-findall-str-no-match", "abc", "zzz"),
-    LiteralCase("module-findall-bytes-repeated", b"abc", b"zabcabc"),
+MODULE_FINDALL_CASES = tuple(
+    case for case in PUBLISHED_MODULE_CASES if case.helper == "findall"
+) + (
+    ModuleCollectionCase("module-findall-str-repeated", "findall", "abc", "abcabc"),
+    ModuleCollectionCase("module-findall-str-no-match", "findall", "abc", "zzz"),
+)
+PATTERN_FINDALL_CASES = tuple(
+    case for case in PUBLISHED_PATTERN_CASES if case.helper == "findall"
+) + (
+    PatternCollectionCase("pattern-findall-str-bounded", "findall", "abc", "zabcabcz", (1, 7)),
+    PatternCollectionCase(
+        "pattern-findall-str-bounded-no-match",
+        "findall",
+        "abc",
+        "zzzzzzz",
+        (1, 7),
+    ),
+    PatternCollectionCase(
+        "pattern-findall-bytes-bounded",
+        "findall",
+        b"abc",
+        b"zabcabcz",
+        (1, 7),
+    ),
 )
 
-PATTERN_FINDALL_CASES = (
-    BoundedCollectionCase("pattern-findall-str-bounded", "abc", "zabcabcz", 1, 7),
-    BoundedCollectionCase("pattern-findall-str-bounded-no-match", "abc", "zzzzzzz", 1, 7),
-    BoundedCollectionCase("pattern-findall-bytes-bounded", b"abc", b"zabcabcz", 1, 7),
+MODULE_FINDITER_CASES = tuple(
+    case for case in PUBLISHED_MODULE_CASES if case.helper == "finditer"
+) + (
+    ModuleCollectionCase("module-finditer-str-no-match", "finditer", "abc", "zzz"),
+    ModuleCollectionCase("module-finditer-bytes-repeated", "finditer", b"abc", b"zabcabc"),
 )
-
-MODULE_FINDITER_CASES = (
-    LiteralCase("module-finditer-str-repeated", "abc", "zabcabc"),
-    LiteralCase("module-finditer-str-no-match", "abc", "zzz"),
-    LiteralCase("module-finditer-bytes-repeated", b"abc", b"zabcabc"),
-)
-
-PATTERN_FINDITER_CASES = (
-    BoundedCollectionCase("pattern-finditer-str-bounded", "abc", "zabcabcx", 1, 7),
-    BoundedCollectionCase("pattern-finditer-str-bounded-no-match", "abc", "zzzzzzzx", 1, 7),
-    BoundedCollectionCase("pattern-finditer-bytes-bounded", b"abc", b"zabcabcx", 1, 7),
+PATTERN_FINDITER_CASES = tuple(
+    case for case in PUBLISHED_PATTERN_CASES if case.helper == "finditer"
+) + (
+    PatternCollectionCase("pattern-finditer-str-bounded", "finditer", "abc", "zabcabcx", (1, 7)),
+    PatternCollectionCase(
+        "pattern-finditer-str-bounded-no-match",
+        "finditer",
+        "abc",
+        "zzzzzzzx",
+        (1, 7),
+    ),
 )
 
 TYPE_ERROR_CASES = (
@@ -148,150 +320,116 @@ UNSUPPORTED_CASES = (
 )
 
 
-def _normalize_match(match: object) -> dict[str, object]:
-    return {
-        "group0": match.group(0),
-        "groups": match.groups(),
-        "groupdict": match.groupdict(),
-        "span": match.span(),
-        "pos": match.pos,
-        "endpos": match.endpos,
-        "lastindex": match.lastindex,
-        "lastgroup": match.lastgroup,
-    }
+def test_literal_collection_suite_stays_aligned_with_published_fixture_rows() -> None:
+    bundle = COLLECTION_FIXTURE_BUNDLE
+
+    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
+    assert len(bundle.cases) == len(bundle.expected_case_ids)
+    assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
+    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
+        bundle.expected_operation_helper_counts
+    )
 
 
-def _assert_finditer_parity(
-    backend_name: str,
-    observed_iter: object,
-    expected_iter: object,
-) -> None:
-    observed_matches = list(observed_iter)
-    expected_matches = list(expected_iter)
-
-    if backend_name == "rebar":
-        assert [type(match) for match in observed_matches] == [rebar.Match] * len(observed_matches)
-    else:
-        assert [type(match) for match in observed_matches] == [type(match) for match in expected_matches]
-
-    assert [_normalize_match(match) for match in observed_matches] == [
-        _normalize_match(match) for match in expected_matches
-    ]
-    assert next(observed_iter, None) is None
-    assert next(expected_iter, None) is None
-
-
-def _invoke_collection_helper(module: object, case: TypeErrorCase) -> object:
-    target = module.compile(case.pattern) if case.compiled else module
-    args = (case.string,) if case.compiled else (case.pattern, case.string)
-    result = getattr(target, case.helper)(*args)
-    if case.helper == "finditer":
-        return list(result)
-    return result
-
-
-@pytest.mark.parametrize(("backend_name", "backend"), BACKENDS)
 @pytest.mark.parametrize("case", MODULE_SPLIT_CASES, ids=lambda case: case.id)
 def test_module_split_matches_cpython(
-    backend_name: str,
-    backend: object,
-    case: LiteralCase,
+    regex_backend: tuple[str, object],
+    case: ModuleCollectionCase,
 ) -> None:
-    del backend_name
-    observed = backend.split(case.pattern, case.string, maxsplit=case.maxsplit)
-    expected = re.split(case.pattern, case.string, maxsplit=case.maxsplit)
+    _, backend = regex_backend
 
-    assert observed == expected
+    assert _call_module_helper(backend, case) == _call_module_helper(re, case)
 
 
-@pytest.mark.parametrize(("backend_name", "backend"), BACKENDS)
 @pytest.mark.parametrize("case", PATTERN_SPLIT_CASES, ids=lambda case: case.id)
 def test_pattern_split_matches_cpython(
-    backend_name: str,
-    backend: object,
-    case: LiteralCase,
+    regex_backend: tuple[str, object],
+    case: PatternCollectionCase,
 ) -> None:
-    del backend_name
-    observed_pattern = backend.compile(case.pattern)
-    expected_pattern = re.compile(case.pattern)
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+        case.flags,
+    )
 
-    assert observed_pattern.split(case.string, case.maxsplit) == expected_pattern.split(
-        case.string,
-        case.maxsplit,
+    assert _call_pattern_helper(observed_pattern, case) == _call_pattern_helper(
+        expected_pattern,
+        case,
     )
 
 
-@pytest.mark.parametrize(("backend_name", "backend"), BACKENDS)
 @pytest.mark.parametrize("case", MODULE_FINDALL_CASES, ids=lambda case: case.id)
 def test_module_findall_matches_cpython(
-    backend_name: str,
-    backend: object,
-    case: LiteralCase,
+    regex_backend: tuple[str, object],
+    case: ModuleCollectionCase,
 ) -> None:
-    del backend_name
-    observed = backend.findall(case.pattern, case.string)
-    expected = re.findall(case.pattern, case.string)
+    _, backend = regex_backend
 
-    assert observed == expected
+    assert _call_module_helper(backend, case) == _call_module_helper(re, case)
 
 
-@pytest.mark.parametrize(("backend_name", "backend"), BACKENDS)
 @pytest.mark.parametrize("case", PATTERN_FINDALL_CASES, ids=lambda case: case.id)
 def test_pattern_findall_matches_cpython(
-    backend_name: str,
-    backend: object,
-    case: BoundedCollectionCase,
+    regex_backend: tuple[str, object],
+    case: PatternCollectionCase,
 ) -> None:
-    del backend_name
-    observed_pattern = backend.compile(case.pattern)
-    expected_pattern = re.compile(case.pattern)
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+        case.flags,
+    )
 
-    assert observed_pattern.findall(case.string, case.pos, case.endpos) == expected_pattern.findall(
-        case.string,
-        case.pos,
-        case.endpos,
+    assert _call_pattern_helper(observed_pattern, case) == _call_pattern_helper(
+        expected_pattern,
+        case,
     )
 
 
-@pytest.mark.parametrize(("backend_name", "backend"), BACKENDS)
 @pytest.mark.parametrize("case", MODULE_FINDITER_CASES, ids=lambda case: case.id)
 def test_module_finditer_matches_cpython(
-    backend_name: str,
-    backend: object,
-    case: LiteralCase,
+    regex_backend: tuple[str, object],
+    case: ModuleCollectionCase,
 ) -> None:
+    backend_name, backend = regex_backend
+
     _assert_finditer_parity(
         backend_name,
-        backend.finditer(case.pattern, case.string),
-        re.finditer(case.pattern, case.string),
+        _call_module_helper(backend, case),
+        _call_module_helper(re, case),
     )
 
 
-@pytest.mark.parametrize(("backend_name", "backend"), BACKENDS)
 @pytest.mark.parametrize("case", PATTERN_FINDITER_CASES, ids=lambda case: case.id)
 def test_pattern_finditer_matches_cpython(
-    backend_name: str,
-    backend: object,
-    case: BoundedCollectionCase,
+    regex_backend: tuple[str, object],
+    case: PatternCollectionCase,
 ) -> None:
-    observed_pattern = backend.compile(case.pattern)
-    expected_pattern = re.compile(case.pattern)
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+        case.flags,
+    )
 
     _assert_finditer_parity(
         backend_name,
-        observed_pattern.finditer(case.string, case.pos, case.endpos),
-        expected_pattern.finditer(case.string, case.pos, case.endpos),
+        _call_pattern_helper(observed_pattern, case),
+        _call_pattern_helper(expected_pattern, case),
     )
 
 
-@pytest.mark.parametrize(("backend_name", "backend"), BACKENDS)
 @pytest.mark.parametrize("case", TYPE_ERROR_CASES, ids=lambda case: case.id)
 def test_collection_helper_type_errors_match_cpython(
-    backend_name: str,
-    backend: object,
+    regex_backend: tuple[str, object],
     case: TypeErrorCase,
 ) -> None:
-    del backend_name
+    _, backend = regex_backend
+
     with pytest.raises(TypeError) as expected_error:
         _invoke_collection_helper(re, case)
 

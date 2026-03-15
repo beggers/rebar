@@ -1,8 +1,9 @@
 # RBR-0411: Replace literal collection case tables with a fixture-backed parity suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Remove the duplicate literal collection workflow tables from `tests/python/test_literal_collection_helpers.py`, so the source-tree collection parity suite reads the published `tests/conformance/fixtures/collection_replacement_workflows.py` rows it already shares with correctness reporting and keeps only a small explicit supplement for source-surface-only bounds and error cases.
@@ -42,3 +43,11 @@ Created: 2026-03-15
 - `RBR-0410` is already reserved in `ops/state/backlog.md` and `ops/state/current_status.md` for the next feature-owned benchmark catch-up, so this cleanup intentionally uses `RBR-0411`.
 - `tests/python/test_literal_collection_helpers.py` is still a `310`-line source-tree parity file with file-local repo bootstrap plus hard-coded `split` / `findall` / `finditer` case tables, even though `tests/conformance/fixtures/collection_replacement_workflows.py` already publishes the overlapping literal collection rows for correctness reporting.
 - The existing nonliteral collection row, `module-findall-nonliteral-str`, already lives on `tests/python/test_bounded_wildcard_parity_suite.py`; this cleanup should reduce duplicate literal fixture data without collapsing that separate bounded-wildcard owner.
+
+## Completion
+- 2026-03-15: Rewrote `tests/python/test_literal_collection_helpers.py` to load the published `collection_replacement_workflows.py` manifest through `load_fixture_manifest(...)`, keep one alignment assertion for the seven shared literal collection rows, and drop the file-local repo bootstrap in favor of the shared pytest path from `tests/python/conftest.py`.
+- 2026-03-15: Preserved the extra source-surface-only parity coverage outside those shared rows for module and compiled-pattern `split()`, `findall()`, and `finditer()`, including maxsplit, bounded `pos` / `endpos`, iterator exhaustion, `Match` metadata parity, explicit mismatch `TypeError` checks, and the existing loud-placeholder checks for unsupported collection calls.
+
+## Verification
+- 2026-03-15: `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_literal_collection_helpers.py tests/python/test_bounded_wildcard_parity_suite.py` (`86 passed`)
+- 2026-03-15: `rg -n "REPO_ROOT =|PYTHON_SOURCE =|sys\.path\.insert\(" tests/python/test_literal_collection_helpers.py` (no matches)
