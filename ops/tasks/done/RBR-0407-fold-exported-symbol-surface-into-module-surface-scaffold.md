@@ -1,8 +1,9 @@
 # RBR-0407: Fold the exported symbol surface into the module scaffold owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Replace the remaining standalone exported-symbol wrapper with one pytest owner in `tests/python/test_module_surface_scaffold.py`, so the bounded source-tree module surface stops splitting overlapping export, metadata, and placeholder assertions across a second legacy `unittest` file with repeated repo bootstrap.
@@ -47,3 +48,13 @@ Created: 2026-03-15
 - The runtime dashboard is clean and current for `HEAD`, the ready queue is empty, and both tracked and live JSON counts are zero (`tracked_json_blob_count: 0`, `tracked_json_blob_delta: 0`, `git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), so this run should queue a post-JSON simplification instead of another JSON burn-down task.
 - `RBR-0406` is already reserved in `ops/state/backlog.md` and `ops/state/current_status.md` for the next feature-owned replacement-template slice, so this cleanup intentionally uses `RBR-0407`.
 - `tests/python/test_exported_symbol_surface.py` is still a separate `116`-line `unittest` wrapper with file-local `PYTHON_SOURCE` bootstrap, while `tests/python/test_module_surface_scaffold.py` already owns the overlapping helper exports, compile metadata, and literal match scaffold assertions across `328` lines on the shared pytest path.
+
+## Completion
+- 2026-03-15: Folded the stdlib-style export contract, scaffold metadata checks, primary flag value and alias assertions, `RegexFlag` iteration parity, and placeholder non-instantiability checks from the legacy `unittest` wrapper into `tests/python/test_module_surface_scaffold.py` while keeping the existing compile metadata and literal match scaffold assertions on the shared pytest path.
+- 2026-03-15: Deleted `tests/python/test_exported_symbol_surface.py` after consolidating its bounded export and placeholder coverage into the sole pytest owner.
+
+## Verification
+- 2026-03-15: `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_module_surface_scaffold.py tests/python/test_native_extension_smoke.py` (`35 passed, 1 skipped`)
+- 2026-03-15: `rg --files tests/python | rg 'test_exported_symbol_surface\.py$'` (no matches)
+- 2026-03-15: `rg -n "import unittest|REPO_ROOT =|PYTHON_SOURCE =|sys\.path\.insert\(" tests/python/test_module_surface_scaffold.py` (no matches)
+- 2026-03-15: `git diff --name-status -- tests/python/test_module_surface_scaffold.py tests/python/test_exported_symbol_surface.py` (`M` for the consolidated owner, `D` for the deleted legacy file)

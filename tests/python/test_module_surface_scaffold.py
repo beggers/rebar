@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 import pytest
 
 import rebar
@@ -19,6 +21,27 @@ EXPECTED_HELPERS = {
     "escape",
     "purge",
 }
+
+PRIMARY_FLAG_EXPORTS = [
+    "NOFLAG",
+    "ASCII",
+    "A",
+    "IGNORECASE",
+    "I",
+    "LOCALE",
+    "L",
+    "MULTILINE",
+    "M",
+    "DOTALL",
+    "S",
+    "VERBOSE",
+    "X",
+    "UNICODE",
+    "U",
+    "DEBUG",
+    "TEMPLATE",
+    "T",
+]
 
 STR_CASES = [
     ("", ""),
@@ -68,9 +91,69 @@ def _assert_match_contract(
 def test_source_package_exports_helper_surface() -> None:
     exported = set(rebar.__all__)
 
+    assert set(re.__all__).issubset(exported)
     assert EXPECTED_HELPERS.issubset(exported)
+    assert rebar.RegexFlag is rebar.ASCII.__class__
+    assert rebar.error is re.error
+    assert isinstance(rebar.Pattern, type)
+    assert isinstance(rebar.Match, type)
+    assert rebar.RegexFlag.__module__ == "re"
+    assert rebar.Pattern.__module__ == "re"
+    assert rebar.Match.__module__ == "re"
     for helper_name in sorted(EXPECTED_HELPERS):
         assert callable(getattr(rebar, helper_name))
+
+
+def test_source_package_scaffold_metadata_exports_are_coherent() -> None:
+    assert rebar.TARGET_CPYTHON_SERIES == "3.12.x"
+    assert rebar.SCAFFOLD_STATUS == "scaffold-only"
+    assert rebar.NATIVE_MODULE_NAME == "rebar._rebar"
+    assert isinstance(rebar.native_module_loaded(), bool)
+
+    if rebar.native_module_loaded():
+        assert rebar.native_scaffold_status() == "scaffold-only"
+        assert rebar.native_target_cpython_series() == "3.12.x"
+    else:
+        assert rebar.native_scaffold_status() is None
+        assert rebar.native_target_cpython_series() is None
+
+
+def test_source_package_primary_flag_exports_match_cpython_values_and_aliases() -> None:
+    for name in PRIMARY_FLAG_EXPORTS:
+        assert hasattr(rebar, name)
+        assert int(getattr(rebar, name)) == int(getattr(re, name))
+
+    for short_name, long_name in [
+        ("A", "ASCII"),
+        ("I", "IGNORECASE"),
+        ("L", "LOCALE"),
+        ("M", "MULTILINE"),
+        ("S", "DOTALL"),
+        ("X", "VERBOSE"),
+        ("U", "UNICODE"),
+        ("T", "TEMPLATE"),
+    ]:
+        assert getattr(rebar, short_name) is getattr(rebar, long_name)
+
+
+def test_source_package_regexflag_members_match_cpython() -> None:
+    assert {member.name: int(member) for member in rebar.RegexFlag} == {
+        member.name: int(member) for member in re.RegexFlag
+    }
+
+
+def test_source_package_pattern_and_match_placeholders_are_non_instantiable() -> None:
+    with pytest.raises(
+        TypeError,
+        match=re.escape("cannot create 're.Pattern' instances"),
+    ):
+        rebar.Pattern()
+
+    with pytest.raises(
+        TypeError,
+        match=re.escape("cannot create 're.Match' instances"),
+    ):
+        rebar.Match()
 
 
 def test_source_package_template_placeholder_fails_loudly() -> None:
