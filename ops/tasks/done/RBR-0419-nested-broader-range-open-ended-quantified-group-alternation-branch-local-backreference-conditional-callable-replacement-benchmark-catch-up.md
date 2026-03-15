@@ -1,6 +1,6 @@
 # RBR-0419: Catch broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional callable-replacement benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-15
 
@@ -31,3 +31,8 @@ Created: 2026-03-15
 - Keep this follow-on on the existing `nested_group_callable_replacement_boundary.py` manifest path instead of forking another benchmark family.
 - The shared callable benchmark manifest already covers the exact, quantified `+`, broader `{1,4}`, open-ended `{1,}`, and broader-range `{2,}` non-conditional branch-local-backreference callable rows, so this task should add only the directly adjacent broader-range open-ended `{2,}` conditional rows needed to close that Python-path benchmark gap.
 - The adjacent published callable-replacement correctness fixture family currently stops at this bounded conditional slice, so once this benchmark catch-up drains no concrete post-drain feature follow-on is pinned yet.
+
+## Completion Notes
+- 2026-03-15: Added the minimal four broader-range open-ended `{2,}` conditional callable benchmark rows on the existing `nested_group_callable_replacement_boundary.py` path: numbered warm `module.sub()` and `module.subn()` lower-bound / first-match-only probes plus named purged `Pattern.sub()` and `Pattern.subn()` lower-bound / first-match-only probes for `a((b|c){2,})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)`.
+- 2026-03-15: Updated the shared source-tree benchmark expectations so `nested-group-callable-replacement-boundary` now publishes `44` measured workloads with `0` known gaps, and refreshed `reports/benchmarks/latest.py` to `562` total workloads, `538` real `rebar` timings, and the same `24` explicit known gaps.
+- 2026-03-15: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k "nested_broader_range_open_ended_conditional"`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_python_benchmark_manifest_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
