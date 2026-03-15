@@ -179,6 +179,32 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
         ),
         "representative_known_gap_workload_ids": (),
     },
+    "branch-local-backreference-boundary": {
+        "manifest_ids": ("branch-local-backreference-boundary",),
+        "selection_mode": "full",
+        "expected_summary": {
+            "known_gap_count": 0,
+            "measured_workloads": 24,
+            "module_workloads": 24,
+            "parser_workloads": 0,
+            "regression_workloads": 0,
+            "total_workloads": 24,
+        },
+        "manifest_expectations": {
+            "branch-local-backreference-boundary": {
+                "known_gap_count": 0,
+            },
+        },
+        "representative_measured_workload_ids": (
+            "module-compile-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-cold-str",
+            "module-search-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-str",
+            "pattern-fullmatch-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-mixed-branches-purged-str",
+            "module-compile-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-warm-str",
+            "module-search-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-warm-str",
+            "pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-purged-str",
+        ),
+        "representative_known_gap_workload_ids": (),
+    },
     "regression-pack-full": {
         "manifest_ids": (
             "compile-matrix",
@@ -411,7 +437,14 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
     "branch-local-backreference-boundary": {
         "known_gap_count": 0,
         "representative_known_gap_workload_ids": (),
-        "representative_measured_workload_ids": (),
+        "representative_measured_workload_ids": (
+            "module-compile-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-cold-str",
+            "module-search-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-str",
+            "pattern-fullmatch-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-mixed-branches-purged-str",
+            "module-compile-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-warm-str",
+            "module-search-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-warm-str",
+            "pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-purged-str",
+        ),
     },
     "optional-group-boundary": {
         "known_gap_count": 1,

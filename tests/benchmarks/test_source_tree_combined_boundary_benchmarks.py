@@ -25,10 +25,23 @@ from tests.report_assertions import (
     find_workload_record,
 )
 
+BRANCH_LOCAL_BACKREFERENCE_MANIFEST_ID = "branch-local-backreference-boundary"
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"
 NESTED_GROUP_REPLACEMENT_MANIFEST_ID = "nested-group-replacement-boundary"
 NESTED_GROUP_CALLABLE_REPLACEMENT_MANIFEST_ID = "nested-group-callable-replacement-boundary"
 NESTED_GROUP_ALTERNATION_MANIFEST_ID = "nested-group-alternation-boundary"
+BRANCH_LOCAL_BACKREFERENCE_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_WORKLOAD_IDS = (
+    "module-compile-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-cold-str",
+    "module-search-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-str",
+    "pattern-fullmatch-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-mixed-branches-purged-str",
+    "module-compile-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-warm-str",
+    "module-search-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-warm-str",
+    "pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-purged-str",
+)
+BRANCH_LOCAL_BACKREFERENCE_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_PATTERNS = {
+    r"a((b|c){2,})\2(?(2)d|e)",
+    r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+}
 NESTED_GROUP_REPLACEMENT_OPEN_ENDED_BRANCH_LOCAL_WORKLOAD_IDS = (
     "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
     "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
@@ -374,6 +387,85 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                         workload_document=find_workload_document(case["target_manifest"], workload_id),
                         expected_status=expected_status,
                     )
+
+    def test_branch_local_backreference_manifest_covers_broader_range_open_ended_conditional_slice(
+        self,
+    ) -> None:
+        case = source_tree_combined_case(BRANCH_LOCAL_BACKREFERENCE_MANIFEST_ID)
+        _, scorecard = run_source_tree_benchmark_scorecard(case["manifest_paths"])
+
+        manifest_summary = scorecard["manifests"][BRANCH_LOCAL_BACKREFERENCE_MANIFEST_ID]
+        self.assertEqual(manifest_summary["known_gap_count"], 0)
+
+        broader_range_open_ended_conditional_rows = [
+            workload
+            for workload in case["target_manifest"]["workloads"]
+            if "branch-local-backreferences" in workload["syntax_features"]
+            and "conditionals" in workload["syntax_features"]
+            and "nested-groups" in workload["syntax_features"]
+            and "counted-repeats" in workload["syntax_features"]
+            and "open-ended-repeat" in workload["categories"]
+            and "broader-range" in workload["categories"]
+        ]
+        self.assertEqual(
+            tuple(workload["id"] for workload in broader_range_open_ended_conditional_rows),
+            BRANCH_LOCAL_BACKREFERENCE_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_WORKLOAD_IDS,
+        )
+        self.assertEqual(
+            {workload["operation"] for workload in broader_range_open_ended_conditional_rows},
+            {"module.compile", "module.search", "pattern.fullmatch"},
+        )
+        self.assertEqual(
+            {workload["pattern"] for workload in broader_range_open_ended_conditional_rows},
+            BRANCH_LOCAL_BACKREFERENCE_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_PATTERNS,
+        )
+        self.assertEqual(
+            {
+                str(workload["haystack"])
+                for workload in broader_range_open_ended_conditional_rows
+                if workload.get("haystack") is not None
+            },
+            {"zzabbbdzz", "abcbccd", "zzacccdzz", "abbbd"},
+        )
+
+        for workload in broader_range_open_ended_conditional_rows:
+            for category in (
+                "grouped",
+                "nested-group",
+                "alternation",
+                "branch-local",
+                "conditional",
+                "quantified",
+                "counted-repeat",
+                "open-ended-repeat",
+                "broader-range",
+            ):
+                self.assertIn(category, workload["categories"])
+
+        scorecard_rows = [
+            workload
+            for workload in scorecard["workloads"]
+            if workload["manifest_id"] == BRANCH_LOCAL_BACKREFERENCE_MANIFEST_ID
+            and workload["id"]
+            in BRANCH_LOCAL_BACKREFERENCE_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_WORKLOAD_IDS
+        ]
+        self.assertEqual(
+            {workload["id"] for workload in scorecard_rows},
+            set(BRANCH_LOCAL_BACKREFERENCE_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_WORKLOAD_IDS),
+        )
+
+        for workload_id in BRANCH_LOCAL_BACKREFERENCE_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_WORKLOAD_IDS:
+            with self.subTest(workload_id=workload_id):
+                assert_benchmark_workload_contract(
+                    self,
+                    find_workload_record(scorecard, workload_id),
+                    manifest_id=BRANCH_LOCAL_BACKREFERENCE_MANIFEST_ID,
+                    workload_document=find_workload_document(
+                        case["target_manifest"],
+                        workload_id,
+                    ),
+                    expected_status="measured",
+                )
 
     def test_nested_group_alternation_manifest_covers_non_quantified_branch_local_backreference_slice(
         self,

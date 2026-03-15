@@ -7,7 +7,7 @@ MANIFEST = {
   ],
   "notes": [
     "Branch-local backreference boundary workloads keep captures, alternation sites, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded branch-local reference slice rather than regex throughput.",
-    "Measured rows cover the bounded `a((b)|c)\\\\2d`, `a(?P<outer>(?P<inner>b)|c)(?P=inner)d`, `a((b)+|c)\\\\2d`, `a(?P<outer>(?P<inner>b)+|c)(?P=inner)d`, `a((b)|c)\\\\2(?(2)d|e)`, and `a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)` compile/search/fullmatch paths directly, while replacement semantics, nested alternation-plus-backreference shapes, and broader backtracking-heavy grouped combinations stay explicit known-gap rows in adjacent manifests."
+    "Measured rows cover the bounded `a((b)|c)\\\\2d`, `a(?P<outer>(?P<inner>b)|c)(?P=inner)d`, `a((b)+|c)\\\\2d`, `a(?P<outer>(?P<inner>b)+|c)(?P=inner)d`, `a((b)|c)\\\\2(?(2)d|e)`, and `a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)` compile/search/fullmatch paths directly, plus one broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional follow-on for `a((b|c){2,})\\\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)`, while replacement semantics, nested alternation-plus-backreference shapes, and broader backtracking-heavy grouped combinations stay explicit known-gap rows in adjacent manifests."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -611,6 +611,268 @@ MANIFEST = {
       ],
       "notes": [
         "Purged-cache Pattern.fullmatch probe for the bounded named conditional-plus-branch-local backreference success path, reusing the existing conditional anchor row now that `RBR-0205` landed parity."
+      ]
+    },
+    {
+      "id": "module-compile-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-cold-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a((b|c){2,})\\2(?(2)d|e)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "nested-group",
+        "alternation",
+        "numbered-backreference",
+        "branch-local",
+        "conditional",
+        "quantified",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "nested-groups",
+        "alternation",
+        "numbered-backreferences",
+        "branch-local-backreferences",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals"
+      ],
+      "notes": [
+        "Cold module.compile benchmark for the broader-range open-ended `{2,}` numbered nested-group alternation branch-local backreference plus conditional slice so shifted-floor compile metadata joins the shared branch-local benchmark report."
+      ]
+    },
+    {
+      "id": "module-search-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a((b|c){2,})\\2(?(2)d|e)",
+      "haystack": "zzabbbdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "nested-group",
+        "alternation",
+        "numbered-backreference",
+        "branch-local",
+        "conditional",
+        "quantified",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "search",
+        "module",
+        "lower-bound",
+        "b-branch",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "nested-groups",
+        "alternation",
+        "numbered-backreferences",
+        "branch-local-backreferences",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm module.search helper path for the broader-range open-ended `{2,}` numbered nested-group alternation branch-local backreference plus conditional lower-bound success case on `abbbd`, so the shifted two-repetition floor, final same-branch replay, and trailing conditional yes arm stay on the shared benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-mixed-branches-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a((b|c){2,})\\2(?(2)d|e)",
+      "haystack": "abcbccd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "nested-group",
+        "alternation",
+        "numbered-backreference",
+        "branch-local",
+        "conditional",
+        "quantified",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "fullmatch",
+        "mixed-branches",
+        "final-inner-capture",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "nested-groups",
+        "alternation",
+        "numbered-backreferences",
+        "branch-local-backreferences",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the broader-range open-ended `{2,}` numbered nested-group alternation branch-local backreference plus conditional mixed-branch success path on `abcbccd`, so the final selected `c` branch replay stays observable before the trailing yes arm accepts `d`."
+      ]
+    },
+    {
+      "id": "module-compile-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-warm-str",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "nested-group",
+        "alternation",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "conditional",
+        "quantified",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "grouping-forms",
+        "nested-groups",
+        "alternation",
+        "named-groups",
+        "named-backreferences",
+        "branch-local-backreferences",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm module.compile path for the broader-range open-ended named `{2,}` nested-group alternation branch-local backreference plus conditional slice so named shifted-floor compile metadata lands beside the new runtime rows."
+      ]
+    },
+    {
+      "id": "module-search-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-warm-str",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+      "haystack": "zzacccdzz",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "nested-group",
+        "alternation",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "conditional",
+        "quantified",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "search",
+        "module",
+        "lower-bound",
+        "c-branch",
+        "outer-capture",
+        "final-inner-capture",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "grouping-forms",
+        "nested-groups",
+        "alternation",
+        "named-groups",
+        "named-backreferences",
+        "branch-local-backreferences",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm module.search helper path for the broader-range open-ended named `{2,}` nested-group alternation branch-local backreference plus conditional lower-bound `c`-branch success on `acccd`, so the visible `outer` capture and final `inner` branch stay observable through the public module helper."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-purged-str",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+      "haystack": "abbbd",
+      "flags": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "nested-group",
+        "alternation",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "conditional",
+        "quantified",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "fullmatch",
+        "lower-bound",
+        "b-branch",
+        "outer-capture",
+        "final-inner-capture",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "grouping-forms",
+        "nested-groups",
+        "alternation",
+        "named-groups",
+        "named-backreferences",
+        "branch-local-backreferences",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.fullmatch probe for the broader-range open-ended named `{2,}` nested-group alternation branch-local backreference plus conditional lower-bound `b`-branch success path on `abbbd`, so the visible `outer` capture and final selected `inner` branch stay explicit at the shifted two-repetition floor."
       ]
     }
   ]

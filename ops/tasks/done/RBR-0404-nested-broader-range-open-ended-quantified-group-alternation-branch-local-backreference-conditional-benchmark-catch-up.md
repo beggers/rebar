@@ -1,6 +1,6 @@
 # RBR-0404: Catch broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-15
 
@@ -31,3 +31,11 @@ Created: 2026-03-15
 - Keep this follow-on on the existing `benchmarks/workloads/branch_local_backreference_boundary.py` manifest path instead of forking another benchmark family.
 - The shared branch-local benchmark manifest already covers the bounded base conditional rows and the adjacent nested branch-local rows, so this task should add only the directly adjacent broader-range open-ended `{2,}` conditional rows needed to close that Python-path benchmark gap.
 - After this benchmark catch-up drains, the surviving frontier should reopen on correctness publication for the matching conditional replacement-template slice rather than another benchmark-only pass.
+
+## Completion
+- Added six measured rows to `benchmarks/workloads/branch_local_backreference_boundary.py` for the bounded numbered and named compile, `module.search()`, and `Pattern.fullmatch()` workflows on `a((b|c){2,})\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)`, using the existing shared branch-local manifest and source-tree shim timing path instead of forking another benchmark family.
+- Extended the shared benchmark assertions in `tests/benchmarks/benchmark_expectations.py` with a dedicated `branch-local-backreference-boundary` source-tree scorecard case and representative measured IDs for the six new workloads, and added a combined-suite assertion in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` that locks their exact IDs, patterns, and haystacks onto the existing shared benchmark surface.
+- Verified the shared benchmark scorecard path with `PYTHONPATH=python ./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_benchmark_scorecards.py` (`1 passed`).
+- Verified the shared combined benchmark surface with `PYTHONPATH=python ./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`17 passed`).
+- Republished the tracked combined benchmark report in `reports/benchmarks/latest.py`; the tracked summary is `554` total workloads, `530` measured `rebar` timings, and `24` known gaps, while the tracked `branch-local-backreference-boundary` manifest summary now shows `24` measured workloads and `0` known gaps.
+- The remaining bounded follow-on for this frontier is correctness-publication task `RBR-0406` for the matching replacement-template `sub()` / `subn()` slice.
