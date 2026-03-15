@@ -7,6 +7,7 @@ import pytest
 
 from rebar_harness.correctness import FixtureCase, load_fixture_manifest
 from tests.python.fixture_parity_support import (
+    _match_api_templates,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
@@ -31,6 +32,9 @@ def _fixture_cases(fixture_name: str) -> dict[str, FixtureCase]:
 
 
 NAMED_GROUP_CASES = _fixture_cases("named_group_workflows.py")
+BRANCH_LOCAL_BACKREFERENCE_CASES = _fixture_cases(
+    "branch_local_backreference_workflows.py"
+)
 COLLECTION_REPLACEMENT_CASES = _fixture_cases("collection_replacement_workflows.py")
 
 
@@ -82,6 +86,40 @@ def _bytes_literal_search_match(
     )
 
 
+def _branch_local_named_backreference_match(
+    backend_name: str,
+    backend: object,
+    *,
+    use_compiled_pattern: bool,
+) -> tuple[object, re.Match[str] | None]:
+    if use_compiled_pattern:
+        case = BRANCH_LOCAL_BACKREFERENCE_CASES[
+            "branch-local-named-backreference-pattern-fullmatch-str"
+        ]
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            case.pattern_payload(),
+            case.flags or 0,
+        )
+        return (
+            observed_pattern.fullmatch(*case.args),
+            expected_pattern.fullmatch(*case.args),
+        )
+
+    case = BRANCH_LOCAL_BACKREFERENCE_CASES[
+        "branch-local-named-backreference-module-search-str"
+    ]
+    pattern = case_pattern(case)
+    text = case.args[1]
+    assert isinstance(pattern, str)
+    assert isinstance(text, str)
+    return (
+        backend.search(pattern, text),
+        re.search(pattern, text),
+    )
+
+
 def test_select_published_fixture_paths_filters_and_sorts_default_inventory() -> None:
     named_group_path = FIXTURES_DIR / "named_group_workflows.py"
     branch_local_path = FIXTURES_DIR / "branch_local_backreference_workflows.py"
@@ -116,6 +154,22 @@ def test_case_pattern_helpers_extract_str_and_bytes_patterns_from_published_fixt
     assert case_pattern(pattern_case) == r"(?P<word>abc)"
     assert str_case_pattern(pattern_case) == r"(?P<word>abc)"
     assert case_pattern(bytes_case) == b"abc"
+
+
+def test_match_api_templates_include_combined_named_group_templates() -> None:
+    case = BRANCH_LOCAL_BACKREFERENCE_CASES[
+        "branch-local-named-backreference-pattern-fullmatch-str"
+    ]
+    pattern = str_case_pattern(case)
+    compiled = re.compile(pattern)
+
+    templates = _match_api_templates(
+        pattern,
+        group_count=compiled.groups,
+        group_names=tuple(compiled.groupindex),
+    )
+
+    assert r"<\g<outer>|\g<inner>>" in templates
 
 
 @pytest.mark.parametrize(
@@ -179,6 +233,31 @@ def test_match_parity_helpers_cover_match_object_contracts(
     assert_match_convenience_api_parity(observed, expected)
     assert_valid_match_group_access_parity(observed, expected)
     assert_invalid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (
+        pytest.param(False, id="module-search"),
+        pytest.param(True, id="pattern-fullmatch"),
+    ),
+)
+def test_match_convenience_api_parity_covers_multiple_named_groups(
+    regex_backend: tuple[str, object],
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = _branch_local_named_backreference_match(
+        backend_name,
+        backend,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+    assert observed is not None
+    assert expected is not None
+
+    assert_match_parity(backend_name, observed, expected, check_regs=True)
+    assert_match_convenience_api_parity(observed, expected)
 
 
 @pytest.mark.parametrize(

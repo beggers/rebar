@@ -198,6 +198,10 @@ def _match_api_templates(
             + "|".join(f"\\g<{group_index}>" for group_index in range(group_count + 1))
             + ">"
         )
+    if len(group_names) >= 2:
+        templates.append(
+            "<" + "|".join(fr"\g<{group_name}>" for group_name in group_names) + ">"
+        )
     for group_name in group_names:
         templates.append(fr"<\g<{group_name}>>")
 

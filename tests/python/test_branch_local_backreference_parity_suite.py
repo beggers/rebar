@@ -678,23 +678,6 @@ def _skip_unsupported_backend(case_id: str, backend_name: str) -> None:
     pytest.skip(reason)
 
 
-def _assert_branch_local_match_expand_templates(
-    observed: object,
-    expected: re.Match[str],
-) -> None:
-    ordered_group_names = tuple(expected.re.groupindex)
-    templates: list[str] = []
-    if expected.re.groups >= 2:
-        templates.append(r"<\1:\2>")
-    if ordered_group_names:
-        templates.append(
-            "<" + ":".join(fr"\g<{group_name}>" for group_name in ordered_group_names) + ">"
-        )
-
-    for template in templates:
-        assert observed.expand(template) == expected.expand(template)
-
-
 def _load_match_group_access_cases() -> tuple[FixtureCase, ...]:
     missing_case_ids = tuple(
         case_id for case_id in MATCH_GROUP_ACCESS_CASE_IDS if case_id not in CASES_BY_ID
@@ -807,7 +790,6 @@ def test_published_workflows_match_cpython(
 
     if case.case_id in MATCH_CONVENIENCE_CASE_IDS:
         assert_match_convenience_api_parity(observed, expected)
-        _assert_branch_local_match_expand_templates(observed, expected)
 
 
 @pytest.mark.parametrize("case", PATTERN_BOUNDS_MATCH_CASES, ids=lambda case: case.id)
@@ -830,7 +812,6 @@ def test_pattern_helper_bounds_match_cpython(
     assert_match_parity(backend_name, observed, expected, check_regs=True)
     assert_match_result_parity(backend_name, observed, expected, check_regs=True)
     assert_match_convenience_api_parity(observed, expected)
-    _assert_branch_local_match_expand_templates(observed, expected)
     assert_valid_match_group_access_parity(observed, expected)
     assert_invalid_match_group_access_parity(observed, expected)
 
