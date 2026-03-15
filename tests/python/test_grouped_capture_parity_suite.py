@@ -136,6 +136,16 @@ FIXTURE_BUNDLES = (
             "named-optional-group-compile-metadata-str",
             "named-optional-group-module-search-absent-str",
             "named-optional-group-pattern-fullmatch-present-str",
+            "systematic-optional-group-numbered-compile-metadata-str",
+            "systematic-optional-group-numbered-module-search-present-str",
+            "systematic-optional-group-numbered-module-search-absent-str",
+            "systematic-optional-group-numbered-pattern-fullmatch-present-str",
+            "systematic-optional-group-numbered-pattern-fullmatch-absent-str",
+            "systematic-optional-group-named-compile-metadata-str",
+            "systematic-optional-group-named-module-search-present-str",
+            "systematic-optional-group-named-module-search-absent-str",
+            "systematic-optional-group-named-pattern-fullmatch-present-str",
+            "systematic-optional-group-named-pattern-fullmatch-absent-str",
         ),
         expected_manifest_id="optional-group-workflows",
         expected_patterns=frozenset(
@@ -146,9 +156,9 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 2,
+                ("compile", None): 4,
+                ("module_call", "search"): 6,
+                ("pattern_call", "fullmatch"): 6,
             }
         ),
     ),

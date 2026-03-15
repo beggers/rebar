@@ -25,6 +25,14 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("pattern_call", "fullmatch"): 2,
     }
 )
+SYSTEMATIC_EMPTY_ELSE_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("compile", None): 4,
+        ("module_call", "search"): 4,
+        ("module_call", "fullmatch"): 4,
+        ("pattern_call", "fullmatch"): 4,
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -44,6 +52,8 @@ def _fixture_bundle(
     expected_case_ids: frozenset[str],
     expected_compile_patterns: frozenset[str],
     selected_case_ids: tuple[str, ...] | None = None,
+    expected_operation_helper_counts: Counter[tuple[str, str | None]]
+    | None = None,
 ) -> FixtureBundle:
     manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
     if selected_case_ids is None:
@@ -64,7 +74,11 @@ def _fixture_bundle(
         expected_manifest_id=expected_manifest_id,
         expected_case_ids=expected_case_ids,
         expected_compile_patterns=expected_compile_patterns,
-        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
+        expected_operation_helper_counts=(
+            EXPECTED_OPERATION_HELPER_COUNTS
+            if expected_operation_helper_counts is None
+            else expected_operation_helper_counts
+        ),
     )
 
 
@@ -126,6 +140,14 @@ FIXTURE_BUNDLES = (
                 "named-conditional-group-exists-empty-else-nested-module-search-present-str",
                 "named-conditional-group-exists-empty-else-nested-module-fullmatch-missing-suffix-str",
                 "named-conditional-group-exists-empty-else-nested-pattern-fullmatch-absent-str",
+                "systematic-conditional-group-exists-empty-else-nested-numbered-compile-metadata-str",
+                "systematic-conditional-group-exists-empty-else-nested-numbered-module-search-present-str",
+                "systematic-conditional-group-exists-empty-else-nested-numbered-module-fullmatch-missing-suffix-str",
+                "systematic-conditional-group-exists-empty-else-nested-numbered-pattern-fullmatch-absent-str",
+                "systematic-conditional-group-exists-empty-else-nested-named-compile-metadata-str",
+                "systematic-conditional-group-exists-empty-else-nested-named-module-search-present-str",
+                "systematic-conditional-group-exists-empty-else-nested-named-module-fullmatch-missing-suffix-str",
+                "systematic-conditional-group-exists-empty-else-nested-named-pattern-fullmatch-absent-str",
             }
         ),
         expected_compile_patterns=frozenset(
@@ -134,17 +156,7 @@ FIXTURE_BUNDLES = (
                 r"a(?P<word>b)?c(?(word)(?(word)d)|)",
             }
         ),
-        # Keep the systematic rows on the dedicated folded-capture parity path.
-        selected_case_ids=(
-            "conditional-group-exists-empty-else-nested-compile-metadata-str",
-            "conditional-group-exists-empty-else-nested-module-search-present-str",
-            "conditional-group-exists-empty-else-nested-module-fullmatch-missing-suffix-str",
-            "conditional-group-exists-empty-else-nested-pattern-fullmatch-absent-str",
-            "named-conditional-group-exists-empty-else-nested-compile-metadata-str",
-            "named-conditional-group-exists-empty-else-nested-module-search-present-str",
-            "named-conditional-group-exists-empty-else-nested-module-fullmatch-missing-suffix-str",
-            "named-conditional-group-exists-empty-else-nested-pattern-fullmatch-absent-str",
-        ),
+        expected_operation_helper_counts=SYSTEMATIC_EMPTY_ELSE_OPERATION_HELPER_COUNTS,
     ),
     _fixture_bundle(
         "conditional_group_exists_empty_yes_else_nested_workflows.py",

@@ -1,6 +1,6 @@
 # RBR-0383: Fold the remaining systematic capture parity wrapper into the owning fixture suites
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
 
@@ -53,3 +53,8 @@ Created: 2026-03-15
 - `tests/python/test_folded_systematic_capture_parity.py` is still a 202-line cross-cutting parity module whose cases already live in standard published fixtures and are already partially referenced by the owning suites.
 - `ops/tasks/done/RBR-0363-consolidate-nested-conditional-group-exists-parity-suite.md` explicitly left these systematic rows on the dedicated wrapper as a follow-on cleanup once the owning nested suite existed.
 - Both tracked and live JSON blob counts are zero in the current checkout, so deleting this duplicate parity surface is the next-priority architecture cleanup instead of another JSON burn-down task.
+
+## Completion Notes
+- Expanded `tests/python/test_grouped_capture_parity_suite.py` so its existing fixture-backed optional-group bundle now selects the ten systematic optional-group rows in `tests/conformance/fixtures/optional_group_workflows.py`, and updated the bundle's expected operation counts to match the absorbed compile/module/pattern coverage.
+- Expanded `tests/python/test_conditional_group_exists_nested_parity_suite.py` so the empty-else nested bundle now owns all sixteen published rows from `tests/conformance/fixtures/conditional_group_exists_empty_else_nested_workflows.py`, including the eight systematic rows that previously stayed on the dedicated wrapper path.
+- Deleted `tests/python/test_folded_systematic_capture_parity.py`, verified `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py tests/python/test_conditional_group_exists_nested_parity_suite.py` (`271 passed`), and confirmed `rg --files tests/python | rg 'test_folded_systematic_capture_parity\\.py$'` returns no matches.
