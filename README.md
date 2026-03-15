@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 889 cases with no honest gaps in that slice, but the main benchmark report still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 now has `RBR-0390` seeded as the surviving follow-on so, once `RBR-0388` catches the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference replacement-template workflows for `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d` up on the shared Python-path benchmark surface, the same bounded pattern pair reopens on correctness publication through callable replacements before broader callback semantics, broader template parsing, or deeper nested grouped execution broaden the queue. |
-| Work queue | `1` ready, `0` in progress, `392` done, `0` blocked |
+| Delivery estimate | The published correctness slice now covers 897 cases with no honest gaps in that slice, but the main benchmark report still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity. |
+| Current milestone | Milestone 2 now has `RBR-0392` seeded as the surviving follow-on so, once `RBR-0390` publishes the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference callable-replacement workflows for `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d` on the shared correctness surface, the same bounded pattern pair reaches Rust-backed callback parity before Python-path benchmark catch-up, broader callback semantics, broader template parsing, or deeper nested grouped execution broaden the queue. |
+| Work queue | `1` ready, `0` in progress, `394` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `889` |
-| Passing in published slice | `889` |
+| Published cases | `897` |
+| Passing in published slice | `897` |
 | Explicit failures | `0` |
 | Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `99` |
+| Covered manifests | `100` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 889 cases with no honest gaps in that slice, but the main benchmark report still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 897 cases with no honest gaps in that slice, but the main benchmark report still runs through the source-tree shim with 24 explicit gaps, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `517` of `541` published workloa
 
 ### Immediate Next Steps
 
-- Land `RBR-0390` so the broader-range open-ended `{2,}` nested-group callable-replacement slice reopens on the shared correctness surface once `RBR-0388` catches the matching replacement-template workflows up on the Python-path benchmark frontier.
+- Triage queued `RBR-0392`: it is still the only ready follow-on for the broader-range open-ended `{2,}` nested-group callable-replacement slice, but `RBR-0390`'s completion note says those published cases already pass and may already be ready for retirement.
 
 ### Current Risks
 
