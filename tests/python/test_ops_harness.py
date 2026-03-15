@@ -1,26 +1,12 @@
 from __future__ import annotations
 
-import importlib.util
 import pathlib
 import subprocess
-import sys
 import tempfile
 import unittest
 from unittest import mock
 
-
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-MODULE_PATH = REPO_ROOT / "scripts" / "rebar_ops.py"
-
-
-def load_rebar_ops_module():
-    spec = importlib.util.spec_from_file_location("rebar_ops_harness_tests", MODULE_PATH)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"Unable to load module from {MODULE_PATH}")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
+from tests.python.rebar_ops_test_support import REPO_ROOT, load_rebar_ops_module
 
 
 def completed_process(*args: str, returncode: int = 0, stdout: str = "", stderr: str = ""):

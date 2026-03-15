@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import importlib.util
 import json
 import pathlib
 import subprocess
@@ -8,8 +7,8 @@ import sys
 import tempfile
 import unittest
 
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-MODULE_PATH = REPO_ROOT / "scripts" / "rebar_ops.py"
+from tests.python.rebar_ops_test_support import REPO_ROOT, load_rebar_ops_module
+
 CORRECTNESS_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
 LEGACY_CORRECTNESS_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
 BENCHMARK_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
@@ -23,16 +22,6 @@ from rebar_harness.benchmarks import SCORECARD_REPORT as BENCHMARK_SCORECARD_REP
 from rebar_harness.correctness import (
     SCORECARD_REPORT as CORRECTNESS_SCORECARD_REPORT,
 )
-
-
-def load_rebar_ops_module():
-    spec = importlib.util.spec_from_file_location("rebar_ops_for_tests", MODULE_PATH)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"Unable to load module from {MODULE_PATH}")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
 
 
 class ReadmeReportingTest(unittest.TestCase):
