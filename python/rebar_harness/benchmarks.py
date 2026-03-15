@@ -50,7 +50,6 @@ SCORECARD_REPORT = ScorecardReportSpec(
     report_attribute="REPORT",
     scorecard_kind="benchmark",
 )
-PUBLISHED_REPORT_PATH = SCORECARD_REPORT.published_path
 LEGACY_REPORT_PATH = SCORECARD_REPORT.legacy_path
 DEFAULT_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py",
@@ -84,7 +83,7 @@ DEFAULT_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_fully_empty_boundary.py",
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py",
 )
-DEFAULT_REPORT_PATH = PUBLISHED_REPORT_PATH
+DEFAULT_REPORT_PATH = SCORECARD_REPORT.published_path
 DEFAULT_NATIVE_SMOKE_MANIFEST_PATHS = (
     REPO_ROOT / "benchmarks" / "workloads" / "pattern_boundary.py",
     REPO_ROOT / "benchmarks" / "workloads" / "collection_replacement_boundary.py",

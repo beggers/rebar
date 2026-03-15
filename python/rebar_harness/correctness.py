@@ -43,7 +43,6 @@ SCORECARD_REPORT = ScorecardReportSpec(
     report_attribute="REPORT",
     scorecard_kind="correctness",
 )
-PUBLISHED_REPORT_PATH = SCORECARD_REPORT.published_path
 LEGACY_REPORT_PATH = SCORECARD_REPORT.legacy_path
 DEFAULT_FIXTURE_PATHS = (
     REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py",
@@ -481,7 +480,7 @@ DEFAULT_FIXTURE_PATHS = (
     / "fixtures"
     / "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
 )
-DEFAULT_REPORT_PATH = PUBLISHED_REPORT_PATH
+DEFAULT_REPORT_PATH = SCORECARD_REPORT.published_path
 PHASE_BY_LAYER = {
     "parser_acceptance_and_diagnostics": "phase1-parser-conformance-pack",
     "module_api_surface": "phase2-public-api-surface-pack",

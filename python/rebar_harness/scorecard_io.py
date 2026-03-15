@@ -103,23 +103,6 @@ def load_python_dict_attribute(
     return payload
 
 
-def load_python_scorecard_module(
-    path: pathlib.Path,
-    *,
-    module_name_prefix: str,
-    report_attribute: str,
-    scorecard_kind: str,
-) -> dict[str, Any]:
-    return load_python_dict_attribute(
-        path,
-        module_name_prefix=module_name_prefix,
-        attribute_name=report_attribute,
-        load_error_label=f"Python {scorecard_kind} scorecard",
-        missing_error_label=f"Python {scorecard_kind} scorecard module",
-        type_error_label=f"{scorecard_kind} scorecard",
-    )
-
-
 def load_scorecard_report(
     report_path: pathlib.Path,
     *,
@@ -133,11 +116,13 @@ def load_scorecard_report(
             raise ValueError(f"{scorecard_kind} scorecard in {report_path} must be a dict")
         return raw_payload
     if report_path.suffix == ".py":
-        return load_python_scorecard_module(
+        return load_python_dict_attribute(
             report_path,
             module_name_prefix=module_name_prefix,
-            report_attribute=report_attribute,
-            scorecard_kind=scorecard_kind,
+            attribute_name=report_attribute,
+            load_error_label=f"Python {scorecard_kind} scorecard",
+            missing_error_label=f"Python {scorecard_kind} scorecard module",
+            type_error_label=f"{scorecard_kind} scorecard",
         )
     raise ValueError(
         f"unsupported {scorecard_kind} scorecard extension {report_path.suffix!r} for {report_path}"
