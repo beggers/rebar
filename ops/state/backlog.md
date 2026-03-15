@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now has `RBR-0368` seeded as the surviving follow-on so, once `RBR-0366` publishes the broader `{1,4}` nested-group alternation plus branch-local-backreference callable-replacement correctness pack for `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d`, the same bounded slice reaches Rust-backed parity before later benchmark catch-up, open-ended counted repeats, replacement-template variants, or deeper nested grouped execution broaden the queue.
+Milestone 2 now has `RBR-0370` seeded as the surviving follow-on so, once `RBR-0368` lands the broader `{1,4}` nested-group alternation plus branch-local-backreference callable-replacement parity slice for `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d`, the same bounded slice reaches the existing Python-path benchmark surface before open-ended counted repeats, replacement-template variants, or deeper nested grouped execution broaden the queue.
 
 ## Ordered Work
-1. Land `RBR-0368` to extend `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_callable_replacement_parity_suite.py`, and `reports/correctness/latest.py` so the bounded numbered and named module/compiled-`Pattern` `sub()` and `subn()` callable-replacement workflows for `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d` move from published `unimplemented` coverage to real Rust-backed parity on the existing shared callback surface after `RBR-0366` lands, without widening into open-ended counted repeats, later benchmark rows, replacement-template variants, or a manifest-specific callback harness.
+1. Land `RBR-0370` to extend `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` so the bounded numbered and named module/compiled-`Pattern` `sub()` and `subn()` callable-replacement benchmark workloads for `a((b|c){1,4})\\2d` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d` move from correctness-only coverage to real Python-path `rebar` timings on the existing shared callback benchmark surface after `RBR-0368` lands, without widening into open-ended counted repeats, replacement-template variants, or a manifest-specific benchmark harness.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
