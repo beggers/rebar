@@ -1,190 +1,109 @@
 from __future__ import annotations
 
-import pathlib
+from collections import Counter
 import re
-import sys
-import unittest
+
+import pytest
+
+from rebar_harness.correctness import FixtureCase, load_fixture_manifest
+from tests.python.fixture_parity_support import (
+    FIXTURES_DIR,
+    assert_match_result_parity,
+    compile_with_cpython_parity,
+    str_case_pattern,
+)
 
 
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-PYTHON_SOURCE = REPO_ROOT / "python"
+FIXTURE_MANIFEST, PUBLISHED_CASES = load_fixture_manifest(
+    FIXTURES_DIR / "exact_repeat_quantified_group_alternation_workflows.py"
+)
+EXPECTED_CASE_IDS = frozenset(
+    {
+        "exact-repeat-quantified-group-alternation-numbered-compile-metadata-str",
+        "exact-repeat-quantified-group-alternation-numbered-module-search-bc-bc-str",
+        "exact-repeat-quantified-group-alternation-numbered-module-search-bc-de-str",
+        "exact-repeat-quantified-group-alternation-numbered-pattern-fullmatch-de-de-str",
+        "exact-repeat-quantified-group-alternation-numbered-pattern-fullmatch-no-match-short-str",
+        "exact-repeat-quantified-group-alternation-named-compile-metadata-str",
+        "exact-repeat-quantified-group-alternation-named-module-search-bc-bc-str",
+        "exact-repeat-quantified-group-alternation-named-module-search-bc-de-str",
+        "exact-repeat-quantified-group-alternation-named-pattern-fullmatch-de-de-str",
+        "exact-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-extra-repetition-str",
+    }
+)
+EXPECTED_PATTERNS = frozenset(
+    {
+        r"a(bc|de){2}d",
+        r"a(?P<word>bc|de){2}d",
+    }
+)
+EXPECTED_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("compile", None): 2,
+        ("module_call", "search"): 4,
+        ("pattern_call", "fullmatch"): 4,
+    }
+)
+COMPILE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "compile")
+MODULE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "module_call")
+PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pattern_call")
 
-if str(PYTHON_SOURCE) not in sys.path:
-    sys.path.insert(0, str(PYTHON_SOURCE))
 
-
-import rebar
-
-
-class RebarExactRepeatQuantifiedGroupAlternationParityTest(unittest.TestCase):
-    def setUp(self) -> None:
-        rebar.purge()
-
-    def tearDown(self) -> None:
-        rebar.purge()
-
-    def _assert_match_parity(
-        self,
-        observed: rebar.Match,
-        expected: re.Match[str],
-        *,
-        group_names: tuple[str, ...] = (),
-    ) -> None:
-        self.assertIs(type(observed), rebar.Match)
-        self.assertEqual(observed.group(0), expected.group(0))
-        self.assertEqual(observed.group(1), expected.group(1))
-        self.assertEqual(observed.groups(), expected.groups())
-        self.assertEqual(observed.groupdict(), expected.groupdict())
-        self.assertEqual(observed.span(), expected.span())
-        self.assertEqual(observed.span(1), expected.span(1))
-        self.assertEqual(observed.start(1), expected.start(1))
-        self.assertEqual(observed.end(1), expected.end(1))
-        self.assertEqual(observed.lastindex, expected.lastindex)
-        self.assertEqual(observed.lastgroup, expected.lastgroup)
-        for group_name in group_names:
-            self.assertEqual(observed.group(group_name), expected.group(group_name))
-            self.assertEqual(observed.span(group_name), expected.span(group_name))
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "exact-repeat quantified-group alternation parity requires rebar._rebar",
+def test_parity_suite_stays_aligned_with_published_correctness_fixture() -> None:
+    assert FIXTURE_MANIFEST.manifest_id == "exact-repeat-quantified-group-alternation-workflows"
+    assert len(PUBLISHED_CASES) == len(EXPECTED_CASE_IDS)
+    assert {case.case_id for case in PUBLISHED_CASES} == EXPECTED_CASE_IDS
+    assert {str_case_pattern(case) for case in PUBLISHED_CASES} == EXPECTED_PATTERNS
+    assert {case.text_model for case in PUBLISHED_CASES} == {"str"}
+    assert Counter((case.operation, case.helper) for case in PUBLISHED_CASES) == (
+        EXPECTED_OPERATION_HELPER_COUNTS
     )
-    def test_compile_matches_cpython_numbered_exact_repeat_group_alternation_metadata(self) -> None:
-        pattern = "a(bc|de){2}d"
-        observed = rebar.compile(pattern)
-        expected = re.compile(pattern)
 
-        self.assertIs(observed, rebar.compile(pattern))
-        self.assertEqual(observed.pattern, expected.pattern)
-        self.assertEqual(observed.flags, expected.flags)
-        self.assertEqual(observed.groups, expected.groups)
-        self.assertEqual(observed.groupindex, expected.groupindex)
 
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "exact-repeat quantified-group alternation parity requires rebar._rebar",
+@pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
+def test_compile_metadata_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    compile_with_cpython_parity(
+        backend_name,
+        backend,
+        str_case_pattern(case),
+        case.flags or 0,
     )
-    def test_module_search_matches_cpython_numbered_bc_bc_behavior(self) -> None:
-        pattern = "a(bc|de){2}d"
-        observed = rebar.search(pattern, "zzabcbcdzz")
-        expected = re.search(pattern, "zzabcbcdzz")
 
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected)
 
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "exact-repeat quantified-group alternation parity requires rebar._rebar",
+@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
+def test_module_search_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper == "search"
+
+    observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
+    expected = getattr(re, case.helper)(*case.args, **case.kwargs)
+
+    assert_match_result_parity(backend_name, observed, expected)
+
+
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
+def test_pattern_fullmatch_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper == "fullmatch"
+
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        str_case_pattern(case),
+        case.flags or 0,
     )
-    def test_module_search_matches_cpython_numbered_bc_de_behavior(self) -> None:
-        pattern = "a(bc|de){2}d"
-        observed = rebar.search(pattern, "zzabcdedzz")
-        expected = re.search(pattern, "zzabcdedzz")
 
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected)
+    observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
+    expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
 
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "exact-repeat quantified-group alternation parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_numbered_de_de_behavior(self) -> None:
-        pattern = "a(bc|de){2}d"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("adeded")
-        expected = expected_pattern.fullmatch("adeded")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "exact-repeat quantified-group alternation parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_numbered_no_match_boundaries(self) -> None:
-        observed_pattern = rebar.compile("a(bc|de){2}d")
-        expected_pattern = re.compile("a(bc|de){2}d")
-
-        self.assertIsNone(observed_pattern.fullmatch("abcd"))
-        self.assertIsNone(expected_pattern.fullmatch("abcd"))
-        self.assertIsNone(observed_pattern.fullmatch("abcbcbcd"))
-        self.assertIsNone(expected_pattern.fullmatch("abcbcbcd"))
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "exact-repeat quantified-group alternation parity requires rebar._rebar",
-    )
-    def test_compile_matches_cpython_named_exact_repeat_group_alternation_metadata(self) -> None:
-        pattern = "a(?P<word>bc|de){2}d"
-        observed = rebar.compile(pattern)
-        expected = re.compile(pattern)
-
-        self.assertIs(observed, rebar.compile(pattern))
-        self.assertEqual(observed.pattern, expected.pattern)
-        self.assertEqual(observed.flags, expected.flags)
-        self.assertEqual(observed.groups, expected.groups)
-        self.assertEqual(observed.groupindex, expected.groupindex)
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "exact-repeat quantified-group alternation parity requires rebar._rebar",
-    )
-    def test_module_search_matches_cpython_named_bc_bc_behavior(self) -> None:
-        pattern = "a(?P<word>bc|de){2}d"
-        observed = rebar.search(pattern, "zzabcbcdzz")
-        expected = re.search(pattern, "zzabcbcdzz")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected, group_names=("word",))
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "exact-repeat quantified-group alternation parity requires rebar._rebar",
-    )
-    def test_module_search_matches_cpython_named_bc_de_behavior(self) -> None:
-        pattern = "a(?P<word>bc|de){2}d"
-        observed = rebar.search(pattern, "zzabcdedzz")
-        expected = re.search(pattern, "zzabcdedzz")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected, group_names=("word",))
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "exact-repeat quantified-group alternation parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_named_de_de_behavior(self) -> None:
-        pattern = "a(?P<word>bc|de){2}d"
-        observed_pattern = rebar.compile(pattern)
-        expected_pattern = re.compile(pattern)
-
-        observed = observed_pattern.fullmatch("adeded")
-        expected = expected_pattern.fullmatch("adeded")
-
-        self.assertIsNotNone(observed)
-        self.assertIsNotNone(expected)
-        self._assert_match_parity(observed, expected, group_names=("word",))
-
-    @unittest.skipUnless(
-        rebar.native_module_loaded(),
-        "exact-repeat quantified-group alternation parity requires rebar._rebar",
-    )
-    def test_pattern_fullmatch_matches_cpython_named_no_match_boundaries(self) -> None:
-        observed_pattern = rebar.compile("a(?P<word>bc|de){2}d")
-        expected_pattern = re.compile("a(?P<word>bc|de){2}d")
-
-        self.assertIsNone(observed_pattern.fullmatch("abcd"))
-        self.assertIsNone(expected_pattern.fullmatch("abcd"))
-        self.assertIsNone(observed_pattern.fullmatch("abcbcbcd"))
-        self.assertIsNone(expected_pattern.fullmatch("abcbcbcd"))
-
-
-if __name__ == "__main__":
-    unittest.main()
+    assert_match_result_parity(backend_name, observed, expected)
