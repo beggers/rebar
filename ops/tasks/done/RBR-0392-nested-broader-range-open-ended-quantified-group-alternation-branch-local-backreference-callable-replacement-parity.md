@@ -1,8 +1,9 @@
 # RBR-0392: Add broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference callable-replacement parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Convert the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference callable-replacement cases published by `RBR-0390` into real Rust-backed behavior without claiming later benchmark rows, replacement-template variants, broader callback semantics, or deeper nested grouped execution.
@@ -30,3 +31,6 @@ Created: 2026-03-15
 - Build on `RBR-0390`, `RBR-0388`, `RBR-0386`, and the existing shared callable-replacement fixture path.
 - Keep later benchmark catch-up on the existing `benchmarks/workloads/nested_group_callable_replacement_boundary.py` path instead of forking another benchmark family.
 - The shared callable-replacement parity suite already discovers published `*callable_replacement_workflows.py` fixtures, so this task should widen that existing parity coverage rather than creating another manifest-specific test harness.
+
+## Completion
+- Retired as stale on 2026-03-15. `RBR-0390`'s completion note and verification already showed the exact broader-range open-ended `{2,}` callable-replacement workflows for `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d` passing through the shared public-API parity surface, so no additional implementation work remained for this task.

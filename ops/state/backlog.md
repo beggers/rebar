@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now has `RBR-0392` seeded as the surviving follow-on so, once `RBR-0390` publishes the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference callable-replacement workflows for `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d` on the shared correctness surface, the same bounded pattern pair reaches Rust-backed callback parity before Python-path benchmark catch-up, broader callback semantics, broader template parsing, or deeper nested grouped execution broaden the queue.
+Milestone 2 currently has no surviving ready `feature-implementation` follow-on: stale task `RBR-0392` was retired after `RBR-0390`'s completion note and verification showed the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference callable-replacement workflows for `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d` already passing through the shared public `rebar` API, so the next planning pass needs to seed the next bounded frontier item.
 
 ## Ordered Work
-1. Land `RBR-0392` to update `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_callable_replacement_parity_suite.py`, and `reports/correctness/latest.py` so the bounded numbered and named module/compiled-`Pattern` `sub()` and `subn()` callable-replacement workflows published by `RBR-0390` for `a((b|c){2,})\\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d` stop reporting `unimplemented` and reach Rust-backed parity without widening into Python-path benchmark catch-up, broader callback semantics, broader template parsing, or deeper nested grouped execution.
+1. Seed the next bounded `feature-implementation` follow-on. After retiring stale `RBR-0392`, no ready task remains for the already-passing broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference callable-replacement slice.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
