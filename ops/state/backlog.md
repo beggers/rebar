@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 now reopens the plain broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference surface through `RBR-0397` on `a((b|c){2,})\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d`; no concrete post-publication feature follow-on currently survives because the shared branch-local parity surface may show the same bounded slice already passing.
+Milestone 2 remains on the plain broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference slice for `a((b|c){2,})\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d`; the shared branch-local parity suite already covers that bounded compile/search/fullmatch surface, and no concrete post-benchmark feature follow-on currently survives.
 
 ## Ordered Work
-1. Let `RBR-0397` publish the bounded compile, `module.search()`, and compiled-`Pattern.fullmatch()` correctness pack for `a((b|c){2,})\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d`, then re-triage whether a Rust-boundary parity task still survives or whether that exact follow-on is stale.
+1. Re-triage after the adjacent shared `nested_group_alternation_boundary.py` benchmark catch-up for `a((b|c){2,})\2d` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d`; the shared branch-local parity suite already passes this bounded slice, so no concrete ready post-benchmark follow-on currently survives.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
