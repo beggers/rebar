@@ -2012,6 +2012,16 @@ def result_last_message_text(result: RunResult) -> str:
 
 
 def commit_summary_text(text: str) -> str | None:
+    section_labels = {
+        "change",
+        "changes",
+        "details",
+        "summary",
+        "test",
+        "tests",
+        "verification",
+        "verified",
+    }
     candidates: list[str] = []
     for raw_line in text.splitlines():
         line = raw_line.strip()
@@ -2019,8 +2029,18 @@ def commit_summary_text(text: str) -> str | None:
             continue
         if line.startswith("- ") or line.startswith("* "):
             line = line[2:].strip()
+        if line.startswith("#"):
+            line = line.lstrip("#").strip()
         line = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", line)
+        while True:
+            emphasized = re.fullmatch(r"(\*\*|__|\*|_)(.+?)\1", line)
+            if emphasized is None:
+                break
+            line = emphasized.group(2).strip()
         line = line.replace("`", "").strip().rstrip(".")
+        normalized = line.lower().rstrip(":")
+        if normalized in section_labels:
+            continue
         if line:
             candidates.append(line)
     if not candidates:

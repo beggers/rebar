@@ -154,6 +154,38 @@ Verified with `python -m unittest`.
             "I consolidated the duplicated scorecard read/write helpers into scorecard_io.py",
         )
 
+    def test_commit_summary_text_skips_markdown_section_heading(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+
+        summary = rebar_ops.commit_summary_text(
+            """**Changes**
+- Seeded [RBR-0350](#/tmp/RBR-0350.md) as the next feature-implementation task.
+
+**Verified**
+- Queue state after the edit: `2` ready.
+"""
+        )
+
+        self.assertEqual(
+            summary,
+            "Seeded RBR-0350 as the next feature-implementation task",
+        )
+
+    def test_commit_summary_text_keeps_bolded_action_line(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+
+        summary = rebar_ops.commit_summary_text(
+            """**Removed one JSON blob and simplified the benchmark loader.**
+
+Verified with `python -m unittest`.
+"""
+        )
+
+        self.assertEqual(
+            summary,
+            "Removed one JSON blob and simplified the benchmark loader",
+        )
+
     def test_owner_routed_task_claims_select_only_matching_owner(self) -> None:
         rebar_ops = load_rebar_ops_module()
         with tempfile.TemporaryDirectory() as temp_dir:
