@@ -526,6 +526,37 @@ fn boundary_quantified_nested_group_alternation_branch_local_backreference_findi
     )
 }
 
+#[pyfunction(signature = (pattern, flags, string, pos=0, endpos=None))]
+fn boundary_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_finditer(
+    pattern: &str,
+    flags: i32,
+    string: &str,
+    pos: isize,
+    endpos: Option<isize>,
+) -> (
+    &'static str,
+    usize,
+    usize,
+    Vec<(usize, usize)>,
+    Vec<Vec<Option<(usize, usize)>>>,
+) {
+    let outcome =
+        core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_str(
+            pattern, flags, string, pos, endpos,
+        );
+    (
+        workflow_status(outcome.status),
+        outcome.pos,
+        outcome.endpos,
+        outcome.matches.iter().map(|matched| matched.span).collect(),
+        outcome
+            .matches
+            .into_iter()
+            .map(|matched| matched.group_spans)
+            .collect(),
+    )
+}
+
 #[pyfunction(signature = (pattern, flags, repl, string, count=0))]
 fn boundary_literal_subn(
     py: Python<'_>,
@@ -1077,6 +1108,10 @@ fn _rebar(module: &Bound<'_, PyModule>) -> PyResult<()> {
     )?)?;
     module.add_function(wrap_pyfunction!(
         boundary_quantified_nested_group_alternation_branch_local_backreference_finditer,
+        module
+    )?)?;
+    module.add_function(wrap_pyfunction!(
+        boundary_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_finditer,
         module
     )?)?;
     module.add_function(wrap_pyfunction!(

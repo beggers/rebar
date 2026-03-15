@@ -1,8 +1,9 @@
 # RBR-0415: Add broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional callable-replacement parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Convert the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional callable-replacement cases published by `RBR-0414` into real Rust-backed behavior without claiming later benchmark rows, replacement-template variants, broader callback semantics, or deeper nested grouped execution.
@@ -30,3 +31,15 @@ Created: 2026-03-15
 - Build on `RBR-0414`, `RBR-0408`, `RBR-0395`, and the existing shared callable-replacement fixture path.
 - Keep later benchmark catch-up on the existing `benchmarks/workloads/nested_group_callable_replacement_boundary.py` path instead of forking another benchmark family.
 - The shared callable-replacement parity suite already discovers published `*callable_replacement_workflows.py` fixtures, so this task should widen that existing parity coverage rather than creating another manifest-specific test harness.
+
+## Completion
+- 2026-03-15: Exposed the existing Rust broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional span finder through a dedicated `_rebar` `finditer` boundary and routed native callable-replacement marshalling through it.
+- 2026-03-15: Dropped the last pending-manifest skip from `tests/python/test_callable_replacement_parity_suite.py`, so the shared callable parity surface now runs this published manifest live instead of treating it as queued follow-on work.
+- 2026-03-15: Republished `reports/correctness/latest.py`; the tracked combined scorecard now reports `933` total cases, `933` passing cases, `0` explicit failures, and `0` unimplemented cases, and the task-local conditional callable suite now reports `8` executed, `8` passed, and `0` unimplemented cases.
+
+## Verification
+- 2026-03-15: `cargo build -p rebar-cpython`
+- 2026-03-15: `PYTHONPATH=python ./.venv/bin/python -m pytest tests/python/test_callable_replacement_parity_suite.py` (`821 passed`)
+- 2026-03-15: `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py --report .rebar/tmp/rbr-0415-conditional-callable.py` (`{"executed_cases": 8, "failed_cases": 0, "passed_cases": 8, "skipped_cases": 0, "total_cases": 8, "unimplemented_cases": 0}`)
+- 2026-03-15: `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`{"executed_cases": 933, "failed_cases": 0, "passed_cases": 933, "skipped_cases": 0, "total_cases": 933, "unimplemented_cases": 0}`)
+- 2026-03-15: `PYTHONPATH=python ./.venv/bin/python -m pytest tests/conformance/test_combined_correctness_scorecards.py` (`9 passed`)

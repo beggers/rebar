@@ -7512,8 +7512,8 @@ pub fn nested_open_ended_quantified_group_alternation_branch_local_backreference
 
 /// Discover repeated spans for the published broader-range open-ended
 /// counted-repeat nested-group alternation plus branch-local-backreference
-/// conditional replacement-template slice while preserving capture spans for
-/// result marshalling.
+/// conditional replacement slice while preserving capture spans for result
+/// marshalling.
 #[must_use]
 pub fn nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_str(
     pattern: &str,
