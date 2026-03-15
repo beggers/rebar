@@ -16,8 +16,6 @@ from rebar_harness.correctness import (
     CpythonReAdapter,
     RebarAdapter,
     evaluate_case,
-    load_scorecard,
-    write_scorecard,
 )
 from tests.conformance.correctness_expectations import (
     CorrectnessScorecardExpectation,
@@ -34,14 +32,6 @@ from tests.report_assertions import (
     assert_correctness_suite_contract,
     find_correctness_case_record,
 )
-
-
-def load_published_correctness_scorecard() -> dict[str, object]:
-    return load_scorecard(TRACKED_REPORT_PATH)
-
-
-def write_published_correctness_scorecard(scorecard: dict[str, object]) -> None:
-    write_scorecard(scorecard, TRACKED_REPORT_PATH)
 
 
 def assert_correctness_scorecard_suite(
