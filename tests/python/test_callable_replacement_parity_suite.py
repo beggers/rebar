@@ -68,6 +68,12 @@ LITERAL_CALLABLE_PARITY_VARIANTS = (
     pytest.param("sub", 0, True, id="literal-pattern-sub-replace-all"),
     pytest.param("subn", 1, True, id="literal-pattern-subn-first-match-only"),
 )
+CALLABLE_NO_MATCH_VARIANTS = (
+    pytest.param("sub", False, id="module-sub"),
+    pytest.param("subn", False, id="module-subn"),
+    pytest.param("sub", True, id="pattern-sub"),
+    pytest.param("subn", True, id="pattern-subn"),
+)
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
         ("module_call", "sub"): 2,
@@ -77,6 +83,8 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     }
 )
 PENDING_REBAR_MANIFEST_IDS = frozenset()
+NO_MATCH_TEXT_CANDIDATES = ("zzz", "", "no-match", "----", "999")
+
 
 def _skip_pending_rebar_callable_parity(
     backend_name: str,
@@ -185,6 +193,32 @@ def _case_count(case: FixtureCase) -> int:
 
 def _case_group_names(case: FixtureCase) -> tuple[str, ...]:
     return tuple(re.compile(_case_pattern(case), case.flags or 0).groupindex)
+
+
+def _invoke_callable_replacement(
+    backend: object,
+    *,
+    pattern: str,
+    helper: str,
+    string: str,
+    count: int,
+    replacement: object,
+    use_compiled_pattern: bool,
+) -> object:
+    if use_compiled_pattern:
+        target = backend.compile(pattern)
+        return getattr(target, helper)(replacement, string, count=count)
+
+    return getattr(backend, helper)(pattern, replacement, string, count=count)
+
+
+def _callable_no_match_text(pattern: str, flags: int = 0) -> str:
+    compiled = re.compile(pattern, flags)
+    for text in NO_MATCH_TEXT_CANDIDATES:
+        if compiled.search(text) is None:
+            return text
+
+    raise AssertionError(f"could not find a shared no-match text for pattern {pattern!r}")
 
 
 def _raw_callable_replacement(bundle: FixtureBundle, case: FixtureCase) -> dict[str, object]:
@@ -298,6 +332,9 @@ def test_literal_callable_case_stays_aligned_with_published_collection_fixture()
     assert raw_args[1] == {"type": "callable_constant", "value": "x"}
 
 
+NO_MATCH_PATTERNS = tuple(sorted({*COMPILE_PATTERNS, _literal_callable_pattern()}))
+
+
 @pytest.mark.parametrize("pattern", COMPILE_PATTERNS)
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
@@ -358,6 +395,49 @@ def test_literal_callable_replacement_matches_cpython(
         )
 
     assert observed == expected
+
+
+@pytest.mark.parametrize("pattern", NO_MATCH_PATTERNS)
+@pytest.mark.parametrize(
+    ("helper", "use_compiled_pattern"),
+    CALLABLE_NO_MATCH_VARIANTS,
+)
+def test_callable_replacement_no_match_paths_leave_input_unchanged(
+    regex_backend: tuple[str, object],
+    pattern: str,
+    helper: str,
+    use_compiled_pattern: bool,
+) -> None:
+    _, backend = regex_backend
+    callback_calls: list[object] = []
+    string = _callable_no_match_text(pattern)
+
+    def replacement(match: object) -> str:
+        callback_calls.append(match)
+        return "X"
+
+    observed = _invoke_callable_replacement(
+        backend,
+        pattern=pattern,
+        helper=helper,
+        string=string,
+        count=1,
+        replacement=replacement,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+    expected = _invoke_callable_replacement(
+        re,
+        pattern=pattern,
+        helper=helper,
+        string=string,
+        count=1,
+        replacement=replacement,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+    expected_result: object = string if helper == "sub" else (string, 0)
+
+    assert observed == expected == expected_result
+    assert callback_calls == []
 
 
 @pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
