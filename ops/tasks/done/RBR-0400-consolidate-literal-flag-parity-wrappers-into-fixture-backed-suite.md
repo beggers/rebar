@@ -1,6 +1,6 @@
 # RBR-0400: Consolidate literal-flag parity wrappers into a fixture-backed pytest suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
 
@@ -51,3 +51,8 @@ Created: 2026-03-15
 - The runtime dashboard is clean and current for `HEAD`, the ready queue is empty, and both tracked and live JSON counts are zero (`tracked_json_blob_count: 0`, `tracked_json_blob_delta: 0`, `git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), so the next architecture priority is deleting duplicate Python parity plumbing rather than another JSON burn-down task.
 - `tests/conformance/fixtures/literal_flag_workflows.py` already publishes `11` cases, but Python parity ownership for its literal rows is still split across `tests/python/test_literal_ignorecase_behavior.py`, `tests/python/test_inline_flag_literal_workflows.py`, and `tests/python/test_locale_bytes_literal_workflows.py`, while `tests/python/test_bounded_wildcard_parity_suite.py` separately owns the nonliteral wildcard row from the same manifest.
 - The three targeted wrappers total `326` lines of repeated repo bootstrap, manual cache purging, built-native gating, and fake-native-boundary scaffolding that can now live on one standard pytest path.
+
+## Completion
+- 2026-03-15: Replaced the three standalone `unittest` wrappers with `tests/python/test_literal_flag_parity_suite.py`, selecting the ten literal-only `literal-flag-workflows` rows through `load_fixture_manifest(...)` / `FixtureCase` while keeping direct pytest coverage for bounded `IGNORECASE`, cache reuse and distinct entries, unsupported placeholder paths, built-native inline/bytes-`LOCALE` parity, and the fake-native-boundary call sequences.
+- 2026-03-15: Deleted `tests/python/test_literal_ignorecase_behavior.py`, `tests/python/test_inline_flag_literal_workflows.py`, and `tests/python/test_locale_bytes_literal_workflows.py`.
+- 2026-03-15: Verified with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_literal_flag_parity_suite.py tests/python/test_parser_matrix_parity_suite.py` (`72 passed, 21 skipped`) and confirmed `rg --files tests/python | rg 'test_(literal_ignorecase_behavior|inline_flag_literal_workflows|locale_bytes_literal_workflows)\.py$'` returns no matches.
