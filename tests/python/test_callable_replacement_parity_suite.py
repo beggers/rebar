@@ -82,7 +82,11 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("pattern_call", "subn"): 2,
     }
 )
-PENDING_REBAR_MANIFEST_IDS = frozenset()
+PENDING_REBAR_MANIFEST_IDS = frozenset(
+    {
+        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+    }
+)
 NO_MATCH_TEXT_CANDIDATES = ("zzz", "", "no-match", "----", "999")
 
 
@@ -95,8 +99,17 @@ def _skip_pending_rebar_callable_parity(
         and case.manifest_id in PENDING_REBAR_MANIFEST_IDS
     ):
         pytest.skip(
-            "quantified nested-group alternation branch-local-backreference callable parity remains queued in RBR-0362"
+            f"callable replacement parity for {case.manifest_id} remains queued behind a later Rust-backed parity task"
         )
+
+
+def _pending_rebar_compile_patterns() -> frozenset[str]:
+    return frozenset(
+        compile_pattern
+        for bundle in FIXTURE_BUNDLES
+        if bundle.manifest.manifest_id in PENDING_REBAR_MANIFEST_IDS
+        for compile_pattern in bundle.compile_patterns
+    )
 
 
 def _fixture_bundle(path: pathlib.Path) -> FixtureBundle:
@@ -333,6 +346,7 @@ def test_literal_callable_case_stays_aligned_with_published_collection_fixture()
 
 
 NO_MATCH_PATTERNS = tuple(sorted({*COMPILE_PATTERNS, _literal_callable_pattern()}))
+PENDING_REBAR_NO_MATCH_PATTERNS = _pending_rebar_compile_patterns()
 
 
 @pytest.mark.parametrize("pattern", COMPILE_PATTERNS)
@@ -408,7 +422,12 @@ def test_callable_replacement_no_match_paths_leave_input_unchanged(
     helper: str,
     use_compiled_pattern: bool,
 ) -> None:
-    _, backend = regex_backend
+    backend_name, backend = regex_backend
+    if backend_name == "rebar" and pattern in PENDING_REBAR_NO_MATCH_PATTERNS:
+        pytest.skip(
+            f"callable replacement parity for pattern {pattern!r} remains queued behind a later Rust-backed parity task"
+        )
+
     callback_calls: list[object] = []
     string = _callable_no_match_text(pattern)
 

@@ -442,6 +442,11 @@ DEFAULT_FIXTURE_PATHS = (
     / "conformance"
     / "fixtures"
     / "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
+    / "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
 )
 DEFAULT_REPORT_PATH = PUBLISHED_REPORT_PATH
 PHASE_BY_LAYER = {
