@@ -1,6 +1,6 @@
 # RBR-0363: Consolidate the nested conditional group-exists parity modules into one fixture-backed pytest suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
 
@@ -46,3 +46,8 @@ Created: 2026-03-15
 - The four targeted singleton modules total 676 lines and are near-identical aside from pattern strings, present/absent/failure texts, and named-group coverage.
 - `ops/tasks/done/RBR-0347-consolidate-base-conditional-group-exists-parity-suite.md` is the exact shape to follow for this nested family: one backend-parameterized suite, one manifest-alignment assertion per published fixture, and no new helper module.
 - `tests/conformance/fixtures/conditional_group_exists_empty_else_nested_workflows.py` is already part of the published correctness corpus; using only its non-systematic rows here keeps the nested family on one standard parity path without dragging the separate folded-systematic capture cleanup into this task.
+
+## Completion Notes
+- Added `tests/python/test_conditional_group_exists_nested_parity_suite.py`, loading the five nested conditional fixture manifests through `load_fixture_manifest(...)` and asserting manifest id, selected case ids, compile patterns, and the `compile` / module `search` / module `fullmatch` / pattern `fullmatch` split for each bundle.
+- Folded the nested explicit-empty-else non-systematic rows from `tests/conformance/fixtures/conditional_group_exists_empty_else_nested_workflows.py` into the same backend-parameterized parity path while leaving that fixture's systematic rows on `tests/python/test_folded_systematic_capture_parity.py`.
+- Deleted the four superseded singleton parity modules and verified with `.venv/bin/python -m pytest tests/python/test_conditional_group_exists_nested_parity_suite.py tests/python/test_folded_systematic_capture_parity.py -q` (`122 passed`) plus `rg --files tests/python | rg 'test_conditional_group_exists(_no_else|_empty_yes_else|_fully_empty)?_nested_parity\\.py$'` returning no matches.
