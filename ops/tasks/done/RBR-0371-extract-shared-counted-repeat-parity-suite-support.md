@@ -1,8 +1,9 @@
 # RBR-0371: Extract shared counted-repeat parity-suite support for the fixture-backed pytest path
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-15
+Completed: 2026-03-15
 
 ## Goal
 - Remove the duplicated fixture-backed parity scaffolding that `tests/python/test_open_ended_quantified_group_parity_suite.py` and `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` now carry in parallel after `RBR-0357` and `RBR-0359`, while keeping each suite's published frontier and bounded supplements explicit.
@@ -33,3 +34,11 @@ Created: 2026-03-15
 ## Notes
 - Build directly on `RBR-0357` and `RBR-0359`, which already moved both counted-repeat suites onto the published fixture path.
 - This cleanup exists because those two files now repeat the same repo-root, fixture-path, compile-parity, pattern-parity, match-parity, and convenience-API scaffolding almost verbatim even though their remaining differences are mostly the manifest inventories and bounded supplemental cases.
+
+## Completion
+- Added `tests/python/fixture_parity_support.py` as a thin local helper module for the shared counted-repeat suite support: published fixture-path selection against `DEFAULT_FIXTURE_PATHS`, generic `FixtureCase` pattern extraction for `str` and `bytes`, CPython compile parity, shared pattern/match metadata assertions, and common `Match.__getitem__` / `expand(...)` convenience-template checks.
+- Updated `tests/python/test_open_ended_quantified_group_parity_suite.py` and `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` to import that support instead of carrying duplicated local compile, pattern-parity, match-parity, and fixture-path-selection helpers.
+- Kept the suite-local fixture bundles, expected manifest ids and pattern sets, operation/helper counters, bytes-only broader `{1,4}` conditional supplements, and broader-range or nested backtracking trace cases explicit in their original files while preserving the existing backend-parameterized parity coverage and `rebar` skip behavior.
+
+## Verification
+- `.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`
