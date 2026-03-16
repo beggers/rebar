@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-With `RBR-0473` already queued at the ready head, the concrete surviving follow-on after that likely drain is `RBR-0475`, which should publish the exact leading-capture grouped-segment search pair already anchored as `module-search-grouped-segment-cold-gap` / `pattern-search-grouped-segment-warm-gap` on `grouped-named-boundary`.
+With `RBR-0475` already queued at the ready head, the concrete surviving follow-on after that likely drain is `RBR-0477`, which should convert the exact leading-capture grouped-segment search pair already being published on `grouped-segment-workflows` into real Rust-backed parity before the existing `grouped-named-boundary` benchmark gap rows are revisited.
 
 ## Ordered Work
-1. With `RBR-0473` already queued as the ready-head benchmark refresh, `RBR-0475` should extend `tests/conformance/fixtures/grouped_segment_workflows.py`, `tests/conformance/correctness_expectations.py`, `tests/python/test_grouped_capture_parity_suite.py`, and `reports/correctness/latest.py` so the exact leading-capture grouped-segment search pair already anchored as `module-search-grouped-segment-cold-gap` / `pattern-search-grouped-segment-warm-gap` on `grouped-named-boundary` becomes honest correctness debt on the shared `grouped-segment-workflows` surface, moving the combined correctness report from `963` total / `963` passed / `0` unimplemented to `965` total / `963` passed / `2` unimplemented while keeping `107` manifests once `RBR-0473` has drained.
+1. With `RBR-0475` already queued as the ready-head correctness publication, `RBR-0477` should update `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_grouped_capture_parity_suite.py`, and `reports/correctness/latest.py` so the exact leading-capture grouped-segment pair `grouped-segment-leading-capture-module-search-str` / `grouped-segment-leading-capture-pattern-search-str`, pinned to pattern `"(ab)c"` and benchmark rows `module-search-grouped-segment-cold-gap` / `pattern-search-grouped-segment-warm-gap`, stops publishing as correctness debt and instead reaches real Rust-backed parity on the shared `grouped-segment-workflows` surface, moving the combined correctness report from `965` total / `963` passed / `2` unimplemented to `965` total / `965` passed / `0` unimplemented while keeping `107` manifests once `RBR-0475` has drained.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
