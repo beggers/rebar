@@ -43,9 +43,16 @@ class SourceTreeBenchmarkCommonCase:
 
 
 @dataclass(frozen=True, slots=True)
+class SourceTreeManifestExpectation:
+    known_gap_count: int
+    representative_measured_workload_ids: tuple[str, ...] = ()
+    representative_known_gap_workload_ids: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
 class SourceTreeScorecardCase(SourceTreeBenchmarkCommonCase):
     case_id: str
-    manifest_expectations: dict[str, dict[str, int]]
+    manifest_expectations: dict[str, SourceTreeManifestExpectation]
     representative_measured_workload_ids: tuple[str, ...]
     representative_known_gap_workload_ids: tuple[str, ...]
     expected_first_deferred: dict[str, str] | None = None
@@ -58,7 +65,7 @@ class SourceTreeScorecardCase(SourceTreeBenchmarkCommonCase):
         common_case: SourceTreeBenchmarkCommonCase,
         *,
         case_id: str,
-        manifest_expectations: dict[str, dict[str, int]],
+        manifest_expectations: dict[str, SourceTreeManifestExpectation],
         representative_measured_workload_ids: tuple[str, ...],
         representative_known_gap_workload_ids: tuple[str, ...],
         expected_first_deferred: dict[str, str] | None = None,
@@ -89,7 +96,7 @@ class SourceTreeScorecardCase(SourceTreeBenchmarkCommonCase):
 
 @dataclass(frozen=True, slots=True)
 class SourceTreeCombinedCase(SourceTreeBenchmarkCommonCase):
-    manifest_expectation: dict[str, Any]
+    manifest_expectation: SourceTreeManifestExpectation
     manifest_id: str
     manifest_path: str
     target_manifest: dict[str, Any]
@@ -99,7 +106,7 @@ class SourceTreeCombinedCase(SourceTreeBenchmarkCommonCase):
         cls,
         common_case: SourceTreeBenchmarkCommonCase,
         *,
-        manifest_expectation: dict[str, Any],
+        manifest_expectation: SourceTreeManifestExpectation,
         manifest_id: str,
         manifest_path: str,
         target_manifest: dict[str, Any],
@@ -1518,6 +1525,29 @@ def _append_unique_workload_ids(
             representative_ids.append(normalized_workload_id)
 
 
+def _source_tree_manifest_expectation_workload_ids(
+    raw_expectation: dict[str, Any],
+    field_name: str,
+    *,
+    selected_workload_ids: Iterable[str] | None = None,
+) -> tuple[str, ...]:
+    workload_ids = tuple(
+        str(workload_id)
+        for workload_id in raw_expectation.get(field_name, ())
+    )
+    if selected_workload_ids is None or not workload_ids:
+        return workload_ids
+
+    selected_workload_id_set = {
+        str(workload_id) for workload_id in selected_workload_ids
+    }
+    return tuple(
+        workload_id
+        for workload_id in workload_ids
+        if workload_id in selected_workload_id_set
+    )
+
+
 def source_tree_combined_manifest_representative_measured_workload_ids(
     manifest_id: str,
 ) -> tuple[str, ...]:
@@ -1555,37 +1585,40 @@ def source_tree_combined_manifest_representative_measured_workload_ids(
 
 
 def _source_tree_manifest_known_gap_count(
-    manifest_expectation: dict[str, Any],
+    raw_expectation: dict[str, Any],
     *,
     selected_workload_ids: Iterable[str] | None = None,
 ) -> int:
-    known_gap_workload_ids = tuple(
-        str(workload_id)
-        for workload_id in manifest_expectation.get("known_gap_workload_ids", ())
-    )
-    if known_gap_workload_ids:
-        if selected_workload_ids is None:
-            return len(known_gap_workload_ids)
-        selected_workload_id_set = {
-            str(workload_id) for workload_id in selected_workload_ids
-        }
-        return sum(
-            1
-            for workload_id in known_gap_workload_ids
-            if workload_id in selected_workload_id_set
+    return len(
+        _source_tree_manifest_expectation_workload_ids(
+            raw_expectation,
+            "known_gap_workload_ids",
+            selected_workload_ids=selected_workload_ids,
         )
-    return 0
+    )
+
+
+def _source_tree_manifest_representative_measured_workload_ids(
+    raw_expectation: dict[str, Any],
+    *,
+    selected_workload_ids: Iterable[str] | None = None,
+) -> tuple[str, ...]:
+    return _source_tree_manifest_expectation_workload_ids(
+        raw_expectation,
+        "representative_measured_workload_ids",
+        selected_workload_ids=selected_workload_ids,
+    )
 
 
 def _source_tree_manifest_representative_known_gap_workload_ids(
-    manifest_expectation: dict[str, Any],
+    raw_expectation: dict[str, Any],
+    *,
+    selected_workload_ids: Iterable[str] | None = None,
 ) -> tuple[str, ...]:
-    return tuple(
-        str(workload_id)
-        for workload_id in manifest_expectation.get(
-            "representative_known_gap_workload_ids",
-            (),
-        )
+    return _source_tree_manifest_expectation_workload_ids(
+        raw_expectation,
+        "representative_known_gap_workload_ids",
+        selected_workload_ids=selected_workload_ids,
     )
 
 
@@ -1593,31 +1626,30 @@ def _public_source_tree_manifest_expectation(
     manifest_id: str,
     *,
     selected_workload_ids: Iterable[str] | None = None,
-) -> dict[str, Any]:
+) -> SourceTreeManifestExpectation:
     manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
     if manifest_expectation is None:
         raise AssertionError(
             f"unknown source-tree combined manifest expectation {manifest_id!r}"
         )
-    return {
-        **manifest_expectation,
-        "known_gap_count": _source_tree_manifest_known_gap_count(
+    return SourceTreeManifestExpectation(
+        known_gap_count=_source_tree_manifest_known_gap_count(
             manifest_expectation,
             selected_workload_ids=selected_workload_ids,
         ),
-        "representative_measured_workload_ids": tuple(
-            str(workload_id)
-            for workload_id in manifest_expectation.get(
-                "representative_measured_workload_ids",
-                (),
+        representative_measured_workload_ids=(
+            _source_tree_manifest_representative_measured_workload_ids(
+                manifest_expectation,
+                selected_workload_ids=selected_workload_ids,
             )
         ),
-        "representative_known_gap_workload_ids": (
+        representative_known_gap_workload_ids=(
             _source_tree_manifest_representative_known_gap_workload_ids(
-                manifest_expectation
+                manifest_expectation,
+                selected_workload_ids=selected_workload_ids,
             )
         ),
-    }
+    )
 
 
 def _source_tree_manifest_known_gap_counts(
@@ -1658,7 +1690,7 @@ def _resolve_source_tree_scorecard_case_definition(
 
     manifest_records = _source_tree_manifest_records()
     manifest_documents: list[dict[str, Any]] = []
-    manifest_expectations: dict[str, dict[str, int]] = {}
+    manifest_expectations: dict[str, SourceTreeManifestExpectation] = {}
     for manifest_id in full_manifest_ids:
         manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
         if manifest_expectation is None:
@@ -1667,11 +1699,9 @@ def _resolve_source_tree_scorecard_case_definition(
                 f"{manifest_id!r}"
             )
         manifest_documents.append(manifest_records[manifest_id][1])
-        manifest_expectations[manifest_id] = {
-            "known_gap_count": _source_tree_manifest_known_gap_count(
-                manifest_expectation
-            ),
-        }
+        manifest_expectations[manifest_id] = _public_source_tree_manifest_expectation(
+            manifest_id
+        )
 
     resolved_case_definition = {
         key: value
@@ -1800,7 +1830,13 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
     public_case_definition.setdefault(
         "manifest_expectations",
         {
-            manifest_id: {"known_gap_count": manifest_known_gap_counts[manifest_id]}
+            manifest_id: _public_source_tree_manifest_expectation(
+                manifest_id,
+                selected_workload_ids=selected_workload_ids_by_manifest.get(
+                    manifest_id,
+                    (),
+                ),
+            )
             for manifest_id in manifest_ids
         },
     )

@@ -33,7 +33,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
     ) -> None:
         case = source_tree_scorecard_case("post-parser-workflows")
         self.assertEqual(
-            case.manifest_expectations["literal-flag-boundary"]["known_gap_count"],
+            case.manifest_expectations["literal-flag-boundary"].known_gap_count,
             0,
         )
 
@@ -149,7 +149,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                 manifest_record,
                 manifest_document=case.manifest_documents_by_id[manifest_id],
                 manifest_path=case.manifest_paths_by_id[manifest_id],
-                known_gap_count=manifest_expectation["known_gap_count"],
+                known_gap_count=manifest_expectation.known_gap_count,
                 selection_mode=case.selection_mode,
                 selected_workload_ids=case.selected_workload_ids_by_manifest[manifest_id],
             )

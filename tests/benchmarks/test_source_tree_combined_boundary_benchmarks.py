@@ -57,9 +57,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 expected_ids = raw_manifest_expectation["known_gap_workload_ids"]
                 self.assertNotIn("known_gap_count", raw_manifest_expectation)
                 self.assertEqual(
-                    source_tree_combined_case(manifest_id).manifest_expectation[
-                        "known_gap_count"
-                    ],
+                    source_tree_combined_case(manifest_id).manifest_expectation.known_gap_count,
                     len(expected_ids),
                 )
 
@@ -82,13 +80,13 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         manifest_expectation = source_tree_combined_case(
             "pattern-boundary"
         ).manifest_expectation
-        self.assertEqual(manifest_expectation["known_gap_count"], 0)
+        self.assertEqual(manifest_expectation.known_gap_count, 0)
         self.assertEqual(
-            manifest_expectation["representative_measured_workload_ids"],
+            manifest_expectation.representative_measured_workload_ids,
             (),
         )
         self.assertEqual(
-            manifest_expectation["representative_known_gap_workload_ids"],
+            manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
 
@@ -99,7 +97,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             "collection-replacement-boundary"
         ).manifest_expectation
         self.assertEqual(
-            manifest_expectation["representative_measured_workload_ids"],
+            manifest_expectation.representative_measured_workload_ids,
             (),
         )
 
@@ -117,9 +115,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
 
         case = source_tree_combined_case("literal-flag-boundary")
         manifest_expectation = case.manifest_expectation
-        self.assertEqual(manifest_expectation["known_gap_count"], 0)
+        self.assertEqual(manifest_expectation.known_gap_count, 0)
         self.assertEqual(
-            manifest_expectation["representative_known_gap_workload_ids"],
+            manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
 
@@ -160,7 +158,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_regression_manifest_is_fully_measured_on_the_shared_surface(self) -> None:
         scorecard_case = source_tree_scorecard_case("regression-pack-full")
         self.assertEqual(
-            scorecard_case.manifest_expectations["regression-matrix"]["known_gap_count"],
+            scorecard_case.manifest_expectations["regression-matrix"].known_gap_count,
             0,
         )
 
@@ -191,7 +189,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(manifest_id=manifest_id):
                 case = source_tree_combined_case(manifest_id)
                 self.assertEqual(
-                    case.manifest_expectation["representative_measured_workload_ids"],
+                    case.manifest_expectation.representative_measured_workload_ids,
                     (),
                 )
                 self.assertEqual(
@@ -239,7 +237,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     manifest_record,
                     manifest_document=case.target_manifest,
                     manifest_path=case.manifest_path,
-                    known_gap_count=manifest_expectation["known_gap_count"],
+                    known_gap_count=manifest_expectation.known_gap_count,
                     selection_mode=case.selection_mode,
                     selected_workload_ids=case.selected_workload_ids_by_manifest[manifest_id],
                 )
@@ -247,12 +245,14 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 representative_ids = representative_measured_workload_ids(
                     scorecard,
                     case.target_manifest,
-                    extra_workload_ids=manifest_expectation["representative_measured_workload_ids"],
+                    extra_workload_ids=manifest_expectation.representative_measured_workload_ids,
                 )
                 representative_gap_ids = set(
-                    manifest_expectation["representative_known_gap_workload_ids"]
+                    manifest_expectation.representative_known_gap_workload_ids
                 )
-                representative_ids.extend(manifest_expectation["representative_known_gap_workload_ids"])
+                representative_ids.extend(
+                    manifest_expectation.representative_known_gap_workload_ids
+                )
 
                 seen_ids: set[str] = set()
                 for workload_id in representative_ids:
@@ -284,7 +284,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 manifest_summary = scorecard["manifests"][manifest_id]
                 self.assertEqual(
                     manifest_summary["known_gap_count"],
-                    case.manifest_expectation["known_gap_count"],
+                    case.manifest_expectation.known_gap_count,
                 )
 
                 for expectation in source_tree_combined_slice_expectations(manifest_id):

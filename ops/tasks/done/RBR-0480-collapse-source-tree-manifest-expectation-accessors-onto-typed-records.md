@@ -1,6 +1,6 @@
 # RBR-0480: Collapse source-tree manifest expectation accessors onto typed records
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -88,3 +88,8 @@ Created: 2026-03-16
   - `rg -n 'manifest_expectation\\["(known_gap_count|representative_measured_workload_ids|representative_known_gap_workload_ids)"\\]|manifest_expectations\\[[^]]+\\]\\["known_gap_count"\\]' tests/benchmarks/benchmark_expectations.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently returns `15` matches, which is the exact string-key manifest-expectation plumbing this task should delete rather than rename.
   - The public manifest-expectation probe above currently reports `dict` / `dict`, which is the exact remaining shape this task is meant to replace.
   - The broad combined benchmark regression is currently red for unrelated feature drift and should stay out of this task's acceptance surface: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently fails with `24` summary mismatches because the ready `RBR-0479` benchmark catch-up has not landed yet.
+
+## Completion
+- 2026-03-16: Added a local `SourceTreeManifestExpectation` dataclass in `tests/benchmarks/benchmark_expectations.py` and converted the public `SourceTreeCombinedCase.manifest_expectation` plus `SourceTreeScorecardCase.manifest_expectations[...]` surfaces to typed records while keeping the raw manifest tables dict-shaped and unchanged.
+- 2026-03-16: Rewired the scorecard and combined benchmark suites to read manifest expectation metadata through attributes instead of string keys, preserving the existing known-gap counts and representative workload ids.
+- 2026-03-16: Verified with the task's targeted pytest command (`11 passed, 23 subtests passed in 0.60s`), both required `rg -n ...` checks (no matches), and the public typed-record probe (`ok`).
