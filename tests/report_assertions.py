@@ -6,6 +6,7 @@ import platform
 import sys
 from typing import Any
 
+from rebar_harness.benchmarks import BenchmarkManifest
 
 _KNOWN_GAP_STATUSES = {"known-gap", "unimplemented"}
 
@@ -403,34 +404,34 @@ def _smoke_workload_ids(workloads: list[dict[str, Any]]) -> list[str]:
 
 def _artifact_manifest_record(
     manifest_path: str,
-    manifest_document: dict[str, Any],
+    manifest: BenchmarkManifest,
 ) -> dict[str, Any]:
     return {
         "manifest": manifest_path,
-        "manifest_id": manifest_document["manifest_id"],
-        "manifest_schema_version": manifest_document["schema_version"],
-        "workload_count": len(manifest_document.get("workloads", [])),
-        "smoke_workload_ids": _smoke_workload_ids(manifest_document.get("workloads", [])),
-        "spec_refs": [str(ref) for ref in manifest_document.get("spec_refs", [])],
+        "manifest_id": manifest.manifest_id,
+        "manifest_schema_version": manifest.schema_version,
+        "workload_count": len(manifest.workloads),
+        "smoke_workload_ids": _smoke_workload_ids(manifest.workloads),
+        "spec_refs": list(manifest.spec_refs),
     }
 
 
 def _selected_manifest_workloads(
-    manifest_document: dict[str, Any],
+    manifest: BenchmarkManifest,
     *,
     selected_workload_ids: tuple[str, ...] | None,
 ) -> list[dict[str, Any]]:
     if selected_workload_ids is None:
-        return list(manifest_document["workloads"])
+        return list(manifest.workloads)
 
     workload_documents = {
-        str(workload["id"]): workload for workload in manifest_document["workloads"]
+        str(workload["id"]): workload for workload in manifest.workloads
     }
     selected_workloads: list[dict[str, Any]] = []
     for workload_id in selected_workload_ids:
         if workload_id not in workload_documents:
             raise AssertionError(
-                f"missing workload definition {workload_id!r} in {manifest_document['manifest_id']!r}"
+                f"missing workload definition {workload_id!r} in {manifest.manifest_id!r}"
             )
         selected_workloads.append(workload_documents[workload_id])
     return selected_workloads
@@ -444,16 +445,16 @@ def assert_source_tree_benchmark_contract(
     expected_phase: str,
     expected_runner_version: str,
     expected_adapter: str,
-    expected_manifest_documents: list[dict[str, Any]],
+    expected_manifests: list[BenchmarkManifest],
     expected_manifest_paths: list[str],
     expected_selection_mode: str,
     tracked_report_path: pathlib.Path | None = None,
 ) -> None:
     expected_manifest_records = [
-        _artifact_manifest_record(manifest_path, manifest_document)
-        for manifest_path, manifest_document in zip(
+        _artifact_manifest_record(manifest_path, manifest)
+        for manifest_path, manifest in zip(
             expected_manifest_paths,
-            expected_manifest_documents,
+            expected_manifests,
             strict=True,
         )
     ]
@@ -543,15 +544,15 @@ def assert_benchmark_manifest_contract(
     manifest_summary: dict[str, Any],
     manifest_record: dict[str, Any],
     *,
-    manifest_document: dict[str, Any],
+    manifest: BenchmarkManifest,
     manifest_path: str,
     known_gap_count: int,
     selection_mode: str = "full",
     selected_workload_ids: tuple[str, ...] | None = None,
 ) -> None:
-    workloads = list(manifest_document["workloads"])
+    workloads = list(manifest.workloads)
     selected_workloads = _selected_manifest_workloads(
-        manifest_document,
+        manifest,
         selected_workload_ids=selected_workload_ids,
     )
     smoke_ids = _smoke_workload_ids(workloads)
@@ -579,12 +580,11 @@ def assert_benchmark_manifest_contract(
     testcase.assertEqual(manifest_summary["smoke_workload_ids"], smoke_ids)
     testcase.assertEqual(manifest_summary["families"], families)
     testcase.assertEqual(manifest_summary["operations"], operations)
-    if "spec_refs" in manifest_document:
-        testcase.assertEqual(manifest_summary["spec_refs"], manifest_document["spec_refs"])
-    if "notes" in manifest_document:
-        testcase.assertEqual(manifest_summary["notes"], manifest_document["notes"])
+    testcase.assertEqual(manifest_summary["spec_refs"], manifest.spec_refs)
+    if manifest.notes:
+        testcase.assertEqual(manifest_summary["notes"], manifest.notes)
 
-    testcase.assertEqual(manifest_record["manifest_id"], manifest_document["manifest_id"])
+    testcase.assertEqual(manifest_record["manifest_id"], manifest.manifest_id)
     testcase.assertEqual(manifest_record["manifest"], manifest_path)
     testcase.assertEqual(manifest_record["smoke_workload_ids"], smoke_ids)
 
@@ -659,12 +659,12 @@ def find_workload_record(scorecard: dict[str, Any], workload_id: str) -> dict[st
 
 
 def find_workload_document(
-    manifest_document: dict[str, Any],
+    manifest: BenchmarkManifest,
     workload_id: str,
 ) -> dict[str, Any]:
-    for workload in manifest_document["workloads"]:
+    for workload in manifest.workloads:
         if workload["id"] == workload_id:
             return workload
     raise AssertionError(
-        f"missing workload definition {workload_id!r} in {manifest_document['manifest_id']!r}"
+        f"missing workload definition {workload_id!r} in {manifest.manifest_id!r}"
     )

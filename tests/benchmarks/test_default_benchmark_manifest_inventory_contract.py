@@ -93,18 +93,16 @@ class DefaultBenchmarkManifestInventoryContractTest(unittest.TestCase):
             PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
         )
         expected_manifest_ids = [
-            str(load_manifest(path)[0]["manifest_id"]) for path in published_manifest_paths
+            load_manifest(path)[0].manifest_id for path in published_manifest_paths
         ]
-        raw_manifests, workloads = load_manifests(list(published_manifest_paths))
+        manifests, workloads = load_manifests(list(published_manifest_paths))
 
         self.assertEqual(
-            [str(manifest["manifest_id"]) for manifest in raw_manifests],
+            [manifest.manifest_id for manifest in manifests],
             expected_manifest_ids,
         )
 
-        manifest_counts = Counter(
-            str(manifest["manifest_id"]) for manifest in raw_manifests
-        )
+        manifest_counts = Counter(manifest.manifest_id for manifest in manifests)
         self.assertEqual(
             _duplicates(manifest_counts),
             [],
@@ -119,7 +117,7 @@ class DefaultBenchmarkManifestInventoryContractTest(unittest.TestCase):
         )
 
         workloads_by_manifest = Counter(workload.manifest_id for workload in workloads)
-        manifest_ids = {str(manifest["manifest_id"]) for manifest in raw_manifests}
+        manifest_ids = {manifest.manifest_id for manifest in manifests}
         for manifest_id in manifest_ids:
             with self.subTest(manifest_id=manifest_id):
                 self.assertGreater(

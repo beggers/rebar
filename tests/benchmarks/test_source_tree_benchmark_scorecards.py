@@ -145,7 +145,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                     expected_phase=case.expected_phase,
                     expected_runner_version=case.expected_runner_version,
                     expected_adapter=case.expected_adapter,
-                    expected_manifest_documents=case.manifest_documents,
+                    expected_manifests=case.manifests,
                     expected_manifest_paths=case.expected_manifest_paths,
                     expected_selection_mode=case.selection_mode,
                     tracked_report_path=TRACKED_REPORT_PATH,
@@ -187,7 +187,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                 self,
                 manifest_summary,
                 manifest_record,
-                manifest_document=case.manifest_documents_by_id[manifest_id],
+                manifest=case.manifests_by_id[manifest_id],
                 manifest_path=case.manifest_paths_by_id[manifest_id],
                 known_gap_count=manifest_expectation.known_gap_count,
                 selection_mode=case.selection_mode,
@@ -228,12 +228,12 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             with self.subTest(workload_id=workload_id):
                 workload_record = find_workload_record(scorecard, workload_id)
                 manifest_id = workload_record["manifest_id"]
-                manifest_document = case.manifest_documents_by_id[manifest_id]
+                manifest = case.manifests_by_id[manifest_id]
                 assert_benchmark_workload_contract(
                     self,
                     workload_record,
                     manifest_id=manifest_id,
-                    workload_document=find_workload_document(manifest_document, workload_id),
+                    workload_document=find_workload_document(manifest, workload_id),
                     expected_status=expected_status,
                 )
 

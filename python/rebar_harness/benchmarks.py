@@ -219,6 +219,68 @@ class Workload:
         )
 
 
+@dataclass(frozen=True, slots=True)
+class BenchmarkManifest:
+    """Typed benchmark manifest metadata plus raw workload documents."""
+
+    path: pathlib.Path
+    manifest_id: str
+    schema_version: int
+    defaults: dict[str, Any]
+    workloads: list[dict[str, Any]]
+    spec_refs: list[str]
+    notes: list[str]
+
+    @classmethod
+    def from_dict(
+        cls,
+        *,
+        path: pathlib.Path,
+        raw_manifest: dict[str, Any],
+    ) -> tuple["BenchmarkManifest", list[Workload]]:
+        schema_version = raw_manifest.get("schema_version")
+        if schema_version != MANIFEST_SCHEMA_VERSION:
+            raise ValueError(
+                f"unsupported benchmark manifest schema version {schema_version!r}; "
+                f"expected {MANIFEST_SCHEMA_VERSION}"
+            )
+
+        defaults = raw_manifest.get("defaults", {})
+        if not isinstance(defaults, dict):
+            raise ValueError("benchmark manifest defaults must be an object")
+
+        manifest_id_key = "manifest_id"
+        manifest_id = str(raw_manifest[manifest_id_key])
+        workload_documents = list(raw_manifest.get("workloads", []))
+        workloads = [
+            Workload.from_dict(
+                manifest_id=manifest_id,
+                raw_workload=raw_workload,
+                defaults=defaults,
+            )
+            for raw_workload in workload_documents
+        ]
+        return (
+            cls(
+                path=path,
+                manifest_id=manifest_id,
+                schema_version=MANIFEST_SCHEMA_VERSION,
+                defaults=dict(defaults),
+                workloads=workload_documents,
+                spec_refs=[str(ref) for ref in raw_manifest.get("spec_refs", [])],
+                notes=[str(note) for note in raw_manifest.get("notes", [])],
+            ),
+            workloads,
+        )
+
+    def smoke_workload_ids(self) -> list[str]:
+        return [
+            str(workload["id"])
+            for workload in self.workloads
+            if bool(workload.get("smoke", False) or "smoke" in workload.get("categories", []))
+        ]
+
+
 def normalize_workload_value(value: Any) -> Any:
     if value is None or isinstance(value, (str, int, float, bool)):
         return value
@@ -329,7 +391,7 @@ def workload_from_payload(payload: dict[str, Any]) -> Workload:
     )
 
 
-def load_manifest(path: pathlib.Path) -> tuple[dict[str, Any], list[Workload]]:
+def load_manifest(path: pathlib.Path) -> tuple[BenchmarkManifest, list[Workload]]:
     if path.suffix != ".py":
         raise ValueError(
             f"unsupported benchmark manifest extension {path.suffix!r} for {path}"
@@ -342,38 +404,18 @@ def load_manifest(path: pathlib.Path) -> tuple[dict[str, Any], list[Workload]]:
         missing_error_label="Python benchmark manifest module",
         type_error_label="benchmark manifest",
     )
-    schema_version = raw_manifest.get("schema_version")
-    if schema_version != MANIFEST_SCHEMA_VERSION:
-        raise ValueError(
-            f"unsupported benchmark manifest schema version {schema_version!r}; "
-            f"expected {MANIFEST_SCHEMA_VERSION}"
-        )
-
-    defaults = raw_manifest.get("defaults", {})
-    if not isinstance(defaults, dict):
-        raise ValueError("benchmark manifest defaults must be an object")
-
-    manifest_id = str(raw_manifest["manifest_id"])
-    workloads = [
-        Workload.from_dict(
-            manifest_id=manifest_id,
-            raw_workload=raw_workload,
-            defaults=defaults,
-        )
-        for raw_workload in raw_manifest.get("workloads", [])
-    ]
-    return raw_manifest, workloads
+    return BenchmarkManifest.from_dict(path=path, raw_manifest=raw_manifest)
 
 
-def load_manifests(paths: list[pathlib.Path]) -> tuple[list[dict[str, Any]], list[Workload]]:
-    raw_manifests: list[dict[str, Any]] = []
+def load_manifests(paths: list[pathlib.Path]) -> tuple[list[BenchmarkManifest], list[Workload]]:
+    manifests: list[BenchmarkManifest] = []
     workloads: list[Workload] = []
     manifest_ids: set[str] = set()
     workload_ids: set[str] = set()
 
     for path in paths:
-        raw_manifest, manifest_workloads = load_manifest(path)
-        manifest_id = str(raw_manifest["manifest_id"])
+        manifest, manifest_workloads = load_manifest(path)
+        manifest_id = manifest.manifest_id
         if manifest_id in manifest_ids:
             raise ValueError(f"duplicate benchmark manifest id {manifest_id!r}")
         manifest_ids.add(manifest_id)
@@ -383,10 +425,10 @@ def load_manifests(paths: list[pathlib.Path]) -> tuple[list[dict[str, Any]], lis
                 raise ValueError(f"duplicate benchmark workload id {workload.workload_id!r}")
             workload_ids.add(workload.workload_id)
 
-        raw_manifests.append(raw_manifest)
+        manifests.append(manifest)
         workloads.extend(manifest_workloads)
 
-    return raw_manifests, workloads
+    return manifests, workloads
 
 
 def select_workloads(workloads: list[Workload], *, smoke_only: bool) -> list[Workload]:
@@ -963,12 +1005,12 @@ def family_notes(family: str, family_workloads: list[dict[str, Any]]) -> list[st
     return ["Module-boundary timings remain deferred to RBR-0015."]
 
 
-def manifest_notes(raw_manifest: dict[str, Any], selected_workloads: list[dict[str, Any]]) -> list[str]:
-    configured_notes = [str(note) for note in raw_manifest.get("notes", [])]
+def manifest_notes(manifest: BenchmarkManifest, selected_workloads: list[dict[str, Any]]) -> list[str]:
+    configured_notes = list(manifest.notes)
     if configured_notes:
         return configured_notes
 
-    manifest_id = str(raw_manifest.get("manifest_id", ""))
+    manifest_id = manifest.manifest_id
     if manifest_id == "compile-matrix":
         return [
             "Compile-path workloads remain the parser proxy portion of the suite until a narrower parser hook exists."
@@ -1019,20 +1061,20 @@ def build_family_summary(workloads: list[dict[str, Any]], family: str) -> dict[s
     }
 
 
-def _manifest_record_by_id(raw_manifests: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
-    return {str(raw_manifest["manifest_id"]): raw_manifest for raw_manifest in raw_manifests}
+def _manifest_record_by_id(manifests: list[BenchmarkManifest]) -> dict[str, BenchmarkManifest]:
+    return {manifest.manifest_id: manifest for manifest in manifests}
 
 
 def build_manifest_summaries(
     *,
-    raw_manifests: list[dict[str, Any]],
+    manifests: list[BenchmarkManifest],
     workloads: list[dict[str, Any]],
     selection_mode: str,
 ) -> dict[str, dict[str, Any]]:
-    raw_manifest_map = _manifest_record_by_id(raw_manifests)
+    manifest_map = _manifest_record_by_id(manifests)
     summaries: dict[str, dict[str, Any]] = {}
 
-    for manifest_id, raw_manifest in raw_manifest_map.items():
+    for manifest_id, manifest in manifest_map.items():
         manifest_workloads = [
             workload for workload in workloads if workload["manifest_id"] == manifest_id
         ]
@@ -1042,14 +1084,10 @@ def build_manifest_summaries(
             if isinstance(workload.get("speedup_vs_cpython"), float)
         ]
         known_gap_count = sum(1 for workload in manifest_workloads if workload["status"] != "measured")
-        smoke_workload_ids = [
-            str(workload["id"])
-            for workload in raw_manifest.get("workloads", [])
-            if bool(workload.get("smoke", False) or "smoke" in workload.get("categories", []))
-        ]
+        smoke_workload_ids = manifest.smoke_workload_ids()
 
         summaries[manifest_id] = {
-            "workload_count": len(raw_manifest.get("workloads", [])),
+            "workload_count": len(manifest.workloads),
             "selected_workload_count": len(manifest_workloads),
             "measured_workloads": len(speedups),
             "known_gap_count": known_gap_count,
@@ -1060,8 +1098,8 @@ def build_manifest_summaries(
             "selection_mode": selection_mode,
             "smoke_workload_ids": smoke_workload_ids,
             "available_smoke_workload_count": len(smoke_workload_ids),
-            "spec_refs": [str(ref) for ref in raw_manifest.get("spec_refs", [])],
-            "notes": manifest_notes(raw_manifest, manifest_workloads),
+            "spec_refs": list(manifest.spec_refs),
+            "notes": manifest_notes(manifest, manifest_workloads),
         }
 
     return summaries
@@ -1413,24 +1451,19 @@ def build_deferred_sections(workloads: list[dict[str, Any]]) -> list[dict[str, s
 
 def build_artifacts(
     *,
-    manifest_paths: list[pathlib.Path],
-    raw_manifests: list[dict[str, Any]],
+    manifests: list[BenchmarkManifest],
     selection_mode: str,
 ) -> dict[str, Any]:
     manifest_records = [
         {
-            "manifest": str(path.relative_to(REPO_ROOT)),
-            "manifest_id": raw_manifest["manifest_id"],
-            "manifest_schema_version": raw_manifest["schema_version"],
-            "workload_count": len(raw_manifest.get("workloads", [])),
-            "smoke_workload_ids": [
-                str(workload["id"])
-                for workload in raw_manifest.get("workloads", [])
-                if bool(workload.get("smoke", False) or "smoke" in workload.get("categories", []))
-            ],
-            "spec_refs": [str(ref) for ref in raw_manifest.get("spec_refs", [])],
+            "manifest": str(manifest.path.relative_to(REPO_ROOT)),
+            "manifest_id": manifest.manifest_id,
+            "manifest_schema_version": manifest.schema_version,
+            "workload_count": len(manifest.workloads),
+            "smoke_workload_ids": manifest.smoke_workload_ids(),
+            "spec_refs": list(manifest.spec_refs),
         }
-        for path, raw_manifest in zip(manifest_paths, raw_manifests, strict=True)
+        for manifest in manifests
     ]
     if len(manifest_records) == 1:
         return {
@@ -1485,8 +1518,7 @@ def run_internal_rebar_metadata_probe() -> dict[str, Any]:
 
 def build_scorecard(
     *,
-    manifest_paths: list[pathlib.Path],
-    raw_manifests: list[dict[str, Any]],
+    manifests: list[BenchmarkManifest],
     workloads: list[dict[str, Any]],
     selection_mode: str,
     implementation_metadata: dict[str, Any],
@@ -1514,7 +1546,7 @@ def build_scorecard(
         },
         "summary": summary,
         "manifests": build_manifest_summaries(
-            raw_manifests=raw_manifests,
+            manifests=manifests,
             workloads=workloads,
             selection_mode=selection_mode,
         ),
@@ -1526,11 +1558,11 @@ def build_scorecard(
         "workloads": workloads,
         "deferred": build_deferred_sections(workloads),
         "artifacts": build_artifacts(
-            manifest_paths=manifest_paths,
-            raw_manifests=raw_manifests,
+            manifests=manifests,
             selection_mode=selection_mode,
         ),
     }
+
 
 def run_benchmarks(
     manifest_paths: list[pathlib.Path] | None = None,
@@ -1549,7 +1581,7 @@ def run_benchmarks(
     resolved_report_path = (
         SCORECARD_REPORT.validate_path(report_path) if report_path is not None else None
     )
-    raw_manifests, manifest_workloads = load_manifests(resolved_manifest_paths)
+    manifests, manifest_workloads = load_manifests(resolved_manifest_paths)
     selected_manifest_workloads = select_workloads(manifest_workloads, smoke_only=smoke_only)
     run_context = prepare_benchmark_run(
         workloads=selected_manifest_workloads,
@@ -1566,8 +1598,7 @@ def run_benchmarks(
             for workload in selected_manifest_workloads
         ]
         scorecard = build_scorecard(
-            manifest_paths=resolved_manifest_paths,
-            raw_manifests=raw_manifests,
+            manifests=manifests,
             workloads=workloads,
             selection_mode="smoke" if smoke_only else "full",
             implementation_metadata=run_context.implementation_metadata,

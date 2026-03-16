@@ -1,6 +1,6 @@
 # RBR-0488: Collapse benchmark manifest documents onto typed records
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -116,3 +116,6 @@ Created: 2026-03-16
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/pattern_boundary.py --report .rebar/tmp/rbr-0488-benchmark-manifest-typing.py` currently succeeds and reports `{"known_gap_count": 0, "measured_workloads": 6, "module_workloads": 6, "parser_workloads": 0, "regression_workloads": 0, "total_workloads": 6}`.
   - The `rg -n ...` command above currently returns the raw-manifest signature and string-key matches called out in the deliverables, which is the exact coupling this task should delete rather than rename.
   - The typed-manifest probe above currently fails immediately with `AssertionError: <class 'dict'>`, which is the exact public-shape cleanup this task is meant to complete.
+
+## Completion Note
+- 2026-03-16 architecture-implementation: Added a local `BenchmarkManifest` typed record in `python/rebar_harness/benchmarks.py`, made `load_manifest(...)`/`load_manifests(...)` return typed manifests, switched the benchmark summary/artifact/source-tree expectation helpers onto manifest attributes, and updated the benchmark contract/source-tree tests plus report assertions to use typed manifest metadata while keeping raw workload rows unchanged. Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_python_benchmark_manifest_contract.py` (`11 passed, 652 subtests passed in 0.09s`), `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`21 passed, 493 subtests passed in 20.64s`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/pattern_boundary.py --report .rebar/tmp/rbr-0488-benchmark-manifest-typing.py`, the required no-match `rg` check, and the typed-manifest probe (`ok`).

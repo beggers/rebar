@@ -117,8 +117,8 @@ class PythonBenchmarkManifestContractTest(unittest.TestCase):
             )
             manifest, workloads = load_manifest(manifest_path)
 
-        self.assertEqual(manifest["manifest_id"], "python-benchmark-loader-contract")
-        self.assertEqual(manifest["defaults"]["warmup_iterations"], 2)
+        self.assertEqual(manifest.manifest_id, "python-benchmark-loader-contract")
+        self.assertEqual(manifest.defaults["warmup_iterations"], 2)
         self.assertEqual([workload.workload_id for workload in workloads], [
             "module-sub-callable-numbered-contract-str",
             "pattern-subn-callable-named-contract-str",
@@ -335,7 +335,10 @@ class PythonBenchmarkManifestContractTest(unittest.TestCase):
             )
             manifest, workloads = load_manifest(manifest_path)
 
-        self.assertEqual(manifest["manifest_id"], "python-benchmark-nested-constant-contract")
+        self.assertEqual(
+            manifest.manifest_id,
+            "python-benchmark-nested-constant-contract",
+        )
         self.assertEqual([workload.workload_id for workload in workloads], [
             "module-sub-callable-nested-constant-contract-bytes",
         ])

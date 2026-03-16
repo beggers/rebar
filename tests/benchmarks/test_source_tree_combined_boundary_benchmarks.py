@@ -3,6 +3,8 @@ from __future__ import annotations
 import pathlib
 import unittest
 
+from rebar_harness.benchmarks import BenchmarkManifest
+
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 
@@ -291,7 +293,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             ),
             manifest_id="regression-matrix",
             workload_document=find_workload_document(
-                scorecard_case.manifest_documents_by_id["regression-matrix"],
+                scorecard_case.manifests_by_id["regression-matrix"],
                 "regression-parser-bytes-backreference-purged",
             ),
             expected_status="measured",
@@ -334,7 +336,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     expected_phase=case.expected_phase,
                     expected_runner_version=case.expected_runner_version,
                     expected_adapter=case.expected_adapter,
-                    expected_manifest_documents=case.manifest_documents,
+                    expected_manifests=case.manifests,
                     expected_manifest_paths=case.expected_manifest_paths,
                     expected_selection_mode=case.selection_mode,
                     tracked_report_path=TRACKED_REPORT_PATH,
@@ -348,7 +350,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     self,
                     manifest_summary,
                     manifest_record,
-                    manifest_document=case.target_manifest,
+                    manifest=case.target_manifest,
                     manifest_path=case.manifest_path,
                     known_gap_count=manifest_expectation.known_gap_count,
                     selection_mode=case.selection_mode,
@@ -410,7 +412,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
 
     def _assert_source_tree_combined_manifest_slice(
         self,
-        manifest_document: dict[str, object],
+        manifest: BenchmarkManifest,
         scorecard: dict[str, object],
         *,
         expectation: SourceTreeCombinedSliceExpectation,
@@ -419,7 +421,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         expected_workload_ids = expectation.expected_workload_ids
         expected_status = expectation.expected_status
         matched_rows = select_source_tree_combined_slice_rows(
-            manifest_document,
+            manifest,
             expectation,
         )
 
@@ -473,7 +475,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     find_workload_record(scorecard, workload_id),
                     manifest_id=manifest_id,
                     workload_document=find_workload_document(
-                        manifest_document,
+                        manifest,
                         workload_id,
                     ),
                     expected_status=expected_status,
@@ -492,11 +494,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(manifest_summary["known_gap_count"], 0)
         self.assertEqual(
             manifest_summary["measured_workloads"],
-            len(case.target_manifest["workloads"]),
+            len(case.target_manifest.workloads),
         )
         self.assertEqual(
             manifest_summary["workload_count"],
-            len(case.target_manifest["workloads"]),
+            len(case.target_manifest.workloads),
         )
 
         for workload_id in shape_expectation.representative_measured_workload_ids:
@@ -523,7 +525,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
 
     def _assert_source_tree_combined_pattern_group(
         self,
-        manifest_document: dict[str, object],
+        manifest: BenchmarkManifest,
         scorecard: dict[str, object],
         *,
         manifest_id: str,
@@ -538,7 +540,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         pattern_haystacks = expectation.pattern_haystacks
         manifest_rows = [
             workload
-            for workload in manifest_document["workloads"]
+            for workload in manifest.workloads
             if workload.get("pattern") in patterns
         ]
 

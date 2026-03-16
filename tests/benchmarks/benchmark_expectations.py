@@ -10,6 +10,7 @@ from typing import Any
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 from rebar_harness.benchmarks import (
+    BenchmarkManifest,
     COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR,
     PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR,
     determine_phase,
@@ -34,8 +35,8 @@ class SourceTreeBenchmarkCommonCase:
     expected_phase: str
     expected_runner_version: str
     expected_summary: dict[str, int]
-    manifest_documents: list[dict[str, Any]]
-    manifest_documents_by_id: dict[str, dict[str, Any]]
+    manifests: list[BenchmarkManifest]
+    manifests_by_id: dict[str, BenchmarkManifest]
     manifest_paths: list[pathlib.Path]
     manifest_paths_by_id: dict[str, str]
     selected_workload_ids_by_manifest: dict[str, tuple[str, ...]]
@@ -78,8 +79,8 @@ class SourceTreeScorecardCase(SourceTreeBenchmarkCommonCase):
             expected_phase=common_case.expected_phase,
             expected_runner_version=common_case.expected_runner_version,
             expected_summary=common_case.expected_summary,
-            manifest_documents=common_case.manifest_documents,
-            manifest_documents_by_id=common_case.manifest_documents_by_id,
+            manifests=common_case.manifests,
+            manifests_by_id=common_case.manifests_by_id,
             manifest_paths=common_case.manifest_paths,
             manifest_paths_by_id=common_case.manifest_paths_by_id,
             selected_workload_ids_by_manifest=common_case.selected_workload_ids_by_manifest,
@@ -111,7 +112,7 @@ class SourceTreeCombinedCase(SourceTreeBenchmarkCommonCase):
     manifest_expectation: SourceTreeManifestExpectation
     manifest_id: str
     manifest_path: str
-    target_manifest: dict[str, Any]
+    target_manifest: BenchmarkManifest
 
     @classmethod
     def from_common_case(
@@ -121,7 +122,7 @@ class SourceTreeCombinedCase(SourceTreeBenchmarkCommonCase):
         manifest_expectation: SourceTreeManifestExpectation,
         manifest_id: str,
         manifest_path: str,
-        target_manifest: dict[str, Any],
+        target_manifest: BenchmarkManifest,
     ) -> SourceTreeCombinedCase:
         return cls(
             expected_adapter=common_case.expected_adapter,
@@ -129,8 +130,8 @@ class SourceTreeCombinedCase(SourceTreeBenchmarkCommonCase):
             expected_phase=common_case.expected_phase,
             expected_runner_version=common_case.expected_runner_version,
             expected_summary=common_case.expected_summary,
-            manifest_documents=common_case.manifest_documents,
-            manifest_documents_by_id=common_case.manifest_documents_by_id,
+            manifests=common_case.manifests,
+            manifests_by_id=common_case.manifests_by_id,
             manifest_paths=common_case.manifest_paths,
             manifest_paths_by_id=common_case.manifest_paths_by_id,
             selected_workload_ids_by_manifest=common_case.selected_workload_ids_by_manifest,
@@ -1462,14 +1463,14 @@ def _published_full_suite_manifest_paths() -> tuple[pathlib.Path, ...]:
 
 
 @cache
-def _source_tree_manifest_records() -> dict[str, tuple[pathlib.Path, dict[str, Any]]]:
-    records: dict[str, tuple[pathlib.Path, dict[str, Any]]] = {}
+def _source_tree_manifest_records() -> dict[str, tuple[pathlib.Path, BenchmarkManifest]]:
+    records: dict[str, tuple[pathlib.Path, BenchmarkManifest]] = {}
     for path in (_compile_smoke_manifest_path(), *_published_full_suite_manifest_paths()):
-        raw_manifest, _ = load_manifest(path)
-        manifest_id = str(raw_manifest["manifest_id"])
+        manifest, _ = load_manifest(path)
+        manifest_id = manifest.manifest_id
         if manifest_id in records:
             raise AssertionError(f"duplicate benchmark manifest id {manifest_id!r}")
-        records[manifest_id] = (path, raw_manifest)
+        records[manifest_id] = (path, manifest)
     return records
 
 
@@ -1711,23 +1712,23 @@ def _source_tree_manifest_known_gap_counts(
 
 
 def _selected_workload_ids_by_manifest(
-    manifest_documents: list[dict[str, Any]],
+    manifests: list[BenchmarkManifest],
     workloads: list[Any],
 ) -> dict[str, tuple[str, ...]]:
     return {
-        str(manifest["manifest_id"]): tuple(
+        manifest.manifest_id: tuple(
             workload.workload_id
             for workload in workloads
-            if workload.manifest_id == str(manifest["manifest_id"])
+            if workload.manifest_id == manifest.manifest_id
         )
-        for manifest in manifest_documents
+        for manifest in manifests
     }
 
 
 def _build_source_tree_benchmark_common_case(
     *,
     manifest_paths: list[pathlib.Path],
-    manifest_documents: list[dict[str, Any]],
+    manifests: list[BenchmarkManifest],
     workloads: list[Any],
     selected_workload_ids_by_manifest: dict[str, tuple[str, ...]],
     selection_mode: str,
@@ -1750,20 +1751,17 @@ def _build_source_tree_benchmark_common_case(
             expected_summary
             if expected_summary is not None
             else expected_summary_for_manifests(
-                manifest_documents,
+                manifests,
                 selected_workload_ids_by_manifest=selected_workload_ids_by_manifest,
                 manifest_known_gap_counts=manifest_known_gap_counts,
             )
         ),
-        manifest_documents=manifest_documents,
-        manifest_documents_by_id={
-            str(raw_manifest["manifest_id"]): raw_manifest
-            for raw_manifest in manifest_documents
-        },
+        manifests=manifests,
+        manifests_by_id={manifest.manifest_id: manifest for manifest in manifests},
         manifest_paths=manifest_paths,
         manifest_paths_by_id={
-            str(raw_manifest["manifest_id"]): relative_manifest_path(path)
-            for path, raw_manifest in zip(manifest_paths, manifest_documents, strict=True)
+            manifest.manifest_id: relative_manifest_path(path)
+            for path, manifest in zip(manifest_paths, manifests, strict=True)
         },
         selected_workload_ids_by_manifest=selected_workload_ids_by_manifest,
         selection_mode=selection_mode,
@@ -1777,13 +1775,13 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
     case_definition = SOURCE_TREE_SCORECARD_EXPECTATIONS[case_id]
     manifest_ids = case_definition.manifest_ids
     manifest_paths = [manifest_path_for_id(manifest_id) for manifest_id in manifest_ids]
-    raw_manifests, manifest_workloads = load_manifests(manifest_paths)
+    manifests, manifest_workloads = load_manifests(manifest_paths)
     selected_workloads = select_workloads(
         manifest_workloads,
         smoke_only=case_definition.selection_mode == "smoke",
     )
     selected_workload_ids_by_manifest = _selected_workload_ids_by_manifest(
-        raw_manifests,
+        manifests,
         selected_workloads,
     )
     manifest_known_gap_counts = _source_tree_manifest_known_gap_counts(
@@ -1835,7 +1833,7 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
             )
     common_case = _build_source_tree_benchmark_common_case(
         manifest_paths=manifest_paths,
-        manifest_documents=raw_manifests,
+        manifests=manifests,
         workloads=selected_workloads,
         selected_workload_ids_by_manifest=selected_workload_ids_by_manifest,
         selection_mode=case_definition.selection_mode,
@@ -1901,7 +1899,7 @@ def selected_manifest_paths_for_target_manifest(target_manifest_id: str) -> list
 
 
 def expected_summary_for_manifests(
-    manifest_documents: list[dict[str, Any]],
+    manifests: list[BenchmarkManifest],
     *,
     selected_workload_ids_by_manifest: dict[str, tuple[str, ...]] | None = None,
     manifest_known_gap_counts: dict[str, int] | None = None,
@@ -1917,9 +1915,9 @@ def expected_summary_for_manifests(
     workloads: list[dict[str, Any]] = []
     regression_workloads = 0
     selected_manifest_ids: list[str] = []
-    for manifest in manifest_documents:
-        manifest_id = str(manifest["manifest_id"])
-        manifest_workloads = manifest["workloads"]
+    for manifest in manifests:
+        manifest_id = manifest.manifest_id
+        manifest_workloads = manifest.workloads
         if selected_workload_ids is None:
             selected_manifest_workloads = manifest_workloads
         else:
@@ -1937,11 +1935,11 @@ def expected_summary_for_manifests(
         manifest_known_gap_counts
         if manifest_known_gap_counts is not None
         else {
-            str(manifest["manifest_id"]): _source_tree_manifest_known_gap_count(
-                SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[str(manifest["manifest_id"])]
+            manifest.manifest_id: _source_tree_manifest_known_gap_count(
+                SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest.manifest_id]
             )
-            for manifest in manifest_documents
-            if str(manifest["manifest_id"]) in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
+            for manifest in manifests
+            if manifest.manifest_id in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
         }
     )
     known_gap_count = sum(
@@ -1959,11 +1957,11 @@ def expected_summary_for_manifests(
 
 def representative_measured_workload_ids(
     scorecard: dict[str, Any],
-    manifest_document: dict[str, Any],
+    manifest: BenchmarkManifest,
     *,
     extra_workload_ids: tuple[str, ...] = (),
 ) -> list[str]:
-    manifest_id = str(manifest_document["manifest_id"])
+    manifest_id = manifest.manifest_id
     representative_ids: list[str] = []
     manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
     if manifest_expectation is not None:
@@ -1974,7 +1972,7 @@ def representative_measured_workload_ids(
             ),
         )
     _append_unique_workload_ids(representative_ids, extra_workload_ids)
-    for operation in ordered_operations(manifest_document["workloads"]):
+    for operation in ordered_operations(manifest.workloads):
         for workload in scorecard["workloads"]:
             if workload["manifest_id"] != manifest_id:
                 continue
@@ -1989,17 +1987,17 @@ def representative_measured_workload_ids(
 
 def source_tree_combined_case(target_manifest_id: str) -> SourceTreeCombinedCase:
     manifest_paths = selected_manifest_paths_for_target_manifest(target_manifest_id)
-    raw_manifests, workloads = load_manifests(list(manifest_paths))
+    manifests, workloads = load_manifests(list(manifest_paths))
     target_manifest = next(
-        manifest for manifest in raw_manifests if manifest["manifest_id"] == target_manifest_id
+        manifest for manifest in manifests if manifest.manifest_id == target_manifest_id
     )
     selected_workload_ids_by_manifest = _selected_workload_ids_by_manifest(
-        raw_manifests,
+        manifests,
         workloads,
     )
     common_case = _build_source_tree_benchmark_common_case(
         manifest_paths=manifest_paths,
-        manifest_documents=raw_manifests,
+        manifests=manifests,
         workloads=workloads,
         selected_workload_ids_by_manifest=selected_workload_ids_by_manifest,
         selection_mode="full",
@@ -2097,11 +2095,11 @@ def _workload_matches_source_tree_combined_slice(
 
 
 def select_source_tree_combined_slice_rows(
-    manifest_document: dict[str, Any],
+    manifest: BenchmarkManifest,
     expectation: SourceTreeCombinedSliceExpectation,
 ) -> list[dict[str, Any]]:
     return [
         workload
-        for workload in manifest_document["workloads"]
+        for workload in manifest.workloads
         if _workload_matches_source_tree_combined_slice(workload, expectation)
     ]
