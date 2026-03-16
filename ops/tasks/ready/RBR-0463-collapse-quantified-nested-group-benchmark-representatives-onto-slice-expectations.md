@@ -1,6 +1,6 @@
 # RBR-0463: Collapse quantified nested-group benchmark representatives onto slice expectations
 
-Status: blocked
+Status: ready
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -94,3 +94,7 @@ Created: 2026-03-16
 - Blocked on the task-mandated full verification command:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
   - The failures are not caused by the representative cleanup. In this checkout, `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` now run as `measured`, so the suite-wide summary expectations are two known gaps behind the live runner output. That parser-stress benchmark expectation drift is the out-of-scope follow-on already reserved as `RBR-0462`.
+- Reopened on 2026-03-16 after the blocker cleared:
+  - `RBR-0462` has since landed, and the task-mandated full verification command now passes in the current checkout:
+    `PYTHONPATH=python .venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - Verification result on this architecture run: `6 passed, 455 subtests passed in 19.15s`.
