@@ -9,17 +9,17 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-The published correctness slice now covers 967 cases across 107 manifests, and all 967 currently pass; the main benchmark report covers 588 workloads with 579 real `rebar` timings and 9 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity.
+The published correctness slice now covers 967 cases across 107 manifests, and all 967 currently pass; the main benchmark report covers 588 workloads with 581 real `rebar` timings and 7 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- The ready-head task is `RBR-0487`, which should republish the exact nested-group benchmark pair on `nested-group-boundary` as measured source-tree timings instead of explicit known gaps.
+- The ready-head task is `RBR-0489`, which should publish the exact nested grouped-alternation replacement-template pair already anchored on `grouped-alternation-replacement-boundary` so that pair stops existing only as benchmark-only debt and instead appears on the correctness surface.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 588 workloads and carries 9 explicit known-gap workloads.
+- The published benchmark surface is still bounded at 588 workloads and carries 7 explicit known-gap workloads.
 
 ## Compatibility Heuristic
-The published slice is still narrow: all 967 published correctness cases now pass across 107 manifests, while benchmark coverage still runs mainly through the source-tree shim with 9 explicit known gaps.
+The published slice is still narrow: all 967 published correctness cases now pass across 107 manifests, while benchmark coverage still runs mainly through the source-tree shim with 7 explicit known gaps.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -313,7 +313,7 @@ The published slice is still narrow: all 967 published correctness cases now pas
 - Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 107 manifests and 967 cases, and all 967 currently pass, but that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree shim while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
-- A primary benchmark publication: `reports/benchmarks/latest.py` now covers 588 workloads across 30 manifests with 579 real `rebar` timings and 9 explicit known gaps, so the published benchmark surface is still bounded.
+- A primary benchmark publication: `reports/benchmarks/latest.py` now covers 588 workloads across 30 manifests with 581 real `rebar` timings and 7 explicit known gaps, so the published benchmark surface is still bounded.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.
@@ -329,8 +329,8 @@ The published slice is still narrow: all 967 published correctness cases now pas
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The concrete surviving follow-on is `RBR-0489`, which should publish the exact nested grouped-alternation replacement-template pair already anchored on `grouped-alternation-replacement-boundary` by adding `rebar.sub("a((b|c))d", "\\1x", "abdacd")` and `rebar.compile("a(?P<outer>(b|c))d").subn("\\g<outer>x", "acdabd", 1)` to the correctness surface, moving the published correctness report from `967` total / `967` passed / `0` unimplemented across `107` manifests to `969` / `967` / `2` across `108` while the new `nested-group-alternation-replacement-workflows` manifest publishes `2` total / `0` passed / `2` unimplemented.
+- The concrete surviving follow-on is `RBR-0489`, which should publish the exact nested grouped-alternation replacement-template pair already anchored on `grouped-alternation-replacement-boundary` so that pair stops existing only as benchmark-only debt and instead appears on the correctness surface.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
-- The published benchmark surface still carries 9 explicit known-gap workloads, so the tracked benchmark frontier remains materially incomplete.
+- The published benchmark surface still carries 7 explicit known-gap workloads, so the tracked benchmark frontier remains materially incomplete.
