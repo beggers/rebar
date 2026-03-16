@@ -256,6 +256,12 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "named-nested-group-alternation-pattern-fullmatch-str",
         ),
     },
+    "nested-group-alternation-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-template-nested-group-alternation-numbered-outer-str",
+            "pattern-subn-template-nested-group-alternation-named-outer-first-match-only-str",
+        ),
+    },
     "nested-group-replacement-workflows": {
         "representative_case_ids": (
             "module-sub-template-nested-group-numbered-str",
