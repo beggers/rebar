@@ -1,24 +1,24 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
 import re
 
 import pytest
 
 from rebar_harness.correctness import (
     FixtureCase,
-    FixtureManifest,
     OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR,
-    load_fixture_manifest,
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
+    FixtureBundle,
+    assert_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_parity,
     case_pattern,
     compile_with_cpython_parity,
+    load_fixture_bundle,
+    published_fixture_paths_from_bundles,
 )
 PUBLISHED_FIXTURE_PATHS = select_correctness_fixture_paths(
     OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR
@@ -253,34 +253,8 @@ SUPPLEMENTAL_REPEATED_REPLACEMENT_CASES = (
 )
 
 
-@dataclass(frozen=True)
-class FixtureBundle:
-    manifest: FixtureManifest
-    cases: tuple[FixtureCase, ...]
-    expected_manifest_id: str
-    expected_case_ids: frozenset[str]
-    expected_patterns: frozenset[str]
-
-
-def _fixture_bundle(
-    fixture_name: str,
-    *,
-    expected_manifest_id: str,
-    expected_case_ids: frozenset[str],
-    expected_patterns: frozenset[str],
-) -> FixtureBundle:
-    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
-    return FixtureBundle(
-        manifest=manifest,
-        cases=tuple(cases),
-        expected_manifest_id=expected_manifest_id,
-        expected_case_ids=expected_case_ids,
-        expected_patterns=expected_patterns,
-    )
-
-
 FIXTURE_BUNDLES = (
-    _fixture_bundle(
+    load_fixture_bundle(
         "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
         expected_manifest_id=(
             "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows"
@@ -303,8 +277,9 @@ FIXTURE_BUNDLES = (
                 r"a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    _fixture_bundle(
+    load_fixture_bundle(
         "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
         expected_manifest_id=(
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows"
@@ -327,8 +302,9 @@ FIXTURE_BUNDLES = (
                 r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    _fixture_bundle(
+    load_fixture_bundle(
         "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
         expected_manifest_id=(
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-replacement-workflows"
@@ -351,6 +327,7 @@ FIXTURE_BUNDLES = (
                 r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
             }
         ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
 )
 PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
@@ -400,9 +377,7 @@ def _search_match_for_case(
 
 
 def test_replacement_template_parity_suite_uses_expected_published_fixture_paths() -> None:
-    assert PUBLISHED_FIXTURE_PATHS == tuple(
-        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
-    )
+    assert PUBLISHED_FIXTURE_PATHS == published_fixture_paths_from_bundles(FIXTURE_BUNDLES)
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
 
@@ -414,14 +389,7 @@ def test_replacement_template_parity_suite_uses_expected_published_fixture_paths
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     bundle: FixtureBundle,
 ) -> None:
-    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
-    assert len(bundle.cases) == len(bundle.expected_case_ids)
-    assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
-    assert {case_pattern(case) for case in bundle.cases} == bundle.expected_patterns
-    assert {case.text_model for case in bundle.cases} == {"str"}
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        EXPECTED_OPERATION_HELPER_COUNTS
-    )
+    assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
 
 
 @pytest.mark.parametrize("pattern", COMPILE_PATTERNS)
