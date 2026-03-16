@@ -338,6 +338,16 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "named-optional-group-alternation-pattern-fullmatch-absent-str",
         ),
     ),
+    "optional-group-conditional-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
+            "optional-group-conditional-compile-metadata-str",
+            "optional-group-conditional-module-search-present-str",
+            "optional-group-conditional-pattern-fullmatch-absent-str",
+            "named-optional-group-conditional-compile-metadata-str",
+            "named-optional-group-conditional-module-search-present-str",
+            "named-optional-group-conditional-pattern-fullmatch-absent-str",
+        ),
+    ),
     "conditional-group-exists-workflows": CorrectnessScorecardManifestExpectation(
         representative_case_ids=(
             "conditional-group-exists-compile-metadata-str",

@@ -116,6 +116,7 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR = {
         "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
         "optional_group_alternation_workflows.py",
         "optional_group_alternation_branch_local_backreference_workflows.py",
+        "optional_group_conditional_workflows.py",
         "conditional_group_exists_workflows.py",
         "conditional_group_exists_no_else_workflows.py",
         "conditional_group_exists_no_else_alternation_workflows.py",
