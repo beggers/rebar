@@ -1,6 +1,6 @@
 # RBR-0468: Publish the IGNORECASE|ASCII literal helper pair on the shared literal-flag correctness surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -37,3 +37,9 @@ Created: 2026-03-16
 - 2026-03-16 planning probe: in the current checkout, `re.search("abc", "ABC", re.IGNORECASE | re.ASCII)` and `re.compile("abc", re.IGNORECASE | re.ASCII).search("ABC")` both return a match with span `(0, 3)`, while `rebar.search("abc", "ABC", rebar.IGNORECASE | rebar.ASCII)` raises `NotImplementedError: rebar.search() is a scaffold placeholder; the \`re\`-compatible API is not implemented yet` and `rebar.compile("abc", rebar.IGNORECASE | rebar.ASCII).search("ABC")` raises `NotImplementedError: rebar.Pattern.search() is a scaffold placeholder; compiled pattern semantics are not implemented yet`.
 - 2026-03-16 planning probe: the tracked `reports/correctness/latest.py` artifact currently reports `961` total cases with `961` passes and `0` unimplemented outcomes, and the existing `literal.flag.workflow` suite reports `11` total cases with `11` passes, so this task should make the two existing `IGNORECASE|ASCII` helper gaps visible as honest correctness debt instead of leaving them unpublished.
 - The immediate follow-on after this publication should stay on the same exact helper pair: first Rust-backed parity for the published `IGNORECASE|ASCII` cases, then source-tree benchmark catch-up against the already-existing gap rows.
+
+## Completion
+- 2026-03-16: Added only the two exact `IGNORECASE|ASCII` `str` search cases to `tests/conformance/fixtures/literal_flag_workflows.py`, kept them on the shared `literal.flag.workflow` manifest, and exposed both case ids through the combined representative-case expectations.
+- 2026-03-16: Updated `tests/python/test_literal_flag_parity_suite.py` so the new ASCII case ids are part of the selected published frontier and fixture-bucket coverage while remaining outside the direct successful `IGNORECASE` parity parametrizations; the suite now exercises them only through placeholder-oriented module and compiled-pattern checks.
+- 2026-03-16: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_literal_flag_parity_suite.py tests/conformance/test_correctness_fixture_inventory_contract.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/literal_flag_workflows.py --report .rebar/tmp/rbr-0468-literal-flags.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
+- 2026-03-16: Republished the tracked correctness scorecard at `reports/correctness/latest.py`; the tracked diff includes that file, and the regenerated artifact now reports `963` total cases, `961` passes, `0` failures, and `2` unimplemented across `107` manifests, while `literal.flag.workflow` now reports `13` total cases, `11` passes, and `2` unimplemented.

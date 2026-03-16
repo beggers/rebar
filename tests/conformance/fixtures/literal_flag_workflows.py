@@ -33,6 +33,18 @@ MANIFEST = {
       ]
     },
     {
+      "id": "flag-module-search-ignorecase-ascii-str-hit",
+      "operation": "module_call",
+      "family": "literal_ignorecase_workflow",
+      "helper": "search",
+      "args": ["abc", "ABC", 258],
+      "flags": 258,
+      "categories": ["workflow", "flag", "ignorecase", "ascii", "literal", "module", "search", "str", "hit"],
+      "notes": [
+        "Publishes the exact module-level IGNORECASE|ASCII literal search helper already anchored as benchmark debt."
+      ]
+    },
+    {
       "id": "flag-module-fullmatch-ignorecase-bytes-hit",
       "operation": "module_call",
       "family": "literal_ignorecase_workflow",
@@ -68,6 +80,19 @@ MANIFEST = {
       "categories": ["workflow", "flag", "ignorecase", "literal", "pattern", "search", "str", "hit"],
       "notes": [
         "Compiles with IGNORECASE and exercises the bound Pattern.search path on str input."
+      ]
+    },
+    {
+      "id": "flag-pattern-search-ignorecase-ascii-str-hit",
+      "operation": "pattern_call",
+      "family": "literal_ignorecase_workflow",
+      "pattern": "abc",
+      "helper": "search",
+      "args": ["ABC"],
+      "flags": 258,
+      "categories": ["workflow", "flag", "ignorecase", "ascii", "literal", "pattern", "search", "str", "hit"],
+      "notes": [
+        "Publishes the exact compiled IGNORECASE|ASCII literal search helper already anchored as benchmark debt."
       ]
     },
     {

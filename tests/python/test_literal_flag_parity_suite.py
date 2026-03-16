@@ -30,7 +30,6 @@ from tests.python.published_case_handoffs import LITERAL_FLAG_DELEGATED_CASE_IDS
 
 IGNORECASE_FLAGS = int(rebar.IGNORECASE)
 UNICODE_FLAGS = int(rebar.UNICODE)
-ASCII_FLAGS = int(rebar.ASCII)
 LOCALE_FLAGS = int(rebar.LOCALE)
 IGNORECASE_UNICODE_FLAGS = IGNORECASE_FLAGS | UNICODE_FLAGS
 
@@ -165,8 +164,10 @@ class _FakeNativeBoundary(RecordingNativeBoundary):
 TARGET_FIXTURE_CASE_IDS = (
     "flag-module-search-ignorecase-str-hit",
     "flag-module-search-ignorecase-str-miss",
+    "flag-module-search-ignorecase-ascii-str-hit",
     "flag-module-fullmatch-ignorecase-bytes-hit",
     "flag-pattern-search-ignorecase-str-hit",
+    "flag-pattern-search-ignorecase-ascii-str-hit",
     "flag-pattern-match-ignorecase-bytes-hit",
     "flag-pattern-fullmatch-ignorecase-str-miss",
     "flag-cache-hit-bytes-ignorecase",
@@ -182,9 +183,9 @@ SELECTED_CASE_BUNDLE_SPECS = (
         expected_patterns=frozenset({"abc", "AbC", "(?i)abc", b"abc", b"AbC"}),
         expected_operation_helper_counts=Counter(
             {
-                ("module_call", "search"): 4,
+                ("module_call", "search"): 5,
                 ("module_call", "fullmatch"): 1,
-                ("pattern_call", "search"): 1,
+                ("pattern_call", "search"): 2,
                 ("pattern_call", "match"): 1,
                 ("pattern_call", "fullmatch"): 1,
                 ("cache_workflow", None): 1,
@@ -225,6 +226,12 @@ LITERAL_FLAG_DIRECT_TEST_CASE_ID_BUCKETS = {
         {
             "flag-unsupported-inline-flag-search",
             "flag-unsupported-locale-bytes-search",
+        }
+    ),
+    "ascii-placeholder": frozenset(
+        {
+            "flag-module-search-ignorecase-ascii-str-hit",
+            "flag-pattern-search-ignorecase-ascii-str-hit",
         }
     ),
 }
@@ -330,6 +337,12 @@ PATTERN_IGNORECASE_CASES = (
     ),
 )
 
+ASCII_PLACEHOLDER_MODULE_CASE = _module_case_from_fixture(
+    LITERAL_FLAG_CASES_BY_ID["flag-module-search-ignorecase-ascii-str-hit"]
+)
+ASCII_PLACEHOLDER_PATTERN_CASE = _pattern_case_from_fixture(
+    LITERAL_FLAG_CASES_BY_ID["flag-pattern-search-ignorecase-ascii-str-hit"]
+)
 INLINE_NATIVE_MODULE_CASE = _module_case_from_fixture(
     LITERAL_FLAG_CASES_BY_ID["flag-unsupported-inline-flag-search"]
 )
@@ -489,25 +502,33 @@ def test_literal_flag_compile_cache_reuse_and_distinct_entries_stay_explicit() -
     assert bytes_flagged_pattern is bytes_flagged_again
 
 
-def test_literal_flag_unsupported_paths_keep_placeholder_messages() -> None:
+def test_literal_flag_ascii_module_paths_keep_placeholder_messages() -> None:
     with pytest.raises(
         NotImplementedError,
         match=r"rebar\.search\(\) is a scaffold placeholder",
     ):
-        rebar.search("abc", "ABC", IGNORECASE_FLAGS | ASCII_FLAGS)
+        _call_module_helper(rebar, ASCII_PLACEHOLDER_MODULE_CASE)
 
+
+def test_literal_flag_ascii_compiled_paths_keep_placeholder_messages() -> None:
+    unsupported_pattern = rebar.compile(
+        ASCII_PLACEHOLDER_PATTERN_CASE.pattern,
+        ASCII_PLACEHOLDER_PATTERN_CASE.flags,
+    )
+
+    with pytest.raises(
+        NotImplementedError,
+        match=r"rebar\.Pattern\.search\(\) is a scaffold placeholder",
+    ):
+        _call_pattern_helper(unsupported_pattern, ASCII_PLACEHOLDER_PATTERN_CASE)
+
+
+def test_literal_flag_other_unsupported_paths_keep_placeholder_messages() -> None:
     with pytest.raises(
         NotImplementedError,
         match=r"rebar\.findall\(\) is a scaffold placeholder",
     ):
         rebar.findall("abc", "ABC", IGNORECASE_FLAGS)
-
-    unsupported_pattern = rebar.compile("abc", IGNORECASE_FLAGS | ASCII_FLAGS)
-    with pytest.raises(
-        NotImplementedError,
-        match=r"rebar\.Pattern\.search\(\) is a scaffold placeholder",
-    ):
-        unsupported_pattern.search("ABC")
 
 
 @pytest.mark.parametrize("case", NATIVE_MODULE_PARITY_CASES, ids=lambda case: case.id)

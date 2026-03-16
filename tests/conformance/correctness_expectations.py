@@ -116,6 +116,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
     "literal-flag-workflows": {
         "representative_case_ids": (
             "flag-module-search-ignorecase-str-hit",
+            "flag-module-search-ignorecase-ascii-str-hit",
+            "flag-pattern-search-ignorecase-ascii-str-hit",
             "flag-pattern-fullmatch-ignorecase-str-miss",
             "flag-pattern-match-ignorecase-bytes-hit",
             "flag-cache-distinct-str-normalized",
