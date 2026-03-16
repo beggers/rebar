@@ -477,6 +477,36 @@ def test_literal_collection_matrix_split_matches_cpython(
         pytest.param("bytes", id="bytes"),
     ),
 )
+def test_literal_collection_matrix_module_split_accepts_compiled_patterns(
+    regex_backend: tuple[str, object],
+    text_model: str,
+) -> None:
+    backend_name, backend = regex_backend
+    patterns, strings = _literal_collection_matrix_payloads(text_model)
+
+    for pattern in patterns:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+        )
+        for string in strings:
+            for maxsplit in _LITERAL_MATRIX_SPLIT_COUNTS:
+                observed_module = backend.split(observed_pattern, string, maxsplit)
+                expected_module = re.split(expected_pattern, string, maxsplit)
+                assert observed_module == expected_module, (
+                    f"{backend_name} compiled-pattern module split mismatch for "
+                    f"pattern={pattern!r}, string={string!r}, maxsplit={maxsplit}"
+                )
+
+
+@pytest.mark.parametrize(
+    "text_model",
+    (
+        pytest.param("str", id="str"),
+        pytest.param("bytes", id="bytes"),
+    ),
+)
 def test_literal_collection_matrix_findall_and_finditer_match_cpython(
     regex_backend: tuple[str, object],
     text_model: str,
@@ -555,6 +585,48 @@ def test_literal_collection_matrix_findall_and_finditer_match_cpython(
                         f"{backend_name} pattern finditer mismatch for pattern={pattern!r}, "
                         f"string={string!r}, pos={pos}, endpos={endpos}"
                     ) from exc
+
+
+@pytest.mark.parametrize(
+    "text_model",
+    (
+        pytest.param("str", id="str"),
+        pytest.param("bytes", id="bytes"),
+    ),
+)
+def test_literal_collection_matrix_module_find_helpers_accept_compiled_patterns(
+    regex_backend: tuple[str, object],
+    text_model: str,
+) -> None:
+    backend_name, backend = regex_backend
+    patterns, strings = _literal_collection_matrix_payloads(text_model)
+
+    for pattern in patterns:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+        )
+        for string in strings:
+            observed_module_findall = backend.findall(observed_pattern, string)
+            expected_module_findall = re.findall(expected_pattern, string)
+            assert observed_module_findall == expected_module_findall, (
+                f"{backend_name} compiled-pattern module findall mismatch for "
+                f"pattern={pattern!r}, string={string!r}"
+            )
+
+            try:
+                assert_finditer_parity(
+                    backend_name,
+                    backend.finditer(observed_pattern, string),
+                    re.finditer(expected_pattern, string),
+                    check_regs=True,
+                )
+            except AssertionError as exc:
+                raise AssertionError(
+                    f"{backend_name} compiled-pattern module finditer mismatch for "
+                    f"pattern={pattern!r}, string={string!r}"
+                ) from exc
 
 
 @pytest.mark.parametrize("case", TYPE_ERROR_CASES, ids=lambda case: case.id)
