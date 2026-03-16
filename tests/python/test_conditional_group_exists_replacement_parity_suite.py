@@ -254,6 +254,11 @@ FIXTURE_BUNDLES = (
 )
 
 REPLACEMENT_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
+TEMPLATE_REPLACEMENT_CASES = next(
+    bundle.cases
+    for bundle in FIXTURE_BUNDLES
+    if bundle.expected_manifest_id == "conditional-group-exists-replacement-template-workflows"
+)
 
 
 def _case_string(case: FixtureCase) -> str:
@@ -261,6 +266,13 @@ def _case_string(case: FixtureCase) -> str:
     string = case.args[text_index]
     assert isinstance(string, str)
     return string
+
+
+def _replacement_template(case: FixtureCase) -> str:
+    template_index = 1 if case.operation == "module_call" else 0
+    template = case.args[template_index]
+    assert isinstance(template, str)
+    return template
 
 
 def _replacement_args(
@@ -385,6 +397,25 @@ def test_replacement_match_capture_and_expand_matches_cpython(
         check_regs=True,
     )
     assert_match_convenience_api_parity(observed_match, expected_match)
+
+
+@pytest.mark.parametrize("case", TEMPLATE_REPLACEMENT_CASES, ids=lambda case: case.case_id)
+def test_replacement_template_match_expand_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_match, expected_match = _search_match_for_case(
+        backend_name,
+        backend,
+        case,
+    )
+
+    observed = observed_match.expand(_replacement_template(case))
+    expected = expected_match.expand(_replacement_template(case))
+
+    assert type(observed) is type(expected)
+    assert observed == expected
 
 
 @pytest.mark.parametrize("case", REPLACEMENT_CASES, ids=lambda case: case.case_id)
