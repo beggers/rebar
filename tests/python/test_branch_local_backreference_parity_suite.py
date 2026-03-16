@@ -23,7 +23,6 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
-    load_published_fixture_cases,
     load_whole_manifest_fixture_bundles,
     published_fixture_paths_from_bundles,
     str_case_pattern,
@@ -603,9 +602,8 @@ SUPPLEMENTAL_MISS_CASES = (
         text="accccccd",
     ),
 )
-MATCH_GROUP_ACCESS_CASES = load_published_fixture_cases(
-    PUBLISHED_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATHS,
-    MATCH_GROUP_ACCESS_CASE_IDS,
+MATCH_GROUP_ACCESS_CASES = tuple(
+    CASES_BY_ID[case_id] for case_id in MATCH_GROUP_ACCESS_CASE_IDS
 )
 
 

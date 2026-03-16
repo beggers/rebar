@@ -21,9 +21,9 @@ from tests.python.fixture_parity_support import (
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
     fixture_cases_from_bundles,
-    load_published_fixture_cases,
     load_selected_case_fixture_bundles,
     published_fixture_paths_from_bundles,
+    select_published_fixture_cases_from_bundles,
     str_case_pattern,
 )
 PUBLISHED_GROUPED_CAPTURE_FIXTURE_PATHS = select_correctness_fixture_paths(
@@ -480,8 +480,8 @@ PATTERN_BOUNDS_NO_MATCH_CASES = (
         bounds=(-100, 999),
     ),
 )
-MATCH_GROUP_ACCESS_CASES = load_published_fixture_cases(
-    PUBLISHED_GROUPED_CAPTURE_FIXTURE_PATHS,
+MATCH_GROUP_ACCESS_CASES = select_published_fixture_cases_from_bundles(
+    FIXTURE_BUNDLES,
     MATCH_GROUP_ACCESS_CASE_IDS,
 )
 

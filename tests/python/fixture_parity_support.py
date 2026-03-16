@@ -247,6 +247,56 @@ def load_published_fixture_cases(
     return tuple(case_by_id[case_id] for case_id in requested_case_ids)
 
 
+def select_published_fixture_cases_from_bundles(
+    bundles: Iterable[FixtureBundle],
+    case_ids: Iterable[str],
+) -> tuple[FixtureCase, ...]:
+    requested_case_ids = tuple(case_ids)
+    selected_case_ids = frozenset(requested_case_ids)
+    case_by_id: dict[str, FixtureCase] = {}
+    duplicate_case_ids: set[str] = set()
+
+    for bundle in bundles:
+        raw_cases = bundle.manifest.raw.get("cases", [])
+        if not isinstance(raw_cases, list):
+            raise ValueError(
+                "fixture manifest raw cases must be a list for ordered published "
+                f"case selection: {bundle.manifest.manifest_id!r}"
+            )
+
+        for raw_case in raw_cases:
+            if not isinstance(raw_case, dict) or "id" not in raw_case:
+                continue
+            case_id = str(raw_case["id"])
+            if case_id not in selected_case_ids:
+                continue
+            if case_id in case_by_id:
+                duplicate_case_ids.add(case_id)
+                continue
+            case_by_id[case_id] = FixtureCase.from_dict(bundle.manifest, raw_case)
+
+    ordered_case_ids = tuple(dict.fromkeys(requested_case_ids))
+    ordered_duplicate_case_ids = tuple(
+        case_id for case_id in ordered_case_ids if case_id in duplicate_case_ids
+    )
+    if ordered_duplicate_case_ids:
+        raise ValueError(
+            "selected published bundle cases contain duplicate case ids: "
+            f"{ordered_duplicate_case_ids}"
+        )
+
+    missing_case_ids = tuple(
+        case_id for case_id in ordered_case_ids if case_id not in case_by_id
+    )
+    if missing_case_ids:
+        raise ValueError(
+            "selected published bundle cases are missing case ids: "
+            f"{missing_case_ids}"
+        )
+
+    return tuple(case_by_id[case_id] for case_id in requested_case_ids)
+
+
 def assert_fixture_bundle_contract(
     bundle: FixtureBundle,
     *,

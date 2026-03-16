@@ -18,9 +18,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
-    load_published_fixture_cases,
     load_whole_manifest_fixture_bundles,
-    published_fixture_paths_from_bundles,
     str_case_pattern,
 )
 QUANTIFIED_ALTERNATION_NUMBERED_PATTERN = r"a(b)?c(?(1)(de|df)|(eg|eh)){2}"
@@ -237,6 +235,7 @@ FIXTURE_BUNDLE_SPECS = (
 )
 FIXTURE_BUNDLES = load_whole_manifest_fixture_bundles(FIXTURE_BUNDLE_SPECS)
 PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
+CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
 COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
 MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
 PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
@@ -250,10 +249,7 @@ MATCH_API_CASE_IDS = (
     "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
     "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
 )
-MATCH_API_CASES = load_published_fixture_cases(
-    published_fixture_paths_from_bundles(FIXTURE_BUNDLES),
-    MATCH_API_CASE_IDS,
-)
+MATCH_API_CASES = tuple(CASES_BY_ID[case_id] for case_id in MATCH_API_CASE_IDS)
 
 # Preserve the extra module.fullmatch mixed-iteration checks that only lived in
 # the superseded singleton files and were never promoted into scorecard fixtures.

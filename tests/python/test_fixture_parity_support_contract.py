@@ -51,6 +51,7 @@ from tests.python.fixture_parity_support import (
     published_fixture_bundle_by_manifest_id,
     published_fixture_paths_from_bundles,
     raw_fixture_cases_by_id,
+    select_published_fixture_cases_from_bundles,
     str_case_pattern,
 )
 OPTIONAL_NAMED_GROUP_PATTERN = r"a(?P<word>b)?d"
@@ -458,6 +459,82 @@ def test_published_fixture_case_selection_rejects_duplicate_case_ids() -> None:
     ):
         load_published_fixture_cases(
             (grouped_match_fixture_path, grouped_match_fixture_path),
+            (duplicate_case_id,),
+        )
+
+
+def test_bundle_backed_published_fixture_case_selection_preserves_requested_order(
+) -> None:
+    bundles = load_selected_case_fixture_bundles(
+        (
+            SelectedCaseBundleSpec(
+                fixture_name="grouped_match_workflows.py",
+                expected_manifest_id="grouped-match-workflows",
+                selected_case_ids=("grouped-module-fullmatch-two-capture-gap-str",),
+                expected_patterns=frozenset({r"(ab)(c)"}),
+                expected_operation_helper_counts=Counter(
+                    {("module_call", "fullmatch"): 1}
+                ),
+                expected_text_models=frozenset({"str"}),
+            ),
+            SelectedCaseBundleSpec(
+                fixture_name="named_group_workflows.py",
+                expected_manifest_id="named-group-workflows",
+                selected_case_ids=("named-group-compile-metadata-str",),
+                expected_patterns=frozenset({r"(?P<word>abc)"}),
+                expected_operation_helper_counts=Counter({("compile", None): 1}),
+                expected_text_models=frozenset({"str"}),
+            ),
+        )
+    )
+    selected_case_ids = (
+        "named-group-pattern-search-metadata-str",
+        "grouped-module-search-single-capture-str",
+        "grouped-pattern-fullmatch-two-capture-gap-str",
+    )
+
+    cases = select_published_fixture_cases_from_bundles(bundles, selected_case_ids)
+
+    assert tuple(case.case_id for case in cases) == selected_case_ids
+    assert tuple(case.manifest_id for case in cases) == (
+        "named-group-workflows",
+        "grouped-match-workflows",
+        "grouped-match-workflows",
+    )
+
+
+def test_bundle_backed_published_fixture_case_selection_rejects_missing_case_ids() -> None:
+    bundles = load_selected_case_fixture_bundles((_selected_case_bundle_specs()[1],))
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "selected published bundle cases are missing case ids: ('missing-case-id',)"
+        ),
+    ):
+        select_published_fixture_cases_from_bundles(
+            bundles,
+            (
+                "grouped-module-search-single-capture-str",
+                "missing-case-id",
+            ),
+        )
+
+
+def test_bundle_backed_published_fixture_case_selection_rejects_duplicate_case_ids(
+) -> None:
+    duplicate_case_id = "grouped-module-search-single-capture-str"
+    bundles = load_selected_case_fixture_bundles((_selected_case_bundle_specs()[1],))
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "selected published bundle cases contain duplicate case ids: "
+            f"({duplicate_case_id!r},)"
+        ),
+    ):
+        select_published_fixture_cases_from_bundles(
+            (bundles[0], bundles[0]),
             (duplicate_case_id,),
         )
 

@@ -1,6 +1,6 @@
 # RBR-0448: Retire the last parity published-fixture case reloads
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -56,3 +56,8 @@ Created: 2026-03-16
   - `tests/python/test_branch_local_backreference_parity_suite.py`
   - `tests/python/test_conditional_group_exists_quantified_parity_suite.py`
 - The helper should remain covered by `tests/python/test_fixture_parity_support_contract.py`, but parity suites that already hold `PUBLISHED_CASES` in memory should not keep re-reading the same fixture files just to rebuild a small ordered subset.
+
+## Completion
+- 2026-03-16: Replaced the last three parity-suite `load_published_fixture_cases(...)` call sites with ordered selection from already-loaded fixture data, keeping the branch-local and quantified-conditional suites on their existing `PUBLISHED_CASES`/`CASES_BY_ID` maps and switching the grouped-capture suite to a new bundle-backed selector for already-loaded manifest raws.
+- 2026-03-16: Added focused helper-contract coverage for ordered selection from already-loaded bundle manifests, verified `rg -n 'load_published_fixture_cases\\(' tests/python/test_grouped_capture_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_conditional_group_exists_quantified_parity_suite.py` returned no matches, and `rg -n 'load_published_fixture_cases\\(' tests/python/*.py` now shows only `tests/python/fixture_parity_support.py` plus `tests/python/test_fixture_parity_support_contract.py`.
+- 2026-03-16: Verified `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_grouped_capture_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_conditional_group_exists_quantified_parity_suite.py` passed (`892 passed in 0.68s`).
