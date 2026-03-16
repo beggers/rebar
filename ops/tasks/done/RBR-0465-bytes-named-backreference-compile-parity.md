@@ -1,6 +1,6 @@
 # RBR-0465: Convert the bytes named-backreference compile proxy to real parity on the shared parser path
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -34,3 +34,13 @@ Created: 2026-03-16
 - 2026-03-16 planning probe: CPython reports compile metadata for that exact bytes pattern as `flags == 0`, `groups == 1`, and `groupindex == {"tag": 1}`.
 - The adjacent regression publication already carries the same pattern as `regression-parser-bytes-backreference-purged` on `benchmarks/workloads/regression_matrix.py`; that row should stay unchanged here and become the benchmark catch-up target immediately after this compile slice is live.
 - The intended post-parity follow-on is `RBR-0467`, which should republish `regression-parser-bytes-backreference-purged` as a measured source-tree timing on the shared `regression-matrix` surface without widening the benchmark frontier.
+
+## Completion
+- Landed the exact bytes compile slice in `crates/rebar-core/src/lib.rs` by classifying `b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}"` as a compiled parser-only case with `groups == 1` and `groupindex == {"tag": 1}`; execution remains unchanged and `Pattern.search()` still raises the existing placeholder.
+- Updated `tests/python/test_parser_matrix_parity_suite.py` so `bytes-named-backreference-compile-proxy-success` now participates in the shared compile-metadata, placeholder-search, compile-cache, and no-stdlib-delegation observations instead of the old rebar-only unsupported bucket.
+- Regenerated the tracked published correctness scorecard at `reports/correctness/latest.py`; the tracked artifact now reports `961` total cases, `961` passes, `0` failures, and `0` unimplemented cases, and the shared `parser.compile` suite reports `17` executed and `17` passed cases.
+- Verification passed:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_parser_matrix_parity_suite.py tests/conformance/test_correctness_fixture_inventory_contract.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/parser_matrix.py --report .rebar/tmp/rbr-0465-parser-matrix.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

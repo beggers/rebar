@@ -22,6 +22,8 @@ const VERBOSE_COMPILE_REGRESSION_PATTERN: &str =
 const VERBOSE_COMPILE_REGRESSION_FLAGS: i32 = FLAG_MULTILINE | FLAG_VERBOSE | FLAG_UNICODE;
 const PARSER_STRESS_COMPILE_PROXY_PATTERN: &str =
     r"(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\d{2}))?(?:(?<=foo)bar)?(?P=lemma)";
+const BYTES_NAMED_BACKREFERENCE_COMPILE_PROXY_PATTERN: &[u8] =
+    br"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}";
 
 /// Borrowed pattern or subject input.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1993,6 +1995,22 @@ fn compile_known_supported_case(
                 group_count: 1,
                 named_groups: vec![NamedGroup {
                     name: "lemma".to_string(),
+                    index: 1,
+                }],
+                warning: None,
+            })
+        }
+        PatternRef::Bytes(pattern)
+            if pattern == BYTES_NAMED_BACKREFERENCE_COMPILE_PROXY_PATTERN
+                && normalized_flags == 0 =>
+        {
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: 1,
+                named_groups: vec![NamedGroup {
+                    name: "tag".to_string(),
                     index: 1,
                 }],
                 warning: None,

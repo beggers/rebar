@@ -139,6 +139,7 @@ COMPILE_METADATA_CASES = tuple(
         "str-fixed-width-lookbehind-success",
         "str-parser-stress-compile-proxy-success",
         "str-inline-unicode-flag-success",
+        "bytes-named-backreference-compile-proxy-success",
         "bytes-inline-locale-flag-success",
     )
 )
@@ -151,6 +152,7 @@ PLACEHOLDER_SEARCH_CASES = tuple(
         "str-fixed-width-lookbehind-success",
         "str-parser-stress-compile-proxy-success",
         "str-inline-unicode-flag-success",
+        "bytes-named-backreference-compile-proxy-success",
         "bytes-inline-locale-flag-success",
         "str-nested-set-warning",
     )
@@ -163,6 +165,7 @@ REPEATED_COMPILE_CACHE_CASES = tuple(
         "str-fixed-width-lookbehind-success",
         "str-parser-stress-compile-proxy-success",
         "str-inline-unicode-flag-success",
+        "bytes-named-backreference-compile-proxy-success",
         "bytes-inline-locale-flag-success",
     )
 )
@@ -177,10 +180,6 @@ DIAGNOSTIC_CASES = tuple(
         "bytes-unicode-escape-error",
     )
 )
-UNIMPLEMENTED_COMPILE_CASES = tuple(
-    PARSER_MATRIX_CASES_BY_ID[case_id]
-    for case_id in ("bytes-named-backreference-compile-proxy-success",)
-)
 NO_STDLIB_DELEGATION_CASES = tuple(
     PARSER_MATRIX_CASES_BY_ID[case_id]
     for case_id in (
@@ -191,6 +190,7 @@ NO_STDLIB_DELEGATION_CASES = tuple(
         "str-parser-stress-compile-proxy-success",
         "str-variable-width-lookbehind-error",
         "str-inline-unicode-flag-success",
+        "bytes-named-backreference-compile-proxy-success",
         "bytes-inline-locale-flag-success",
     )
 )
@@ -205,6 +205,7 @@ PLACEHOLDER_SEARCH_SUBJECTS = {
     "str-fixed-width-lookbehind-success": "abc",
     "str-parser-stress-compile-proxy-success": "lemma_12barlemma",
     "str-inline-unicode-flag-success": "a",
+    "bytes-named-backreference-compile-proxy-success": b"AA-AA",
     "bytes-inline-locale-flag-success": b"a",
     "str-nested-set-warning": "[[a]",
 }
@@ -215,7 +216,6 @@ PARSER_MATRIX_DIRECT_TEST_CASE_ID_BUCKETS = {
     "ignorecase-cache-normalization": frozenset({CHARACTER_CLASS_CASE.case_id}),
     "compile-cache": _case_ids(REPEATED_COMPILE_CACHE_CASES),
     "compile-diagnostics": _case_ids(DIAGNOSTIC_CASES),
-    "compile-unimplemented": _case_ids(UNIMPLEMENTED_COMPILE_CASES),
     "no-stdlib-delegation": _case_ids(NO_STDLIB_DELEGATION_CASES),
 }
 
@@ -445,32 +445,6 @@ def test_compile_diagnostics_match_cpython(
         assert actual_error.pos is None
         assert actual_error.lineno is None
         assert actual_error.colno is None
-
-
-@pytest.mark.parametrize(
-    "case",
-    UNIMPLEMENTED_COMPILE_CASES,
-    ids=lambda case: case.case_id,
-)
-def test_published_unimplemented_compile_rows_keep_cpython_metadata_and_rebar_placeholder(
-    rebar_backend: object,
-    case: FixtureCase,
-) -> None:
-    pattern = case_pattern(case)
-    flags = case.flags or 0
-    expected = re.compile(pattern, flags)
-
-    assert isinstance(pattern, bytes)
-    assert expected.pattern == pattern
-    assert expected.flags == 0
-    assert expected.groups == 1
-    assert expected.groupindex == {"tag": 1}
-
-    with pytest.raises(
-        NotImplementedError,
-        match=r"rebar\.compile\(\) is a scaffold placeholder",
-    ):
-        rebar_backend.compile(pattern, flags)
 
 
 @pytest.mark.parametrize(
