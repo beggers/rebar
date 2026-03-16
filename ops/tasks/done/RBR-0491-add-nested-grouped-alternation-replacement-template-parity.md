@@ -1,6 +1,6 @@
 # RBR-0491: Add nested grouped-alternation replacement-template parity on the shared grouped replacement pytest path
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -40,3 +40,5 @@ Created: 2026-03-16
 - Build on `RBR-0489`, `RBR-0389`, `RBR-0393`, and the existing grouped replacement pytest surface in `tests/python/test_grouped_literal_replacement_template.py`.
 - The current grouped replacement parity module already owns the adjacent grouped, nested-group, and quantified nested-group replacement-template fixtures, so it is the correct home for this follow-on instead of another one-off parity file.
 - The adjacent benchmark follow-on stays concrete on the same exact pair because `tests/benchmarks/benchmark_expectations.py` still classifies `module-sub-template-nested-grouped-alternation-cold-gap` and `pattern-subn-template-named-nested-grouped-alternation-replacement-purged-gap` as the remaining known-gap rows on `grouped-alternation-replacement-boundary`.
+- 2026-03-16 feature-implementation: Routed `boundary_literal_template_subn` through the existing nested grouped-alternation span collector, absorbed `nested_group_alternation_replacement_workflows.py` into the shared grouped replacement pytest surface, and republished `reports/correctness/latest.py`. The tracked combined scorecard now reads `969` total cases / `969` passed / `0` failed / `0` unimplemented across `108` manifests, and `collection.replacement.nested_group_alternation` now reads `2` total / `2` passed / `0` failed / `0` unimplemented on `nested-group-alternation-replacement-workflows`.
+- 2026-03-16 feature-implementation: Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_literal_replacement_template.py tests/conformance/test_combined_correctness_scorecards.py` (`113 passed, 1065 subtests passed in 21.08s`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_group_alternation_replacement_workflows.py --report .rebar/tmp/rbr-0491-nested-grouped-alternation-template-parity.py` (`2` total / `2` passed / `0` failed / `0` unimplemented), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`969` total / `969` passed / `0` failed / `0` unimplemented).

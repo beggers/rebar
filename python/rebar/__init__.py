@@ -1125,6 +1125,7 @@ def _run_native_literal_subn(
         )
 
     if isinstance(compiled_pattern.pattern, str) and isinstance(repl, str) and "\\" in repl:
+        # Capture-sensitive template expansion stays in the native boundary.
         status, substituted, replacement_count = _native.boundary_literal_template_subn(
             compiled_pattern.pattern,
             compiled_pattern.flags,

@@ -7316,8 +7316,8 @@ pub fn nested_capture_find_spans_str(
     }
 }
 
-/// Discover repeated spans for the bounded nested-group alternation callable
-/// replacement slice while preserving capture spans for result marshalling.
+/// Discover repeated spans for the bounded nested-group alternation
+/// replacement slices while preserving capture spans for result marshalling.
 #[must_use]
 pub fn nested_alternation_find_spans_str(
     pattern: &str,

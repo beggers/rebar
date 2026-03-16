@@ -45,16 +45,44 @@ EXPECTED_NESTED_GROUP_REPLACEMENT_COMPILE_PATTERNS = {
     r"a((b))d",
     r"a(?P<outer>(?P<inner>b))d",
 }
+EXPECTED_NESTED_GROUP_ALTERNATION_REPLACEMENT_COMPILE_PATTERNS = {
+    r"a((b|c))d",
+    r"a(?P<outer>(b|c))d",
+}
 EXPECTED_QUANTIFIED_NESTED_GROUP_REPLACEMENT_COMPILE_PATTERNS = {
     r"a((bc)+)d",
     r"a(?P<outer>(?P<inner>bc)+)d",
 }
-EXPECTED_FIXTURE_REPLACEMENT_OPERATION_HELPER_COUNTS = Counter(
+EXPECTED_SHARED_REPLACEMENT_OPERATION_HELPER_COUNTS = Counter(
     {
         ("module_call", "sub"): 2,
         ("module_call", "subn"): 2,
         ("pattern_call", "sub"): 2,
         ("pattern_call", "subn"): 2,
+    }
+)
+EXPECTED_NESTED_GROUP_ALTERNATION_REPLACEMENT_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("module_call", "sub"): 1,
+        ("pattern_call", "subn"): 1,
+    }
+)
+EXPECTED_SHARED_REPLACEMENT_GROUP_KIND_COUNTS = Counter(
+    {
+        ("module_call", "sub", "numbered"): 1,
+        ("module_call", "sub", "named"): 1,
+        ("module_call", "subn", "numbered"): 1,
+        ("module_call", "subn", "named"): 1,
+        ("pattern_call", "sub", "numbered"): 1,
+        ("pattern_call", "sub", "named"): 1,
+        ("pattern_call", "subn", "numbered"): 1,
+        ("pattern_call", "subn", "named"): 1,
+    }
+)
+EXPECTED_NESTED_GROUP_ALTERNATION_REPLACEMENT_GROUP_KIND_COUNTS = Counter(
+    {
+        ("module_call", "sub", "numbered"): 1,
+        ("pattern_call", "subn", "named"): 1,
     }
 )
 SELECTED_CASE_BUNDLE_SPECS = (
@@ -85,7 +113,7 @@ FIXTURE_BUNDLE_SPECS = (
         "grouped_alternation_replacement_workflows.py",
         expected_manifest_id="grouped-alternation-replacement-workflows",
         expected_patterns=frozenset(EXPECTED_GROUPED_ALTERNATION_COMPILE_PATTERNS),
-        expected_operation_helper_counts=EXPECTED_FIXTURE_REPLACEMENT_OPERATION_HELPER_COUNTS,
+        expected_operation_helper_counts=EXPECTED_SHARED_REPLACEMENT_OPERATION_HELPER_COUNTS,
     ),
     FixtureBundleSpec(
         "nested_group_replacement_workflows.py",
@@ -93,7 +121,17 @@ FIXTURE_BUNDLE_SPECS = (
         expected_patterns=frozenset(
             EXPECTED_NESTED_GROUP_REPLACEMENT_COMPILE_PATTERNS
         ),
-        expected_operation_helper_counts=EXPECTED_FIXTURE_REPLACEMENT_OPERATION_HELPER_COUNTS,
+        expected_operation_helper_counts=EXPECTED_SHARED_REPLACEMENT_OPERATION_HELPER_COUNTS,
+    ),
+    FixtureBundleSpec(
+        "nested_group_alternation_replacement_workflows.py",
+        expected_manifest_id="nested-group-alternation-replacement-workflows",
+        expected_patterns=frozenset(
+            EXPECTED_NESTED_GROUP_ALTERNATION_REPLACEMENT_COMPILE_PATTERNS
+        ),
+        expected_operation_helper_counts=(
+            EXPECTED_NESTED_GROUP_ALTERNATION_REPLACEMENT_OPERATION_HELPER_COUNTS
+        ),
     ),
     FixtureBundleSpec(
         "quantified_nested_group_replacement_workflows.py",
@@ -101,7 +139,7 @@ FIXTURE_BUNDLE_SPECS = (
         expected_patterns=frozenset(
             EXPECTED_QUANTIFIED_NESTED_GROUP_REPLACEMENT_COMPILE_PATTERNS
         ),
-        expected_operation_helper_counts=EXPECTED_FIXTURE_REPLACEMENT_OPERATION_HELPER_COUNTS,
+        expected_operation_helper_counts=EXPECTED_SHARED_REPLACEMENT_OPERATION_HELPER_COUNTS,
     ),
 )
 FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
@@ -210,7 +248,11 @@ def _group_kind(case: FixtureCase) -> str:
 
 def _expected_replacement(case: FixtureCase) -> str:
     compiled = _compiled_pattern(case)
-    target_group_index = 1 if case.helper == "sub" else compiled.groups
+    target_group_index = (
+        1
+        if case.helper == "sub" or "outer-capture" in case.categories
+        else compiled.groups
+    )
     if compiled.groupindex:
         group_names_by_index = {
             index: group_name for group_name, index in compiled.groupindex.items()
@@ -221,20 +263,15 @@ def _expected_replacement(case: FixtureCase) -> str:
 
 def _assert_replacement_fixture_bundle_contract(bundle: FixtureBundle) -> None:
     assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
+    expected_group_kind_counts = (
+        EXPECTED_NESTED_GROUP_ALTERNATION_REPLACEMENT_GROUP_KIND_COUNTS
+        if bundle.expected_manifest_id
+        == "nested-group-alternation-replacement-workflows"
+        else EXPECTED_SHARED_REPLACEMENT_GROUP_KIND_COUNTS
+    )
     assert Counter(
         (case.operation, case.helper, _group_kind(case)) for case in bundle.cases
-    ) == Counter(
-        {
-            ("module_call", "sub", "numbered"): 1,
-            ("module_call", "sub", "named"): 1,
-            ("module_call", "subn", "numbered"): 1,
-            ("module_call", "subn", "named"): 1,
-            ("pattern_call", "sub", "numbered"): 1,
-            ("pattern_call", "sub", "named"): 1,
-            ("pattern_call", "subn", "numbered"): 1,
-            ("pattern_call", "subn", "named"): 1,
-        }
-    )
+    ) == expected_group_kind_counts
 
     for case in bundle.cases:
         compiled = _compiled_pattern(case)
