@@ -7,11 +7,21 @@ import unittest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
+NUMBERED_BACKREFERENCE_FIXTURE_PATH = (
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
+    / "numbered_backreference_workflows.py"
+)
+NUMBERED_BACKREFERENCE_SUITE_ID = "match.numbered_backreference"
 
 from rebar_harness.correctness import (
     CpythonReAdapter,
     RebarAdapter,
+    SCORECARD_REPORT as CORRECTNESS_SCORECARD_REPORT,
     evaluate_case,
+    load_fixture_manifest,
 )
 from tests.conformance.correctness_expectations import (
     CorrectnessScorecardExpectation,
@@ -31,6 +41,16 @@ from tests.report_assertions import (
     assert_correctness_suites_present,
     find_correctness_case_record,
 )
+
+
+def _correctness_suite_record(
+    scorecard: dict[str, object],
+    suite_id: str,
+) -> dict[str, object]:
+    for suite in scorecard["suites"]:
+        if suite["id"] == suite_id:
+            return suite
+    raise AssertionError(f"missing correctness suite record for {suite_id!r}")
 
 
 def assert_correctness_scorecard_suite(
@@ -132,6 +152,39 @@ class CorrectnessScorecardSuitesTest(unittest.TestCase):
                         suite.suite_id
                     ),
                     case_factory=partial(correctness_scorecard_case, suite.suite_id),
+                )
+
+    def test_tracked_report_keeps_numbered_backreference_manifest_fresh(self) -> None:
+        build_rebar_extension()
+        _, manifest_cases = load_fixture_manifest(NUMBERED_BACKREFERENCE_FIXTURE_PATH)
+        _, expected_scorecard = run_correctness_scorecard(
+            (NUMBERED_BACKREFERENCE_FIXTURE_PATH,)
+        )
+        tracked_scorecard = CORRECTNESS_SCORECARD_REPORT.load(TRACKED_REPORT_PATH)
+
+        expected_suite = _correctness_suite_record(
+            expected_scorecard,
+            NUMBERED_BACKREFERENCE_SUITE_ID,
+        )
+        tracked_suite = _correctness_suite_record(
+            tracked_scorecard,
+            NUMBERED_BACKREFERENCE_SUITE_ID,
+        )
+
+        self.assertEqual(tracked_suite["manifest_ids"], expected_suite["manifest_ids"])
+        self.assertEqual(tracked_suite["families"], expected_suite["families"])
+        self.assertEqual(tracked_suite["operations"], expected_suite["operations"])
+        self.assertEqual(tracked_suite["text_models"], expected_suite["text_models"])
+        self.assertEqual(tracked_suite["case_count"], expected_suite["case_count"])
+        self.assertEqual(tracked_suite["summary"], expected_suite["summary"])
+        self.assertEqual(tracked_suite["diagnostics"], expected_suite["diagnostics"])
+
+        for fixture_case in manifest_cases:
+            with self.subTest(case_id=fixture_case.case_id):
+                assert_correctness_case_record_matches(
+                    self,
+                    find_correctness_case_record(tracked_scorecard, fixture_case.case_id),
+                    find_correctness_case_record(expected_scorecard, fixture_case.case_id),
                 )
 
 
