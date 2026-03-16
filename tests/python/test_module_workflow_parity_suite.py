@@ -20,6 +20,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     load_fixture_bundles,
+    manifest_case_ids,
 )
 
 
@@ -76,6 +77,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
 (MODULE_WORKFLOW_BUNDLE,) = load_fixture_bundles(
     SELECTED_CASE_BUNDLE_SPECS
 )
+MODULE_WORKFLOW_PUBLISHED_CASE_IDS = manifest_case_ids(MODULE_WORKFLOW_BUNDLE)
 
 COMPILE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "compile")
 NOFLAG_COMPILE_CASES = tuple(
@@ -93,6 +95,13 @@ ESCAPE_CASES = tuple(
     for case in fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "module_call")
     if case.helper == "escape"
 )
+MODULE_WORKFLOW_DIRECT_TEST_CASE_ID_BUCKETS = {
+    "compile": frozenset(case.case_id for case in COMPILE_CASES),
+    "pattern": frozenset(case.case_id for case in PATTERN_CASES),
+    "cache": frozenset(case.case_id for case in CACHE_CASES),
+    "purge": frozenset(case.case_id for case in PURGE_CASES),
+    "escape": frozenset(case.case_id for case in ESCAPE_CASES),
+}
 
 
 @dataclass(frozen=True)
@@ -284,6 +293,35 @@ def test_module_workflow_parity_suite_stays_aligned_with_published_fixture() -> 
         expected_fixture_path=MODULE_WORKFLOW_FIXTURE_PATH,
         expected_ordered_case_ids=EXPECTED_CASE_IDS,
     )
+
+
+def test_module_workflow_parity_suite_tracks_published_case_frontier() -> None:
+    selected_case_ids = frozenset(EXPECTED_CASE_IDS)
+    uncovered_case_ids = tuple(
+        case_id
+        for case_id in MODULE_WORKFLOW_PUBLISHED_CASE_IDS
+        if case_id not in selected_case_ids
+    )
+
+    assert uncovered_case_ids == ()
+    assert frozenset(MODULE_WORKFLOW_PUBLISHED_CASE_IDS) == selected_case_ids
+
+
+def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
+    bucket_case_ids = frozenset().union(
+        *MODULE_WORKFLOW_DIRECT_TEST_CASE_ID_BUCKETS.values()
+    )
+    missing_case_ids = tuple(
+        case_id for case_id in EXPECTED_CASE_IDS if case_id not in bucket_case_ids
+    )
+    unexpected_case_ids = tuple(
+        case_id
+        for case_id in sorted(bucket_case_ids)
+        if case_id not in frozenset(EXPECTED_CASE_IDS)
+    )
+
+    assert missing_case_ids == ()
+    assert unexpected_case_ids == ()
 
 
 @pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
