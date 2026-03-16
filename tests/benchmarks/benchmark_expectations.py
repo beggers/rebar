@@ -165,34 +165,10 @@ class SourceTreeCombinedSliceExpectation:
     expected_status: str = "measured"
 
 
-def _full_source_tree_scorecard_case_definition(
+def _source_tree_scorecard_case_definition(
     *,
     manifest_ids: tuple[str, ...],
-    representative_measured_workload_ids: tuple[str, ...] | None = None,
-    representative_known_gap_workload_ids: tuple[str, ...] | None = None,
-    expected_first_deferred: dict[str, str] | None = None,
-    workload_note_substrings: dict[str, str] | None = None,
-) -> dict[str, Any]:
-    case_definition: dict[str, Any] = {"full_manifest_ids": manifest_ids}
-    if representative_measured_workload_ids is not None:
-        case_definition["representative_measured_workload_ids"] = (
-            representative_measured_workload_ids
-        )
-    if representative_known_gap_workload_ids is not None:
-        case_definition["representative_known_gap_workload_ids"] = (
-            representative_known_gap_workload_ids
-        )
-    if expected_first_deferred is not None:
-        case_definition["expected_first_deferred"] = expected_first_deferred
-    if workload_note_substrings is not None:
-        case_definition["workload_note_substrings"] = workload_note_substrings
-    return case_definition
-
-
-def _derived_source_tree_scorecard_case_definition(
-    *,
-    manifest_ids: tuple[str, ...],
-    selection_mode: str,
+    selection_mode: str = "full",
     manifest_known_gap_counts: dict[str, int] | None = None,
     representative_measured_workload_ids: tuple[str, ...] | None = None,
     representative_known_gap_workload_ids: tuple[str, ...] | None = None,
@@ -224,7 +200,7 @@ def _derived_source_tree_scorecard_case_definition(
 
 
 SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
-    "compile-smoke": _derived_source_tree_scorecard_case_definition(
+    "compile-smoke": _source_tree_scorecard_case_definition(
         manifest_ids=("compile-smoke",),
         selection_mode="full",
         manifest_known_gap_counts={"compile-smoke": 1},
@@ -235,7 +211,7 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
         representative_measured_workload_ids=("compile-literal-cold",),
         representative_known_gap_workload_ids=("compile-character-class-warm",),
     ),
-    "compile-matrix": _full_source_tree_scorecard_case_definition(
+    "compile-matrix": _source_tree_scorecard_case_definition(
         manifest_ids=("compile-matrix",),
         expected_first_deferred={
             "area": "module-boundary",
@@ -248,7 +224,7 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
             "compile-parser-stress-cold",
         ),
     ),
-    "post-parser-workflows": _full_source_tree_scorecard_case_definition(
+    "post-parser-workflows": _source_tree_scorecard_case_definition(
         manifest_ids=(
             "module-boundary",
             "collection-replacement-boundary",
@@ -271,19 +247,19 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
         ),
         representative_known_gap_workload_ids=(),
     ),
-    "nested-group-replacement-boundary": _full_source_tree_scorecard_case_definition(
+    "nested-group-replacement-boundary": _source_tree_scorecard_case_definition(
         manifest_ids=("nested-group-replacement-boundary",),
     ),
-    "nested-group-callable-replacement-boundary": _full_source_tree_scorecard_case_definition(
+    "nested-group-callable-replacement-boundary": _source_tree_scorecard_case_definition(
         manifest_ids=("nested-group-callable-replacement-boundary",),
     ),
-    "branch-local-backreference-boundary": _full_source_tree_scorecard_case_definition(
+    "branch-local-backreference-boundary": _source_tree_scorecard_case_definition(
         manifest_ids=("branch-local-backreference-boundary",),
     ),
-    "conditional-group-exists-boundary": _full_source_tree_scorecard_case_definition(
+    "conditional-group-exists-boundary": _source_tree_scorecard_case_definition(
         manifest_ids=("conditional-group-exists-boundary",),
     ),
-    "regression-pack-full": _full_source_tree_scorecard_case_definition(
+    "regression-pack-full": _source_tree_scorecard_case_definition(
         manifest_ids=(
             "compile-matrix",
             "module-boundary",
@@ -300,7 +276,7 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
         ),
         representative_known_gap_workload_ids=(),
     ),
-    "regression-pack-smoke": _derived_source_tree_scorecard_case_definition(
+    "regression-pack-smoke": _source_tree_scorecard_case_definition(
         manifest_ids=("regression-matrix",),
         selection_mode="smoke",
         expected_workload_order=(
@@ -1715,56 +1691,6 @@ def _source_tree_manifest_known_gap_counts(
     return known_gap_counts
 
 
-def _resolve_source_tree_scorecard_case_definition(
-    case_definition: dict[str, Any],
-) -> dict[str, Any]:
-    full_manifest_ids = case_definition.get("full_manifest_ids")
-    if full_manifest_ids is None:
-        return case_definition
-
-    manifest_records = _source_tree_manifest_records()
-    manifest_documents: list[dict[str, Any]] = []
-    manifest_expectations: dict[str, SourceTreeManifestExpectation] = {}
-    for manifest_id in full_manifest_ids:
-        manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
-        if manifest_expectation is None:
-            raise AssertionError(
-                "unknown full source-tree scorecard expectation "
-                f"{manifest_id!r}"
-            )
-        manifest_documents.append(manifest_records[manifest_id][1])
-        manifest_expectations[manifest_id] = _public_source_tree_manifest_expectation(
-            manifest_id
-        )
-
-    resolved_case_definition = {
-        key: value
-        for key, value in case_definition.items()
-        if key != "full_manifest_ids"
-    }
-    resolved_case_definition["manifest_ids"] = full_manifest_ids
-    resolved_case_definition["selection_mode"] = "full"
-    resolved_case_definition["expected_summary"] = expected_summary_for_manifests(
-        manifest_documents
-    )
-    resolved_case_definition["manifest_expectations"] = manifest_expectations
-    if len(full_manifest_ids) == 1:
-        manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[full_manifest_ids[0]]
-        resolved_case_definition.setdefault(
-            "representative_measured_workload_ids",
-            source_tree_combined_manifest_representative_measured_workload_ids(
-                full_manifest_ids[0]
-            ),
-        )
-        resolved_case_definition.setdefault(
-            "representative_known_gap_workload_ids",
-            _source_tree_manifest_representative_known_gap_workload_ids(
-                manifest_expectation
-            ),
-        )
-    return resolved_case_definition
-
-
 def _selected_workload_ids_by_manifest(
     manifest_documents: list[dict[str, Any]],
     workloads: list[Any],
@@ -1829,9 +1755,7 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
     if case_id not in SOURCE_TREE_SCORECARD_EXPECTATIONS:
         raise AssertionError(f"unknown source-tree scorecard case {case_id!r}")
 
-    case_definition = _resolve_source_tree_scorecard_case_definition(
-        SOURCE_TREE_SCORECARD_EXPECTATIONS[case_id]
-    )
+    case_definition = SOURCE_TREE_SCORECARD_EXPECTATIONS[case_id]
     manifest_ids = tuple(case_definition["manifest_ids"])
     manifest_paths = [manifest_path_for_id(manifest_id) for manifest_id in manifest_ids]
     raw_manifests, manifest_workloads = load_manifests(manifest_paths)
@@ -1886,6 +1810,20 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
             for manifest_id in manifest_ids
         },
     )
+    if len(manifest_ids) == 1 and manifest_ids[0] in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS:
+        manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_ids[0]]
+        public_case_definition.setdefault(
+            "representative_measured_workload_ids",
+            source_tree_combined_manifest_representative_measured_workload_ids(
+                manifest_ids[0]
+            ),
+        )
+        public_case_definition.setdefault(
+            "representative_known_gap_workload_ids",
+            _source_tree_manifest_representative_known_gap_workload_ids(
+                manifest_expectation
+            ),
+        )
     common_case = _build_source_tree_benchmark_common_case(
         manifest_paths=manifest_paths,
         manifest_documents=raw_manifests,

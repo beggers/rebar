@@ -8,6 +8,7 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 
 from tests.benchmarks.benchmark_expectations import (
+    SOURCE_TREE_SCORECARD_EXPECTATIONS,
     SourceTreeScorecardCase,
     run_source_tree_benchmark_scorecard,
     source_tree_combined_manifest_representative_measured_workload_ids,
@@ -27,6 +28,14 @@ from tests.report_assertions import (
 
 class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
     maxDiff = None
+
+    def test_raw_scorecard_case_definitions_use_direct_manifest_ids(self) -> None:
+        for case_id, case_definition in SOURCE_TREE_SCORECARD_EXPECTATIONS.items():
+            with self.subTest(case_id=case_id):
+                self.assertNotIn("full_manifest_ids", case_definition)
+                self.assertIn("manifest_ids", case_definition)
+                self.assertGreaterEqual(len(case_definition["manifest_ids"]), 1)
+                self.assertIn(case_definition["selection_mode"], {"full", "smoke"})
 
     def test_full_scorecard_cases_derive_known_gap_counts_from_manifest_inventories(
         self,
