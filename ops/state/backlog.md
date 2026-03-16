@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The concrete surviving follow-on is `RBR-0468`, which should publish the exact `IGNORECASE|ASCII` literal helper pair from `literal-flag-boundary` on the shared `literal-flag-workflows` correctness surface before parity or benchmark catch-up reopen that flag-combination slice.
+Once `RBR-0468` lands, the concrete surviving follow-on is `RBR-0471`, which should convert that exact `IGNORECASE|ASCII` literal helper pair on `literal-flag-workflows` from published correctness debt into real parity before source-tree benchmark catch-up revisits the existing `literal-flag-boundary` gap rows.
 
 ## Ordered Work
-1. `RBR-0468` should extend `tests/conformance/fixtures/literal_flag_workflows.py`, `tests/conformance/correctness_expectations.py`, `tests/python/test_literal_flag_parity_suite.py`, and `reports/correctness/latest.py` so the exact `module-search-ignorecase-ascii-cold-gap` / `pattern-search-ignorecase-ascii-warm-gap` pair is published as honest correctness coverage for `rebar.search("abc", "ABC", rebar.IGNORECASE | rebar.ASCII)` and `rebar.compile("abc", rebar.IGNORECASE | rebar.ASCII).search("ABC")` before Rust-backed parity or source-tree benchmark catch-up revisit that existing `literal-flag-boundary` gap surface.
+1. Once `RBR-0468` lands, `RBR-0471` should extend `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_literal_flag_parity_suite.py`, and `reports/correctness/latest.py` so the exact `flag-module-search-ignorecase-ascii-str-hit` / `flag-pattern-search-ignorecase-ascii-str-hit` pair stops publishing as `unimplemented` and instead reaches real CPython-shaped parity for `rebar.search("abc", "ABC", rebar.IGNORECASE | rebar.ASCII)` and `rebar.compile("abc", rebar.IGNORECASE | rebar.ASCII).search("ABC")` before source-tree benchmark catch-up revisits the already-published `module-search-ignorecase-ascii-cold-gap` / `pattern-search-ignorecase-ascii-warm-gap` rows.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
