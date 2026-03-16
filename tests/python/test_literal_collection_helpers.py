@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass
+from itertools import product
 import re
 
 import pytest
@@ -102,6 +103,62 @@ def _invoke_collection_helper(regex_api: object, case: TypeErrorCase) -> object:
     if case.helper == "finditer":
         return list(result)
     return result
+
+
+_LITERAL_MATRIX_ALPHABET = "ab"
+_LITERAL_MATRIX_SPLIT_COUNTS = (0, 1, -1)
+
+
+def _literal_collection_matrix_payloads(
+    text_model: str,
+) -> tuple[tuple[str | bytes, ...], tuple[str | bytes, ...]]:
+    patterns = tuple(
+        "".join(chars)
+        for length in (1, 2)
+        for chars in product(_LITERAL_MATRIX_ALPHABET, repeat=length)
+    )
+    strings = tuple(
+        "".join(chars)
+        for length in range(4)
+        for chars in product(_LITERAL_MATRIX_ALPHABET, repeat=length)
+    )
+    if text_model == "bytes":
+        return (
+            tuple(pattern.encode("ascii") for pattern in patterns),
+            tuple(string.encode("ascii") for string in strings),
+        )
+    return patterns, strings
+
+
+def _literal_collection_window_cases(
+    string_length: int,
+) -> tuple[tuple[int, int | None], ...]:
+    # Stay within the already-published non-negative bounded-window slice.
+    candidate_windows = [(0, None), (0, string_length)]
+    if string_length:
+        candidate_windows.extend(((1, None), (0, string_length - 1)))
+
+    windows: list[tuple[int, int | None]] = []
+    seen: set[tuple[int, int | None]] = set()
+    for window in candidate_windows:
+        if window in seen:
+            continue
+        seen.add(window)
+        windows.append(window)
+    return tuple(windows)
+
+
+def _call_pattern_collection_helper_with_window(
+    pattern: object,
+    helper: str,
+    string: str | bytes,
+    pos: int,
+    endpos: int | None,
+) -> object:
+    method = getattr(pattern, helper)
+    if endpos is None:
+        return method(string, pos)
+    return method(string, pos, endpos)
 
 
 TARGET_FIXTURE_CASE_IDS = (
@@ -374,6 +431,130 @@ def test_pattern_finditer_matches_cpython(
         _call_pattern_helper(expected_pattern, case),
         check_regs=True,
     )
+
+
+@pytest.mark.parametrize(
+    "text_model",
+    (
+        pytest.param("str", id="str"),
+        pytest.param("bytes", id="bytes"),
+    ),
+)
+def test_literal_collection_matrix_split_matches_cpython(
+    regex_backend: tuple[str, object],
+    text_model: str,
+) -> None:
+    backend_name, backend = regex_backend
+    patterns, strings = _literal_collection_matrix_payloads(text_model)
+
+    for pattern in patterns:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+        )
+        for string in strings:
+            for maxsplit in _LITERAL_MATRIX_SPLIT_COUNTS:
+                observed_module = backend.split(pattern, string, maxsplit)
+                expected_module = re.split(pattern, string, maxsplit)
+                assert observed_module == expected_module, (
+                    f"{backend_name} module split mismatch for pattern={pattern!r}, "
+                    f"string={string!r}, maxsplit={maxsplit}"
+                )
+
+                observed_bound = observed_pattern.split(string, maxsplit)
+                expected_bound = expected_pattern.split(string, maxsplit)
+                assert observed_bound == expected_bound, (
+                    f"{backend_name} pattern split mismatch for pattern={pattern!r}, "
+                    f"string={string!r}, maxsplit={maxsplit}"
+                )
+
+
+@pytest.mark.parametrize(
+    "text_model",
+    (
+        pytest.param("str", id="str"),
+        pytest.param("bytes", id="bytes"),
+    ),
+)
+def test_literal_collection_matrix_findall_and_finditer_match_cpython(
+    regex_backend: tuple[str, object],
+    text_model: str,
+) -> None:
+    backend_name, backend = regex_backend
+    patterns, strings = _literal_collection_matrix_payloads(text_model)
+
+    for pattern in patterns:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+        )
+        for string in strings:
+            observed_module_findall = backend.findall(pattern, string)
+            expected_module_findall = re.findall(pattern, string)
+            assert observed_module_findall == expected_module_findall, (
+                f"{backend_name} module findall mismatch for pattern={pattern!r}, "
+                f"string={string!r}"
+            )
+
+            try:
+                assert_finditer_parity(
+                    backend_name,
+                    backend.finditer(pattern, string),
+                    re.finditer(pattern, string),
+                    check_regs=True,
+                )
+            except AssertionError as exc:
+                raise AssertionError(
+                    f"{backend_name} module finditer mismatch for pattern={pattern!r}, "
+                    f"string={string!r}"
+                ) from exc
+
+            for pos, endpos in _literal_collection_window_cases(len(string)):
+                observed_bound_findall = _call_pattern_collection_helper_with_window(
+                    observed_pattern,
+                    "findall",
+                    string,
+                    pos,
+                    endpos,
+                )
+                expected_bound_findall = _call_pattern_collection_helper_with_window(
+                    expected_pattern,
+                    "findall",
+                    string,
+                    pos,
+                    endpos,
+                )
+                assert observed_bound_findall == expected_bound_findall, (
+                    f"{backend_name} pattern findall mismatch for pattern={pattern!r}, "
+                    f"string={string!r}, pos={pos}, endpos={endpos}"
+                )
+
+                try:
+                    assert_finditer_parity(
+                        backend_name,
+                        _call_pattern_collection_helper_with_window(
+                            observed_pattern,
+                            "finditer",
+                            string,
+                            pos,
+                            endpos,
+                        ),
+                        _call_pattern_collection_helper_with_window(
+                            expected_pattern,
+                            "finditer",
+                            string,
+                            pos,
+                            endpos,
+                        ),
+                        check_regs=True,
+                    )
+                except AssertionError as exc:
+                    raise AssertionError(
+                        f"{backend_name} pattern finditer mismatch for pattern={pattern!r}, "
+                        f"string={string!r}, pos={pos}, endpos={endpos}"
+                    ) from exc
 
 
 @pytest.mark.parametrize("case", TYPE_ERROR_CASES, ids=lambda case: case.id)
