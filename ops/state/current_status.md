@@ -329,7 +329,7 @@ The published slice is still narrow: 963 of 965 published correctness cases now 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The ready-head task is `RBR-0477`, which should convert the grouped-segment leading-capture `(ab)c` module/pattern `search()` pair to real Rust-backed parity before the matching benchmark gap rows are republished as measured timings.
+- After the ready-head `RBR-0477` drains, the surviving feature follow-on is `RBR-0479`, which should republish the same grouped-segment leading-capture `(ab)c` module/pattern `search()` benchmark pair as measured source-tree timings on `grouped-named-boundary`, moving the benchmark report from `588` total workloads / `575` measured / `13` known gaps to `588` / `577` / `11`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
