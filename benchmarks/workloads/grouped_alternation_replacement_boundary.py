@@ -7,7 +7,7 @@ MANIFEST = {
   ],
   "notes": [
     "Grouped-alternation replacement boundary workloads keep replacements and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported grouped-branch replacement-template slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b|c)d` plus `\\\\1x` and `a(?P<word>b|c)d` plus `\\\\g<word>x` `sub()`/`subn()` flows through module and compiled-`Pattern` entrypoints, while nested grouped replacement-template shapes stay as explicit known-gap rows until the nested-group follow-ons land."
+    "Measured rows cover the bounded flat and nested grouped-alternation replacement-template `sub()`/`subn()` flows through module and compiled-`Pattern` entrypoints, keeping the nested legacy workload ids only for scorecard continuity."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -308,8 +308,7 @@ MANIFEST = {
         "nested-groups",
         "sub",
         "module",
-        "cold-cache",
-        "gap"
+        "cold-cache"
       ],
       "syntax_features": [
         "module-sub",
@@ -319,7 +318,7 @@ MANIFEST = {
         "replacement-template"
       ],
       "notes": [
-        "Explicit nested-group grouped-alternation replacement-template gap row so broader grouped replacement shapes stay visible while nested-group work is still queued."
+        "Legacy workload id retained for scorecard continuity while the bounded nested grouped-alternation replacement-template `module.sub()` workflow now publishes as a measured source-tree helper timing."
       ]
     },
     {
@@ -344,8 +343,7 @@ MANIFEST = {
         "named-group",
         "nested-groups",
         "subn",
-        "purged-cache",
-        "gap"
+        "purged-cache"
       ],
       "syntax_features": [
         "pattern-subn",
@@ -357,7 +355,7 @@ MANIFEST = {
         "cache-purge"
       ],
       "notes": [
-        "Explicit named nested-group grouped-alternation replacement-template gap row so broader alternation-and-replacement shapes stay visible instead of disappearing until the nested-group follow-ons land."
+        "Legacy workload id retained for scorecard continuity while the bounded named nested grouped-alternation replacement-template `Pattern.subn(..., count=1)` workflow now publishes as a measured source-tree helper timing."
       ]
     }
   ]

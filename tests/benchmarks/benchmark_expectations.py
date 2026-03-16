@@ -384,13 +384,11 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS: dict[
         ),
     ),
     "grouped-alternation-replacement-boundary": _combined_manifest_definition(
-        known_gap_workload_ids=(
+        representative_measured_workload_ids=(
             "module-sub-template-nested-grouped-alternation-cold-gap",
             "pattern-subn-template-named-nested-grouped-alternation-replacement-purged-gap",
         ),
-        representative_known_gap_workload_ids=(
-            "module-sub-template-nested-grouped-alternation-cold-gap",
-        ),
+        representative_known_gap_workload_ids=(),
     ),
     "grouped-alternation-callable-replacement-boundary": _combined_manifest_definition(),
     "nested-group-boundary": _combined_manifest_definition(

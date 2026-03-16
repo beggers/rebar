@@ -1,6 +1,6 @@
 # RBR-0493: Republish the nested grouped-alternation replacement benchmark pair as measured source-tree timings
 
-Status: ready
+Status: blocked
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -52,3 +52,7 @@ Created: 2026-03-16
 - `RBR-0491` should land immediately ahead of this task and convert the matching correctness pair to real Rust-backed parity on the shared grouped replacement pytest path.
 - 2026-03-16 planning probe: `benchmarks/workloads/grouped_alternation_replacement_boundary.py` already carries the exact target rows pinned to patterns `a((b|c))d` and `a(?P<outer>(b|c))d`, haystacks `abdacd` and `acdabd`, replacement templates `\\1x` and `\\g<outer>x`, flags `0`, and the ordinary module/pattern helper timing scopes, so this follow-on should stay on that existing benchmark path rather than inventing another manifest.
 - 2026-03-16 planning probe: the tracked `reports/benchmarks/latest.py` artifact currently reports `588` total workloads, `581` measured workloads, `7` known gaps overall, and `grouped-alternation-replacement-boundary` at `8` measured workloads / `2` known gaps, with both exact nested replacement rows still publishing `status == "unimplemented"`.
+
+## Blocker Note
+- 2026-03-16 feature-implementation: Updated `benchmarks/workloads/grouped_alternation_replacement_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, and `tests/benchmarks/test_grouped_alternation_replacement_benchmark_correctness_anchor_contract.py` so the exact nested `\\1x` / `\\g<outer>x` legacy ids are modeled as measured and anchored directly to the published nested grouped-alternation correctness cases. Verified `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_grouped_alternation_replacement_benchmark_correctness_anchor_contract.py` (`5 passed, 10 subtests passed`) and `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py` (`9 passed, 146 subtests passed`). Verified the narrow manifest rerun at `.rebar/tmp/rbr-0493-grouped-alternation-replacement-boundary.py`, which now reports `10` measured workloads / `0` known gaps for `grouped-alternation-replacement-boundary`.
+- Blocking issue: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` still fails because the adjacent wrapper-template pair on `benchmarks/workloads/grouped_alternation_boundary.py` is already timing as measured too. The narrow rerun at `.rebar/tmp/rbr-0493-grouped-alternation-boundary-adjacent.py` reports `grouped-alternation-boundary` at `8` measured workloads / `0` known gaps, while the shared combined-suite expectations and queued follow-on `RBR-0495` still treat that manifest as `6` measured / `2` known gaps. Republishing `reports/benchmarks/latest.py` from this checkout would therefore publish an out-of-scope extra benchmark slice and shift the combined totals past this task's claimed `583` measured / `5` known-gap target.

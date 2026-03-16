@@ -21,7 +21,7 @@ from tests.benchmarks.correctness_anchor_support import (
 )
 
 
-EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_WORKLOAD_IDS = frozenset(
+EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_LEGACY_NESTED_WORKLOAD_IDS = frozenset(
     {
         "module-sub-template-nested-grouped-alternation-cold-gap",
         "pattern-subn-template-named-nested-grouped-alternation-replacement-purged-gap",
@@ -61,8 +61,6 @@ EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS = {
         "grouped_alternation_replacement_boundary.py",
         "pattern-subn-template-named-grouped-alternation-purged-str",
     ): ("pattern-subn-template-named-grouped-alternation-str",),
-}
-EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_ANCHOR_CASE_IDS = {
     (
         "grouped_alternation_replacement_boundary.py",
         "module-sub-template-nested-grouped-alternation-cold-gap",
@@ -72,6 +70,20 @@ EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_ANCHOR_CASE_IDS = {
         "pattern-subn-template-named-nested-grouped-alternation-replacement-purged-gap",
     ): ("pattern-subn-template-nested-group-alternation-named-outer-first-match-only-str",),
 }
+EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_LEGACY_NESTED_ANCHOR_CASE_IDS = {
+    (
+        "grouped_alternation_replacement_boundary.py",
+        "module-sub-template-nested-grouped-alternation-cold-gap",
+    ): ("module-sub-template-nested-group-alternation-numbered-outer-str",),
+    (
+        "grouped_alternation_replacement_boundary.py",
+        "pattern-subn-template-named-nested-grouped-alternation-replacement-purged-gap",
+    ): ("pattern-subn-template-nested-group-alternation-named-outer-first-match-only-str",),
+}
+EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_MEASURED_WORKLOAD_IDS = tuple(
+    workload_id
+    for _, workload_id in EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS
+)
 
 
 def _correctness_case_signature(case: Any) -> tuple[Any, ...] | None:
@@ -175,12 +187,7 @@ def _measured_grouped_alternation_replacement_workload_ids(
     manifest_path: pathlib.Path,
 ) -> tuple[str, ...]:
     workloads = load_manifest(manifest_path).workloads
-    return tuple(
-        workload.workload_id
-        for workload in workloads
-        if workload.workload_id
-        not in EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_WORKLOAD_IDS
-    )
+    return tuple(workload.workload_id for workload in workloads)
 
 
 def _unanchored_measured_grouped_alternation_replacement_workload_ids(
@@ -190,10 +197,7 @@ def _unanchored_measured_grouped_alternation_replacement_workload_ids(
         manifest_path,
         anchor_case_ids=published_case_ids_by_signature(_correctness_case_signature),
         workload_signature=_benchmark_workload_signature,
-        include_workload=lambda workload: (
-            workload.workload_id
-            not in EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_WORKLOAD_IDS
-        ),
+        include_workload=lambda workload: True,
     )
 
 
@@ -204,24 +208,7 @@ def _anchored_grouped_alternation_replacement_workload_case_ids(
         manifest_path,
         anchor_case_ids=published_case_ids_by_signature(_correctness_case_signature),
         workload_signature=_benchmark_workload_signature,
-        include_workload=lambda workload: (
-            workload.workload_id
-            not in EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_WORKLOAD_IDS
-        ),
-    )
-
-
-def _known_gap_grouped_alternation_replacement_workload_case_ids(
-    manifest_path: pathlib.Path,
-) -> dict[tuple[str, str], tuple[str, ...]]:
-    return anchored_workload_case_ids(
-        manifest_path,
-        anchor_case_ids=published_case_ids_by_signature(_correctness_case_signature),
-        workload_signature=_benchmark_workload_signature,
-        include_workload=lambda workload: (
-            workload.workload_id
-            in EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_WORKLOAD_IDS
-        ),
+        include_workload=lambda workload: True,
     )
 
 
@@ -230,7 +217,7 @@ class GroupedAlternationReplacementBenchmarkCorrectnessAnchorContractTest(
 ):
     maxDiff = None
 
-    def test_grouped_alternation_replacement_manifest_keeps_expected_nested_gap_pair_out_of_scope(
+    def test_grouped_alternation_replacement_manifest_keeps_legacy_nested_pair_on_measured_surface(
         self,
     ) -> None:
         workloads = load_manifest(GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH).workloads
@@ -239,20 +226,15 @@ class GroupedAlternationReplacementBenchmarkCorrectnessAnchorContractTest(
                 workload.workload_id
                 for workload in workloads
                 if workload.workload_id
-                in EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_WORKLOAD_IDS
+                in EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_LEGACY_NESTED_WORKLOAD_IDS
             },
-            EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_WORKLOAD_IDS,
+            EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_LEGACY_NESTED_WORKLOAD_IDS,
         )
         self.assertEqual(
             _measured_grouped_alternation_replacement_workload_ids(
                 GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH
             ),
-            tuple(
-                workload_id
-                for _, workload_id in (
-                    EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS
-                )
-            ),
+            EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_MEASURED_WORKLOAD_IDS,
         )
 
     def test_measured_grouped_alternation_replacement_workloads_stay_anchored_to_published_correctness_cases(
@@ -275,14 +257,18 @@ class GroupedAlternationReplacementBenchmarkCorrectnessAnchorContractTest(
             EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS,
         )
 
-    def test_known_gap_grouped_alternation_replacement_workloads_stay_pinned_to_published_nested_case_ids(
+    def test_legacy_nested_grouped_alternation_replacement_workloads_stay_pinned_to_published_nested_case_ids(
         self,
     ) -> None:
         self.assertEqual(
-            _known_gap_grouped_alternation_replacement_workload_case_ids(
-                GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH
-            ),
-            EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_ANCHOR_CASE_IDS,
+            {
+                key: case_ids
+                for key, case_ids in _anchored_grouped_alternation_replacement_workload_case_ids(
+                    GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH
+                ).items()
+                if key[1] in EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_LEGACY_NESTED_WORKLOAD_IDS
+            },
+            EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_LEGACY_NESTED_ANCHOR_CASE_IDS,
         )
 
     def test_grouped_alternation_replacement_workload_callbacks_match_anchor_case_results(
@@ -293,12 +279,10 @@ class GroupedAlternationReplacementBenchmarkCorrectnessAnchorContractTest(
             workload.workload_id: workload for workload in manifest.workloads
         }
         published_cases = published_cases_by_id()
-        anchored_case_ids = {
-            **EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS,
-            **EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_ANCHOR_CASE_IDS,
-        }
 
-        for (_, workload_id), case_ids in anchored_case_ids.items():
+        for (_, workload_id), case_ids in (
+            EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS.items()
+        ):
             self.assertEqual(len(case_ids), 1)
             case_id = case_ids[0]
 
