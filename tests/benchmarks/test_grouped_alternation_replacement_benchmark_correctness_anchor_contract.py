@@ -56,6 +56,16 @@ EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS = {
         "pattern-subn-template-named-grouped-alternation-purged-str",
     ): ("pattern-subn-template-named-grouped-alternation-str",),
 }
+EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_ANCHOR_CASE_IDS = {
+    (
+        "grouped_alternation_replacement_boundary.py",
+        "module-sub-template-nested-grouped-alternation-cold-gap",
+    ): ("module-sub-template-nested-group-alternation-numbered-outer-str",),
+    (
+        "grouped_alternation_replacement_boundary.py",
+        "pattern-subn-template-named-nested-grouped-alternation-replacement-purged-gap",
+    ): ("pattern-subn-template-nested-group-alternation-named-outer-first-match-only-str",),
+}
 
 
 def _freeze_signature_value(value: Any) -> Any:
@@ -198,6 +208,23 @@ def _anchored_grouped_alternation_replacement_workload_case_ids(
     }
 
 
+def _known_gap_grouped_alternation_replacement_workload_case_ids(
+    manifest_path: pathlib.Path,
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    workloads = load_manifest(manifest_path).workloads
+    anchor_case_ids = _published_anchor_case_ids_by_signature()
+
+    return {
+        (manifest_path.name, workload.workload_id): anchor_case_ids.get(
+            _benchmark_workload_signature(workload),
+            (),
+        )
+        for workload in workloads
+        if workload.workload_id
+        in EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_WORKLOAD_IDS
+    }
+
+
 class GroupedAlternationReplacementBenchmarkCorrectnessAnchorContractTest(
     unittest.TestCase
 ):
@@ -246,6 +273,16 @@ class GroupedAlternationReplacementBenchmarkCorrectnessAnchorContractTest(
                 GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH
             ),
             EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS,
+        )
+
+    def test_known_gap_grouped_alternation_replacement_workloads_stay_pinned_to_published_nested_case_ids(
+        self,
+    ) -> None:
+        self.assertEqual(
+            _known_gap_grouped_alternation_replacement_workload_case_ids(
+                GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH
+            ),
+            EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_ANCHOR_CASE_IDS,
         )
 
 
