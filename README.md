@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 961 cases across 107 manifests, with 961 passes, 0 failures, and 0 published correctness gaps; the main benchmark report now covers 588 workloads with 573 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | The concrete surviving follow-on is `RBR-0468`, which should publish the exact `IGNORECASE|ASCII` literal helper pair from `literal-flag-boundary` on the shared `literal-flag-workflows` correctness surface before parity or benchmark catch-up reopen that flag-combination slice. |
-| Work queue | `1` ready, `0` in progress, `468` done, `0` blocked |
+| Delivery estimate | The published correctness slice now covers 963 cases across 107 manifests, with 961 passes, 0 failures, and 2 published correctness gaps; the main benchmark report still covers 588 workloads with 573 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity. |
+| Current milestone | Once `RBR-0468` lands, the concrete surviving follow-on is `RBR-0471`, which should convert that exact `IGNORECASE|ASCII` literal helper pair on `literal-flag-workflows` from published correctness debt into real parity before source-tree benchmark catch-up revisits the existing `literal-flag-boundary` gap rows. |
+| Work queue | `1` ready, `0` in progress, `470` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `961` |
+| Published cases | `963` |
 | Passing in published slice | `961` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
+| Honest gaps (`unimplemented`) | `2` |
 | Covered manifests | `107` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 961 cases across 107 manifests, with 961 passes, 0 failures, and 0 published correctness gaps; the main benchmark report now covers 588 workloads with 573 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 963 cases across 107 manifests, with 961 passes, 0 failures, and 2 published correctness gaps; the main benchmark report still covers 588 workloads with 573 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `573` of `588` published workloa
 
 ### Immediate Next Steps
 
-- The concrete surviving follow-on is `RBR-0468`, which should publish the exact `IGNORECASE|ASCII` literal helper pair from `literal-flag-boundary` on the shared `literal-flag-workflows` correctness surface before parity or benchmark catch-up reopen that flag-combination slice.
+- The concrete surviving follow-on is `RBR-0471`, which should convert the newly published `IGNORECASE|ASCII` literal helper pair on the shared `literal-flag-workflows` surface from two honest gaps into real Rust-backed parity before benchmark catch-up reopens that flag-combination slice.
 
 ### Current Risks
 
@@ -57,7 +57,7 @@ _README speedup rollups stay omitted while only `573` of `588` published workloa
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published slice is fully green again at 961/961, but it still represents a narrow frontier rather than broad drop-in coverage. The immediate follow-on is a narrow correctness pass that publishes the exact `IGNORECASE|ASCII` literal helper pair on the shared `literal-flag-workflows` surface, not a broad new syntax push.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published slice now passes 961 of 963 cases, with the remaining two honest gaps isolated to the `IGNORECASE|ASCII` literal helper pair on the shared `literal-flag-workflows` surface. The immediate follow-on is `RBR-0471`, which converts that exact pair to real parity before the matching benchmark catch-up resumes.
 
 The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice, where the published parser family is about 2.9x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
