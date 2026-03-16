@@ -1,6 +1,6 @@
 # RBR-0449: Convert the anchored module.compile literal slice to real parity on the public compile path
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -31,6 +31,9 @@ Created: 2026-03-16
 - Keep the scope bounded to compile metadata only. Do not turn this task into a general anchored-regex execution milestone.
 
 ## Notes
-- Direct verification in the current checkout still shows `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... rebar.compile("^abc$") ... PY` raising `NotImplementedError: rebar.compile() is a scaffold placeholder; the \`re\`-compatible API is not implemented yet`.
-- The published correctness artifact already exposes this exact gap as `workflow-compile-str-anchored-literal` with `comparison == "unimplemented"` in `reports/correctness/latest.py`.
-- The adjacent benchmark publication already carries the three matching `module-compile-literal-{cold,warm,purged}` rows on the shared `module-boundary` manifest, each still published as `status == "unimplemented"` in `reports/benchmarks/latest.py`.
+- Before this run, direct verification in the current checkout showed `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... rebar.compile("^abc$") ... PY` raising `NotImplementedError: rebar.compile() is a scaffold placeholder; the \`re\`-compatible API is not implemented yet`.
+- Before this run, the published correctness artifact exposed the same gap as `workflow-compile-str-anchored-literal` with `comparison == "unimplemented"` in `reports/correctness/latest.py`.
+- The adjacent benchmark publication still carries the three matching `module-compile-literal-{cold,warm,purged}` rows on the shared `module-boundary` manifest, each still published as `status == "unimplemented"` in `reports/benchmarks/latest.py`.
+- Completed 2026-03-16: extended the Rust compile classifier so the native boundary now reports `^abc$` as a compiled `str` pattern at normalized `UNICODE` flags without broadening into anchored execution or other metacharacter support, and added the anchored compile-metadata assertion to `tests/python/test_module_surface_scaffold.py`.
+- Verified publication from the tracked report artifact: `workflow-compile-str-anchored-literal` is now `comparison == "pass"`, the `module.workflow` suite for `module-workflow-surface` is `11` total cases with `11` passes and `0` `unimplemented`, and the combined summary is `958` total cases with `958` passes, `0` failures, and `0` `unimplemented`.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_surface_scaffold.py tests/conformance/test_correctness_fixture_inventory_contract.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0449-anchored-module-compile.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.

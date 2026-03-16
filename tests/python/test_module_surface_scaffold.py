@@ -251,6 +251,14 @@ def test_source_package_compile_returns_pattern_scaffold_with_pinned_metadata() 
     assert bytes_pattern.groups == 0
     assert bytes_pattern.groupindex == {}
 
+    anchored_pattern = rebar.compile("^abc$")
+
+    assert type(anchored_pattern) is rebar.Pattern
+    assert anchored_pattern.pattern == "^abc$"
+    assert anchored_pattern.flags == int(rebar.UNICODE)
+    assert anchored_pattern.groups == 0
+    assert anchored_pattern.groupindex == {}
+
 
 def test_source_package_compile_reuses_existing_pattern_without_reprocessing_flags() -> None:
     pattern = rebar.compile("abc")

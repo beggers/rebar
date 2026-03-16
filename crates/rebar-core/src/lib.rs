@@ -1950,6 +1950,14 @@ fn compile_known_supported_case(
                 warning: None,
             })
         }
+        PatternRef::Str("^abc$") if normalized_flags == FLAG_UNICODE => Some(CompileOutcome {
+            status: CompileStatus::Compiled,
+            normalized_flags,
+            supports_literal: false,
+            group_count: 0,
+            named_groups: Vec::new(),
+            warning: None,
+        }),
         PatternRef::Str(pattern)
             if parse_literal_alternation_pattern_str(pattern).is_some()
                 && normalized_flags == FLAG_UNICODE =>
