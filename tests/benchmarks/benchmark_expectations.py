@@ -87,8 +87,8 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
         ),
         "selection_mode": "full",
         "expected_summary": {
-            "known_gap_count": 5,
-            "measured_workloads": 23,
+            "known_gap_count": 2,
+            "measured_workloads": 26,
             "module_workloads": 28,
             "parser_workloads": 0,
             "regression_workloads": 0,
@@ -96,7 +96,7 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
         },
         "manifest_expectations": {
             "module-boundary": {
-                "known_gap_count": 3,
+                "known_gap_count": 0,
             },
             "collection-replacement-boundary": {
                 "known_gap_count": 0,
@@ -106,6 +106,9 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
             },
         },
         "representative_measured_workload_ids": (
+            "module-compile-literal-cold",
+            "module-compile-literal-warm",
+            "module-compile-literal-purged",
             "module-search-grouped-literal-cold-hit",
             "module-findall-single-dot-warm-str",
             "module-sub-template-warm-str",
@@ -265,8 +268,8 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
         ),
         "selection_mode": "full",
         "expected_summary": {
-            "known_gap_count": 7,
-            "measured_workloads": 12,
+            "known_gap_count": 4,
+            "measured_workloads": 15,
             "module_workloads": 11,
             "parser_workloads": 8,
             "regression_workloads": 5,
@@ -277,7 +280,7 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
                 "known_gap_count": 1,
             },
             "module-boundary": {
-                "known_gap_count": 3,
+                "known_gap_count": 0,
             },
             "regression-matrix": {
                 "known_gap_count": 3,
@@ -285,6 +288,9 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
         },
         "representative_measured_workload_ids": (
             "compile-inline-locale-bytes-warm",
+            "module-compile-literal-cold",
+            "module-compile-literal-warm",
+            "module-compile-literal-purged",
             "regression-import-cold",
             "regression-module-search-bytes-cold-miss",
         ),
@@ -326,9 +332,12 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "module-boundary": {
-        "known_gap_count": 3,
-        "representative_known_gap_workload_ids": ("module-compile-literal-cold",),
+        "known_gap_count": 0,
+        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (
+            "module-compile-literal-cold",
+            "module-compile-literal-warm",
+            "module-compile-literal-purged",
             "import-module-cold",
             "module-search-grouped-literal-cold-hit",
             "module-search-literal-warm-hit",
@@ -748,11 +757,13 @@ def _combined_slice_expectation(
     expected_operations: set[str],
     expected_haystacks: set[str],
     required_row_categories: tuple[str, ...],
+    expected_status: str = "measured",
 ) -> dict[str, Any]:
     return {
         "expected_haystacks": expected_haystacks,
         "expected_operations": expected_operations,
         "expected_patterns": expected_patterns,
+        "expected_status": expected_status,
         "expected_workload_ids": expected_workload_ids,
         "excluded_categories": excluded_categories,
         "excluded_syntax_features": excluded_syntax_features,
@@ -766,6 +777,22 @@ def _combined_slice_expectation(
 
 
 SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
+    _combined_slice_expectation(
+        manifest_id="module-boundary",
+        slice_id="anchored-module-compile-cluster",
+        required_syntax_features=("module-compile", "literal-text"),
+        required_categories=("compile", "literal"),
+        expected_workload_ids=(
+            "module-compile-literal-cold",
+            "module-compile-literal-warm",
+            "module-compile-literal-purged",
+        ),
+        expected_patterns={r"^abc$"},
+        expected_operations={"module.compile"},
+        expected_haystacks=set(),
+        required_row_categories=("compile", "literal"),
+        expected_status="measured",
+    ),
     _combined_slice_expectation(
         manifest_id="branch-local-backreference-boundary",
         slice_id="broader-range-open-ended-conditional-branch-local-backreference",

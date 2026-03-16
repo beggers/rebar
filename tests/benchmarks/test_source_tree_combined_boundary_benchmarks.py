@@ -125,6 +125,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         manifest_id = str(expectation["manifest_id"])
         expected_workload_ids = expectation["expected_workload_ids"]
+        expected_status = str(expectation.get("expected_status", "measured"))
         matched_rows = select_source_tree_combined_slice_rows(
             manifest_document,
             expectation,
@@ -183,7 +184,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                         manifest_document,
                         workload_id,
                     ),
-                    expected_status="measured",
+                    expected_status=expected_status,
                 )
 
     def test_wider_ranged_repeat_manifest_shape_stays_covered_in_combined_suite(
