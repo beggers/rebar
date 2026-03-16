@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-With `RBR-0471` already queued at the ready head, the concrete surviving follow-on after that likely drain is `RBR-0473`, which should republish the exact `IGNORECASE|ASCII` literal benchmark pair on `literal-flag-boundary` as measured source-tree timings.
+With `RBR-0473` already queued at the ready head, the concrete surviving follow-on after that likely drain is `RBR-0475`, which should publish the exact leading-capture grouped-segment search pair already anchored as `module-search-grouped-segment-cold-gap` / `pattern-search-grouped-segment-warm-gap` on `grouped-named-boundary`.
 
 ## Ordered Work
-1. With `RBR-0471` already queued as the ready-head parity task, `RBR-0473` should extend `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` so the exact `module-search-ignorecase-ascii-cold-gap` / `pattern-search-ignorecase-ascii-warm-gap` pair stops publishing as source-tree known gaps and instead becomes measured `literal-flag-boundary` coverage, moving the combined benchmark report from `588` total / `573` measured / `15` gaps to `588` total / `575` measured / `13` gaps once `RBR-0471` has landed.
+1. With `RBR-0473` already queued as the ready-head benchmark refresh, `RBR-0475` should extend `tests/conformance/fixtures/grouped_segment_workflows.py`, `tests/conformance/correctness_expectations.py`, `tests/python/test_grouped_capture_parity_suite.py`, and `reports/correctness/latest.py` so the exact leading-capture grouped-segment search pair already anchored as `module-search-grouped-segment-cold-gap` / `pattern-search-grouped-segment-warm-gap` on `grouped-named-boundary` becomes honest correctness debt on the shared `grouped-segment-workflows` surface, moving the combined correctness report from `963` total / `963` passed / `0` unimplemented to `965` total / `963` passed / `2` unimplemented while keeping `107` manifests once `RBR-0473` has drained.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
