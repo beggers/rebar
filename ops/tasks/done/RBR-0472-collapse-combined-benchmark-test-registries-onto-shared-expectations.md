@@ -1,6 +1,6 @@
 # RBR-0472: Collapse combined benchmark test registries onto shared expectations
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -64,3 +64,8 @@ Created: 2026-03-16
 - 2026-03-16 intake verification:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_scorecards.py` passes in the current checkout (`14 passed, 464 subtests passed in 19.56s`).
   - `rg -n '^KNOWN_GAP_WORKLOAD_IDS_BY_MANIFEST =|^SLICE_DERIVED_MANIFEST_IDS = \\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently returns two matches (`32:SLICE_DERIVED_MANIFEST_IDS = (` and `40:KNOWN_GAP_WORKLOAD_IDS_BY_MANIFEST = {`), which is the exact cleanup this task is meant to remove.
+
+## Completion
+- 2026-03-16: Added a tiny shared helper in `tests/benchmarks/benchmark_expectations.py` for the manifests whose representative measured workload ids are fully slice-derived, then updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to consume that helper instead of a local manifest-id tuple.
+- 2026-03-16: Deleted the test-local `SLICE_DERIVED_MANIFEST_IDS` tuple and `KNOWN_GAP_WORKLOAD_IDS_BY_MANIFEST` dict, and rewired the known-gap regression to iterate directly over raw `SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS` entries that expose `known_gap_workload_ids`.
+- 2026-03-16: Verified the cleanup with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_scorecards.py` (`14 passed, 464 subtests passed in 19.52s`) and `rg -n '^KNOWN_GAP_WORKLOAD_IDS_BY_MANIFEST =|^SLICE_DERIVED_MANIFEST_IDS = \\(' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (no matches).

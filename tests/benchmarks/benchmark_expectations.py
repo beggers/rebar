@@ -1757,6 +1757,17 @@ def source_tree_combined_slice_manifest_ids() -> tuple[str, ...]:
     )
 
 
+def source_tree_combined_slice_derived_manifest_ids() -> tuple[str, ...]:
+    return tuple(
+        manifest_id
+        for manifest_id in source_tree_combined_slice_manifest_ids()
+        if "representative_measured_workload_ids"
+        not in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
+        and "shape_expectation"
+        not in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
+    )
+
+
 def source_tree_combined_slice_expectations(
     manifest_id: str,
 ) -> tuple[dict[str, Any], ...]:

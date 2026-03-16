@@ -14,6 +14,7 @@ from tests.benchmarks.benchmark_expectations import (
     source_tree_combined_case,
     source_tree_combined_manifest_shape_expectation,
     source_tree_combined_manifest_representative_measured_workload_ids,
+    source_tree_combined_slice_derived_manifest_ids,
     source_tree_combined_slice_expectations,
     source_tree_scorecard_case,
     source_tree_combined_slice_manifest_ids,
@@ -29,49 +30,6 @@ from tests.report_assertions import (
 )
 
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"
-SLICE_DERIVED_MANIFEST_IDS = (
-    "grouped-alternation-callable-replacement-boundary",
-    "nested-group-alternation-boundary",
-    "nested-group-replacement-boundary",
-    "nested-group-callable-replacement-boundary",
-    "branch-local-backreference-boundary",
-    "conditional-group-exists-boundary",
-)
-KNOWN_GAP_WORKLOAD_IDS_BY_MANIFEST = {
-    "literal-flag-boundary": (
-        "module-search-ignorecase-ascii-cold-gap",
-        "pattern-search-ignorecase-ascii-warm-gap",
-    ),
-    "grouped-named-boundary": (
-        "module-search-grouped-segment-cold-gap",
-        "pattern-search-grouped-segment-warm-gap",
-    ),
-    "numbered-backreference-boundary": (
-        "module-search-numbered-backreference-segment-cold-gap",
-        "pattern-search-numbered-backreference-prefix-purged-gap",
-    ),
-    "grouped-alternation-boundary": (
-        "module-sub-template-nested-grouped-alternation-warm-gap",
-        "pattern-subn-template-named-nested-grouped-alternation-purged-gap",
-    ),
-    "grouped-alternation-replacement-boundary": (
-        "module-sub-template-nested-grouped-alternation-cold-gap",
-        "pattern-subn-template-named-nested-grouped-alternation-replacement-purged-gap",
-    ),
-    "nested-group-boundary": (
-        "module-search-triple-nested-group-cold-gap",
-        "pattern-fullmatch-named-quantified-nested-group-purged-gap",
-    ),
-    "optional-group-boundary": (
-        "module-search-numbered-optional-group-conditional-cold-gap",
-    ),
-    "exact-repeat-quantified-group-boundary": (
-        "module-search-numbered-broader-ranged-repeat-group-cold-gap",
-    ),
-    "ranged-repeat-quantified-group-boundary": (
-        "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
-    ),
-}
 
 
 class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
@@ -88,16 +46,14 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(stored_empty_representative_ids, [])
 
     def test_manifest_gap_inventories_derive_public_known_gap_counts(self) -> None:
-        for manifest_id, expected_ids in KNOWN_GAP_WORKLOAD_IDS_BY_MANIFEST.items():
+        for manifest_id, raw_manifest_expectation in (
+            SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.items()
+        ):
+            if "known_gap_workload_ids" not in raw_manifest_expectation:
+                continue
             with self.subTest(manifest_id=manifest_id):
-                raw_manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
-                    manifest_id
-                ]
+                expected_ids = raw_manifest_expectation["known_gap_workload_ids"]
                 self.assertNotIn("known_gap_count", raw_manifest_expectation)
-                self.assertEqual(
-                    raw_manifest_expectation["known_gap_workload_ids"],
-                    expected_ids,
-                )
                 self.assertEqual(
                     source_tree_combined_case(manifest_id)["manifest_expectation"][
                         "known_gap_count"
@@ -186,7 +142,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
 
     def test_scoped_manifests_keep_slice_backed_representatives(self) -> None:
-        for manifest_id in SLICE_DERIVED_MANIFEST_IDS:
+        for manifest_id in source_tree_combined_slice_derived_manifest_ids():
             with self.subTest(manifest_id=manifest_id):
                 case = source_tree_combined_case(manifest_id)
                 self.assertEqual(
