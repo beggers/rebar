@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 960 cases across 107 manifests, with 959 passes, 0 failures, and 1 published correctness gap; the main benchmark report now covers 588 workloads with 570 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- The concrete surviving follow-on is `RBR-0460`, which should convert the exact parser-stress compile proxy `(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\\d{2}))?(?:(?<=foo)bar)?(?P=lemma)` to real Rust-backed parity on the shared `parser-matrix` surface before Python-path benchmark catch-up revisits `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold`.
+- The concrete surviving follow-on is `RBR-0462`, which should republish the already-anchored parser-stress benchmark rows `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` as measured source-tree timings on the shared `compile-matrix` and `regression-matrix` surfaces, refreshing the shared benchmark expectations and publication without widening the manifest frontier.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: 959 of 960 published correctness cases now 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The concrete surviving follow-on is `RBR-0460`, which should convert the exact parser-stress compile proxy `(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\\d{2}))?(?:(?<=foo)bar)?(?P=lemma)` to real Rust-backed parity on the shared `parser-matrix` surface before Python-path benchmark catch-up revisits `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold`.
+- The concrete surviving follow-on is `RBR-0462`, which should republish the already-anchored parser-stress benchmark rows `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` as measured source-tree timings on the shared `compile-matrix` and `regression-matrix` surfaces, refreshing the shared benchmark expectations and publication without widening the manifest frontier.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

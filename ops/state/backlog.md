@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The concrete surviving follow-on is `RBR-0460`, which should convert the exact parser-stress compile proxy `(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\\d{2}))?(?:(?<=foo)bar)?(?P=lemma)` to real Rust-backed parity on the shared `parser-matrix` surface before Python-path benchmark catch-up revisits `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold`.
+The concrete surviving follow-on is `RBR-0462`, which should republish the already-anchored parser-stress benchmark rows `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` as measured source-tree timings on the shared `compile-matrix` and `regression-matrix` surfaces, refreshing the shared benchmark expectations and publication without widening the manifest frontier.
 
 ## Ordered Work
-1. `RBR-0460` should extend `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, and `tests/python/test_parser_matrix_parity_suite.py` just enough for `rebar.compile("(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\\d{2}))?(?:(?<=foo)bar)?(?P=lemma)")` to return CPython-matching compile metadata for that exact `str` parser-stress pattern while keeping the new parser row compile-only on the existing placeholder-search contract, then regenerate `reports/correctness/latest.py` so the published `parser-matrix` case flips from `unimplemented` to `pass` before Python-path benchmark catch-up revisits `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold`.
+1. `RBR-0462` should update `tests/benchmarks/benchmark_expectations.py` and regenerate `reports/benchmarks/latest.py` so the existing `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` rows flip from explicit known gaps to measured source-tree timings on the shared `compile-matrix` and `regression-matrix` surfaces, while leaving `regression-parser-bytes-backreference-purged` as the only remaining `regression-matrix` known gap and avoiding any new benchmark manifests or workload rows.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
