@@ -96,6 +96,7 @@ _BOUNDED_NUMBERED_BACKREFERENCE_SEARCH_CASES: Final[dict[str, tuple[str, int, in
 }
 _EXACT_TRIPLE_NESTED_GROUP_PATTERN: Final[str] = "a(((b)))d"
 _EXACT_TRIPLE_NESTED_GROUP_LITERAL: Final[str] = "abd"
+_EXACT_NUMBERED_QUANTIFIED_NESTED_GROUP_PATTERN: Final[str] = r"a((bc)+)d"
 _EXACT_NAMED_QUANTIFIED_NESTED_GROUP_PATTERN: Final[str] = (
     r"a(?P<outer>(?P<inner>bc)+)d"
 )
@@ -717,14 +718,19 @@ def _supports_exact_triple_nested_group_execution(compiled_pattern: Pattern) -> 
     )
 
 
-def _supports_exact_named_quantified_nested_group_execution(
+def _supports_exact_quantified_nested_group_execution(
     compiled_pattern: Pattern,
 ) -> bool:
+    if (
+        not isinstance(compiled_pattern.pattern, str)
+        or compiled_pattern.flags != int(UNICODE)
+        or compiled_pattern.groups != 2
+    ):
+        return False
+    if compiled_pattern.pattern == _EXACT_NUMBERED_QUANTIFIED_NESTED_GROUP_PATTERN:
+        return compiled_pattern.groupindex == {}
     return (
-        isinstance(compiled_pattern.pattern, str)
-        and compiled_pattern.pattern == _EXACT_NAMED_QUANTIFIED_NESTED_GROUP_PATTERN
-        and compiled_pattern.flags == int(UNICODE)
-        and compiled_pattern.groups == 2
+        compiled_pattern.pattern == _EXACT_NAMED_QUANTIFIED_NESTED_GROUP_PATTERN
         and compiled_pattern.groupindex == {"outer": 1, "inner": 2}
     )
 
@@ -763,6 +769,16 @@ def _source_tree_compile_fallback(
             flags,
             supports_literal=False,
             groups=3,
+        )
+    if (
+        pattern == _EXACT_NUMBERED_QUANTIFIED_NESTED_GROUP_PATTERN
+        and flags == int(UNICODE)
+    ):
+        return _build_compiled_pattern(
+            pattern,
+            flags,
+            supports_literal=False,
+            groups=2,
         )
     return None
 
@@ -847,7 +863,7 @@ def _run_exact_triple_nested_group_match(
     )
 
 
-def _run_exact_named_quantified_nested_group_match(
+def _run_exact_quantified_nested_group_match(
     compiled_pattern: Pattern,
     mode: str,
     compatible_string: str,
@@ -926,8 +942,8 @@ def _run_exact_nested_group_match(
             normalized_pos,
             normalized_endpos,
         )
-    if _supports_exact_named_quantified_nested_group_execution(compiled_pattern):
-        return _run_exact_named_quantified_nested_group_match(
+    if _supports_exact_quantified_nested_group_execution(compiled_pattern):
+        return _run_exact_quantified_nested_group_match(
             compiled_pattern,
             mode,
             compatible_string,
@@ -1411,6 +1427,17 @@ def _compile_known_parser_case(pattern: str | bytes, flags: int) -> Pattern | No
 
     if pattern == _EXACT_TRIPLE_NESTED_GROUP_PATTERN and flags == int(UNICODE):
         return _build_compiled_pattern(pattern, flags, supports_literal=False, groups=3)
+
+    if (
+        pattern == _EXACT_NUMBERED_QUANTIFIED_NESTED_GROUP_PATTERN
+        and flags == int(UNICODE)
+    ):
+        return _build_compiled_pattern(
+            pattern,
+            flags,
+            supports_literal=False,
+            groups=2,
+        )
 
     if pattern == _EXACT_NAMED_QUANTIFIED_NESTED_GROUP_PATTERN and flags == int(UNICODE):
         return _build_compiled_pattern(
