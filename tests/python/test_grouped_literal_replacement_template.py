@@ -144,6 +144,14 @@ FIXTURE_BUNDLE_SPECS = (
 )
 FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
 FIXTURE_BACKED_GROUPED_REPLACEMENT_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
+MATCH_EXPAND_CASES = (
+    GROUPED_TEMPLATE_CASE,
+    *tuple(
+        case
+        for case in FIXTURE_BACKED_GROUPED_REPLACEMENT_CASES
+        if case.manifest_id != "quantified-nested-group-replacement-workflows"
+    ),
+)
 COMPILE_PATTERNS = (
     str_case_pattern(GROUPED_TEMPLATE_CASE),
     *tuple(
@@ -298,6 +306,35 @@ def _assert_replacement_fixture_bundle_contract(bundle: FixtureBundle) -> None:
             assert case.args[count_index] == 1
 
 
+def _search_match_for_case(
+    backend_name: str,
+    backend: object,
+    case: FixtureCase,
+) -> tuple[object, re.Match[str]]:
+    pattern = str_case_pattern(case)
+    string = case_text_argument(case)
+    assert isinstance(string, str)
+
+    if case.operation == "module_call":
+        observed = backend.search(pattern, string, case.flags or 0)
+        expected = re.search(pattern, string, case.flags or 0)
+    elif case.operation == "pattern_call":
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+            case.flags or 0,
+        )
+        observed = observed_pattern.search(string)
+        expected = expected_pattern.search(string)
+    else:
+        raise ValueError(f"unsupported grouped template operation {case.operation!r}")
+
+    assert observed is not None
+    assert expected is not None
+    return observed, expected
+
+
 def test_grouped_literal_template_suite_stays_aligned_with_published_fixtures() -> None:
     assert_fixture_bundle_contract(
         GROUPED_TEMPLATE_BUNDLE,
@@ -407,6 +444,40 @@ def test_fixture_backed_grouped_template_replacement_matches_cpython(
         observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
         expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
 
+    assert observed == expected
+
+
+@pytest.mark.parametrize(
+    "case",
+    MATCH_EXPAND_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_grouped_template_match_expand_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    template = case_replacement_argument(case)
+    assert isinstance(template, str)
+
+    observed_match, expected_match = _search_match_for_case(
+        backend_name,
+        backend,
+        case,
+    )
+
+    assert_match_parity(
+        backend_name,
+        observed_match,
+        expected_match,
+        check_regs=True,
+    )
+    assert_match_convenience_api_parity(observed_match, expected_match)
+
+    observed = observed_match.expand(template)
+    expected = expected_match.expand(template)
+
+    assert type(observed) is type(expected)
     assert observed == expected
 
 
