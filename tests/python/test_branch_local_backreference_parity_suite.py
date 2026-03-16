@@ -13,7 +13,7 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FixtureBundle,
-    WholeManifestBundleSpec,
+    FixtureBundleSpec,
     assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -23,7 +23,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
-    load_whole_manifest_fixture_bundles,
+    load_fixture_bundles,
     published_fixture_paths_from_bundles,
     str_case_pattern,
 )
@@ -51,7 +51,7 @@ class BoundedPatternCase:
 
 
 FIXTURE_BUNDLE_SPECS = (
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "branch_local_backreference_workflows.py",
         expected_manifest_id="branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -78,7 +78,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "quantified_branch_local_backreference_workflows.py",
         expected_manifest_id="quantified-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -107,7 +107,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "optional_group_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="optional-group-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -138,7 +138,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "conditional_group_exists_branch_local_backreference_workflows.py",
         expected_manifest_id="conditional-group-exists-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -165,7 +165,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "nested_group_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="nested-group-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -194,7 +194,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "quantified_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="quantified-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -225,7 +225,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="quantified-nested-group-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -256,7 +256,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -291,7 +291,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -322,7 +322,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
         expected_manifest_id="nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows",
         expected_case_ids=frozenset(
@@ -354,7 +354,7 @@ FIXTURE_BUNDLE_SPECS = (
         ),
     ),
 )
-FIXTURE_BUNDLES = load_whole_manifest_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
 PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
 COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")

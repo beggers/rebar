@@ -13,7 +13,7 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FixtureBundle,
-    WholeManifestBundleSpec,
+    FixtureBundleSpec,
     assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -22,7 +22,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
-    load_whole_manifest_fixture_bundles,
+    load_fixture_bundles,
     published_fixture_paths_from_bundles,
     str_case_pattern,
 )
@@ -39,7 +39,7 @@ class SupplementalMissCase:
     misses: tuple[str, ...]
 
 FIXTURE_BUNDLE_SPECS = (
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "named_backreference_workflows.py",
         expected_manifest_id="named-backreference-workflows",
         expected_case_ids=frozenset(
@@ -58,7 +58,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "numbered_backreference_workflows.py",
         expected_manifest_id="numbered-backreference-workflows",
         expected_case_ids=frozenset(
@@ -78,7 +78,7 @@ FIXTURE_BUNDLE_SPECS = (
         ),
     ),
 )
-FIXTURE_BUNDLES = load_whole_manifest_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
 PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
 MATCH_CASES = tuple(

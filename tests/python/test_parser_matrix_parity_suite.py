@@ -11,12 +11,12 @@ import rebar
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
-    SelectedCaseBundleSpec,
+    FixtureBundleSpec,
     assert_fixture_bundle_contract,
     assert_pattern_parity,
     case_pattern,
     compile_with_cpython_parity,
-    load_selected_case_fixture_bundles,
+    load_fixture_bundles,
 )
 
 
@@ -81,7 +81,7 @@ EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_OPERATION_HELPER_COUNTS = Counter(
     {("compile", None): len(EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS)}
 )
 SELECTED_CASE_BUNDLE_SPECS = (
-    SelectedCaseBundleSpec(
+    FixtureBundleSpec(
         "parser_matrix.py",
         expected_manifest_id="parser-matrix",
         selected_case_ids=EXPECTED_CASE_IDS,
@@ -91,7 +91,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
         ),
         expected_text_models=frozenset({"str", "bytes"}),
     ),
-    SelectedCaseBundleSpec(
+    FixtureBundleSpec(
         "conditional_group_exists_assertion_diagnostics.py",
         expected_manifest_id="conditional-group-exists-assertion-diagnostics",
         selected_case_ids=EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS,
@@ -105,7 +105,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
 (
     PARSER_MATRIX_FIXTURE_BUNDLE,
     CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_BUNDLE,
-) = load_selected_case_fixture_bundles(SELECTED_CASE_BUNDLE_SPECS)
+) = load_fixture_bundles(SELECTED_CASE_BUNDLE_SPECS)
 PARSER_MATRIX_CASES_BY_ID = {
     case.case_id: case for case in PARSER_MATRIX_FIXTURE_BUNDLE.cases
 }

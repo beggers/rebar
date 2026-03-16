@@ -14,14 +14,14 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
-    SelectedCaseBundleSpec,
+    FixtureBundleSpec,
     assert_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_result_parity,
     assert_pattern_parity,
     case_pattern,
     compile_with_cpython_parity,
-    load_selected_case_fixture_bundles,
+    load_fixture_bundles,
 )
 from tests.python.native_boundary_test_support import RecordingNativeBoundary
 
@@ -173,7 +173,7 @@ TARGET_FIXTURE_CASE_IDS = (
     "flag-unsupported-locale-bytes-search",
 )
 SELECTED_CASE_BUNDLE_SPECS = (
-    SelectedCaseBundleSpec(
+    FixtureBundleSpec(
         "literal_flag_workflows.py",
         expected_manifest_id="literal-flag-workflows",
         selected_case_ids=TARGET_FIXTURE_CASE_IDS,
@@ -191,7 +191,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
         ),
     ),
 )
-LITERAL_FLAG_FIXTURE_BUNDLE, = load_selected_case_fixture_bundles(
+LITERAL_FLAG_FIXTURE_BUNDLE, = load_fixture_bundles(
     SELECTED_CASE_BUNDLE_SPECS
 )
 LITERAL_FLAG_CASES_BY_ID = {

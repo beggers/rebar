@@ -10,12 +10,12 @@ import pytest
 import rebar
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
-    SelectedCaseBundleSpec,
+    FixtureBundleSpec,
     assert_fixture_bundle_contract,
     assert_finditer_parity,
     case_pattern,
     compile_with_cpython_parity,
-    load_selected_case_fixture_bundles,
+    load_fixture_bundles,
 )
 
 
@@ -170,9 +170,9 @@ TARGET_FIXTURE_CASE_IDS = (
     "module-finditer-str-repeated",
     "pattern-finditer-bytes-bounded",
 )
-COLLECTION_FIXTURE_BUNDLE, = load_selected_case_fixture_bundles(
+COLLECTION_FIXTURE_BUNDLE, = load_fixture_bundles(
     (
-        SelectedCaseBundleSpec(
+        FixtureBundleSpec(
             "collection_replacement_workflows.py",
             expected_manifest_id="collection-replacement-workflows",
             selected_case_ids=TARGET_FIXTURE_CASE_IDS,

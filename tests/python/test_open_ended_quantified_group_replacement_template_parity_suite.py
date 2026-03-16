@@ -12,7 +12,7 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FixtureBundle,
-    WholeManifestBundleSpec,
+    FixtureBundleSpec,
     assert_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_parity,
@@ -22,7 +22,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
-    load_whole_manifest_fixture_bundles,
+    load_fixture_bundles,
     published_fixture_paths_from_bundles,
 )
 
@@ -260,7 +260,7 @@ SUPPLEMENTAL_REPEATED_REPLACEMENT_CASES = (
 
 
 FIXTURE_BUNDLE_SPECS = (
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
         expected_manifest_id=(
             "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows"
@@ -285,7 +285,7 @@ FIXTURE_BUNDLE_SPECS = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
         expected_manifest_id=(
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows"
@@ -310,7 +310,7 @@ FIXTURE_BUNDLE_SPECS = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
         expected_manifest_id=(
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-replacement-workflows"
@@ -336,7 +336,7 @@ FIXTURE_BUNDLE_SPECS = (
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
 )
-FIXTURE_BUNDLES = load_whole_manifest_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
 PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 COMPILE_PATTERNS = tuple(sorted({case_pattern(case) for case in PUBLISHED_CASES}))
 MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")

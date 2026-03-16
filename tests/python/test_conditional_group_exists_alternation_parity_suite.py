@@ -7,18 +7,18 @@ import pytest
 
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
-    WholeManifestBundleSpec,
+    FixtureBundleSpec,
     assert_fixture_bundle_contract,
     assert_match_result_parity,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
-    load_whole_manifest_fixture_bundles,
+    load_fixture_bundles,
     str_case_pattern,
 )
 
 
 FIXTURE_BUNDLE_SPECS = (
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "conditional_group_exists_alternation_workflows.py",
         expected_manifest_id="conditional-group-exists-alternation-workflows",
         expected_case_ids=frozenset(
@@ -49,7 +49,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "conditional_group_exists_no_else_alternation_workflows.py",
         expected_manifest_id="conditional-group-exists-no-else-alternation-workflows",
         expected_case_ids=frozenset(
@@ -78,7 +78,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "conditional_group_exists_empty_else_alternation_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-else-alternation-workflows",
         expected_case_ids=frozenset(
@@ -107,7 +107,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "conditional_group_exists_empty_yes_else_alternation_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-yes-else-alternation-workflows",
         expected_case_ids=frozenset(
@@ -136,7 +136,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "conditional_group_exists_fully_empty_alternation_workflows.py",
         expected_manifest_id="conditional-group-exists-fully-empty-alternation-workflows",
         expected_case_ids=frozenset(
@@ -167,7 +167,7 @@ FIXTURE_BUNDLE_SPECS = (
         ),
     ),
 )
-FIXTURE_BUNDLES = load_whole_manifest_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
 COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
 MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
 PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")

@@ -14,7 +14,7 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FixtureBundle,
-    WholeManifestBundleSpec,
+    FixtureBundleSpec,
     assert_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_parity,
@@ -22,7 +22,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
-    load_whole_manifest_fixture_bundles,
+    load_fixture_bundles,
     published_fixture_bundle_by_manifest_id,
     published_fixture_paths_from_bundles,
 )
@@ -54,7 +54,7 @@ class SupplementalNoMatchCase:
 
 
 FIXTURE_BUNDLE_SPECS = (
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "literal_alternation_workflows.py",
         expected_manifest_id="literal-alternation-workflows",
         expected_case_ids=frozenset(
@@ -73,7 +73,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "exact_repeat_quantified_group_alternation_workflows.py",
         expected_manifest_id="exact-repeat-quantified-group-alternation-workflows",
         expected_case_ids=frozenset(
@@ -104,7 +104,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "quantified_alternation_workflows.py",
         expected_manifest_id="quantified-alternation-workflows",
         expected_case_ids=frozenset(
@@ -131,7 +131,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "quantified_nested_group_alternation_workflows.py",
         expected_manifest_id="quantified-nested-group-alternation-workflows",
         expected_case_ids=frozenset(
@@ -158,7 +158,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "quantified_alternation_backtracking_heavy_workflows.py",
         expected_manifest_id="quantified-alternation-backtracking-heavy-workflows",
         expected_case_ids=frozenset(
@@ -191,7 +191,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "quantified_alternation_broader_range_workflows.py",
         expected_manifest_id="quantified-alternation-broader-range-workflows",
         expected_case_ids=frozenset(
@@ -228,7 +228,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "quantified_alternation_conditional_workflows.py",
         expected_manifest_id="quantified-alternation-conditional-workflows",
         expected_case_ids=frozenset(
@@ -261,7 +261,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "quantified_alternation_open_ended_workflows.py",
         expected_manifest_id="quantified-alternation-open-ended-workflows",
         expected_case_ids=frozenset(
@@ -298,7 +298,7 @@ FIXTURE_BUNDLE_SPECS = (
             }
         ),
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "quantified_alternation_nested_branch_workflows.py",
         expected_manifest_id="quantified-alternation-nested-branch-workflows",
         expected_case_ids=frozenset(
@@ -330,7 +330,7 @@ FIXTURE_BUNDLE_SPECS = (
         ),
     ),
 )
-FIXTURE_BUNDLES = load_whole_manifest_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
 PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
 MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")

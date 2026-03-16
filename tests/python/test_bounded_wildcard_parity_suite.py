@@ -13,7 +13,7 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
-    SelectedCaseBundleSpec,
+    FixtureBundleSpec,
     assert_fixture_bundle_contract,
     assert_finditer_parity,
     assert_match_convenience_api_parity,
@@ -21,7 +21,7 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_from_bundles,
-    load_selected_case_fixture_bundles,
+    load_fixture_bundles,
     published_fixture_paths_from_bundles,
 )
 from tests.python.native_boundary_test_support import RecordingNativeBoundary
@@ -77,7 +77,7 @@ class _FakeNativeBoundary(RecordingNativeBoundary):
 
 
 SELECTED_CASE_BUNDLE_SPECS = (
-    SelectedCaseBundleSpec(
+    FixtureBundleSpec(
         "literal_flag_workflows.py",
         expected_manifest_id="literal-flag-workflows",
         selected_case_ids=("flag-unsupported-nonliteral-ignorecase-search",),
@@ -85,7 +85,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
         expected_operation_helper_counts=Counter({("module_call", "search"): 1}),
         expected_text_models=frozenset({"str"}),
     ),
-    SelectedCaseBundleSpec(
+    FixtureBundleSpec(
         "collection_replacement_workflows.py",
         expected_manifest_id="collection-replacement-workflows",
         selected_case_ids=("module-findall-nonliteral-str",),
@@ -94,7 +94,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
         expected_text_models=frozenset({"str"}),
     ),
 )
-FIXTURE_BUNDLES = load_selected_case_fixture_bundles(SELECTED_CASE_BUNDLE_SPECS)
+FIXTURE_BUNDLES = load_fixture_bundles(SELECTED_CASE_BUNDLE_SPECS)
 PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 MODULE_SEARCH_CASES = tuple(case for case in PUBLISHED_CASES if case.helper == "search")
 MODULE_FINDALL_CASES = tuple(case for case in PUBLISHED_CASES if case.helper == "findall")

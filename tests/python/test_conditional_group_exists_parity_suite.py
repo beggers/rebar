@@ -9,7 +9,7 @@ import pytest
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundle,
-    WholeManifestBundleSpec,
+    FixtureBundleSpec,
     assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -19,7 +19,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
-    load_whole_manifest_fixture_bundles,
+    load_fixture_bundles,
     str_case_pattern,
 )
 
@@ -42,7 +42,7 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
 )
 
 FIXTURE_BUNDLE_SPECS = (
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "conditional_group_exists_workflows.py",
         expected_manifest_id="conditional-group-exists-workflows",
         expected_case_ids=frozenset(
@@ -63,7 +63,7 @@ FIXTURE_BUNDLE_SPECS = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "conditional_group_exists_no_else_workflows.py",
         expected_manifest_id="conditional-group-exists-no-else-workflows",
         expected_case_ids=frozenset(
@@ -84,7 +84,7 @@ FIXTURE_BUNDLE_SPECS = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "conditional_group_exists_empty_else_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-else-workflows",
         expected_case_ids=frozenset(
@@ -105,7 +105,7 @@ FIXTURE_BUNDLE_SPECS = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "conditional_group_exists_empty_yes_else_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-yes-else-workflows",
         expected_case_ids=frozenset(
@@ -126,7 +126,7 @@ FIXTURE_BUNDLE_SPECS = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    WholeManifestBundleSpec(
+    FixtureBundleSpec(
         "conditional_group_exists_fully_empty_workflows.py",
         expected_manifest_id="conditional-group-exists-fully-empty-workflows",
         expected_case_ids=frozenset(
@@ -148,7 +148,7 @@ FIXTURE_BUNDLE_SPECS = (
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
 )
-FIXTURE_BUNDLES = load_whole_manifest_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
 PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
 MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")

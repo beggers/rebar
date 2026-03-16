@@ -11,7 +11,7 @@ from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
     assert_finditer_parity,
-    SelectedCaseBundleSpec,
+    FixtureBundleSpec,
     assert_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_result_parity,
@@ -19,7 +19,7 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
-    load_selected_case_fixture_bundles,
+    load_fixture_bundles,
 )
 
 
@@ -64,7 +64,7 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     }
 )
 SELECTED_CASE_BUNDLE_SPECS = (
-    SelectedCaseBundleSpec(
+    FixtureBundleSpec(
         fixture_name="module_workflow_surface.py",
         expected_manifest_id="module-workflow-surface",
         selected_case_ids=EXPECTED_CASE_IDS,
@@ -73,7 +73,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
         expected_text_models=frozenset({"bytes", "str"}),
     ),
 )
-(MODULE_WORKFLOW_BUNDLE,) = load_selected_case_fixture_bundles(
+(MODULE_WORKFLOW_BUNDLE,) = load_fixture_bundles(
     SELECTED_CASE_BUNDLE_SPECS
 )
 

@@ -27,8 +27,7 @@ from rebar_harness.correctness import (
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
     _match_api_templates,
-    SelectedCaseBundleSpec,
-    WholeManifestBundleSpec,
+    FixtureBundleSpec,
     assert_fixture_bundle_contract,
     assert_finditer_parity,
     assert_invalid_match_group_access_parity,
@@ -44,8 +43,7 @@ from tests.python.fixture_parity_support import (
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
     load_fixture_bundle,
-    load_selected_case_fixture_bundles,
-    load_whole_manifest_fixture_bundles,
+    load_fixture_bundles,
     load_published_fixture_bundles,
     published_fixture_bundle_by_manifest_id,
     published_fixture_paths_from_bundles,
@@ -441,9 +439,9 @@ def test_published_fixture_bundle_lookup_by_manifest_id_supports_success_and_cle
         published_fixture_bundle_by_manifest_id((bundles[0], bundles[0]), manifest_id)
 
 
-def _whole_manifest_backreference_bundle_specs() -> tuple[WholeManifestBundleSpec, ...]:
+def _whole_manifest_backreference_bundle_specs() -> tuple[FixtureBundleSpec, ...]:
     return (
-        WholeManifestBundleSpec(
+        FixtureBundleSpec(
             fixture_name="named_backreference_workflows.py",
             expected_manifest_id="named-backreference-workflows",
             expected_case_ids=frozenset(
@@ -462,7 +460,7 @@ def _whole_manifest_backreference_bundle_specs() -> tuple[WholeManifestBundleSpe
                 }
             ),
         ),
-        WholeManifestBundleSpec(
+        FixtureBundleSpec(
             fixture_name="numbered_backreference_workflows.py",
             expected_manifest_id="numbered-backreference-workflows",
             expected_case_ids=frozenset(
@@ -485,9 +483,9 @@ def _whole_manifest_backreference_bundle_specs() -> tuple[WholeManifestBundleSpe
     )
 
 
-def _selected_case_bundle_specs() -> tuple[SelectedCaseBundleSpec, ...]:
+def _selected_case_bundle_specs() -> tuple[FixtureBundleSpec, ...]:
     return (
-        SelectedCaseBundleSpec(
+        FixtureBundleSpec(
             fixture_name="literal_flag_workflows.py",
             expected_manifest_id="literal-flag-workflows",
             selected_case_ids=(
@@ -498,7 +496,7 @@ def _selected_case_bundle_specs() -> tuple[SelectedCaseBundleSpec, ...]:
             expected_operation_helper_counts=Counter({("module_call", "search"): 2}),
             expected_text_models=frozenset({"bytes", "str"}),
         ),
-        SelectedCaseBundleSpec(
+        FixtureBundleSpec(
             fixture_name="grouped_match_workflows.py",
             expected_manifest_id="grouped-match-workflows",
             selected_case_ids=(
@@ -518,7 +516,7 @@ def _selected_case_bundle_specs() -> tuple[SelectedCaseBundleSpec, ...]:
 
 
 def test_whole_manifest_bundle_specs_load_in_declared_order_with_bundle_validation() -> None:
-    bundles = load_whole_manifest_fixture_bundles(
+    bundles = load_fixture_bundles(
         _whole_manifest_backreference_bundle_specs()
     )
 
@@ -531,7 +529,7 @@ def test_whole_manifest_bundle_specs_load_in_declared_order_with_bundle_validati
 
 
 def test_fixture_case_fanout_from_bundles_preserves_bundle_then_case_order() -> None:
-    bundles = load_whole_manifest_fixture_bundles(
+    bundles = load_fixture_bundles(
         _whole_manifest_backreference_bundle_specs()
     )
 
@@ -546,7 +544,7 @@ def test_fixture_case_fanout_from_bundles_preserves_bundle_then_case_order() -> 
 
 
 def test_fixture_case_operation_selection_preserves_published_row_order() -> None:
-    bundles = load_whole_manifest_fixture_bundles(
+    bundles = load_fixture_bundles(
         _whole_manifest_backreference_bundle_specs()
     )
 
@@ -617,7 +615,7 @@ def test_expected_fixture_bundle_contract_supports_exact_case_id_validation() ->
 
 def test_fixture_bundle_contract_supports_selected_case_path_and_order_validation() -> None:
     (spec,) = _selected_case_bundle_specs()[:1]
-    (bundle,) = load_selected_case_fixture_bundles((spec,))
+    (bundle,) = load_fixture_bundles((spec,))
 
     assert bundle.expected_case_ids == frozenset(spec.selected_case_ids)
     assert_fixture_bundle_contract(
@@ -630,7 +628,7 @@ def test_fixture_bundle_contract_supports_selected_case_path_and_order_validatio
 
 def test_fixture_bundle_contract_rejects_wrong_selected_case_order() -> None:
     (spec,) = _selected_case_bundle_specs()[:1]
-    (bundle,) = load_selected_case_fixture_bundles((spec,))
+    (bundle,) = load_fixture_bundles((spec,))
 
     with pytest.raises(AssertionError):
         assert_fixture_bundle_contract(
@@ -644,7 +642,7 @@ def test_fixture_bundle_contract_rejects_wrong_selected_case_order() -> None:
 def test_selected_case_bundle_specs_load_in_declared_bundle_order() -> None:
     specs = tuple(reversed(_selected_case_bundle_specs()))
 
-    bundles = load_selected_case_fixture_bundles(specs)
+    bundles = load_fixture_bundles(specs)
 
     assert tuple(bundle.manifest.path.name for bundle in bundles) == tuple(
         spec.fixture_name for spec in specs
@@ -775,9 +773,9 @@ def test_module_workflow_surface_compile_case_selection_preserves_row_order() ->
         "workflow-compile-str-verbose-regression",
         "workflow-compile-bytes-literal",
     )
-    (bundle,) = load_selected_case_fixture_bundles(
+    (bundle,) = load_fixture_bundles(
         (
-            SelectedCaseBundleSpec(
+            FixtureBundleSpec(
                 fixture_name="module_workflow_surface.py",
                 expected_manifest_id="module-workflow-surface",
                 selected_case_ids=selected_case_ids,

@@ -33,44 +33,14 @@ class FixtureBundle:
 
 
 @dataclass(frozen=True)
-class WholeManifestBundleSpec:
+class FixtureBundleSpec:
     fixture_name: str
     expected_manifest_id: str
     expected_patterns: frozenset[str | bytes]
     expected_operation_helper_counts: Counter[tuple[str, str | None]]
+    selected_case_ids: tuple[str, ...] | None = None
     expected_case_ids: frozenset[str] | None = None
     expected_text_models: frozenset[str] | None = None
-
-
-@dataclass(frozen=True)
-class SelectedCaseBundleSpec:
-    fixture_name: str
-    expected_manifest_id: str
-    selected_case_ids: tuple[str, ...]
-    expected_patterns: frozenset[str | bytes]
-    expected_operation_helper_counts: Counter[tuple[str, str | None]]
-    expected_text_models: frozenset[str] | None = None
-
-
-def _fixture_bundle(
-    *,
-    manifest: FixtureManifest,
-    cases: tuple[FixtureCase, ...],
-    expected_manifest_id: str,
-    expected_patterns: frozenset[str | bytes],
-    expected_operation_helper_counts: Counter[tuple[str, str | None]],
-    expected_case_ids: frozenset[str] | None = None,
-    expected_text_models: frozenset[str] | None = None,
-) -> FixtureBundle:
-    return FixtureBundle(
-        manifest=manifest,
-        cases=cases,
-        expected_manifest_id=expected_manifest_id,
-        expected_patterns=expected_patterns,
-        expected_operation_helper_counts=expected_operation_helper_counts,
-        expected_case_ids=expected_case_ids,
-        expected_text_models=expected_text_models,
-    )
 
 
 def load_fixture_bundle(
@@ -101,20 +71,23 @@ def load_fixture_bundle(
     bundle_text_models = expected_text_models
     if bundle_text_models is None and selected_case_ids is None:
         bundle_text_models = frozenset({"str"})
+    bundle_case_ids = expected_case_ids
+    if bundle_case_ids is None and selected_case_ids is not None:
+        bundle_case_ids = frozenset(selected_case_ids)
 
-    return _fixture_bundle(
+    return FixtureBundle(
         manifest=manifest,
         cases=bundle_cases,
         expected_manifest_id=expected_manifest_id,
         expected_patterns=expected_patterns,
         expected_operation_helper_counts=expected_operation_helper_counts,
-        expected_case_ids=expected_case_ids,
+        expected_case_ids=bundle_case_ids,
         expected_text_models=bundle_text_models,
     )
 
 
-def load_whole_manifest_fixture_bundles(
-    specs: Iterable[WholeManifestBundleSpec],
+def load_fixture_bundles(
+    specs: Iterable[FixtureBundleSpec],
 ) -> tuple[FixtureBundle, ...]:
     return tuple(
         load_fixture_bundle(
@@ -122,24 +95,8 @@ def load_whole_manifest_fixture_bundles(
             expected_manifest_id=spec.expected_manifest_id,
             expected_patterns=spec.expected_patterns,
             expected_operation_helper_counts=spec.expected_operation_helper_counts,
-            expected_case_ids=spec.expected_case_ids,
-            expected_text_models=spec.expected_text_models,
-        )
-        for spec in specs
-    )
-
-
-def load_selected_case_fixture_bundles(
-    specs: Iterable[SelectedCaseBundleSpec],
-) -> tuple[FixtureBundle, ...]:
-    return tuple(
-        load_fixture_bundle(
-            spec.fixture_name,
-            expected_manifest_id=spec.expected_manifest_id,
             selected_case_ids=spec.selected_case_ids,
-            expected_case_ids=frozenset(spec.selected_case_ids),
-            expected_patterns=spec.expected_patterns,
-            expected_operation_helper_counts=spec.expected_operation_helper_counts,
+            expected_case_ids=spec.expected_case_ids,
             expected_text_models=spec.expected_text_models,
         )
         for spec in specs
@@ -170,7 +127,7 @@ def load_published_fixture_bundles(
         manifest, cases = load_fixture_manifest(path)
         loaded_cases = tuple(cases)
         bundles.append(
-            _fixture_bundle(
+            FixtureBundle(
                 manifest=manifest,
                 cases=loaded_cases,
                 expected_manifest_id=manifest.manifest_id,

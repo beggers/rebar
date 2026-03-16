@@ -12,7 +12,7 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
-    SelectedCaseBundleSpec,
+    FixtureBundleSpec,
     assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -22,7 +22,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
-    load_selected_case_fixture_bundles,
+    load_fixture_bundles,
     published_fixture_paths_from_bundles,
     str_case_pattern,
 )
@@ -57,7 +57,7 @@ class BoundedPatternCase:
 
 
 SELECTED_CASE_BUNDLE_SPECS = (
-    SelectedCaseBundleSpec(
+    FixtureBundleSpec(
         fixture_name="grouped_match_workflows.py",
         expected_manifest_id="grouped-match-workflows",
         selected_case_ids=(
@@ -72,7 +72,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
             }
         ),
     ),
-    SelectedCaseBundleSpec(
+    FixtureBundleSpec(
         fixture_name="named_group_workflows.py",
         expected_manifest_id="named-group-workflows",
         selected_case_ids=(
@@ -89,7 +89,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
             }
         ),
     ),
-    SelectedCaseBundleSpec(
+    FixtureBundleSpec(
         fixture_name="grouped_segment_workflows.py",
         expected_manifest_id="grouped-segment-workflows",
         selected_case_ids=(
@@ -114,7 +114,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
             }
         ),
     ),
-    SelectedCaseBundleSpec(
+    FixtureBundleSpec(
         fixture_name="grouped_alternation_workflows.py",
         expected_manifest_id="grouped-alternation-workflows",
         selected_case_ids=(
@@ -139,7 +139,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
             }
         ),
     ),
-    SelectedCaseBundleSpec(
+    FixtureBundleSpec(
         fixture_name="optional_group_workflows.py",
         expected_manifest_id="optional-group-workflows",
         selected_case_ids=(
@@ -174,7 +174,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
             }
         ),
     ),
-    SelectedCaseBundleSpec(
+    FixtureBundleSpec(
         fixture_name="optional_group_alternation_workflows.py",
         expected_manifest_id="optional-group-alternation-workflows",
         selected_case_ids=(
@@ -199,7 +199,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
             }
         ),
     ),
-    SelectedCaseBundleSpec(
+    FixtureBundleSpec(
         fixture_name="nested_group_workflows.py",
         expected_manifest_id="nested-group-workflows",
         selected_case_ids=(
@@ -224,7 +224,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
             }
         ),
     ),
-    SelectedCaseBundleSpec(
+    FixtureBundleSpec(
         fixture_name="nested_group_alternation_workflows.py",
         expected_manifest_id="nested-group-alternation-workflows",
         selected_case_ids=(
@@ -250,7 +250,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
         ),
     ),
 )
-FIXTURE_BUNDLES = load_selected_case_fixture_bundles(SELECTED_CASE_BUNDLE_SPECS)
+FIXTURE_BUNDLES = load_fixture_bundles(SELECTED_CASE_BUNDLE_SPECS)
 
 
 def _compile_cases(cases: tuple[FixtureCase, ...]) -> tuple[CompileCase, ...]:
