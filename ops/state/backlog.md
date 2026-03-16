@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The concrete surviving follow-on is `RBR-0455`, which should convert the published verbose `module.compile()` regression slice to real Rust-backed parity on the shared public compile path before regression benchmark catch-up reopens the compile frontier.
+The concrete surviving follow-on is `RBR-0457`, which should republish the existing `regression-module-compile-verbose-purged` workload as a measured source-tree timing on the shared `regression-matrix` surface.
 
 ## Ordered Work
-1. `RBR-0455` should convert the exact `str` `module.compile()` workflow for `^ (?P<key>[A-Z_]+) \s* = \s* (?:[A-Z]{2,4}+|\d{2,3}) $` with `re.MULTILINE | re.VERBOSE` to real Rust-backed parity on the public compile path, refresh the bounded compile assertions in `tests/python/test_module_surface_scaffold.py`, and regenerate `reports/correctness/latest.py` so the existing `regression-module-compile-verbose-purged` benchmark gap can move to Python-path benchmark catch-up.
+1. `RBR-0457` should refresh `reports/benchmarks/latest.py` and any touched shared benchmark expectations so the existing `regression-module-compile-verbose-purged` row in `benchmarks/workloads/regression_matrix.py` flips from an explicit known gap to a measured Python-path timing without widening the regression manifest beyond that single verbose `module.compile()` probe.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

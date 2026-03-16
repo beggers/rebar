@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 959 cases across 107 manifests, with 958 passes, 0 failures, and 1 published `unimplemented` outcome; the main benchmark report now covers 588 workloads with 569 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- The concrete surviving follow-on is `RBR-0455`, which should convert the published verbose `module.compile()` regression slice to real Rust-backed parity on the shared public compile path before regression benchmark catch-up reopens the compile frontier.
+- The concrete surviving follow-on is `RBR-0457`, which should republish the existing `regression-module-compile-verbose-purged` row as a measured source-tree timing on the shared `regression-matrix` benchmark surface.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow, now lands 958 of 959 published cases, still
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The concrete surviving follow-on is `RBR-0455`, which should convert the published verbose `module.compile()` regression slice to real Rust-backed parity on the shared public compile path before regression benchmark catch-up reopens the compile frontier.
+- The concrete surviving follow-on is `RBR-0457`, which should republish the existing `regression-module-compile-verbose-purged` row as a measured source-tree timing on the shared `regression-matrix` benchmark surface.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
