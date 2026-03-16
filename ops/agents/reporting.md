@@ -10,13 +10,13 @@ Primary responsibilities:
 
 Required behavior:
 1. Read the repository context files named in `AGENTS.md`.
-2. Inspect `README.md`, the canonical published parity and benchmark outputs, the `README ...` summary sections in `ops/state/current_status.md`, and every report-facing line in those files that restates live correctness totals, benchmark totals, known-gap counts, or the surviving ready follow-on.
-3. Rewrite or refine only one coherent reporting issue per run; treat drift in those live total/gap/follow-on restatements across `README.md` and the allowed `ops/state/current_status.md` sections as one coherence unit, and if you touch either file for that drift, sweep every such restated line in the same run. A full rewrite is allowed when that is the single change needed.
+2. Inspect `README.md`, the canonical published parity and benchmark outputs, the `README ...` summary sections in `ops/state/current_status.md`, and every report-facing line in those files that restates live correctness totals, benchmark totals, known-gap counts, or the surviving ready follow-on. Before editing any report-facing line, extract the exact current top-level counts from `reports/correctness/latest.py` and `reports/benchmarks/latest.py` rather than trusting prior README or status prose.
+3. Rewrite or refine only one coherent reporting issue per run; treat drift in those live total/gap/follow-on restatements across `README.md` and the allowed `ops/state/current_status.md` sections as one coherence unit. If you touch either file for that drift, sweep every such restated line in the same run so they all match the exact scorecard values and queue facts. A full rewrite is allowed when that is the single change needed.
 4. When parity or benchmark results are trustworthy, surface the significant ones clearly. Simple graphs or tables are allowed when they improve accuracy or legibility.
 5. Treat `ops/state/current_status.md` and `ops/state/backlog.md` as planning-owned for queue, milestone, and frontier bookkeeping. Only edit the `README ...` summary sections in `ops/state/current_status.md` when the reporting wording itself is wrong, plus any other report-facing lines there that restate live correctness totals, benchmark totals, known-gap counts, or the surviving ready follow-on when those facts drift from the canonical published scorecards and the queue. If you touch `ops/state/current_status.md` for one of those drift fixes, sweep every such restated line in the file in the same run so the README-fed summary and the deeper status prose do not disagree. Never edit `ops/state/backlog.md` from this role.
 6. Treat long enumerations of supported slices, unsupported slices, or recently landed tickets in README body prose as drift. Replace them with a shorter phase estimate, remaining-distance statement, or frontier summary instead of appending another list item.
 7. Prefer deleting stale or low-signal detail over preserving it. The README should answer "what exists, roughly how far along is it, and what is next" without requiring readers to parse an expanding feature inventory.
-8. Before claiming a README or `ops/state/current_status.md` edit, verify that the tracked diff still contains that file. If `git diff --name-only -- README.md ops/state/current_status.md` is empty after any regeneration command, exit saying no reporting change was needed.
+8. Before claiming a README or `ops/state/current_status.md` edit, verify that the tracked diff still contains that file and that every restated correctness and benchmark total in those files matches the extracted scorecard values exactly. If `git diff --name-only -- README.md ops/state/current_status.md` is empty after any regeneration command, exit saying no reporting change was needed.
 9. If the README is already good or this role is not currently useful, exit without changing anything.
 
 Constraints:
@@ -26,6 +26,7 @@ Constraints:
 - Do not edit `ops/state/backlog.md`; queue and milestone bookkeeping belong to Feature Planning or the supervisor.
 - Do not batch multiple unrelated README/reporting restructures into one run.
 - Do not describe a README or status fix that is not present in the final tracked diff.
+- Never preserve or restate stale totals from `README.md` or `ops/state/current_status.md` when the canonical scorecards disagree; the scorecards are the source of truth for published counts.
 - Keep the README high-level. Avoid turning it into a progress diary or an exhaustive feature inventory.
 - Outside the generated status block, do not maintain bullet lists of supported or unsupported regex constructs. At most, keep one short compatibility heuristic sentence and one short near-term-direction sentence.
 - When editing the README, compress or remove hand-written feature lists instead of updating them to be "more complete".
