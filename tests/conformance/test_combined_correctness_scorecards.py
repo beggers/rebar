@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
-from functools import partial
+from functools import lru_cache, partial
 import pathlib
+import subprocess
 import unittest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -25,7 +26,6 @@ from rebar_harness.correctness import (
 )
 from tests.conformance.correctness_expectations import (
     CorrectnessScorecardExpectation,
-    build_rebar_extension,
     correctness_scorecard_case,
     correctness_scorecard_target_manifest_ids,
     tracked_correctness_scorecard_suites,
@@ -41,6 +41,17 @@ from tests.report_assertions import (
     assert_correctness_suites_present,
     find_correctness_case_record,
 )
+
+
+@lru_cache(maxsize=1)
+def _build_rebar_extension() -> None:
+    subprocess.run(
+        ["cargo", "build", "-p", "rebar-cpython"],
+        check=True,
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+    )
 
 
 def _correctness_suite_record(
@@ -60,7 +71,7 @@ def assert_correctness_scorecard_suite(
     case_factory: Callable[[str], CorrectnessScorecardExpectation],
 ) -> None:
     target_manifest_ids = tuple(target_manifest_ids)
-    build_rebar_extension()
+    _build_rebar_extension()
     cpython_adapter = CpythonReAdapter()
     rebar_adapter = RebarAdapter()
 
@@ -162,7 +173,7 @@ class CorrectnessScorecardSuitesTest(unittest.TestCase):
                 )
 
     def test_tracked_report_keeps_numbered_backreference_manifest_fresh(self) -> None:
-        build_rebar_extension()
+        _build_rebar_extension()
         _, manifest_cases = load_fixture_manifest(NUMBERED_BACKREFERENCE_FIXTURE_PATH)
         _, expected_scorecard = run_harness_scorecard(
             "rebar_harness.correctness",

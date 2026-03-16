@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pathlib
-import subprocess
 from collections.abc import Iterable
 from dataclasses import dataclass
 from functools import lru_cache
@@ -16,15 +15,6 @@ from rebar_harness.correctness import (
     determine_phase,
     load_fixture_manifest,
 )
-@lru_cache(maxsize=1)
-def build_rebar_extension() -> None:
-    subprocess.run(
-        ["cargo", "build", "-p", "rebar-cpython"],
-        check=True,
-        cwd=REPO_ROOT,
-        capture_output=True,
-        text=True,
-    )
 
 
 COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
