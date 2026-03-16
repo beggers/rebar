@@ -87,6 +87,10 @@ WHOLE_MATCH_TEMPLATE_REPLACEMENT_CASES = [
     pytest.param("abc", r"\g<0>x", "abcabc", 0, id="repeated-matches"),
     pytest.param("abc", r"\g<0>x", "abcabc", 1, id="count-one"),
 ]
+VERBOSE_REGRESSION_PATTERN = (
+    "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $"
+)
+VERBOSE_REGRESSION_FLAGS = rebar.MULTILINE | rebar.VERBOSE
 
 
 def _assert_placeholder_message(error: BaseException, expected_prefix: str) -> None:
@@ -258,6 +262,40 @@ def test_source_package_compile_returns_pattern_scaffold_with_pinned_metadata() 
     assert anchored_pattern.flags == int(rebar.UNICODE)
     assert anchored_pattern.groups == 0
     assert anchored_pattern.groupindex == {}
+
+
+@pytest.mark.skipif(
+    not rebar.native_module_loaded(),
+    reason="verbose regression compile support requires rebar._rebar",
+)
+def test_source_package_compile_supports_verbose_regression_metadata_and_keeps_neighbors_unsupported() -> None:
+    compiled = rebar.compile(VERBOSE_REGRESSION_PATTERN, VERBOSE_REGRESSION_FLAGS)
+
+    assert type(compiled) is rebar.Pattern
+    assert compiled.pattern == VERBOSE_REGRESSION_PATTERN
+    assert compiled.flags == int(VERBOSE_REGRESSION_FLAGS | rebar.UNICODE)
+    assert compiled.groups == 1
+    assert compiled.groupindex == {"key": 1}
+    assert rebar.compile(VERBOSE_REGRESSION_PATTERN, VERBOSE_REGRESSION_FLAGS) is compiled
+
+    with pytest.raises(NotImplementedError) as missing_verbose:
+        rebar.compile(VERBOSE_REGRESSION_PATTERN, rebar.MULTILINE)
+
+    _assert_placeholder_message(
+        missing_verbose.value,
+        "rebar.compile() is a scaffold placeholder",
+    )
+
+    with pytest.raises(NotImplementedError) as bytes_variant:
+        rebar.compile(
+            VERBOSE_REGRESSION_PATTERN.encode("ascii"),
+            int(VERBOSE_REGRESSION_FLAGS),
+        )
+
+    _assert_placeholder_message(
+        bytes_variant.value,
+        "rebar.compile() is a scaffold placeholder",
+    )
 
 
 def test_source_package_compile_reuses_existing_pattern_without_reprocessing_flags() -> None:

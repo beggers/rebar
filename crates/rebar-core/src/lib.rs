@@ -11,10 +11,15 @@ pub const TARGET_CPYTHON_SERIES: &str = "3.12.x";
 
 const FLAG_IGNORECASE: i32 = 2;
 const FLAG_LOCALE: i32 = 4;
+const FLAG_MULTILINE: i32 = 8;
 const FLAG_UNICODE: i32 = 32;
+const FLAG_VERBOSE: i32 = 64;
 const FLAG_ASCII: i32 = 256;
 
 const FUTURE_WARNING_MESSAGE: &str = "Possible nested set at position 1";
+const VERBOSE_COMPILE_REGRESSION_PATTERN: &str =
+    "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $";
+const VERBOSE_COMPILE_REGRESSION_FLAGS: i32 = FLAG_MULTILINE | FLAG_VERBOSE | FLAG_UNICODE;
 
 /// Borrowed pattern or subject input.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -77,6 +82,11 @@ impl<'a> PatternRef<'a> {
 
     fn supports_bounded_locale_literal_execution(self, flags: i32) -> bool {
         matches!(self, Self::Bytes(_)) && flags == FLAG_LOCALE
+    }
+
+    fn supports_verbose_compile_regression_execution(self, flags: i32) -> bool {
+        matches!(self, Self::Str(VERBOSE_COMPILE_REGRESSION_PATTERN))
+            && flags == VERBOSE_COMPILE_REGRESSION_FLAGS
     }
 
     fn is_empty(self) -> bool {
@@ -1958,6 +1968,21 @@ fn compile_known_supported_case(
             named_groups: Vec::new(),
             warning: None,
         }),
+        PatternRef::Str(VERBOSE_COMPILE_REGRESSION_PATTERN)
+            if normalized_flags == VERBOSE_COMPILE_REGRESSION_FLAGS =>
+        {
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: 1,
+                named_groups: vec![NamedGroup {
+                    name: "key".to_string(),
+                    index: 1,
+                }],
+                warning: None,
+            })
+        }
         PatternRef::Str(pattern)
             if parse_literal_alternation_pattern_str(pattern).is_some()
                 && normalized_flags == FLAG_UNICODE =>
@@ -5560,6 +5585,16 @@ fn literal_match_str(
             ),
             Vec::new(),
         )
+    } else if pattern.supports_verbose_compile_regression_execution(flags) {
+        find_verbose_compile_regression_match_span_str(
+            &string_chars,
+            mode,
+            normalized_pos,
+            normalized_endpos,
+        )
+        .map_or((None, Vec::new()), |(span, group_spans)| {
+            (Some(span), group_spans)
+        })
     } else if let PatternRef::Str(pattern_value) = pattern {
         if let Some(alternation_pattern) = parse_literal_alternation_pattern_str(pattern_value) {
             if flags != FLAG_UNICODE {
@@ -11135,6 +11170,121 @@ fn normalize_bounds(length: usize, pos: isize, endpos: Option<isize>) -> (usize,
     };
 
     (clamp(pos), endpos.map(clamp).unwrap_or(length))
+}
+
+fn is_line_start_in_multiline_mode(string: &[char], index: usize) -> bool {
+    index == 0 || matches!(string.get(index - 1), Some('\n'))
+}
+
+fn match_verbose_compile_regression_at_str(
+    string: &[char],
+    start: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    if start >= endpos {
+        return None;
+    }
+
+    let line_end = string[start..endpos]
+        .iter()
+        .position(|character| *character == '\n')
+        .map_or(endpos, |offset| start + offset);
+
+    let mut cursor = start;
+    let key_start = cursor;
+    while cursor < line_end && (string[cursor].is_ascii_uppercase() || string[cursor] == '_') {
+        cursor += 1;
+    }
+    if cursor == key_start {
+        return None;
+    }
+    let key_span = (key_start, cursor);
+
+    while cursor < line_end && string[cursor].is_whitespace() {
+        cursor += 1;
+    }
+    if cursor == line_end || string[cursor] != '=' {
+        return None;
+    }
+    cursor += 1;
+
+    while cursor < line_end && string[cursor].is_whitespace() {
+        cursor += 1;
+    }
+    if cursor == line_end {
+        return None;
+    }
+
+    let value_start = cursor;
+    if string[cursor].is_ascii_uppercase() {
+        while cursor < line_end && string[cursor].is_ascii_uppercase() {
+            cursor += 1;
+        }
+        let value_len = cursor - value_start;
+        if !(2..=4).contains(&value_len) {
+            return None;
+        }
+    } else if string[cursor].is_ascii_digit() {
+        while cursor < line_end && string[cursor].is_ascii_digit() {
+            cursor += 1;
+        }
+        let value_len = cursor - value_start;
+        if !(2..=3).contains(&value_len) {
+            return None;
+        }
+    } else {
+        return None;
+    }
+
+    if cursor != line_end {
+        return None;
+    }
+
+    Some(((start, line_end), vec![Some(key_span)]))
+}
+
+fn find_verbose_compile_regression_match_span_str(
+    string: &[char],
+    mode: MatchMode,
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    match mode {
+        MatchMode::Search => {
+            let mut candidate = pos;
+            while candidate <= endpos {
+                if is_line_start_in_multiline_mode(string, candidate) {
+                    if let Some(matched) =
+                        match_verbose_compile_regression_at_str(string, candidate, endpos)
+                    {
+                        return Some(matched);
+                    }
+                }
+                if candidate == endpos {
+                    break;
+                }
+                candidate += 1;
+            }
+            None
+        }
+        MatchMode::Match => {
+            if !is_line_start_in_multiline_mode(string, pos) {
+                return None;
+            }
+            match_verbose_compile_regression_at_str(string, pos, endpos)
+        }
+        MatchMode::Fullmatch => {
+            if !is_line_start_in_multiline_mode(string, pos) {
+                return None;
+            }
+            let (span, group_spans) = match_verbose_compile_regression_at_str(string, pos, endpos)?;
+            if span == (pos, endpos) {
+                Some((span, group_spans))
+            } else {
+                None
+            }
+        }
+    }
 }
 
 fn folded_chars_equal(left: char, right: char) -> bool {

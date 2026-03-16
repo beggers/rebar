@@ -78,12 +78,6 @@ SELECTED_CASE_BUNDLE_SPECS = (
 
 COMPILE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "compile")
 VERBOSE_COMPILE_CASE_ID = "workflow-compile-str-verbose-regression"
-SUPPORTED_COMPILE_CASES = tuple(
-    case for case in COMPILE_CASES if case.case_id != VERBOSE_COMPILE_CASE_ID
-)
-UNIMPLEMENTED_COMPILE_CASES = tuple(
-    case for case in COMPILE_CASES if case.case_id == VERBOSE_COMPILE_CASE_ID
-)
 (VERBOSE_COMPILE_CASE,) = tuple(
     case for case in COMPILE_CASES if case.case_id == VERBOSE_COMPILE_CASE_ID
 )
@@ -95,9 +89,6 @@ ESCAPE_CASES = tuple(
     for case in fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "module_call")
     if case.helper == "escape"
 )
-VERBOSE_COMPILE_SKIP_REASON = (
-    "rebar does not yet support the published verbose module.compile() regression slice"
-)
 
 
 @dataclass(frozen=True)
@@ -108,8 +99,6 @@ class VerboseCompileWorkflowCase:
     expected_group0: str | None
     expected_key: str | None
     expected_span: tuple[int, int] | None
-    unsupported_backends: tuple[str, ...] = ("rebar",)
-    unsupported_backend_reason: str | None = VERBOSE_COMPILE_SKIP_REASON
 
 
 VERBOSE_COMPILE_WORKFLOW_CASES = (
@@ -195,7 +184,7 @@ def test_module_workflow_parity_suite_stays_aligned_with_published_fixture() -> 
     )
 
 
-@pytest.mark.parametrize("case", SUPPORTED_COMPILE_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
 def test_compile_workflows_match_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -208,26 +197,6 @@ def test_compile_workflows_match_cpython(
         case_pattern(case),
         case.flags or 0,
     )
-
-
-@pytest.mark.parametrize(
-    "case", UNIMPLEMENTED_COMPILE_CASES, ids=lambda case: case.case_id
-)
-def test_unimplemented_compile_workflow_keeps_placeholder_message(
-    case: FixtureCase,
-) -> None:
-    pattern = case_pattern(case)
-    assert isinstance(pattern, str)
-
-    expected = re.compile(pattern, case.flags or 0)
-    assert expected.pattern == pattern
-    assert expected.groupindex == {"key": 1}
-
-    with pytest.raises(NotImplementedError) as raised:
-        rebar.compile(pattern, case.flags or 0)
-
-    assert "rebar.compile() is a scaffold placeholder" in str(raised.value)
-
 
 @pytest.mark.parametrize(
     "case", VERBOSE_COMPILE_WORKFLOW_CASES, ids=lambda case: case.case_id

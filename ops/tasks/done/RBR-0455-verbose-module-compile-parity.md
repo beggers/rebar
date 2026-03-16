@@ -1,6 +1,6 @@
 # RBR-0455: Convert the verbose module.compile regression slice to real parity on the public compile path
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -33,3 +33,4 @@ Created: 2026-03-16
 - Before this task, `RBR-0453` published `workflow-compile-str-verbose-regression` on the shared `module-workflow-surface` manifest, and the tracked `reports/correctness/latest.py` artifact still shows it as the lone `comparison == "unimplemented"` case in the combined scorecard.
 - The adjacent benchmark publication already carries `regression-module-compile-verbose-purged` on `benchmarks/workloads/regression_matrix.py`, and the tracked `reports/benchmarks/latest.py` artifact still publishes that row as a known gap.
 - The intended post-parity follow-on is `RBR-0457`, which should republish that existing regression benchmark row as a measured source-tree timing once this compile slice is live.
+- Completed 2026-03-16: landed exact Rust-backed compile plus bound `search()`/`fullmatch()` support for `^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $` with `MULTILINE|VERBOSE` on the shared native compile path, kept nearby bytes/differently-flagged variants unsupported, verified `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_surface_scaffold.py tests/python/test_module_workflow_parity_suite.py tests/conformance/test_correctness_fixture_inventory_contract.py tests/conformance/test_combined_correctness_scorecards.py`, generated `.rebar/tmp/rbr-0455-verbose-module-compile.py` with 12/12 passes for `module_workflow_surface`, and republished `reports/correctness/latest.py` to 959 total / 959 pass / 0 fail / 0 unimplemented. Benchmark artifacts remain unchanged for `RBR-0457`.
