@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 stays on the bounded two-arm conditional replacement-template family for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; after `RBR-0430` converts the published `\\1x` / `\\g<word>x` module and compiled-`Pattern` slice to Rust-backed parity on the shared conditional replacement pytest path, the concrete surviving follow-on is `RBR-0431`, which should catch that same family up on `benchmarks/workloads/conditional_group_exists_boundary.py` by converting `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` into a real `rebar` timing.
+Milestone 2 stays on the bounded two-arm conditional replacement-template benchmark family for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; the concrete surviving follow-on is `RBR-0433`, which should keep `benchmarks/workloads/conditional_group_exists_boundary.py` on that same family by adding the remaining absent-capture numbered `module.subn()` plus named compiled-`Pattern` `sub()` / `subn()` replacement-template timings already published on `tests/conformance/fixtures/conditional_group_exists_replacement_template_workflows.py`.
 
 ## Ordered Work
-1. After `RBR-0430` converts the bounded numbered and named replacement-template `sub()` / `subn()` slice for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x` to Rust-backed parity on `tests/python/test_conditional_group_exists_replacement_parity_suite.py`, `RBR-0431` should catch that same family up on the existing `benchmarks/workloads/conditional_group_exists_boundary.py` path by clearing the `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` known-gap row and refreshing the shared benchmark expectations.
+1. `RBR-0433` should keep the bounded numbered and named replacement-template `sub()` / `subn()` family on the existing `benchmarks/workloads/conditional_group_exists_boundary.py` path by adding the remaining absent-capture numbered `module.subn()` plus named compiled-`Pattern` `sub()` / `subn()` replacement-template timings from `tests/conformance/fixtures/conditional_group_exists_replacement_template_workflows.py` and refreshing the shared source-tree benchmark expectations.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

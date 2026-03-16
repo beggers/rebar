@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 949 cases across 106 manifests and is fully passing; the main benchmark report now covers 565 workloads with 542 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- The next planned follow-on is `RBR-0431`, which should catch the same bounded two-arm conditional replacement-template family up on `benchmarks/workloads/conditional_group_exists_boundary.py` by converting `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` into a real `rebar` timing.
+- The concrete surviving follow-on is `RBR-0433`, which should keep `benchmarks/workloads/conditional_group_exists_boundary.py` on the bounded two-arm conditional replacement-template family by adding the remaining absent-capture numbered `module.subn()` plus named compiled-`Pattern` `sub()` / `subn()` replacement-template timings already published on the shared correctness path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow, now lands all 949 of 949 published cases, a
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The next planned follow-on is `RBR-0431`, which should catch the same bounded two-arm conditional replacement-template family up on `benchmarks/workloads/conditional_group_exists_boundary.py` by converting `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` into a real `rebar` timing.
+- The concrete surviving follow-on is `RBR-0433`, which should keep `benchmarks/workloads/conditional_group_exists_boundary.py` on the bounded two-arm conditional replacement-template family by adding the remaining absent-capture numbered `module.subn()` plus named compiled-`Pattern` `sub()` / `subn()` replacement-template timings already published on the shared correctness path.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
