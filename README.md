@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | The published correctness slice now covers 949 cases across 106 manifests and is fully passing; the main benchmark report now covers 565 workloads with 542 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 stays on the bounded two-arm conditional replacement-template family for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; after `RBR-0430` converts the published `\\1x` / `\\g<word>x` module and compiled-`Pattern` slice to Rust-backed parity on the shared conditional replacement pytest path, the concrete surviving follow-on is `RBR-0431`, which should catch that same family up on `benchmarks/workloads/conditional_group_exists_boundary.py` by converting `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` into a real `rebar` timing. |
-| Work queue | `0` ready, `0` in progress, `430` done, `0` blocked |
+| Current milestone | Milestone 2 stays on the bounded two-arm conditional replacement-template benchmark family for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; the concrete surviving follow-on is `RBR-0433`, which should keep `benchmarks/workloads/conditional_group_exists_boundary.py` on that same family by adding the remaining absent-capture numbered `module.subn()` plus named compiled-`Pattern` `sub()` / `subn()` replacement-template timings already published on `tests/conformance/fixtures/conditional_group_exists_replacement_template_workflows.py`. |
+| Work queue | `0` ready, `0` in progress, `432` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -36,18 +36,18 @@ _These correctness counts cover only the published slice. Overall delivery estim
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
 | Published workloads | `565` |
-| Workloads with real `rebar` timings | `542` |
-| Known-gap workloads | `23` |
+| Workloads with real `rebar` timings | `543` |
+| Known-gap workloads | `22` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native smoke and full-suite modes remain available for ad hoc runs and tests via `--native-smoke` and `--native-full` when you pass an explicit `--report` path._
 
-_README speedup rollups stay omitted while only `542` of `565` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `543` of `565` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- The next planned follow-on is `RBR-0431`, which should catch the same bounded two-arm conditional replacement-template family up on `benchmarks/workloads/conditional_group_exists_boundary.py` by converting `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` into a real `rebar` timing.
+- The concrete surviving follow-on is `RBR-0433`, which should keep `benchmarks/workloads/conditional_group_exists_boundary.py` on the bounded two-arm conditional replacement-template family by adding the remaining absent-capture numbered `module.subn()` plus named compiled-`Pattern` `sub()` / `subn()` replacement-template timings already published on the shared correctness path.
 
 ### Current Risks
 
