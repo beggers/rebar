@@ -20,6 +20,7 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
+    fixture_cases_for_operation,
     fixture_cases_from_bundles,
     load_selected_case_fixture_bundles,
     published_fixture_paths_from_bundles,
@@ -272,8 +273,8 @@ def _compile_cases(cases: tuple[FixtureCase, ...]) -> tuple[CompileCase, ...]:
 
 PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 COMPILE_CASES = _compile_cases(PUBLISHED_CASES)
-MODULE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "module_call")
-PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pattern_call")
+MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
+PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
 assert len(CASES_BY_ID) == len(PUBLISHED_CASES)
 SUPPLEMENTAL_MISS_CASES = (

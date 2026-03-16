@@ -20,6 +20,7 @@ from tests.python.fixture_parity_support import (
     case_replacement_argument,
     case_text_argument,
     compile_with_cpython_parity,
+    fixture_cases_for_operation,
     fixture_cases_from_bundles,
     load_whole_manifest_fixture_bundles,
     published_fixture_paths_from_bundles,
@@ -338,8 +339,8 @@ FIXTURE_BUNDLE_SPECS = (
 FIXTURE_BUNDLES = load_whole_manifest_fixture_bundles(FIXTURE_BUNDLE_SPECS)
 PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 COMPILE_PATTERNS = tuple(sorted({case_pattern(case) for case in PUBLISHED_CASES}))
-MODULE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "module_call")
-PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pattern_call")
+MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
+PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
 
 
 def _search_match_for_case(
