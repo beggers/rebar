@@ -8,6 +8,7 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 
 from tests.benchmarks.benchmark_expectations import (
+    SourceTreeScorecardCase,
     run_source_tree_benchmark_scorecard,
     source_tree_combined_manifest_representative_measured_workload_ids,
     source_tree_combined_slice_expectations,
@@ -32,7 +33,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
     ) -> None:
         case = source_tree_scorecard_case("post-parser-workflows")
         self.assertEqual(
-            case["manifest_expectations"]["literal-flag-boundary"]["known_gap_count"],
+            case.manifest_expectations["literal-flag-boundary"]["known_gap_count"],
             0,
         )
 
@@ -45,10 +46,10 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             "pattern-search-ignorecase-ascii-warm-gap",
         ):
             with self.subTest(workload_id=workload_id):
-                self.assertIn(workload_id, case["representative_measured_workload_ids"])
+                self.assertIn(workload_id, case.representative_measured_workload_ids)
                 self.assertNotIn(
                     workload_id,
-                    case["representative_known_gap_workload_ids"],
+                    case.representative_known_gap_workload_ids,
                 )
 
     def test_regression_pack_full_promotes_bytes_backreference_probe_to_measured(
@@ -57,11 +58,11 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
         case = source_tree_scorecard_case("regression-pack-full")
         self.assertIn(
             "regression-parser-bytes-backreference-purged",
-            case["representative_measured_workload_ids"],
+            case.representative_measured_workload_ids,
         )
         self.assertNotIn(
             "regression-parser-bytes-backreference-purged",
-            case["representative_known_gap_workload_ids"],
+            case.representative_known_gap_workload_ids,
         )
 
     def test_single_manifest_scorecards_keep_slice_backed_representatives(self) -> None:
@@ -74,13 +75,13 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             with self.subTest(case_id=case_id):
                 case = source_tree_scorecard_case(case_id)
                 self.assertEqual(
-                    case["representative_measured_workload_ids"],
+                    case.representative_measured_workload_ids,
                     source_tree_combined_manifest_representative_measured_workload_ids(
                         case_id
                     ),
                 )
                 self.assertEqual(
-                    case["representative_measured_workload_ids"],
+                    case.representative_measured_workload_ids,
                     tuple(
                         workload_id
                         for expectation in source_tree_combined_slice_expectations(case_id)
@@ -93,25 +94,25 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             with self.subTest(case_id=case_id):
                 case = source_tree_scorecard_case(case_id)
                 summary, scorecard = run_source_tree_benchmark_scorecard(
-                    case["manifest_paths"],
-                    smoke=case["selection_mode"] == "smoke",
+                    case.manifest_paths,
+                    smoke=case.selection_mode == "smoke",
                 )
 
                 assert_source_tree_benchmark_contract(
                     self,
                     scorecard,
                     summary,
-                    expected_phase=case["expected_phase"],
-                    expected_runner_version=case["expected_runner_version"],
-                    expected_adapter=case["expected_adapter"],
-                    expected_manifest_documents=case["manifest_documents"],
-                    expected_manifest_paths=case["expected_manifest_paths"],
-                    expected_selection_mode=case["selection_mode"],
+                    expected_phase=case.expected_phase,
+                    expected_runner_version=case.expected_runner_version,
+                    expected_adapter=case.expected_adapter,
+                    expected_manifest_documents=case.manifest_documents,
+                    expected_manifest_paths=case.expected_manifest_paths,
+                    expected_selection_mode=case.selection_mode,
                     tracked_report_path=TRACKED_REPORT_PATH,
                 )
-                self.assertEqual(summary, case["expected_summary"])
+                self.assertEqual(summary, case.expected_summary)
 
-                expected_first_deferred = case.get("expected_first_deferred")
+                expected_first_deferred = case.expected_first_deferred
                 if expected_first_deferred is not None:
                     self.assertGreaterEqual(len(scorecard["deferred"]), 1)
                     self.assertEqual(
@@ -123,7 +124,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                         expected_first_deferred["follow_up"],
                     )
 
-                expected_workload_order = case.get("expected_workload_order")
+                expected_workload_order = case.expected_workload_order
                 if expected_workload_order is not None:
                     self.assertEqual(
                         [workload["id"] for workload in scorecard["workloads"]],
@@ -135,10 +136,10 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
 
     def _assert_manifest_contracts(
         self,
-        case: dict[str, object],
+        case: SourceTreeScorecardCase,
         scorecard: dict[str, object],
     ) -> None:
-        manifest_expectations = case["manifest_expectations"]
+        manifest_expectations = case.manifest_expectations
         for manifest_id, manifest_expectation in manifest_expectations.items():
             manifest_summary = scorecard["manifests"][manifest_id]
             manifest_record = find_manifest_record(scorecard, manifest_id)
@@ -146,37 +147,37 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                 self,
                 manifest_summary,
                 manifest_record,
-                manifest_document=case["manifest_documents_by_id"][manifest_id],
-                manifest_path=case["manifest_paths_by_id"][manifest_id],
+                manifest_document=case.manifest_documents_by_id[manifest_id],
+                manifest_path=case.manifest_paths_by_id[manifest_id],
                 known_gap_count=manifest_expectation["known_gap_count"],
-                selection_mode=case["selection_mode"],
-                selected_workload_ids=case["selected_workload_ids_by_manifest"][manifest_id],
+                selection_mode=case.selection_mode,
+                selected_workload_ids=case.selected_workload_ids_by_manifest[manifest_id],
             )
 
     def _assert_representative_workloads(
         self,
-        case: dict[str, object],
+        case: SourceTreeScorecardCase,
         scorecard: dict[str, object],
     ) -> None:
-        note_expectations = case.get("workload_note_substrings", {})
+        note_expectations = case.workload_note_substrings or {}
         self._assert_workloads(
             case,
             scorecard,
-            case["representative_measured_workload_ids"],
+            case.representative_measured_workload_ids,
             expected_status="measured",
             note_expectations=note_expectations,
         )
         self._assert_workloads(
             case,
             scorecard,
-            case["representative_known_gap_workload_ids"],
+            case.representative_known_gap_workload_ids,
             expected_status="unimplemented",
             note_expectations=note_expectations,
         )
 
     def _assert_workloads(
         self,
-        case: dict[str, object],
+        case: SourceTreeScorecardCase,
         scorecard: dict[str, object],
         workload_ids: tuple[str, ...],
         *,
@@ -187,7 +188,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             with self.subTest(workload_id=workload_id):
                 workload_record = find_workload_record(scorecard, workload_id)
                 manifest_id = workload_record["manifest_id"]
-                manifest_document = case["manifest_documents_by_id"][manifest_id]
+                manifest_document = case.manifest_documents_by_id[manifest_id]
                 assert_benchmark_workload_contract(
                     self,
                     workload_record,

@@ -1,8 +1,9 @@
 # RBR-0476: Collapse source-tree benchmark case dict plumbing onto typed records
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
+Completed: 2026-03-16
 
 ## Goal
 - Replace the remaining dict-shaped case payloads returned by `source_tree_scorecard_case(...)` and `source_tree_combined_case(...)` with explicit typed records plus one shared common-case builder, so the benchmark scorecard suites stop coupling to long lists of string keys and the common benchmark case metadata is assembled in one place instead of two near-identical dict literals.
@@ -110,3 +111,13 @@ Created: 2026-03-16
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passes in the current checkout (`16 passed, 467 subtests passed in 20.05s`).
   - `rg -n 'case\\[\"(expected_adapter|expected_manifest_paths|expected_phase|expected_runner_version|expected_summary|manifest_documents|manifest_documents_by_id|manifest_paths|manifest_paths_by_id|selected_workload_ids_by_manifest|selection_mode|representative_measured_workload_ids|representative_known_gap_workload_ids|manifest_expectations|manifest_expectation|manifest_id|manifest_path|target_manifest)\"\\]' tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently returns the expected string-key benchmark case lookups listed above, which is the exact cleanup this task is meant to delete.
   - The typed-case probe above currently fails with `AssertionError: <class 'dict'>`, which is the exact remaining shape this task is meant to replace.
+
+## Completion
+- Added local `SourceTreeBenchmarkCommonCase`, `SourceTreeScorecardCase`, and `SourceTreeCombinedCase` dataclasses in `tests/benchmarks/benchmark_expectations.py`, with one shared common-case builder that now owns the previously duplicated source-tree benchmark metadata assembly.
+- Reworked `source_tree_scorecard_case(...)` and `source_tree_combined_case(...)` to return those typed records while preserving the existing case ids, manifest ordering, selection modes, summaries, representative workload ids, and deferred metadata.
+- Updated `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to use attribute access throughout instead of string-key indexing against anonymous case dicts.
+
+## Verification
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed (`16 passed, 467 subtests passed in 19.74s`).
+- `rg -n 'case\\[\"(expected_adapter|expected_manifest_paths|expected_phase|expected_runner_version|expected_summary|manifest_documents|manifest_documents_by_id|manifest_paths|manifest_paths_by_id|selected_workload_ids_by_manifest|selection_mode|representative_measured_workload_ids|representative_known_gap_workload_ids|manifest_expectations|manifest_expectation|manifest_id|manifest_path|target_manifest)\"\\]' tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` returned no matches.
+- `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` succeeded and printed `ok`, confirming both builders now return typed records instead of `dict` and still expose the required shared fields plus `case_id`/`manifest_id`.
