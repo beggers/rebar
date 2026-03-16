@@ -180,13 +180,9 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
 
 SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
     "compile-matrix": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (),
     },
     "module-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (
             "module-compile-literal-cold",
             "module-compile-literal-warm",
@@ -198,16 +194,12 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         ),
     },
     "pattern-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (
             "pattern-search-literal-warm-hit",
             "pattern-fullmatch-bytes-purged-hit",
         ),
     },
     "collection-replacement-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (),
     },
     "literal-flag-boundary": {
@@ -241,13 +233,9 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "grouped-segment-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (),
     },
     "literal-alternation-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (),
     },
     "grouped-alternation-boundary": {
@@ -271,8 +259,6 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "grouped-alternation-callable-replacement-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (),
     },
     "nested-group-boundary": {
@@ -286,23 +272,15 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "nested-group-alternation-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (),
     },
     "nested-group-replacement-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (),
     },
     "nested-group-callable-replacement-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (),
     },
     "branch-local-backreference-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (),
     },
     "optional-group-boundary": {
@@ -333,8 +311,6 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "wider-ranged-repeat-quantified-group-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (
             "module-search-numbered-wider-ranged-repeat-group-broader-range-cold-gap",
             "pattern-fullmatch-numbered-wider-ranged-repeat-group-broader-range-third-repetition-mixed-purged-str",
@@ -458,8 +434,6 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         },
     },
     "open-ended-quantified-group-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (
             "module-search-numbered-open-ended-group-broader-range-cold-gap",
             "module-search-numbered-open-ended-group-broader-range-conditional-warm-gap",
@@ -467,42 +441,27 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         ),
     },
     "quantified-alternation-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (),
     },
     "optional-group-alternation-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (),
     },
     "conditional-group-exists-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (),
     },
     "conditional-group-exists-no-else-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (),
     },
     "conditional-group-exists-empty-else-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (),
     },
     "conditional-group-exists-empty-yes-else-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (),
     },
     "conditional-group-exists-fully-empty-boundary": {
-        "known_gap_count": 0,
-        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (),
     },
     "regression-matrix": {
-        "known_gap_count": 1,
         "known_gap_workload_ids": (
             "regression-parser-bytes-backreference-purged",
         ),
@@ -1423,7 +1382,19 @@ def _source_tree_manifest_known_gap_count(
             for workload_id in known_gap_workload_ids
             if workload_id in selected_workload_id_set
         )
-    return int(manifest_expectation.get("known_gap_count", 0))
+    return 0
+
+
+def _source_tree_manifest_representative_known_gap_workload_ids(
+    manifest_expectation: dict[str, Any],
+) -> tuple[str, ...]:
+    return tuple(
+        str(workload_id)
+        for workload_id in manifest_expectation.get(
+            "representative_known_gap_workload_ids",
+            (),
+        )
+    )
 
 
 def _public_source_tree_manifest_expectation(
@@ -1441,6 +1412,11 @@ def _public_source_tree_manifest_expectation(
         "known_gap_count": _source_tree_manifest_known_gap_count(
             manifest_expectation,
             selected_workload_ids=selected_workload_ids,
+        ),
+        "representative_known_gap_workload_ids": (
+            _source_tree_manifest_representative_known_gap_workload_ids(
+                manifest_expectation
+            )
         ),
     }
 
@@ -1519,7 +1495,9 @@ def _resolve_source_tree_scorecard_case_definition(
         )
         resolved_case_definition.setdefault(
             "representative_known_gap_workload_ids",
-            manifest_expectation["representative_known_gap_workload_ids"],
+            _source_tree_manifest_representative_known_gap_workload_ids(
+                manifest_expectation
+            ),
         )
     return resolved_case_definition
 

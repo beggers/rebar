@@ -94,6 +94,27 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     len(expected_ids),
                 )
 
+    def test_zero_gap_manifests_omit_raw_defaults_but_public_case_restores_them(
+        self,
+    ) -> None:
+        raw_manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+            "pattern-boundary"
+        ]
+        self.assertNotIn("known_gap_count", raw_manifest_expectation)
+        self.assertNotIn(
+            "representative_known_gap_workload_ids",
+            raw_manifest_expectation,
+        )
+
+        manifest_expectation = source_tree_combined_case("pattern-boundary")[
+            "manifest_expectation"
+        ]
+        self.assertEqual(manifest_expectation["known_gap_count"], 0)
+        self.assertEqual(
+            manifest_expectation["representative_known_gap_workload_ids"],
+            (),
+        )
+
     def test_scoped_manifests_keep_slice_backed_representatives(self) -> None:
         for manifest_id in SLICE_DERIVED_MANIFEST_IDS:
             with self.subTest(manifest_id=manifest_id):

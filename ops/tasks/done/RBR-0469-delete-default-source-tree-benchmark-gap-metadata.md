@@ -1,6 +1,6 @@
 # RBR-0469: Delete default source-tree benchmark gap metadata
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -88,3 +88,10 @@ Created: 2026-03-16
   - `20` manifest entries still store `representative_known_gap_workload_ids: ()`.
 - The broad benchmark scorecard suites are currently red for unrelated publication drift that belongs to `RBR-0467`, not this cleanup. The live rerun reports `15` known gaps / `573` measured workloads while the tracked summary assertions still expect the pre-`RBR-0465` `16`-gap / `572`-measured publication, so do not use those broad suites as this task's acceptance gate.
 - 2026-03-16 verification: the structural command above fails in the current checkout with the stored-count list beginning `['branch-local-backreference-boundary', 'collection-replacement-boundary', 'compile-matrix', ...]`, which is the exact remaining duplication this task is meant to delete.
+
+## Completion
+- 2026-03-16: Removed stored `known_gap_count` fields from `SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS` and deleted empty `representative_known_gap_workload_ids: ()` entries from zero-gap manifests, leaving the raw table with only explicit gap inventories and non-empty representative gap subsets.
+- 2026-03-16: Kept the public helper shape unchanged on the existing normalization path by synthesizing `known_gap_count` and defaulting `representative_known_gap_workload_ids` to `()` in `_public_source_tree_manifest_expectation(...)`, and by using that same defaulted representative-gap path when resolving single-manifest `source_tree_scorecard_case(...)` definitions.
+- 2026-03-16: Added focused regression coverage in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` for the zero-gap raw/default cleanup and reran `PYTHONPATH=python ./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'manifest_gap_inventories or zero_gap_manifests' -q` (`2 passed`).
+- 2026-03-16: Verified the structural cleanup with a repo-local Python probe that confirmed no raw manifest expectations still store `known_gap_count` or empty representative-gap tuples, `source_tree_combined_case("pattern-boundary")` still returns `known_gap_count == 0` and `representative_known_gap_workload_ids == ()`, `literal-flag-boundary` still reports the same representative known-gap tuple, and `source_tree_scorecard_case("post-parser-workflows")` still derives `0` for `collection-replacement-boundary` and `2` for `literal-flag-boundary`.
+- 2026-03-16: The task's pasted verification snippet has one stale lookup: `source_tree_scorecard_case("post-parser-workflows")["manifest_expectations"]["pattern-boundary"]` raises `KeyError` because that scorecard case does not include `pattern-boundary`. The equivalent zero-gap scorecard-path check above passed against the zero-gap manifest that case does include.
