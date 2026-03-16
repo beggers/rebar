@@ -43,6 +43,21 @@ class SourceTreeBenchmarkCommonCase:
     selected_workload_ids_by_manifest: dict[str, tuple[str, ...]]
     selection_mode: str
 
+    def init_kwargs(self) -> dict[str, Any]:
+        return {
+            "expected_adapter": self.expected_adapter,
+            "expected_manifest_paths": self.expected_manifest_paths,
+            "expected_phase": self.expected_phase,
+            "expected_runner_version": self.expected_runner_version,
+            "expected_summary": self.expected_summary,
+            "manifests": self.manifests,
+            "manifests_by_id": self.manifests_by_id,
+            "manifest_paths": self.manifest_paths,
+            "manifest_paths_by_id": self.manifest_paths_by_id,
+            "selected_workload_ids_by_manifest": self.selected_workload_ids_by_manifest,
+            "selection_mode": self.selection_mode,
+        }
+
 
 @dataclass(frozen=True, slots=True)
 class SourceTreeManifestExpectation:
@@ -75,17 +90,7 @@ class SourceTreeScorecardCase(SourceTreeBenchmarkCommonCase):
         workload_note_substrings: dict[str, str] | None = None,
     ) -> SourceTreeScorecardCase:
         return cls(
-            expected_adapter=common_case.expected_adapter,
-            expected_manifest_paths=common_case.expected_manifest_paths,
-            expected_phase=common_case.expected_phase,
-            expected_runner_version=common_case.expected_runner_version,
-            expected_summary=common_case.expected_summary,
-            manifests=common_case.manifests,
-            manifests_by_id=common_case.manifests_by_id,
-            manifest_paths=common_case.manifest_paths,
-            manifest_paths_by_id=common_case.manifest_paths_by_id,
-            selected_workload_ids_by_manifest=common_case.selected_workload_ids_by_manifest,
-            selection_mode=common_case.selection_mode,
+            **common_case.init_kwargs(),
             case_id=case_id,
             manifest_expectations=manifest_expectations,
             representative_measured_workload_ids=representative_measured_workload_ids,
@@ -126,17 +131,7 @@ class SourceTreeCombinedCase(SourceTreeBenchmarkCommonCase):
         target_manifest: BenchmarkManifest,
     ) -> SourceTreeCombinedCase:
         return cls(
-            expected_adapter=common_case.expected_adapter,
-            expected_manifest_paths=common_case.expected_manifest_paths,
-            expected_phase=common_case.expected_phase,
-            expected_runner_version=common_case.expected_runner_version,
-            expected_summary=common_case.expected_summary,
-            manifests=common_case.manifests,
-            manifests_by_id=common_case.manifests_by_id,
-            manifest_paths=common_case.manifest_paths,
-            manifest_paths_by_id=common_case.manifest_paths_by_id,
-            selected_workload_ids_by_manifest=common_case.selected_workload_ids_by_manifest,
-            selection_mode=common_case.selection_mode,
+            **common_case.init_kwargs(),
             manifest_expectation=manifest_expectation,
             manifest_id=manifest_id,
             manifest_path=manifest_path,
