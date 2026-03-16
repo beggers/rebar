@@ -329,7 +329,7 @@ The published slice is still narrow: all 967 published correctness cases now pas
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The concrete surviving follow-on is `RBR-0485`, which should republish the exact numbered-backreference grouped-segment benchmark pair on `numbered-backreference-boundary` as measured source-tree timings, moving the published benchmark report from `588` total / `577` measured / `11` known gaps to `588` / `579` / `9` while `numbered-backreference-boundary` moves from `3` measured / `2` known gaps to `5` / `0`.
+- The concrete surviving follow-on is `RBR-0487`, which should republish the exact nested-group benchmark pair on `nested-group-boundary` as measured source-tree timings, moving the published benchmark report from `588` total / `579` measured / `9` known gaps to `588` / `581` / `7` while `nested-group-boundary` moves from `6` measured / `2` known gaps to `8` / `0`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
