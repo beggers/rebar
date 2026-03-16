@@ -69,6 +69,11 @@ _PUBLISHED_FULL_SUITE_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
+    / "nested_group_alternation_wrapper_replacement_workflows.py",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
     / "nested_group_replacement_workflows.py",
     REPO_ROOT
     / "tests"

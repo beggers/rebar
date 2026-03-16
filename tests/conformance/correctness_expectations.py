@@ -267,6 +267,12 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "pattern-subn-template-nested-group-alternation-named-outer-first-match-only-str",
         ),
     ),
+    "nested-group-alternation-wrapper-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
+            "module-sub-template-nested-group-alternation-numbered-wrapper-str",
+            "pattern-subn-template-nested-group-alternation-named-wrapper-first-match-only-str",
+        ),
+    ),
     "nested-group-replacement-workflows": CorrectnessScorecardManifestExpectation(
         representative_case_ids=(
             "module-sub-template-nested-group-numbered-str",
