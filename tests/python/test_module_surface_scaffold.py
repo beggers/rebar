@@ -496,7 +496,7 @@ def test_source_package_literal_replacement_helpers_reject_string_bytes_mismatch
 
 def test_source_package_module_and_pattern_helpers_stay_loud_for_unsupported_cases() -> None:
     with pytest.raises(NotImplementedError) as module_flags:
-        rebar.search("abc", "abc", rebar.IGNORECASE | rebar.ASCII)
+        rebar.search("abc", "abc", rebar.IGNORECASE | rebar.VERBOSE)
 
     _assert_placeholder_message(
         module_flags.value,
@@ -511,7 +511,7 @@ def test_source_package_module_and_pattern_helpers_stay_loud_for_unsupported_cas
         "rebar.compile() is a scaffold placeholder",
     )
 
-    pattern = rebar.compile("abc", rebar.IGNORECASE | rebar.ASCII)
+    pattern = rebar.compile("abc", rebar.IGNORECASE | rebar.VERBOSE)
 
     for method_name in ("search", "match", "fullmatch"):
         with pytest.raises(NotImplementedError) as bound_flags:

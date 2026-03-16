@@ -1633,13 +1633,12 @@ def compile(pattern: str | bytes | Pattern, flags: int = 0) -> Pattern:
 def search(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> Match | None:
     """Literal-only drop-in slice for `re.search`."""
 
-    compiled = compile(pattern, flags)
-    try:
-        return compiled.search(string)
-    except NotImplementedError as exc:
-        if str(exc) == _pattern_placeholder_message("search"):
-            return _raise_placeholder("search")
-        raise
+    return _call_compiled_pattern_method(
+        pattern,
+        flags,
+        "search",
+        lambda compiled: compiled.search(string),
+    )
 
 
 def _translate_pattern_placeholder(method_name: str, call) -> object:
@@ -1651,28 +1650,65 @@ def _translate_pattern_placeholder(method_name: str, call) -> object:
         raise
 
 
+def _call_compiled_pattern_method(
+    pattern: str | bytes | Pattern,
+    flags: int,
+    method_name: str,
+    call,
+) -> object:
+    compiled = compile(pattern, flags)
+    return _translate_pattern_placeholder(method_name, lambda: call(compiled))
+
+
+def _validate_module_literal_replacement_request(
+    pattern: str | bytes,
+    repl: object,
+    flags: int,
+    *,
+    helper_name: str,
+) -> None:
+    _ensure_literal_replacement_payload(
+        pattern,
+        repl,
+        unsupported=_raise_placeholder,
+        helper_name=helper_name,
+        allow_native_template_passthrough=_allow_native_template_passthrough(pattern),
+    )
+    if (
+        isinstance(pattern, str)
+        and isinstance(repl, str)
+        and "\\" in repl
+        and _supports_pattern_scaffold(pattern)
+        and _expand_literal_replacement_template(repl, "") is None
+    ):
+        _raise_placeholder(helper_name)
+    if len(pattern) == 0:
+        _raise_placeholder(helper_name)
+    normalized_flags = _normalize_pattern_flags(pattern, int(flags))
+    if normalized_flags != _normalize_pattern_flags(pattern, 0):
+        _raise_placeholder(helper_name)
+
+
 def match(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> Match | None:
     """Literal-only drop-in slice for `re.match`."""
 
-    compiled = compile(pattern, flags)
-    try:
-        return compiled.match(string)
-    except NotImplementedError as exc:
-        if str(exc) == _pattern_placeholder_message("match"):
-            return _raise_placeholder("match")
-        raise
+    return _call_compiled_pattern_method(
+        pattern,
+        flags,
+        "match",
+        lambda compiled: compiled.match(string),
+    )
 
 
 def fullmatch(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> Match | None:
     """Literal-only drop-in slice for `re.fullmatch`."""
 
-    compiled = compile(pattern, flags)
-    try:
-        return compiled.fullmatch(string)
-    except NotImplementedError as exc:
-        if str(exc) == _pattern_placeholder_message("fullmatch"):
-            return _raise_placeholder("fullmatch")
-        raise
+    return _call_compiled_pattern_method(
+        pattern,
+        flags,
+        "fullmatch",
+        lambda compiled: compiled.fullmatch(string),
+    )
 
 
 def split(
@@ -1683,25 +1719,34 @@ def split(
 ) -> object:
     """Literal-only drop-in slice for `re.split`."""
 
-    compiled = compile(pattern, flags)
-    return _translate_pattern_placeholder(
+    return _call_compiled_pattern_method(
+        pattern,
+        flags,
         "split",
-        lambda: compiled.split(string, maxsplit=maxsplit),
+        lambda compiled: compiled.split(string, maxsplit=maxsplit),
     )
 
 
 def findall(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> object:
     """Literal-only drop-in slice for `re.findall`."""
 
-    compiled = compile(pattern, flags)
-    return _translate_pattern_placeholder("findall", lambda: compiled.findall(string))
+    return _call_compiled_pattern_method(
+        pattern,
+        flags,
+        "findall",
+        lambda compiled: compiled.findall(string),
+    )
 
 
 def finditer(pattern: str | bytes | Pattern, string: object, flags: int = 0) -> object:
     """Literal-only drop-in slice for `re.finditer`."""
 
-    compiled = compile(pattern, flags)
-    return _translate_pattern_placeholder("finditer", lambda: compiled.finditer(string))
+    return _call_compiled_pattern_method(
+        pattern,
+        flags,
+        "finditer",
+        lambda compiled: compiled.finditer(string),
+    )
 
 
 def sub(
@@ -1716,29 +1761,19 @@ def sub(
     if not isinstance(pattern, Pattern):
         if not isinstance(pattern, (str, bytes)):
             raise TypeError("first argument must be string or compiled pattern")
-        _ensure_literal_replacement_payload(
+        _validate_module_literal_replacement_request(
             pattern,
             repl,
-            unsupported=_raise_placeholder,
+            flags,
             helper_name="sub",
-            allow_native_template_passthrough=_allow_native_template_passthrough(pattern),
         )
-        if (
-            isinstance(pattern, str)
-            and isinstance(repl, str)
-            and "\\" in repl
-            and _supports_pattern_scaffold(pattern)
-            and _expand_literal_replacement_template(repl, "") is None
-        ):
-            return _raise_placeholder("sub")
-        if len(pattern) == 0:
-            return _raise_placeholder("sub")
-        normalized_flags = _normalize_pattern_flags(pattern, int(flags))
-        if normalized_flags != _normalize_pattern_flags(pattern, 0):
-            return _raise_placeholder("sub")
 
-    compiled = compile(pattern, flags)
-    return _translate_pattern_placeholder("sub", lambda: compiled.sub(repl, string, count=count))
+    return _call_compiled_pattern_method(
+        pattern,
+        flags,
+        "sub",
+        lambda compiled: compiled.sub(repl, string, count=count),
+    )
 
 
 def subn(
@@ -1753,29 +1788,19 @@ def subn(
     if not isinstance(pattern, Pattern):
         if not isinstance(pattern, (str, bytes)):
             raise TypeError("first argument must be string or compiled pattern")
-        _ensure_literal_replacement_payload(
+        _validate_module_literal_replacement_request(
             pattern,
             repl,
-            unsupported=_raise_placeholder,
+            flags,
             helper_name="subn",
-            allow_native_template_passthrough=_allow_native_template_passthrough(pattern),
         )
-        if (
-            isinstance(pattern, str)
-            and isinstance(repl, str)
-            and "\\" in repl
-            and _supports_pattern_scaffold(pattern)
-            and _expand_literal_replacement_template(repl, "") is None
-        ):
-            return _raise_placeholder("subn")
-        if len(pattern) == 0:
-            return _raise_placeholder("subn")
-        normalized_flags = _normalize_pattern_flags(pattern, int(flags))
-        if normalized_flags != _normalize_pattern_flags(pattern, 0):
-            return _raise_placeholder("subn")
 
-    compiled = compile(pattern, flags)
-    return _translate_pattern_placeholder("subn", lambda: compiled.subn(repl, string, count=count))
+    return _call_compiled_pattern_method(
+        pattern,
+        flags,
+        "subn",
+        lambda compiled: compiled.subn(repl, string, count=count),
+    )
 
 
 def template(*_args: object, **_kwargs: object) -> object:
