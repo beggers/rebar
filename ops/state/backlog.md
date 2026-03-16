@@ -1,10 +1,11 @@
 # Backlog
 
 ## Current Milestone
-After the single ready conditional callable-replacement exception benchmark catch-up drains, the concrete surviving follow-on is `RBR-0447`, which should convert the three old `module.compile("^abc$")` cold/warm/purged gap rows on `benchmarks/workloads/module_boundary.py` into measured source-tree timings through the Python-facing `rebar` path.
+After the single ready anchored `module.compile("^abc$")` correctness publication task drains, the concrete surviving follow-on is `RBR-0449`, which should convert that newly published anchored literal compile slice to real Rust-backed parity on the public `rebar.compile()` path before the adjacent `module_boundary.py` compile rows can be measured.
 
 ## Ordered Work
-1. `RBR-0447` should catch the old `module-boundary` compile-benchmark hole up on `benchmarks/workloads/module_boundary.py` by converting the `module.compile("^abc$")` cold, warm, and purged rows from explicit gaps into measured source-tree timings, updating the shared source-tree benchmark expectations, and regenerating `reports/benchmarks/latest.py`.
+1. `RBR-0449` should add bounded Rust-backed parity for the newly published anchored `module.compile("^abc$")` slice by teaching the public compile path to return CPython-matching compile metadata for that exact `str` pattern on the native boundary, locking the behavior down on the shared module-facing pytest surface, and regenerating `reports/correctness/latest.py`.
+2. `RBR-0450` should catch the old `module-boundary` compile-benchmark hole up on `benchmarks/workloads/module_boundary.py` by converting the `module.compile("^abc$")` cold, warm, and purged rows from explicit gaps into measured source-tree timings, updating the shared source-tree benchmark expectations, and regenerating `reports/benchmarks/latest.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
