@@ -1,8 +1,9 @@
 # RBR-0484: Collapse source-tree scorecard case definitions onto typed records
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
+Completed: 2026-03-16
 
 ## Goal
 - Replace the remaining dict-shaped source-tree benchmark scorecard case-definition payloads with an explicit typed record, so the benchmark expectation registry stops rebuilding anonymous `public_case_definition` dicts and the last raw case-definition string-key coupling disappears from the source-tree scorecard path.
@@ -88,3 +89,8 @@ Created: 2026-03-16
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passes in the current checkout (`19 passed, 488 subtests passed in 20.69s`).
   - `rg -n 'public_case_definition|SOURCE_TREE_SCORECARD_EXPECTATIONS: dict\\[str, dict\\[str, Any\\]\\]|def _source_tree_scorecard_case_definition\\(|case_definition\\["manifest_ids"\\]|case_definition\\["selection_mode"\\]|case_definition\\.get\\("(representative_measured_workload_ids|representative_known_gap_workload_ids|expected_first_deferred|expected_workload_order|workload_note_substrings|_derived_manifest_known_gap_counts)"\\)' tests/benchmarks/benchmark_expectations.py tests/benchmarks/test_source_tree_benchmark_scorecards.py` currently returns the string-key and staging-dict matches listed above, which is the exact coupling this task should delete rather than rename.
   - The public typed-record probe above currently fails with `AssertionError: <class 'dict'>`, which is the exact public-shape cleanup this task is meant to complete.
+
+## Completion
+- 2026-03-16: Added a local typed source-tree scorecard definition record in `tests/benchmarks/benchmark_expectations.py` and converted `SOURCE_TREE_SCORECARD_EXPECTATIONS[...]` from dict payloads to typed instances while keeping the same case ids, manifest ordering, selection modes, representative workload ids, deferred/order metadata, and known-gap override behavior.
+- 2026-03-16: Rewired `_single_manifest_scorecard_fallback_expectation(...)`, `_source_tree_manifest_known_gap_counts(...)`, and `source_tree_scorecard_case(...)` to use attribute access directly and deleted the intermediate `public_case_definition` staging dict.
+- 2026-03-16: Updated `tests/benchmarks/test_source_tree_benchmark_scorecards.py` to assert the typed registry surface through attributes, and verified `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `19 passed, 488 subtests passed in 20.56s`, the required `rg -n ...` check returned no matches, and the public typed-record probe printed `ok`.

@@ -32,10 +32,11 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
     def test_raw_scorecard_case_definitions_use_direct_manifest_ids(self) -> None:
         for case_id, case_definition in SOURCE_TREE_SCORECARD_EXPECTATIONS.items():
             with self.subTest(case_id=case_id):
-                self.assertNotIn("full_manifest_ids", case_definition)
-                self.assertIn("manifest_ids", case_definition)
-                self.assertGreaterEqual(len(case_definition["manifest_ids"]), 1)
-                self.assertIn(case_definition["selection_mode"], {"full", "smoke"})
+                self.assertFalse(isinstance(case_definition, dict))
+                self.assertFalse(hasattr(case_definition, "full_manifest_ids"))
+                self.assertTrue(hasattr(case_definition, "manifest_ids"))
+                self.assertGreaterEqual(len(case_definition.manifest_ids), 1)
+                self.assertIn(case_definition.selection_mode, {"full", "smoke"})
 
     def test_full_scorecard_cases_derive_known_gap_counts_from_manifest_inventories(
         self,
