@@ -8,7 +8,8 @@ import subprocess
 import sys
 import tempfile
 import textwrap
-import unittest
+
+import pytest
 
 from rebar_harness import benchmarks
 
@@ -122,116 +123,88 @@ PROBE = textwrap.dedent(
 )
 
 
-class RebarNativeExtensionSmokeTest(unittest.TestCase):
-    @unittest.skipUnless(
-        MATURIN is not None,
-        "native extension smoke requires a maturin executable on PATH",
-    )
-    def test_built_wheel_keeps_native_surface_contract(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="rebar-native-smoke-") as temp_dir:
-            temp_root = pathlib.Path(temp_dir)
-            provisioned, temp_dir_handle, error = benchmarks.provision_built_native_runtime()
-            self.assertIsNotNone(provisioned, error)
-            self.assertIsNotNone(temp_dir_handle, error)
-            assert provisioned is not None
-            assert temp_dir_handle is not None
+@pytest.mark.skipif(
+    MATURIN is None,
+    reason="native extension smoke requires a maturin executable on PATH",
+)
+def test_built_wheel_keeps_native_surface_contract() -> None:
+    with tempfile.TemporaryDirectory(prefix="rebar-native-smoke-") as temp_dir:
+        temp_root = pathlib.Path(temp_dir)
+        provisioned, temp_dir_handle, error = benchmarks.provision_built_native_runtime()
+        assert provisioned is not None, error
+        assert temp_dir_handle is not None, error
 
-            env = os.environ.copy()
-            env["PYTHONPATH"] = os.pathsep.join(
-                str(path) for path in (provisioned["install_root"], PYTHON_SOURCE)
-            )
+        env = os.environ.copy()
+        env["PYTHONPATH"] = os.pathsep.join(
+            str(path) for path in (provisioned["install_root"], PYTHON_SOURCE)
+        )
 
-            try:
-                completed = subprocess.run(
-                    [sys.executable, "-c", PROBE],
-                    cwd=temp_root,
-                    check=True,
-                    capture_output=True,
-                    text=True,
-                    env=env,
-                )
-            finally:
-                temp_dir_handle.cleanup()
-            result = json.loads(completed.stdout)
+        try:
+            completed = subprocess.run(
+                [sys.executable, "-c", PROBE],
+                cwd=temp_root,
+                check=True,
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+        finally:
+            temp_dir_handle.cleanup()
+        result = json.loads(completed.stdout)
 
-            self.assertTrue(result["native_module_loaded"])
-            self.assertEqual(result["native_scaffold_status"], "scaffold-only")
-            self.assertEqual(result["native_target_cpython_series"], "3.12.x")
-            self.assertTrue(result["native_private_flag"])
-            self.assertEqual(result["native_module_name"], "rebar._rebar")
-            self.assertTrue(result["exported_helpers_present"])
-            self.assertIsNone(result["purge_result"])
-            self.assertEqual(
-                result["template_exception"],
-                {
-                    "type": "NotImplementedError",
-                    "message": "rebar.template() is a scaffold placeholder",
-                },
-            )
-            self.assertIsNone(result["compile_exception"])
-            self.assertEqual(
-                result["compiled_pattern"],
-                {
-                    "type_name": "Pattern",
-                    "type_module": "re",
-                    "pattern": "abc",
-                    "flags": 34,
-                    "groups": 0,
-                    "groupindex": {},
-                },
-            )
-            self.assertIsNone(result["compiled_search_exception"])
-            self.assertEqual(
-                result["compiled_search"],
-                {
-                    "type_name": "Match",
-                    "group0": "abc",
-                    "span": [0, 3],
-                },
-            )
-            self.assertEqual(
-                result["literal_search"],
-                {
-                    "type_name": "Match",
-                    "group0": "abc",
-                    "span": [2, 5],
-                },
-            )
-            self.assertIsNone(result["literal_match_none"])
-            self.assertEqual(
-                result["literal_fullmatch"],
-                {
-                    "type_name": "Match",
-                    "group0": "abc",
-                    "span": [0, 3],
-                },
-            )
-            self.assertEqual(result["literal_split"], ["", "abc"])
-            self.assertEqual(result["literal_findall"], ["abc", "abc"])
-            self.assertEqual(
-                result["literal_finditer"],
-                [
-                    {
-                        "type_name": "Match",
-                        "group0": "abc",
-                        "span": [1, 4],
-                    },
-                    {
-                        "type_name": "Match",
-                        "group0": "abc",
-                        "span": [4, 7],
-                    },
-                ],
-            )
-            self.assertEqual(
-                result["escape_outputs"],
-                {
-                    "simple_str": "a\\-b\\.c",
-                    "punctuation_str": '\\ !"\\#%\\&,/:;<=>@`\\~',
-                    "simple_bytes": "a\\-b\\.c",
-                },
-            )
-
-
-if __name__ == "__main__":
-    unittest.main()
+        assert result["native_module_loaded"]
+        assert result["native_scaffold_status"] == "scaffold-only"
+        assert result["native_target_cpython_series"] == "3.12.x"
+        assert result["native_private_flag"]
+        assert result["native_module_name"] == "rebar._rebar"
+        assert result["exported_helpers_present"]
+        assert result["purge_result"] is None
+        assert result["template_exception"] == {
+            "type": "NotImplementedError",
+            "message": "rebar.template() is a scaffold placeholder",
+        }
+        assert result["compile_exception"] is None
+        assert result["compiled_pattern"] == {
+            "type_name": "Pattern",
+            "type_module": "re",
+            "pattern": "abc",
+            "flags": 34,
+            "groups": 0,
+            "groupindex": {},
+        }
+        assert result["compiled_search_exception"] is None
+        assert result["compiled_search"] == {
+            "type_name": "Match",
+            "group0": "abc",
+            "span": [0, 3],
+        }
+        assert result["literal_search"] == {
+            "type_name": "Match",
+            "group0": "abc",
+            "span": [2, 5],
+        }
+        assert result["literal_match_none"] is None
+        assert result["literal_fullmatch"] == {
+            "type_name": "Match",
+            "group0": "abc",
+            "span": [0, 3],
+        }
+        assert result["literal_split"] == ["", "abc"]
+        assert result["literal_findall"] == ["abc", "abc"]
+        assert result["literal_finditer"] == [
+            {
+                "type_name": "Match",
+                "group0": "abc",
+                "span": [1, 4],
+            },
+            {
+                "type_name": "Match",
+                "group0": "abc",
+                "span": [4, 7],
+            },
+        ]
+        assert result["escape_outputs"] == {
+            "simple_str": "a\\-b\\.c",
+            "punctuation_str": '\\ !"\\#%\\&,/:;<=>@`\\~',
+            "simple_bytes": "a\\-b\\.c",
+        }
