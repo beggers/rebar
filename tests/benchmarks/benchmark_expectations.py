@@ -211,21 +211,30 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "literal-flag-boundary": {
-        "known_gap_count": 2,
+        "known_gap_workload_ids": (
+            "module-search-ignorecase-ascii-cold-gap",
+            "pattern-search-ignorecase-ascii-warm-gap",
+        ),
         "representative_known_gap_workload_ids": (
             "module-search-ignorecase-ascii-cold-gap",
         ),
         "representative_measured_workload_ids": (),
     },
     "grouped-named-boundary": {
-        "known_gap_count": 2,
+        "known_gap_workload_ids": (
+            "module-search-grouped-segment-cold-gap",
+            "pattern-search-grouped-segment-warm-gap",
+        ),
         "representative_known_gap_workload_ids": (
             "module-search-grouped-segment-cold-gap",
         ),
         "representative_measured_workload_ids": (),
     },
     "numbered-backreference-boundary": {
-        "known_gap_count": 2,
+        "known_gap_workload_ids": (
+            "module-search-numbered-backreference-segment-cold-gap",
+            "pattern-search-numbered-backreference-prefix-purged-gap",
+        ),
         "representative_known_gap_workload_ids": (
             "module-search-numbered-backreference-segment-cold-gap",
         ),
@@ -242,14 +251,20 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "grouped-alternation-boundary": {
-        "known_gap_count": 2,
+        "known_gap_workload_ids": (
+            "module-sub-template-nested-grouped-alternation-warm-gap",
+            "pattern-subn-template-named-nested-grouped-alternation-purged-gap",
+        ),
         "representative_known_gap_workload_ids": (
             "module-sub-template-nested-grouped-alternation-warm-gap",
         ),
         "representative_measured_workload_ids": (),
     },
     "grouped-alternation-replacement-boundary": {
-        "known_gap_count": 2,
+        "known_gap_workload_ids": (
+            "module-sub-template-nested-grouped-alternation-cold-gap",
+            "pattern-subn-template-named-nested-grouped-alternation-replacement-purged-gap",
+        ),
         "representative_known_gap_workload_ids": (
             "module-sub-template-nested-grouped-alternation-cold-gap",
         ),
@@ -261,7 +276,10 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "nested-group-boundary": {
-        "known_gap_count": 2,
+        "known_gap_workload_ids": (
+            "module-search-triple-nested-group-cold-gap",
+            "pattern-fullmatch-named-quantified-nested-group-purged-gap",
+        ),
         "representative_known_gap_workload_ids": (
             "module-search-triple-nested-group-cold-gap",
         ),
@@ -288,21 +306,27 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "optional-group-boundary": {
-        "known_gap_count": 1,
+        "known_gap_workload_ids": (
+            "module-search-numbered-optional-group-conditional-cold-gap",
+        ),
         "representative_known_gap_workload_ids": (
             "module-search-numbered-optional-group-conditional-cold-gap",
         ),
         "representative_measured_workload_ids": (),
     },
     "exact-repeat-quantified-group-boundary": {
-        "known_gap_count": 1,
+        "known_gap_workload_ids": (
+            "module-search-numbered-broader-ranged-repeat-group-cold-gap",
+        ),
         "representative_known_gap_workload_ids": (
             "module-search-numbered-broader-ranged-repeat-group-cold-gap",
         ),
         "representative_measured_workload_ids": (),
     },
     "ranged-repeat-quantified-group-boundary": {
-        "known_gap_count": 1,
+        "known_gap_workload_ids": (
+            "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
+        ),
         "representative_known_gap_workload_ids": (
             "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
         ),
@@ -1379,6 +1403,48 @@ def source_tree_combined_manifest_representative_measured_workload_ids(
     return tuple(representative_ids)
 
 
+def _source_tree_manifest_known_gap_count(
+    manifest_expectation: dict[str, Any],
+    *,
+    selected_workload_ids: Iterable[str] | None = None,
+) -> int:
+    known_gap_workload_ids = tuple(
+        str(workload_id)
+        for workload_id in manifest_expectation.get("known_gap_workload_ids", ())
+    )
+    if known_gap_workload_ids:
+        if selected_workload_ids is None:
+            return len(known_gap_workload_ids)
+        selected_workload_id_set = {
+            str(workload_id) for workload_id in selected_workload_ids
+        }
+        return sum(
+            1
+            for workload_id in known_gap_workload_ids
+            if workload_id in selected_workload_id_set
+        )
+    return int(manifest_expectation.get("known_gap_count", 0))
+
+
+def _public_source_tree_manifest_expectation(
+    manifest_id: str,
+    *,
+    selected_workload_ids: Iterable[str] | None = None,
+) -> dict[str, Any]:
+    manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
+    if manifest_expectation is None:
+        raise AssertionError(
+            f"unknown source-tree combined manifest expectation {manifest_id!r}"
+        )
+    return {
+        **manifest_expectation,
+        "known_gap_count": _source_tree_manifest_known_gap_count(
+            manifest_expectation,
+            selected_workload_ids=selected_workload_ids,
+        ),
+    }
+
+
 def _source_tree_manifest_known_gap_counts(
     manifest_ids: tuple[str, ...],
     case_definition: dict[str, Any],
@@ -1397,18 +1463,14 @@ def _source_tree_manifest_known_gap_counts(
                 "missing known-gap expectation for source-tree scorecard manifest "
                 f"{manifest_id!r}"
             )
-        if (
-            selected_workload_ids_by_manifest is not None
-            and "known_gap_workload_ids" in manifest_expectation
-        ):
-            selected_workload_ids = set(selected_workload_ids_by_manifest.get(manifest_id, ()))
-            known_gap_counts[manifest_id] = sum(
-                1
-                for workload_id in manifest_expectation["known_gap_workload_ids"]
-                if workload_id in selected_workload_ids
-            )
-            continue
-        known_gap_counts[manifest_id] = int(manifest_expectation["known_gap_count"])
+        known_gap_counts[manifest_id] = _source_tree_manifest_known_gap_count(
+            manifest_expectation,
+            selected_workload_ids=(
+                selected_workload_ids_by_manifest.get(manifest_id, ())
+                if selected_workload_ids_by_manifest is not None
+                else None
+            ),
+        )
     return known_gap_counts
 
 
@@ -1431,7 +1493,9 @@ def _resolve_source_tree_scorecard_case_definition(
             )
         manifest_documents.append(manifest_records[manifest_id][1])
         manifest_expectations[manifest_id] = {
-            "known_gap_count": manifest_expectation["known_gap_count"],
+            "known_gap_count": _source_tree_manifest_known_gap_count(
+                manifest_expectation
+            ),
         }
 
     resolved_case_definition = {
@@ -1622,10 +1686,8 @@ def expected_summary_for_manifests(
         manifest_known_gap_counts
         if manifest_known_gap_counts is not None
         else {
-            str(manifest["manifest_id"]): int(
-                SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[str(manifest["manifest_id"])][
-                    "known_gap_count"
-                ]
+            str(manifest["manifest_id"]): _source_tree_manifest_known_gap_count(
+                SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[str(manifest["manifest_id"])]
             )
             for manifest in manifest_documents
             if str(manifest["manifest_id"]) in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
@@ -1695,7 +1757,9 @@ def source_tree_combined_case(target_manifest_id: str) -> dict[str, Any]:
         "manifest_documents_by_id": {
             str(raw_manifest["manifest_id"]): raw_manifest for raw_manifest in raw_manifests
         },
-        "manifest_expectation": SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[target_manifest_id],
+        "manifest_expectation": _public_source_tree_manifest_expectation(
+            target_manifest_id
+        ),
         "manifest_id": target_manifest_id,
         "manifest_path": relative_manifest_path(manifest_path_for_id(target_manifest_id)),
         "manifest_paths": manifest_paths,

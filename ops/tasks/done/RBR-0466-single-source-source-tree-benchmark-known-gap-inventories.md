@@ -1,6 +1,6 @@
 ## RBR-0466: Single-source source-tree benchmark known-gap inventories
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -135,3 +135,10 @@ Created: 2026-03-16
 - The current tracked benchmark report confirms the exact live gap inventories above for those manifests, so this task is a bookkeeping cleanup, not a feature reclassification.
 - 2026-03-16 note: the previous broad-suite verification command is now red for unrelated drift after `RBR-0465` landed. Live source-tree reruns now report `15` known gaps / `573` measured workloads, while the tracked benchmark summary assertions in `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` still expect the pre-`RBR-0465` `16`-gap / `572`-measured totals. That publication follow-on belongs to `RBR-0467`, not this architecture cleanup.
 - 2026-03-16 verification: the isolated structural command above fails in the current checkout with `AssertionError: ('literal-flag-boundary', {'known_gap_count': 2, ...})`, which is the exact remaining cleanup this task is supposed to remove.
+
+## Completion
+- 2026-03-16: Replaced the remaining nine manual source-tree gap counts in `tests/benchmarks/benchmark_expectations.py` with explicit `known_gap_workload_ids` inventories, keeping the existing representative known-gap ids unchanged and preserving the public case shape by deriving `manifest_expectation["known_gap_count"]` through the shared helper path.
+- 2026-03-16: Updated the shared normalization flow used by `source_tree_scorecard_case(...)`, `source_tree_combined_case(...)`, and `expected_summary_for_manifests(...)` so any manifest with explicit `known_gap_workload_ids` now derives its count from that inventory instead of a duplicated stored integer.
+- 2026-03-16: Added focused regression coverage in `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` for the normalization path, then verified the cleanup with the task's structural Python probe and these targeted pytest nodes:
+  - `PYTHONPATH=python .venv/bin/python -m pytest tests/benchmarks/test_source_tree_benchmark_scorecards.py::SourceTreeBenchmarkScorecardTest::test_full_scorecard_cases_derive_known_gap_counts_from_manifest_inventories tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeCombinedBoundaryBenchmarkSuiteTest::test_manifest_gap_inventories_derive_public_known_gap_counts`
+- 2026-03-16: The broader tracked source-tree summary assertions still reflect the pre-`RBR-0465` 16-gap / 572-measured publication and remain intentionally out of scope here; that report-level drift is still owned by `RBR-0467`.

@@ -7,6 +7,7 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 
 from tests.benchmarks.benchmark_expectations import (
+    SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS,
     representative_measured_workload_ids,
     run_source_tree_benchmark_scorecard,
     select_source_tree_combined_slice_rows,
@@ -35,10 +36,63 @@ SLICE_DERIVED_MANIFEST_IDS = (
     "branch-local-backreference-boundary",
     "conditional-group-exists-boundary",
 )
+KNOWN_GAP_WORKLOAD_IDS_BY_MANIFEST = {
+    "literal-flag-boundary": (
+        "module-search-ignorecase-ascii-cold-gap",
+        "pattern-search-ignorecase-ascii-warm-gap",
+    ),
+    "grouped-named-boundary": (
+        "module-search-grouped-segment-cold-gap",
+        "pattern-search-grouped-segment-warm-gap",
+    ),
+    "numbered-backreference-boundary": (
+        "module-search-numbered-backreference-segment-cold-gap",
+        "pattern-search-numbered-backreference-prefix-purged-gap",
+    ),
+    "grouped-alternation-boundary": (
+        "module-sub-template-nested-grouped-alternation-warm-gap",
+        "pattern-subn-template-named-nested-grouped-alternation-purged-gap",
+    ),
+    "grouped-alternation-replacement-boundary": (
+        "module-sub-template-nested-grouped-alternation-cold-gap",
+        "pattern-subn-template-named-nested-grouped-alternation-replacement-purged-gap",
+    ),
+    "nested-group-boundary": (
+        "module-search-triple-nested-group-cold-gap",
+        "pattern-fullmatch-named-quantified-nested-group-purged-gap",
+    ),
+    "optional-group-boundary": (
+        "module-search-numbered-optional-group-conditional-cold-gap",
+    ),
+    "exact-repeat-quantified-group-boundary": (
+        "module-search-numbered-broader-ranged-repeat-group-cold-gap",
+    ),
+    "ranged-repeat-quantified-group-boundary": (
+        "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
+    ),
+}
 
 
 class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     maxDiff = None
+
+    def test_manifest_gap_inventories_derive_public_known_gap_counts(self) -> None:
+        for manifest_id, expected_ids in KNOWN_GAP_WORKLOAD_IDS_BY_MANIFEST.items():
+            with self.subTest(manifest_id=manifest_id):
+                raw_manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+                    manifest_id
+                ]
+                self.assertNotIn("known_gap_count", raw_manifest_expectation)
+                self.assertEqual(
+                    raw_manifest_expectation["known_gap_workload_ids"],
+                    expected_ids,
+                )
+                self.assertEqual(
+                    source_tree_combined_case(manifest_id)["manifest_expectation"][
+                        "known_gap_count"
+                    ],
+                    len(expected_ids),
+                )
 
     def test_scoped_manifests_keep_slice_backed_representatives(self) -> None:
         for manifest_id in SLICE_DERIVED_MANIFEST_IDS:

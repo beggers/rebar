@@ -27,6 +27,15 @@ from tests.report_assertions import (
 class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
     maxDiff = None
 
+    def test_full_scorecard_cases_derive_known_gap_counts_from_manifest_inventories(
+        self,
+    ) -> None:
+        case = source_tree_scorecard_case("post-parser-workflows")
+        self.assertEqual(
+            case["manifest_expectations"]["literal-flag-boundary"]["known_gap_count"],
+            2,
+        )
+
     def test_single_manifest_scorecards_keep_slice_backed_representatives(self) -> None:
         for case_id in (
             "nested-group-replacement-boundary",
