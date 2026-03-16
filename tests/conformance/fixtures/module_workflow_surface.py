@@ -29,6 +29,17 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-compile-str-verbose-regression",
+      "operation": "compile",
+      "family": "compile_workflow",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "flags": 72,
+      "categories": ["workflow", "compile", "verbose", "multiline", "regression", "str"],
+      "notes": [
+        "Publishes the exact verbose module compile workflow that anchors the adjacent regression benchmark row without broadening into cache-state coverage."
+      ]
+    },
+    {
       "id": "workflow-compile-bytes-literal",
       "operation": "compile",
       "family": "compile_workflow",

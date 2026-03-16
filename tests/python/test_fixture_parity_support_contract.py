@@ -694,7 +694,7 @@ def test_case_argument_helpers_cover_module_and_pattern_replacement_rows() -> No
     assert case_text_argument(pattern_case) == pattern_case.args[1]
 
 
-def test_module_workflow_surface_bundle_contract_covers_anchored_compile_case() -> None:
+def test_module_workflow_surface_bundle_contract_covers_verbose_compile_case() -> None:
     bundle = load_fixture_bundle(
         "module_workflow_surface.py",
         expected_manifest_id="module-workflow-surface",
@@ -702,6 +702,7 @@ def test_module_workflow_surface_bundle_contract_covers_anchored_compile_case() 
             {
                 "workflow-compile-str-literal",
                 "workflow-compile-str-anchored-literal",
+                "workflow-compile-str-verbose-regression",
                 "workflow-compile-bytes-literal",
                 "workflow-pattern-search-str",
                 "workflow-pattern-match-str",
@@ -717,6 +718,7 @@ def test_module_workflow_surface_bundle_contract_covers_anchored_compile_case() 
             {
                 "abc",
                 "^abc$",
+                "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
                 b"abc",
                 b"123",
                 "cache-me",
@@ -728,7 +730,7 @@ def test_module_workflow_surface_bundle_contract_covers_anchored_compile_case() 
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("compile", None): 3,
+                ("compile", None): 4,
                 ("pattern_call", "search"): 1,
                 ("pattern_call", "match"): 1,
                 ("pattern_call", "fullmatch"): 1,
@@ -742,15 +744,16 @@ def test_module_workflow_surface_bundle_contract_covers_anchored_compile_case() 
 
     assert bundle.manifest.path == FIXTURES_DIR / "module_workflow_surface.py"
     assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
-    assert "workflow-compile-str-anchored-literal" in {
+    assert "workflow-compile-str-verbose-regression" in {
         case.case_id for case in bundle.cases
     }
 
 
-def test_module_workflow_surface_compile_case_selection_preserves_anchored_row_order() -> None:
+def test_module_workflow_surface_compile_case_selection_preserves_row_order() -> None:
     selected_case_ids = (
         "workflow-compile-str-literal",
         "workflow-compile-str-anchored-literal",
+        "workflow-compile-str-verbose-regression",
         "workflow-compile-bytes-literal",
     )
     (bundle,) = load_selected_case_fixture_bundles(
@@ -759,8 +762,15 @@ def test_module_workflow_surface_compile_case_selection_preserves_anchored_row_o
                 fixture_name="module_workflow_surface.py",
                 expected_manifest_id="module-workflow-surface",
                 selected_case_ids=selected_case_ids,
-                expected_patterns=frozenset({"abc", "^abc$", b"abc"}),
-                expected_operation_helper_counts=Counter({("compile", None): 3}),
+                expected_patterns=frozenset(
+                    {
+                        "abc",
+                        "^abc$",
+                        "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+                        b"abc",
+                    }
+                ),
+                expected_operation_helper_counts=Counter({("compile", None): 4}),
                 expected_text_models=frozenset({"bytes", "str"}),
             ),
         )

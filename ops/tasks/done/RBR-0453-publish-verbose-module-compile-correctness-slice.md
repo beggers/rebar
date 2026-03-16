@@ -1,6 +1,6 @@
 # RBR-0453: Publish the verbose module.compile regression slice on the shared module-workflow surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -29,3 +29,6 @@ Created: 2026-03-16
 - Direct planning verification in the current checkout shows `rebar.compile("^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $", rebar.MULTILINE | rebar.VERBOSE)` still raises `NotImplementedError: rebar.compile() is a scaffold placeholder; the \`re\`-compatible API is not implemented yet`.
 - The adjacent benchmark publication already carries the exact `regression-module-compile-verbose-purged` row in `benchmarks/workloads/regression_matrix.py`, and `reports/benchmarks/latest.py` still publishes it as `status == "unimplemented"`.
 - The intended post-publication follow-on is `RBR-0455`, which should convert this newly published verbose compile case to real Rust-backed parity on the public `rebar.compile()` surface before the adjacent regression benchmark row is turned into a measured source-tree timing.
+- Completed 2026-03-16: added `workflow-compile-str-verbose-regression` to the shared `module-workflow-surface` manifest, updated the shared combined-scorecard expectation table, and aligned the module-workflow fixture-contract/public-surface tests so the new row remains visible while `rebar.compile()` still reports it honestly as unimplemented.
+- Verified from the tracked `reports/correctness/latest.py` artifact: `workflow-compile-str-verbose-regression` now appears with `comparison == "unimplemented"`, the `module.workflow` suite for `module-workflow-surface` is `12` total cases with `11` passes and `1` `unimplemented`, and the combined summary is `959` total cases with `958` passes, `0` failures, and `1` `unimplemented`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_module_workflow_parity_suite.py`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_correctness_fixture_inventory_contract.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0453-verbose-module-compile.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.

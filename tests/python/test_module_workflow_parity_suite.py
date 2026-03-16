@@ -5,6 +5,7 @@ import re
 
 import pytest
 
+import rebar
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
@@ -24,6 +25,7 @@ MODULE_WORKFLOW_FIXTURE_PATH = FIXTURES_DIR / "module_workflow_surface.py"
 EXPECTED_CASE_IDS = (
     "workflow-compile-str-literal",
     "workflow-compile-str-anchored-literal",
+    "workflow-compile-str-verbose-regression",
     "workflow-compile-bytes-literal",
     "workflow-pattern-search-str",
     "workflow-pattern-match-str",
@@ -38,6 +40,7 @@ EXPECTED_PATTERNS = frozenset(
     {
         "abc",
         "^abc$",
+        "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
         b"abc",
         b"123",
         "cache-me",
@@ -49,7 +52,7 @@ EXPECTED_PATTERNS = frozenset(
 )
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
-        ("compile", None): 3,
+        ("compile", None): 4,
         ("pattern_call", "search"): 1,
         ("pattern_call", "match"): 1,
         ("pattern_call", "fullmatch"): 1,
@@ -73,6 +76,13 @@ SELECTED_CASE_BUNDLE_SPECS = (
 )
 
 COMPILE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "compile")
+UNIMPLEMENTED_COMPILE_CASE_ID = "workflow-compile-str-verbose-regression"
+SUPPORTED_COMPILE_CASES = tuple(
+    case for case in COMPILE_CASES if case.case_id != UNIMPLEMENTED_COMPILE_CASE_ID
+)
+UNIMPLEMENTED_COMPILE_CASES = tuple(
+    case for case in COMPILE_CASES if case.case_id == UNIMPLEMENTED_COMPILE_CASE_ID
+)
 PATTERN_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "pattern_call")
 CACHE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "cache_workflow")
 PURGE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "purge_workflow")
@@ -95,7 +105,7 @@ def test_module_workflow_parity_suite_stays_aligned_with_published_fixture() -> 
     )
 
 
-@pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", SUPPORTED_COMPILE_CASES, ids=lambda case: case.case_id)
 def test_compile_workflows_match_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -108,6 +118,25 @@ def test_compile_workflows_match_cpython(
         case_pattern(case),
         case.flags or 0,
     )
+
+
+@pytest.mark.parametrize(
+    "case", UNIMPLEMENTED_COMPILE_CASES, ids=lambda case: case.case_id
+)
+def test_unimplemented_compile_workflow_keeps_placeholder_message(
+    case: FixtureCase,
+) -> None:
+    pattern = case_pattern(case)
+    assert isinstance(pattern, str)
+
+    expected = re.compile(pattern, case.flags or 0)
+    assert expected.pattern == pattern
+    assert expected.groupindex == {"key": 1}
+
+    with pytest.raises(NotImplementedError) as raised:
+        rebar.compile(pattern, case.flags or 0)
+
+    assert "rebar.compile() is a scaffold placeholder" in str(raised.value)
 
 
 @pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
