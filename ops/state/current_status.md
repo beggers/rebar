@@ -329,7 +329,7 @@ The published slice is still narrow: all 965 published correctness cases now pas
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The concrete surviving follow-on is `RBR-0481`, which should publish the exact numbered-backreference grouped-segment search pair on `numbered-backreference-workflows`, moving the combined correctness report from `965` total cases / `965` passes / `0` unimplemented to `967` / `965` / `2` while `match.numbered_backreference` moves from `3` total / `3` passed / `0` unimplemented to `5` / `3` / `2`.
+- The concrete surviving follow-on is `RBR-0483`, which should convert the exact numbered-backreference grouped-segment search pair that `RBR-0481` publishes on `numbered-backreference-workflows` into real Rust-backed parity, moving the post-publication combined correctness report from `967` total / `965` passed / `2` unimplemented to `967` / `967` / `0` while `match.numbered_backreference` moves from `5` / `3` / `2` to `5` / `5` / `0`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
