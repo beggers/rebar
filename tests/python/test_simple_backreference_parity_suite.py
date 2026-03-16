@@ -18,6 +18,7 @@ from tests.python.fixture_parity_support import (
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
+    assert_match_result_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
@@ -59,6 +60,16 @@ class SupplementalMissCase:
     module_case_id: str
     pattern_case_id: str
     misses: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class BoundedPatternCase:
+    id: str
+    pattern_case_id: str
+    helper: str
+    string: str
+    bounds: tuple[int, int]
+
 
 FIXTURE_BUNDLE_SPECS = (
     FixtureBundleSpec(
@@ -136,6 +147,66 @@ SUPPLEMENTAL_MISS_CASES = (
         misses=("zzabzz", "zzz"),
     ),
 )
+PATTERN_BOUNDS_MATCH_CASES = (
+    BoundedPatternCase(
+        id="numbered-backreference-match-honors-narrowed-window",
+        pattern_case_id="numbered-backreference-pattern-search-str",
+        helper="match",
+        string="zzababzz",
+        bounds=(2, 6),
+    ),
+    BoundedPatternCase(
+        id="named-backreference-fullmatch-honors-narrowed-window",
+        pattern_case_id="named-backreference-pattern-search-str",
+        helper="fullmatch",
+        string="zzababzz",
+        bounds=(2, 6),
+    ),
+    BoundedPatternCase(
+        id="numbered-backreference-segment-search-honors-narrowed-window",
+        pattern_case_id="numbered-backreference-segment-module-search-str",
+        helper="search",
+        string="zzabxabzz",
+        bounds=(2, 7),
+    ),
+    BoundedPatternCase(
+        id="numbered-backreference-prefix-search-normalizes-negative-and-oversized-bounds",
+        pattern_case_id="numbered-backreference-prefix-pattern-search-str",
+        helper="search",
+        string="zzxababzz",
+        bounds=(-100, 999),
+    ),
+)
+PATTERN_BOUNDS_NO_MATCH_CASES = (
+    BoundedPatternCase(
+        id="numbered-backreference-search-skips-match-before-pos",
+        pattern_case_id="numbered-backreference-pattern-search-str",
+        helper="search",
+        string="zzababzz",
+        bounds=(3, 8),
+    ),
+    BoundedPatternCase(
+        id="named-backreference-fullmatch-does-not-expand-to-the-whole-string",
+        pattern_case_id="named-backreference-pattern-search-str",
+        helper="fullmatch",
+        string="zzababzz",
+        bounds=(-100, 999),
+    ),
+    BoundedPatternCase(
+        id="numbered-backreference-segment-search-skips-match-before-pos",
+        pattern_case_id="numbered-backreference-segment-module-search-str",
+        helper="search",
+        string="zzabxabzz",
+        bounds=(3, 9),
+    ),
+    BoundedPatternCase(
+        id="numbered-backreference-prefix-search-fails-when-endpos-truncates-the-replay",
+        pattern_case_id="numbered-backreference-prefix-pattern-search-str",
+        helper="search",
+        string="zzxababzz",
+        bounds=(2, 6),
+    ),
+)
 
 
 def _module_call_with_text(regex_api: object, case: FixtureCase, text: str) -> object:
@@ -155,6 +226,14 @@ def _pattern_call_with_text(compiled_pattern: object, case: FixtureCase, text: s
     assert case.helper is not None
 
     return getattr(compiled_pattern, case.helper)(text, *case.args[1:], **case.kwargs)
+
+
+def _bounded_pattern(case: BoundedPatternCase) -> str:
+    return str_case_pattern(CASES_BY_ID[case.pattern_case_id])
+
+
+def _invoke_bound_helper(pattern: object, case: BoundedPatternCase) -> object:
+    return getattr(pattern, case.helper)(case.string, *case.bounds)
 
 
 def _match_for_case(
@@ -227,6 +306,21 @@ def test_simple_backreference_direct_match_and_miss_parametrizations_stay_suppor
     assert not (frozenset(KNOWN_UNSUPPORTED_CASE_IDS) & supplemental_case_ids)
 
 
+def test_pattern_bounds_cases_stay_anchored_to_supported_simple_backreference_patterns() -> None:
+    assert str_case_pattern(CASES_BY_ID["named-backreference-pattern-search-str"]) == (
+        r"(?P<word>ab)(?P=word)"
+    )
+    assert str_case_pattern(CASES_BY_ID["numbered-backreference-pattern-search-str"]) == (
+        r"(ab)\1"
+    )
+    assert str_case_pattern(CASES_BY_ID["numbered-backreference-segment-module-search-str"]) == (
+        r"(ab)x\1"
+    )
+    assert str_case_pattern(CASES_BY_ID["numbered-backreference-prefix-pattern-search-str"]) == (
+        r"x(ab)\1"
+    )
+
+
 @pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
@@ -255,6 +349,52 @@ def test_search_results_match_cpython(
     assert_match_convenience_api_parity(observed, expected)
     assert_valid_match_group_access_parity(observed, expected)
     assert_invalid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize("case", PATTERN_BOUNDS_MATCH_CASES, ids=lambda case: case.id)
+def test_compiled_pattern_bounds_match_cpython(
+    regex_backend: tuple[str, object],
+    case: BoundedPatternCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        _bounded_pattern(case),
+    )
+
+    observed = _invoke_bound_helper(observed_pattern, case)
+    expected = _invoke_bound_helper(expected_pattern, case)
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_parity(backend_name, observed, expected, check_regs=True)
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+    assert_match_convenience_api_parity(observed, expected)
+    assert_valid_match_group_access_parity(observed, expected)
+    assert_invalid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize("case", PATTERN_BOUNDS_NO_MATCH_CASES, ids=lambda case: case.id)
+def test_compiled_pattern_bounds_no_match_paths_match_cpython(
+    regex_backend: tuple[str, object],
+    case: BoundedPatternCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        _bounded_pattern(case),
+    )
+
+    observed = _invoke_bound_helper(observed_pattern, case)
+    expected = _invoke_bound_helper(expected_pattern, case)
+
+    assert observed is None
+    assert expected is None
+    assert_match_result_parity(backend_name, observed, expected)
 
 
 @pytest.mark.parametrize("case", SUPPLEMENTAL_MISS_CASES, ids=lambda case: case.id)
