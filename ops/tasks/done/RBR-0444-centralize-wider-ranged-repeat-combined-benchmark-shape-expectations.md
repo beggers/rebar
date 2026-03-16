@@ -1,8 +1,9 @@
 # RBR-0444: Centralize wider-ranged-repeat combined benchmark shape expectations
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
+Completed: 2026-03-16
 
 ## Goal
 - Replace the last wider-ranged-repeat-specific manifest-shape constants and helper path in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with shared expectation data in `tests/benchmarks/benchmark_expectations.py`, so the combined source-tree benchmark suite stops carrying one bespoke benchmark-slice block after `RBR-0425`.
@@ -53,3 +54,4 @@ Created: 2026-03-16
   - `git ls-files '*.json' | wc -l = 0`
   - `rg --files -g '*.json' | wc -l = 0`
 - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` still carries one wider-ranged-repeat-only constant block even after `RBR-0425`, while `tests/benchmarks/benchmark_expectations.py` already owns the rest of the combined-suite selector, manifest, and slice expectation plumbing.
+- Completed 2026-03-16: moved the wider-ranged-repeat combined-suite manifest-shape expectations into the existing `SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS` entry in `tests/benchmarks/benchmark_expectations.py`, rewired `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to consume that shared shape data through a generic pattern-group assertion path, confirmed `rg -n 'WIDER_RANGED_REPEAT_REPRESENTATIVE_MEASURED_WORKLOAD_IDS|WIDER_RANGED_REPEAT_PATTERN_GROUPS|def _assert_wider_ranged_repeat_pattern_group' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` returns no matches, and verified `PYTHONPATH=python .venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`4 passed`, `342 subtests passed`).

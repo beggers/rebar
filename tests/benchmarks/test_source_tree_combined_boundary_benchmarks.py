@@ -11,6 +11,7 @@ from tests.benchmarks.benchmark_expectations import (
     run_source_tree_benchmark_scorecard,
     select_source_tree_combined_slice_rows,
     source_tree_combined_case,
+    source_tree_combined_manifest_shape_expectation,
     source_tree_combined_slice_expectations,
     source_tree_combined_slice_manifest_ids,
     source_tree_combined_target_manifest_ids,
@@ -25,105 +26,6 @@ from tests.report_assertions import (
 )
 
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"
-WIDER_RANGED_REPEAT_REPRESENTATIVE_MEASURED_WORKLOAD_IDS = (
-    "module-search-numbered-wider-ranged-repeat-group-broader-range-cold-gap",
-    "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-upper-bound-mixed-purged-str",
-    "pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-gap",
-    "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-conditional-absent-warm-str",
-    "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-fourth-repetition-mixed-purged-str",
-)
-WIDER_RANGED_REPEAT_PATTERN_GROUPS = (
-    {
-        "label": "nested broader-range grouped alternation",
-        "patterns": (
-            "a((bc|de){1,4})d",
-            "a(?P<outer>(bc|de){1,4})d",
-        ),
-        "minimum_rows": 6,
-        "required_operations": (
-            "module.compile",
-            "module.search",
-            "pattern.fullmatch",
-        ),
-        "required_categories": (
-            "nested-group",
-            "alternation",
-            "ranged-repeat",
-            "broader-range",
-            "counted-repeat",
-        ),
-        "search_haystack_substrings": (
-            "abcd",
-            "aded",
-        ),
-        "pattern_haystacks": (
-            "abcbcded",
-            "adedededed",
-        ),
-    },
-    {
-        "label": "nested broader-range grouped conditional",
-        "patterns": (
-            "a(((bc|de){1,4})d)?(?(1)e|f)",
-            "a(?P<outer>((bc|de){1,4})d)?(?(outer)e|f)",
-        ),
-        "minimum_rows": 7,
-        "required_operations": (
-            "module.compile",
-            "module.search",
-            "pattern.fullmatch",
-        ),
-        "required_categories": (
-            "nested-group",
-            "alternation",
-            "conditional",
-            "optional-group",
-            "ranged-repeat",
-            "broader-range",
-            "counted-repeat",
-        ),
-        "search_haystacks": (
-            "zzafzz",
-            "zzabcdezz",
-            "zzadedezz",
-        ),
-        "pattern_haystacks": (
-            "abcbcdede",
-            "adedededede",
-        ),
-    },
-    {
-        "label": "nested broader-range grouped backtracking-heavy",
-        "patterns": (
-            "a(((bc|b)c){1,4})d",
-            "a(?P<outer>((bc|b)c){1,4})d",
-        ),
-        "minimum_rows": 7,
-        "required_operations": (
-            "module.compile",
-            "module.search",
-            "pattern.fullmatch",
-        ),
-        "required_categories": (
-            "grouped",
-            "nested-group",
-            "alternation",
-            "backtracking-heavy",
-            "ranged-repeat",
-            "broader-range",
-            "counted-repeat",
-        ),
-        "search_haystacks": (
-            "zzabcdzz",
-            "zzabccdzz",
-        ),
-        "pattern_haystacks": (
-            "abcbccd",
-            "abccbcd",
-            "abcbccbccbcd",
-        ),
-    },
-)
 
 
 class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
@@ -288,6 +190,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         case = source_tree_combined_case(WIDER_RANGED_REPEAT_MANIFEST_ID)
+        shape_expectation = source_tree_combined_manifest_shape_expectation(
+            WIDER_RANGED_REPEAT_MANIFEST_ID
+        )
         _, scorecard = run_source_tree_benchmark_scorecard(case["manifest_paths"])
 
         manifest_summary = scorecard["manifests"][WIDER_RANGED_REPEAT_MANIFEST_ID]
@@ -301,7 +206,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             len(case["target_manifest"]["workloads"]),
         )
 
-        for workload_id in WIDER_RANGED_REPEAT_REPRESENTATIVE_MEASURED_WORKLOAD_IDS:
+        for workload_id in shape_expectation["representative_measured_workload_ids"]:
             with self.subTest(workload_id=workload_id):
                 assert_benchmark_workload_contract(
                     self,
@@ -314,38 +219,38 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     expected_status="measured",
                 )
 
-        for pattern_group in WIDER_RANGED_REPEAT_PATTERN_GROUPS:
-            with self.subTest(group=pattern_group["label"]):
-                self._assert_wider_ranged_repeat_pattern_group(
+        for pattern_group in shape_expectation["pattern_groups"]:
+            with self.subTest(slice_id=pattern_group["slice_id"]):
+                self._assert_source_tree_combined_pattern_group(
                     case["target_manifest"],
                     scorecard,
-                    label=pattern_group["label"],
-                    patterns=pattern_group["patterns"],
-                    minimum_rows=pattern_group["minimum_rows"],
-                    required_operations=pattern_group["required_operations"],
-                    required_categories=pattern_group["required_categories"],
-                    search_haystacks=pattern_group.get("search_haystacks", ()),
-                    search_haystack_substrings=pattern_group.get(
-                        "search_haystack_substrings",
-                        (),
-                    ),
-                    pattern_haystacks=pattern_group["pattern_haystacks"],
+                    manifest_id=WIDER_RANGED_REPEAT_MANIFEST_ID,
+                    expectation=pattern_group,
                 )
 
-    def _assert_wider_ranged_repeat_pattern_group(
+    def _assert_source_tree_combined_pattern_group(
         self,
         manifest_document: dict[str, object],
         scorecard: dict[str, object],
         *,
-        label: str,
-        patterns: tuple[str, ...],
-        minimum_rows: int,
-        required_operations: tuple[str, ...],
-        required_categories: tuple[str, ...],
-        search_haystacks: tuple[str, ...],
-        search_haystack_substrings: tuple[str, ...],
-        pattern_haystacks: tuple[str, ...],
+        manifest_id: str,
+        expectation: dict[str, object],
     ) -> None:
+        slice_id = str(expectation["slice_id"])
+        patterns = tuple(str(pattern) for pattern in expectation["patterns"])
+        required_operations = tuple(
+            str(operation) for operation in expectation["required_operations"]
+        )
+        required_categories = tuple(
+            str(category) for category in expectation["required_categories"]
+        )
+        search_haystacks = tuple(str(haystack) for haystack in expectation["search_haystacks"])
+        search_haystack_substrings = tuple(
+            str(snippet) for snippet in expectation["search_haystack_substrings"]
+        )
+        pattern_haystacks = tuple(
+            str(haystack) for haystack in expectation["pattern_haystacks"]
+        )
         manifest_rows = [
             workload
             for workload in manifest_document["workloads"]
@@ -354,8 +259,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertGreaterEqual(
             len(manifest_rows),
-            minimum_rows,
-            f"expected benchmark rows for the {label} slice",
+            int(expectation["minimum_rows"]),
+            f"expected benchmark rows for the {slice_id} slice",
         )
 
         for pattern in patterns:
@@ -401,7 +306,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         scorecard_rows = [
             workload
             for workload in scorecard["workloads"]
-            if workload["manifest_id"] == WIDER_RANGED_REPEAT_MANIFEST_ID
+            if workload["manifest_id"] == manifest_id
             and workload["pattern"] in patterns
         ]
         self.assertEqual(

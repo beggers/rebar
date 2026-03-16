@@ -535,6 +535,110 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
             "pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-gap",
             "pattern-fullmatch-named-wider-ranged-repeat-group-open-ended-fourth-repetition-de-purged-str",
         ),
+        "shape_expectation": {
+            "representative_measured_workload_ids": (
+                "module-search-numbered-wider-ranged-repeat-group-broader-range-cold-gap",
+                "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-upper-bound-mixed-purged-str",
+                "pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-gap",
+                "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-conditional-absent-warm-str",
+                "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-fourth-repetition-mixed-purged-str",
+            ),
+            "pattern_groups": (
+                {
+                    "slice_id": "nested-broader-range-grouped-alternation",
+                    "patterns": (
+                        "a((bc|de){1,4})d",
+                        "a(?P<outer>(bc|de){1,4})d",
+                    ),
+                    "minimum_rows": 6,
+                    "required_operations": (
+                        "module.compile",
+                        "module.search",
+                        "pattern.fullmatch",
+                    ),
+                    "required_categories": (
+                        "nested-group",
+                        "alternation",
+                        "ranged-repeat",
+                        "broader-range",
+                        "counted-repeat",
+                    ),
+                    "search_haystacks": (),
+                    "search_haystack_substrings": (
+                        "abcd",
+                        "aded",
+                    ),
+                    "pattern_haystacks": (
+                        "abcbcded",
+                        "adedededed",
+                    ),
+                },
+                {
+                    "slice_id": "nested-broader-range-grouped-conditional",
+                    "patterns": (
+                        "a(((bc|de){1,4})d)?(?(1)e|f)",
+                        "a(?P<outer>((bc|de){1,4})d)?(?(outer)e|f)",
+                    ),
+                    "minimum_rows": 7,
+                    "required_operations": (
+                        "module.compile",
+                        "module.search",
+                        "pattern.fullmatch",
+                    ),
+                    "required_categories": (
+                        "nested-group",
+                        "alternation",
+                        "conditional",
+                        "optional-group",
+                        "ranged-repeat",
+                        "broader-range",
+                        "counted-repeat",
+                    ),
+                    "search_haystacks": (
+                        "zzafzz",
+                        "zzabcdezz",
+                        "zzadedezz",
+                    ),
+                    "search_haystack_substrings": (),
+                    "pattern_haystacks": (
+                        "abcbcdede",
+                        "adedededede",
+                    ),
+                },
+                {
+                    "slice_id": "nested-broader-range-grouped-backtracking-heavy",
+                    "patterns": (
+                        "a(((bc|b)c){1,4})d",
+                        "a(?P<outer>((bc|b)c){1,4})d",
+                    ),
+                    "minimum_rows": 7,
+                    "required_operations": (
+                        "module.compile",
+                        "module.search",
+                        "pattern.fullmatch",
+                    ),
+                    "required_categories": (
+                        "grouped",
+                        "nested-group",
+                        "alternation",
+                        "backtracking-heavy",
+                        "ranged-repeat",
+                        "broader-range",
+                        "counted-repeat",
+                    ),
+                    "search_haystacks": (
+                        "zzabcdzz",
+                        "zzabccdzz",
+                    ),
+                    "search_haystack_substrings": (),
+                    "pattern_haystacks": (
+                        "abcbccd",
+                        "abccbcd",
+                        "abcbccbccbcd",
+                    ),
+                },
+            ),
+        },
     },
     "open-ended-quantified-group-boundary": {
         "known_gap_count": 0,
@@ -1496,6 +1600,21 @@ def source_tree_combined_case(target_manifest_id: str) -> dict[str, Any]:
         "selection_mode": "full",
         "target_manifest": target_manifest,
     }
+
+
+def source_tree_combined_manifest_shape_expectation(manifest_id: str) -> dict[str, Any]:
+    manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
+    if manifest_expectation is None:
+        raise AssertionError(
+            f"unknown source-tree combined manifest expectation {manifest_id!r}"
+        )
+    shape_expectation = manifest_expectation.get("shape_expectation")
+    if shape_expectation is None:
+        raise AssertionError(
+            "source-tree combined manifest "
+            f"{manifest_id!r} does not define shared shape expectations"
+        )
+    return shape_expectation
 
 
 def source_tree_combined_slice_manifest_ids() -> tuple[str, ...]:
