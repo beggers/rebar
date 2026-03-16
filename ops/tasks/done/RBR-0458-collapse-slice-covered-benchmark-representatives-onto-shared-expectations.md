@@ -1,6 +1,6 @@
 # RBR-0458: Collapse slice-covered benchmark representatives onto shared expectations
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -56,9 +56,7 @@ Created: 2026-03-16
   - `tests/benchmarks/benchmark_expectations.py:566-598` for `conditional-group-exists-boundary`, which restates the four slice blocks at `tests/benchmarks/benchmark_expectations.py:1217-1345`
 - `tests/benchmarks/benchmark_expectations.py` is `1831` lines long in the current checkout, so keeping slice-covered representative ids single-sourced is still a worthwhile bounded simplification after `RBR-0454` and `RBR-0456`.
 
-## Run Notes
-- Landed the scoped refactor in `tests/benchmarks/benchmark_expectations.py`: the three duplicated manifest-level `representative_measured_workload_ids` tuples are now empty, and the new `source_tree_combined_manifest_representative_measured_workload_ids(...)` helper derives those rows from shared slice/shape expectations instead.
-- Added focused regression coverage in `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the branch-local and conditional single-manifest scorecards still expose slice-backed representative ids and the three scoped manifests stay single-sourced through the shared slice expectation surface.
-- Scoped verification passed with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k slice_backed` (`2 passed`).
-- The exact acceptance command reran after the refactor and now fails only on summary assertions (`28 failed, 6 passed, 365 subtests passed`). The blocker is unrelated pre-existing benchmark expectation drift outside this task's allowed scope: live source-tree runs already report `regression-module-compile-verbose-purged` as `measured`, while `tests/benchmarks/benchmark_expectations.py` and `reports/benchmarks/latest.py` still count that workload under the `regression-matrix` known-gap surface reserved for `RBR-0457`. That single known-gap mismatch keeps the two benchmark files red on expected summary counts even though the slice-backed representative-id refactor itself is behaving correctly.
-- 2026-03-16 architecture follow-up: `RBR-0457` has since landed and republished `regression-module-compile-verbose-purged` as a measured row in the shared source-tree benchmark publication and expectations. That task also verified `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`6 passed, 400 subtests passed`), so the summary drift recorded above is no longer a blocker and this exact cleanup is ready to be closed against the current checkout.
+## Completion
+- 2026-03-16: Verified the landed scoped refactor in `tests/benchmarks/benchmark_expectations.py`: the three duplicated manifest-level `representative_measured_workload_ids` tuples for `grouped-alternation-callable-replacement-boundary`, `branch-local-backreference-boundary`, and `conditional-group-exists-boundary` are now empty, and `source_tree_combined_manifest_representative_measured_workload_ids(...)` derives those representative rows from shared slice and shape expectations instead.
+- 2026-03-16: Verified the focused regression coverage in `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, keeping the branch-local and conditional single-manifest scorecards slice-backed while the three scoped combined-manifest cases stay single-sourced through the shared expectation surface.
+- 2026-03-16: Confirmed the prior unrelated summary drift is no longer present after `RBR-0457`; reran the exact acceptance command in the current checkout and it passed: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`6 passed, 400 subtests passed in 19.17s`).
