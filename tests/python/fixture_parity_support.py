@@ -235,6 +235,29 @@ def assert_match_result_parity(
     )
 
 
+def assert_finditer_parity(
+    backend_name: str,
+    observed_iter: object,
+    expected_iter: object,
+    *,
+    check_regs: bool = False,
+) -> None:
+    observed_matches = list(observed_iter)
+    expected_matches = list(expected_iter)
+
+    assert len(observed_matches) == len(expected_matches)
+    for observed, expected in zip(observed_matches, expected_matches):
+        assert_match_result_parity(
+            backend_name,
+            observed,
+            expected,
+            check_regs=check_regs,
+        )
+
+    assert next(observed_iter, None) is None
+    assert next(expected_iter, None) is None
+
+
 def assert_match_convenience_api_parity(
     observed: object,
     expected: re.Match[str] | re.Match[bytes],

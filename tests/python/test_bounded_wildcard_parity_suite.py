@@ -14,6 +14,7 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     assert_fixture_bundle_contract,
+    assert_finditer_parity,
     assert_match_convenience_api_parity,
     assert_match_result_parity,
     case_pattern,
@@ -177,22 +178,6 @@ def _call_pattern_helper(pattern: object, case: PatternCase) -> object:
     return getattr(pattern, case.helper)(*args)
 
 
-def _assert_finditer_parity(
-    backend_name: str,
-    observed_iter: object,
-    expected_iter: object,
-) -> None:
-    observed_matches = list(observed_iter)
-    expected_matches = list(expected_iter)
-
-    assert len(observed_matches) == len(expected_matches)
-    for observed, expected in zip(observed_matches, expected_matches):
-        assert_match_result_parity(backend_name, observed, expected)
-
-    assert next(observed_iter, None) is None
-    assert next(expected_iter, None) is None
-
-
 def test_bounded_wildcard_suite_uses_expected_published_fixture_paths() -> None:
     assert PUBLISHED_BOUNDED_WILDCARD_FIXTURE_PATHS == published_fixture_paths_from_bundles(
         FIXTURE_BUNDLES
@@ -318,7 +303,7 @@ def test_pattern_collection_helpers_match_cpython(
     expected = _call_pattern_helper(expected_pattern, case)
 
     if case.helper == "finditer":
-        _assert_finditer_parity(backend_name, observed, expected)
+        assert_finditer_parity(backend_name, observed, expected)
         return
 
     assert observed == expected

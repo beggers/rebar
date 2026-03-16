@@ -28,6 +28,7 @@ from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
     _match_api_templates,
     assert_fixture_bundle_contract,
+    assert_finditer_parity,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
@@ -604,6 +605,41 @@ def test_match_parity_helpers_cover_bytes_match_object_contracts(
     assert_match_convenience_api_parity(observed, expected)
     assert_valid_match_group_access_parity(observed, expected)
     assert_invalid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "use_compiled_pattern",
+    (
+        pytest.param(False, id="module-finditer"),
+        pytest.param(True, id="pattern-finditer"),
+    ),
+)
+def test_finditer_parity_helper_covers_match_metadata_and_iterator_exhaustion(
+    regex_backend: tuple[str, object],
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    pattern = "abc"
+    text = "zabcabc"
+
+    if use_compiled_pattern:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+        )
+        observed_iter = observed_pattern.finditer(text)
+        expected_iter = expected_pattern.finditer(text)
+    else:
+        observed_iter = backend.finditer(pattern, text)
+        expected_iter = re.finditer(pattern, text)
+
+    assert_finditer_parity(
+        backend_name,
+        observed_iter,
+        expected_iter,
+        check_regs=True,
+    )
 
 
 @pytest.mark.parametrize(

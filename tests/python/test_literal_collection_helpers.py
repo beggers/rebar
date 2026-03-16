@@ -10,7 +10,7 @@ import rebar
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     assert_fixture_bundle_contract,
-    assert_match_result_parity,
+    assert_finditer_parity,
     case_pattern,
     compile_with_cpython_parity,
     load_fixture_bundle,
@@ -92,22 +92,6 @@ def _call_module_helper(regex_api: object, case: ModuleCollectionCase) -> object
 
 def _call_pattern_helper(pattern: object, case: PatternCollectionCase) -> object:
     return getattr(pattern, case.helper)(case.string, *case.extra_args)
-
-
-def _assert_finditer_parity(
-    backend_name: str,
-    observed_iter: object,
-    expected_iter: object,
-) -> None:
-    observed_matches = list(observed_iter)
-    expected_matches = list(expected_iter)
-
-    assert len(observed_matches) == len(expected_matches)
-    for observed, expected in zip(observed_matches, expected_matches):
-        assert_match_result_parity(backend_name, observed, expected, check_regs=True)
-
-    assert next(observed_iter, None) is None
-    assert next(expected_iter, None) is None
 
 
 def _invoke_collection_helper(regex_api: object, case: TypeErrorCase) -> object:
@@ -358,10 +342,11 @@ def test_module_finditer_matches_cpython(
 ) -> None:
     backend_name, backend = regex_backend
 
-    _assert_finditer_parity(
+    assert_finditer_parity(
         backend_name,
         _call_module_helper(backend, case),
         _call_module_helper(re, case),
+        check_regs=True,
     )
 
 
@@ -378,10 +363,11 @@ def test_pattern_finditer_matches_cpython(
         case.flags,
     )
 
-    _assert_finditer_parity(
+    assert_finditer_parity(
         backend_name,
         _call_pattern_helper(observed_pattern, case),
         _call_pattern_helper(expected_pattern, case),
+        check_regs=True,
     )
 
 
