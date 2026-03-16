@@ -50,30 +50,52 @@ def _full_source_tree_scorecard_case_definition(
     return case_definition
 
 
+def _derived_source_tree_scorecard_case_definition(
+    *,
+    manifest_ids: tuple[str, ...],
+    selection_mode: str,
+    manifest_known_gap_counts: dict[str, int] | None = None,
+    representative_measured_workload_ids: tuple[str, ...] | None = None,
+    representative_known_gap_workload_ids: tuple[str, ...] | None = None,
+    expected_first_deferred: dict[str, str] | None = None,
+    expected_workload_order: tuple[str, ...] | None = None,
+    workload_note_substrings: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    case_definition: dict[str, Any] = {
+        "manifest_ids": manifest_ids,
+        "selection_mode": selection_mode,
+    }
+    if manifest_known_gap_counts is not None:
+        case_definition["_derived_manifest_known_gap_counts"] = manifest_known_gap_counts
+    if representative_measured_workload_ids is not None:
+        case_definition["representative_measured_workload_ids"] = (
+            representative_measured_workload_ids
+        )
+    if representative_known_gap_workload_ids is not None:
+        case_definition["representative_known_gap_workload_ids"] = (
+            representative_known_gap_workload_ids
+        )
+    if expected_first_deferred is not None:
+        case_definition["expected_first_deferred"] = expected_first_deferred
+    if expected_workload_order is not None:
+        case_definition["expected_workload_order"] = expected_workload_order
+    if workload_note_substrings is not None:
+        case_definition["workload_note_substrings"] = workload_note_substrings
+    return case_definition
+
+
 SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
-    "compile-smoke": {
-        "manifest_ids": ("compile-smoke",),
-        "selection_mode": "full",
-        "expected_summary": {
-            "known_gap_count": 1,
-            "measured_workloads": 1,
-            "module_workloads": 0,
-            "parser_workloads": 2,
-            "regression_workloads": 0,
-            "total_workloads": 2,
-        },
-        "expected_first_deferred": {
+    "compile-smoke": _derived_source_tree_scorecard_case_definition(
+        manifest_ids=("compile-smoke",),
+        selection_mode="full",
+        manifest_known_gap_counts={"compile-smoke": 1},
+        expected_first_deferred={
             "area": "module-boundary",
             "follow_up": "RBR-0015",
         },
-        "manifest_expectations": {
-            "compile-smoke": {
-                "known_gap_count": 1,
-            },
-        },
-        "representative_measured_workload_ids": ("compile-literal-cold",),
-        "representative_known_gap_workload_ids": ("compile-character-class-warm",),
-    },
+        representative_measured_workload_ids=("compile-literal-cold",),
+        representative_known_gap_workload_ids=("compile-character-class-warm",),
+    ),
     "compile-matrix": _full_source_tree_scorecard_case_definition(
         manifest_ids=("compile-matrix",),
         expected_first_deferred={
@@ -172,31 +194,18 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
             "regression-parser-bytes-backreference-purged",
         ),
     ),
-    "regression-pack-smoke": {
-        "manifest_ids": ("regression-matrix",),
-        "selection_mode": "smoke",
-        "expected_summary": {
-            "known_gap_count": 1,
-            "measured_workloads": 1,
-            "module_workloads": 1,
-            "parser_workloads": 1,
-            "regression_workloads": 2,
-            "total_workloads": 2,
-        },
-        "expected_workload_order": (
+    "regression-pack-smoke": _derived_source_tree_scorecard_case_definition(
+        manifest_ids=("regression-matrix",),
+        selection_mode="smoke",
+        expected_workload_order=(
             "regression-import-cold",
             "regression-parser-atomic-lookbehind-cold",
         ),
-        "manifest_expectations": {
-            "regression-matrix": {
-                "known_gap_count": 1,
-            },
-        },
-        "representative_measured_workload_ids": ("regression-import-cold",),
-        "representative_known_gap_workload_ids": (
+        representative_measured_workload_ids=("regression-import-cold",),
+        representative_known_gap_workload_ids=(
             "regression-parser-atomic-lookbehind-cold",
         ),
-    },
+    ),
 }
 
 SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
@@ -609,6 +618,11 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
     },
     "regression-matrix": {
         "known_gap_count": 3,
+        "known_gap_workload_ids": (
+            "regression-parser-atomic-lookbehind-cold",
+            "regression-parser-bytes-backreference-purged",
+            "regression-module-compile-verbose-purged",
+        ),
         "representative_known_gap_workload_ids": (
             "regression-parser-atomic-lookbehind-cold",
         ),
@@ -1413,6 +1427,39 @@ def source_tree_scorecard_case_ids() -> tuple[str, ...]:
     return tuple(SOURCE_TREE_SCORECARD_EXPECTATIONS)
 
 
+def _source_tree_manifest_known_gap_counts(
+    manifest_ids: tuple[str, ...],
+    case_definition: dict[str, Any],
+    *,
+    selected_workload_ids_by_manifest: dict[str, tuple[str, ...]] | None = None,
+) -> dict[str, int]:
+    explicit_known_gap_counts = case_definition.get("_derived_manifest_known_gap_counts", {})
+    known_gap_counts: dict[str, int] = {}
+    for manifest_id in manifest_ids:
+        if manifest_id in explicit_known_gap_counts:
+            known_gap_counts[manifest_id] = int(explicit_known_gap_counts[manifest_id])
+            continue
+        manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
+        if manifest_expectation is None:
+            raise AssertionError(
+                "missing known-gap expectation for source-tree scorecard manifest "
+                f"{manifest_id!r}"
+            )
+        if (
+            selected_workload_ids_by_manifest is not None
+            and "known_gap_workload_ids" in manifest_expectation
+        ):
+            selected_workload_ids = set(selected_workload_ids_by_manifest.get(manifest_id, ()))
+            known_gap_counts[manifest_id] = sum(
+                1
+                for workload_id in manifest_expectation["known_gap_workload_ids"]
+                if workload_id in selected_workload_ids
+            )
+            continue
+        known_gap_counts[manifest_id] = int(manifest_expectation["known_gap_count"])
+    return known_gap_counts
+
+
 def _resolve_source_tree_scorecard_case_definition(
     case_definition: dict[str, Any],
 ) -> dict[str, Any]:
@@ -1473,13 +1520,46 @@ def source_tree_scorecard_case(case_id: str) -> dict[str, Any]:
         manifest_workloads,
         smoke_only=case_definition["selection_mode"] == "smoke",
     )
+    selected_workload_ids_by_manifest = {
+        manifest_id: tuple(
+            workload.workload_id
+            for workload in selected_workloads
+            if workload.manifest_id == manifest_id
+        )
+        for manifest_id in manifest_ids
+    }
     workload_payloads = [
         workload_to_payload(workload)
         for workload in selected_workloads
     ]
+    manifest_known_gap_counts = _source_tree_manifest_known_gap_counts(
+        manifest_ids,
+        case_definition,
+        selected_workload_ids_by_manifest=selected_workload_ids_by_manifest,
+    )
+    public_case_definition = {
+        key: value
+        for key, value in case_definition.items()
+        if key != "_derived_manifest_known_gap_counts"
+    }
+    public_case_definition.setdefault(
+        "expected_summary",
+        expected_summary_for_manifests(
+            raw_manifests,
+            selected_workload_ids_by_manifest=selected_workload_ids_by_manifest,
+            manifest_known_gap_counts=manifest_known_gap_counts,
+        ),
+    )
+    public_case_definition.setdefault(
+        "manifest_expectations",
+        {
+            manifest_id: {"known_gap_count": manifest_known_gap_counts[manifest_id]}
+            for manifest_id in manifest_ids
+        },
+    )
 
     return {
-        **case_definition,
+        **public_case_definition,
         "case_id": case_id,
         "expected_adapter": (
             "rebar.module-surface"
@@ -1500,14 +1580,7 @@ def source_tree_scorecard_case(case_id: str) -> dict[str, Any]:
             manifest_id: relative_manifest_path(manifest_path_for_id(manifest_id))
             for manifest_id in manifest_ids
         },
-        "selected_workload_ids_by_manifest": {
-            manifest_id: tuple(
-                workload.workload_id
-                for workload in selected_workloads
-                if workload.manifest_id == manifest_id
-            )
-            for manifest_id in manifest_ids
-        },
+        "selected_workload_ids_by_manifest": selected_workload_ids_by_manifest,
     }
 
 
@@ -1560,27 +1633,59 @@ def selected_manifest_paths_for_target_manifest(target_manifest_id: str) -> list
 
 def expected_summary_for_manifests(
     manifest_documents: list[dict[str, Any]],
+    *,
+    selected_workload_ids_by_manifest: dict[str, tuple[str, ...]] | None = None,
+    manifest_known_gap_counts: dict[str, int] | None = None,
 ) -> dict[str, int]:
-    workloads = [
-        workload
-        for manifest in manifest_documents
-        for workload in manifest["workloads"]
-    ]
+    selected_workload_ids = (
+        {
+            manifest_id: set(workload_ids)
+            for manifest_id, workload_ids in selected_workload_ids_by_manifest.items()
+        }
+        if selected_workload_ids_by_manifest is not None
+        else None
+    )
+    workloads: list[dict[str, Any]] = []
+    regression_workloads = 0
+    selected_manifest_ids: list[str] = []
+    for manifest in manifest_documents:
+        manifest_id = str(manifest["manifest_id"])
+        manifest_workloads = manifest["workloads"]
+        if selected_workload_ids is None:
+            selected_manifest_workloads = manifest_workloads
+        else:
+            selected_manifest_workloads = [
+                workload
+                for workload in manifest_workloads
+                if str(workload["id"]) in selected_workload_ids.get(manifest_id, set())
+            ]
+        if selected_manifest_workloads:
+            selected_manifest_ids.append(manifest_id)
+        if manifest_id == "regression-matrix":
+            regression_workloads += len(selected_manifest_workloads)
+        workloads.extend(selected_manifest_workloads)
+    known_gap_counts = (
+        manifest_known_gap_counts
+        if manifest_known_gap_counts is not None
+        else {
+            str(manifest["manifest_id"]): int(
+                SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[str(manifest["manifest_id"])][
+                    "known_gap_count"
+                ]
+            )
+            for manifest in manifest_documents
+            if str(manifest["manifest_id"]) in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
+        }
+    )
     known_gap_count = sum(
-        SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[str(manifest["manifest_id"])]["known_gap_count"]
-        for manifest in manifest_documents
-        if str(manifest["manifest_id"]) in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
+        known_gap_counts.get(manifest_id, 0) for manifest_id in selected_manifest_ids
     )
     return {
         "known_gap_count": known_gap_count,
         "measured_workloads": len(workloads) - known_gap_count,
         "module_workloads": sum(1 for workload in workloads if workload["family"] == "module"),
         "parser_workloads": sum(1 for workload in workloads if workload["family"] == "parser"),
-        "regression_workloads": sum(
-            len(manifest["workloads"])
-            for manifest in manifest_documents
-            if manifest["manifest_id"] == "regression-matrix"
-        ),
+        "regression_workloads": regression_workloads,
         "total_workloads": len(workloads),
     }
 

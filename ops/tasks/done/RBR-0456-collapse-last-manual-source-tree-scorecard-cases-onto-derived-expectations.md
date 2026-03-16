@@ -1,6 +1,6 @@
 # RBR-0456: Collapse the last manual source-tree scorecard cases onto derived expectations
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -49,3 +49,9 @@ Created: 2026-03-16
   - `compile-smoke` (`tests/benchmarks/benchmark_expectations.py:54`)
   - `regression-pack-smoke` (`tests/benchmarks/benchmark_expectations.py:175`)
 - `RBR-0452` and `RBR-0454` already collapsed all full source-tree scorecard cases onto shared manifest expectations and explicitly left these last standalone cases manual for a bounded follow-on.
+
+## Completion
+- 2026-03-16: Replaced the last two manual source-tree scorecard definitions with `_derived_source_tree_scorecard_case_definition(...)`, so `compile-smoke` and `regression-pack-smoke` now derive their manifest ids, selection mode, summary, and one-manifest `known_gap_count` expectations from the live manifest-loading path instead of carrying copied summary dicts and manifest-expectation blocks.
+- 2026-03-16: Kept the intentionally narrow case-local assertions in place for `compile-smoke` (`expected_first_deferred` plus representative measured/gap workload ids) and `regression-pack-smoke` (`expected_workload_order` plus representative measured/gap workload ids).
+- 2026-03-16: Added shared `regression-matrix` known-gap workload ids to `SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS`, allowing the smoke case to count only the selected regression gaps while keeping the full-suite regression known-gap metadata single-sourced in the existing manifest expectation table.
+- 2026-03-16: Verified `PYTHONPATH=python .venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_adapter_provenance.py` passed with `5 passed, 1 skipped, 394 subtests passed in 19.03s`.
