@@ -9,17 +9,17 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-The published correctness slice now covers 960 cases across 107 manifests, with 960 passes, 0 failures, and 0 published correctness gaps; the main benchmark report now covers 588 workloads with 570 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
+The published correctness slice now covers 960 cases across 107 manifests, with 960 passes, 0 failures, and 0 published correctness gaps; the main benchmark report now covers 588 workloads with 572 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
 - The concrete surviving follow-on is `RBR-0464`, which should publish the exact bytes parser compile proxy `b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}"` on the shared `parser-matrix` correctness surface so the lone remaining `regression-parser-bytes-backreference-purged` benchmark gap has an adjacent correctness anchor before Rust-backed parity or later regression benchmark catch-up reopen that bytes backreference slice.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 588 workloads and carries 18 explicit known-gap workloads.
+- The published benchmark surface is still bounded at 588 workloads and carries 16 explicit known-gap workloads.
 
 ## Compatibility Heuristic
-The published slice is still narrow: all 960 published correctness cases now pass, with 0 explicit `unimplemented` gaps, and benchmark coverage still runs mainly through the source-tree shim with 18 explicit known gaps.
+The published slice is still narrow: all 960 published correctness cases now pass, with 0 explicit `unimplemented` gaps, and benchmark coverage still runs mainly through the source-tree shim with 16 explicit known gaps.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -313,7 +313,7 @@ The published slice is still narrow: all 960 published correctness cases now pas
 - Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 107 manifests and 960 cases, with 960 passing, 0 explicit failures, and 0 published correctness gaps, and that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree shim while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
-- A primary benchmark publication: `reports/benchmarks/latest.py` now covers 588 workloads across 30 manifests with 570 real `rebar` timings and 18 explicit known gaps, so the published benchmark surface is still bounded.
+- A primary benchmark publication: `reports/benchmarks/latest.py` now covers 588 workloads across 30 manifests with 572 real `rebar` timings and 16 explicit known gaps, so the published benchmark surface is still bounded.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.
@@ -333,4 +333,4 @@ The published slice is still narrow: all 960 published correctness cases now pas
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
-- The published benchmark surface still carries 18 explicit known-gap workloads, so the tracked benchmark frontier remains materially incomplete.
+- The published benchmark surface still carries 16 explicit known-gap workloads, so the tracked benchmark frontier remains materially incomplete.
