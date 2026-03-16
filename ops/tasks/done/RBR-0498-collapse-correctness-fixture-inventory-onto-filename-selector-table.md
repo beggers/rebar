@@ -1,6 +1,6 @@
 # RBR-0498: Collapse correctness fixture inventory onto one filename-rooted selector table
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -64,3 +64,8 @@ Created: 2026-03-16
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/conformance/test_correctness_scorecard_registry_contract.py` passes (`104 passed, 139 subtests passed in 0.61s`).
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/grouped_alternation_replacement_workflows.py --report .rebar/tmp/rbr-0498-correctness-selector-inventory.py` currently succeeds and reports `{"executed_cases": 8, "failed_cases": 0, "passed_cases": 8, "skipped_cases": 0, "total_cases": 8, "unimplemented_cases": 0}`.
   - `rg -n 'REPO_ROOT\\s*/\\s*"tests"\\s*/\\s*"conformance"\\s*/\\s*"fixtures"\\s*/' python/rebar_harness/correctness.py` currently returns matches, which is the exact cleanup target for this task.
+
+## Completion
+- 2026-03-16: Replaced the published correctness `Path` inventory with a filename-rooted selector table in `python/rebar_harness/correctness.py`, rewired the focused selector helpers to filter selector-owned filenames, and kept `DEFAULT_FIXTURE_PATHS` derived from `select_correctness_fixture_paths(PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR)`.
+- Added an explicit published full-suite count/first/last/sha256 contract to `tests/python/test_fixture_parity_support_contract.py` without changing the focused selector filename expectations.
+- Verified `PYTHONPATH=python ./.venv/bin/python - <<'PY' ...` still reports `count=109`, `first=parser_matrix.py`, `last=conditional_group_exists_callable_replacement_workflows.py`, and `sha256=4a9cef3163e096784b33fb00337ca038e56d92cfe4cac5c7876620f9ec76c166`; `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/conformance/test_correctness_scorecard_registry_contract.py` passes (`105 passed, 139 subtests passed`); the focused correctness harness run still reports `8` executed / `8` passed / `0` failed / `0` unimplemented; and the `rg -n 'REPO_ROOT\\s*/\\s*"tests"\\s*/\\s*"conformance"\\s*/\\s*"fixtures"\\s*/' python/rebar_harness/correctness.py` check now returns no matches.

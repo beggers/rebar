@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from hashlib import sha256
 import pathlib
 import re
 
@@ -56,6 +57,12 @@ from tests.python.fixture_parity_support import (
 )
 OPTIONAL_NAMED_GROUP_PATTERN = r"a(?P<word>b)?d"
 BYTES_LITERAL_PATTERN = b"abc"
+EXPECTED_PUBLISHED_FULL_SUITE_SELECTOR = {
+    "count": 109,
+    "first": "parser_matrix.py",
+    "last": "conditional_group_exists_callable_replacement_workflows.py",
+    "sha256": "4a9cef3163e096784b33fb00337ca038e56d92cfe4cac5c7876620f9ec76c166",
+}
 SELECTOR_EXPECTATIONS = (
     pytest.param(
         COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
@@ -395,6 +402,18 @@ def test_published_full_suite_fixture_selector_matches_tracked_fixture_inventory
         assert path.is_relative_to(FIXTURES_DIR)
         assert path.is_file()
         assert path.suffix == ".py"
+
+
+def test_published_full_suite_fixture_selector_preserves_count_and_order_digest() -> None:
+    published_fixture_paths = select_correctness_fixture_paths(
+        PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
+    )
+    payload = "\n".join(path.name for path in published_fixture_paths).encode()
+
+    assert len(published_fixture_paths) == EXPECTED_PUBLISHED_FULL_SUITE_SELECTOR["count"]
+    assert published_fixture_paths[0].name == EXPECTED_PUBLISHED_FULL_SUITE_SELECTOR["first"]
+    assert published_fixture_paths[-1].name == EXPECTED_PUBLISHED_FULL_SUITE_SELECTOR["last"]
+    assert sha256(payload).hexdigest() == EXPECTED_PUBLISHED_FULL_SUITE_SELECTOR["sha256"]
 
 
 @pytest.mark.parametrize(

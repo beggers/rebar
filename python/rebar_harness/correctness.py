@@ -39,478 +39,6 @@ SCORECARD_REPORT = ScorecardReportSpec(
     report_attribute="REPORT",
     scorecard_kind="correctness",
 )
-_PUBLISHED_FULL_SUITE_FIXTURE_PATHS = (
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "public_api_surface.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "match_behavior_smoke.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "exported_symbol_surface.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "pattern_object_surface.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "module_workflow_surface.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "collection_replacement_workflows.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "literal_flag_workflows.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_match_workflows.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "named_group_workflows.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "named_group_replacement_workflows.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "named_backreference_workflows.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "numbered_backreference_workflows.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_segment_workflows.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "nested_group_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_group_alternation_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_group_alternation_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_group_alternation_wrapper_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_group_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "quantified_nested_group_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "quantified_nested_group_callable_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_group_callable_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_group_alternation_callable_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "quantified_nested_group_alternation_callable_replacement_workflows.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "literal_alternation_workflows.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_alternation_workflows.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "grouped_alternation_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "grouped_alternation_callable_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "branch_local_backreference_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_branch_local_backreference_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "quantified_branch_local_backreference_workflows.py",
-    REPO_ROOT / "tests" / "conformance" / "fixtures" / "optional_group_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "exact_repeat_quantified_group_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "exact_repeat_quantified_group_alternation_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "ranged_repeat_quantified_group_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "wider_ranged_repeat_quantified_group_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "wider_ranged_repeat_quantified_group_alternation_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "open_ended_quantified_group_alternation_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_open_ended_quantified_group_alternation_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "broader_range_open_ended_quantified_group_alternation_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "open_ended_quantified_group_alternation_conditional_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "optional_group_alternation_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "optional_group_alternation_branch_local_backreference_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_no_else_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_no_else_alternation_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_no_else_nested_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_replacement_template_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_alternation_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_nested_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_quantified_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_quantified_alternation_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_no_else_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_no_else_quantified_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_empty_else_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_empty_else_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_empty_else_alternation_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_empty_else_nested_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_empty_else_quantified_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_empty_yes_else_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_empty_yes_else_alternation_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_empty_yes_else_nested_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_empty_yes_else_quantified_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_fully_empty_alternation_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_fully_empty_quantified_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_fully_empty_nested_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_alternation_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_nested_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_empty_yes_else_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_fully_empty_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_fully_empty_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_assertion_diagnostics.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_quantified_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_quantified_alternation_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "quantified_alternation_conditional_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "quantified_alternation_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "quantified_alternation_branch_local_backreference_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "quantified_alternation_nested_branch_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "quantified_alternation_backtracking_heavy_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "quantified_alternation_broader_range_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "quantified_alternation_open_ended_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "quantified_nested_group_alternation_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_group_alternation_branch_local_backreference_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "quantified_nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "conditional_group_exists_callable_replacement_workflows.py",
-)
-
 CORRECTNESS_FIXTURES_ROOT = REPO_ROOT / "tests" / "conformance" / "fixtures"
 PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR = "published-full-suite"
 COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR = "counted-repeat-quantified-group"
@@ -532,142 +60,257 @@ OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR = (
 )
 OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR = "open-ended-quantified-group"
 
+_CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR = {
+    PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR: (
+        "parser_matrix.py",
+        "public_api_surface.py",
+        "match_behavior_smoke.py",
+        "exported_symbol_surface.py",
+        "pattern_object_surface.py",
+        "module_workflow_surface.py",
+        "collection_replacement_workflows.py",
+        "literal_flag_workflows.py",
+        "grouped_match_workflows.py",
+        "named_group_workflows.py",
+        "named_group_replacement_workflows.py",
+        "named_backreference_workflows.py",
+        "numbered_backreference_workflows.py",
+        "grouped_segment_workflows.py",
+        "nested_group_workflows.py",
+        "nested_group_alternation_workflows.py",
+        "nested_group_alternation_replacement_workflows.py",
+        "nested_group_alternation_wrapper_replacement_workflows.py",
+        "nested_group_replacement_workflows.py",
+        "quantified_nested_group_replacement_workflows.py",
+        "quantified_nested_group_callable_replacement_workflows.py",
+        "nested_group_callable_replacement_workflows.py",
+        "nested_group_alternation_callable_replacement_workflows.py",
+        "quantified_nested_group_alternation_callable_replacement_workflows.py",
+        "literal_alternation_workflows.py",
+        "grouped_alternation_workflows.py",
+        "grouped_alternation_replacement_workflows.py",
+        "grouped_alternation_callable_replacement_workflows.py",
+        "branch_local_backreference_workflows.py",
+        "conditional_group_exists_branch_local_backreference_workflows.py",
+        "quantified_branch_local_backreference_workflows.py",
+        "optional_group_workflows.py",
+        "exact_repeat_quantified_group_workflows.py",
+        "exact_repeat_quantified_group_alternation_workflows.py",
+        "ranged_repeat_quantified_group_workflows.py",
+        "wider_ranged_repeat_quantified_group_workflows.py",
+        "wider_ranged_repeat_quantified_group_alternation_workflows.py",
+        "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
+        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
+        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+        "open_ended_quantified_group_alternation_workflows.py",
+        "nested_open_ended_quantified_group_alternation_workflows.py",
+        "broader_range_open_ended_quantified_group_alternation_workflows.py",
+        "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+        "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+        "open_ended_quantified_group_alternation_conditional_workflows.py",
+        "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
+        "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+        "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+        "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+        "optional_group_alternation_workflows.py",
+        "optional_group_alternation_branch_local_backreference_workflows.py",
+        "conditional_group_exists_workflows.py",
+        "conditional_group_exists_no_else_workflows.py",
+        "conditional_group_exists_no_else_alternation_workflows.py",
+        "conditional_group_exists_no_else_nested_workflows.py",
+        "conditional_group_exists_replacement_workflows.py",
+        "conditional_group_exists_replacement_template_workflows.py",
+        "conditional_group_exists_alternation_replacement_workflows.py",
+        "conditional_group_exists_nested_replacement_workflows.py",
+        "conditional_group_exists_quantified_replacement_workflows.py",
+        "conditional_group_exists_quantified_alternation_replacement_workflows.py",
+        "conditional_group_exists_no_else_replacement_workflows.py",
+        "conditional_group_exists_no_else_quantified_workflows.py",
+        "conditional_group_exists_empty_else_workflows.py",
+        "conditional_group_exists_empty_else_replacement_workflows.py",
+        "conditional_group_exists_empty_else_alternation_workflows.py",
+        "conditional_group_exists_empty_else_nested_workflows.py",
+        "conditional_group_exists_empty_else_quantified_workflows.py",
+        "conditional_group_exists_empty_yes_else_workflows.py",
+        "conditional_group_exists_empty_yes_else_alternation_workflows.py",
+        "conditional_group_exists_empty_yes_else_nested_workflows.py",
+        "conditional_group_exists_empty_yes_else_quantified_workflows.py",
+        "conditional_group_exists_fully_empty_alternation_workflows.py",
+        "conditional_group_exists_fully_empty_quantified_workflows.py",
+        "conditional_group_exists_fully_empty_nested_workflows.py",
+        "conditional_group_exists_alternation_workflows.py",
+        "conditional_group_exists_nested_workflows.py",
+        "conditional_group_exists_empty_yes_else_replacement_workflows.py",
+        "conditional_group_exists_fully_empty_replacement_workflows.py",
+        "conditional_group_exists_fully_empty_workflows.py",
+        "conditional_group_exists_assertion_diagnostics.py",
+        "conditional_group_exists_quantified_workflows.py",
+        "conditional_group_exists_quantified_alternation_workflows.py",
+        "quantified_alternation_conditional_workflows.py",
+        "quantified_alternation_workflows.py",
+        "quantified_alternation_branch_local_backreference_workflows.py",
+        "quantified_alternation_nested_branch_workflows.py",
+        "quantified_alternation_backtracking_heavy_workflows.py",
+        "quantified_alternation_broader_range_workflows.py",
+        "quantified_alternation_open_ended_workflows.py",
+        "quantified_nested_group_alternation_workflows.py",
+        "nested_group_alternation_branch_local_backreference_workflows.py",
+        "nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+        "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
+        "quantified_nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
+        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+        "nested_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+        "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
+        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
+        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
+        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
+        "conditional_group_exists_callable_replacement_workflows.py",
+    ),
+}
+
 
 def _sorted_published_fixture_subset(
     *fixture_filenames: str,
-) -> tuple[pathlib.Path, ...]:
+) -> tuple[str, ...]:
+    published_fixture_filenames = _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR[
+        PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
+    ]
     expected_filenames = frozenset(fixture_filenames)
-    selected_paths = tuple(
+    selected_filenames = tuple(
         sorted(
-            (
-                path
-                for path in _PUBLISHED_FULL_SUITE_FIXTURE_PATHS
-                if path.name in expected_filenames
-            ),
-            key=lambda path: path.name,
+            filename
+            for filename in published_fixture_filenames
+            if filename in expected_filenames
         )
     )
-    missing_filenames = expected_filenames - {path.name for path in selected_paths}
+    missing_filenames = expected_filenames - set(selected_filenames)
     if missing_filenames:
         raise ValueError(
             "unknown published correctness fixture filename(s): "
             f"{sorted(missing_filenames)}"
         )
-    return selected_paths
+    return selected_filenames
 
 
-def _published_callable_replacement_fixture_paths() -> tuple[pathlib.Path, ...]:
+def _published_callable_replacement_fixture_filenames() -> tuple[str, ...]:
+    published_fixture_filenames = _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR[
+        PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
+    ]
     return tuple(
         sorted(
-            (
-                path
-                for path in _PUBLISHED_FULL_SUITE_FIXTURE_PATHS
-                if path.name.endswith("_callable_replacement_workflows.py")
-            ),
-            key=lambda path: path.name,
+            filename
+            for filename in published_fixture_filenames
+            if filename.endswith("_callable_replacement_workflows.py")
         )
     )
 
 
-_CORRECTNESS_FIXTURE_PATHS_BY_SELECTOR = {
-    PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR: _PUBLISHED_FULL_SUITE_FIXTURE_PATHS,
-    COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
-        "exact_repeat_quantified_group_workflows.py",
-        "ranged_repeat_quantified_group_workflows.py",
-    ),
-    QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
-        "exact_repeat_quantified_group_alternation_workflows.py",
-        "literal_alternation_workflows.py",
-        "quantified_alternation_workflows.py",
-        "quantified_alternation_backtracking_heavy_workflows.py",
-        "quantified_alternation_broader_range_workflows.py",
-        "quantified_alternation_conditional_workflows.py",
-        "quantified_nested_group_alternation_workflows.py",
-        "quantified_alternation_open_ended_workflows.py",
-        "quantified_alternation_nested_branch_workflows.py",
-    ),
-    BOUNDED_WILDCARD_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
-        "collection_replacement_workflows.py",
-        "literal_flag_workflows.py",
-    ),
-    SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
-        "named_backreference_workflows.py",
-        "numbered_backreference_workflows.py",
-    ),
-    CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
-        "conditional_group_exists_alternation_replacement_workflows.py",
-        "conditional_group_exists_empty_else_replacement_workflows.py",
-        "conditional_group_exists_empty_yes_else_replacement_workflows.py",
-        "conditional_group_exists_fully_empty_replacement_workflows.py",
-        "conditional_group_exists_nested_replacement_workflows.py",
-        "conditional_group_exists_no_else_replacement_workflows.py",
-        "conditional_group_exists_quantified_alternation_replacement_workflows.py",
-        "conditional_group_exists_quantified_replacement_workflows.py",
-        "conditional_group_exists_replacement_workflows.py",
-        "conditional_group_exists_replacement_template_workflows.py",
-    ),
-    GROUPED_CAPTURE_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
-        "grouped_alternation_workflows.py",
-        "grouped_match_workflows.py",
-        "grouped_segment_workflows.py",
-        "named_group_workflows.py",
-        "nested_group_alternation_workflows.py",
-        "optional_group_alternation_workflows.py",
-        "optional_group_workflows.py",
-        "nested_group_workflows.py",
-    ),
-    WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
-        "wider_ranged_repeat_quantified_group_workflows.py",
-        "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-        "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-        "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
-        "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-        "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
-        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
-        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
-    ),
-    BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
-        "branch_local_backreference_workflows.py",
-        "quantified_branch_local_backreference_workflows.py",
-        "optional_group_alternation_branch_local_backreference_workflows.py",
-        "conditional_group_exists_branch_local_backreference_workflows.py",
-        "nested_group_alternation_branch_local_backreference_workflows.py",
-        "quantified_alternation_branch_local_backreference_workflows.py",
-        "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
-        "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
-        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
-        "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
-    ),
-    LITERAL_FLAG_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
-        "literal_flag_workflows.py",
-    ),
-    CALLABLE_REPLACEMENT_FIXTURE_SELECTOR: _published_callable_replacement_fixture_paths(),
-    OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR: (
-        _sorted_published_fixture_subset(
-            "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
-            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
-            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
-        )
-    ),
-    OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
-        "open_ended_quantified_group_alternation_workflows.py",
-        "open_ended_quantified_group_alternation_conditional_workflows.py",
-        "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
-        "broader_range_open_ended_quantified_group_alternation_workflows.py",
-        "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
-        "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
-        "nested_open_ended_quantified_group_alternation_workflows.py",
-    ),
-}
+_CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
+    {
+        COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+            "exact_repeat_quantified_group_workflows.py",
+            "ranged_repeat_quantified_group_workflows.py",
+        ),
+        QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+            "exact_repeat_quantified_group_alternation_workflows.py",
+            "literal_alternation_workflows.py",
+            "quantified_alternation_workflows.py",
+            "quantified_alternation_backtracking_heavy_workflows.py",
+            "quantified_alternation_broader_range_workflows.py",
+            "quantified_alternation_conditional_workflows.py",
+            "quantified_nested_group_alternation_workflows.py",
+            "quantified_alternation_open_ended_workflows.py",
+            "quantified_alternation_nested_branch_workflows.py",
+        ),
+        BOUNDED_WILDCARD_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+            "collection_replacement_workflows.py",
+            "literal_flag_workflows.py",
+        ),
+        SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+            "named_backreference_workflows.py",
+            "numbered_backreference_workflows.py",
+        ),
+        CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+            "conditional_group_exists_alternation_replacement_workflows.py",
+            "conditional_group_exists_empty_else_replacement_workflows.py",
+            "conditional_group_exists_empty_yes_else_replacement_workflows.py",
+            "conditional_group_exists_fully_empty_replacement_workflows.py",
+            "conditional_group_exists_nested_replacement_workflows.py",
+            "conditional_group_exists_no_else_replacement_workflows.py",
+            "conditional_group_exists_quantified_alternation_replacement_workflows.py",
+            "conditional_group_exists_quantified_replacement_workflows.py",
+            "conditional_group_exists_replacement_workflows.py",
+            "conditional_group_exists_replacement_template_workflows.py",
+        ),
+        GROUPED_CAPTURE_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+            "grouped_alternation_workflows.py",
+            "grouped_match_workflows.py",
+            "grouped_segment_workflows.py",
+            "named_group_workflows.py",
+            "nested_group_alternation_workflows.py",
+            "optional_group_alternation_workflows.py",
+            "optional_group_workflows.py",
+            "nested_group_workflows.py",
+        ),
+        WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+            "wider_ranged_repeat_quantified_group_workflows.py",
+            "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+            "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+            "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
+            "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+            "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
+            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
+            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
+        ),
+        BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+            "branch_local_backreference_workflows.py",
+            "quantified_branch_local_backreference_workflows.py",
+            "optional_group_alternation_branch_local_backreference_workflows.py",
+            "conditional_group_exists_branch_local_backreference_workflows.py",
+            "nested_group_alternation_branch_local_backreference_workflows.py",
+            "quantified_alternation_branch_local_backreference_workflows.py",
+            "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
+            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
+            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
+            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
+        ),
+        LITERAL_FLAG_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+            "literal_flag_workflows.py",
+        ),
+        CALLABLE_REPLACEMENT_FIXTURE_SELECTOR: _published_callable_replacement_fixture_filenames(),
+        OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR: (
+            _sorted_published_fixture_subset(
+                "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+                "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
+                "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
+            )
+        ),
+        OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+            "open_ended_quantified_group_alternation_workflows.py",
+            "open_ended_quantified_group_alternation_conditional_workflows.py",
+            "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+            "broader_range_open_ended_quantified_group_alternation_workflows.py",
+            "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
+            "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+            "nested_open_ended_quantified_group_alternation_workflows.py",
+        ),
+    }
+)
 
 
 def select_correctness_fixture_paths(selector: str) -> tuple[pathlib.Path, ...]:
     try:
-        fixture_paths = _CORRECTNESS_FIXTURE_PATHS_BY_SELECTOR[selector]
+        fixture_filenames = _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR[selector]
     except KeyError as exc:
         raise ValueError(f"unknown correctness fixture selector {selector!r}") from exc
-    return tuple(CORRECTNESS_FIXTURES_ROOT / path.name for path in fixture_paths)
+    return tuple(CORRECTNESS_FIXTURES_ROOT / filename for filename in fixture_filenames)
 
 
 DEFAULT_FIXTURE_PATHS = select_correctness_fixture_paths(
