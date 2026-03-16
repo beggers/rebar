@@ -1,13 +1,21 @@
 from __future__ import annotations
 
 import json
+import os
 import pathlib
+import shutil
 import subprocess
+import sys
 import tempfile
 import textwrap
 import unittest
 
-from tests.benchmarks import native_benchmark_test_support as native_test_support
+from rebar_harness import benchmarks
+
+
+REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
+PYTHON_SOURCE = REPO_ROOT / "python"
+MATURIN = shutil.which("maturin")
 
 
 PROBE = textwrap.dedent(
@@ -116,21 +124,34 @@ PROBE = textwrap.dedent(
 
 class RebarNativeExtensionSmokeTest(unittest.TestCase):
     @unittest.skipUnless(
-        native_test_support.MATURIN is not None,
+        MATURIN is not None,
         "native extension smoke requires a maturin executable on PATH",
     )
     def test_built_wheel_keeps_native_surface_contract(self) -> None:
         with tempfile.TemporaryDirectory(prefix="rebar-native-smoke-") as temp_dir:
             temp_root = pathlib.Path(temp_dir)
-            with native_test_support.built_native_runtime(self) as (python_bin, env):
+            provisioned, temp_dir_handle, error = benchmarks.provision_built_native_runtime()
+            self.assertIsNotNone(provisioned, error)
+            self.assertIsNotNone(temp_dir_handle, error)
+            assert provisioned is not None
+            assert temp_dir_handle is not None
+
+            env = os.environ.copy()
+            env["PYTHONPATH"] = os.pathsep.join(
+                str(path) for path in (provisioned["install_root"], PYTHON_SOURCE)
+            )
+
+            try:
                 completed = subprocess.run(
-                    [str(python_bin), "-c", PROBE],
+                    [sys.executable, "-c", PROBE],
                     cwd=temp_root,
                     check=True,
                     capture_output=True,
                     text=True,
                     env=env,
                 )
+            finally:
+                temp_dir_handle.cleanup()
             result = json.loads(completed.stdout)
 
             self.assertTrue(result["native_module_loaded"])

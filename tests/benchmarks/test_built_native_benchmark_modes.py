@@ -1,17 +1,16 @@
 from __future__ import annotations
 
 import pathlib
+import shutil
 import tempfile
 import unittest
 from collections.abc import Callable
 from unittest import mock
 
-from tests.benchmarks.native_benchmark_test_support import (
-    MATURIN,
-    benchmarks,
-)
+from rebar_harness import benchmarks
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
+MATURIN = shutil.which("maturin")
 _MISSING_MATURIN_REASON = (
     "built-native mode unavailable because no `maturin` executable was found on PATH"
 )

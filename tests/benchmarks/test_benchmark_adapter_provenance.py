@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 import pathlib
+import shutil
 import tempfile
 import unittest
 from unittest import mock
 
-from tests.benchmarks.native_benchmark_test_support import MATURIN, benchmarks
+from rebar_harness import benchmarks
+
+
+MATURIN = shutil.which("maturin")
 
 MANIFEST_PATH = benchmarks.select_benchmark_manifest_path(
     benchmarks.COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR
