@@ -33,8 +33,23 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
         case = source_tree_scorecard_case("post-parser-workflows")
         self.assertEqual(
             case["manifest_expectations"]["literal-flag-boundary"]["known_gap_count"],
-            2,
+            0,
         )
+
+    def test_post_parser_workflows_promote_ignorecase_ascii_pair_to_measured_representatives(
+        self,
+    ) -> None:
+        case = source_tree_scorecard_case("post-parser-workflows")
+        for workload_id in (
+            "module-search-ignorecase-ascii-cold-gap",
+            "pattern-search-ignorecase-ascii-warm-gap",
+        ):
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(workload_id, case["representative_measured_workload_ids"])
+                self.assertNotIn(
+                    workload_id,
+                    case["representative_known_gap_workload_ids"],
+                )
 
     def test_regression_pack_full_promotes_bytes_backreference_probe_to_measured(
         self,

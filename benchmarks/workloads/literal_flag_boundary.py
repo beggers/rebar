@@ -7,7 +7,7 @@ MANIFEST = {
   ],
   "notes": [
     "Literal-flag boundary workloads keep patterns and haystacks intentionally tiny so the timings expose bounded flag-sensitive helper-call overhead instead of regex throughput.",
-    "Supported API-level IGNORECASE, inline-flag, and bytes-LOCALE helpers are measured directly, while unsupported flag combinations stay in the same pack as explicit known-gap rows rather than disappearing from the scorecard."
+    "Supported API-level IGNORECASE, IGNORECASE|ASCII, inline-flag, and bytes-LOCALE helpers are measured directly; the historical `-gap` ids stay pinned only so the shared scorecard can preserve row continuity."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -256,9 +256,10 @@ MANIFEST = {
       "timing_scope": "module-helper-call",
       "categories": [
         "flag",
-        "unsupported",
         "ignorecase",
         "ascii",
+        "search",
+        "literal",
         "cold-cache"
       ],
       "syntax_features": [
@@ -268,7 +269,7 @@ MANIFEST = {
         "flag-combination"
       ],
       "notes": [
-        "Explicit known-gap row for the current unsupported module-level IGNORECASE|ASCII literal helper combination."
+        "Measured module-level IGNORECASE|ASCII literal search row that keeps its historical `-gap` id for publication continuity."
       ]
     },
     {
@@ -285,9 +286,10 @@ MANIFEST = {
       "categories": [
         "pattern",
         "flag",
-        "unsupported",
         "ignorecase",
         "ascii",
+        "search",
+        "literal",
         "warm-cache"
       ],
       "syntax_features": [
@@ -297,7 +299,7 @@ MANIFEST = {
         "flag-combination"
       ],
       "notes": [
-        "Explicit known-gap row for the current unsupported precompiled IGNORECASE|ASCII pattern helper combination."
+        "Measured precompiled IGNORECASE|ASCII literal search row that keeps its historical `-gap` id for publication continuity."
       ]
     }
   ]

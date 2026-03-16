@@ -127,11 +127,10 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
             "pattern-search-inline-flag-warm-str-hit",
             "module-search-locale-purged-bytes-hit",
             "pattern-search-locale-purged-bytes-hit",
-        ),
-        representative_known_gap_workload_ids=(
             "module-search-ignorecase-ascii-cold-gap",
             "pattern-search-ignorecase-ascii-warm-gap",
         ),
+        representative_known_gap_workload_ids=(),
     ),
     "nested-group-replacement-boundary": _full_source_tree_scorecard_case_definition(
         manifest_ids=("nested-group-replacement-boundary",),
@@ -199,15 +198,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         },
     },
     "collection-replacement-boundary": {},
-    "literal-flag-boundary": {
-        "known_gap_workload_ids": (
-            "module-search-ignorecase-ascii-cold-gap",
-            "pattern-search-ignorecase-ascii-warm-gap",
-        ),
-        "representative_known_gap_workload_ids": (
-            "module-search-ignorecase-ascii-cold-gap",
-        ),
-    },
+    "literal-flag-boundary": {},
     "grouped-named-boundary": {
         "known_gap_workload_ids": (
             "module-search-grouped-segment-cold-gap",

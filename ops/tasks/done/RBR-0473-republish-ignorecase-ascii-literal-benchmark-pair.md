@@ -1,8 +1,9 @@
 # RBR-0473: Republish the IGNORECASE|ASCII literal benchmark pair as measured source-tree timings
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
+Completed: 2026-03-16
 
 ## Goal
 - Refresh the shared source-tree benchmark publication once `RBR-0471` lands so the exact `IGNORECASE|ASCII` literal helper pair already anchored on `literal-flag-boundary` stops publishing as explicit gaps and instead becomes measured `rebar` timing coverage without widening the benchmark frontier.
@@ -44,3 +45,10 @@ Created: 2026-03-16
 - `RBR-0471` should land immediately ahead of this task and convert the matching correctness pair `flag-module-search-ignorecase-ascii-str-hit` / `flag-pattern-search-ignorecase-ascii-str-hit` to real Rust-backed parity on `literal-flag-workflows`.
 - 2026-03-16 planning probe: the tracked `reports/benchmarks/latest.py` artifact still reports `588` total workloads, `573` measured workloads, `15` known gaps overall, and `literal-flag-boundary` at `8` measured workloads / `2` known gaps with both exact ASCII rows still publishing as `status == "unimplemented"`.
 - 2026-03-16 planning probe: `benchmarks/workloads/literal_flag_boundary.py` already carries the exact target rows pinned to pattern `"abc"`, haystack `"ABC"`, flags `258` (`IGNORECASE | ASCII`), and the ordinary module/pattern helper timing scopes, so this follow-on should stay on that existing path rather than inventing another manifest.
+
+## Completion
+- 2026-03-16: Updated `tests/benchmarks/benchmark_expectations.py` so the shared `post-parser-workflows` source-tree case now treats `module-search-ignorecase-ascii-cold-gap` and `pattern-search-ignorecase-ascii-warm-gap` as measured representative rows, while the `literal-flag-boundary` combined-manifest expectation now derives `known_gap_count == 0` from the absence of raw known-gap ids instead of manual bookkeeping.
+- 2026-03-16: Refreshed the direct benchmark assertions in `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the post-parser scorecard promotes the ASCII pair onto the measured representative surface and the one-manifest literal-flag rerun explicitly checks both legacy `-gap` workload ids publish `status == "measured"`.
+- 2026-03-16: Made `benchmarks/workloads/literal_flag_boundary.py` honest for the now-measured slice by removing the stale `unsupported` row categories and rewriting the manifest/row notes to explain that the legacy `-gap` ids are retained only for scorecard continuity.
+- 2026-03-16: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/literal_flag_boundary.py --report .rebar/tmp/rbr-0473-literal-flag-boundary.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
+- 2026-03-16: Republished the tracked benchmark scorecard at `reports/benchmarks/latest.py`; the tracked diff includes that file, and the regenerated artifact now reports `588` total workloads, `575` measured workloads, and `13` known gaps overall, while `literal-flag-boundary` reports `10` measured workloads, `0` known gaps, and both exact ASCII rows publish `status == "measured"`.

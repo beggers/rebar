@@ -101,6 +101,49 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             (),
         )
 
+    def test_literal_flag_manifest_no_longer_classifies_ascii_pair_as_known_gaps(
+        self,
+    ) -> None:
+        raw_manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+            "literal-flag-boundary"
+        ]
+        self.assertNotIn("known_gap_workload_ids", raw_manifest_expectation)
+        self.assertNotIn(
+            "representative_known_gap_workload_ids",
+            raw_manifest_expectation,
+        )
+
+        case = source_tree_combined_case("literal-flag-boundary")
+        manifest_expectation = case["manifest_expectation"]
+        self.assertEqual(manifest_expectation["known_gap_count"], 0)
+        self.assertEqual(
+            manifest_expectation["representative_known_gap_workload_ids"],
+            (),
+        )
+
+        _, scorecard = run_source_tree_benchmark_scorecard(
+            [REPO_ROOT / case["manifest_path"]]
+        )
+        manifest_summary = scorecard["manifests"]["literal-flag-boundary"]
+        self.assertEqual(manifest_summary["known_gap_count"], 0)
+        self.assertEqual(manifest_summary["measured_workloads"], 10)
+
+        for workload_id in (
+            "module-search-ignorecase-ascii-cold-gap",
+            "pattern-search-ignorecase-ascii-warm-gap",
+        ):
+            with self.subTest(workload_id=workload_id):
+                assert_benchmark_workload_contract(
+                    self,
+                    find_workload_record(scorecard, workload_id),
+                    manifest_id="literal-flag-boundary",
+                    workload_document=find_workload_document(
+                        case["target_manifest"],
+                        workload_id,
+                    ),
+                    expected_status="measured",
+                )
+
     def test_shape_backed_manifests_keep_derived_representatives(self) -> None:
         shape_expectation = source_tree_combined_manifest_shape_expectation(
             "pattern-boundary"
