@@ -177,64 +177,49 @@ class FixtureBundleSpec:
     expected_text_models: frozenset[str] | None = None
 
 
-def load_fixture_bundle(
-    fixture_name: str,
-    *,
-    expected_manifest_id: str,
-    expected_patterns: frozenset[str | bytes],
-    expected_operation_helper_counts: Counter[tuple[str, str | None]],
-    selected_case_ids: tuple[str, ...] | None = None,
-    expected_case_ids: frozenset[str] | None = None,
-    expected_text_models: frozenset[str] | None = None,
-) -> FixtureBundle:
-    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
-    loaded_cases = tuple(cases)
-    if selected_case_ids is None:
-        bundle_cases = loaded_cases
-    else:
-        case_by_id = {case.case_id: case for case in loaded_cases}
-        missing_case_ids = tuple(
-            case_id for case_id in selected_case_ids if case_id not in case_by_id
-        )
-        if missing_case_ids:
-            raise ValueError(
-                f"{fixture_name} is missing expected fixture rows: {missing_case_ids}"
-            )
-        bundle_cases = tuple(case_by_id[case_id] for case_id in selected_case_ids)
-
-    bundle_text_models = expected_text_models
-    if bundle_text_models is None and selected_case_ids is None:
-        bundle_text_models = frozenset({"str"})
-    bundle_case_ids = expected_case_ids
-    if bundle_case_ids is None and selected_case_ids is not None:
-        bundle_case_ids = frozenset(selected_case_ids)
-
-    return FixtureBundle(
-        manifest=manifest,
-        cases=bundle_cases,
-        expected_manifest_id=expected_manifest_id,
-        expected_patterns=expected_patterns,
-        expected_operation_helper_counts=expected_operation_helper_counts,
-        expected_case_ids=bundle_case_ids,
-        expected_text_models=bundle_text_models,
-    )
-
-
 def load_fixture_bundles(
     specs: Iterable[FixtureBundleSpec],
 ) -> tuple[FixtureBundle, ...]:
-    return tuple(
-        load_fixture_bundle(
-            spec.fixture_name,
-            expected_manifest_id=spec.expected_manifest_id,
-            expected_patterns=spec.expected_patterns,
-            expected_operation_helper_counts=spec.expected_operation_helper_counts,
-            selected_case_ids=spec.selected_case_ids,
-            expected_case_ids=spec.expected_case_ids,
-            expected_text_models=spec.expected_text_models,
+    bundles: list[FixtureBundle] = []
+    for spec in specs:
+        manifest, cases = load_fixture_manifest(FIXTURES_DIR / spec.fixture_name)
+        loaded_cases = tuple(cases)
+        if spec.selected_case_ids is None:
+            bundle_cases = loaded_cases
+        else:
+            case_by_id = {case.case_id: case for case in loaded_cases}
+            missing_case_ids = tuple(
+                case_id
+                for case_id in spec.selected_case_ids
+                if case_id not in case_by_id
+            )
+            if missing_case_ids:
+                raise ValueError(
+                    f"{spec.fixture_name} is missing expected fixture rows: {missing_case_ids}"
+                )
+            bundle_cases = tuple(
+                case_by_id[case_id] for case_id in spec.selected_case_ids
+            )
+
+        bundle_text_models = spec.expected_text_models
+        if bundle_text_models is None and spec.selected_case_ids is None:
+            bundle_text_models = frozenset({"str"})
+        bundle_case_ids = spec.expected_case_ids
+        if bundle_case_ids is None and spec.selected_case_ids is not None:
+            bundle_case_ids = frozenset(spec.selected_case_ids)
+
+        bundles.append(
+            FixtureBundle(
+                manifest=manifest,
+                cases=bundle_cases,
+                expected_manifest_id=spec.expected_manifest_id,
+                expected_patterns=spec.expected_patterns,
+                expected_operation_helper_counts=spec.expected_operation_helper_counts,
+                expected_case_ids=bundle_case_ids,
+                expected_text_models=bundle_text_models,
+            )
         )
-        for spec in specs
-    )
+    return tuple(bundles)
 
 
 def fixture_cases_from_bundles(

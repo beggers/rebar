@@ -45,7 +45,6 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
-    load_fixture_bundle,
     load_fixture_bundles,
     load_published_fixture_bundles,
     manifest_case_ids,
@@ -607,24 +606,28 @@ def test_fixture_case_operation_selection_preserves_published_row_order() -> Non
 
 
 def test_whole_manifest_bundle_contract_supports_exact_case_id_validation() -> None:
-    bundle = load_fixture_bundle(
-        "named_backreference_workflows.py",
-        expected_manifest_id="named-backreference-workflows",
-        expected_case_ids=frozenset(
-            {
-                "named-backreference-compile-metadata-str",
-                "named-backreference-module-search-str",
-                "named-backreference-pattern-search-str",
-            }
-        ),
-        expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 1,
-                ("module_call", "search"): 1,
-                ("pattern_call", "search"): 1,
-            }
-        ),
+    (bundle,) = load_fixture_bundles(
+        (
+            FixtureBundleSpec(
+                "named_backreference_workflows.py",
+                expected_manifest_id="named-backreference-workflows",
+                expected_case_ids=frozenset(
+                    {
+                        "named-backreference-compile-metadata-str",
+                        "named-backreference-module-search-str",
+                        "named-backreference-pattern-search-str",
+                    }
+                ),
+                expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
+                expected_operation_helper_counts=Counter(
+                    {
+                        ("compile", None): 1,
+                        ("module_call", "search"): 1,
+                        ("pattern_call", "search"): 1,
+                    }
+                ),
+            ),
+        )
     )
 
     assert bundle.manifest.path == FIXTURES_DIR / "named_backreference_workflows.py"
@@ -633,24 +636,28 @@ def test_whole_manifest_bundle_contract_supports_exact_case_id_validation() -> N
 
 
 def test_expected_fixture_bundle_contract_supports_exact_case_id_validation() -> None:
-    bundle = load_fixture_bundle(
-        "named_backreference_workflows.py",
-        expected_manifest_id="named-backreference-workflows",
-        expected_case_ids=frozenset(
-            {
-                "named-backreference-compile-metadata-str",
-                "named-backreference-module-search-str",
-                "named-backreference-pattern-search-str",
-            }
-        ),
-        expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 1,
-                ("module_call", "search"): 1,
-                ("pattern_call", "search"): 1,
-            }
-        ),
+    (bundle,) = load_fixture_bundles(
+        (
+            FixtureBundleSpec(
+                "named_backreference_workflows.py",
+                expected_manifest_id="named-backreference-workflows",
+                expected_case_ids=frozenset(
+                    {
+                        "named-backreference-compile-metadata-str",
+                        "named-backreference-module-search-str",
+                        "named-backreference-pattern-search-str",
+                    }
+                ),
+                expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
+                expected_operation_helper_counts=Counter(
+                    {
+                        ("compile", None): 1,
+                        ("module_call", "search"): 1,
+                        ("pattern_call", "search"): 1,
+                    }
+                ),
+            ),
+        )
     )
 
     assert_fixture_bundle_contract(
@@ -706,14 +713,18 @@ def test_bundle_pattern_projection_and_raw_case_lookup_helpers_cover_published_f
         "module-sub-callable-str",
         "module-sub-grouping-template",
     )
-    bundle = load_fixture_bundle(
-        "collection_replacement_workflows.py",
-        expected_manifest_id="collection-replacement-workflows",
-        expected_case_ids=frozenset(selected_case_ids),
-        expected_patterns=frozenset({"abc", "(abc)"}),
-        expected_operation_helper_counts=Counter({("module_call", "sub"): 2}),
-        selected_case_ids=selected_case_ids,
-        expected_text_models=frozenset({"str"}),
+    (bundle,) = load_fixture_bundles(
+        (
+            FixtureBundleSpec(
+                "collection_replacement_workflows.py",
+                expected_manifest_id="collection-replacement-workflows",
+                expected_case_ids=frozenset(selected_case_ids),
+                expected_patterns=frozenset({"abc", "(abc)"}),
+                expected_operation_helper_counts=Counter({("module_call", "sub"): 2}),
+                selected_case_ids=selected_case_ids,
+                expected_text_models=frozenset({"str"}),
+            ),
+        )
     )
 
     raw_cases = raw_fixture_cases_by_id(bundle)
@@ -798,23 +809,27 @@ def test_ordered_manifest_cases_from_bundles_rejects_missing_case_ids() -> None:
 
 
 def test_case_argument_helpers_cover_module_and_pattern_replacement_rows() -> None:
-    module_bundle = load_fixture_bundle(
-        "collection_replacement_workflows.py",
-        expected_manifest_id="collection-replacement-workflows",
-        expected_case_ids=frozenset({"module-sub-grouping-template"}),
-        expected_patterns=frozenset({"(abc)"}),
-        expected_operation_helper_counts=Counter({("module_call", "sub"): 1}),
-        selected_case_ids=("module-sub-grouping-template",),
-        expected_text_models=frozenset({"str"}),
-    )
-    pattern_bundle = load_fixture_bundle(
-        "named_group_replacement_workflows.py",
-        expected_manifest_id="named-group-replacement-workflows",
-        expected_case_ids=frozenset({"pattern-sub-template-named-group-str"}),
-        expected_patterns=frozenset({r"(?P<word>abc)"}),
-        expected_operation_helper_counts=Counter({("pattern_call", "sub"): 1}),
-        selected_case_ids=("pattern-sub-template-named-group-str",),
-        expected_text_models=frozenset({"str"}),
+    module_bundle, pattern_bundle = load_fixture_bundles(
+        (
+            FixtureBundleSpec(
+                "collection_replacement_workflows.py",
+                expected_manifest_id="collection-replacement-workflows",
+                expected_case_ids=frozenset({"module-sub-grouping-template"}),
+                expected_patterns=frozenset({"(abc)"}),
+                expected_operation_helper_counts=Counter({("module_call", "sub"): 1}),
+                selected_case_ids=("module-sub-grouping-template",),
+                expected_text_models=frozenset({"str"}),
+            ),
+            FixtureBundleSpec(
+                "named_group_replacement_workflows.py",
+                expected_manifest_id="named-group-replacement-workflows",
+                expected_case_ids=frozenset({"pattern-sub-template-named-group-str"}),
+                expected_patterns=frozenset({r"(?P<word>abc)"}),
+                expected_operation_helper_counts=Counter({("pattern_call", "sub"): 1}),
+                selected_case_ids=("pattern-sub-template-named-group-str",),
+                expected_text_models=frozenset({"str"}),
+            ),
+        )
     )
 
     module_case = module_bundle.cases[0]
@@ -827,51 +842,55 @@ def test_case_argument_helpers_cover_module_and_pattern_replacement_rows() -> No
 
 
 def test_module_workflow_surface_bundle_contract_covers_verbose_compile_case() -> None:
-    bundle = load_fixture_bundle(
-        "module_workflow_surface.py",
-        expected_manifest_id="module-workflow-surface",
-        expected_case_ids=frozenset(
-            {
-                "workflow-compile-str-literal",
-                "workflow-compile-str-anchored-literal",
-                "workflow-compile-str-verbose-regression",
-                "workflow-compile-bytes-literal",
-                "workflow-pattern-search-str",
-                "workflow-pattern-match-str",
-                "workflow-pattern-fullmatch-bytes",
-                "workflow-cache-hit-str",
-                "workflow-cache-hit-bytes",
-                "workflow-purge-reset-str",
-                "workflow-escape-str",
-                "workflow-escape-bytes",
-            }
-        ),
-        expected_patterns=frozenset(
-            {
-                "abc",
-                "^abc$",
-                "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
-                b"abc",
-                b"123",
-                "cache-me",
-                b"cache-me",
-                "purge-me",
-                "a-b.c",
-                b"a-b.c",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 4,
-                ("pattern_call", "search"): 1,
-                ("pattern_call", "match"): 1,
-                ("pattern_call", "fullmatch"): 1,
-                ("cache_workflow", None): 2,
-                ("purge_workflow", None): 1,
-                ("module_call", "escape"): 2,
-            }
-        ),
-        expected_text_models=frozenset({"bytes", "str"}),
+    (bundle,) = load_fixture_bundles(
+        (
+            FixtureBundleSpec(
+                "module_workflow_surface.py",
+                expected_manifest_id="module-workflow-surface",
+                expected_case_ids=frozenset(
+                    {
+                        "workflow-compile-str-literal",
+                        "workflow-compile-str-anchored-literal",
+                        "workflow-compile-str-verbose-regression",
+                        "workflow-compile-bytes-literal",
+                        "workflow-pattern-search-str",
+                        "workflow-pattern-match-str",
+                        "workflow-pattern-fullmatch-bytes",
+                        "workflow-cache-hit-str",
+                        "workflow-cache-hit-bytes",
+                        "workflow-purge-reset-str",
+                        "workflow-escape-str",
+                        "workflow-escape-bytes",
+                    }
+                ),
+                expected_patterns=frozenset(
+                    {
+                        "abc",
+                        "^abc$",
+                        "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+                        b"abc",
+                        b"123",
+                        "cache-me",
+                        b"cache-me",
+                        "purge-me",
+                        "a-b.c",
+                        b"a-b.c",
+                    }
+                ),
+                expected_operation_helper_counts=Counter(
+                    {
+                        ("compile", None): 4,
+                        ("pattern_call", "search"): 1,
+                        ("pattern_call", "match"): 1,
+                        ("pattern_call", "fullmatch"): 1,
+                        ("cache_workflow", None): 2,
+                        ("purge_workflow", None): 1,
+                        ("module_call", "escape"): 2,
+                    }
+                ),
+                expected_text_models=frozenset({"bytes", "str"}),
+            ),
+        )
     )
 
     assert bundle.manifest.path == FIXTURES_DIR / "module_workflow_surface.py"
@@ -920,41 +939,45 @@ def test_module_workflow_surface_compile_case_selection_preserves_row_order() ->
 
 
 def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_case_ids() -> None:
-    named_bundle = load_fixture_bundle(
-        "named_backreference_workflows.py",
-        expected_manifest_id="named-backreference-workflows",
-        expected_case_ids=frozenset(
-            {
-                "named-backreference-compile-metadata-str",
-                "named-backreference-module-search-str",
-                "named-backreference-pattern-search-str",
-            }
-        ),
-        expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 1,
-                ("module_call", "search"): 1,
-                ("pattern_call", "search"): 1,
-            }
-        ),
-    )
-    open_ended_bundle = load_fixture_bundle(
-        "open_ended_quantified_group_alternation_workflows.py",
-        expected_manifest_id="open-ended-quantified-group-alternation-workflows",
-        expected_patterns=frozenset(
-            {
-                r"a(bc|de){1,}d",
-                r"a(?P<word>bc|de){1,}d",
-            }
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 10,
-            }
-        ),
+    named_bundle, open_ended_bundle = load_fixture_bundles(
+        (
+            FixtureBundleSpec(
+                "named_backreference_workflows.py",
+                expected_manifest_id="named-backreference-workflows",
+                expected_case_ids=frozenset(
+                    {
+                        "named-backreference-compile-metadata-str",
+                        "named-backreference-module-search-str",
+                        "named-backreference-pattern-search-str",
+                    }
+                ),
+                expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
+                expected_operation_helper_counts=Counter(
+                    {
+                        ("compile", None): 1,
+                        ("module_call", "search"): 1,
+                        ("pattern_call", "search"): 1,
+                    }
+                ),
+            ),
+            FixtureBundleSpec(
+                "open_ended_quantified_group_alternation_workflows.py",
+                expected_manifest_id="open-ended-quantified-group-alternation-workflows",
+                expected_patterns=frozenset(
+                    {
+                        r"a(bc|de){1,}d",
+                        r"a(?P<word>bc|de){1,}d",
+                    }
+                ),
+                expected_operation_helper_counts=Counter(
+                    {
+                        ("compile", None): 2,
+                        ("module_call", "search"): 4,
+                        ("pattern_call", "fullmatch"): 10,
+                    }
+                ),
+            ),
+        )
     )
 
     assert open_ended_bundle.expected_case_ids is None
