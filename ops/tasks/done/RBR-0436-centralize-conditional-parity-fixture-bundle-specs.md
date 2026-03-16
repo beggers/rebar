@@ -1,8 +1,9 @@
 # RBR-0436: Centralize conditional parity fixture-bundle specs
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
+Completed: 2026-03-16
 
 ## Goal
 - Replace the remaining repeated whole-manifest `load_fixture_bundle(...)` declarations and bundle fanout comprehensions in the non-replacement conditional parity suites with one small declarative helper path, so this fixture-backed conditional surface stops hand-maintaining the same bundle-spec plumbing after the earlier suite consolidation and shared parity-helper passes.
@@ -61,3 +62,13 @@ Created: 2026-03-16
 - `ops/tasks/done/RBR-0347-consolidate-base-conditional-group-exists-parity-suite.md`, `ops/tasks/done/RBR-0363-consolidate-nested-conditional-group-exists-parity-suite.md`, `ops/tasks/done/RBR-0365-consolidate-conditional-alternation-parity-suite.md`, and `ops/tasks/done/RBR-0373-extract-shared-conditional-parity-suite-support.md` already removed the old per-file test scaffolding. The remaining duplication in this family is the repeated whole-manifest bundle declaration shape itself:
   - 21 direct `load_fixture_bundle(...)` calls across the four targeted suites; and
   - repeated bundle-to-case fanout comprehensions for the compile/module/pattern partitions.
+
+## Completion
+- Added `WholeManifestBundleSpec`, ordered whole-manifest bundle loading, and shared ordered bundle fanout helpers to `tests/python/fixture_parity_support.py`, all layered on the existing `load_fixture_bundle(...)` path.
+- Switched the four targeted non-replacement conditional parity suites to explicit `FIXTURE_BUNDLE_SPECS` declarations plus shared bundle/case derivation, while keeping each suite's manifest ids, case-id sets, pattern sets, operation counters, the nested empty-else override, and the quantified suite's supplemental coverage local to the suite.
+- Added focused helper-contract coverage for ordered bundle loading, ordered all-case fanout, and ordered per-operation selection in `tests/python/test_fixture_parity_support_contract.py`.
+
+## Verification
+- `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_conditional_group_exists_parity_suite.py tests/python/test_conditional_group_exists_alternation_parity_suite.py tests/python/test_conditional_group_exists_nested_parity_suite.py tests/python/test_conditional_group_exists_quantified_parity_suite.py`
+- `rg -n 'load_fixture_bundle\\(' tests/python/test_conditional_group_exists_parity_suite.py tests/python/test_conditional_group_exists_alternation_parity_suite.py tests/python/test_conditional_group_exists_nested_parity_suite.py tests/python/test_conditional_group_exists_quantified_parity_suite.py`
+- `rg -n 'case for bundle in FIXTURE_BUNDLES for case in bundle\\.cases' tests/python/test_conditional_group_exists_parity_suite.py tests/python/test_conditional_group_exists_alternation_parity_suite.py tests/python/test_conditional_group_exists_nested_parity_suite.py tests/python/test_conditional_group_exists_quantified_parity_suite.py`

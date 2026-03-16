@@ -32,6 +32,16 @@ class FixtureBundle:
     expected_text_models: frozenset[str] | None = None
 
 
+@dataclass(frozen=True)
+class WholeManifestBundleSpec:
+    fixture_name: str
+    expected_manifest_id: str
+    expected_patterns: frozenset[str | bytes]
+    expected_operation_helper_counts: Counter[tuple[str, str | None]]
+    expected_case_ids: frozenset[str] | None = None
+    expected_text_models: frozenset[str] | None = None
+
+
 def _fixture_bundle(
     *,
     manifest: FixtureManifest,
@@ -90,6 +100,37 @@ def load_fixture_bundle(
         expected_operation_helper_counts=expected_operation_helper_counts,
         expected_case_ids=expected_case_ids,
         expected_text_models=bundle_text_models,
+    )
+
+
+def load_whole_manifest_fixture_bundles(
+    specs: Iterable[WholeManifestBundleSpec],
+) -> tuple[FixtureBundle, ...]:
+    return tuple(
+        load_fixture_bundle(
+            spec.fixture_name,
+            expected_manifest_id=spec.expected_manifest_id,
+            expected_patterns=spec.expected_patterns,
+            expected_operation_helper_counts=spec.expected_operation_helper_counts,
+            expected_case_ids=spec.expected_case_ids,
+            expected_text_models=spec.expected_text_models,
+        )
+        for spec in specs
+    )
+
+
+def fixture_cases_from_bundles(
+    bundles: Iterable[FixtureBundle],
+) -> tuple[FixtureCase, ...]:
+    return tuple(case for bundle in bundles for case in bundle.cases)
+
+
+def fixture_cases_for_operation(
+    bundles: Iterable[FixtureBundle],
+    operation: str,
+) -> tuple[FixtureCase, ...]:
+    return tuple(
+        case for case in fixture_cases_from_bundles(bundles) if case.operation == operation
     )
 
 

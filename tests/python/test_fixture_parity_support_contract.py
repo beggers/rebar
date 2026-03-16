@@ -27,6 +27,7 @@ from rebar_harness.correctness import (
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
     _match_api_templates,
+    WholeManifestBundleSpec,
     assert_fixture_bundle_contract,
     assert_finditer_parity,
     assert_invalid_match_group_access_parity,
@@ -39,7 +40,10 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     case_text_argument,
     compile_with_cpython_parity,
+    fixture_cases_for_operation,
+    fixture_cases_from_bundles,
     load_fixture_bundle,
+    load_whole_manifest_fixture_bundles,
     load_published_fixture_bundles,
     load_published_fixture_cases,
     published_fixture_bundle_by_manifest_id,
@@ -414,6 +418,91 @@ def test_published_fixture_case_selection_rejects_duplicate_case_ids() -> None:
             (grouped_match_fixture_path, grouped_match_fixture_path),
             (duplicate_case_id,),
         )
+
+
+def _whole_manifest_backreference_bundle_specs() -> tuple[WholeManifestBundleSpec, ...]:
+    return (
+        WholeManifestBundleSpec(
+            fixture_name="named_backreference_workflows.py",
+            expected_manifest_id="named-backreference-workflows",
+            expected_case_ids=frozenset(
+                {
+                    "named-backreference-compile-metadata-str",
+                    "named-backreference-module-search-str",
+                    "named-backreference-pattern-search-str",
+                }
+            ),
+            expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
+            expected_operation_helper_counts=Counter(
+                {
+                    ("compile", None): 1,
+                    ("module_call", "search"): 1,
+                    ("pattern_call", "search"): 1,
+                }
+            ),
+        ),
+        WholeManifestBundleSpec(
+            fixture_name="numbered_backreference_workflows.py",
+            expected_manifest_id="numbered-backreference-workflows",
+            expected_case_ids=frozenset(
+                {
+                    "numbered-backreference-compile-metadata-str",
+                    "numbered-backreference-module-search-str",
+                    "numbered-backreference-pattern-search-str",
+                }
+            ),
+            expected_patterns=frozenset({r"(ab)\1"}),
+            expected_operation_helper_counts=Counter(
+                {
+                    ("compile", None): 1,
+                    ("module_call", "search"): 1,
+                    ("pattern_call", "search"): 1,
+                }
+            ),
+            expected_text_models=frozenset({"str"}),
+        ),
+    )
+
+
+def test_whole_manifest_bundle_specs_load_in_declared_order_with_bundle_validation() -> None:
+    bundles = load_whole_manifest_fixture_bundles(
+        _whole_manifest_backreference_bundle_specs()
+    )
+
+    assert tuple(bundle.manifest.path.name for bundle in bundles) == (
+        "named_backreference_workflows.py",
+        "numbered_backreference_workflows.py",
+    )
+    for bundle in bundles:
+        assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
+
+
+def test_fixture_case_fanout_from_bundles_preserves_bundle_then_case_order() -> None:
+    bundles = load_whole_manifest_fixture_bundles(
+        _whole_manifest_backreference_bundle_specs()
+    )
+
+    assert tuple(case.case_id for case in fixture_cases_from_bundles(bundles)) == (
+        "named-backreference-compile-metadata-str",
+        "named-backreference-module-search-str",
+        "named-backreference-pattern-search-str",
+        "numbered-backreference-compile-metadata-str",
+        "numbered-backreference-module-search-str",
+        "numbered-backreference-pattern-search-str",
+    )
+
+
+def test_fixture_case_operation_selection_preserves_published_row_order() -> None:
+    bundles = load_whole_manifest_fixture_bundles(
+        _whole_manifest_backreference_bundle_specs()
+    )
+
+    assert tuple(
+        case.case_id for case in fixture_cases_for_operation(bundles, "pattern_call")
+    ) == (
+        "named-backreference-pattern-search-str",
+        "numbered-backreference-pattern-search-str",
+    )
 
 
 def test_whole_manifest_bundle_contract_supports_exact_case_id_validation() -> None:

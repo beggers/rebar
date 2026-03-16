@@ -7,10 +7,12 @@ import pytest
 
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
+    WholeManifestBundleSpec,
     assert_fixture_bundle_contract,
     assert_match_result_parity,
     compile_with_cpython_parity,
-    load_fixture_bundle,
+    fixture_cases_for_operation,
+    load_whole_manifest_fixture_bundles,
     str_case_pattern,
 )
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
@@ -31,8 +33,8 @@ SYSTEMATIC_EMPTY_ELSE_OPERATION_HELPER_COUNTS = Counter(
 )
 
 
-FIXTURE_BUNDLES = (
-    load_fixture_bundle(
+FIXTURE_BUNDLE_SPECS = (
+    WholeManifestBundleSpec(
         "conditional_group_exists_nested_workflows.py",
         expected_manifest_id="conditional-group-exists-nested-workflows",
         expected_case_ids=frozenset(
@@ -55,7 +57,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_no_else_nested_workflows.py",
         expected_manifest_id="conditional-group-exists-no-else-nested-workflows",
         expected_case_ids=frozenset(
@@ -78,7 +80,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_empty_else_nested_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-else-nested-workflows",
         expected_case_ids=frozenset(
@@ -109,7 +111,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=SYSTEMATIC_EMPTY_ELSE_OPERATION_HELPER_COUNTS,
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_empty_yes_else_nested_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-yes-else-nested-workflows",
         expected_case_ids=frozenset(
@@ -132,7 +134,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_fully_empty_nested_workflows.py",
         expected_manifest_id="conditional-group-exists-fully-empty-nested-workflows",
         expected_case_ids=frozenset(
@@ -156,24 +158,10 @@ FIXTURE_BUNDLES = (
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
 )
-COMPILE_CASES = tuple(
-    case
-    for bundle in FIXTURE_BUNDLES
-    for case in bundle.cases
-    if case.operation == "compile"
-)
-MODULE_CASES = tuple(
-    case
-    for bundle in FIXTURE_BUNDLES
-    for case in bundle.cases
-    if case.operation == "module_call"
-)
-PATTERN_CASES = tuple(
-    case
-    for bundle in FIXTURE_BUNDLES
-    for case in bundle.cases
-    if case.operation == "pattern_call"
-)
+FIXTURE_BUNDLES = load_whole_manifest_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
+MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
+PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
 
 
 @pytest.mark.parametrize(

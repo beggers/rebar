@@ -8,6 +8,7 @@ import pytest
 
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
+    WholeManifestBundleSpec,
     assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -15,7 +16,9 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
-    load_fixture_bundle,
+    fixture_cases_for_operation,
+    fixture_cases_from_bundles,
+    load_whole_manifest_fixture_bundles,
     str_case_pattern,
 )
 QUANTIFIED_ALTERNATION_NUMBERED_PATTERN = r"a(b)?c(?(1)(de|df)|(eg|eh)){2}"
@@ -47,8 +50,8 @@ class SupplementalMissCase:
     text: str
 
 
-FIXTURE_BUNDLES = (
-    load_fixture_bundle(
+FIXTURE_BUNDLE_SPECS = (
+    WholeManifestBundleSpec(
         "conditional_group_exists_quantified_workflows.py",
         expected_manifest_id="conditional-group-exists-quantified-workflows",
         expected_case_ids=frozenset(
@@ -78,7 +81,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_quantified_alternation_workflows.py",
         expected_manifest_id="conditional-group-exists-quantified-alternation-workflows",
         expected_case_ids=frozenset(
@@ -109,7 +112,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_no_else_quantified_workflows.py",
         expected_manifest_id="conditional-group-exists-no-else-quantified-workflows",
         expected_case_ids=frozenset(
@@ -139,7 +142,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_empty_else_quantified_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-else-quantified-workflows",
         expected_case_ids=frozenset(
@@ -169,7 +172,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_empty_yes_else_quantified_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-yes-else-quantified-workflows",
         expected_case_ids=frozenset(
@@ -198,7 +201,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_fully_empty_quantified_workflows.py",
         expected_manifest_id="conditional-group-exists-fully-empty-quantified-workflows",
         expected_case_ids=frozenset(
@@ -230,10 +233,11 @@ FIXTURE_BUNDLES = (
         ),
     ),
 )
-PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
-COMPILE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "compile")
-MODULE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "module_call")
-PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pattern_call")
+FIXTURE_BUNDLES = load_whole_manifest_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
+COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
+MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
+PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
 MATCH_API_CASE_IDS = (
     "conditional-group-exists-quantified-module-search-present-str",
     "conditional-group-exists-quantified-module-fullmatch-absent-str",
