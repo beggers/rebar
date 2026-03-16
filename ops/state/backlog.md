@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The concrete surviving follow-on is `RBR-0457`, which should republish the existing `regression-module-compile-verbose-purged` workload as a measured source-tree timing on the shared `regression-matrix` surface.
+The concrete surviving follow-on is `RBR-0459`, which should publish the exact parser-stress compile proxy already anchored by `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` on the shared `parser-matrix` correctness surface.
 
 ## Ordered Work
-1. `RBR-0457` should refresh `reports/benchmarks/latest.py` and any touched shared benchmark expectations so the existing `regression-module-compile-verbose-purged` row in `benchmarks/workloads/regression_matrix.py` flips from an explicit known gap to a measured Python-path timing without widening the regression manifest beyond that single verbose `module.compile()` probe.
+1. `RBR-0459` should add the exact `(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\\d{2}))?(?:(?<=foo)bar)?(?P=lemma)` parser-stress compile proxy to `tests/conformance/fixtures/parser_matrix.py`, refresh the shared correctness/parity expectations in `tests/conformance/correctness_expectations.py` and `tests/python/test_parser_matrix_parity_suite.py`, and regenerate `reports/correctness/latest.py` so the existing `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` benchmark anchors gain a published correctness case before Rust-backed parity or later benchmark catch-up reopen that heavier parser frontier.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
