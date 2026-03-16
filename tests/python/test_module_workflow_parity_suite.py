@@ -10,6 +10,7 @@ import rebar
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
+    assert_finditer_parity,
     SelectedCaseBundleSpec,
     assert_fixture_bundle_contract,
     assert_match_convenience_api_parity,
@@ -101,6 +102,15 @@ class VerboseCompileWorkflowCase:
     expected_span: tuple[int, int] | None
 
 
+@dataclass(frozen=True)
+class CompiledPatternModuleHelperCase:
+    case_id: str
+    helper: str
+    pattern: str | bytes
+    args: tuple[object, ...]
+    result_kind: str
+
+
 VERBOSE_COMPILE_WORKFLOW_CASES = (
     VerboseCompileWorkflowCase(
         case_id="fullmatch-digits-without-literal-spaces",
@@ -151,6 +161,64 @@ VERBOSE_COMPILE_WORKFLOW_CASES = (
         expected_span=None,
     ),
 )
+COMPILED_PATTERN_MODULE_HELPER_CASES = (
+    CompiledPatternModuleHelperCase(
+        case_id="compiled-pattern-search-str",
+        helper="search",
+        pattern="abc",
+        args=("zabczz",),
+        result_kind="match",
+    ),
+    CompiledPatternModuleHelperCase(
+        case_id="compiled-pattern-match-str",
+        helper="match",
+        pattern="abc",
+        args=("abcdef",),
+        result_kind="match",
+    ),
+    CompiledPatternModuleHelperCase(
+        case_id="compiled-pattern-fullmatch-bytes",
+        helper="fullmatch",
+        pattern=b"abc",
+        args=(b"abc",),
+        result_kind="match",
+    ),
+    CompiledPatternModuleHelperCase(
+        case_id="compiled-pattern-split-str-maxsplit",
+        helper="split",
+        pattern="abc",
+        args=("zzabczzabc", 1),
+        result_kind="value",
+    ),
+    CompiledPatternModuleHelperCase(
+        case_id="compiled-pattern-findall-bytes",
+        helper="findall",
+        pattern=b"abc",
+        args=(b"zabcabc",),
+        result_kind="value",
+    ),
+    CompiledPatternModuleHelperCase(
+        case_id="compiled-pattern-finditer-str",
+        helper="finditer",
+        pattern="abc",
+        args=("zabcabc",),
+        result_kind="iter",
+    ),
+    CompiledPatternModuleHelperCase(
+        case_id="compiled-pattern-sub-str-count",
+        helper="sub",
+        pattern="abc",
+        args=("x", "zabcabc", 1),
+        result_kind="value",
+    ),
+    CompiledPatternModuleHelperCase(
+        case_id="compiled-pattern-subn-bytes-count",
+        helper="subn",
+        pattern=b"abc",
+        args=(b"x", b"zabcabc", 1),
+        result_kind="value",
+    ),
+)
 
 
 def _compile_verbose_regression_pattern(
@@ -170,6 +238,15 @@ def _compile_verbose_regression_pattern(
     assert expected_pattern.flags == int(re.MULTILINE | re.VERBOSE | re.UNICODE)
     assert expected_pattern.groupindex == {"key": 1}
     return observed_pattern, expected_pattern
+
+
+def _compile_compiled_pattern_case(
+    regex_api: object,
+    pattern: str | bytes,
+) -> object:
+    compiled = regex_api.compile(pattern)
+    assert regex_api.compile(compiled) is compiled
+    return compiled
 
 
 def _assert_verbose_compile_case_matches_cpython(
@@ -222,6 +299,7 @@ def test_compile_workflows_match_cpython(
         case_pattern(case),
         case.flags or 0,
     )
+
 
 @pytest.mark.parametrize(
     "case", VERBOSE_COMPILE_WORKFLOW_CASES, ids=lambda case: case.case_id
@@ -298,6 +376,67 @@ def test_compiled_pattern_workflows_match_cpython(
     assert_match_result_parity(backend_name, observed, expected)
     assert expected is not None
     assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    COMPILED_PATTERN_MODULE_HELPER_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_module_helpers_accept_compiled_patterns_with_cpython_parity(
+    regex_backend: tuple[str, object],
+    case: CompiledPatternModuleHelperCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern = _compile_compiled_pattern_case(backend, case.pattern)
+    expected_pattern = _compile_compiled_pattern_case(re, case.pattern)
+
+    assert_pattern_parity(backend_name, observed_pattern, expected_pattern)
+
+    observed = getattr(backend, case.helper)(observed_pattern, *case.args)
+    expected = getattr(re, case.helper)(expected_pattern, *case.args)
+
+    if case.result_kind == "match":
+        assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+        assert expected is not None
+        assert_match_convenience_api_parity(observed, expected)
+        return
+
+    if case.result_kind == "iter":
+        assert_finditer_parity(backend_name, observed, expected, check_regs=True)
+        return
+
+    assert observed == expected
+
+
+@pytest.mark.parametrize(
+    "case",
+    COMPILED_PATTERN_MODULE_HELPER_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_module_helpers_reject_flags_for_compiled_patterns_like_cpython(
+    regex_backend: tuple[str, object],
+    case: CompiledPatternModuleHelperCase,
+) -> None:
+    _, backend = regex_backend
+    observed_pattern = _compile_compiled_pattern_case(backend, case.pattern)
+    expected_pattern = _compile_compiled_pattern_case(re, case.pattern)
+
+    with pytest.raises(ValueError) as expected_error:
+        getattr(re, case.helper)(
+            expected_pattern,
+            *case.args,
+            flags=int(re.IGNORECASE),
+        )
+
+    with pytest.raises(type(expected_error.value)) as observed_error:
+        getattr(backend, case.helper)(
+            observed_pattern,
+            *case.args,
+            flags=int(backend.IGNORECASE),
+        )
+
+    assert str(observed_error.value) == str(expected_error.value)
 
 
 @pytest.mark.parametrize("case", CACHE_CASES, ids=lambda case: case.case_id)
