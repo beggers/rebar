@@ -1,6 +1,6 @@
 # RBR-0467: Republish the bytes named-backreference regression row as a measured source-tree benchmark
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -36,3 +36,13 @@ Created: 2026-03-16
 - 2026-03-16 planning probe: the tracked `reports/benchmarks/latest.py` artifact still reports `588` total workloads, `572` measured workloads, `16` known gaps, and `regression-matrix` at `4` measured workloads / `1` known gap.
 - 2026-03-16 planning probe: `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/regression_matrix.py --report .rebar/tmp/feature-planning-rbr-0467-regression.py` now reports `5` measured workloads / `0` known gaps, and a full rerun to `.rebar/tmp/feature-planning-rbr-0467-full.py` reports `588` total workloads, `573` measured workloads, and `15` known gaps.
 - The intended post-benchmark follow-on is `RBR-0468`, which should publish the exact `IGNORECASE|ASCII` literal helper pair already exposed as `literal-flag-boundary` gap rows on the shared `literal-flag-workflows` correctness surface before Rust-backed parity or benchmark catch-up revisit that flag-combination slice.
+
+## Completion
+- 2026-03-16: Updated `tests/benchmarks/benchmark_expectations.py` so the shared regression source-tree expectations stop classifying `regression-parser-bytes-backreference-purged` as a known gap, keep the `RBR-0466` inventory-derived gap-count flow intact, and instead treat that row as a representative measured regression workload.
+- 2026-03-16: Added focused expectation coverage in `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the regression pack no longer advertises the bytes backreference row as a representative gap and the direct regression-manifest rerun now asserts `5` measured workloads / `0` known gaps with that workload published as `measured`.
+- 2026-03-16: Republished the tracked source-tree benchmark scorecard in `reports/benchmarks/latest.py`; the tracked artifact now reports `588` total workloads, `573` measured workloads, `15` known gaps overall, `regression-matrix` at `5` measured workloads / `0` known gaps, and `regression-parser-bytes-backreference-purged` with `implementation_timing.status == "measured"`.
+- 2026-03-16: Verification completed with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_compile_proxy_correctness_anchor_contract.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/regression_matrix.py --report .rebar/tmp/rbr-0467-regression.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`

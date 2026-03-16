@@ -15,6 +15,7 @@ from tests.benchmarks.benchmark_expectations import (
     source_tree_combined_manifest_shape_expectation,
     source_tree_combined_manifest_representative_measured_workload_ids,
     source_tree_combined_slice_expectations,
+    source_tree_scorecard_case,
     source_tree_combined_slice_manifest_ids,
     source_tree_combined_target_manifest_ids,
 )
@@ -113,6 +114,35 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(
             manifest_expectation["representative_known_gap_workload_ids"],
             (),
+        )
+
+    def test_regression_manifest_is_fully_measured_on_the_shared_surface(self) -> None:
+        scorecard_case = source_tree_scorecard_case("regression-pack-full")
+        self.assertEqual(
+            scorecard_case["manifest_expectations"]["regression-matrix"]["known_gap_count"],
+            0,
+        )
+
+        _, scorecard = run_source_tree_benchmark_scorecard(
+            [REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"]
+        )
+
+        manifest_summary = scorecard["manifests"]["regression-matrix"]
+        self.assertEqual(manifest_summary["known_gap_count"], 0)
+        self.assertEqual(manifest_summary["measured_workloads"], 5)
+
+        assert_benchmark_workload_contract(
+            self,
+            find_workload_record(
+                scorecard,
+                "regression-parser-bytes-backreference-purged",
+            ),
+            manifest_id="regression-matrix",
+            workload_document=find_workload_document(
+                scorecard_case["manifest_documents_by_id"]["regression-matrix"],
+                "regression-parser-bytes-backreference-purged",
+            ),
+            expected_status="measured",
         )
 
     def test_scoped_manifests_keep_slice_backed_representatives(self) -> None:

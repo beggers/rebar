@@ -157,11 +157,10 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
             "module-compile-literal-warm",
             "module-compile-literal-purged",
             "regression-import-cold",
+            "regression-parser-bytes-backreference-purged",
             "regression-module-search-bytes-cold-miss",
         ),
-        representative_known_gap_workload_ids=(
-            "regression-parser-bytes-backreference-purged",
-        ),
+        representative_known_gap_workload_ids=(),
     ),
     "regression-pack-smoke": _derived_source_tree_scorecard_case_definition(
         manifest_ids=("regression-matrix",),
@@ -462,13 +461,9 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "regression-matrix": {
-        "known_gap_workload_ids": (
+        "representative_measured_workload_ids": (
             "regression-parser-bytes-backreference-purged",
         ),
-        "representative_known_gap_workload_ids": (
-            "regression-parser-bytes-backreference-purged",
-        ),
-        "representative_measured_workload_ids": (),
     },
 }
 

@@ -36,6 +36,19 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             2,
         )
 
+    def test_regression_pack_full_promotes_bytes_backreference_probe_to_measured(
+        self,
+    ) -> None:
+        case = source_tree_scorecard_case("regression-pack-full")
+        self.assertIn(
+            "regression-parser-bytes-backreference-purged",
+            case["representative_measured_workload_ids"],
+        )
+        self.assertNotIn(
+            "regression-parser-bytes-backreference-purged",
+            case["representative_known_gap_workload_ids"],
+        )
+
     def test_single_manifest_scorecards_keep_slice_backed_representatives(self) -> None:
         for case_id in (
             "nested-group-replacement-boundary",
