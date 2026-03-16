@@ -215,11 +215,11 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
         "selection_mode": "full",
         "expected_summary": {
             "known_gap_count": 0,
-            "measured_workloads": 56,
-            "module_workloads": 56,
+            "measured_workloads": 60,
+            "module_workloads": 60,
             "parser_workloads": 0,
             "regression_workloads": 0,
-            "total_workloads": 56,
+            "total_workloads": 60,
         },
         "manifest_expectations": {
             "conditional-group-exists-boundary": {
@@ -229,6 +229,10 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
         "representative_measured_workload_ids": (
             "module-sub-template-numbered-conditional-group-exists-replacement-warm-gap",
             "module-subn-template-numbered-conditional-group-exists-replacement-warm-str",
+            "pattern-sub-template-numbered-conditional-group-exists-replacement-purged-str",
+            "pattern-subn-template-numbered-conditional-group-exists-replacement-purged-str",
+            "module-sub-template-named-conditional-group-exists-replacement-warm-str",
+            "module-subn-template-named-conditional-group-exists-replacement-warm-str",
             "pattern-sub-template-named-conditional-group-exists-replacement-purged-str",
             "pattern-subn-template-named-conditional-group-exists-replacement-purged-str",
             "module-sub-callable-numbered-conditional-group-exists-replacement-warm-str",
@@ -552,6 +556,10 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (
             "module-sub-template-numbered-conditional-group-exists-replacement-warm-gap",
             "module-subn-template-numbered-conditional-group-exists-replacement-warm-str",
+            "pattern-sub-template-numbered-conditional-group-exists-replacement-purged-str",
+            "pattern-subn-template-numbered-conditional-group-exists-replacement-purged-str",
+            "module-sub-template-named-conditional-group-exists-replacement-warm-str",
+            "module-subn-template-named-conditional-group-exists-replacement-warm-str",
             "pattern-sub-template-named-conditional-group-exists-replacement-purged-str",
             "pattern-subn-template-named-conditional-group-exists-replacement-purged-str",
         ),
@@ -1165,6 +1173,10 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         expected_workload_ids=(
             "module-sub-template-numbered-conditional-group-exists-replacement-warm-gap",
             "module-subn-template-numbered-conditional-group-exists-replacement-warm-str",
+            "pattern-sub-template-numbered-conditional-group-exists-replacement-purged-str",
+            "pattern-subn-template-numbered-conditional-group-exists-replacement-purged-str",
+            "module-sub-template-named-conditional-group-exists-replacement-warm-str",
+            "module-subn-template-named-conditional-group-exists-replacement-warm-str",
             "pattern-sub-template-named-conditional-group-exists-replacement-purged-str",
             "pattern-subn-template-named-conditional-group-exists-replacement-purged-str",
         ),

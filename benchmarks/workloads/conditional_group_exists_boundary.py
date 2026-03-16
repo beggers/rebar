@@ -7,7 +7,7 @@ MANIFEST = {
   ],
   "notes": [
     "Conditional group-exists boundary workloads keep one optional capture, one conditional site, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported bounded two-arm conditional slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch plus constant-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, one numbered `module.sub()` present-capture callable path, one numbered `module.subn()` first-match-only callable companion, one named `Pattern.sub()` present-capture callable path, one named `Pattern.subn()` first-match-only callable companion through the existing `callable_match_group` helper, one numbered `module.sub()` present-capture replacement-template helper plus one numbered `module.subn()` absent-capture count companion through `\\1x`, one named `Pattern.sub()` present-capture replacement-template helper plus one named `Pattern.subn()` absent-capture count companion through `\\g<word>x`, the bounded alternation-heavy replacement `a(b)?c(?(1)(de|df)|(eg|eh))` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the bounded nested two-arm `a(b)?c(?(1)(?(1)d|e)|f)` / `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` module-search, Pattern.fullmatch, and constant-replacement `sub()`/`subn()` probes through module and compiled-`Pattern` entrypoints, one bounded quantified `{2}` Pattern.fullmatch companion for each numbered and named spelling, the bounded quantified two-arm replacement `a(b)?c(?(1)d|e){2}` / `a(?P<word>b)?c(?(word)d|e){2}` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, and the bounded quantified alternation-heavy `a(b)?c(?(1)(de|df)|(eg|eh)){2}` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` module-search and Pattern.fullmatch probes, while the complementary named module and numbered compiled-`Pattern` replacement-template entrypoints, callable exception probes on absent first matches, alternation-heavy quantified replacement arms, deeper nested replacement-conditioned shapes, branch-local-backreference-conditioned flows, and broader backtracking-heavy conditional shapes stay follow-on benchmark expansion or later slices instead of being silently omitted here."
+    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch plus constant-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, one numbered `module.sub()` present-capture callable path, one numbered `module.subn()` first-match-only callable companion, one named `Pattern.sub()` present-capture callable path, one named `Pattern.subn()` first-match-only callable companion through the existing `callable_match_group` helper, the numbered and named replacement-template `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints via `\\1x` and `\\g<word>x`, the bounded alternation-heavy replacement `a(b)?c(?(1)(de|df)|(eg|eh))` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the bounded nested two-arm `a(b)?c(?(1)(?(1)d|e)|f)` / `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` module-search, Pattern.fullmatch, and constant-replacement `sub()`/`subn()` probes through module and compiled-`Pattern` entrypoints, one bounded quantified `{2}` Pattern.fullmatch companion for each numbered and named spelling, the bounded quantified two-arm replacement `a(b)?c(?(1)d|e){2}` / `a(?P<word>b)?c(?(word)d|e){2}` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, and the bounded quantified alternation-heavy `a(b)?c(?(1)(de|df)|(eg|eh)){2}` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` module-search and Pattern.fullmatch probes, while callable exception probes on absent first matches, alternation-heavy quantified replacement arms, deeper nested replacement-conditioned shapes, branch-local-backreference-conditioned flows, and broader backtracking-heavy conditional shapes stay follow-on benchmark expansion or later slices instead of being silently omitted here."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -525,7 +525,7 @@ MANIFEST = {
         "replacement-template"
       ],
       "notes": [
-        "This former replacement-template gap anchor now benchmarks the bounded numbered `module.sub()` present-capture workflow on `zzabcdzz`, so `\\1x` expands the captured `b` after the conditional yes-arm `d` closes the match while the complementary named module and numbered compiled-entrypoint template companions stay follow-on work."
+        "This former replacement-template gap anchor now benchmarks the bounded numbered `module.sub()` present-capture workflow on `zzabcdzz`, so `\\1x` expands the captured `b` after the conditional yes-arm `d` closes the match alongside the complementary named module and numbered compiled-`Pattern` template companions."
       ]
     },
     {
@@ -563,6 +563,158 @@ MANIFEST = {
       ],
       "notes": [
         "Warm module.subn helper path for the bounded numbered two-arm conditional replacement-template count workflow when the optional capture is absent, so the empty `\\1` expansion still leaves the literal `x` visible."
+      ]
+    },
+    {
+      "id": "pattern-sub-template-numbered-conditional-group-exists-replacement-purged-str",
+      "bucket": "pattern-sub",
+      "family": "module",
+      "operation": "pattern.sub",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": "\\1x",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "template",
+        "numbered-group",
+        "sub",
+        "present",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "replacement-template",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.sub helper path for the bounded numbered two-arm conditional replacement-template workflow when the optional capture is present and `\\1x` expands to `bx`."
+      ]
+    },
+    {
+      "id": "pattern-subn-template-numbered-conditional-group-exists-replacement-purged-str",
+      "bucket": "pattern-subn",
+      "family": "module",
+      "operation": "pattern.subn",
+      "pattern": "a(b)?c(?(1)d|e)",
+      "haystack": "zzacezz",
+      "replacement": "\\1x",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "template",
+        "numbered-group",
+        "subn",
+        "absent",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "replacement-template",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache Pattern.subn helper path for the bounded numbered two-arm conditional replacement-template count workflow when the optional capture is absent, so the empty `\\1` expansion still leaves the literal `x` visible."
+      ]
+    },
+    {
+      "id": "module-sub-template-named-conditional-group-exists-replacement-warm-str",
+      "bucket": "module-sub",
+      "family": "module",
+      "operation": "module.sub",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzabcdzz",
+      "replacement": "\\g<word>x",
+      "flags": 0,
+      "count": 0,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "template",
+        "named-group",
+        "sub",
+        "module",
+        "present",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-sub",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "replacement-template"
+      ],
+      "notes": [
+        "Warm module.sub helper path for the bounded named two-arm conditional replacement-template workflow when the optional named capture is present and `\\g<word>x` expands to `bx`."
+      ]
+    },
+    {
+      "id": "module-subn-template-named-conditional-group-exists-replacement-warm-str",
+      "bucket": "module-subn",
+      "family": "module",
+      "operation": "module.subn",
+      "pattern": "a(?P<word>b)?c(?(word)d|e)",
+      "haystack": "zzacezz",
+      "replacement": "\\g<word>x",
+      "flags": 0,
+      "count": 1,
+      "text_model": "str",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "optional-group",
+        "conditional",
+        "group-exists",
+        "replacement",
+        "template",
+        "named-group",
+        "subn",
+        "module",
+        "absent",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-subn",
+        "grouping-forms",
+        "optional-groups",
+        "conditionals",
+        "named-groups",
+        "replacement-template"
+      ],
+      "notes": [
+        "Warm module.subn helper path for the bounded named two-arm conditional replacement-template count workflow when the optional named capture is absent, so the empty `\\g<word>` expansion still leaves the literal `x` visible."
       ]
     },
     {
