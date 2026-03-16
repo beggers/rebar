@@ -26,6 +26,7 @@ EXPECTED_CASE_IDS = (
     "str-possessive-quantifier-success",
     "str-atomic-group-success",
     "str-fixed-width-lookbehind-success",
+    "str-parser-stress-compile-proxy-success",
     "str-variable-width-lookbehind-error",
     "str-nested-set-warning",
     "str-invalid-repeat-error",
@@ -48,6 +49,7 @@ EXPECTED_PARSER_MATRIX_PATTERNS = frozenset(
         "a*+",
         "(?>ab|a)b",
         "(?<=ab)c",
+        "(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\\d{2}))?(?:(?<=foo)bar)?(?P=lemma)",
         "(?<=a+)b",
         "[[a]",
         "*abc",
@@ -147,6 +149,10 @@ COMPILE_METADATA_CASES = tuple(
         "bytes-inline-locale-flag-success",
     )
 )
+UNIMPLEMENTED_COMPILE_CASES = tuple(
+    PARSER_MATRIX_CASES_BY_ID[case_id]
+    for case_id in ("str-parser-stress-compile-proxy-success",)
+)
 PLACEHOLDER_SEARCH_CASES = tuple(
     PARSER_MATRIX_CASES_BY_ID[case_id]
     for case_id in (
@@ -207,6 +213,7 @@ PLACEHOLDER_SEARCH_SUBJECTS = {
 }
 PARSER_MATRIX_DIRECT_TEST_CASE_ID_BUCKETS = {
     "compile-metadata": _case_ids(COMPILE_METADATA_CASES),
+    "unimplemented-compile": _case_ids(UNIMPLEMENTED_COMPILE_CASES),
     "warning-cache": frozenset({NESTED_SET_WARNING_CASE.case_id}),
     "placeholder-search": _case_ids(PLACEHOLDER_SEARCH_CASES),
     "ignorecase-cache-normalization": frozenset({CHARACTER_CLASS_CASE.case_id}),
@@ -341,6 +348,35 @@ def test_compile_metadata_matches_cpython(
         backend,
         case_pattern(case),
         case.flags or 0,
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
+    UNIMPLEMENTED_COMPILE_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_known_gap_compile_rows_stay_honestly_unimplemented_in_rebar(
+    rebar_backend: object,
+    case: FixtureCase,
+) -> None:
+    pattern = case_pattern(case)
+    flags = case.flags or 0
+
+    expected = re.compile(pattern, flags)
+    assert expected.pattern == pattern
+
+    with mock.patch.object(
+        rebar._stdlib_re,
+        "compile",
+        side_effect=AssertionError("stdlib re.compile() should not be used"),
+    ):
+        with pytest.raises(NotImplementedError) as excinfo:
+            rebar_backend.compile(pattern, flags)
+
+    assert (
+        str(excinfo.value)
+        == "rebar.compile() is a scaffold placeholder; the `re`-compatible API is not implemented yet"
     )
 
 

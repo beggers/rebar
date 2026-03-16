@@ -1,6 +1,6 @@
 # RBR-0459: Publish the parser-stress compile proxy on the shared parser-matrix surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -32,3 +32,4 @@ Created: 2026-03-16
 - 2026-03-16 planning probe: `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/compile_matrix.py --report .rebar/tmp/feature-planning-compile-matrix-probe.py` still reports `6` total workloads with `5` measured and `1` known gap, confirming `compile-parser-stress-cold` remains the lone `compile-matrix` gap in the current checkout.
 - The adjacent regression publication already carries the exact same pattern as `regression-parser-atomic-lookbehind-cold`, and `reports/benchmarks/latest.py` still publishes that row as a known gap on the shared `regression-matrix` surface.
 - The intended post-publication follow-on is `RBR-0460`, which should convert this exact parser-stress compile proxy to real Rust-backed compile parity on the shared parser path before Python-path benchmark catch-up revisits the adjacent compile anchors.
+- 2026-03-16 feature-implementation: Added the single `parser-matrix` compile row `str-parser-stress-compile-proxy-success`, kept it on the existing selected-case parity bundle as an honest `NotImplementedError` gap, regenerated `.rebar/tmp/rbr-0459-parser-stress.py` (`16` total, `15` pass, `1` unimplemented), and republished `reports/correctness/latest.py` (`960` total, `959` pass, `1` unimplemented; shared `parser.compile` suite for `parser-matrix`: `16` total, `15` pass, `1` unimplemented). Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_parser_matrix_parity_suite.py`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_correctness_fixture_inventory_contract.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/parser_matrix.py --report .rebar/tmp/rbr-0459-parser-stress.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.

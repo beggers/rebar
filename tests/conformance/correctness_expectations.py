@@ -52,6 +52,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "str-possessive-quantifier-success",
             "str-atomic-group-success",
             "str-fixed-width-lookbehind-success",
+            "str-parser-stress-compile-proxy-success",
             "str-nested-set-warning",
             "str-variable-width-lookbehind-error",
             "bytes-inline-unicode-flag-error",

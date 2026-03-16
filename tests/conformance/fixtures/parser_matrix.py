@@ -55,6 +55,15 @@ MANIFEST = {
       ]
     },
     {
+      "id": "str-parser-stress-compile-proxy-success",
+      "family": "parser_stress",
+      "pattern": "(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\\d{2}))?(?:(?<=foo)bar)?(?P=lemma)",
+      "categories": ["valid", "str", "parser-stress"],
+      "notes": [
+        "Publishes the exact parser-stress compile proxy already anchored on the shared compile and regression benchmark surfaces."
+      ]
+    },
+    {
       "id": "str-nested-set-warning",
       "family": "character_classes",
       "pattern": "[[a]",
