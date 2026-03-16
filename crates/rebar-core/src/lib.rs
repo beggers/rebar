@@ -84,6 +84,10 @@ impl<'a> PatternRef<'a> {
         matches!(self, Self::Str("(?i)abc")) && flags == FLAG_IGNORECASE | FLAG_UNICODE
     }
 
+    fn supports_bounded_ascii_ignorecase_search_execution(self, flags: i32) -> bool {
+        matches!(self, Self::Str("abc")) && flags == (FLAG_IGNORECASE | FLAG_ASCII)
+    }
+
     fn supports_bounded_locale_literal_execution(self, flags: i32) -> bool {
         matches!(self, Self::Bytes(_)) && flags == FLAG_LOCALE
     }
@@ -5573,6 +5577,24 @@ fn literal_match_str(
     let (normalized_pos, normalized_endpos) = normalize_bounds(string.chars().count(), pos, endpos);
     let string_chars: Vec<char> = string.chars().collect();
     let (span, group_spans) = if pattern.supports_literal_execution(flags) {
+        let pattern_chars: Vec<char> = match pattern {
+            PatternRef::Str(value) => value.chars().collect(),
+            PatternRef::Bytes(_) => unreachable!(),
+        };
+        (
+            find_match_span_str(
+                &pattern_chars,
+                flags,
+                mode,
+                &string_chars,
+                normalized_pos,
+                normalized_endpos,
+            ),
+            Vec::new(),
+        )
+    } else if pattern.supports_bounded_ascii_ignorecase_search_execution(flags)
+        && mode == MatchMode::Search
+    {
         let pattern_chars: Vec<char> = match pattern {
             PatternRef::Str(value) => value.chars().collect(),
             PatternRef::Bytes(_) => unreachable!(),

@@ -632,6 +632,19 @@ def _supports_literal_execution(compiled_pattern: Pattern) -> bool:
     return compiled_pattern.flags in (base_flags, base_flags | int(IGNORECASE))
 
 
+def _supports_bounded_ascii_ignorecase_search_execution(
+    compiled_pattern: Pattern,
+    mode: str,
+) -> bool:
+    return (
+        compiled_pattern._supports_literal
+        and mode == "search"
+        and isinstance(compiled_pattern.pattern, str)
+        and compiled_pattern.pattern == "abc"
+        and compiled_pattern.flags == int(IGNORECASE | ASCII)
+    )
+
+
 def _supports_literal_collection_execution(compiled_pattern: Pattern) -> bool:
     if not compiled_pattern._supports_literal:
         return False
@@ -745,6 +758,7 @@ def _dispatch_pattern_match(
 
     if not (
         _supports_literal_execution(compiled_pattern)
+        or _supports_bounded_ascii_ignorecase_search_execution(compiled_pattern, mode)
         or _supports_bounded_single_dot_execution(compiled_pattern)
     ):
         return compiled_pattern._raise_placeholder(mode)

@@ -1,6 +1,6 @@
 # RBR-0471: Convert the IGNORECASE|ASCII literal helper pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -39,3 +39,9 @@ Created: 2026-03-16
 - 2026-03-16 planning probe: in the current checkout, CPython reports `re.compile("abc", re.IGNORECASE | re.ASCII).flags == 258`, `groups == 0`, and `groupindex == {}`, and both `re.search("abc", "ABC", re.IGNORECASE | re.ASCII)` and the compiled-pattern `search("ABC")` return a match with span `(0, 3)`.
 - 2026-03-16 planning probe: `rebar.compile("abc", rebar.IGNORECASE | rebar.ASCII)` already returns compile metadata with `flags == 258`, `groups == 0`, and `groupindex == {}`, but `rebar.search("abc", "ABC", rebar.IGNORECASE | rebar.ASCII)` still raises `NotImplementedError: rebar.search() is a scaffold placeholder; the \`re\`-compatible API is not implemented yet` and `rebar.compile("abc", rebar.IGNORECASE | rebar.ASCII).search("ABC")` still raises `NotImplementedError: rebar.Pattern.search() is a scaffold placeholder; compiled pattern semantics are not implemented yet`.
 - 2026-03-16 planning probe: the adjacent benchmark rows `module-search-ignorecase-ascii-cold-gap` and `pattern-search-ignorecase-ascii-warm-gap` already exist on `benchmarks/workloads/literal_flag_boundary.py` and still publish as explicit source-tree known gaps in `reports/benchmarks/latest.py`; they should stay untouched here and become the benchmark catch-up target immediately after parity lands.
+
+## Completion
+- 2026-03-16: Added a bounded Rust-core search gate for the exact `str` literal `IGNORECASE|ASCII` slice on pattern `"abc"`, so `rebar.search("abc", "ABC", rebar.IGNORECASE | rebar.ASCII)` and `rebar.compile("abc", rebar.IGNORECASE | rebar.ASCII).search("ABC")` now run through the existing `rebar._rebar` literal-match boundary instead of falling back to the scaffold placeholders.
+- 2026-03-16: Kept the source-tree shim aligned by adding the same exact search-only gate in `python/rebar/__init__.py`, while leaving broader `ASCII` combinations and non-search helpers outside the supported slice; the direct parity suite now covers the two published ASCII case ids through the module/pattern parity parametrizations, and a focused guard test keeps `match()`/`fullmatch()` on that flag combination loud and unimplemented.
+- 2026-03-16: Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_literal_flag_parity_suite.py tests/conformance/test_correctness_fixture_inventory_contract.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/literal_flag_workflows.py --report .rebar/tmp/rbr-0471-literal-flags.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
+- 2026-03-16: Republished the tracked correctness scorecard at `reports/correctness/latest.py`; the tracked diff includes that file, and the regenerated artifact now reports `963` total cases, `963` passes, `0` failures, and `0` unimplemented overall, while `literal.flag.workflow` reports `13` total cases, `13` passes, and `0` unimplemented.

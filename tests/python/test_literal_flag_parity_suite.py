@@ -206,12 +206,14 @@ LITERAL_FLAG_DIRECT_TEST_CASE_ID_BUCKETS = {
         {
             "flag-module-search-ignorecase-str-hit",
             "flag-module-search-ignorecase-str-miss",
+            "flag-module-search-ignorecase-ascii-str-hit",
             "flag-module-fullmatch-ignorecase-bytes-hit",
         }
     ),
     "pattern-ignorecase": frozenset(
         {
             "flag-pattern-search-ignorecase-str-hit",
+            "flag-pattern-search-ignorecase-ascii-str-hit",
             "flag-pattern-match-ignorecase-bytes-hit",
             "flag-pattern-fullmatch-ignorecase-str-miss",
         }
@@ -228,12 +230,6 @@ LITERAL_FLAG_DIRECT_TEST_CASE_ID_BUCKETS = {
             "flag-unsupported-locale-bytes-search",
         }
     ),
-    "ascii-placeholder": frozenset(
-        {
-            "flag-module-search-ignorecase-ascii-str-hit",
-            "flag-pattern-search-ignorecase-ascii-str-hit",
-        }
-    ),
 }
 
 MODULE_IGNORECASE_CASES = (
@@ -242,6 +238,9 @@ MODULE_IGNORECASE_CASES = (
     ),
     _module_case_from_fixture(
         LITERAL_FLAG_CASES_BY_ID["flag-module-search-ignorecase-str-miss"]
+    ),
+    _module_case_from_fixture(
+        LITERAL_FLAG_CASES_BY_ID["flag-module-search-ignorecase-ascii-str-hit"]
     ),
     _module_case_from_fixture(
         LITERAL_FLAG_CASES_BY_ID["flag-module-fullmatch-ignorecase-bytes-hit"]
@@ -286,6 +285,9 @@ MODULE_IGNORECASE_CASES = (
 PATTERN_IGNORECASE_CASES = (
     _pattern_case_from_fixture(
         LITERAL_FLAG_CASES_BY_ID["flag-pattern-search-ignorecase-str-hit"]
+    ),
+    _pattern_case_from_fixture(
+        LITERAL_FLAG_CASES_BY_ID["flag-pattern-search-ignorecase-ascii-str-hit"]
     ),
     _pattern_case_from_fixture(
         LITERAL_FLAG_CASES_BY_ID["flag-pattern-match-ignorecase-bytes-hit"]
@@ -337,12 +339,6 @@ PATTERN_IGNORECASE_CASES = (
     ),
 )
 
-ASCII_PLACEHOLDER_MODULE_CASE = _module_case_from_fixture(
-    LITERAL_FLAG_CASES_BY_ID["flag-module-search-ignorecase-ascii-str-hit"]
-)
-ASCII_PLACEHOLDER_PATTERN_CASE = _pattern_case_from_fixture(
-    LITERAL_FLAG_CASES_BY_ID["flag-pattern-search-ignorecase-ascii-str-hit"]
-)
 INLINE_NATIVE_MODULE_CASE = _module_case_from_fixture(
     LITERAL_FLAG_CASES_BY_ID["flag-unsupported-inline-flag-search"]
 )
@@ -502,33 +498,29 @@ def test_literal_flag_compile_cache_reuse_and_distinct_entries_stay_explicit() -
     assert bytes_flagged_pattern is bytes_flagged_again
 
 
-def test_literal_flag_ascii_module_paths_keep_placeholder_messages() -> None:
-    with pytest.raises(
-        NotImplementedError,
-        match=r"rebar\.search\(\) is a scaffold placeholder",
-    ):
-        _call_module_helper(rebar, ASCII_PLACEHOLDER_MODULE_CASE)
-
-
-def test_literal_flag_ascii_compiled_paths_keep_placeholder_messages() -> None:
-    unsupported_pattern = rebar.compile(
-        ASCII_PLACEHOLDER_PATTERN_CASE.pattern,
-        ASCII_PLACEHOLDER_PATTERN_CASE.flags,
-    )
-
-    with pytest.raises(
-        NotImplementedError,
-        match=r"rebar\.Pattern\.search\(\) is a scaffold placeholder",
-    ):
-        _call_pattern_helper(unsupported_pattern, ASCII_PLACEHOLDER_PATTERN_CASE)
-
-
 def test_literal_flag_other_unsupported_paths_keep_placeholder_messages() -> None:
     with pytest.raises(
         NotImplementedError,
         match=r"rebar\.findall\(\) is a scaffold placeholder",
     ):
         rebar.findall("abc", "ABC", IGNORECASE_FLAGS)
+
+
+def test_literal_flag_ascii_non_search_paths_stay_placeholder() -> None:
+    ascii_flags = IGNORECASE_FLAGS | int(rebar.ASCII)
+
+    with pytest.raises(
+        NotImplementedError,
+        match=r"rebar\.match\(\) is a scaffold placeholder",
+    ):
+        rebar.match("abc", "ABC", ascii_flags)
+
+    compiled = rebar.compile("abc", ascii_flags)
+    with pytest.raises(
+        NotImplementedError,
+        match=r"rebar\.Pattern\.fullmatch\(\) is a scaffold placeholder",
+    ):
+        compiled.fullmatch("ABC")
 
 
 @pytest.mark.parametrize("case", NATIVE_MODULE_PARITY_CASES, ids=lambda case: case.id)
