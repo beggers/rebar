@@ -22,6 +22,7 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     load_fixture_bundles,
+    manifest_case_ids,
 )
 from tests.python.native_boundary_test_support import RecordingNativeBoundary
 
@@ -197,6 +198,38 @@ LITERAL_FLAG_FIXTURE_BUNDLE, = load_fixture_bundles(
 LITERAL_FLAG_CASES_BY_ID = {
     case.case_id: case for case in LITERAL_FLAG_FIXTURE_BUNDLE.cases
 }
+KNOWN_UNCOVERED_LITERAL_FLAG_CASE_IDS = (
+    "flag-unsupported-nonliteral-ignorecase-search",
+)
+LITERAL_FLAG_PUBLISHED_CASE_IDS = manifest_case_ids(LITERAL_FLAG_FIXTURE_BUNDLE)
+LITERAL_FLAG_DIRECT_TEST_CASE_ID_BUCKETS = {
+    "module-ignorecase": frozenset(
+        {
+            "flag-module-search-ignorecase-str-hit",
+            "flag-module-search-ignorecase-str-miss",
+            "flag-module-fullmatch-ignorecase-bytes-hit",
+        }
+    ),
+    "pattern-ignorecase": frozenset(
+        {
+            "flag-pattern-search-ignorecase-str-hit",
+            "flag-pattern-match-ignorecase-bytes-hit",
+            "flag-pattern-fullmatch-ignorecase-str-miss",
+        }
+    ),
+    "cache-workflows": frozenset(
+        {
+            "flag-cache-hit-bytes-ignorecase",
+            "flag-cache-distinct-str-normalized",
+        }
+    ),
+    "native-boundary": frozenset(
+        {
+            "flag-unsupported-inline-flag-search",
+            "flag-unsupported-locale-bytes-search",
+        }
+    ),
+}
 
 MODULE_IGNORECASE_CASES = (
     _module_case_from_fixture(
@@ -369,6 +402,38 @@ def test_literal_flag_suite_stays_aligned_with_published_correctness_fixture() -
     assert PUBLISHED_LITERAL_FLAG_FIXTURE_PATHS == (bundle.manifest.path,)
     assert bundle.manifest.path == FIXTURES_DIR / "literal_flag_workflows.py"
     assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
+
+
+def test_literal_flag_parity_suite_tracks_published_case_frontier() -> None:
+    selected_case_ids = frozenset(TARGET_FIXTURE_CASE_IDS)
+    uncovered_case_ids = tuple(
+        case_id
+        for case_id in LITERAL_FLAG_PUBLISHED_CASE_IDS
+        if case_id not in selected_case_ids
+    )
+
+    assert not (
+        selected_case_ids & frozenset(KNOWN_UNCOVERED_LITERAL_FLAG_CASE_IDS)
+    )
+    assert uncovered_case_ids == KNOWN_UNCOVERED_LITERAL_FLAG_CASE_IDS
+    assert frozenset(LITERAL_FLAG_PUBLISHED_CASE_IDS) == (
+        selected_case_ids | frozenset(KNOWN_UNCOVERED_LITERAL_FLAG_CASE_IDS)
+    )
+
+
+def test_literal_flag_direct_test_buckets_cover_selected_frontier() -> None:
+    bucket_case_ids = frozenset().union(*LITERAL_FLAG_DIRECT_TEST_CASE_ID_BUCKETS.values())
+    missing_case_ids = tuple(
+        case_id for case_id in TARGET_FIXTURE_CASE_IDS if case_id not in bucket_case_ids
+    )
+    unexpected_case_ids = tuple(
+        case_id
+        for case_id in sorted(bucket_case_ids)
+        if case_id not in frozenset(TARGET_FIXTURE_CASE_IDS)
+    )
+
+    assert missing_case_ids == ()
+    assert unexpected_case_ids == ()
 
 
 @pytest.mark.parametrize("case", MODULE_IGNORECASE_CASES, ids=lambda case: case.id)
