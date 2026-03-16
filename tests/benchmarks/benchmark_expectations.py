@@ -579,11 +579,10 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "regression-matrix": {
-        "known_gap_count": 3,
+        "known_gap_count": 2,
         "known_gap_workload_ids": (
             "regression-parser-atomic-lookbehind-cold",
             "regression-parser-bytes-backreference-purged",
-            "regression-module-compile-verbose-purged",
         ),
         "representative_known_gap_workload_ids": (
             "regression-parser-atomic-lookbehind-cold",

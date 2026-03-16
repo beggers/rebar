@@ -1,6 +1,6 @@
 # RBR-0457: Republish the verbose module.compile regression row as a measured source-tree timing
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -27,3 +27,4 @@ Created: 2026-03-16
 - 2026-03-16 planning probe: `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report .rebar/tmp/feature-planning-post-0457-full.py` already produced `588` total workloads with `570` measured / `18` known gaps, confirming this run should be a publication and expectation refresh rather than another implementation slice.
 - `RBR-0458` is currently blocked only because the tracked benchmark expectation and publication layers still count this verbose regression row as a known gap; landing this task should remove that unrelated summary drift without widening the architecture cleanup.
 - The intended post-catch-up follow-on is `RBR-0459`, which should publish the exact parser-stress compile proxy already anchored by `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` on the shared `parser-matrix` correctness path before parity or later benchmark refreshes reopen that heavier parser frontier.
+- 2026-03-16 feature-implementation: republished `reports/benchmarks/latest.py` so `regression-module-compile-verbose-purged` is now tracked as `measured`; the published `regression-matrix` summary is `5` workloads with `3` measured / `2` known gaps, the combined benchmark summary is `588` total with `570` measured / `18` known gaps, and `tests/benchmarks/benchmark_expectations.py` now drops only that workload from the regression known-gap list. Verified with `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/regression_matrix.py --report .rebar/tmp/rbr-0457-regression-matrix.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`, and `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`6 passed, 400 subtests passed`).
