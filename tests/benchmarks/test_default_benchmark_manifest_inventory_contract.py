@@ -23,6 +23,10 @@ def _duplicates(counter: Counter[str]) -> list[str]:
     return sorted(item for item, count in counter.items() if count > 1)
 
 
+def _tracked_manifest_paths() -> tuple[pathlib.Path, ...]:
+    return tuple(sorted(BENCHMARK_WORKLOADS_ROOT.glob("*.py"), key=lambda path: path.name))
+
+
 class DefaultBenchmarkManifestInventoryContractTest(unittest.TestCase):
     def test_unknown_manifest_selector_raises_clear_error(self) -> None:
         with self.assertRaisesRegex(ValueError, "unknown benchmark manifest selector"):
@@ -38,6 +42,17 @@ class DefaultBenchmarkManifestInventoryContractTest(unittest.TestCase):
     def test_published_full_suite_manifest_selector_is_unique_and_supported(self) -> None:
         published_manifest_paths = select_benchmark_manifest_paths(
             PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
+        )
+        tracked_manifest_paths = _tracked_manifest_paths()
+        compile_smoke_manifest_path = select_benchmark_manifest_path(
+            COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR
+        )
+
+        self.assertEqual(
+            set(published_manifest_paths),
+            set(tracked_manifest_paths) - {compile_smoke_manifest_path},
+            "published full-suite selector should cover every tracked benchmark manifest "
+            "except the explicit compile-smoke-only contract manifest",
         )
         self.assertEqual(len(published_manifest_paths), len(set(published_manifest_paths)))
 
@@ -58,7 +73,6 @@ class DefaultBenchmarkManifestInventoryContractTest(unittest.TestCase):
             COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR
         )
 
-        self.assertEqual(len(published_manifest_paths), 30)
         self.assertEqual(
             [path.name for path in native_smoke_manifest_paths],
             [
