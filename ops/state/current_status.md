@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 949 cases across 106 manifests and is fully passing; the main benchmark report now covers 568 workloads with 546 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- No concrete ready follow-on is queued after `RBR-0433`; the next bounded step on `benchmarks/workloads/conditional_group_exists_boundary.py` still needs to be seeded.
+- After the newly seeded `RBR-0435` replacement-template benchmark expansion drains, the surviving bounded follow-on is `RBR-0437` on `benchmarks/workloads/conditional_group_exists_boundary.py`, adding the complementary numbered compiled-`Pattern` plus named module callable `sub()` / `subn()` timings for the same two-arm conditional replacement family.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow, now lands all 949 of 949 published cases, a
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- No concrete ready follow-on is queued after `RBR-0433`; the next bounded step on `benchmarks/workloads/conditional_group_exists_boundary.py` still needs to be seeded.
+- After the newly seeded `RBR-0435` replacement-template benchmark expansion drains, the surviving bounded follow-on is `RBR-0437` on `benchmarks/workloads/conditional_group_exists_boundary.py`, adding the complementary numbered compiled-`Pattern` plus named module callable `sub()` / `subn()` timings for the same two-arm conditional replacement family.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

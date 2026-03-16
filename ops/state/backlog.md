@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 stays on the bounded two-arm conditional replacement-template benchmark family for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; the concrete surviving follow-on is `RBR-0435`, which should keep `benchmarks/workloads/conditional_group_exists_boundary.py` on that same family by adding the complementary numbered compiled-`Pattern` `sub()` / `subn()` plus named module `sub()` / `subn()` replacement-template timings already published on `tests/conformance/fixtures/conditional_group_exists_replacement_template_workflows.py`.
+Milestone 2 stays on the bounded two-arm conditional replacement benchmark family for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; after the newly seeded `RBR-0435` replacement-template entrypoint catch-up drains, the concrete surviving follow-on is `RBR-0437`, which should keep `benchmarks/workloads/conditional_group_exists_boundary.py` on that same family by adding the complementary numbered compiled-`Pattern` `sub()` / `subn()` plus named module `sub()` / `subn()` callable timings through the existing `callable_match_group` helper.
 
 ## Ordered Work
-1. `RBR-0435` should keep the bounded numbered and named replacement-template `sub()` / `subn()` family on the existing `benchmarks/workloads/conditional_group_exists_boundary.py` path by adding the complementary numbered compiled-`Pattern` `sub()` / `subn()` plus named module `sub()` / `subn()` replacement-template timings from `tests/conformance/fixtures/conditional_group_exists_replacement_template_workflows.py` and refreshing the shared source-tree benchmark expectations.
+1. `RBR-0437` should keep the bounded numbered and named callable replacement `sub()` / `subn()` family on the existing `benchmarks/workloads/conditional_group_exists_boundary.py` path by adding the complementary numbered compiled-`Pattern` `sub()` / `subn()` plus named module `sub()` / `subn()` callable timings for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` through the existing `callable_match_group` helper and refreshing the shared source-tree benchmark expectations.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
