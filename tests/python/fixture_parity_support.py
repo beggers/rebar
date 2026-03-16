@@ -187,6 +187,16 @@ def load_fixture_bundles(
         if spec.selected_case_ids is None:
             bundle_cases = loaded_cases
         else:
+            duplicate_case_ids = tuple(
+                case_id
+                for case_id, count in Counter(spec.selected_case_ids).items()
+                if count > 1
+            )
+            if duplicate_case_ids:
+                raise ValueError(
+                    f"{spec.fixture_name} selected_case_ids contains duplicate ids: "
+                    f"{duplicate_case_ids}"
+                )
             case_by_id = {case.case_id: case for case in loaded_cases}
             missing_case_ids = tuple(
                 case_id
