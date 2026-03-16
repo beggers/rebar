@@ -25,6 +25,31 @@ from tests.harness_cli_test_support import run_harness_scorecard
 
 BASE_SOURCE_TREE_MANIFEST_IDS = frozenset({"compile-matrix", "regression-matrix"})
 
+
+def _single_manifest_source_tree_scorecard_case_definition(
+    *,
+    manifest_id: str,
+    representative_measured_workload_ids: tuple[str, ...] | None = None,
+    representative_known_gap_workload_ids: tuple[str, ...] | None = None,
+    expected_first_deferred: dict[str, str] | None = None,
+    workload_note_substrings: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    case_definition: dict[str, Any] = {"single_manifest_id": manifest_id}
+    if representative_measured_workload_ids is not None:
+        case_definition["representative_measured_workload_ids"] = (
+            representative_measured_workload_ids
+        )
+    if representative_known_gap_workload_ids is not None:
+        case_definition["representative_known_gap_workload_ids"] = (
+            representative_known_gap_workload_ids
+        )
+    if expected_first_deferred is not None:
+        case_definition["expected_first_deferred"] = expected_first_deferred
+    if workload_note_substrings is not None:
+        case_definition["workload_note_substrings"] = workload_note_substrings
+    return case_definition
+
+
 SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
     "compile-smoke": {
         "manifest_ids": ("compile-smoke",),
@@ -49,36 +74,22 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
         "representative_measured_workload_ids": ("compile-literal-cold",),
         "representative_known_gap_workload_ids": ("compile-character-class-warm",),
     },
-    "compile-matrix": {
-        "manifest_ids": ("compile-matrix",),
-        "selection_mode": "full",
-        "expected_summary": {
-            "known_gap_count": 1,
-            "measured_workloads": 5,
-            "module_workloads": 0,
-            "parser_workloads": 6,
-            "regression_workloads": 0,
-            "total_workloads": 6,
-        },
-        "expected_first_deferred": {
+    "compile-matrix": _single_manifest_source_tree_scorecard_case_definition(
+        manifest_id="compile-matrix",
+        expected_first_deferred={
             "area": "module-boundary",
             "follow_up": "RBR-0015",
         },
-        "manifest_expectations": {
-            "compile-matrix": {
-                "known_gap_count": 1,
-            },
-        },
-        "representative_measured_workload_ids": (
+        representative_measured_workload_ids=(
             "compile-inline-locale-bytes-warm",
             "compile-lookbehind-cold",
             "compile-atomic-group-purged",
         ),
-        "representative_known_gap_workload_ids": ("compile-parser-stress-cold",),
-        "workload_note_substrings": {
+        representative_known_gap_workload_ids=("compile-parser-stress-cold",),
+        workload_note_substrings={
             "compile-parser-stress-cold": "outside the current rebar compile surface",
         },
-    },
+    ),
     "post-parser-workflows": {
         "manifest_ids": (
             "module-boundary",
@@ -123,23 +134,9 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
             "pattern-search-ignorecase-ascii-warm-gap",
         ),
     },
-    "nested-group-replacement-boundary": {
-        "manifest_ids": ("nested-group-replacement-boundary",),
-        "selection_mode": "full",
-        "expected_summary": {
-            "known_gap_count": 0,
-            "measured_workloads": 24,
-            "module_workloads": 24,
-            "parser_workloads": 0,
-            "regression_workloads": 0,
-            "total_workloads": 24,
-        },
-        "manifest_expectations": {
-            "nested-group-replacement-boundary": {
-                "known_gap_count": 0,
-            },
-        },
-        "representative_measured_workload_ids": (
+    "nested-group-replacement-boundary": _single_manifest_source_tree_scorecard_case_definition(
+        manifest_id="nested-group-replacement-boundary",
+        representative_measured_workload_ids=(
             "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
             "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
             "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-c-branch-purged-str",
@@ -153,25 +150,10 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
             "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-purged-str",
             "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-c-branch-first-match-only-purged-str",
         ),
-        "representative_known_gap_workload_ids": (),
-    },
-    "nested-group-callable-replacement-boundary": {
-        "manifest_ids": ("nested-group-callable-replacement-boundary",),
-        "selection_mode": "full",
-        "expected_summary": {
-            "known_gap_count": 0,
-            "measured_workloads": 44,
-            "module_workloads": 44,
-            "parser_workloads": 0,
-            "regression_workloads": 0,
-            "total_workloads": 44,
-        },
-        "manifest_expectations": {
-            "nested-group-callable-replacement-boundary": {
-                "known_gap_count": 0,
-            },
-        },
-        "representative_measured_workload_ids": (
+    ),
+    "nested-group-callable-replacement-boundary": _single_manifest_source_tree_scorecard_case_definition(
+        manifest_id="nested-group-callable-replacement-boundary",
+        representative_measured_workload_ids=(
             "module-sub-callable-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
             "module-subn-callable-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
             "pattern-sub-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-c-branch-purged-str",
@@ -185,81 +167,13 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
             "pattern-sub-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-purged-str",
             "pattern-subn-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-c-branch-first-match-only-purged-str",
         ),
-        "representative_known_gap_workload_ids": (),
-    },
-    "branch-local-backreference-boundary": {
-        "manifest_ids": ("branch-local-backreference-boundary",),
-        "selection_mode": "full",
-        "expected_summary": {
-            "known_gap_count": 0,
-            "measured_workloads": 24,
-            "module_workloads": 24,
-            "parser_workloads": 0,
-            "regression_workloads": 0,
-            "total_workloads": 24,
-        },
-        "manifest_expectations": {
-            "branch-local-backreference-boundary": {
-                "known_gap_count": 0,
-            },
-        },
-        "representative_measured_workload_ids": (
-            "module-compile-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-cold-str",
-            "module-search-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-str",
-            "pattern-fullmatch-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-mixed-branches-purged-str",
-            "module-compile-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-warm-str",
-            "module-search-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-warm-str",
-            "pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-purged-str",
-        ),
-        "representative_known_gap_workload_ids": (),
-    },
-    "conditional-group-exists-boundary": {
-        "manifest_ids": ("conditional-group-exists-boundary",),
-        "selection_mode": "full",
-        "expected_summary": {
-            "known_gap_count": 0,
-            "measured_workloads": 76,
-            "module_workloads": 76,
-            "parser_workloads": 0,
-            "regression_workloads": 0,
-            "total_workloads": 76,
-        },
-        "manifest_expectations": {
-            "conditional-group-exists-boundary": {
-                "known_gap_count": 0,
-            },
-        },
-        "representative_measured_workload_ids": (
-            "module-sub-template-numbered-conditional-group-exists-replacement-warm-gap",
-            "module-subn-template-numbered-conditional-group-exists-replacement-warm-str",
-            "pattern-sub-template-numbered-conditional-group-exists-replacement-purged-str",
-            "pattern-subn-template-numbered-conditional-group-exists-replacement-purged-str",
-            "module-sub-template-named-conditional-group-exists-replacement-warm-str",
-            "module-subn-template-named-conditional-group-exists-replacement-warm-str",
-            "pattern-sub-template-named-conditional-group-exists-replacement-purged-str",
-            "pattern-subn-template-named-conditional-group-exists-replacement-purged-str",
-            "module-sub-callable-numbered-conditional-group-exists-replacement-warm-str",
-            "pattern-sub-callable-numbered-conditional-group-exists-replacement-purged-str",
-            "pattern-subn-callable-numbered-conditional-group-exists-replacement-first-match-only-purged-str",
-            "module-sub-callable-named-conditional-group-exists-replacement-warm-str",
-            "module-subn-callable-named-conditional-group-exists-replacement-first-match-only-warm-str",
-            "pattern-sub-callable-named-conditional-group-exists-replacement-purged-str",
-            "pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap",
-            "module-subn-callable-numbered-conditional-group-exists-replacement-absent-exception-warm-str",
-            "pattern-subn-callable-numbered-conditional-group-exists-replacement-absent-exception-purged-str",
-            "module-subn-callable-named-conditional-group-exists-replacement-absent-exception-warm-str",
-            "pattern-subn-callable-named-conditional-group-exists-replacement-absent-exception-purged-str",
-            "module-sub-numbered-conditional-group-exists-quantified-alternation-heavy-replacement-warm-str",
-            "module-subn-numbered-conditional-group-exists-quantified-alternation-heavy-replacement-warm-str",
-            "pattern-sub-numbered-conditional-group-exists-quantified-alternation-heavy-replacement-purged-str",
-            "pattern-subn-numbered-conditional-group-exists-quantified-alternation-heavy-replacement-purged-str",
-            "module-sub-named-conditional-group-exists-quantified-alternation-heavy-replacement-warm-str",
-            "module-subn-named-conditional-group-exists-quantified-alternation-heavy-replacement-warm-str",
-            "pattern-sub-named-conditional-group-exists-quantified-alternation-heavy-replacement-purged-str",
-            "pattern-subn-named-conditional-group-exists-quantified-alternation-heavy-replacement-purged-str",
-        ),
-        "representative_known_gap_workload_ids": (),
-    },
+    ),
+    "branch-local-backreference-boundary": _single_manifest_source_tree_scorecard_case_definition(
+        manifest_id="branch-local-backreference-boundary",
+    ),
+    "conditional-group-exists-boundary": _single_manifest_source_tree_scorecard_case_definition(
+        manifest_id="conditional-group-exists-boundary",
+    ),
     "regression-pack-full": {
         "manifest_ids": (
             "compile-matrix",
@@ -1539,11 +1453,54 @@ def source_tree_scorecard_case_ids() -> tuple[str, ...]:
     return tuple(SOURCE_TREE_SCORECARD_EXPECTATIONS)
 
 
+def _resolve_source_tree_scorecard_case_definition(
+    case_definition: dict[str, Any],
+) -> dict[str, Any]:
+    single_manifest_id = case_definition.get("single_manifest_id")
+    if single_manifest_id is None:
+        return case_definition
+
+    manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(single_manifest_id)
+    if manifest_expectation is None:
+        raise AssertionError(
+            "unknown single-manifest source-tree scorecard expectation "
+            f"{single_manifest_id!r}"
+        )
+
+    manifest_document = _source_tree_manifest_records()[single_manifest_id][1]
+    resolved_case_definition = {
+        key: value
+        for key, value in case_definition.items()
+        if key != "single_manifest_id"
+    }
+    resolved_case_definition["manifest_ids"] = (single_manifest_id,)
+    resolved_case_definition["selection_mode"] = "full"
+    resolved_case_definition["expected_summary"] = expected_summary_for_manifests(
+        [manifest_document]
+    )
+    resolved_case_definition["manifest_expectations"] = {
+        single_manifest_id: {
+            "known_gap_count": manifest_expectation["known_gap_count"],
+        },
+    }
+    resolved_case_definition.setdefault(
+        "representative_measured_workload_ids",
+        manifest_expectation["representative_measured_workload_ids"],
+    )
+    resolved_case_definition.setdefault(
+        "representative_known_gap_workload_ids",
+        manifest_expectation["representative_known_gap_workload_ids"],
+    )
+    return resolved_case_definition
+
+
 def source_tree_scorecard_case(case_id: str) -> dict[str, Any]:
     if case_id not in SOURCE_TREE_SCORECARD_EXPECTATIONS:
         raise AssertionError(f"unknown source-tree scorecard case {case_id!r}")
 
-    case_definition = SOURCE_TREE_SCORECARD_EXPECTATIONS[case_id]
+    case_definition = _resolve_source_tree_scorecard_case_definition(
+        SOURCE_TREE_SCORECARD_EXPECTATIONS[case_id]
+    )
     manifest_ids = tuple(case_definition["manifest_ids"])
     manifest_paths = [manifest_path_for_id(manifest_id) for manifest_id in manifest_ids]
     raw_manifests, manifest_workloads = load_manifests(manifest_paths)

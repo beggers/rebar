@@ -1,6 +1,6 @@
 # RBR-0452: Collapse single-manifest source-tree scorecard cases onto shared manifest expectations
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -55,3 +55,9 @@ Created: 2026-03-16
 - Direct overlap confirmed in the current checkout:
   - `branch-local-backreference-boundary` and `conditional-group-exists-boundary` currently duplicate their representative measured-workload ids exactly across both registries;
   - `compile-matrix`, `nested-group-replacement-boundary`, and `nested-group-callable-replacement-boundary` still duplicate the one-manifest `known_gap_count` and summary structure even where their scorecard-case representative workload subsets intentionally differ from the broader combined-manifest coverage.
+
+## Completion
+- 2026-03-16: Added `_single_manifest_source_tree_scorecard_case_definition(...)` plus a small resolver in `tests/benchmarks/benchmark_expectations.py`, so the five scoped full single-manifest scorecard cases now derive `manifest_ids`, `selection_mode`, `expected_summary`, and single-entry `manifest_expectations` from the live manifest document and `SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS`.
+- 2026-03-16: Kept the suite-local frontier explicit where required by leaving `compile-matrix` deferred metadata, representative ids, and workload-note substring assertions local, and by keeping the shorter local representative measured-workload subsets for `nested-group-replacement-boundary` and `nested-group-callable-replacement-boundary`.
+- 2026-03-16: Reused the shared representative workload tuples for `branch-local-backreference-boundary` and `conditional-group-exists-boundary` through the combined-manifest expectation surface, without changing the public `source_tree_scorecard_case(...)` payload consumed by `tests/benchmarks/test_source_tree_benchmark_scorecards.py`.
+- 2026-03-16: Verified `PYTHONPATH=python .venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed (`4 passed, 394 subtests passed in 19.12s`).
