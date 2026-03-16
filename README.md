@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 957 cases across 107 manifests, with 957 passes, 0 failures, and 0 published `unimplemented` outcomes; the main benchmark report now covers 584 workloads with 562 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 stays on the shared conditional replacement benchmark frontier; after the single ready quantified alternation-heavy benchmark catch-up drains, the concrete surviving follow-on is `RBR-0445`, which should use the already-published callable replacement slice to add the missing numbered and named absent-capture `module.subn()` and compiled-`Pattern.subn()` benchmark rows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` on `benchmarks/workloads/conditional_group_exists_boundary.py` through the Python-facing `rebar` path. |
-| Work queue | `0` ready, `0` in progress, `444` done, `0` blocked |
+| Delivery estimate | The published correctness slice now covers 957 cases across 107 manifests, with 957 passes, 0 failures, and 0 published `unimplemented` outcomes; the main benchmark report now covers 588 workloads with 566 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity. |
+| Current milestone | After the single ready conditional callable-replacement exception benchmark catch-up drains, the concrete surviving follow-on is `RBR-0447`, which should convert the three old `module.compile("^abc$")` cold/warm/purged gap rows on `benchmarks/workloads/module_boundary.py` into measured source-tree timings through the Python-facing `rebar` path. |
+| Work queue | `0` ready, `0` in progress, `446` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,31 +28,31 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `107` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 957 cases across 107 manifests, with 957 passes, 0 failures, and 0 published `unimplemented` outcomes; the main benchmark report now covers 584 workloads with 562 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 957 cases across 107 manifests, with 957 passes, 0 failures, and 0 published `unimplemented` outcomes; the main benchmark report now covers 588 workloads with 566 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `584` |
-| Workloads with real `rebar` timings | `562` |
+| Published workloads | `588` |
+| Workloads with real `rebar` timings | `566` |
 | Known-gap workloads | `22` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native smoke and full-suite modes remain available for ad hoc runs and tests via `--native-smoke` and `--native-full` when you pass an explicit `--report` path._
 
-_README speedup rollups stay omitted while only `562` of `584` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `566` of `588` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- The ready queue is empty; the surviving follow-on is `RBR-0445`, which should add the missing numbered and named absent-capture `module.subn()` and compiled-`Pattern.subn()` benchmark rows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` on `benchmarks/workloads/conditional_group_exists_boundary.py` through the shared Python-path surface.
+- With the queue drained, the concrete surviving follow-on is `RBR-0447`, which should convert the three old `module.compile("^abc$")` cold/warm/purged gap rows on `benchmarks/workloads/module_boundary.py` into measured source-tree timings through the shared Python-path surface.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 584 workloads and carries 22 explicit known-gap workloads.
+- The published benchmark surface is still bounded at 588 workloads and carries 22 explicit known-gap workloads.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
