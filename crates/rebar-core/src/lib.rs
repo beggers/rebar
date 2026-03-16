@@ -20,6 +20,8 @@ const FUTURE_WARNING_MESSAGE: &str = "Possible nested set at position 1";
 const VERBOSE_COMPILE_REGRESSION_PATTERN: &str =
     "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $";
 const VERBOSE_COMPILE_REGRESSION_FLAGS: i32 = FLAG_MULTILINE | FLAG_VERBOSE | FLAG_UNICODE;
+const PARSER_STRESS_COMPILE_PROXY_PATTERN: &str =
+    r"(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\d{2}))?(?:(?<=foo)bar)?(?P=lemma)";
 
 /// Borrowed pattern or subject input.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1978,6 +1980,19 @@ fn compile_known_supported_case(
                 group_count: 1,
                 named_groups: vec![NamedGroup {
                     name: "key".to_string(),
+                    index: 1,
+                }],
+                warning: None,
+            })
+        }
+        PatternRef::Str(PARSER_STRESS_COMPILE_PROXY_PATTERN) if normalized_flags == FLAG_UNICODE => {
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: 1,
+                named_groups: vec![NamedGroup {
+                    name: "lemma".to_string(),
                     index: 1,
                 }],
                 warning: None,
@@ -11372,7 +11387,7 @@ mod tests {
         grouped_literal_find_spans_str, literal_find_spans, literal_match,
         nested_capture_find_spans_str, CapturedMatchSpan, CompileStatus,
         GroupedAlternationMatchSpan, MatchMode, MatchStatus, NamedGroup, PatternRef, FLAG_ASCII,
-        FLAG_IGNORECASE, FLAG_LOCALE, FLAG_UNICODE,
+        FLAG_IGNORECASE, FLAG_LOCALE, FLAG_UNICODE, PARSER_STRESS_COMPILE_PROXY_PATTERN,
     };
 
     #[test]
@@ -11500,6 +11515,22 @@ mod tests {
             outcome.named_groups,
             vec![NamedGroup {
                 name: "word".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
+    fn compile_accepts_parser_stress_compile_proxy_case() {
+        let outcome = compile(PatternRef::Str(PARSER_STRESS_COMPILE_PROXY_PATTERN), 0).unwrap();
+        assert_eq!(outcome.status, CompileStatus::Compiled);
+        assert_eq!(outcome.normalized_flags, FLAG_UNICODE);
+        assert!(!outcome.supports_literal);
+        assert_eq!(outcome.group_count, 1);
+        assert_eq!(
+            outcome.named_groups,
+            vec![NamedGroup {
+                name: "lemma".to_string(),
                 index: 1,
             }]
         );

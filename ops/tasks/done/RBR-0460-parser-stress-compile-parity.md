@@ -1,6 +1,6 @@
 # RBR-0460: Convert the parser-stress compile proxy to real parity on the shared parser path
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -33,3 +33,9 @@ Created: 2026-03-16
 - 2026-03-16 planning probe: CPython reports compile metadata for that exact pattern as `flags == 32`, `groups == 1`, and `groupindex == {"lemma": 1}`.
 - The adjacent benchmark publication already carries the same pattern as `compile-parser-stress-cold` on `benchmarks/workloads/compile_matrix.py` and `regression-parser-atomic-lookbehind-cold` on `benchmarks/workloads/regression_matrix.py`; both rows remain explicit source-tree known gaps in the current checkout.
 - The intended post-parity follow-on is `RBR-0462`, which should republish those two existing benchmark rows as measured source-tree timings on the shared `compile-matrix` and `regression-matrix` surfaces without widening the benchmark frontier.
+
+## Completion
+- 2026-03-16: Added exact Rust-backed compile support for `(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\\d{2}))?(?:(?<=foo)bar)?(?P=lemma)` with CPython-matching metadata (`flags == 32`, `groups == 1`, `groupindex == {"lemma": 1}`) while keeping `Pattern.search()` on that row as the existing placeholder.
+- 2026-03-16: Moved `str-parser-stress-compile-proxy-success` from the direct parser-matrix `unimplemented` bucket onto the shared compile-metadata, cache-identity, placeholder-search, and no-stdlib-delegation checks without widening the fixture surface.
+- 2026-03-16: Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_parser_matrix_parity_suite.py tests/conformance/test_correctness_fixture_inventory_contract.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/parser_matrix.py --report .rebar/tmp/rbr-0460-parser-matrix.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
+- 2026-03-16: Republished `reports/correctness/latest.py` to 960 total cases across 107 manifests with 960 passes, 0 failures, and 0 unimplemented outcomes; the tracked `parser.compile` suite now reports 16 total cases with 16 passes and 0 unimplemented outcomes.
