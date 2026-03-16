@@ -1,6 +1,6 @@
 # RBR-0499: Republish the nested grouped-alternation wrapper-template benchmark pair as measured source-tree timings
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -53,3 +53,9 @@ Created: 2026-03-16
 - `RBR-0497` already published the matching correctness pair as passing cases on `nested-group-alternation-wrapper-replacement-workflows`, so this benchmark follow-on should anchor directly to those published case ids instead of treating the rows as standalone benchmark-only debt.
 - 2026-03-16 planning probe: direct public-API checks in the current checkout already report `rebar.sub("a((b|c))d", "<\\1>", "abdacd") == "<b><c>"` and `rebar.compile("a(?P<outer>(b|c))d").subn("<\\g<outer>>", "abdacd", 1) == ("<b>acd", 1)`, matching CPython for the exact wrapper-template pair under test.
 - 2026-03-16 planning probe: a fresh full-suite benchmark run to `.rebar/tmp/feature-planning-probe-benchmarks.py` already reports `588` total workloads / `585` measured workloads / `3` known gaps; the tracked `reports/benchmarks/latest.py` artifact is still stale at `581` / `7` because `grouped_alternation_boundary.py` expectations still classify the adjacent wrapper-template pair as known gaps.
+
+## Completion Note
+- 2026-03-16 feature-implementation: Updated `benchmarks/workloads/grouped_alternation_boundary.py` so the legacy wrapper-template workload ids stay stable but no longer carry stale `gap` categories or known-gap notes, promoted the exact pair to measured representatives in `tests/benchmarks/benchmark_expectations.py`, added `tests/benchmarks/test_grouped_alternation_benchmark_correctness_anchor_contract.py`, and republished `reports/benchmarks/latest.py`.
+- Verified `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_grouped_alternation_benchmark_correctness_anchor_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`28 passed, 498 subtests passed in 21.10s`).
+- Verified `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/grouped_alternation_boundary.py --report .rebar/tmp/rbr-0499-grouped-alternation-boundary.py` produced `8` measured workloads / `0` known gaps for `grouped-alternation-boundary`.
+- Verified the tracked `reports/benchmarks/latest.py` publication now reports `grouped-alternation-boundary` at `8` measured workloads / `0` known gaps, `grouped-alternation-replacement-boundary` at `10` measured workloads / `0` known gaps, and the full source-tree summary at `588` total workloads / `585` measured workloads / `3` known gaps.
