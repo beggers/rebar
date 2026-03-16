@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 971 cases across 109 manifests, with all 971 passing and 0 honest `unimplemented` gaps; the main benchmark report covers 588 workloads with 585 real `rebar` timings and 3 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- The ready queue is empty after `RBR-0499`; the only remaining task record is blocked `RBR-0493`, whose old benchmark-catch-up claim no longer matches the already-published `588` / `585` / `3` scorecard.
+- Ready head `RBR-0500` publishes the exact optional-group conditional pair `a(b)?(?(1)c|d)e` / `a(?P<word>b)?(?(word)c|d)e` on the correctness surface so the remaining `optional-group-boundary` benchmark gap stops floating without a published anchor.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: all 971 published correctness cases current
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The ready queue is empty after `RBR-0499`; the only remaining task record is blocked `RBR-0493`, whose old benchmark-catch-up claim no longer matches the already-published `588` / `585` / `3` scorecard.
+- `RBR-0501` should be the surviving follow-on after the current correctness-publication head drains, converting the exact numbered/named optional-group conditional pair `a(b)?(?(1)c|d)e` / `a(?P<word>b)?(?(word)c|d)e` to Rust-backed parity on the existing conditional group-exists pytest path before the `optional-group-boundary` benchmark gap is republished.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

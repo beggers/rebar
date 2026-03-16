@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No concrete ready feature follow-on currently survives after the likely same-cycle drain of `RBR-0499`; once the adjacent nested grouped-alternation wrapper-template benchmark pair is republished on `grouped_alternation_boundary.py`, the only published benchmark gaps left in the tracked full-suite report sit on `optional-group-boundary`, `exact-repeat-quantified-group-boundary`, and `ranged-repeat-quantified-group-boundary`, and none yet collapses onto one tracked correctness/parity slice concrete enough to queue safely without another bounded planning pass.
+The surviving frontier is `RBR-0501`: convert the exact optional-group conditional pair `a(b)?(?(1)c|d)e` and `a(?P<word>b)?(?(word)c|d)e` to Rust-backed parity on the existing conditional group-exists pytest path once the current correctness-publication head drains, before the anchored `optional-group-boundary` benchmark row is republished.
 
 ## Ordered Work
-1. No post-drain feature task is queued yet. The next planning pass should re-triage the three remaining published benchmark known-gap rows `module-search-numbered-optional-group-conditional-cold-gap`, `module-search-numbered-broader-ranged-repeat-group-cold-gap`, and `module-search-numbered-ranged-repeat-group-wider-range-cold-gap` against the tracked correctness/parity surfaces before seeding another bounded follow-on.
+1. `RBR-0501` should land immediately after the current correctness-publication head and keep the same bounded numbered/named optional-group conditional pair on the existing conditional parity path. Keep the scope pinned to compile, module `search()`, and `Pattern.fullmatch()` for `a(b)?(?(1)c|d)e` and `a(?P<word>b)?(?(word)c|d)e`; do not broaden into counted-repeat `{1,4}` follow-ons or benchmark-manifest edits in that run.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
