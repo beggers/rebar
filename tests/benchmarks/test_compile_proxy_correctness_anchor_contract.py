@@ -9,20 +9,46 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
 REGRESSION_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"
 
-from rebar_harness.benchmarks import load_manifest
-from rebar_harness.correctness import DEFAULT_FIXTURE_PATHS, load_fixture_manifest
+from tests.benchmarks.correctness_anchor_support import (
+    anchored_workload_case_ids,
+    published_case_ids_by_signature,
+    unanchored_workload_ids,
+)
 
 
-def _compile_case_signature(case) -> tuple[str | bytes, int, str]:
+def _compile_signature(
+    pattern: str | bytes,
+    *,
+    flags: int,
+    text_model: str,
+) -> tuple[str, str | bytes, tuple[()], tuple[()], int, str]:
+    return ("module.compile", pattern, (), (), flags, text_model)
+
+
+def _correctness_case_signature(case) -> tuple[str, str | bytes, tuple[()], tuple[()], int, str] | None:
+    if case.operation != "compile":
+        return None
     pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
     assert isinstance(pattern, (str, bytes))
-    return (pattern, case.flags or 0, case.text_model)
+    return _compile_signature(
+        pattern,
+        flags=case.flags or 0,
+        text_model=case.text_model or "str",
+    )
 
 
-def _workload_signature(workload) -> tuple[str | bytes, int, str]:
+def _workload_signature(workload) -> tuple[str, str | bytes, tuple[()], tuple[()], int, str]:
     pattern = workload.pattern_payload()
     assert isinstance(pattern, (str, bytes))
-    return (pattern, workload.flags, workload.text_model)
+    return _compile_signature(
+        pattern,
+        flags=workload.flags,
+        text_model=workload.text_model,
+    )
+
+
+def _is_compile_workload(workload) -> bool:
+    return workload.operation in {"compile", "module.compile"}
 
 
 EXPECTED_COMPILE_ANCHOR_CASE_IDS = {
@@ -57,61 +83,28 @@ EXPECTED_COMPILE_ANCHOR_CASE_IDS = {
 
 
 @cache
-def _published_compile_case_signatures() -> frozenset[tuple[str | bytes, int, str]]:
-    signatures: set[tuple[str | bytes, int, str]] = set()
-
-    for fixture_path in DEFAULT_FIXTURE_PATHS:
-        for case in load_fixture_manifest(fixture_path).cases:
-            if case.operation == "compile":
-                signatures.add(_compile_case_signature(case))
-
-    return frozenset(signatures)
-
-
-@cache
-def _published_compile_case_ids_by_signature() -> dict[
-    tuple[str | bytes, int, str], tuple[str, ...]
-]:
-    case_ids_by_signature: dict[tuple[str | bytes, int, str], list[str]] = {}
-
-    for fixture_path in DEFAULT_FIXTURE_PATHS:
-        for case in load_fixture_manifest(fixture_path).cases:
-            if case.operation == "compile":
-                signature = _compile_case_signature(case)
-                case_ids_by_signature.setdefault(signature, []).append(case.case_id)
-
-    return {
-        signature: tuple(case_ids)
-        for signature, case_ids in case_ids_by_signature.items()
-    }
+def _published_compile_case_ids_by_signature() -> dict[tuple[object, ...], tuple[str, ...]]:
+    return published_case_ids_by_signature(_correctness_case_signature)
 
 
 def _unanchored_compile_workload_ids(manifest_path: pathlib.Path) -> tuple[str, ...]:
-    workloads = load_manifest(manifest_path).workloads
-    compile_case_signatures = _published_compile_case_signatures()
-
-    return tuple(
-        workload.workload_id
-        for workload in workloads
-        if workload.operation in {"compile", "module.compile"}
-        and _workload_signature(workload) not in compile_case_signatures
+    return unanchored_workload_ids(
+        manifest_path,
+        anchor_case_ids=_published_compile_case_ids_by_signature(),
+        workload_signature=_workload_signature,
+        include_workload=_is_compile_workload,
     )
 
 
 def _anchored_compile_workload_case_ids(
     manifest_path: pathlib.Path,
 ) -> dict[tuple[str, str], tuple[str, ...]]:
-    workloads = load_manifest(manifest_path).workloads
-    case_ids_by_signature = _published_compile_case_ids_by_signature()
-
-    return {
-        (manifest_path.name, workload.workload_id): case_ids_by_signature.get(
-            _workload_signature(workload),
-            (),
-        )
-        for workload in workloads
-        if workload.operation in {"compile", "module.compile"}
-    }
+    return anchored_workload_case_ids(
+        manifest_path,
+        anchor_case_ids=_published_compile_case_ids_by_signature(),
+        workload_signature=_workload_signature,
+        include_workload=_is_compile_workload,
+    )
 
 
 class CompileProxyCorrectnessAnchorContractTest(unittest.TestCase):
