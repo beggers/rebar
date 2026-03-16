@@ -23,7 +23,6 @@ from tests.python.fixture_parity_support import (
     fixture_cases_from_bundles,
     load_selected_case_fixture_bundles,
     published_fixture_paths_from_bundles,
-    select_published_fixture_cases_from_bundles,
     str_case_pattern,
 )
 PUBLISHED_GROUPED_CAPTURE_FIXTURE_PATHS = select_correctness_fixture_paths(
@@ -276,6 +275,7 @@ COMPILE_CASES = _compile_cases(PUBLISHED_CASES)
 MODULE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "module_call")
 PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pattern_call")
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
+assert len(CASES_BY_ID) == len(PUBLISHED_CASES)
 SUPPLEMENTAL_MISS_CASES = (
     SupplementalMissCase(
         id="numbered-two-capture-fullmatch",
@@ -480,10 +480,50 @@ PATTERN_BOUNDS_NO_MATCH_CASES = (
         bounds=(-100, 999),
     ),
 )
-MATCH_GROUP_ACCESS_CASES = select_published_fixture_cases_from_bundles(
-    FIXTURE_BUNDLES,
-    MATCH_GROUP_ACCESS_CASE_IDS,
-)
+
+
+def _match_group_access_cases() -> tuple[FixtureCase, ...]:
+    selected_case_ids = frozenset(MATCH_GROUP_ACCESS_CASE_IDS)
+    case_by_id: dict[str, FixtureCase] = {}
+    duplicate_case_ids: set[str] = set()
+
+    for bundle in FIXTURE_BUNDLES:
+        raw_cases = bundle.manifest.raw.get("cases", [])
+        assert isinstance(raw_cases, list)
+
+        for raw_case in raw_cases:
+            if not isinstance(raw_case, dict) or "id" not in raw_case:
+                continue
+            case_id = str(raw_case["id"])
+            if case_id not in selected_case_ids:
+                continue
+            if case_id in case_by_id:
+                duplicate_case_ids.add(case_id)
+                continue
+            case_by_id[case_id] = FixtureCase.from_dict(bundle.manifest, raw_case)
+
+    ordered_duplicate_case_ids = tuple(
+        case_id for case_id in MATCH_GROUP_ACCESS_CASE_IDS if case_id in duplicate_case_ids
+    )
+    if ordered_duplicate_case_ids:
+        raise AssertionError(
+            "grouped capture match-group-access rows contain duplicate case ids: "
+            f"{ordered_duplicate_case_ids}"
+        )
+
+    missing_case_ids = tuple(
+        case_id for case_id in MATCH_GROUP_ACCESS_CASE_IDS if case_id not in case_by_id
+    )
+    if missing_case_ids:
+        raise AssertionError(
+            "grouped capture match-group-access rows are missing case ids: "
+            f"{missing_case_ids}"
+        )
+
+    return tuple(case_by_id[case_id] for case_id in MATCH_GROUP_ACCESS_CASE_IDS)
+
+
+MATCH_GROUP_ACCESS_CASES = _match_group_access_cases()
 
 
 def _module_call_with_text(regex_api: object, case: FixtureCase, text: str) -> object:
