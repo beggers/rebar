@@ -288,10 +288,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
     "grouped-alternation-callable-replacement-boundary": {
         "known_gap_count": 0,
         "representative_known_gap_workload_ids": (),
-        "representative_measured_workload_ids": (
-            "module-sub-callable-nested-grouped-alternation-cold-gap",
-            "pattern-subn-callable-named-nested-grouped-alternation-purged-gap",
-        ),
+        "representative_measured_workload_ids": (),
     },
     "nested-group-boundary": {
         "known_gap_count": 2,
@@ -389,14 +386,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
     "branch-local-backreference-boundary": {
         "known_gap_count": 0,
         "representative_known_gap_workload_ids": (),
-        "representative_measured_workload_ids": (
-            "module-compile-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-cold-str",
-            "module-search-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-str",
-            "pattern-fullmatch-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-mixed-branches-purged-str",
-            "module-compile-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-warm-str",
-            "module-search-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-warm-str",
-            "pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-purged-str",
-        ),
+        "representative_measured_workload_ids": (),
     },
     "optional-group-boundary": {
         "known_gap_count": 1,
@@ -566,35 +556,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
     "conditional-group-exists-boundary": {
         "known_gap_count": 0,
         "representative_known_gap_workload_ids": (),
-        "representative_measured_workload_ids": (
-            "module-sub-template-numbered-conditional-group-exists-replacement-warm-gap",
-            "module-subn-template-numbered-conditional-group-exists-replacement-warm-str",
-            "pattern-sub-template-numbered-conditional-group-exists-replacement-purged-str",
-            "pattern-subn-template-numbered-conditional-group-exists-replacement-purged-str",
-            "module-sub-template-named-conditional-group-exists-replacement-warm-str",
-            "module-subn-template-named-conditional-group-exists-replacement-warm-str",
-            "pattern-sub-template-named-conditional-group-exists-replacement-purged-str",
-            "pattern-subn-template-named-conditional-group-exists-replacement-purged-str",
-            "module-sub-callable-numbered-conditional-group-exists-replacement-warm-str",
-            "pattern-sub-callable-numbered-conditional-group-exists-replacement-purged-str",
-            "pattern-subn-callable-numbered-conditional-group-exists-replacement-first-match-only-purged-str",
-            "module-sub-callable-named-conditional-group-exists-replacement-warm-str",
-            "module-subn-callable-named-conditional-group-exists-replacement-first-match-only-warm-str",
-            "pattern-sub-callable-named-conditional-group-exists-replacement-purged-str",
-            "pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap",
-            "module-subn-callable-numbered-conditional-group-exists-replacement-absent-exception-warm-str",
-            "pattern-subn-callable-numbered-conditional-group-exists-replacement-absent-exception-purged-str",
-            "module-subn-callable-named-conditional-group-exists-replacement-absent-exception-warm-str",
-            "pattern-subn-callable-named-conditional-group-exists-replacement-absent-exception-purged-str",
-            "module-sub-numbered-conditional-group-exists-quantified-alternation-heavy-replacement-warm-str",
-            "module-subn-numbered-conditional-group-exists-quantified-alternation-heavy-replacement-warm-str",
-            "pattern-sub-numbered-conditional-group-exists-quantified-alternation-heavy-replacement-purged-str",
-            "pattern-subn-numbered-conditional-group-exists-quantified-alternation-heavy-replacement-purged-str",
-            "module-sub-named-conditional-group-exists-quantified-alternation-heavy-replacement-warm-str",
-            "module-subn-named-conditional-group-exists-quantified-alternation-heavy-replacement-warm-str",
-            "pattern-sub-named-conditional-group-exists-quantified-alternation-heavy-replacement-purged-str",
-            "pattern-subn-named-conditional-group-exists-quantified-alternation-heavy-replacement-purged-str",
-        ),
+        "representative_measured_workload_ids": (),
     },
     "conditional-group-exists-no-else-boundary": {
         "known_gap_count": 0,
@@ -1427,6 +1389,49 @@ def source_tree_scorecard_case_ids() -> tuple[str, ...]:
     return tuple(SOURCE_TREE_SCORECARD_EXPECTATIONS)
 
 
+def _append_unique_workload_ids(
+    representative_ids: list[str],
+    workload_ids: Iterable[str],
+) -> None:
+    for workload_id in workload_ids:
+        normalized_workload_id = str(workload_id)
+        if normalized_workload_id not in representative_ids:
+            representative_ids.append(normalized_workload_id)
+
+
+def source_tree_combined_manifest_representative_measured_workload_ids(
+    manifest_id: str,
+) -> tuple[str, ...]:
+    manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
+    if manifest_expectation is None:
+        raise AssertionError(
+            f"unknown source-tree combined manifest expectation {manifest_id!r}"
+        )
+
+    explicit_workload_ids = tuple(
+        str(workload_id)
+        for workload_id in manifest_expectation["representative_measured_workload_ids"]
+    )
+    if explicit_workload_ids:
+        return explicit_workload_ids
+
+    representative_ids: list[str] = []
+    shape_expectation = manifest_expectation.get("shape_expectation")
+    if shape_expectation is not None:
+        _append_unique_workload_ids(
+            representative_ids,
+            shape_expectation.get("representative_measured_workload_ids", ()),
+        )
+    for expectation in SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS:
+        if expectation["manifest_id"] != manifest_id:
+            continue
+        _append_unique_workload_ids(
+            representative_ids,
+            expectation["expected_workload_ids"],
+        )
+    return tuple(representative_ids)
+
+
 def _source_tree_manifest_known_gap_counts(
     manifest_ids: tuple[str, ...],
     case_definition: dict[str, Any],
@@ -1497,7 +1502,9 @@ def _resolve_source_tree_scorecard_case_definition(
         manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[full_manifest_ids[0]]
         resolved_case_definition.setdefault(
             "representative_measured_workload_ids",
-            manifest_expectation["representative_measured_workload_ids"],
+            source_tree_combined_manifest_representative_measured_workload_ids(
+                full_manifest_ids[0]
+            ),
         )
         resolved_case_definition.setdefault(
             "representative_known_gap_workload_ids",
@@ -1697,7 +1704,16 @@ def representative_measured_workload_ids(
     extra_workload_ids: tuple[str, ...] = (),
 ) -> list[str]:
     manifest_id = str(manifest_document["manifest_id"])
-    representative_ids = list(extra_workload_ids)
+    representative_ids: list[str] = []
+    manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
+    if manifest_expectation is not None:
+        _append_unique_workload_ids(
+            representative_ids,
+            source_tree_combined_manifest_representative_measured_workload_ids(
+                manifest_id
+            ),
+        )
+    _append_unique_workload_ids(representative_ids, extra_workload_ids)
     for operation in ordered_operations(manifest_document["workloads"]):
         for workload in scorecard["workloads"]:
             if workload["manifest_id"] != manifest_id:

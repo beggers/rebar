@@ -9,6 +9,8 @@ TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 
 from tests.benchmarks.benchmark_expectations import (
     run_source_tree_benchmark_scorecard,
+    source_tree_combined_manifest_representative_measured_workload_ids,
+    source_tree_combined_slice_expectations,
     source_tree_scorecard_case,
     source_tree_scorecard_case_ids,
 )
@@ -24,6 +26,28 @@ from tests.report_assertions import (
 
 class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
     maxDiff = None
+
+    def test_single_manifest_scorecards_keep_slice_backed_representatives(self) -> None:
+        for case_id in (
+            "branch-local-backreference-boundary",
+            "conditional-group-exists-boundary",
+        ):
+            with self.subTest(case_id=case_id):
+                case = source_tree_scorecard_case(case_id)
+                self.assertEqual(
+                    case["representative_measured_workload_ids"],
+                    source_tree_combined_manifest_representative_measured_workload_ids(
+                        case_id
+                    ),
+                )
+                self.assertEqual(
+                    case["representative_measured_workload_ids"],
+                    tuple(
+                        workload_id
+                        for expectation in source_tree_combined_slice_expectations(case_id)
+                        for workload_id in expectation["expected_workload_ids"]
+                    ),
+                )
 
     def test_runner_regenerates_source_tree_scorecards(self) -> None:
         for case_id in source_tree_scorecard_case_ids():

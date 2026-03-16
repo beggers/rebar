@@ -12,6 +12,7 @@ from tests.benchmarks.benchmark_expectations import (
     select_source_tree_combined_slice_rows,
     source_tree_combined_case,
     source_tree_combined_manifest_shape_expectation,
+    source_tree_combined_manifest_representative_measured_workload_ids,
     source_tree_combined_slice_expectations,
     source_tree_combined_slice_manifest_ids,
     source_tree_combined_target_manifest_ids,
@@ -26,10 +27,36 @@ from tests.report_assertions import (
 )
 
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"
+SLICE_DERIVED_MANIFEST_IDS = (
+    "grouped-alternation-callable-replacement-boundary",
+    "branch-local-backreference-boundary",
+    "conditional-group-exists-boundary",
+)
 
 
 class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     maxDiff = None
+
+    def test_scoped_manifests_keep_slice_backed_representatives(self) -> None:
+        for manifest_id in SLICE_DERIVED_MANIFEST_IDS:
+            with self.subTest(manifest_id=manifest_id):
+                case = source_tree_combined_case(manifest_id)
+                self.assertEqual(
+                    case["manifest_expectation"]["representative_measured_workload_ids"],
+                    (),
+                )
+                self.assertEqual(
+                    source_tree_combined_manifest_representative_measured_workload_ids(
+                        manifest_id
+                    ),
+                    tuple(
+                        workload_id
+                        for expectation in source_tree_combined_slice_expectations(
+                            manifest_id
+                        )
+                        for workload_id in expectation["expected_workload_ids"]
+                    ),
+                )
 
     def test_runner_regenerates_combined_source_tree_boundary_scorecards(self) -> None:
         for target_manifest_id in source_tree_combined_target_manifest_ids():

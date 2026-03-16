@@ -1,6 +1,6 @@
 # RBR-0458: Collapse slice-covered benchmark representatives onto shared expectations
 
-Status: ready
+Status: blocked
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -55,3 +55,9 @@ Created: 2026-03-16
   - `tests/benchmarks/benchmark_expectations.py:389-400` for `branch-local-backreference-boundary`, which restates the `broader-range-open-ended-conditional-branch-local-backreference` slice at `tests/benchmarks/benchmark_expectations.py:685-708`
   - `tests/benchmarks/benchmark_expectations.py:566-598` for `conditional-group-exists-boundary`, which restates the four slice blocks at `tests/benchmarks/benchmark_expectations.py:1217-1345`
 - `tests/benchmarks/benchmark_expectations.py` is `1831` lines long in the current checkout, so keeping slice-covered representative ids single-sourced is still a worthwhile bounded simplification after `RBR-0454` and `RBR-0456`.
+
+## Run Notes
+- Landed the scoped refactor in `tests/benchmarks/benchmark_expectations.py`: the three duplicated manifest-level `representative_measured_workload_ids` tuples are now empty, and the new `source_tree_combined_manifest_representative_measured_workload_ids(...)` helper derives those rows from shared slice/shape expectations instead.
+- Added focused regression coverage in `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the branch-local and conditional single-manifest scorecards still expose slice-backed representative ids and the three scoped manifests stay single-sourced through the shared slice expectation surface.
+- Scoped verification passed with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k slice_backed` (`2 passed`).
+- The exact acceptance command reran after the refactor and now fails only on summary assertions (`28 failed, 6 passed, 365 subtests passed`). The blocker is unrelated pre-existing benchmark expectation drift outside this task's allowed scope: live source-tree runs already report `regression-module-compile-verbose-purged` as `measured`, while `tests/benchmarks/benchmark_expectations.py` and `reports/benchmarks/latest.py` still count that workload under the `regression-matrix` known-gap surface reserved for `RBR-0457`. That single known-gap mismatch keeps the two benchmark files red on expected summary counts even though the slice-backed representative-id refactor itself is behaving correctly.
