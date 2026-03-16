@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+import pathlib
 import re
 
 import pytest
@@ -12,6 +13,7 @@ from rebar_harness.correctness import (
     CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR,
     COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
     CORRECTNESS_FIXTURES_ROOT,
+    DEFAULT_FIXTURE_PATHS,
     FixtureCase,
     GROUPED_CAPTURE_FIXTURE_SELECTOR,
     LITERAL_FLAG_FIXTURE_SELECTOR,
@@ -22,6 +24,7 @@ from rebar_harness.correctness import (
     SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR,
     WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
     load_fixture_manifest,
+    load_fixture_manifests,
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
@@ -167,6 +170,14 @@ SELECTOR_EXPECTATIONS = (
         id="open-ended-quantified-group",
     ),
 )
+
+
+def _duplicate_items(counter: Counter[str]) -> list[str]:
+    return sorted(item for item, count in counter.items() if count > 1)
+
+
+def _tracked_fixture_paths() -> tuple[pathlib.Path, ...]:
+    return tuple(sorted(FIXTURES_DIR.glob("*.py"), key=lambda path: path.name))
 
 
 def _selector_paths_matching_published_fixture_names(
@@ -371,6 +382,22 @@ def test_unknown_correctness_fixture_selector_raises_clear_error() -> None:
         select_correctness_fixture_paths("missing-selector")
 
 
+def test_published_full_suite_fixture_selector_matches_tracked_fixture_inventory() -> None:
+    published_fixture_paths = select_correctness_fixture_paths(
+        PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
+    )
+    tracked_fixture_paths = _tracked_fixture_paths()
+
+    assert DEFAULT_FIXTURE_PATHS == published_fixture_paths
+    assert set(published_fixture_paths) == set(tracked_fixture_paths)
+    assert len(published_fixture_paths) == len(set(published_fixture_paths))
+
+    for path in published_fixture_paths:
+        assert path.is_relative_to(FIXTURES_DIR)
+        assert path.is_file()
+        assert path.suffix == ".py"
+
+
 @pytest.mark.parametrize(
     ("selector", "filename_predicate"),
     REPLACEMENT_SELECTOR_PATTERN_EXPECTATIONS,
@@ -439,6 +466,27 @@ def test_published_fixture_bundle_lookup_by_manifest_id_supports_success_and_cle
         ),
     ):
         published_fixture_bundle_by_manifest_id((bundles[0], bundles[0]), manifest_id)
+
+
+def test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids() -> None:
+    published_fixture_paths = select_correctness_fixture_paths(
+        PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
+    )
+    manifests, cases = load_fixture_manifests(published_fixture_paths)
+
+    assert [manifest.path for manifest in manifests] == list(published_fixture_paths)
+    assert _duplicate_items(Counter(manifest.manifest_id for manifest in manifests)) == []
+    assert _duplicate_items(Counter(manifest.suite_id for manifest in manifests)) == []
+    assert _duplicate_items(Counter(case.case_id for case in cases)) == []
+
+    cases_by_manifest = Counter(case.manifest_id for case in cases)
+    manifest_ids = {manifest.manifest_id for manifest in manifests}
+
+    for manifest in manifests:
+        assert cases_by_manifest[manifest.manifest_id] > 0
+
+    for case in cases:
+        assert case.manifest_id in manifest_ids
 
 
 def _whole_manifest_backreference_bundle_specs() -> tuple[FixtureBundleSpec, ...]:
