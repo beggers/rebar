@@ -96,21 +96,6 @@ SELECTOR_EXPECTATIONS = (
         id="simple-backreference",
     ),
     pytest.param(
-        CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR,
-        (
-            "conditional_group_exists_alternation_replacement_workflows.py",
-            "conditional_group_exists_empty_else_replacement_workflows.py",
-            "conditional_group_exists_empty_yes_else_replacement_workflows.py",
-            "conditional_group_exists_fully_empty_replacement_workflows.py",
-            "conditional_group_exists_nested_replacement_workflows.py",
-            "conditional_group_exists_no_else_replacement_workflows.py",
-            "conditional_group_exists_quantified_replacement_workflows.py",
-            "conditional_group_exists_replacement_template_workflows.py",
-            "conditional_group_exists_replacement_workflows.py",
-        ),
-        id="conditional-replacement",
-    ),
-    pytest.param(
         GROUPED_CAPTURE_FIXTURE_SELECTOR,
         (
             "grouped_alternation_workflows.py",
@@ -161,24 +146,6 @@ SELECTOR_EXPECTATIONS = (
         id="literal-flag",
     ),
     pytest.param(
-        CALLABLE_REPLACEMENT_FIXTURE_SELECTOR,
-        (
-            "conditional_group_exists_callable_replacement_workflows.py",
-            "grouped_alternation_callable_replacement_workflows.py",
-            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
-            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-            "nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-            "nested_group_alternation_callable_replacement_workflows.py",
-            "nested_group_callable_replacement_workflows.py",
-            "nested_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-            "quantified_nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-            "quantified_nested_group_alternation_callable_replacement_workflows.py",
-            "quantified_nested_group_callable_replacement_workflows.py",
-        ),
-        id="callable-replacement",
-    ),
-    pytest.param(
         OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR,
         (
             "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
@@ -199,6 +166,60 @@ SELECTOR_EXPECTATIONS = (
             "open_ended_quantified_group_alternation_workflows.py",
         ),
         id="open-ended-quantified-group",
+    ),
+)
+
+
+def _selector_paths_matching_published_fixture_names(
+    *,
+    selector: str,
+    filename_predicate,
+) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    published_full_suite_paths = select_correctness_fixture_paths(
+        PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
+    )
+    selected_paths = select_correctness_fixture_paths(selector)
+    expected_paths = tuple(
+        sorted(
+            (
+                path
+                for path in published_full_suite_paths
+                if filename_predicate(path.name)
+            ),
+            key=lambda path: path.name,
+        )
+    )
+    return (
+        tuple(path.name for path in selected_paths),
+        tuple(path.name for path in expected_paths),
+    )
+
+
+def _is_conditional_replacement_fixture_name(filename: str) -> bool:
+    return (
+        filename.startswith("conditional_group_exists_")
+        and "_callable_" not in filename
+        and (
+            filename.endswith("_replacement_workflows.py")
+            or filename.endswith("_replacement_template_workflows.py")
+        )
+    )
+
+
+def _is_callable_replacement_fixture_name(filename: str) -> bool:
+    return filename.endswith("_callable_replacement_workflows.py")
+
+
+REPLACEMENT_SELECTOR_PATTERN_EXPECTATIONS = (
+    pytest.param(
+        CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR,
+        _is_conditional_replacement_fixture_name,
+        id="conditional-replacement",
+    ),
+    pytest.param(
+        CALLABLE_REPLACEMENT_FIXTURE_SELECTOR,
+        _is_callable_replacement_fixture_name,
+        id="callable-replacement",
     ),
 )
 
@@ -315,6 +336,25 @@ def test_shared_correctness_fixture_selectors_resolve_expected_published_paths(
 def test_unknown_correctness_fixture_selector_raises_clear_error() -> None:
     with pytest.raises(ValueError, match="unknown correctness fixture selector"):
         select_correctness_fixture_paths("missing-selector")
+
+
+@pytest.mark.parametrize(
+    ("selector", "filename_predicate"),
+    REPLACEMENT_SELECTOR_PATTERN_EXPECTATIONS,
+)
+def test_replacement_family_selectors_follow_published_fixture_naming_conventions(
+    selector: str,
+    filename_predicate,
+) -> None:
+    selected_filenames, expected_filenames = (
+        _selector_paths_matching_published_fixture_names(
+            selector=selector,
+            filename_predicate=filename_predicate,
+        )
+    )
+
+    assert selected_filenames
+    assert selected_filenames == expected_filenames
 
 
 def test_case_pattern_helpers_extract_str_and_bytes_patterns_from_published_fixtures() -> None:
