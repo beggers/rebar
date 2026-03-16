@@ -78,6 +78,9 @@ SELECTED_CASE_BUNDLE_SPECS = (
 )
 
 COMPILE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "compile")
+NOFLAG_COMPILE_CASES = tuple(
+    case for case in COMPILE_CASES if (case.flags or 0) == 0
+)
 VERBOSE_COMPILE_CASE_ID = "workflow-compile-str-verbose-regression"
 (VERBOSE_COMPILE_CASE,) = tuple(
     case for case in COMPILE_CASES if case.case_id == VERBOSE_COMPILE_CASE_ID
@@ -298,6 +301,31 @@ def test_compile_workflows_match_cpython(
     )
 
 
+@pytest.mark.parametrize("case", NOFLAG_COMPILE_CASES, ids=lambda case: case.case_id)
+def test_explicit_noflag_compile_workflows_match_default_and_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    pattern = case_pattern(case)
+
+    observed_default, expected_default = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+    )
+    observed_noflag, expected_noflag = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+        backend.NOFLAG,
+    )
+
+    assert observed_default is observed_noflag
+    assert expected_default is expected_noflag
+    assert_pattern_parity(backend_name, observed_noflag, expected_noflag)
+
+
 @pytest.mark.parametrize(
     "case", VERBOSE_COMPILE_WORKFLOW_CASES, ids=lambda case: case.case_id
 )
@@ -392,6 +420,45 @@ def test_module_helpers_accept_compiled_patterns_with_cpython_parity(
 
     observed = getattr(backend, case.helper)(observed_pattern, *case.args)
     expected = getattr(re, case.helper)(expected_pattern, *case.args)
+
+    if case.result_kind == "match":
+        assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+        assert expected is not None
+        assert_match_convenience_api_parity(observed, expected)
+        return
+
+    if case.result_kind == "iter":
+        assert_finditer_parity(backend_name, observed, expected, check_regs=True)
+        return
+
+    assert observed == expected
+
+
+@pytest.mark.parametrize(
+    "case",
+    COMPILED_PATTERN_MODULE_HELPER_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_module_helpers_accept_explicit_noflag_for_compiled_patterns_like_cpython(
+    regex_backend: tuple[str, object],
+    case: CompiledPatternModuleHelperCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern = _compile_compiled_pattern_case(backend, case.pattern)
+    expected_pattern = _compile_compiled_pattern_case(re, case.pattern)
+
+    assert_pattern_parity(backend_name, observed_pattern, expected_pattern)
+
+    observed = getattr(backend, case.helper)(
+        observed_pattern,
+        *case.args,
+        flags=backend.NOFLAG,
+    )
+    expected = getattr(re, case.helper)(
+        expected_pattern,
+        *case.args,
+        flags=re.NOFLAG,
+    )
 
     if case.result_kind == "match":
         assert_match_result_parity(backend_name, observed, expected, check_regs=True)
