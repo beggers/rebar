@@ -214,8 +214,8 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
         "manifest_ids": ("conditional-group-exists-boundary",),
         "selection_mode": "full",
         "expected_summary": {
-            "known_gap_count": 1,
-            "measured_workloads": 52,
+            "known_gap_count": 0,
+            "measured_workloads": 53,
             "module_workloads": 53,
             "parser_workloads": 0,
             "regression_workloads": 0,
@@ -223,18 +223,17 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
         },
         "manifest_expectations": {
             "conditional-group-exists-boundary": {
-                "known_gap_count": 1,
+                "known_gap_count": 0,
             },
         },
         "representative_measured_workload_ids": (
+            "module-sub-template-numbered-conditional-group-exists-replacement-warm-gap",
             "module-sub-callable-numbered-conditional-group-exists-replacement-warm-str",
             "module-subn-callable-numbered-conditional-group-exists-replacement-first-match-only-warm-str",
             "pattern-sub-callable-named-conditional-group-exists-replacement-purged-str",
             "pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap",
         ),
-        "representative_known_gap_workload_ids": (
-            "module-sub-template-numbered-conditional-group-exists-replacement-warm-gap",
-        ),
+        "representative_known_gap_workload_ids": (),
     },
     "regression-pack-full": {
         "manifest_ids": (
@@ -547,11 +546,10 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "conditional-group-exists-boundary": {
-        "known_gap_count": 1,
-        "representative_known_gap_workload_ids": (
-            "module-sub-template-numbered-conditional-group-exists-replacement-warm-gap",
-        ),
+        "known_gap_count": 0,
+        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (
+            "module-sub-template-numbered-conditional-group-exists-replacement-warm-gap",
             "module-sub-callable-numbered-conditional-group-exists-replacement-warm-str",
             "module-subn-callable-numbered-conditional-group-exists-replacement-first-match-only-warm-str",
             "pattern-sub-callable-named-conditional-group-exists-replacement-purged-str",

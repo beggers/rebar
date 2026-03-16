@@ -7,7 +7,7 @@ MANIFEST = {
   ],
   "notes": [
     "Conditional group-exists boundary workloads keep one optional capture, one conditional site, and tiny haystacks so the scorecard measures helper-call overhead for the newly supported bounded two-arm conditional slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch plus constant-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, one numbered `module.sub()` present-capture callable path, one numbered `module.subn()` first-match-only callable companion, one named `Pattern.sub()` present-capture callable path, one named `Pattern.subn()` first-match-only callable companion through the existing `callable_match_group` helper, the bounded alternation-heavy replacement `a(b)?c(?(1)(de|df)|(eg|eh))` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the bounded nested two-arm `a(b)?c(?(1)(?(1)d|e)|f)` / `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` module-search, Pattern.fullmatch, and constant-replacement `sub()`/`subn()` probes through module and compiled-`Pattern` entrypoints, one bounded quantified `{2}` Pattern.fullmatch companion for each numbered and named spelling, the bounded quantified two-arm replacement `a(b)?c(?(1)d|e){2}` / `a(?P<word>b)?c(?(word)d|e){2}` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, and the bounded quantified alternation-heavy `a(b)?c(?(1)(de|df)|(eg|eh)){2}` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` module-search and Pattern.fullmatch probes, while replacement templates that read captures, callable exception probes on absent first matches, alternation-heavy quantified replacement arms, deeper nested replacement-conditioned shapes, branch-local-backreference-conditioned flows, and broader backtracking-heavy conditional shapes stay explicit gap rows or later benchmark slices instead of being silently omitted here."
+    "Measured rows cover the bounded `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` compile/search/fullmatch plus constant-replacement `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, one numbered `module.sub()` present-capture callable path, one numbered `module.subn()` first-match-only callable companion, one named `Pattern.sub()` present-capture callable path, one named `Pattern.subn()` first-match-only callable companion through the existing `callable_match_group` helper, one numbered `module.sub()` present-capture replacement-template helper through `\\1`, the bounded alternation-heavy replacement `a(b)?c(?(1)(de|df)|(eg|eh))` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh))` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, the bounded nested two-arm `a(b)?c(?(1)(?(1)d|e)|f)` / `a(?P<word>b)?c(?(word)(?(word)d|e)|f)` module-search, Pattern.fullmatch, and constant-replacement `sub()`/`subn()` probes through module and compiled-`Pattern` entrypoints, one bounded quantified `{2}` Pattern.fullmatch companion for each numbered and named spelling, the bounded quantified two-arm replacement `a(b)?c(?(1)d|e){2}` / `a(?P<word>b)?c(?(word)d|e){2}` `sub()`/`subn()` paths through module and compiled-`Pattern` entrypoints, and the bounded quantified alternation-heavy `a(b)?c(?(1)(de|df)|(eg|eh)){2}` / `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` module-search and Pattern.fullmatch probes, while the remaining absent-capture numbered and named compiled-`Pattern` replacement-template companions, callable exception probes on absent first matches, alternation-heavy quantified replacement arms, deeper nested replacement-conditioned shapes, branch-local-backreference-conditioned flows, and broader backtracking-heavy conditional shapes stay follow-on benchmark expansion or later slices instead of being silently omitted here."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -510,9 +510,11 @@ MANIFEST = {
         "conditional",
         "group-exists",
         "replacement",
-        "replacement-template",
+        "template",
+        "numbered-group",
+        "sub",
         "module",
-        "unsupported",
+        "present",
         "warm-cache"
       ],
       "syntax_features": [
@@ -523,7 +525,7 @@ MANIFEST = {
         "replacement-template"
       ],
       "notes": [
-        "Explicit replacement-template gap row so capture-reading `sub()` helpers for the bounded two-arm conditional slice stay visible until template expansion reaches this conditional replacement path."
+        "This former replacement-template gap anchor now benchmarks the bounded numbered `module.sub()` present-capture workflow on `zzabcdzz`, so `\\1` expansion after the conditional yes-arm `d` is measured without widening into absent-capture or named compiled-entrypoint template companions yet."
       ]
     },
     {
