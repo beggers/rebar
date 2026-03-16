@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import pathlib
 import re
 import tempfile
@@ -7,7 +8,12 @@ import textwrap
 import unittest
 
 
-from rebar_harness.benchmarks import load_manifest, load_manifests, workload_to_payload
+from rebar_harness.benchmarks import (
+    load_manifest,
+    load_manifests,
+    run_internal_workload_probe,
+    workload_to_payload,
+)
 
 
 class PythonBenchmarkManifestContractTest(unittest.TestCase):
@@ -195,6 +201,88 @@ class PythonBenchmarkManifestContractTest(unittest.TestCase):
                 },
             },
         )
+
+    def test_python_benchmark_manifest_measures_expected_exception_workloads(
+        self,
+    ) -> None:
+        manifest_source = """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "python-benchmark-exception-contract",
+            "defaults": {
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 2,
+                "text_model": "str",
+                "cache_mode": "warm",
+                "timing_scope": "module-helper-call",
+            },
+            "workloads": [
+                {
+                    "id": "module-subn-callable-numbered-conditional-expected-exception-contract-str",
+                    "bucket": "module-subn",
+                    "family": "module",
+                    "operation": "module.subn",
+                    "pattern": r"a(b)?c(?(1)d|e)",
+                    "replacement": {
+                        "type": "callable_match_group",
+                        "group": 1,
+                        "suffix": "x",
+                    },
+                    "expected_exception": {
+                        "type": "TypeError",
+                        "message_substring": "NoneType",
+                    },
+                    "haystack": "zzacezz",
+                    "count": 1,
+                    "categories": [
+                        "replacement",
+                        "callable",
+                        "conditional",
+                        "exception",
+                        "str",
+                    ],
+                    "notes": [
+                        "Ensures Python-backed benchmark manifests can measure expected callable replacement exceptions instead of failing the run."
+                    ],
+                },
+            ],
+        }
+        """
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            manifest_path = self._write_manifest(
+                pathlib.Path(temp_dir),
+                "python_benchmark_exception_contract.py",
+                manifest_source,
+            )
+            _, workloads = load_manifest(manifest_path)
+
+        workload = workloads[0]
+        payload = workload_to_payload(workload)
+        self.assertEqual(
+            payload["expected_exception"],
+            {
+                "type": "TypeError",
+                "message_substring": "NoneType",
+            },
+        )
+
+        baseline_probe = run_internal_workload_probe(
+            workload_payload=json.dumps(payload, sort_keys=True),
+            import_name="re",
+            adapter_name="cpython.re",
+        )
+        self.assertEqual(baseline_probe["status"], "measured")
+        self.assertGreater(baseline_probe["median_ns"], 0)
+
+        implementation_probe = run_internal_workload_probe(
+            workload_payload=json.dumps(payload, sort_keys=True),
+            import_name="rebar",
+            adapter_name="rebar",
+        )
+        self.assertEqual(implementation_probe["status"], "measured")
+        self.assertGreater(implementation_probe["median_ns"], 0)
 
     def test_python_benchmark_manifest_materializes_nested_constant_bytes_without_aliasing(
         self,

@@ -135,6 +135,7 @@ class Workload:
     pattern: str
     haystack: str | None
     replacement: Any | None
+    expected_exception: dict[str, Any] | None
     flags: int
     count: int
     maxsplit: int
@@ -171,6 +172,9 @@ class Workload:
                 else str(raw_workload.get("haystack"))
             ),
             replacement=normalize_workload_value(raw_workload.get("replacement")),
+            expected_exception=normalize_expected_exception(
+                raw_workload.get("expected_exception")
+            ),
             flags=int(raw_workload.get("flags", 0)),
             count=int(raw_workload.get("count", 0)),
             maxsplit=int(raw_workload.get("maxsplit", 0)),
@@ -231,6 +235,32 @@ def normalize_workload_value(value: Any) -> Any:
     raise ValueError(f"unsupported workload value {value!r}")
 
 
+def normalize_expected_exception(value: Any) -> dict[str, Any] | None:
+    if value is None:
+        return None
+
+    normalized = normalize_workload_value(value)
+    if not isinstance(normalized, dict):
+        raise ValueError("benchmark workload expected_exception must be an object")
+
+    unknown_keys = set(normalized) - {"message_substring", "type"}
+    if unknown_keys:
+        raise ValueError(
+            "benchmark workload expected_exception contains unsupported keys: "
+            f"{sorted(unknown_keys)}"
+        )
+
+    expected_type = normalized.get("type")
+    if expected_type is None:
+        raise ValueError("benchmark workload expected_exception requires a `type`")
+
+    result = {"type": str(expected_type)}
+    message_substring = normalized.get("message_substring")
+    if message_substring is not None:
+        result["message_substring"] = str(message_substring)
+    return result
+
+
 @dataclass
 class BenchmarkRunContext:
     """Resolved benchmark execution mode plus adapter/runtime metadata."""
@@ -258,6 +288,7 @@ def workload_to_payload(workload: Workload) -> dict[str, Any]:
         "pattern": workload.pattern,
         "haystack": workload.haystack,
         "replacement": workload.replacement,
+        "expected_exception": workload.expected_exception,
         "flags": workload.flags,
         "count": workload.count,
         "maxsplit": workload.maxsplit,
@@ -284,6 +315,7 @@ def workload_from_payload(payload: dict[str, Any]) -> Workload:
         pattern=str(payload.get("pattern", "")),
         haystack=None if payload.get("haystack") is None else str(payload["haystack"]),
         replacement=normalize_workload_value(payload.get("replacement")),
+        expected_exception=normalize_expected_exception(payload.get("expected_exception")),
         flags=int(payload.get("flags", 0)),
         count=int(payload.get("count", 0)),
         maxsplit=int(payload.get("maxsplit", 0)),
@@ -494,6 +526,8 @@ def module_helper_invoke(module: Any, workload: Workload) -> object:
 
 
 def helper_callable(module: Any, workload: Workload) -> Any:
+    pattern = workload.pattern_payload()
+
     def invoke() -> object:
         return module_helper_invoke(module, workload)
 
@@ -507,7 +541,10 @@ def helper_callable(module: Any, workload: Workload) -> Any:
         return run_once
 
     if workload.cache_mode == "warm":
-        invoke()
+        if workload.expected_exception is None:
+            invoke()
+        else:
+            module.compile(pattern, workload.flags)
 
         def run_once() -> object:
             return invoke()
@@ -611,16 +648,51 @@ def build_callable(module: Any, import_name: str, workload: Workload) -> Any:
     raise ValueError(f"unsupported benchmark operation {workload.operation!r}")
 
 
+def _expected_exception_matches(
+    exc: Exception,
+    expected_exception: dict[str, Any],
+) -> bool:
+    if type(exc).__name__ != expected_exception["type"]:
+        return False
+
+    message_substring = expected_exception.get("message_substring")
+    if message_substring is not None and message_substring not in str(exc):
+        return False
+    return True
+
+
+def _invoke_timed_callback(workload: Workload, callback: Any) -> None:
+    expected_exception = workload.expected_exception
+    try:
+        callback()
+    except Exception as exc:
+        if expected_exception is None:
+            raise
+        if not _expected_exception_matches(exc, expected_exception):
+            raise AssertionError(
+                f"workload {workload.workload_id!r} raised "
+                f"{type(exc).__name__}: {exc!s} instead of the expected "
+                f"{expected_exception['type']!r} exception"
+            ) from exc
+        return
+
+    if expected_exception is not None:
+        raise AssertionError(
+            f"workload {workload.workload_id!r} did not raise the expected "
+            f"{expected_exception['type']!r} exception"
+        )
+
+
 def measure_callable(workload: Workload, callback: Any) -> dict[str, Any]:
     for _ in range(workload.warmup_iterations):
         for _ in range(workload.sample_iterations):
-            callback()
+            _invoke_timed_callback(workload, callback)
 
     sample_ns: list[int] = []
     for _ in range(workload.timed_samples):
         start = time.perf_counter_ns()
         for _ in range(workload.sample_iterations):
-            callback()
+            _invoke_timed_callback(workload, callback)
         elapsed_ns = time.perf_counter_ns() - start
         sample_ns.append(max(1, round(elapsed_ns / workload.sample_iterations)))
 
@@ -801,6 +873,7 @@ def evaluate_workload(
         "pattern": workload.pattern,
         "haystack": workload.haystack,
         "replacement": workload.replacement,
+        "expected_exception": workload.expected_exception,
         "flags": workload.flags,
         "count": workload.count,
         "maxsplit": workload.maxsplit,
