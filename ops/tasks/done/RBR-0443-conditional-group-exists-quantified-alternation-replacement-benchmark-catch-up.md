@@ -1,8 +1,9 @@
 # RBR-0443: Catch bounded quantified alternation-heavy conditional replacement benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
+Completed: 2026-03-16
 
 ## Goal
 - Extend the published benchmark surface so the bounded quantified alternation-heavy conditional replacement workflows already supported by `RBR-0441` produce real Python-path `rebar` timings on `conditional_group_exists_boundary.py` before the remaining callable-exception benchmark gap or deeper replacement-conditioned follow-ons reopen the frontier.
@@ -29,3 +30,4 @@ Created: 2026-03-16
 ## Notes
 - Build on `RBR-0441`, `RBR-0439`, and the existing `conditional_group_exists_boundary.py` benchmark surface.
 - The current tracked benchmark publication reports `576` total workloads, `554` measured workloads, `22` known gaps, and `64` measured workloads with `0` known gaps for `conditional-group-exists-boundary`; this task should extend that same benchmark boundary rather than reopen correctness.
+- Completed 2026-03-16: added the eight numbered and named module/compiled-`Pattern` `sub()` / `subn()` quantified alternation-heavy conditional replacement benchmark rows for `a(b)?c(?(1)(de|df)|(eg|eh)){2}` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` to `benchmarks/workloads/conditional_group_exists_boundary.py`, extended the shared source-tree benchmark expectations in `tests/benchmarks/benchmark_expectations.py`, regenerated the narrow manifest report at `.rebar/tmp/rbr-0443-conditional-quantified-alternation-replacement-bench.py` (`72` measured / `0` gaps) and the tracked publication at `reports/benchmarks/latest.py` (`584` total / `562` measured / `22` gaps, with `conditional-group-exists-boundary` at `72` measured / `0` gaps), and verified `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_python_benchmark_manifest_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`9 passed`, `371 subtests passed`).
