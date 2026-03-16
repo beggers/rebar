@@ -1,8 +1,9 @@
 # RBR-0438: Centralize grouped-capture selected-case bundle specs
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
+Completed: 2026-03-16
 
 ## Goal
 - Replace the remaining repeated selected-case `load_fixture_bundle(...)` declarations in `tests/python/test_grouped_capture_parity_suite.py` with one small declarative helper path, so the grouped-capture parity surface stops hand-maintaining the same selected-case bundle plumbing after the earlier whole-manifest and selector-backed cleanup passes.
@@ -52,3 +53,14 @@ Created: 2026-03-16
 - The runtime dashboard is lagging behind the live checkout (`dashboard HEAD: 8f2e69dee98a5a9426ee090013a9aea6c551d955`, live `git rev-parse HEAD`: `64128afc0094aa8e2be4bbe1f236ec57b21c9b1f`), so JSON status for this run was sized from live checks rather than the lagging report.
 - Live JSON checks are fully burned down (`git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), the ready queue is empty, and recent runtime reporting shows no inherited-dirty or post-task refresh stall, so this run should seed one post-JSON duplicate-plumbing cleanup rather than no-op.
 - `RBR-0427` already moved `tests/python/test_grouped_capture_parity_suite.py` onto the shared bundle loader, but the suite still carries eight inline selected-case bundle declarations plus one open-coded bundle-to-case fanout because `tests/python/fixture_parity_support.py` still lacks a declarative selected-case spec path.
+
+## Completion
+- 2026-03-16: Added `SelectedCaseBundleSpec` plus `load_selected_case_fixture_bundles(...)` to `tests/python/fixture_parity_support.py`, keeping the helper layered on `load_fixture_bundle(...)` while deriving each bundle's exact `expected_case_ids` from its ordered `selected_case_ids`.
+- 2026-03-16: Switched `tests/python/test_grouped_capture_parity_suite.py` to an explicit `SELECTED_CASE_BUNDLE_SPECS` tuple and `load_selected_case_fixture_bundles(...)`, removing all direct `load_fixture_bundle(...)` and `expected_case_ids=` repetition there and routing `PUBLISHED_CASES` through `fixture_cases_from_bundles(FIXTURE_BUNDLES)`.
+- 2026-03-16: Added focused contract coverage in `tests/python/test_fixture_parity_support_contract.py` for single-spec selected-case loading, derived exact case-id validation, in-bundle case-order preservation, and multi-spec bundle-order preservation.
+
+## Verification
+- 2026-03-16: `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_grouped_capture_parity_suite.py` (`429 passed`)
+- 2026-03-16: `rg -n 'load_fixture_bundle\\(' tests/python/test_grouped_capture_parity_suite.py` (no matches)
+- 2026-03-16: `rg -n 'expected_case_ids=' tests/python/test_grouped_capture_parity_suite.py` (no matches)
+- 2026-03-16: `rg -n 'case for bundle in FIXTURE_BUNDLES for case in bundle\\.cases' tests/python/test_grouped_capture_parity_suite.py` (no matches)

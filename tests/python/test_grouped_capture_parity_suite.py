@@ -12,7 +12,7 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
+    SelectedCaseBundleSpec,
     assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -20,8 +20,9 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
-    load_fixture_bundle,
+    fixture_cases_from_bundles,
     load_published_fixture_cases,
+    load_selected_case_fixture_bundles,
     published_fixture_paths_from_bundles,
     str_case_pattern,
 )
@@ -55,19 +56,13 @@ class BoundedPatternCase:
     bounds: tuple[int, ...]
 
 
-FIXTURE_BUNDLES = (
-    load_fixture_bundle(
-        "grouped_match_workflows.py",
+SELECTED_CASE_BUNDLE_SPECS = (
+    SelectedCaseBundleSpec(
+        fixture_name="grouped_match_workflows.py",
         expected_manifest_id="grouped-match-workflows",
         selected_case_ids=(
             "grouped-module-fullmatch-two-capture-gap-str",
             "grouped-pattern-fullmatch-two-capture-gap-str",
-        ),
-        expected_case_ids=frozenset(
-            {
-                "grouped-module-fullmatch-two-capture-gap-str",
-                "grouped-pattern-fullmatch-two-capture-gap-str",
-            }
         ),
         expected_patterns=frozenset({r"(ab)(c)"}),
         expected_operation_helper_counts=Counter(
@@ -77,20 +72,13 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
-        "named_group_workflows.py",
+    SelectedCaseBundleSpec(
+        fixture_name="named_group_workflows.py",
         expected_manifest_id="named-group-workflows",
         selected_case_ids=(
             "named-group-compile-metadata-str",
             "named-group-module-search-metadata-str",
             "named-group-pattern-search-metadata-str",
-        ),
-        expected_case_ids=frozenset(
-            {
-                "named-group-compile-metadata-str",
-                "named-group-module-search-metadata-str",
-                "named-group-pattern-search-metadata-str",
-            }
         ),
         expected_patterns=frozenset({r"(?P<word>abc)"}),
         expected_operation_helper_counts=Counter(
@@ -101,8 +89,8 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
-        "grouped_segment_workflows.py",
+    SelectedCaseBundleSpec(
+        fixture_name="grouped_segment_workflows.py",
         expected_manifest_id="grouped-segment-workflows",
         selected_case_ids=(
             "grouped-segment-compile-metadata-str",
@@ -111,16 +99,6 @@ FIXTURE_BUNDLES = (
             "named-grouped-segment-compile-metadata-str",
             "named-grouped-segment-module-search-str",
             "named-grouped-segment-pattern-fullmatch-str",
-        ),
-        expected_case_ids=frozenset(
-            {
-                "grouped-segment-compile-metadata-str",
-                "grouped-segment-module-search-str",
-                "grouped-segment-pattern-fullmatch-str",
-                "named-grouped-segment-compile-metadata-str",
-                "named-grouped-segment-module-search-str",
-                "named-grouped-segment-pattern-fullmatch-str",
-            }
         ),
         expected_patterns=frozenset(
             {
@@ -136,8 +114,8 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
-        "grouped_alternation_workflows.py",
+    SelectedCaseBundleSpec(
+        fixture_name="grouped_alternation_workflows.py",
         expected_manifest_id="grouped-alternation-workflows",
         selected_case_ids=(
             "grouped-alternation-compile-metadata-str",
@@ -146,16 +124,6 @@ FIXTURE_BUNDLES = (
             "named-grouped-alternation-compile-metadata-str",
             "named-grouped-alternation-module-search-str",
             "named-grouped-alternation-pattern-fullmatch-str",
-        ),
-        expected_case_ids=frozenset(
-            {
-                "grouped-alternation-compile-metadata-str",
-                "grouped-alternation-module-search-str",
-                "grouped-alternation-pattern-fullmatch-str",
-                "named-grouped-alternation-compile-metadata-str",
-                "named-grouped-alternation-module-search-str",
-                "named-grouped-alternation-pattern-fullmatch-str",
-            }
         ),
         expected_patterns=frozenset(
             {
@@ -171,8 +139,8 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
-        "optional_group_workflows.py",
+    SelectedCaseBundleSpec(
+        fixture_name="optional_group_workflows.py",
         expected_manifest_id="optional-group-workflows",
         selected_case_ids=(
             "optional-group-compile-metadata-str",
@@ -192,26 +160,6 @@ FIXTURE_BUNDLES = (
             "systematic-optional-group-named-pattern-fullmatch-present-str",
             "systematic-optional-group-named-pattern-fullmatch-absent-str",
         ),
-        expected_case_ids=frozenset(
-            {
-                "optional-group-compile-metadata-str",
-                "optional-group-module-search-present-str",
-                "optional-group-pattern-fullmatch-absent-str",
-                "named-optional-group-compile-metadata-str",
-                "named-optional-group-module-search-absent-str",
-                "named-optional-group-pattern-fullmatch-present-str",
-                "systematic-optional-group-numbered-compile-metadata-str",
-                "systematic-optional-group-numbered-module-search-present-str",
-                "systematic-optional-group-numbered-module-search-absent-str",
-                "systematic-optional-group-numbered-pattern-fullmatch-present-str",
-                "systematic-optional-group-numbered-pattern-fullmatch-absent-str",
-                "systematic-optional-group-named-compile-metadata-str",
-                "systematic-optional-group-named-module-search-present-str",
-                "systematic-optional-group-named-module-search-absent-str",
-                "systematic-optional-group-named-pattern-fullmatch-present-str",
-                "systematic-optional-group-named-pattern-fullmatch-absent-str",
-            }
-        ),
         expected_patterns=frozenset(
             {
                 r"a(b)?d",
@@ -226,8 +174,8 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
-        "optional_group_alternation_workflows.py",
+    SelectedCaseBundleSpec(
+        fixture_name="optional_group_alternation_workflows.py",
         expected_manifest_id="optional-group-alternation-workflows",
         selected_case_ids=(
             "optional-group-alternation-compile-metadata-str",
@@ -236,16 +184,6 @@ FIXTURE_BUNDLES = (
             "named-optional-group-alternation-compile-metadata-str",
             "named-optional-group-alternation-module-search-present-str",
             "named-optional-group-alternation-pattern-fullmatch-absent-str",
-        ),
-        expected_case_ids=frozenset(
-            {
-                "optional-group-alternation-compile-metadata-str",
-                "optional-group-alternation-module-search-present-str",
-                "optional-group-alternation-pattern-fullmatch-absent-str",
-                "named-optional-group-alternation-compile-metadata-str",
-                "named-optional-group-alternation-module-search-present-str",
-                "named-optional-group-alternation-pattern-fullmatch-absent-str",
-            }
         ),
         expected_patterns=frozenset(
             {
@@ -261,8 +199,8 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
-        "nested_group_workflows.py",
+    SelectedCaseBundleSpec(
+        fixture_name="nested_group_workflows.py",
         expected_manifest_id="nested-group-workflows",
         selected_case_ids=(
             "nested-group-compile-metadata-str",
@@ -271,16 +209,6 @@ FIXTURE_BUNDLES = (
             "named-nested-group-compile-metadata-str",
             "named-nested-group-module-search-str",
             "named-nested-group-pattern-fullmatch-str",
-        ),
-        expected_case_ids=frozenset(
-            {
-                "nested-group-compile-metadata-str",
-                "nested-group-module-search-str",
-                "nested-group-pattern-fullmatch-str",
-                "named-nested-group-compile-metadata-str",
-                "named-nested-group-module-search-str",
-                "named-nested-group-pattern-fullmatch-str",
-            }
         ),
         expected_patterns=frozenset(
             {
@@ -296,8 +224,8 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
-        "nested_group_alternation_workflows.py",
+    SelectedCaseBundleSpec(
+        fixture_name="nested_group_alternation_workflows.py",
         expected_manifest_id="nested-group-alternation-workflows",
         selected_case_ids=(
             "nested-group-alternation-compile-metadata-str",
@@ -306,16 +234,6 @@ FIXTURE_BUNDLES = (
             "named-nested-group-alternation-compile-metadata-str",
             "named-nested-group-alternation-module-search-str",
             "named-nested-group-alternation-pattern-fullmatch-str",
-        ),
-        expected_case_ids=frozenset(
-            {
-                "nested-group-alternation-compile-metadata-str",
-                "nested-group-alternation-module-search-str",
-                "nested-group-alternation-pattern-fullmatch-str",
-                "named-nested-group-alternation-compile-metadata-str",
-                "named-nested-group-alternation-module-search-str",
-                "named-nested-group-alternation-pattern-fullmatch-str",
-            }
         ),
         expected_patterns=frozenset(
             {
@@ -332,6 +250,7 @@ FIXTURE_BUNDLES = (
         ),
     ),
 )
+FIXTURE_BUNDLES = load_selected_case_fixture_bundles(SELECTED_CASE_BUNDLE_SPECS)
 
 
 def _compile_cases(cases: tuple[FixtureCase, ...]) -> tuple[CompileCase, ...]:
@@ -352,7 +271,7 @@ def _compile_cases(cases: tuple[FixtureCase, ...]) -> tuple[CompileCase, ...]:
     return tuple(compile_cases)
 
 
-PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
+PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 COMPILE_CASES = _compile_cases(PUBLISHED_CASES)
 MODULE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "module_call")
 PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pattern_call")

@@ -27,6 +27,7 @@ from rebar_harness.correctness import (
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
     _match_api_templates,
+    SelectedCaseBundleSpec,
     WholeManifestBundleSpec,
     assert_fixture_bundle_contract,
     assert_finditer_parity,
@@ -43,6 +44,7 @@ from tests.python.fixture_parity_support import (
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
     load_fixture_bundle,
+    load_selected_case_fixture_bundles,
     load_whole_manifest_fixture_bundles,
     load_published_fixture_bundles,
     load_published_fixture_cases,
@@ -464,6 +466,38 @@ def _whole_manifest_backreference_bundle_specs() -> tuple[WholeManifestBundleSpe
     )
 
 
+def _selected_case_bundle_specs() -> tuple[SelectedCaseBundleSpec, ...]:
+    return (
+        SelectedCaseBundleSpec(
+            fixture_name="literal_flag_workflows.py",
+            expected_manifest_id="literal-flag-workflows",
+            selected_case_ids=(
+                "flag-unsupported-inline-flag-search",
+                "flag-unsupported-locale-bytes-search",
+            ),
+            expected_patterns=frozenset({"(?i)abc", b"abc"}),
+            expected_operation_helper_counts=Counter({("module_call", "search"): 2}),
+            expected_text_models=frozenset({"bytes", "str"}),
+        ),
+        SelectedCaseBundleSpec(
+            fixture_name="grouped_match_workflows.py",
+            expected_manifest_id="grouped-match-workflows",
+            selected_case_ids=(
+                "grouped-module-fullmatch-two-capture-gap-str",
+                "grouped-pattern-fullmatch-two-capture-gap-str",
+            ),
+            expected_patterns=frozenset({r"(ab)(c)"}),
+            expected_operation_helper_counts=Counter(
+                {
+                    ("module_call", "fullmatch"): 1,
+                    ("pattern_call", "fullmatch"): 1,
+                }
+            ),
+            expected_text_models=frozenset({"str"}),
+        ),
+    )
+
+
 def test_whole_manifest_bundle_specs_load_in_declared_order_with_bundle_validation() -> None:
     bundles = load_whole_manifest_fixture_bundles(
         _whole_manifest_backreference_bundle_specs()
@@ -559,23 +593,26 @@ def test_expected_fixture_bundle_contract_supports_exact_case_id_validation() ->
     )
 
 
-def test_expected_fixture_bundle_contract_supports_selected_case_loading() -> None:
-    selected_case_ids = (
-        "flag-unsupported-inline-flag-search",
-        "flag-unsupported-locale-bytes-search",
-    )
-    bundle = load_fixture_bundle(
-        "literal_flag_workflows.py",
-        expected_manifest_id="literal-flag-workflows",
-        expected_case_ids=frozenset(selected_case_ids),
-        expected_patterns=frozenset({"(?i)abc", b"abc"}),
-        expected_operation_helper_counts=Counter({("module_call", "search"): 2}),
-        selected_case_ids=selected_case_ids,
-    )
+def test_selected_case_bundle_specs_derive_exact_case_ids_and_preserve_case_order() -> None:
+    (spec,) = _selected_case_bundle_specs()[:1]
+    (bundle,) = load_selected_case_fixture_bundles((spec,))
 
-    assert bundle.manifest.path == FIXTURES_DIR / "literal_flag_workflows.py"
-    assert tuple(case.case_id for case in bundle.cases) == selected_case_ids
+    assert bundle.manifest.path == FIXTURES_DIR / spec.fixture_name
+    assert bundle.expected_case_ids == frozenset(spec.selected_case_ids)
+    assert tuple(case.case_id for case in bundle.cases) == spec.selected_case_ids
     assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
+
+
+def test_selected_case_bundle_specs_load_in_declared_bundle_order() -> None:
+    specs = tuple(reversed(_selected_case_bundle_specs()))
+
+    bundles = load_selected_case_fixture_bundles(specs)
+
+    assert tuple(bundle.manifest.path.name for bundle in bundles) == tuple(
+        spec.fixture_name for spec in specs
+    )
+    for bundle in bundles:
+        assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
 
 
 def test_bundle_pattern_projection_and_raw_case_lookup_helpers_cover_published_fixtures() -> None:

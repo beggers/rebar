@@ -42,6 +42,16 @@ class WholeManifestBundleSpec:
     expected_text_models: frozenset[str] | None = None
 
 
+@dataclass(frozen=True)
+class SelectedCaseBundleSpec:
+    fixture_name: str
+    expected_manifest_id: str
+    selected_case_ids: tuple[str, ...]
+    expected_patterns: frozenset[str | bytes]
+    expected_operation_helper_counts: Counter[tuple[str, str | None]]
+    expected_text_models: frozenset[str] | None = None
+
+
 def _fixture_bundle(
     *,
     manifest: FixtureManifest,
@@ -113,6 +123,23 @@ def load_whole_manifest_fixture_bundles(
             expected_patterns=spec.expected_patterns,
             expected_operation_helper_counts=spec.expected_operation_helper_counts,
             expected_case_ids=spec.expected_case_ids,
+            expected_text_models=spec.expected_text_models,
+        )
+        for spec in specs
+    )
+
+
+def load_selected_case_fixture_bundles(
+    specs: Iterable[SelectedCaseBundleSpec],
+) -> tuple[FixtureBundle, ...]:
+    return tuple(
+        load_fixture_bundle(
+            spec.fixture_name,
+            expected_manifest_id=spec.expected_manifest_id,
+            selected_case_ids=spec.selected_case_ids,
+            expected_case_ids=frozenset(spec.selected_case_ids),
+            expected_patterns=spec.expected_patterns,
+            expected_operation_helper_counts=spec.expected_operation_helper_counts,
             expected_text_models=spec.expected_text_models,
         )
         for spec in specs
