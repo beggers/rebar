@@ -29,6 +29,8 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
 
     def test_single_manifest_scorecards_keep_slice_backed_representatives(self) -> None:
         for case_id in (
+            "nested-group-replacement-boundary",
+            "nested-group-callable-replacement-boundary",
             "branch-local-backreference-boundary",
             "conditional-group-exists-boundary",
         ):

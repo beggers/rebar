@@ -1,6 +1,6 @@
 # RBR-0463: Collapse quantified nested-group benchmark representatives onto slice expectations
 
-Status: ready
+Status: blocked
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -80,3 +80,17 @@ Created: 2026-03-16
   - `nested-group-alternation-boundary`: 16 explicit representative ids, 12 already slice-derived, 4 explicit-only quantified nested-group alternation ids
   - `nested-group-replacement-boundary`: 16 explicit representative ids, 12 already slice-derived, 4 explicit-only quantified nested-group replacement-template ids
   - `nested-group-callable-replacement-boundary`: 36 explicit representative ids, 33 already slice-derived, 3 explicit-only quantified nested-group callable ids plus one quantified gap row still living in the misaligned `former-gap-callable-replacement-rows` slice
+
+## Run Notes
+- Landed the structural cleanup in `tests/benchmarks/benchmark_expectations.py`:
+  - the three scoped `SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS` entries now leave `representative_measured_workload_ids` empty;
+  - new slice expectations cover the quantified nested-group alternation, template-replacement, and callable-replacement representative rows in the required order; and
+  - the redundant `nested-group-callable-replacement-boundary` `former-gap-callable-replacement-rows` slice was deleted.
+- Aligned the single-manifest scorecard cases for `nested-group-replacement-boundary` and `nested-group-callable-replacement-boundary` so they derive representative measured workload ids from the shared slice-backed combined-manifest path instead of local tuples.
+- Updated the targeted benchmark tests so the slice-derived manifest set includes the three scoped manifests and the scorecard slice-backed representative assertion now covers the two affected single-manifest scorecard cases.
+- Narrow verification passed:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py -k keep_slice_backed_representatives tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'scoped_manifests_keep_slice_backed_representatives or selected_combined_source_tree_manifest_slices_stay_covered'`
+  - Result: `2 passed, 4 deselected, 252 subtests passed`
+- Blocked on the task-mandated full verification command:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - The failures are not caused by the representative cleanup. In this checkout, `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` now run as `measured`, so the suite-wide summary expectations are two known gaps behind the live runner output. That parser-stress benchmark expectation drift is the out-of-scope follow-on already reserved as `RBR-0462`.

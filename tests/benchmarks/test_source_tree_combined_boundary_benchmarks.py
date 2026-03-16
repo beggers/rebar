@@ -29,6 +29,9 @@ from tests.report_assertions import (
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"
 SLICE_DERIVED_MANIFEST_IDS = (
     "grouped-alternation-callable-replacement-boundary",
+    "nested-group-alternation-boundary",
+    "nested-group-replacement-boundary",
+    "nested-group-callable-replacement-boundary",
     "branch-local-backreference-boundary",
     "conditional-group-exists-boundary",
 )
