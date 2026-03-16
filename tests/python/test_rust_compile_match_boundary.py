@@ -5,7 +5,7 @@ import unittest
 from unittest import mock
 
 import rebar
-from tests.python.native_boundary_test_support import RecordingNativeBoundary
+from tests.python.fixture_parity_support import RecordingNativeBoundary
 
 
 class _FakeNativeBoundary(RecordingNativeBoundary):

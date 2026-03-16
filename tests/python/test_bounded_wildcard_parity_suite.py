@@ -14,6 +14,7 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FixtureBundleSpec,
+    RecordingNativeBoundary,
     assert_fixture_bundle_contract,
     assert_finditer_parity,
     assert_match_convenience_api_parity,
@@ -24,7 +25,6 @@ from tests.python.fixture_parity_support import (
     load_fixture_bundles,
     published_fixture_paths_from_bundles,
 )
-from tests.python.native_boundary_test_support import RecordingNativeBoundary
 from tests.python.published_case_handoffs import LITERAL_FLAG_DELEGATED_CASE_IDS
 
 
