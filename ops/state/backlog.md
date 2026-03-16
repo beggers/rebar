@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Once `RBR-0468` lands, the concrete surviving follow-on is `RBR-0471`, which should convert that exact `IGNORECASE|ASCII` literal helper pair on `literal-flag-workflows` from published correctness debt into real parity before source-tree benchmark catch-up revisits the existing `literal-flag-boundary` gap rows.
+With `RBR-0471` already queued at the ready head, the concrete surviving follow-on after that likely drain is `RBR-0473`, which should republish the exact `IGNORECASE|ASCII` literal benchmark pair on `literal-flag-boundary` as measured source-tree timings.
 
 ## Ordered Work
-1. Once `RBR-0468` lands, `RBR-0471` should extend `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_literal_flag_parity_suite.py`, and `reports/correctness/latest.py` so the exact `flag-module-search-ignorecase-ascii-str-hit` / `flag-pattern-search-ignorecase-ascii-str-hit` pair stops publishing as `unimplemented` and instead reaches real CPython-shaped parity for `rebar.search("abc", "ABC", rebar.IGNORECASE | rebar.ASCII)` and `rebar.compile("abc", rebar.IGNORECASE | rebar.ASCII).search("ABC")` before source-tree benchmark catch-up revisits the already-published `module-search-ignorecase-ascii-cold-gap` / `pattern-search-ignorecase-ascii-warm-gap` rows.
+1. With `RBR-0471` already queued as the ready-head parity task, `RBR-0473` should extend `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` so the exact `module-search-ignorecase-ascii-cold-gap` / `pattern-search-ignorecase-ascii-warm-gap` pair stops publishing as source-tree known gaps and instead becomes measured `literal-flag-boundary` coverage, moving the combined benchmark report from `588` total / `573` measured / `15` gaps to `588` total / `575` measured / `13` gaps once `RBR-0471` has landed.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

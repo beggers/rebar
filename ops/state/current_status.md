@@ -329,7 +329,7 @@ The published slice is still narrow: 961 of 963 published correctness cases now 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The concrete surviving follow-on is `RBR-0471`, which should convert the newly published `IGNORECASE|ASCII` literal helper pair on the shared `literal-flag-workflows` surface from two honest gaps into real Rust-backed parity before source-tree benchmark catch-up reopens that flag-combination slice.
+- With `RBR-0471` already queued as the ready head, the concrete surviving follow-on after that likely same-cycle drain is `RBR-0473`, which should republish the exact `module-search-ignorecase-ascii-cold-gap` / `pattern-search-ignorecase-ascii-warm-gap` pair on `literal-flag-boundary` as measured source-tree timings once parity lands.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
