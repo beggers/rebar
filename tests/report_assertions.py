@@ -104,28 +104,6 @@ def _assert_cpython_baseline_contract(
     testcase.assertEqual(baseline["re_module"], expected_re_module)
 
 
-def assert_correctness_summary_consistent(
-    testcase: Any,
-    scorecard: dict[str, Any],
-    summary: dict[str, Any],
-) -> None:
-    testcase.assertEqual(summary, scorecard["summary"])
-    testcase.assertEqual(scorecard["summary"], _correctness_summary(scorecard["cases"]))
-
-
-def assert_correctness_layer_summary_consistent(
-    testcase: Any,
-    scorecard: dict[str, Any],
-    layer_id: str,
-) -> dict[str, Any]:
-    layer = scorecard["layers"][layer_id]
-    layer_cases = [case for case in scorecard["cases"] if case["layer"] == layer_id]
-    testcase.assertEqual(layer["case_count"], len(layer_cases))
-    testcase.assertEqual(layer["summary"], _correctness_summary(layer_cases))
-    testcase.assertEqual(layer["diagnostics"], _correctness_diagnostics(layer_cases))
-    return layer
-
-
 def _correctness_cases_for_suite(
     scorecard: dict[str, Any],
     suite: dict[str, Any],
@@ -148,7 +126,7 @@ def _correctness_cases_for_suite(
     return suite_cases
 
 
-def find_correctness_suite_record(
+def _find_correctness_suite_record(
     scorecard: dict[str, Any],
     suite_id: str,
 ) -> dict[str, Any]:
@@ -211,12 +189,12 @@ def assert_correctness_case_record_matches(
         testcase.assertEqual(actual_arg, expected_arg)
 
 
-def assert_correctness_suite_summary_consistent(
+def _assert_correctness_suite_summary_consistent(
     testcase: Any,
     scorecard: dict[str, Any],
     suite_id: str,
 ) -> dict[str, Any]:
-    suite = find_correctness_suite_record(scorecard, suite_id)
+    suite = _find_correctness_suite_record(scorecard, suite_id)
     suite_cases = _correctness_cases_for_suite(scorecard, suite)
     testcase.assertEqual(suite["case_count"], len(suite_cases))
     testcase.assertEqual(suite["summary"], _correctness_summary(suite_cases))
@@ -230,7 +208,7 @@ def assert_correctness_suites_present(
     suite_ids: Iterable[str],
 ) -> tuple[dict[str, Any], ...]:
     return tuple(
-        assert_correctness_suite_summary_consistent(testcase, scorecard, suite_id)
+        _assert_correctness_suite_summary_consistent(testcase, scorecard, suite_id)
         for suite_id in suite_ids
     )
 
@@ -243,7 +221,8 @@ def assert_correctness_report_contract(
     expected_phase: str,
     tracked_report_path: pathlib.Path | None = None,
 ) -> None:
-    assert_correctness_summary_consistent(testcase, scorecard, summary)
+    testcase.assertEqual(summary, scorecard["summary"])
+    testcase.assertEqual(scorecard["summary"], _correctness_summary(scorecard["cases"]))
     testcase.assertEqual(scorecard["schema_version"], "1.0")
     testcase.assertEqual(scorecard["suite"], "correctness")
     testcase.assertEqual(scorecard["phase"], expected_phase)
@@ -287,7 +266,11 @@ def assert_correctness_layer_contract(
     expected_operations: tuple[str, ...],
     expected_text_models: tuple[str, ...],
 ) -> dict[str, Any]:
-    layer = assert_correctness_layer_summary_consistent(testcase, scorecard, layer_id)
+    layer = scorecard["layers"][layer_id]
+    layer_cases = [case for case in scorecard["cases"] if case["layer"] == layer_id]
+    testcase.assertEqual(layer["case_count"], len(layer_cases))
+    testcase.assertEqual(layer["summary"], _correctness_summary(layer_cases))
+    testcase.assertEqual(layer["diagnostics"], _correctness_diagnostics(layer_cases))
     testcase.assertEqual(layer["manifest_ids"], list(expected_manifest_ids))
     testcase.assertEqual(layer["operations"], list(expected_operations))
     testcase.assertEqual(layer["text_models"], list(expected_text_models))
@@ -304,7 +287,7 @@ def assert_correctness_suite_contract(
     expected_operations: tuple[str, ...],
     expected_text_models: tuple[str, ...],
 ) -> dict[str, Any]:
-    suite = assert_correctness_suite_summary_consistent(testcase, scorecard, suite_id)
+    suite = _assert_correctness_suite_summary_consistent(testcase, scorecard, suite_id)
     testcase.assertEqual(suite["manifest_ids"], list(expected_manifest_ids))
     testcase.assertEqual(suite["families"], list(expected_families))
     testcase.assertEqual(suite["operations"], list(expected_operations))
@@ -327,7 +310,7 @@ def assert_correctness_suite_case_accounting(
     )
 
 
-def assert_benchmark_summary_consistent(
+def _assert_benchmark_summary_consistent(
     testcase: Any,
     scorecard: dict[str, Any],
     summary: dict[str, Any],
@@ -475,7 +458,7 @@ def assert_source_tree_benchmark_contract(
         )
     ]
 
-    assert_benchmark_summary_consistent(testcase, scorecard, summary)
+    _assert_benchmark_summary_consistent(testcase, scorecard, summary)
     testcase.assertEqual(scorecard["schema_version"], "1.0")
     testcase.assertEqual(scorecard["suite"], "benchmarks")
     testcase.assertEqual(scorecard["phase"], expected_phase)
