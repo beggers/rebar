@@ -215,11 +215,11 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
         "selection_mode": "full",
         "expected_summary": {
             "known_gap_count": 0,
-            "measured_workloads": 53,
-            "module_workloads": 53,
+            "measured_workloads": 56,
+            "module_workloads": 56,
             "parser_workloads": 0,
             "regression_workloads": 0,
-            "total_workloads": 53,
+            "total_workloads": 56,
         },
         "manifest_expectations": {
             "conditional-group-exists-boundary": {
@@ -228,9 +228,10 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
         },
         "representative_measured_workload_ids": (
             "module-sub-template-numbered-conditional-group-exists-replacement-warm-gap",
+            "module-subn-template-numbered-conditional-group-exists-replacement-warm-str",
+            "pattern-sub-template-named-conditional-group-exists-replacement-purged-str",
+            "pattern-subn-template-named-conditional-group-exists-replacement-purged-str",
             "module-sub-callable-numbered-conditional-group-exists-replacement-warm-str",
-            "module-subn-callable-numbered-conditional-group-exists-replacement-first-match-only-warm-str",
-            "pattern-sub-callable-named-conditional-group-exists-replacement-purged-str",
             "pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap",
         ),
         "representative_known_gap_workload_ids": (),
@@ -550,10 +551,9 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (
             "module-sub-template-numbered-conditional-group-exists-replacement-warm-gap",
-            "module-sub-callable-numbered-conditional-group-exists-replacement-warm-str",
-            "module-subn-callable-numbered-conditional-group-exists-replacement-first-match-only-warm-str",
-            "pattern-sub-callable-named-conditional-group-exists-replacement-purged-str",
-            "pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap",
+            "module-subn-template-numbered-conditional-group-exists-replacement-warm-str",
+            "pattern-sub-template-named-conditional-group-exists-replacement-purged-str",
+            "pattern-subn-template-named-conditional-group-exists-replacement-purged-str",
         ),
     },
     "conditional-group-exists-no-else-boundary": {
@@ -1148,6 +1148,39 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "nested-group",
             "replacement",
             "callable",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="conditional-group-exists-boundary",
+        slice_id="minimal-template-replacement-rows",
+        required_syntax_features=("conditionals", "replacement-template"),
+        excluded_syntax_features=("quantifiers",),
+        excluded_categories=(
+            "alternation-heavy",
+            "nested-group",
+            "quantified",
+            "unsupported",
+            "callable",
+        ),
+        expected_workload_ids=(
+            "module-sub-template-numbered-conditional-group-exists-replacement-warm-gap",
+            "module-subn-template-numbered-conditional-group-exists-replacement-warm-str",
+            "pattern-sub-template-named-conditional-group-exists-replacement-purged-str",
+            "pattern-subn-template-named-conditional-group-exists-replacement-purged-str",
+        ),
+        expected_patterns={
+            r"a(b)?c(?(1)d|e)",
+            r"a(?P<word>b)?c(?(word)d|e)",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"zzabcdzz", "zzacezz"},
+        required_row_categories=(
+            "grouped",
+            "optional-group",
+            "conditional",
+            "group-exists",
+            "replacement",
+            "template",
         ),
     ),
     _combined_slice_expectation(
