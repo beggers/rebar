@@ -9,12 +9,13 @@ from typing import Any
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 NESTED_GROUP_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py"
 
-from rebar_harness.benchmarks import build_callable, load_manifest
+from rebar_harness.benchmarks import load_manifest
 from tests.benchmarks.correctness_anchor_support import (
     anchored_workload_case_ids,
     freeze_signature_value,
     published_case_ids_by_signature,
     published_cases_by_id,
+    run_benchmark_workload_with_cpython,
     unanchored_workload_ids,
 )
 from tests.python.fixture_parity_support import (
@@ -159,14 +160,6 @@ def _run_correctness_case_with_cpython(case: Any) -> object:
     )
 
 
-def _run_benchmark_workload_with_cpython(workload: Any) -> object:
-    re.purge()
-    callback = build_callable(re, "re", workload)
-    result = callback()
-    re.purge()
-    return result
-
-
 class NestedGroupBenchmarkCorrectnessAnchorContractTest(unittest.TestCase):
     maxDiff = None
 
@@ -222,7 +215,7 @@ class NestedGroupBenchmarkCorrectnessAnchorContractTest(unittest.TestCase):
                 self.assertIn(case_id, published_cases)
                 workload = workloads_by_id[workload_id]
                 case = published_cases[case_id]
-                observed = _run_benchmark_workload_with_cpython(workload)
+                observed = run_benchmark_workload_with_cpython(workload)
                 expected = _run_correctness_case_with_cpython(case)
 
                 if workload.operation == "module.compile":

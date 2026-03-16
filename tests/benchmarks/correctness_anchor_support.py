@@ -3,9 +3,10 @@ from __future__ import annotations
 from collections.abc import Callable
 from functools import cache
 import pathlib
+import re
 from typing import Any
 
-from rebar_harness.benchmarks import load_manifest
+from rebar_harness.benchmarks import build_callable, load_manifest
 from rebar_harness.correctness import DEFAULT_FIXTURE_PATHS, load_fixture_manifest
 
 
@@ -88,3 +89,11 @@ def unanchored_workload_ids(
         if (include_workload is None or include_workload(workload))
         and workload_signature(workload) not in anchor_case_ids
     )
+
+
+def run_benchmark_workload_with_cpython(workload: Any) -> object:
+    re.purge()
+    callback = build_callable(re, "re", workload)
+    result = callback()
+    re.purge()
+    return result
