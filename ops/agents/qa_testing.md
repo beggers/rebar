@@ -13,7 +13,7 @@ Required behavior:
 2. Inspect existing tests, fixtures, reports, and the relevant implementation/spec surface before deciding what to add.
 3. Add or refine exactly one coherent set of tests, fixtures, or harness assertions that improves faithfulness or brittleness resistance.
 4. Prefer backend-parameterized pytest coverage or shared helpers over another bespoke JSON-backed layer when both are viable.
-5. Run the most relevant test commands for the changes you make.
+5. Run the most relevant test commands for the changes you make, using repo-local tooling such as `./.venv/bin/python -m pytest` when it exists instead of bare `python3`.
 6. If you modify default published correctness fixtures or benchmark workloads, refresh the tracked combined report that those defaults publish.
 7. If broad feature coverage is not ripe for expansion, harden one shared helper, corpus generator, or brittle assertion path instead of exiting idle.
 

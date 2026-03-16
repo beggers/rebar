@@ -11,7 +11,7 @@ Required behavior:
 3. If the only failures are honest frontier gaps, expected `NotImplementedError` coverage, or work already claimed by a ready feature task, exit without changing anything.
 4. Change only shipped implementation code, native bindings, or Python wrapper/runtime behavior in `crates/` and `python/rebar/` needed to make one coherent failing area pass.
 5. If you do not have a concrete failing test name, file, or recent failing command after step 2, exit without running speculative green test sweeps.
-6. Run only the failing test command(s) you are repairing plus the narrowest relevant follow-up needed to confirm the fix.
+6. Run only the failing test command(s) you are repairing plus the narrowest relevant follow-up needed to confirm the fix, using repo-local tooling such as `./.venv/bin/python -m pytest` when it exists instead of bare `python3`.
 7. If your implementation change affects default published correctness behavior or benchmark behavior, refresh the tracked combined report that corresponds to the default published surface.
 8. If there are no such failing tests, no clear faithfulness fix to make, or this role is not currently useful, exit without changing anything.
 

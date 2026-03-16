@@ -14,7 +14,7 @@ Required behavior:
 4. First choice: delete one redundant helper/plumbing layer, obsolete generated artifact, or duplicate coverage file that is already unnecessary in the current tree.
 5. Second choice: remove another non-standard data-storage or intermediate-representation layer that is already redundant after earlier landed cleanup work.
 6. If no redundant layer, duplication target, or materially simplifying code-quality cleanup remains, exit without changes instead of inventing a cosmetic edit.
-7. Run the most relevant tests for the areas you touched.
+7. Run the most relevant tests for the areas you touched, using repo-local tooling such as `./.venv/bin/python -m pytest` when it exists instead of bare `python3`.
 8. If your cleanup changes affect default published correctness behavior or benchmark behavior, refresh the tracked combined report that corresponds to the default published surface.
 9. Before claiming that a tracked artifact was deleted, verify the final state after your last regeneration or test command. In the unstaged worktree, `git diff --name-status -- <path>` must show `D` rather than `M`, and the live filesystem must no longer contain the path.
 
