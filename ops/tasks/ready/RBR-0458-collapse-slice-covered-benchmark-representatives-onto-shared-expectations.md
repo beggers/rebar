@@ -1,6 +1,6 @@
 # RBR-0458: Collapse slice-covered benchmark representatives onto shared expectations
 
-Status: blocked
+Status: ready
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -61,3 +61,4 @@ Created: 2026-03-16
 - Added focused regression coverage in `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the branch-local and conditional single-manifest scorecards still expose slice-backed representative ids and the three scoped manifests stay single-sourced through the shared slice expectation surface.
 - Scoped verification passed with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k slice_backed` (`2 passed`).
 - The exact acceptance command reran after the refactor and now fails only on summary assertions (`28 failed, 6 passed, 365 subtests passed`). The blocker is unrelated pre-existing benchmark expectation drift outside this task's allowed scope: live source-tree runs already report `regression-module-compile-verbose-purged` as `measured`, while `tests/benchmarks/benchmark_expectations.py` and `reports/benchmarks/latest.py` still count that workload under the `regression-matrix` known-gap surface reserved for `RBR-0457`. That single known-gap mismatch keeps the two benchmark files red on expected summary counts even though the slice-backed representative-id refactor itself is behaving correctly.
+- 2026-03-16 architecture follow-up: `RBR-0457` has since landed and republished `regression-module-compile-verbose-purged` as a measured row in the shared source-tree benchmark publication and expectations. That task also verified `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`6 passed, 400 subtests passed`), so the summary drift recorded above is no longer a blocker and this exact cleanup is ready to be closed against the current checkout.
