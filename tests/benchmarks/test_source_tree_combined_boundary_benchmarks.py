@@ -144,6 +144,63 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     expected_status="measured",
                 )
 
+    def test_grouped_named_manifest_promotes_legacy_grouped_segment_pair_to_measured(
+        self,
+    ) -> None:
+        raw_manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+            "grouped-named-boundary"
+        ]
+        self.assertNotIn("known_gap_workload_ids", raw_manifest_expectation)
+        self.assertNotIn(
+            "representative_known_gap_workload_ids",
+            raw_manifest_expectation,
+        )
+        self.assertEqual(
+            raw_manifest_expectation["representative_measured_workload_ids"],
+            (
+                "module-search-grouped-segment-cold-gap",
+                "pattern-search-grouped-segment-warm-gap",
+            ),
+        )
+
+        case = source_tree_combined_case("grouped-named-boundary")
+        manifest_expectation = case.manifest_expectation
+        self.assertEqual(manifest_expectation.known_gap_count, 0)
+        self.assertEqual(
+            manifest_expectation.representative_known_gap_workload_ids,
+            (),
+        )
+        self.assertEqual(
+            manifest_expectation.representative_measured_workload_ids,
+            (
+                "module-search-grouped-segment-cold-gap",
+                "pattern-search-grouped-segment-warm-gap",
+            ),
+        )
+
+        _, scorecard = run_source_tree_benchmark_scorecard(
+            [REPO_ROOT / case.manifest_path]
+        )
+        manifest_summary = scorecard["manifests"]["grouped-named-boundary"]
+        self.assertEqual(manifest_summary["known_gap_count"], 0)
+        self.assertEqual(manifest_summary["measured_workloads"], 13)
+
+        for workload_id in (
+            "module-search-grouped-segment-cold-gap",
+            "pattern-search-grouped-segment-warm-gap",
+        ):
+            with self.subTest(workload_id=workload_id):
+                assert_benchmark_workload_contract(
+                    self,
+                    find_workload_record(scorecard, workload_id),
+                    manifest_id="grouped-named-boundary",
+                    workload_document=find_workload_document(
+                        case.target_manifest,
+                        workload_id,
+                    ),
+                    expected_status="measured",
+                )
+
     def test_shape_backed_manifests_keep_derived_representatives(self) -> None:
         shape_expectation = source_tree_combined_manifest_shape_expectation(
             "pattern-boundary"

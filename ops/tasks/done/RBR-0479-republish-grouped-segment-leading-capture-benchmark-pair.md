@@ -1,6 +1,6 @@
 # RBR-0479: Republish the grouped-segment leading-capture benchmark pair as measured source-tree timings
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -48,3 +48,11 @@ Created: 2026-03-16
 - `RBR-0477` should land immediately ahead of this task and convert the matching correctness pair `grouped-segment-leading-capture-module-search-str` / `grouped-segment-leading-capture-pattern-search-str` to real Rust-backed parity on `grouped-segment-workflows`.
 - 2026-03-16 planning probe: `benchmarks/workloads/grouped_named_boundary.py` already carries the exact target rows pinned to pattern `"(ab)c"`, haystack `"zabcz"`, flags `0`, and the ordinary module/pattern helper timing scopes, so this follow-on should stay on that existing benchmark path rather than inventing another manifest.
 - 2026-03-16 planning probe: the tracked `reports/benchmarks/latest.py` artifact currently reports `588` total workloads, `575` measured workloads, `13` known gaps overall, and `grouped-named-boundary` at `11` measured workloads / `2` known gaps, with both exact grouped-segment rows still publishing `status == "unimplemented"`.
+
+## Completion
+- 2026-03-16: Removed the stale grouped-segment gap labeling from `benchmarks/workloads/grouped_named_boundary.py` while preserving the legacy workload ids `module-search-grouped-segment-cold-gap` and `pattern-search-grouped-segment-warm-gap` for scorecard continuity.
+- 2026-03-16: Updated `tests/benchmarks/benchmark_expectations.py` so `grouped-named-boundary` no longer classifies that `(ab)c` pair as known gaps and instead promotes both ids onto the measured representative surface; also added the minimal single-manifest fallback expectation path needed for the existing `compile-smoke` scorecard case so the required benchmark pytest suite runs cleanly in this checkout.
+- 2026-03-16: Added focused regressions in `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, regenerated `reports/benchmarks/latest.py`, and verified:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`18 passed, 479 subtests passed in 20.44s`)
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/grouped_named_boundary.py --report .rebar/tmp/rbr-0479-grouped-named-boundary.py` (`13` measured workloads, `0` known gaps)
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` (tracked publication now reports `588` total workloads, `577` measured workloads, `11` known gaps overall, with `grouped-named-boundary` at `13` measured / `0` known gaps and both target workload ids publishing `status == "measured"`)

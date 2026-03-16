@@ -65,6 +65,19 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             case.representative_known_gap_workload_ids,
         )
 
+    def test_compile_smoke_case_restores_single_manifest_expectations(self) -> None:
+        case = source_tree_scorecard_case("compile-smoke")
+        manifest_expectation = case.manifest_expectations["compile-smoke"]
+        self.assertEqual(manifest_expectation.known_gap_count, 1)
+        self.assertEqual(
+            manifest_expectation.representative_measured_workload_ids,
+            ("compile-literal-cold",),
+        )
+        self.assertEqual(
+            manifest_expectation.representative_known_gap_workload_ids,
+            ("compile-character-class-warm",),
+        )
+
     def test_single_manifest_scorecards_keep_slice_backed_representatives(self) -> None:
         for case_id in (
             "nested-group-replacement-boundary",

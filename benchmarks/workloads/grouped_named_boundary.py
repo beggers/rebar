@@ -7,7 +7,7 @@ MANIFEST = {
   ],
   "notes": [
     "Grouped/named boundary workloads keep captures, replacements, and haystacks intentionally tiny so the scorecard stays about public helper overhead rather than regex throughput.",
-    "Supported grouped-capture, named-group, named-template, and named-backreference paths produce real timings here, while still-unsupported grouped-segment cases stay as explicit known-gap rows instead of disappearing from the benchmark surface."
+    "Supported grouped-capture, named-group, named-template, named-backreference, and the legacy-id leading-capture grouped-segment `(ab)c` pair all publish real timings here so the shared scorecard stays continuous without hiding that bounded helper slice."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -343,8 +343,7 @@ MANIFEST = {
         "segment",
         "search",
         "module",
-        "cold-cache",
-        "gap"
+        "cold-cache"
       ],
       "syntax_features": [
         "module-search",
@@ -352,7 +351,7 @@ MANIFEST = {
         "grouped-segments"
       ],
       "notes": [
-        "Explicit grouped-segment gap row so unsupported literal text around captures stays visible while the grouped frontier advances."
+        "Cold module.search helper path for the now-supported leading-capture grouped-segment `(ab)c` slice, keeping the legacy workload id while publishing a real timing."
       ]
     },
     {
@@ -371,8 +370,7 @@ MANIFEST = {
         "grouped",
         "segment",
         "search",
-        "warm-cache",
-        "gap"
+        "warm-cache"
       ],
       "syntax_features": [
         "pattern-search",
@@ -380,7 +378,7 @@ MANIFEST = {
         "grouped-segments"
       ],
       "notes": [
-        "Matching Pattern.search grouped-segment gap row that keeps the precompiled helper frontier honest until grouped-segment support lands."
+        "Warm Pattern.search helper path for the same now-supported leading-capture grouped-segment `(ab)c` slice, preserving the legacy workload id for scorecard continuity."
       ]
     }
   ]

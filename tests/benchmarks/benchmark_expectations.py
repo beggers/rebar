@@ -339,12 +339,9 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
     "collection-replacement-boundary": {},
     "literal-flag-boundary": {},
     "grouped-named-boundary": {
-        "known_gap_workload_ids": (
+        "representative_measured_workload_ids": (
             "module-search-grouped-segment-cold-gap",
             "pattern-search-grouped-segment-warm-gap",
-        ),
-        "representative_known_gap_workload_ids": (
-            "module-search-grouped-segment-cold-gap",
         ),
     },
     "numbered-backreference-boundary": {
@@ -1652,6 +1649,43 @@ def _public_source_tree_manifest_expectation(
     )
 
 
+def _single_manifest_scorecard_fallback_expectation(
+    manifest_id: str,
+    *,
+    case_definition: dict[str, Any],
+    manifest_known_gap_counts: dict[str, int],
+    selected_workload_ids: Iterable[str] | None = None,
+) -> SourceTreeManifestExpectation:
+    selected_workload_id_set = (
+        {str(workload_id) for workload_id in selected_workload_ids}
+        if selected_workload_ids is not None
+        else None
+    )
+
+    def _filter_case_workload_ids(field_name: str) -> tuple[str, ...]:
+        workload_ids = tuple(
+            str(workload_id)
+            for workload_id in case_definition.get(field_name, ())
+        )
+        if selected_workload_id_set is None:
+            return workload_ids
+        return tuple(
+            workload_id
+            for workload_id in workload_ids
+            if workload_id in selected_workload_id_set
+        )
+
+    return SourceTreeManifestExpectation(
+        known_gap_count=manifest_known_gap_counts[manifest_id],
+        representative_measured_workload_ids=_filter_case_workload_ids(
+            "representative_measured_workload_ids"
+        ),
+        representative_known_gap_workload_ids=_filter_case_workload_ids(
+            "representative_known_gap_workload_ids"
+        ),
+    )
+
+
 def _source_tree_manifest_known_gap_counts(
     manifest_ids: tuple[str, ...],
     case_definition: dict[str, Any],
@@ -1830,12 +1864,24 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
     public_case_definition.setdefault(
         "manifest_expectations",
         {
-            manifest_id: _public_source_tree_manifest_expectation(
-                manifest_id,
-                selected_workload_ids=selected_workload_ids_by_manifest.get(
+            manifest_id: (
+                _public_source_tree_manifest_expectation(
                     manifest_id,
-                    (),
-                ),
+                    selected_workload_ids=selected_workload_ids_by_manifest.get(
+                        manifest_id,
+                        (),
+                    ),
+                )
+                if manifest_id in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
+                else _single_manifest_scorecard_fallback_expectation(
+                    manifest_id,
+                    case_definition=public_case_definition,
+                    manifest_known_gap_counts=manifest_known_gap_counts,
+                    selected_workload_ids=selected_workload_ids_by_manifest.get(
+                        manifest_id,
+                        (),
+                    ),
+                )
             )
             for manifest_id in manifest_ids
         },
