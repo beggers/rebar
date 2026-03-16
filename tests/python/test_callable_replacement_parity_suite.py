@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
-import pathlib
 import re
 
 import pytest
@@ -11,7 +9,6 @@ from rebar_harness.correctness import (
     CALLABLE_REPLACEMENT_FIXTURE_SELECTOR,
     CpythonReAdapter,
     FixtureCase,
-    FixtureManifest,
     RebarAdapter,
     evaluate_case,
     load_fixture_manifest,
@@ -19,16 +16,18 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
+    FixtureBundle,
     assert_match_convenience_api_parity,
     assert_match_parity,
+    bundle_patterns,
+    load_fixture_bundle,
+    published_fixture_paths_from_bundles,
+    raw_fixture_cases_by_id,
     str_case_pattern,
 )
 
 
-COLLECTION_REPLACEMENT_FIXTURE_PATH = (
-    FIXTURES_DIR / "collection_replacement_workflows.py"
-)
+COLLECTION_REPLACEMENT_FIXTURE_NAME = "collection_replacement_workflows.py"
 CONDITIONAL_GROUP_EXISTS_CALLABLE_MANIFEST_ID = (
     "conditional-group-exists-callable-replacement-workflows"
 )
@@ -494,22 +493,6 @@ def assert_pattern_callable_replacement_return_type_error_parity(
     )
 
 
-@dataclass(frozen=True)
-class FixtureBundle:
-    manifest: FixtureManifest
-    cases: tuple[FixtureCase, ...]
-    raw_cases_by_id: dict[str, dict[str, object]]
-
-    @property
-    def compile_patterns(self) -> frozenset[str]:
-        patterns: set[str] = set()
-        for case in self.cases:
-            pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
-            assert isinstance(pattern, str)
-            patterns.add(pattern)
-        return frozenset(patterns)
-
-
 CALLABLE_FIXTURE_PATHS = select_correctness_fixture_paths(
     CALLABLE_REPLACEMENT_FIXTURE_SELECTOR
 )
@@ -555,7 +538,10 @@ def _pending_rebar_compile_patterns() -> frozenset[str]:
         compile_pattern
         for bundle in FIXTURE_BUNDLES
         if bundle.manifest.manifest_id in PENDING_REBAR_MANIFEST_IDS
-        for compile_pattern in bundle.compile_patterns
+        for compile_pattern in bundle_patterns(
+            bundle,
+            pattern_extractor=str_case_pattern,
+        )
     )
 
 
@@ -567,32 +553,41 @@ def _fixture_bundle_by_manifest_id(manifest_id: str) -> FixtureBundle:
     return bundles[0]
 
 
-def _fixture_bundle(path: pathlib.Path) -> FixtureBundle:
-    manifest, cases = load_fixture_manifest(path)
-    raw_cases = manifest.raw.get("cases", [])
-    assert isinstance(raw_cases, list)
-    return FixtureBundle(
-        manifest=manifest,
-        cases=tuple(cases),
-        raw_cases_by_id={
-            str(raw_case["id"]): raw_case
-            for raw_case in raw_cases
-            if isinstance(raw_case, dict) and "id" in raw_case
-        },
-    )
-
-
-COLLECTION_REPLACEMENT_BUNDLE = _fixture_bundle(COLLECTION_REPLACEMENT_FIXTURE_PATH)
-FIXTURE_BUNDLES = (
-    *(_fixture_bundle(path) for path in CALLABLE_FIXTURE_PATHS),
+COLLECTION_REPLACEMENT_BUNDLE = load_fixture_bundle(
+    COLLECTION_REPLACEMENT_FIXTURE_NAME,
+    expected_manifest_id="collection-replacement-workflows",
+    selected_case_ids=("module-sub-callable-str",),
+    expected_case_ids=frozenset({"module-sub-callable-str"}),
+    expected_patterns=frozenset({"abc"}),
+    expected_operation_helper_counts=Counter({("module_call", "sub"): 1}),
+    expected_text_models=frozenset({"str"}),
 )
+_fixture_bundles: list[FixtureBundle] = []
+for path in CALLABLE_FIXTURE_PATHS:
+    manifest, cases = load_fixture_manifest(path)
+    _fixture_bundles.append(
+        load_fixture_bundle(
+            path.name,
+            expected_manifest_id=manifest.manifest_id,
+            expected_patterns=frozenset(str_case_pattern(case) for case in cases),
+            expected_operation_helper_counts=Counter(
+                (case.operation, case.helper) for case in cases
+            ),
+            expected_text_models=frozenset({"str"}),
+        )
+    )
+FIXTURE_BUNDLES = tuple(_fixture_bundles)
+del _fixture_bundles
 
 COMPILE_PATTERNS = tuple(
     sorted(
         {
             compile_pattern
             for bundle in FIXTURE_BUNDLES
-            for compile_pattern in bundle.compile_patterns
+            for compile_pattern in bundle_patterns(
+                bundle,
+                pattern_extractor=str_case_pattern,
+            )
         }
     )
 )
@@ -635,17 +630,11 @@ PATTERN_RETURN_TYPE_ERROR_CASES = tuple(
 
 
 def _literal_callable_case() -> FixtureCase:
-    cases = [
-        case
-        for case in COLLECTION_REPLACEMENT_BUNDLE.cases
-        if case.case_id == "module-sub-callable-str"
-    ]
-    assert len(cases) == 1
-    return cases[0]
+    return COLLECTION_REPLACEMENT_BUNDLE.cases[0]
 
 
 def _literal_callable_raw_case() -> dict[str, object]:
-    return COLLECTION_REPLACEMENT_BUNDLE.raw_cases_by_id["module-sub-callable-str"]
+    return raw_fixture_cases_by_id(COLLECTION_REPLACEMENT_BUNDLE)["module-sub-callable-str"]
 
 
 def _literal_callable_pattern() -> str:
@@ -729,7 +718,7 @@ def _callable_no_match_text(pattern: str, flags: int = 0) -> str:
 
 
 def _raw_callable_replacement(bundle: FixtureBundle, case: FixtureCase) -> dict[str, object]:
-    raw_case = bundle.raw_cases_by_id[case.case_id]
+    raw_case = raw_fixture_cases_by_id(bundle)[case.case_id]
     raw_args = raw_case.get("args", [])
     assert isinstance(raw_args, list)
     replacement_index = 1 if case.operation == "module_call" else 0
@@ -775,9 +764,7 @@ def _live_unimplemented_callable_manifest_ids() -> frozenset[str]:
 
 def test_callable_replacement_suite_discovers_all_published_callable_fixtures() -> None:
     assert CALLABLE_FIXTURE_PATHS
-    assert CALLABLE_FIXTURE_PATHS == tuple(
-        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
-    )
+    assert CALLABLE_FIXTURE_PATHS == published_fixture_paths_from_bundles(FIXTURE_BUNDLES)
 
 
 def test_pending_rebar_callable_manifest_ids_match_live_unimplemented_manifests() -> None:
@@ -792,21 +779,24 @@ def test_pending_rebar_callable_manifest_ids_match_live_unimplemented_manifests(
 def test_callable_replacement_fixture_shape_contract(
     bundle: FixtureBundle,
 ) -> None:
+    raw_cases_by_id = raw_fixture_cases_by_id(bundle)
+    compile_patterns = bundle_patterns(bundle, pattern_extractor=str_case_pattern)
+
     assert bundle.manifest.manifest_id.endswith("-callable-replacement-workflows")
     assert bundle.manifest.layer == "module_workflow"
     assert bundle.manifest.defaults.get("text_model") == "str"
     assert len(bundle.cases) == 8
-    assert len(bundle.raw_cases_by_id) == len(bundle.cases)
-    assert {case.case_id for case in bundle.cases} == set(bundle.raw_cases_by_id)
+    assert len(raw_cases_by_id) == len(bundle.cases)
+    assert {case.case_id for case in bundle.cases} == set(raw_cases_by_id)
     assert {case.text_model for case in bundle.cases} == {"str"}
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
         EXPECTED_OPERATION_HELPER_COUNTS
     )
-    assert len(bundle.compile_patterns) == 2
+    assert len(compile_patterns) == 2
 
     has_named_pattern = False
     has_numbered_pattern = False
-    for pattern in bundle.compile_patterns:
+    for pattern in compile_patterns:
         compiled = re.compile(pattern)
         if compiled.groupindex:
             has_named_pattern = True
@@ -853,7 +843,7 @@ def test_quantified_nested_group_alternation_callable_cases_stay_aligned_with_pu
     assert {case.case_id for case in bundle.cases} == (
         QUANTIFIED_NESTED_GROUP_ALTERNATION_EXPECTED_CASE_IDS
     )
-    assert bundle.compile_patterns == (
+    assert bundle_patterns(bundle, pattern_extractor=str_case_pattern) == (
         QUANTIFIED_NESTED_GROUP_ALTERNATION_EXPECTED_COMPILE_PATTERNS
     )
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
@@ -870,7 +860,7 @@ def test_conditional_group_exists_callable_cases_stay_aligned_with_published_fix
     assert {case.case_id for case in bundle.cases} == (
         CONDITIONAL_GROUP_EXISTS_CALLABLE_EXPECTED_CASE_IDS
     )
-    assert bundle.compile_patterns == (
+    assert bundle_patterns(bundle, pattern_extractor=str_case_pattern) == (
         CONDITIONAL_GROUP_EXISTS_CALLABLE_EXPECTED_COMPILE_PATTERNS
     )
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
@@ -893,7 +883,7 @@ def test_nested_broader_range_open_ended_callable_cases_stay_aligned_with_publis
     assert {case.case_id for case in bundle.cases} == (
         NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_EXPECTED_CASE_IDS
     )
-    assert bundle.compile_patterns == (
+    assert bundle_patterns(bundle, pattern_extractor=str_case_pattern) == (
         NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_EXPECTED_COMPILE_PATTERNS
     )
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
@@ -916,7 +906,7 @@ def test_nested_broader_range_open_ended_conditional_callable_cases_stay_aligned
     assert {case.case_id for case in bundle.cases} == (
         NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_CALLABLE_EXPECTED_CASE_IDS
     )
-    assert bundle.compile_patterns == (
+    assert bundle_patterns(bundle, pattern_extractor=str_case_pattern) == (
         NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_CALLABLE_EXPECTED_COMPILE_PATTERNS
     )
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (

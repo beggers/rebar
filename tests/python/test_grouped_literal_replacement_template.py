@@ -1,51 +1,37 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
 import re
 
 import pytest
 
-from rebar_harness.correctness import FixtureCase, load_fixture_manifest
+from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
+    FixtureBundle,
+    assert_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_parity,
     compile_with_cpython_parity,
+    load_fixture_bundle,
     str_case_pattern,
 )
 
 
-REPLACEMENT_FIXTURE_PATH = FIXTURES_DIR / "collection_replacement_workflows.py"
-ALTERNATION_REPLACEMENT_FIXTURE_PATH = (
-    FIXTURES_DIR / "grouped_alternation_replacement_workflows.py"
-)
-NESTED_REPLACEMENT_FIXTURE_PATH = FIXTURES_DIR / "nested_group_replacement_workflows.py"
-QUANTIFIED_NESTED_REPLACEMENT_FIXTURE_PATH = (
-    FIXTURES_DIR / "quantified_nested_group_replacement_workflows.py"
-)
-MATCH_FIXTURE_PATH = FIXTURES_DIR / "grouped_match_workflows.py"
-
-REPLACEMENT_FIXTURE_MANIFEST, REPLACEMENT_FIXTURE_CASES = load_fixture_manifest(
-    REPLACEMENT_FIXTURE_PATH
-)
-ALTERNATION_REPLACEMENT_FIXTURE_MANIFEST, ALTERNATION_REPLACEMENT_FIXTURE_CASES = (
-    load_fixture_manifest(ALTERNATION_REPLACEMENT_FIXTURE_PATH)
-)
-NESTED_REPLACEMENT_FIXTURE_MANIFEST, NESTED_REPLACEMENT_FIXTURE_CASES = (
-    load_fixture_manifest(NESTED_REPLACEMENT_FIXTURE_PATH)
-)
-(
-    QUANTIFIED_NESTED_REPLACEMENT_FIXTURE_MANIFEST,
-    QUANTIFIED_NESTED_REPLACEMENT_FIXTURE_CASES,
-) = load_fixture_manifest(QUANTIFIED_NESTED_REPLACEMENT_FIXTURE_PATH)
-MATCH_FIXTURE_MANIFEST, MATCH_FIXTURE_CASES = load_fixture_manifest(MATCH_FIXTURE_PATH)
-
+EXPECTED_GROUPED_TEMPLATE_CASE_ID = "module-sub-grouping-template"
 EXPECTED_SINGLE_CAPTURE_MATCH_CASE_IDS = (
     "grouped-module-search-single-capture-str",
     "grouped-module-fullmatch-single-capture-str",
     "grouped-pattern-search-single-capture-str",
     "grouped-pattern-match-single-capture-str",
+)
+EXPECTED_GROUPED_TEMPLATE_OPERATION_HELPER_COUNTS = Counter({("module_call", "sub"): 1})
+EXPECTED_SINGLE_CAPTURE_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("module_call", "search"): 1,
+        ("module_call", "fullmatch"): 1,
+        ("pattern_call", "search"): 1,
+        ("pattern_call", "match"): 1,
+    }
 )
 EXPECTED_GROUPED_ALTERNATION_COMPILE_PATTERNS = {
     "a(b|c)d",
@@ -66,6 +52,64 @@ EXPECTED_FIXTURE_REPLACEMENT_OPERATION_HELPER_COUNTS = Counter(
         ("pattern_call", "sub"): 2,
         ("pattern_call", "subn"): 2,
     }
+)
+GROUPED_TEMPLATE_BUNDLE = load_fixture_bundle(
+    "collection_replacement_workflows.py",
+    expected_manifest_id="collection-replacement-workflows",
+    selected_case_ids=(EXPECTED_GROUPED_TEMPLATE_CASE_ID,),
+    expected_case_ids=frozenset({EXPECTED_GROUPED_TEMPLATE_CASE_ID}),
+    expected_patterns=frozenset({"(abc)"}),
+    expected_operation_helper_counts=EXPECTED_GROUPED_TEMPLATE_OPERATION_HELPER_COUNTS,
+    expected_text_models=frozenset({"str"}),
+)
+GROUPED_SINGLE_CAPTURE_BUNDLE = load_fixture_bundle(
+    "grouped_match_workflows.py",
+    expected_manifest_id="grouped-match-workflows",
+    selected_case_ids=EXPECTED_SINGLE_CAPTURE_MATCH_CASE_IDS,
+    expected_case_ids=frozenset(EXPECTED_SINGLE_CAPTURE_MATCH_CASE_IDS),
+    expected_patterns=frozenset({"(abc)"}),
+    expected_operation_helper_counts=EXPECTED_SINGLE_CAPTURE_OPERATION_HELPER_COUNTS,
+    expected_text_models=frozenset({"str"}),
+)
+GROUPED_TEMPLATE_CASE = GROUPED_TEMPLATE_BUNDLE.cases[0]
+GROUPED_SINGLE_CAPTURE_CASES = GROUPED_SINGLE_CAPTURE_BUNDLE.cases
+FIXTURE_BUNDLES = (
+    load_fixture_bundle(
+        "grouped_alternation_replacement_workflows.py",
+        expected_manifest_id="grouped-alternation-replacement-workflows",
+        expected_patterns=frozenset(EXPECTED_GROUPED_ALTERNATION_COMPILE_PATTERNS),
+        expected_operation_helper_counts=EXPECTED_FIXTURE_REPLACEMENT_OPERATION_HELPER_COUNTS,
+    ),
+    load_fixture_bundle(
+        "nested_group_replacement_workflows.py",
+        expected_manifest_id="nested-group-replacement-workflows",
+        expected_patterns=frozenset(
+            EXPECTED_NESTED_GROUP_REPLACEMENT_COMPILE_PATTERNS
+        ),
+        expected_operation_helper_counts=EXPECTED_FIXTURE_REPLACEMENT_OPERATION_HELPER_COUNTS,
+    ),
+    load_fixture_bundle(
+        "quantified_nested_group_replacement_workflows.py",
+        expected_manifest_id="quantified-nested-group-replacement-workflows",
+        expected_patterns=frozenset(
+            EXPECTED_QUANTIFIED_NESTED_GROUP_REPLACEMENT_COMPILE_PATTERNS
+        ),
+        expected_operation_helper_counts=EXPECTED_FIXTURE_REPLACEMENT_OPERATION_HELPER_COUNTS,
+    ),
+)
+FIXTURE_BACKED_GROUPED_REPLACEMENT_CASES = tuple(
+    case for bundle in FIXTURE_BUNDLES for case in bundle.cases
+)
+COMPILE_PATTERNS = (
+    str_case_pattern(GROUPED_TEMPLATE_CASE),
+    *tuple(
+        sorted(
+            {
+                str_case_pattern(case)
+                for case in FIXTURE_BACKED_GROUPED_REPLACEMENT_CASES
+            }
+        )
+    ),
 )
 REPLACEMENT_VARIANTS = (
     pytest.param(False, "sub", 1, 0, id="module-sub-single-match"),
@@ -150,81 +194,6 @@ NESTED_GROUP_NO_MATCH_CASES = (
     ),
 )
 
-
-@dataclass(frozen=True)
-class ReplacementFixtureBundle:
-    manifest_id: str
-    cases: tuple[FixtureCase, ...]
-    expected_manifest_id: str
-    expected_compile_patterns: frozenset[str]
-
-
-def _fixture_case_by_id(
-    cases: tuple[FixtureCase, ...] | list[FixtureCase],
-    case_id: str,
-) -> FixtureCase:
-    cases = [case for case in cases if case.case_id == case_id]
-    assert len(cases) == 1
-    return cases[0]
-
-
-GROUPED_TEMPLATE_CASE = _fixture_case_by_id(
-    REPLACEMENT_FIXTURE_CASES,
-    "module-sub-grouping-template",
-)
-GROUPED_SINGLE_CAPTURE_CASES = tuple(
-    _fixture_case_by_id(MATCH_FIXTURE_CASES, case_id)
-    for case_id in EXPECTED_SINGLE_CAPTURE_MATCH_CASE_IDS
-)
-GROUPED_ALTERNATION_REPLACEMENT_CASES = tuple(ALTERNATION_REPLACEMENT_FIXTURE_CASES)
-NESTED_GROUP_REPLACEMENT_CASES = tuple(NESTED_REPLACEMENT_FIXTURE_CASES)
-QUANTIFIED_NESTED_GROUP_REPLACEMENT_CASES = tuple(
-    QUANTIFIED_NESTED_REPLACEMENT_FIXTURE_CASES
-)
-BUNDLED_GROUPED_REPLACEMENT_FIXTURES = (
-    ReplacementFixtureBundle(
-        manifest_id=ALTERNATION_REPLACEMENT_FIXTURE_MANIFEST.manifest_id,
-        cases=GROUPED_ALTERNATION_REPLACEMENT_CASES,
-        expected_manifest_id="grouped-alternation-replacement-workflows",
-        expected_compile_patterns=frozenset(
-            EXPECTED_GROUPED_ALTERNATION_COMPILE_PATTERNS
-        ),
-    ),
-    ReplacementFixtureBundle(
-        manifest_id=NESTED_REPLACEMENT_FIXTURE_MANIFEST.manifest_id,
-        cases=NESTED_GROUP_REPLACEMENT_CASES,
-        expected_manifest_id="nested-group-replacement-workflows",
-        expected_compile_patterns=frozenset(
-            EXPECTED_NESTED_GROUP_REPLACEMENT_COMPILE_PATTERNS
-        ),
-    ),
-    ReplacementFixtureBundle(
-        manifest_id=QUANTIFIED_NESTED_REPLACEMENT_FIXTURE_MANIFEST.manifest_id,
-        cases=QUANTIFIED_NESTED_GROUP_REPLACEMENT_CASES,
-        expected_manifest_id="quantified-nested-group-replacement-workflows",
-        expected_compile_patterns=frozenset(
-            EXPECTED_QUANTIFIED_NESTED_GROUP_REPLACEMENT_COMPILE_PATTERNS
-        ),
-    ),
-)
-FIXTURE_BACKED_GROUPED_REPLACEMENT_CASES = (
-    GROUPED_ALTERNATION_REPLACEMENT_CASES
-    + NESTED_GROUP_REPLACEMENT_CASES
-    + QUANTIFIED_NESTED_GROUP_REPLACEMENT_CASES
-)
-COMPILE_PATTERNS = (
-    str_case_pattern(GROUPED_TEMPLATE_CASE),
-    *tuple(
-        sorted(
-            {
-                str_case_pattern(case)
-                for case in FIXTURE_BACKED_GROUPED_REPLACEMENT_CASES
-            }
-        )
-    ),
-)
-
-
 def _replacement(case: FixtureCase) -> str:
     replacement_index = 1 if case.operation == "module_call" else 0
     replacement = case.args[replacement_index]
@@ -258,17 +227,8 @@ def _expected_replacement(case: FixtureCase) -> str:
     return rf"\{target_group_index}x"
 
 
-def _assert_replacement_fixture_bundle_contract(bundle: ReplacementFixtureBundle) -> None:
-    assert bundle.manifest_id == bundle.expected_manifest_id
-    assert len(bundle.cases) == 8
-    assert len({case.case_id for case in bundle.cases}) == len(bundle.cases)
-    assert {str_case_pattern(case) for case in bundle.cases} == (
-        bundle.expected_compile_patterns
-    )
-    assert {case.text_model for case in bundle.cases} == {"str"}
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        EXPECTED_FIXTURE_REPLACEMENT_OPERATION_HELPER_COUNTS
-    )
+def _assert_replacement_fixture_bundle_contract(bundle: FixtureBundle) -> None:
+    assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
     assert Counter(
         (case.operation, case.helper, _group_kind(case)) for case in bundle.cases
     ) == Counter(
@@ -310,8 +270,17 @@ def _assert_replacement_fixture_bundle_contract(bundle: ReplacementFixtureBundle
 
 
 def test_grouped_literal_template_suite_stays_aligned_with_published_fixtures() -> None:
-    assert REPLACEMENT_FIXTURE_MANIFEST.manifest_id == "collection-replacement-workflows"
-    assert MATCH_FIXTURE_MANIFEST.manifest_id == "grouped-match-workflows"
+    assert_fixture_bundle_contract(
+        GROUPED_TEMPLATE_BUNDLE,
+        pattern_extractor=str_case_pattern,
+    )
+    assert_fixture_bundle_contract(
+        GROUPED_SINGLE_CAPTURE_BUNDLE,
+        pattern_extractor=str_case_pattern,
+    )
+    assert GROUPED_TEMPLATE_BUNDLE.manifest.manifest_id == "collection-replacement-workflows"
+    assert GROUPED_SINGLE_CAPTURE_BUNDLE.manifest.manifest_id == "grouped-match-workflows"
+    assert GROUPED_TEMPLATE_CASE.case_id == EXPECTED_GROUPED_TEMPLATE_CASE_ID
     assert GROUPED_TEMPLATE_CASE.operation == "module_call"
     assert GROUPED_TEMPLATE_CASE.helper == "sub"
     assert str_case_pattern(GROUPED_TEMPLATE_CASE) == "(abc)"
@@ -332,11 +301,11 @@ def test_grouped_literal_template_suite_stays_aligned_with_published_fixtures() 
 
 @pytest.mark.parametrize(
     "bundle",
-    BUNDLED_GROUPED_REPLACEMENT_FIXTURES,
+    FIXTURE_BUNDLES,
     ids=lambda bundle: bundle.expected_manifest_id,
 )
 def test_grouped_template_fixture_bundles_stay_aligned_with_published_fixtures(
-    bundle: ReplacementFixtureBundle,
+    bundle: FixtureBundle,
 ) -> None:
     _assert_replacement_fixture_bundle_contract(bundle)
 

@@ -33,10 +33,12 @@ from tests.python.fixture_parity_support import (
     assert_match_parity,
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
+    bundle_patterns,
     case_pattern,
     compile_with_cpython_parity,
     load_fixture_bundle,
     published_fixture_paths_from_bundles,
+    raw_fixture_cases_by_id,
     str_case_pattern,
 )
 OPTIONAL_NAMED_GROUP_PATTERN = r"a(?P<word>b)?d"
@@ -386,6 +388,37 @@ def test_expected_fixture_bundle_contract_supports_selected_case_loading() -> No
     assert bundle.manifest.path == FIXTURES_DIR / "literal_flag_workflows.py"
     assert tuple(case.case_id for case in bundle.cases) == selected_case_ids
     assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
+
+
+def test_bundle_pattern_projection_and_raw_case_lookup_helpers_cover_published_fixtures() -> None:
+    selected_case_ids = (
+        "module-sub-callable-str",
+        "module-sub-grouping-template",
+    )
+    bundle = load_fixture_bundle(
+        "collection_replacement_workflows.py",
+        expected_manifest_id="collection-replacement-workflows",
+        expected_case_ids=frozenset(selected_case_ids),
+        expected_patterns=frozenset({"abc", "(abc)"}),
+        expected_operation_helper_counts=Counter({("module_call", "sub"): 2}),
+        selected_case_ids=selected_case_ids,
+        expected_text_models=frozenset({"str"}),
+    )
+
+    raw_cases = raw_fixture_cases_by_id(bundle)
+
+    assert bundle_patterns(bundle, pattern_extractor=case_pattern) == frozenset(
+        {"abc", "(abc)"}
+    )
+    assert bundle_patterns(bundle, pattern_extractor=str_case_pattern) == frozenset(
+        {"abc", "(abc)"}
+    )
+    assert set(raw_cases) == set(selected_case_ids)
+    assert raw_cases["module-sub-callable-str"]["args"][1] == {
+        "type": "callable_constant",
+        "value": "x",
+    }
+    assert raw_cases["module-sub-grouping-template"]["args"][1] == r"\1x"
 
 
 def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_case_ids() -> None:

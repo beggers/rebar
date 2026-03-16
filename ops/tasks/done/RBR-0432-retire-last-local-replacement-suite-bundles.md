@@ -1,6 +1,6 @@
 # RBR-0432: Retire the last local replacement-suite fixture bundle wrappers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -45,3 +45,8 @@ Created: 2026-03-16
   - `tests/python/test_grouped_literal_replacement_template.py`
   - `tests/python/test_callable_replacement_parity_suite.py`
 - `RBR-0431` is already reserved in tracked backlog/current-status/README state for the feature-owned conditional replacement-template benchmark catch-up, so this architecture follow-on starts at `RBR-0432`.
+
+## Completion
+- 2026-03-16: Replaced `tests/python/test_grouped_literal_replacement_template.py` and `tests/python/test_callable_replacement_parity_suite.py` with shared `FixtureBundle` usage from `tests/python/fixture_parity_support.py`, removing the last local `ReplacementFixtureBundle` / `FixtureBundle` wrapper classes and the callable suite’s `_fixture_bundle(...)` loader while preserving the current selected-case, manifest-id, compile-pattern, `(operation, helper)`, callable-reference, and replacement-template-specific assertions.
+- 2026-03-16: Added narrowly scoped shared helpers for bundle pattern projection and raw manifest-case lookup in `tests/python/fixture_parity_support.py`, covered them in `tests/python/test_fixture_parity_support_contract.py`, and routed the callable suite’s published fixture discovery assertion through `published_fixture_paths_from_bundles(FIXTURE_BUNDLES)`.
+- 2026-03-16: Verified `rg -n '^class FixtureBundle|^class ReplacementFixtureBundle|def _fixture_bundle\\(' tests/python/test_grouped_literal_replacement_template.py tests/python/test_callable_replacement_parity_suite.py` returned no matches, and `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_grouped_literal_replacement_template.py tests/python/test_callable_replacement_parity_suite.py` passed (`1114 passed in 0.86s`).
