@@ -669,6 +669,20 @@ def _supports_bounded_single_dot_collection_execution(compiled_pattern: Pattern)
     )
 
 
+def _supports_grouped_segment_leading_capture_search_execution(
+    compiled_pattern: Pattern,
+    mode: str,
+) -> bool:
+    return (
+        mode == "search"
+        and isinstance(compiled_pattern.pattern, str)
+        and compiled_pattern.pattern == "(ab)c"
+        and compiled_pattern.flags == int(UNICODE)
+        and compiled_pattern.groups == 1
+        and compiled_pattern.groupindex == {}
+    )
+
+
 def _raise_regex_error(message: str, pattern: str | bytes, pos: int) -> object:
     raise error(message, pattern, pos)
 
@@ -760,8 +774,19 @@ def _dispatch_pattern_match(
         _supports_literal_execution(compiled_pattern)
         or _supports_bounded_ascii_ignorecase_search_execution(compiled_pattern, mode)
         or _supports_bounded_single_dot_execution(compiled_pattern)
+        or _supports_grouped_segment_leading_capture_search_execution(
+            compiled_pattern, mode
+        )
     ):
         return compiled_pattern._raise_placeholder(mode)
+
+    if _supports_grouped_segment_leading_capture_search_execution(compiled_pattern, mode):
+        return _run_grouped_segment_leading_capture_search(
+            compiled_pattern,
+            string,
+            pos=pos,
+            endpos=endpos,
+        )
     return _run_literal_match(compiled_pattern, mode, string, pos=pos, endpos=endpos)
 
 
@@ -1130,6 +1155,9 @@ def _compile_known_parser_case(pattern: str | bytes, flags: int) -> Pattern | No
     if pattern == "a.c" and flags in (int(UNICODE), int(IGNORECASE | UNICODE)):
         return _build_compiled_pattern(pattern, flags, supports_literal=False)
 
+    if pattern == "(ab)c" and flags == int(UNICODE):
+        return _build_compiled_pattern(pattern, flags, supports_literal=False, groups=1)
+
     if isinstance(pattern, str) and flags == int(UNICODE):
         grouped_literal_body = _grouped_literal_body(pattern)
         if grouped_literal_body is not None:
@@ -1325,6 +1353,31 @@ def _run_literal_match(
         raise ValueError(f"unsupported literal match mode {mode!r}")
 
     return _build_match(compiled_pattern, compatible_string, normalized_pos, normalized_endpos, span)
+
+
+def _run_grouped_segment_leading_capture_search(
+    compiled_pattern: Pattern,
+    string: object,
+    pos: int = 0,
+    endpos: int | None = None,
+) -> Match | None:
+    compatible_string = _ensure_compatible_string(compiled_pattern.pattern, string)
+    normalized_pos, normalized_endpos = _normalize_match_bounds(
+        compatible_string,
+        pos,
+        endpos,
+    )
+    start = compatible_string.find("abc", normalized_pos, normalized_endpos)
+    if start < 0:
+        return None
+    return _build_match(
+        compiled_pattern,
+        compatible_string,
+        normalized_pos,
+        normalized_endpos,
+        (start, start + 3),
+        ((start, start + 2),),
+    )
 
 
 def _run_literal_split(

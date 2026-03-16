@@ -1,8 +1,9 @@
 # RBR-0477: Convert the grouped-segment leading-capture search pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
+Completed: 2026-03-16
 
 ## Goal
 - Convert the newly published grouped-segment leading-capture search pair from honest `unimplemented` correctness debt into real CPython-shaped behavior on the shared `grouped-segment-workflows` surface, while keeping the work pinned to the exact numbered `str`-valued `(ab)c` helper pair already anchored as `module-search-grouped-segment-cold-gap` and `pattern-search-grouped-segment-warm-gap` on `grouped-named-boundary`.
@@ -37,6 +38,19 @@ Created: 2026-03-16
 ## Notes
 - `RBR-0475` should land immediately ahead of this task and publish the exact cases `grouped-segment-leading-capture-module-search-str` and `grouped-segment-leading-capture-pattern-search-str` on `tests/conformance/fixtures/grouped_segment_workflows.py`.
 - 2026-03-16 planning probe: in the current checkout, CPython reports that both `re.search("(ab)c", "zabcz")` and `re.compile("(ab)c").search("zabcz")` return a match with span `(1, 4)`, `group(0) == "abc"`, `group(1) == "ab"`, and `groups() == ("ab",)`, while `re.compile("(ab)c")` reports `pattern == "(ab)c"`, `flags == 32`, `groups == 1`, and `groupindex == {}`.
-- 2026-03-16 planning probe: with `PYTHONPATH=python`, `rebar.compile("(ab)c")` already returns compile metadata `pattern == "(ab)c"`, `flags == 32`, `groups == 1`, and `groupindex == {}`, and the adjacent simpler grouped-segment slice `a(b)c` already matches through module and compiled-pattern `search()`, but `rebar.search("(ab)c", "zabcz")` and `rebar.compile("(ab)c").search("zabcz")` still raise scaffold-placeholder `NotImplementedError`.
+- 2026-03-16 implementation check: before this fix, the native path in the current checkout still rejected `"(ab)c"` entirely, while the adjacent simpler grouped-segment slice `a(b)c` already matched through module and compiled-pattern `search()`.
 - 2026-03-16 planning probe: the adjacent benchmark rows `module-search-grouped-segment-cold-gap` and `pattern-search-grouped-segment-warm-gap` already exist on `benchmarks/workloads/grouped_named_boundary.py` and still publish as explicit source-tree known gaps in `reports/benchmarks/latest.py`; they should stay untouched here and become the benchmark catch-up target immediately after parity lands.
 
+## Completion
+- Added exact Rust-backed compile and `search()` support for the numbered `str` pattern `"(ab)c"` in `crates/rebar-core/src/lib.rs`, keeping the new behavior scoped to the published leading-capture grouped-segment pair and leaving `match()` / `fullmatch()` as explicit placeholders.
+- Kept the source-tree shim aligned in `python/rebar/__init__.py` for the same exact bounded pattern/helper pair without delegating to stdlib `re`.
+- Promoted the two published leading-capture grouped-segment case ids into the shared grouped-capture parity frontier in `tests/python/test_grouped_capture_parity_suite.py`, including direct module/pattern parity coverage, match-group-access coverage, and one explicit `group(1)` / `groups()` assertion for the exact successful hits.
+- Republished `reports/correctness/latest.py`; the tracked combined scorecard now reports `965` total / `965` passed / `0` failed / `0` unimplemented cases, and the published `match.grouped_segment` suite now reports `8` total / `8` passed / `0` unimplemented.
+- No direct edit to `crates/rebar-cpython/src/lib.rs` was required; the existing CPython boundary already forwarded the core compile and match payloads once the Rust core supported this exact slice.
+
+## Verification
+- `cargo build -p rebar-cpython` passed.
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py tests/conformance/test_correctness_fixture_inventory_contract.py tests/conformance/test_combined_correctness_scorecards.py` passed (`394 passed, 2234 subtests passed in 21.00s`).
+- `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/grouped_segment_workflows.py --report .rebar/tmp/rbr-0477-grouped-segment.py` passed and wrote `8` total / `8` passed / `0` failed / `0` unimplemented cases.
+- `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` republished the tracked combined scorecard at `965` total / `965` passed / `0` failed / `0` unimplemented cases.
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py` passed after republishing (`1 passed, 1055 subtests passed in 20.82s`).

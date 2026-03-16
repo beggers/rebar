@@ -40,11 +40,12 @@ GROUPED_SEGMENT_CASE_IDS = (
     "named-grouped-segment-module-search-str",
     "named-grouped-segment-pattern-fullmatch-str",
 )
+GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER = (
+    "grouped-segment-leading-capture-module-search-str",
+    "grouped-segment-leading-capture-pattern-search-str",
+)
 GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS = frozenset(
-    {
-        "grouped-segment-leading-capture-module-search-str",
-        "grouped-segment-leading-capture-pattern-search-str",
-    }
+    GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER
 )
 
 
@@ -289,11 +290,7 @@ def _compile_cases(cases: tuple[FixtureCase, ...]) -> tuple[CompileCase, ...]:
 
 
 PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
-DIRECT_PARITY_CASES = tuple(
-    case
-    for case in PUBLISHED_CASES
-    if case.case_id not in GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS
-)
+DIRECT_PARITY_CASES = PUBLISHED_CASES
 COMPILE_CASES = _compile_cases(DIRECT_PARITY_CASES)
 MODULE_CASES = tuple(
     case for case in DIRECT_PARITY_CASES if case.operation == "module_call"
@@ -407,7 +404,9 @@ MATCH_GROUP_ACCESS_CASE_IDS = (
     "grouped-module-search-single-capture-str",
     "grouped-pattern-search-single-capture-str",
     "grouped-segment-module-search-str",
+    "grouped-segment-leading-capture-module-search-str",
     "grouped-segment-pattern-fullmatch-str",
+    "grouped-segment-leading-capture-pattern-search-str",
     "grouped-alternation-module-search-str",
     "grouped-alternation-pattern-fullmatch-str",
     "named-group-module-search-metadata-str",
@@ -513,6 +512,11 @@ MATCH_GROUP_ACCESS_CASES = ordered_manifest_cases_from_bundles(
     MATCH_GROUP_ACCESS_CASE_IDS,
     error_label="grouped capture match-group-access rows",
 )
+GROUPED_SEGMENT_LEADING_CAPTURE_CASES = ordered_manifest_cases_from_bundles(
+    FIXTURE_BUNDLES,
+    GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER,
+    error_label="grouped-segment leading-capture rows",
+)
 
 
 def _module_call_with_text(regex_api: object, case: FixtureCase, text: str) -> object:
@@ -574,34 +578,32 @@ def test_grouped_capture_parity_suite_uses_expected_published_fixture_paths() ->
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
 
-def test_grouped_segment_leading_capture_rows_stay_published_but_out_of_direct_parity_params() -> None:
+def test_grouped_segment_leading_capture_rows_stay_on_direct_parity_frontier() -> None:
     assert tuple(case.case_id for case in GROUPED_SEGMENT_FIXTURE_BUNDLE.cases) == (
         GROUPED_SEGMENT_CASE_IDS
     )
     assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS <= frozenset(
         case.case_id for case in GROUPED_SEGMENT_FIXTURE_BUNDLE.cases
     )
-    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS.isdisjoint(
-        {case.id for case in COMPILE_CASES}
-    )
-    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS.isdisjoint(
-        {case.case_id for case in MODULE_CASES}
-    )
-    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS.isdisjoint(
-        {case.case_id for case in PATTERN_CASES}
-    )
-    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS.isdisjoint(
-        frozenset(MATCH_GROUP_ACCESS_CASE_IDS)
-    )
+    assert GROUPED_SEGMENT_LEADING_CAPTURE_PATTERN in {
+        case.pattern for case in COMPILE_CASES
+    }
+    assert "grouped-segment-leading-capture-module-search-str" in {
+        case.case_id for case in MODULE_CASES
+    }
+    assert "grouped-segment-leading-capture-pattern-search-str" in {
+        case.case_id for case in PATTERN_CASES
+    }
+    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS <= set(MATCH_GROUP_ACCESS_CASE_IDS)
     assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS.isdisjoint(
         {case.module_case_id for case in SUPPLEMENTAL_MISS_CASES}
     )
     assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS.isdisjoint(
         {case.pattern_case_id for case in SUPPLEMENTAL_MISS_CASES}
     )
-    assert GROUPED_SEGMENT_LEADING_CAPTURE_PATTERN not in {
-        case.pattern for case in COMPILE_CASES
-    }
+    assert tuple(case.case_id for case in GROUPED_SEGMENT_LEADING_CAPTURE_CASES) == (
+        GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER
+    )
 
 
 def test_pattern_bounds_cases_stay_anchored_to_grouped_capture_patterns() -> None:
@@ -612,6 +614,24 @@ def test_pattern_bounds_cases_stay_anchored_to_grouped_capture_patterns() -> Non
 def test_match_group_access_rows_remain_on_grouped_capture_fixture_paths() -> None:
     assert tuple(case.case_id for case in MATCH_GROUP_ACCESS_CASES) == MATCH_GROUP_ACCESS_CASE_IDS
     assert {case.text_model for case in MATCH_GROUP_ACCESS_CASES} == {"str"}
+
+
+@pytest.mark.parametrize(
+    "case",
+    GROUPED_SEGMENT_LEADING_CAPTURE_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_grouped_segment_leading_capture_groups_match_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = _match_for_case(backend_name, backend, case)
+
+    assert observed.span() == expected.span() == (1, 4)
+    assert observed.group(0) == expected.group(0) == "abc"
+    assert observed.group(1) == expected.group(1) == "ab"
+    assert observed.groups() == expected.groups() == ("ab",)
 
 
 @pytest.mark.parametrize(
