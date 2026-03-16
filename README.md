@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 971 cases across 109 manifests, with all 971 passing and 0 honest `unimplemented` gaps; the main benchmark report covers 588 workloads with 581 real `rebar` timings and 7 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | The ready queue is empty after `RBR-0497`; the only surviving queued follow-on is blocked `RBR-0493`, which still needs the nested grouped-alternation replacement benchmark pair republished after combined benchmark expectations stop treating the already-measured adjacent wrapper-template rows as gaps. |
-| Work queue | `0` ready, `0` in progress, `496` done, `1` blocked |
+| Delivery estimate | The published correctness slice now covers 971 cases across 109 manifests, with all 971 passing and 0 honest `unimplemented` gaps; the main benchmark report covers 588 workloads with 585 real `rebar` timings and 3 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity. |
+| Current milestone | The ready queue is empty after `RBR-0499`; no new feature slice is seeded, and the only remaining task record is blocked `RBR-0493`, whose old benchmark-catch-up claim no longer matches the already-published `588` / `585` / `3` scorecard. |
+| Work queue | `0` ready, `0` in progress, `498` done, `1` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,7 +28,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `109` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 971 cases across 109 manifests, with all 971 passing and 0 honest `unimplemented` gaps; the main benchmark report covers 588 workloads with 581 real `rebar` timings and 7 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 971 cases across 109 manifests, with all 971 passing and 0 honest `unimplemented` gaps; the main benchmark report covers 588 workloads with 585 real `rebar` timings and 3 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 
@@ -36,30 +36,30 @@ _These correctness counts cover only the published slice. Overall delivery estim
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
 | Published workloads | `588` |
-| Workloads with real `rebar` timings | `581` |
-| Known-gap workloads | `7` |
+| Workloads with real `rebar` timings | `585` |
+| Known-gap workloads | `3` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native smoke and full-suite modes remain available for ad hoc runs and tests via `--native-smoke` and `--native-full` when you pass an explicit `--report` path._
 
-_README speedup rollups stay omitted while only `581` of `588` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `585` of `588` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- The ready queue is empty after `RBR-0497`; the only surviving queued follow-on is blocked `RBR-0493`, which still needs the nested grouped-alternation replacement benchmark pair republished after combined benchmark expectations stop treating the already-measured adjacent wrapper-template rows as gaps.
+- The ready queue is empty after `RBR-0499`; the only remaining task record is blocked `RBR-0493`, whose old benchmark-catch-up claim no longer matches the already-published `588` / `585` / `3` scorecard.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 588 workloads and carries 7 explicit known-gap workloads.
+- The published benchmark surface is still bounded at 588 workloads and carries 3 explicit known-gap workloads.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published correctness slice now covers 971 cases across 109 manifests with all 971 passing, and the benchmark publication is still bounded at 588 workloads with 7 explicit source-tree known gaps. The last ready task, `RBR-0497`, has landed; no ready follow-on is currently seeded, and the only queued follow-on is blocked benchmark task `RBR-0493`.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published correctness slice now covers 971 cases across 109 manifests with all 971 passing, and the benchmark publication now covers 588 workloads with 585 real `rebar` timings and 3 explicit source-tree known gaps. `RBR-0499` has landed, so the ready queue is empty; the only remaining task record is blocked `RBR-0493`, whose older benchmark-catch-up framing no longer matches the published report.
 
-The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice, where the published parser family is about 2.7x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
+The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice, where the published parser family is about 2.8x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
 ## Where To Look
 
