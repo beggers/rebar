@@ -1,6 +1,6 @@
 # RBR-0485: Republish the numbered-backreference grouped-segment benchmark pair as measured source-tree timings
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -48,3 +48,11 @@ Created: 2026-03-16
 - `RBR-0483` should land immediately ahead of this task and convert the matching correctness pair `numbered-backreference-segment-module-search-str` / `numbered-backreference-prefix-pattern-search-str` to real Rust-backed parity on `numbered-backreference-workflows`.
 - 2026-03-16 planning probe: `benchmarks/workloads/numbered_backreference_boundary.py` already carries the exact target rows pinned to patterns `"(ab)x\\1"` and `"x(ab)\\1"`, haystacks `"zzabxabzz"` and `"zzxababzz"`, flags `0`, and the ordinary module/pattern helper timing scopes, so this follow-on should stay on that existing benchmark path rather than inventing another manifest.
 - 2026-03-16 planning probe: the tracked `reports/benchmarks/latest.py` artifact currently reports `588` total workloads, `577` measured workloads, `11` known gaps overall, and `numbered-backreference-boundary` at `3` measured workloads / `2` known gaps, with both exact grouped-segment rows still publishing `status == "unimplemented"`.
+
+## Completion
+- 2026-03-16: Removed the stale grouped-segment unsupported labeling from `benchmarks/workloads/numbered_backreference_boundary.py` while preserving the legacy workload ids `module-search-numbered-backreference-segment-cold-gap` and `pattern-search-numbered-backreference-prefix-purged-gap` for scorecard continuity.
+- 2026-03-16: Updated `tests/benchmarks/benchmark_expectations.py` so `numbered-backreference-boundary` no longer classifies that `(ab)x\\1` / `x(ab)\\1` pair as known gaps, promotes both ids onto the measured representative surface, and adds a direct single-manifest scorecard case for the refreshed benchmark anchor.
+- 2026-03-16: Added focused regressions in `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, regenerated `reports/benchmarks/latest.py`, and verified:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`21 passed, 493 subtests passed in 20.76s`)
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/numbered_backreference_boundary.py --report .rebar/tmp/rbr-0485-numbered-backreference-boundary.py` (`5` measured workloads, `0` known gaps)
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` (tracked publication now reports `588` total workloads, `579` measured workloads, `9` known gaps overall, with `numbered-backreference-boundary` at `5` measured / `0` known gaps and both target workload ids publishing `status == "measured"`)

@@ -6,8 +6,8 @@ MANIFEST = {
     "docs/spec/drop-in-re-compatibility.md"
   ],
   "notes": [
-    "Numbered-backreference boundary workloads keep grouped patterns and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported `(ab)\\\\1` slice rather than regex throughput.",
-    "The bounded compile plus module and Pattern search paths are measured directly here, while grouped-reference shapes with extra literal segments stay as explicit known-gap rows until the grouped-segment follow-on lands."
+    "Numbered-backreference boundary workloads keep grouped patterns and haystacks intentionally tiny so the scorecard measures helper-call overhead for the bounded `(ab)\\\\1` and grouped-segment numbered-backreference slices rather than regex throughput.",
+    "The bounded compile plus module and Pattern search paths are measured directly here, including the legacy grouped-segment `(ab)x\\\\1` / `x(ab)\\\\1` workload ids now that the helper pair is supported."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -114,7 +114,8 @@ MANIFEST = {
         "grouped",
         "numbered-backreference",
         "grouped-segment",
-        "unsupported",
+        "search",
+        "module",
         "cold-cache"
       ],
       "syntax_features": [
@@ -124,7 +125,7 @@ MANIFEST = {
         "literal-segments"
       ],
       "notes": [
-        "Explicit grouped-segment known-gap row so literal text between the capture and backreference stays visible until the next grouped-segment milestone lands."
+        "Cold module.search helper path for the now-supported grouped-segment numbered-backreference `(ab)x\\\\1` slice, keeping the legacy workload id while publishing a real timing."
       ]
     },
     {
@@ -143,7 +144,7 @@ MANIFEST = {
         "grouped",
         "numbered-backreference",
         "grouped-segment",
-        "unsupported",
+        "search",
         "purged-cache"
       ],
       "syntax_features": [
@@ -154,7 +155,7 @@ MANIFEST = {
         "cache-purge"
       ],
       "notes": [
-        "Explicit grouped-segment known-gap row so literal text ahead of a numbered backreference stays on the benchmark surface instead of disappearing."
+        "Purged-cache Pattern.search helper path for the now-supported grouped-segment numbered-backreference `x(ab)\\\\1` slice, keeping the legacy workload id while publishing a real timing."
       ]
     }
   ]

@@ -233,6 +233,9 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, _SourceTreeScorecardDefinition] = 
         ),
         representative_known_gap_workload_ids=(),
     ),
+    "numbered-backreference-boundary": _SourceTreeScorecardDefinition(
+        manifest_ids=("numbered-backreference-boundary",),
+    ),
     "nested-group-replacement-boundary": _SourceTreeScorecardDefinition(
         manifest_ids=("nested-group-replacement-boundary",),
     ),
@@ -358,13 +361,11 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS: dict[
         ),
     ),
     "numbered-backreference-boundary": _combined_manifest_definition(
-        known_gap_workload_ids=(
+        representative_measured_workload_ids=(
             "module-search-numbered-backreference-segment-cold-gap",
             "pattern-search-numbered-backreference-prefix-purged-gap",
         ),
-        representative_known_gap_workload_ids=(
-            "module-search-numbered-backreference-segment-cold-gap",
-        ),
+        representative_known_gap_workload_ids=(),
     ),
     "grouped-segment-boundary": _combined_manifest_definition(),
     "literal-alternation-boundary": _combined_manifest_definition(),
