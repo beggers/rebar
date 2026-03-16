@@ -277,6 +277,11 @@ _PUBLISHED_FULL_SUITE_FIXTURE_PATHS = (
     / "tests"
     / "conformance"
     / "fixtures"
+    / "conditional_group_exists_quantified_alternation_replacement_workflows.py",
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
     / "conditional_group_exists_no_else_replacement_workflows.py",
     REPO_ROOT
     / "tests"
@@ -590,6 +595,7 @@ _CORRECTNESS_FIXTURE_PATHS_BY_SELECTOR = {
         "conditional_group_exists_fully_empty_replacement_workflows.py",
         "conditional_group_exists_nested_replacement_workflows.py",
         "conditional_group_exists_no_else_replacement_workflows.py",
+        "conditional_group_exists_quantified_alternation_replacement_workflows.py",
         "conditional_group_exists_quantified_replacement_workflows.py",
         "conditional_group_exists_replacement_workflows.py",
         "conditional_group_exists_replacement_template_workflows.py",

@@ -1040,6 +1040,18 @@ CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "pattern-subn-named-conditional-group-exists-quantified-replacement-absent-str",
         ),
     },
+    "conditional-group-exists-quantified-alternation-replacement-workflows": {
+        "representative_case_ids": (
+            "module-sub-conditional-group-exists-quantified-alternation-replacement-present-first-arm-str",
+            "module-subn-conditional-group-exists-quantified-alternation-replacement-present-second-arm-str",
+            "pattern-sub-conditional-group-exists-quantified-alternation-replacement-absent-first-arm-str",
+            "pattern-subn-conditional-group-exists-quantified-alternation-replacement-absent-second-arm-str",
+            "module-sub-named-conditional-group-exists-quantified-alternation-replacement-present-first-arm-str",
+            "module-subn-named-conditional-group-exists-quantified-alternation-replacement-present-second-arm-str",
+            "pattern-sub-named-conditional-group-exists-quantified-alternation-replacement-absent-first-arm-str",
+            "pattern-subn-named-conditional-group-exists-quantified-alternation-replacement-absent-second-arm-str",
+        ),
+    },
 }
 
 
