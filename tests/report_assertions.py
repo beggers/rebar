@@ -127,7 +127,7 @@ def _correctness_cases_for_suite(
     return suite_cases
 
 
-def _find_correctness_suite_record(
+def find_correctness_suite_record(
     scorecard: dict[str, Any],
     suite_id: str,
 ) -> dict[str, Any]:
@@ -195,7 +195,7 @@ def _assert_correctness_suite_summary_consistent(
     scorecard: dict[str, Any],
     suite_id: str,
 ) -> dict[str, Any]:
-    suite = _find_correctness_suite_record(scorecard, suite_id)
+    suite = find_correctness_suite_record(scorecard, suite_id)
     suite_cases = _correctness_cases_for_suite(scorecard, suite)
     testcase.assertEqual(suite["case_count"], len(suite_cases))
     testcase.assertEqual(suite["summary"], _correctness_summary(suite_cases))

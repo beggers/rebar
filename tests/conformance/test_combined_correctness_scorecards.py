@@ -40,6 +40,7 @@ from tests.report_assertions import (
     assert_correctness_suite_contract,
     assert_correctness_suites_present,
     find_correctness_case_record,
+    find_correctness_suite_record,
 )
 
 
@@ -52,17 +53,6 @@ def _build_rebar_extension() -> None:
         capture_output=True,
         text=True,
     )
-
-
-def _correctness_suite_record(
-    scorecard: dict[str, object],
-    suite_id: str,
-) -> dict[str, object]:
-    for suite in scorecard["suites"]:
-        if suite["id"] == suite_id:
-            return suite
-    raise AssertionError(f"missing correctness suite record for {suite_id!r}")
-
 
 def assert_correctness_scorecard_suite(
     testcase: unittest.TestCase,
@@ -185,11 +175,11 @@ class CorrectnessScorecardSuitesTest(unittest.TestCase):
         )
         tracked_scorecard = CORRECTNESS_SCORECARD_REPORT.load(TRACKED_REPORT_PATH)
 
-        expected_suite = _correctness_suite_record(
+        expected_suite = find_correctness_suite_record(
             expected_scorecard,
             NUMBERED_BACKREFERENCE_SUITE_ID,
         )
-        tracked_suite = _correctness_suite_record(
+        tracked_suite = find_correctness_suite_record(
             tracked_scorecard,
             NUMBERED_BACKREFERENCE_SUITE_ID,
         )
