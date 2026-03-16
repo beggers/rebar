@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 960 cases across 107 manifests, with 960 passes, 0 failures, and 0 published correctness gaps; the main benchmark report now covers 588 workloads with 572 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- The concrete surviving follow-on is `RBR-0464`, which should publish the exact bytes parser compile proxy `b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}"` on the shared `parser-matrix` correctness surface so the lone remaining `regression-parser-bytes-backreference-purged` benchmark gap has an adjacent correctness anchor before Rust-backed parity or later regression benchmark catch-up reopen that bytes backreference slice.
+- The concrete surviving follow-on is `RBR-0465`, which should convert the exact bytes parser compile proxy `b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}"` to real `rebar.compile()` parity on the shared `parser-matrix` path with CPython-matching bytes metadata before regression benchmark catch-up revisits `regression-parser-bytes-backreference-purged`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: all 960 published correctness cases now pas
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The concrete surviving follow-on is `RBR-0464`, which should publish the exact bytes parser compile proxy `b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}"` on the shared `parser-matrix` correctness surface so the lone remaining `regression-parser-bytes-backreference-purged` benchmark gap has an adjacent correctness anchor before Rust-backed parity or later regression benchmark catch-up reopen that bytes backreference slice.
+- The concrete surviving follow-on is `RBR-0465`, which should convert the exact bytes parser compile proxy `b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}"` to real `rebar.compile()` parity on the shared `parser-matrix` path with CPython-matching bytes metadata before regression benchmark catch-up revisits `regression-parser-bytes-backreference-purged`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

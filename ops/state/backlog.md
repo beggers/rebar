@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The concrete surviving follow-on is `RBR-0464`, which should publish the exact bytes parser compile proxy `b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}"` on the shared `parser-matrix` correctness surface so the lone remaining `regression-parser-bytes-backreference-purged` benchmark gap has an adjacent correctness anchor before Rust-backed parity or later regression benchmark catch-up reopen that bytes backreference slice.
+The concrete surviving follow-on is `RBR-0465`, which should convert the exact bytes parser compile proxy `b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}"` to real `rebar.compile()` parity on the shared `parser-matrix` path with CPython-matching bytes metadata before regression benchmark catch-up revisits `regression-parser-bytes-backreference-purged`.
 
 ## Ordered Work
-1. `RBR-0464` should add the exact bytes named-backreference compile case `b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}"` to `tests/conformance/fixtures/parser_matrix.py`, extend the shared parser-matrix expectations/parity suite just enough to keep that case visible as an honest compile-only gap, and regenerate `reports/correctness/latest.py` so the remaining `regression-parser-bytes-backreference-purged` benchmark gap has an adjacent correctness anchor without creating a new manifest or widening into module-helper execution.
+1. `RBR-0465` should convert the exact bytes named-backreference compile proxy `b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}"` into real Rust-backed `rebar.compile()` support with CPython-matching compile metadata (`flags == 0`, `groups == 1`, `groupindex == {"tag": 1}`) on the shared `parser-matrix` parity path, updating `tests/python/test_parser_matrix_parity_suite.py` and `reports/correctness/latest.py` without widening into bytes execution or new benchmark rows.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
