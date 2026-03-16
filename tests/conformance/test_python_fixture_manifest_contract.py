@@ -104,7 +104,8 @@ class PythonFixtureManifestContractTest(unittest.TestCase):
                 "quantified_nested_group_callable_fixture.py",
                 fixture_source,
             )
-            manifest, cases = load_fixture_manifest(fixture_path)
+            manifest = load_fixture_manifest(fixture_path)
+            cases = manifest.cases
 
         self.assertEqual(
             manifest.manifest_id,
@@ -246,7 +247,8 @@ class PythonFixtureManifestContractTest(unittest.TestCase):
                 "bytes_callable_fixture.py",
                 fixture_source,
             )
-            manifest, cases = load_fixture_manifest(fixture_path)
+            manifest = load_fixture_manifest(fixture_path)
+            cases = manifest.cases
 
         self.assertEqual(
             manifest.manifest_id,
@@ -394,7 +396,8 @@ class PythonFixtureManifestContractTest(unittest.TestCase):
             ) in manifest_cases:
                 with self.subTest(filename=filename):
                     fixture_path = self._write_fixture(temp_root, filename, source)
-                    manifest, cases = load_fixture_manifest(fixture_path)
+                    manifest = load_fixture_manifest(fixture_path)
+                    cases = manifest.cases
 
                     self.assertEqual(manifest.suite_id, expected_suite_id)
                     self.assertEqual(manifest.layer, expected_layer)

@@ -1,6 +1,6 @@
 # RBR-0492: Collapse the correctness loader onto one typed manifest/case surface
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -81,3 +81,15 @@ Created: 2026-03-16
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/grouped_alternation_replacement_workflows.py --report .rebar/tmp/rbr-0492-correctness-loader-shape.py` currently succeeds and reports `{"executed_cases": 8, "failed_cases": 0, "passed_cases": 8, "skipped_cases": 0, "total_cases": 8, "unimplemented_cases": 0}`.
   - The `rg -n ...` command above currently returns the old tuple signatures and tuple-unpack call sites, which is the exact surface this task should delete rather than wrap.
   - The typed-loader probe above currently fails with `AssertionError: <class 'tuple'>`, which is the exact public-shape cleanup this task is meant to complete.
+
+## Completion Notes
+- 2026-03-16: Collapsed the correctness loader onto one typed manifest surface by making `FixtureManifest.cases` hold `FixtureCase` records, changing `load_fixture_manifest(...)` and `load_fixture_manifests(...)` to return manifests only, and flattening cases from `manifest.cases` inside `run_correctness_harness(...)`.
+- Updated correctness expectation helpers, conformance tests, fixture parity support, and adjacent benchmark anchor-contract tests to stop unpacking loader tuples and to read manifest-owned typed cases instead of reparsing raw rows into fresh `FixtureCase` objects.
+- Kept the raw descriptor lookup local to `raw_fixture_cases_by_id(...)` so the descriptor-shape assertions still compare against the original manifest payloads without reintroducing a second typed loader surface.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_compile_proxy_correctness_anchor_contract.py tests/benchmarks/test_nested_group_benchmark_correctness_anchor_contract.py tests/benchmarks/test_grouped_alternation_replacement_benchmark_correctness_anchor_contract.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/grouped_alternation_replacement_workflows.py --report .rebar/tmp/rbr-0492-correctness-loader-shape.py`
+  - `rg -n 'def load_fixture_manifest\\(path: pathlib\\.Path\\) -> tuple\\[FixtureManifest, list\\[FixtureCase\\]\\]|def load_fixture_manifests\\(paths: Sequence\\[pathlib\\.Path\\]\\) -> tuple\\[list\\[FixtureManifest\\], list\\[FixtureCase\\]\\]|manifest, cases = load_fixture_manifest\\(|_, cases = load_fixture_manifest\\(|manifests, cases = load_fixture_manifests\\(|_, manifest_cases = load_fixture_manifest\\(|manifest, _ = load_fixture_manifest\\(' python/rebar_harness/correctness.py tests/conformance tests/python -g '*.py'` returned no matches.
+  - The typed-loader probe from the task prints `ok`.

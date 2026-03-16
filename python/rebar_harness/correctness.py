@@ -8,7 +8,7 @@ import pathlib
 import re as cpython_re
 import sys
 import warnings
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from typing import Any, Iterable, Sequence
 
@@ -688,6 +688,7 @@ class FixtureManifest:
     suite_id: str
     schema_version: int
     defaults: dict[str, Any]
+    cases: list["FixtureCase"]
     raw: dict[str, Any]
 
 
@@ -771,7 +772,7 @@ def _optional_int(value: Any) -> int | None:
     return int(value)
 
 
-def load_fixture_manifest(path: pathlib.Path) -> tuple[FixtureManifest, list[FixtureCase]]:
+def load_fixture_manifest(path: pathlib.Path) -> FixtureManifest:
     if path.suffix != ".py":
         raise ValueError(f"fixture manifests must be Python modules; got {path}")
     raw_manifest = load_python_dict_attribute(
@@ -812,19 +813,19 @@ def load_fixture_manifest(path: pathlib.Path) -> tuple[FixtureManifest, list[Fix
         suite_id=default_suite_id,
         schema_version=schema_version,
         defaults=defaults,
+        cases=[],
         raw=raw_manifest,
     )
     cases = [FixtureCase.from_dict(manifest, raw_case) for raw_case in raw_manifest.get("cases", [])]
-    return manifest, cases
+    return replace(manifest, cases=cases)
 
 
-def load_fixture_manifests(paths: Sequence[pathlib.Path]) -> tuple[list[FixtureManifest], list[FixtureCase]]:
+def load_fixture_manifests(paths: Sequence[pathlib.Path]) -> list[FixtureManifest]:
     manifests: list[FixtureManifest] = []
-    cases: list[FixtureCase] = []
     seen_manifest_ids: dict[str, pathlib.Path] = {}
     seen_case_ids: dict[str, pathlib.Path] = {}
     for path in paths:
-        manifest, manifest_cases = load_fixture_manifest(path)
+        manifest = load_fixture_manifest(path)
         prior_manifest_path = seen_manifest_ids.get(manifest.manifest_id)
         if prior_manifest_path is not None:
             raise ValueError(
@@ -833,7 +834,7 @@ def load_fixture_manifests(paths: Sequence[pathlib.Path]) -> tuple[list[FixtureM
             )
         seen_manifest_ids[manifest.manifest_id] = manifest.path
 
-        for case in manifest_cases:
+        for case in manifest.cases:
             prior_case_path = seen_case_ids.get(case.case_id)
             if prior_case_path is not None:
                 raise ValueError(
@@ -843,8 +844,7 @@ def load_fixture_manifests(paths: Sequence[pathlib.Path]) -> tuple[list[FixtureM
             seen_case_ids[case.case_id] = manifest.path
 
         manifests.append(manifest)
-        cases.extend(manifest_cases)
-    return manifests, cases
+    return manifests
 
 
 def normalize_warning_records(records: list[warnings.WarningMessage]) -> list[dict[str, str]]:
@@ -1864,7 +1864,8 @@ def run_correctness_harness(
 ) -> dict[str, Any]:
     resolved_fixture_paths = [path.resolve() for path in fixture_paths]
     report_path = SCORECARD_REPORT.validate_path(report_path)
-    manifests, cases = load_fixture_manifests(resolved_fixture_paths)
+    manifests = load_fixture_manifests(resolved_fixture_paths)
+    cases = [case for manifest in manifests for case in manifest.cases]
     cpython_adapter = CpythonReAdapter()
     rebar_adapter = RebarAdapter()
     case_results = [evaluate_case(case, cpython_adapter, rebar_adapter) for case in cases]

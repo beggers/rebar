@@ -234,8 +234,8 @@ REPLACEMENT_SELECTOR_PATTERN_EXPECTATIONS = (
 
 
 def _fixture_cases(fixture_name: str) -> dict[str, FixtureCase]:
-    _, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
-    return {case.case_id: case for case in cases}
+    manifest = load_fixture_manifest(FIXTURES_DIR / fixture_name)
+    return {case.case_id: case for case in manifest.cases}
 
 
 NAMED_GROUP_CASES = _fixture_cases("named_group_workflows.py")
@@ -471,7 +471,8 @@ def test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids() -> N
     published_fixture_paths = select_correctness_fixture_paths(
         PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
     )
-    manifests, cases = load_fixture_manifests(published_fixture_paths)
+    manifests = load_fixture_manifests(published_fixture_paths)
+    cases = [case for manifest in manifests for case in manifest.cases]
 
     assert [manifest.path for manifest in manifests] == list(published_fixture_paths)
     assert _duplicate_items(Counter(manifest.manifest_id for manifest in manifests)) == []
@@ -801,8 +802,8 @@ def test_manifest_case_helpers_cover_bundle_manifest_order_and_unselected_rows()
     bundles = load_fixture_bundles(specs)
 
     for spec, bundle in zip(specs, bundles, strict=True):
-        _, manifest_cases = load_fixture_manifest(FIXTURES_DIR / spec.fixture_name)
-        assert manifest_case_ids(bundle) == tuple(case.case_id for case in manifest_cases)
+        manifest = load_fixture_manifest(FIXTURES_DIR / spec.fixture_name)
+        assert manifest_case_ids(bundle) == tuple(case.case_id for case in manifest.cases)
 
     selected_case_ids = (
         "grouped-pattern-search-single-capture-str",
@@ -817,8 +818,8 @@ def test_manifest_case_helpers_cover_bundle_manifest_order_and_unselected_rows()
 
     expected_cases_by_id: dict[str, FixtureCase] = {}
     for spec in specs:
-        _, manifest_cases = load_fixture_manifest(FIXTURES_DIR / spec.fixture_name)
-        for case in manifest_cases:
+        manifest = load_fixture_manifest(FIXTURES_DIR / spec.fixture_name)
+        for case in manifest.cases:
             if case.case_id in selected_case_ids:
                 expected_cases_by_id[case.case_id] = case
 

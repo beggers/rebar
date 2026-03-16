@@ -164,7 +164,7 @@ class CorrectnessScorecardSuitesTest(unittest.TestCase):
 
     def test_tracked_report_keeps_numbered_backreference_manifest_fresh(self) -> None:
         _build_rebar_extension()
-        _, manifest_cases = load_fixture_manifest(NUMBERED_BACKREFERENCE_FIXTURE_PATH)
+        manifest_cases = load_fixture_manifest(NUMBERED_BACKREFERENCE_FIXTURE_PATH).cases
         _, expected_scorecard = run_harness_scorecard(
             "rebar_harness.correctness",
             [

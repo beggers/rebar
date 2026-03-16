@@ -182,8 +182,8 @@ def load_fixture_bundles(
 ) -> tuple[FixtureBundle, ...]:
     bundles: list[FixtureBundle] = []
     for spec in specs:
-        manifest, cases = load_fixture_manifest(FIXTURES_DIR / spec.fixture_name)
-        loaded_cases = tuple(cases)
+        manifest = load_fixture_manifest(FIXTURES_DIR / spec.fixture_name)
+        loaded_cases = tuple(manifest.cases)
         if spec.selected_case_ids is None:
             bundle_cases = loaded_cases
         else:
@@ -253,8 +253,8 @@ def load_published_fixture_bundles(
     bundles: list[FixtureBundle] = []
 
     for path in fixture_paths:
-        manifest, cases = load_fixture_manifest(path)
-        loaded_cases = tuple(cases)
+        manifest = load_fixture_manifest(path)
+        loaded_cases = tuple(manifest.cases)
         bundles.append(
             FixtureBundle(
                 manifest=manifest,
@@ -339,7 +339,7 @@ def _manifest_raw_cases(bundle: FixtureBundle) -> tuple[dict[str, object], ...]:
 
 
 def manifest_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
-    return tuple(str(raw_case["id"]) for raw_case in _manifest_raw_cases(bundle))
+    return tuple(case.case_id for case in bundle.manifest.cases)
 
 
 def bundle_patterns(
@@ -372,14 +372,14 @@ def ordered_manifest_cases_from_bundles(
     duplicate_case_ids: set[str] = set()
 
     for bundle in bundles:
-        for raw_case in _manifest_raw_cases(bundle):
-            case_id = str(raw_case["id"])
+        for case in bundle.manifest.cases:
+            case_id = case.case_id
             if case_id not in selected_case_ids:
                 continue
             if case_id in case_by_id:
                 duplicate_case_ids.add(case_id)
                 continue
-            case_by_id[case_id] = FixtureCase.from_dict(bundle.manifest, raw_case)
+            case_by_id[case_id] = case
 
     ordered_duplicate_case_ids = tuple(
         case_id for case_id in ordered_case_ids if case_id in duplicate_case_ids

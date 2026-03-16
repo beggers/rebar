@@ -61,8 +61,7 @@ def _published_compile_case_signatures() -> frozenset[tuple[str | bytes, int, st
     signatures: set[tuple[str | bytes, int, str]] = set()
 
     for fixture_path in DEFAULT_FIXTURE_PATHS:
-        _, cases = load_fixture_manifest(fixture_path)
-        for case in cases:
+        for case in load_fixture_manifest(fixture_path).cases:
             if case.operation == "compile":
                 signatures.add(_compile_case_signature(case))
 
@@ -76,8 +75,7 @@ def _published_compile_case_ids_by_signature() -> dict[
     case_ids_by_signature: dict[tuple[str | bytes, int, str], list[str]] = {}
 
     for fixture_path in DEFAULT_FIXTURE_PATHS:
-        _, cases = load_fixture_manifest(fixture_path)
-        for case in cases:
+        for case in load_fixture_manifest(fixture_path).cases:
             if case.operation == "compile":
                 signature = _compile_case_signature(case)
                 case_ids_by_signature.setdefault(signature, []).append(case.case_id)

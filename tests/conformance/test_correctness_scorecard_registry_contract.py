@@ -17,7 +17,7 @@ from tests.conformance.correctness_expectations import (
 def _fixture_inventory() -> tuple[tuple[pathlib.Path, str], ...]:
     inventory = []
     for path in DEFAULT_FIXTURE_PATHS:
-        manifest, _ = load_fixture_manifest(path)
+        manifest = load_fixture_manifest(path)
         inventory.append((path, manifest.manifest_id))
     return tuple(inventory)
 

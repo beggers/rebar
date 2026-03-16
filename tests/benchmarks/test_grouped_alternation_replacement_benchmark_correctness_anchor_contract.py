@@ -151,8 +151,7 @@ def _published_anchor_case_ids_by_signature() -> dict[tuple[Any, ...], tuple[str
     case_ids_by_signature: dict[tuple[Any, ...], list[str]] = {}
 
     for fixture_path in DEFAULT_FIXTURE_PATHS:
-        _, cases = load_fixture_manifest(fixture_path)
-        for case in cases:
+        for case in load_fixture_manifest(fixture_path).cases:
             signature = _correctness_case_signature(case)
             if signature is None:
                 continue

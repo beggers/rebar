@@ -1601,11 +1601,11 @@ def _sorted_unique_strings(values: object) -> tuple[str, ...]:
 
 
 @lru_cache(maxsize=1)
-def _fixture_inventory() -> tuple[tuple[pathlib.Path, FixtureManifest, tuple[FixtureCase, ...]], ...]:
+def _fixture_inventory() -> tuple[tuple[pathlib.Path, FixtureManifest], ...]:
     inventory = []
     for path in DEFAULT_FIXTURE_PATHS:
-        manifest, cases = load_fixture_manifest(path)
-        inventory.append((path, manifest, tuple(cases)))
+        manifest = load_fixture_manifest(path)
+        inventory.append((path, manifest))
     return tuple(inventory)
 
 
@@ -1616,7 +1616,7 @@ def _expected_target_manifest_ids(
 ) -> tuple[str, ...]:
     target_manifest_ids = tuple(
         manifest.manifest_id
-        for _, manifest, _ in _fixture_inventory()
+        for _, manifest in _fixture_inventory()
         if manifest.manifest_id in expectations
     )
     missing_expectations = set(expectations) - set(target_manifest_ids)
@@ -1638,13 +1638,13 @@ def _build_scorecard_expectation(
     target_cases: tuple[FixtureCase, ...] | None = None
     target_manifest: FixtureManifest | None = None
 
-    for path, manifest, cases in _fixture_inventory():
+    for path, manifest in _fixture_inventory():
         selected_paths.append(path)
         selected_manifests.append(manifest)
-        selected_cases.extend(cases)
+        selected_cases.extend(manifest.cases)
         if manifest.manifest_id == target_manifest_id:
             target_manifest = manifest
-            target_cases = cases
+            target_cases = tuple(manifest.cases)
             break
 
     if target_manifest is None or target_cases is None:
@@ -1667,9 +1667,7 @@ def _build_scorecard_expectation(
         )
 
     selected_cases_by_manifest_id = {
-        manifest.manifest_id: tuple(
-            case for case in selected_cases if case.manifest_id == manifest.manifest_id
-        )
+        manifest.manifest_id: tuple(manifest.cases)
         for manifest in selected_manifests
     }
     target_suite_cases = tuple(
