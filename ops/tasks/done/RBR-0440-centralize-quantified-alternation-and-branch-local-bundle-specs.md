@@ -1,8 +1,9 @@
 # RBR-0440: Centralize quantified-alternation and branch-local bundle specs
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
+Completed: 2026-03-16
 
 ## Goal
 - Replace the remaining repeated whole-manifest `load_fixture_bundle(...)` declarations and bundle-to-case fanout in the two largest fixture-backed parity suites with the existing declarative spec helpers in `tests/python/fixture_parity_support.py`, so the post-JSON pytest surface stops hand-maintaining 19 near-identical bundle loads after the earlier suite-consolidation passes.
@@ -69,3 +70,14 @@ Created: 2026-03-16
 - `rg -o "load_fixture_bundle\\(" tests/python/*.py | cut -d: -f1 | sort | uniq -c | sort -nr` shows these two targeted suites as the densest remaining whole-manifest bundle-load owners after the earlier conditional and grouped-capture cleanup passes:
   - `10 tests/python/test_branch_local_backreference_parity_suite.py`
   - `9 tests/python/test_quantified_alternation_parity_suite.py`
+
+## Completion
+- 2026-03-16: Switched `tests/python/test_quantified_alternation_parity_suite.py` from inline `load_fixture_bundle(...)` declarations to an explicit `FIXTURE_BUNDLE_SPECS` tuple of `WholeManifestBundleSpec(...)`, then routed `FIXTURE_BUNDLES`, `PUBLISHED_CASES`, `COMPILE_CASES`, `MODULE_CASES`, and `PATTERN_CASES` through the shared fixture-parity helpers.
+- 2026-03-16: Kept the quantified-alternation suite's frontier local and unchanged, and replaced its backtracking-heavy `next(bundle for bundle in FIXTURE_BUNDLES ...)` lookup with `published_fixture_bundle_by_manifest_id(...)` while preserving the same supplemental trace and no-match coverage.
+- 2026-03-16: Switched `tests/python/test_branch_local_backreference_parity_suite.py` to `FIXTURE_BUNDLE_SPECS` plus shared case fanout helpers, keeping the suite-local manifest ids, case ids, pattern sets, counters, supplemental cases, bounded pattern cases, and `CASES_BY_ID` intact.
+
+## Verification
+- 2026-03-16: `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py` (`763 passed`)
+- 2026-03-16: `rg -n 'load_fixture_bundle\\(' tests/python/test_quantified_alternation_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py` (no matches)
+- 2026-03-16: `rg -n 'case for bundle in FIXTURE_BUNDLES for case in bundle\\.cases' tests/python/test_quantified_alternation_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py` (no matches)
+- 2026-03-16: `rg -n 'next\\(\\s*bundle\\s+for\\s+bundle\\s+in\\s+FIXTURE_BUNDLES' tests/python/test_quantified_alternation_parity_suite.py` (no matches)

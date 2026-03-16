@@ -13,6 +13,7 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FixtureBundle,
+    WholeManifestBundleSpec,
     assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -20,7 +21,9 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
-    load_fixture_bundle,
+    fixture_cases_for_operation,
+    fixture_cases_from_bundles,
+    load_whole_manifest_fixture_bundles,
     published_fixture_paths_from_bundles,
     str_case_pattern,
 )
@@ -47,8 +50,8 @@ class BoundedPatternCase:
     bounds: tuple[int, ...]
 
 
-FIXTURE_BUNDLES = (
-    load_fixture_bundle(
+FIXTURE_BUNDLE_SPECS = (
+    WholeManifestBundleSpec(
         "branch_local_backreference_workflows.py",
         expected_manifest_id="branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -75,7 +78,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "quantified_branch_local_backreference_workflows.py",
         expected_manifest_id="quantified-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -104,7 +107,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "optional_group_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="optional-group-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -135,7 +138,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_branch_local_backreference_workflows.py",
         expected_manifest_id="conditional-group-exists-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -162,7 +165,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "nested_group_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="nested-group-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -191,7 +194,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "quantified_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="quantified-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -222,7 +225,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="quantified-nested-group-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -253,7 +256,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -288,7 +291,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -319,7 +322,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
         expected_manifest_id="nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows",
         expected_case_ids=frozenset(
@@ -351,9 +354,10 @@ FIXTURE_BUNDLES = (
         ),
     ),
 )
-PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
+FIXTURE_BUNDLES = load_whole_manifest_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
-COMPILE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "compile")
+COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
 WORKFLOW_CASES = tuple(case for case in PUBLISHED_CASES if case.operation != "compile")
 MATCH_CONVENIENCE_MANIFEST_IDS = frozenset(
     {
@@ -368,10 +372,8 @@ MATCH_CONVENIENCE_MANIFEST_IDS = frozenset(
 )
 MATCH_CONVENIENCE_CASE_IDS = frozenset(
     case.case_id
-    for bundle in FIXTURE_BUNDLES
-    if bundle.expected_manifest_id in MATCH_CONVENIENCE_MANIFEST_IDS
-    for case in bundle.cases
-    if case.operation != "compile"
+    for case in PUBLISHED_CASES
+    if case.manifest_id in MATCH_CONVENIENCE_MANIFEST_IDS and case.operation != "compile"
 )
 MATCH_GROUP_ACCESS_CASE_IDS = (
     "nested-group-alternation-branch-local-numbered-backreference-module-search-b-branch-str",
