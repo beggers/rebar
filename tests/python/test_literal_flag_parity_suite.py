@@ -337,6 +337,40 @@ PATTERN_IGNORECASE_CASES = (
         string=b"aBcd",
         flags=IGNORECASE_FLAGS,
     ),
+    PatternCallCase(
+        id="pattern-search-ignorecase-str-pos-hit",
+        helper="search",
+        pattern="AbC",
+        string="zzABCzzabc",
+        flags=IGNORECASE_FLAGS,
+        pos=2,
+    ),
+    PatternCallCase(
+        id="pattern-search-ignorecase-str-pos-miss",
+        helper="search",
+        pattern="AbC",
+        string="ABC",
+        flags=IGNORECASE_FLAGS,
+        pos=1,
+    ),
+    PatternCallCase(
+        id="pattern-search-ignorecase-ascii-str-window-hit",
+        helper="search",
+        pattern="abc",
+        string="zzABCzz",
+        flags=IGNORECASE_FLAGS | int(rebar.ASCII),
+        pos=2,
+        endpos=5,
+    ),
+    PatternCallCase(
+        id="pattern-search-ignorecase-bytes-window-hit",
+        helper="search",
+        pattern=b"AbC",
+        string=b"zzabczz",
+        flags=IGNORECASE_FLAGS,
+        pos=2,
+        endpos=5,
+    ),
 )
 
 INLINE_NATIVE_MODULE_CASE = _module_case_from_fixture(
