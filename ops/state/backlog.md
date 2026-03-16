@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The concrete surviving follow-on is `RBR-0453`, which should publish the next public `module.compile()` correctness slice for the existing verbose regression pattern on the shared module-workflow surface before parity or regression benchmark catch-up reopen the compile frontier.
+The concrete surviving follow-on is `RBR-0455`, which should convert the published verbose `module.compile()` regression slice to real Rust-backed parity on the shared public compile path before regression benchmark catch-up reopens the compile frontier.
 
 ## Ordered Work
-1. `RBR-0453` should add the exact `str` `module.compile()` workflow for `^ (?P<key>[A-Z_]+) \s* = \s* (?:[A-Z]{2,4}+|\d{2,3}) $` with `re.MULTILINE | re.VERBOSE` to `tests/conformance/fixtures/module_workflow_surface.py`, refresh `tests/conformance/correctness_expectations.py`, and regenerate `reports/correctness/latest.py` so the existing `regression-module-compile-verbose-purged` benchmark gap gains a published module-workflow anchor before Rust-backed parity or benchmark catch-up reopen the compile frontier.
+1. `RBR-0455` should convert the exact `str` `module.compile()` workflow for `^ (?P<key>[A-Z_]+) \s* = \s* (?:[A-Z]{2,4}+|\d{2,3}) $` with `re.MULTILINE | re.VERBOSE` to real Rust-backed parity on the public compile path, refresh the bounded compile assertions in `tests/python/test_module_surface_scaffold.py`, and regenerate `reports/correctness/latest.py` so the existing `regression-module-compile-verbose-purged` benchmark gap can move to Python-path benchmark catch-up.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
