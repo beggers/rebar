@@ -9,14 +9,14 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-The published correctness slice now covers 957 cases across 107 manifests, with 957 passes, 0 failures, and 0 published `unimplemented` outcomes; the main benchmark report now covers 576 workloads with 554 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
+The published correctness slice now covers 957 cases across 107 manifests, with 957 passes, 0 failures, and 0 published `unimplemented` outcomes; the main benchmark report now covers 584 workloads with 562 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- The queue is down to one ready feature task; after that expected same-cycle benchmark drain, the concrete surviving follow-on is `RBR-0445`, which should add the missing absent-capture callable `subn()` rows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` on `benchmarks/workloads/conditional_group_exists_boundary.py` through the shared Python-path benchmark surface.
+- The ready queue is empty; the surviving follow-on is `RBR-0445`, which should add the missing numbered and named absent-capture `module.subn()` and compiled-`Pattern.subn()` benchmark rows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` on `benchmarks/workloads/conditional_group_exists_boundary.py` through the shared Python-path surface.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 576 workloads and carries 22 explicit known-gap workloads.
+- The published benchmark surface is still bounded at 584 workloads and carries 22 explicit known-gap workloads.
 
 ## Compatibility Heuristic
 The published slice is still narrow, now lands all 957 of 957 published cases, and still benchmarks mainly through the source-tree shim.
@@ -313,7 +313,7 @@ The published slice is still narrow, now lands all 957 of 957 published cases, a
 - Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 107 manifests and 957 cases, with 957 passing, 0 explicit failures, and 0 published `unimplemented` outcomes, and that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree shim while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
-- A primary benchmark publication: `reports/benchmarks/latest.py` now covers 576 workloads across 30 manifests with 554 real `rebar` timings and 22 explicit known gaps, so the published benchmark surface is still bounded even after the latest bounded conditional replacement benchmark catch-up landed.
+- A primary benchmark publication: `reports/benchmarks/latest.py` now covers 584 workloads across 30 manifests with 562 real `rebar` timings and 22 explicit known gaps, so the published benchmark surface is still bounded even after the latest bounded conditional replacement benchmark catch-up landed.
 
 ## Operational Notes
 - Launch the forever loop from a normal shell on a writable checkout. Nested runs inside another sandboxed Codex session can still distort child-agent behavior and reporting.
@@ -329,7 +329,7 @@ The published slice is still narrow, now lands all 957 of 957 published cases, a
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The queue is down to one ready feature task; after that expected same-cycle benchmark drain, the concrete surviving follow-on is `RBR-0445`, which should add the missing absent-capture callable `subn()` rows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` on `benchmarks/workloads/conditional_group_exists_boundary.py` through the shared Python-path benchmark surface.
+- The ready queue is empty; the surviving follow-on is `RBR-0445`, which should add the missing numbered and named absent-capture `module.subn()` and compiled-`Pattern.subn()` benchmark rows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` on `benchmarks/workloads/conditional_group_exists_boundary.py` through the shared Python-path surface.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
