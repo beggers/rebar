@@ -20,7 +20,8 @@ Required behavior:
 8. If tracked JSON or the live filesystem JSON count remains nonzero, queue a task whose primary acceptance criteria reduce that live count or delete plumbing that exists only to support tracked JSON.
 9. Only fall back to duplicate-fixture, duplicate-workload, report-plumbing, or boundary-clarity tasks after both counts reach zero.
 10. If the ready queue already contains concrete `feature-implementation` work and recent runtime artifacts show inherited-dirty checkpoint churn or another stalled post-task refresh/commit path, do only the minimal queue/runtime check needed to confirm the stall and then no-op cleanly instead of seeding another architecture task into the same bottleneck.
-11. If the first simplification you inspect is not viable, keep looking and queue the next concrete cleanup/refactor task instead of defaulting to a no-op, unless rule 10 applies.
+11. Before inventing a new architecture task, inspect the newest blocked architecture task. If its blocker was an out-of-scope feature or reporting drift that has since landed and the task is still otherwise bounded, move that exact task back to `ops/tasks/ready/` with any minimal refinement it now needs instead of minting a sibling.
+12. If the first simplification you inspect is not viable against the current checkout, keep looking and queue the next concrete cleanup/refactor task instead of defaulting to a no-op, unless rule 10 applies or every remaining candidate still depends on work outside the architecture lane landing first.
 
 Constraints:
 - Do not write or change implementation code, tests, reports, benchmarks, README copy, or tracked project-state prose.
@@ -29,7 +30,8 @@ Constraints:
 - Do not queue multiple unrelated architecture tasks in one run.
 - Do not use a merely healthy feature queue as a reason to skip this role, but do yield when rule 10 applies and the current bottleneck is draining already-queued work rather than finding the next cleanup target.
 - If the ready queue already contains the exact simplification you want, refine that task instead of queuing a duplicate sibling.
-- Because the harness has a single shared ready queue with owner-routed task workers, make queued tasks concrete, priority-aware, and executable against the current checkout. Do not seed architecture tasks whose acceptance criteria depend on ready or in-progress feature work landing later in the same cycle.
+- Because the harness has a single shared ready queue with owner-routed task workers, make queued tasks concrete, priority-aware, and executable against the current checkout. Do not seed architecture tasks whose acceptance criteria depend on ready, in-progress, or planning-owned reserved feature work landing later in the same or a future cycle. If a feature follow-on already named in `ops/state/backlog.md` or `ops/state/current_status.md` must land first to make the current checkout green, pick another architecture task or no-op.
+- Do not leave a blocked architecture task stranded when later feature or reporting work has already cleared its only blocker; reopen or refine that exact task instead of issuing a new `RBR-` id for the same cleanup.
 - Prefer deleting or consolidating machinery over adding new abstractions.
 - Do not spend the run on duplicated-wrapper or general clarity work while tracked JSON or the live filesystem JSON count is still nonzero.
 - Once tracked JSON and the live filesystem JSON count both reach zero, favor tasks that shrink duplicated fixtures, duplicated benchmark rows, duplicate report plumbing, redundant wrappers, or unnecessary architectural layers.
