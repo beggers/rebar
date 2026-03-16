@@ -329,7 +329,7 @@ The published slice is still narrow: all 961 published correctness cases now pas
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The concrete surviving follow-on is `RBR-0467`, which should republish `regression-parser-bytes-backreference-purged` as a measured source-tree `regression-matrix` row now that the exact bytes named-backreference compile slice is live behind `rebar.compile()`.
+- The concrete surviving follow-on is `RBR-0468`, which should publish the exact `IGNORECASE|ASCII` literal helper pair from `literal-flag-boundary` on the shared `literal-flag-workflows` correctness surface before Rust-backed parity or source-tree benchmark catch-up reopen that flag-combination slice.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
