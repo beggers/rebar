@@ -24,6 +24,7 @@ from tests.python.fixture_parity_support import (
     load_selected_case_fixture_bundles,
     published_fixture_paths_from_bundles,
 )
+from tests.python.native_boundary_test_support import RecordingNativeBoundary
 
 
 PUBLISHED_BOUNDED_WILDCARD_FIXTURE_PATHS = select_correctness_fixture_paths(
@@ -49,15 +50,11 @@ class PatternCase:
     endpos: int | None = None
 
 
-class _FakeNativeBoundary:
-    def __init__(self) -> None:
-        self.calls: list[tuple[object, ...]] = []
-
-    def boundary_compile(self, pattern: str | bytes, flags: int) -> tuple[str, int, bool]:
-        self.calls.append(("compile", pattern, flags))
+class _FakeNativeBoundary(RecordingNativeBoundary):
+    def compile_result(self, pattern: str | bytes, flags: int) -> tuple[str, int, bool]:
         return ("compiled", 34, False)
 
-    def boundary_literal_match(
+    def literal_match_result(
         self,
         pattern: str | bytes,
         flags: int,
@@ -66,28 +63,17 @@ class _FakeNativeBoundary:
         pos: int,
         endpos: int | None,
     ) -> tuple[str, int, int, tuple[int, int] | None]:
-        self.calls.append(("match", pattern, flags, mode, string, pos, endpos))
         return ("matched", 0, len(string), (0, 3))
 
-    def boundary_literal_findall(
+    def literal_findall_result(
         self,
         pattern: str | bytes,
         flags: int,
         string: str | bytes,
         pos: int,
         endpos: int | None,
-    ) -> tuple[str, list[str] | list[bytes]]:
-        self.calls.append(("findall", pattern, flags, string, pos, endpos))
+    ) -> tuple[str, list[str] | list[bytes] | None]:
         return ("supported", ["abc"])
-
-    def scaffold_raise(self, helper_name: str) -> object:
-        raise NotImplementedError(rebar._placeholder_message(helper_name))
-
-    def scaffold_pattern_raise(self, method_name: str) -> object:
-        raise NotImplementedError(rebar._pattern_placeholder_message(method_name))
-
-    def scaffold_purge(self) -> None:
-        self.calls.append(("purge",))
 
 
 SELECTED_CASE_BUNDLE_SPECS = (

@@ -5,9 +5,10 @@ import unittest
 from unittest import mock
 
 import rebar
+from tests.python.native_boundary_test_support import RecordingNativeBoundary
 
 
-class _FakeNativeBoundary:
+class _FakeNativeBoundary(RecordingNativeBoundary):
     def __init__(
         self,
         *,
@@ -15,13 +16,11 @@ class _FakeNativeBoundary:
         bytes_compile_flags: int = 2050,
         native_placeholder_messages: bool = False,
     ) -> None:
-        self.calls: list[tuple[object, ...]] = []
+        super().__init__(native_placeholder_messages=native_placeholder_messages)
         self._str_compile_flags = str_compile_flags
         self._bytes_compile_flags = bytes_compile_flags
-        self._native_placeholder_messages = native_placeholder_messages
 
-    def boundary_compile(self, pattern: str | bytes, flags: int) -> tuple[str, int, bool]:
-        self.calls.append(("compile", pattern, flags))
+    def compile_result(self, pattern: str | bytes, flags: int) -> tuple[str, int, bool]:
         if pattern == "boom":
             raise stdlib_re.error("native compile failure", pattern, 2)
         normalized_flags = (
@@ -29,7 +28,7 @@ class _FakeNativeBoundary:
         )
         return ("compiled", normalized_flags | flags, True)
 
-    def boundary_literal_match(
+    def literal_match_result(
         self,
         pattern: str | bytes,
         flags: int,
@@ -38,24 +37,22 @@ class _FakeNativeBoundary:
         pos: int,
         endpos: int | None,
     ) -> tuple[str, int, int, tuple[int, int] | None]:
-        self.calls.append(("match", pattern, flags, mode, string, pos, endpos))
         if pattern == "unsupported":
             return ("unsupported", 0, len(string), None)
         return ("matched", 1, len(string) - 1, (1, 4))
 
-    def boundary_literal_split(
+    def literal_split_result(
         self,
         pattern: str | bytes,
         flags: int,
         string: str | bytes,
         maxsplit: int,
     ) -> tuple[str, list[str] | list[bytes] | None]:
-        self.calls.append(("split", pattern, flags, string, maxsplit))
         if isinstance(pattern, bytes):
             return ("supported", [b"native-bytes-split"])
         return ("supported", ["native-split"])
 
-    def boundary_literal_findall(
+    def literal_findall_result(
         self,
         pattern: str | bytes,
         flags: int,
@@ -63,14 +60,13 @@ class _FakeNativeBoundary:
         pos: int,
         endpos: int | None,
     ) -> tuple[str, list[str] | list[bytes] | None]:
-        self.calls.append(("findall", pattern, flags, string, pos, endpos))
         if pattern == "unsupported" or flags == int(rebar.IGNORECASE):
             return ("unsupported", None)
         if isinstance(pattern, bytes):
             return ("supported", [b"native-bytes-findall"])
         return ("supported", ["native-findall"])
 
-    def boundary_literal_finditer(
+    def literal_finditer_result(
         self,
         pattern: str | bytes,
         flags: int,
@@ -78,12 +74,11 @@ class _FakeNativeBoundary:
         pos: int,
         endpos: int | None,
     ) -> tuple[str, int, int, list[tuple[int, int]]]:
-        self.calls.append(("finditer", pattern, flags, string, pos, endpos))
         if pattern == "unsupported":
             return ("unsupported", 0, 0, [])
         return ("supported", 1, 6, [(2, 5)])
 
-    def boundary_literal_subn(
+    def literal_subn_result(
         self,
         pattern: str | bytes,
         flags: int,
@@ -91,31 +86,16 @@ class _FakeNativeBoundary:
         string: str | bytes,
         count: int,
     ) -> tuple[str, str | bytes | None, int]:
-        self.calls.append(("subn", pattern, flags, repl, string, count))
         if pattern == "unsupported":
             return ("unsupported", None, 0)
         if isinstance(pattern, bytes):
             return ("supported", b"native-bytes-subn", 7)
         return ("supported", "native-subn", 9)
 
-    def boundary_escape(self, pattern: str | bytes) -> str | bytes:
-        self.calls.append(("escape", pattern))
+    def escape_result(self, pattern: str | bytes) -> str | bytes:
         if isinstance(pattern, bytes):
             return b"native:" + pattern
         return f"native:{pattern}"
-
-    def scaffold_raise(self, helper_name: str) -> object:
-        if self._native_placeholder_messages:
-            raise NotImplementedError(f"native helper placeholder {helper_name}")
-        raise NotImplementedError(rebar._placeholder_message(helper_name))
-
-    def scaffold_pattern_raise(self, method_name: str) -> object:
-        if self._native_placeholder_messages:
-            raise NotImplementedError(f"native pattern placeholder {method_name}")
-        raise NotImplementedError(rebar._pattern_placeholder_message(method_name))
-
-    def scaffold_purge(self) -> None:
-        self.calls.append(("purge",))
 
 
 class RebarRustBoundaryHookTest(unittest.TestCase):

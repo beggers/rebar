@@ -23,6 +23,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     load_selected_case_fixture_bundles,
 )
+from tests.python.native_boundary_test_support import RecordingNativeBoundary
 
 
 IGNORECASE_FLAGS = int(rebar.IGNORECASE)
@@ -127,17 +128,13 @@ def _require_native_module() -> None:
         pytest.skip("native extension not available in source-tree test mode")
 
 
-class _FakeNativeBoundary:
-    def __init__(self) -> None:
-        self.calls: list[tuple[object, ...]] = []
-
-    def boundary_compile(self, pattern: str | bytes, flags: int) -> tuple[str, int, bool]:
-        self.calls.append(("compile", pattern, flags))
+class _FakeNativeBoundary(RecordingNativeBoundary):
+    def compile_result(self, pattern: str | bytes, flags: int) -> tuple[str, int, bool]:
         if pattern == "(?i)abc":
             return ("compiled", IGNORECASE_UNICODE_FLAGS, False)
         return ("compiled", flags, True)
 
-    def boundary_literal_match(
+    def literal_match_result(
         self,
         pattern: str | bytes,
         flags: int,
@@ -146,7 +143,6 @@ class _FakeNativeBoundary:
         pos: int,
         endpos: int | None,
     ) -> tuple[str, int, int, tuple[int, int] | None]:
-        self.calls.append(("match", pattern, flags, mode, string, pos, endpos))
         if (
             pattern == "(?i)abc"
             and flags == IGNORECASE_UNICODE_FLAGS
@@ -162,15 +158,6 @@ class _FakeNativeBoundary:
         ):
             return ("matched", 0, len(string), (0, 3))
         return ("unsupported", 0, len(string), None)
-
-    def scaffold_raise(self, helper_name: str) -> object:
-        raise NotImplementedError(rebar._placeholder_message(helper_name))
-
-    def scaffold_pattern_raise(self, method_name: str) -> object:
-        raise NotImplementedError(rebar._pattern_placeholder_message(method_name))
-
-    def scaffold_purge(self) -> None:
-        self.calls.append(("purge",))
 
 
 TARGET_FIXTURE_CASE_IDS = (
