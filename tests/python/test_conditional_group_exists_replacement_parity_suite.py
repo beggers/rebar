@@ -11,13 +11,16 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
+    WholeManifestBundleSpec,
     assert_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_parity,
     case_replacement_argument,
     case_text_argument,
     compile_with_cpython_parity,
-    load_fixture_bundle,
+    fixture_cases_from_bundles,
+    load_whole_manifest_fixture_bundles,
+    published_fixture_bundle_by_manifest_id,
     published_fixture_paths_from_bundles,
     str_case_pattern,
 )
@@ -87,8 +90,8 @@ SUPPLEMENTAL_REPEATED_TEMPLATE_REPLACEMENT_CASES = (
 )
 
 
-FIXTURE_BUNDLES = (
-    load_fixture_bundle(
+FIXTURE_BUNDLE_SPECS = (
+    WholeManifestBundleSpec(
         "conditional_group_exists_replacement_workflows.py",
         expected_manifest_id="conditional-group-exists-replacement-workflows",
         expected_case_ids=frozenset(
@@ -111,7 +114,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_replacement_template_workflows.py",
         expected_manifest_id="conditional-group-exists-replacement-template-workflows",
         expected_case_ids=frozenset(
@@ -134,7 +137,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_no_else_replacement_workflows.py",
         expected_manifest_id="conditional-group-exists-no-else-replacement-workflows",
         expected_case_ids=frozenset(
@@ -157,7 +160,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_empty_else_replacement_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-else-replacement-workflows",
         expected_case_ids=frozenset(
@@ -180,7 +183,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_empty_yes_else_replacement_workflows.py",
         expected_manifest_id="conditional-group-exists-empty-yes-else-replacement-workflows",
         expected_case_ids=frozenset(
@@ -203,7 +206,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_fully_empty_replacement_workflows.py",
         expected_manifest_id="conditional-group-exists-fully-empty-replacement-workflows",
         expected_case_ids=frozenset(
@@ -226,7 +229,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_alternation_replacement_workflows.py",
         expected_manifest_id="conditional-group-exists-alternation-replacement-workflows",
         expected_case_ids=frozenset(
@@ -249,7 +252,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_nested_replacement_workflows.py",
         expected_manifest_id="conditional-group-exists-nested-replacement-workflows",
         expected_case_ids=frozenset(
@@ -272,7 +275,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "conditional_group_exists_quantified_replacement_workflows.py",
         expected_manifest_id="conditional-group-exists-quantified-replacement-workflows",
         expected_case_ids=frozenset(
@@ -296,13 +299,15 @@ FIXTURE_BUNDLES = (
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
 )
+FIXTURE_BUNDLES = load_whole_manifest_fixture_bundles(FIXTURE_BUNDLE_SPECS)
 
-REPLACEMENT_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
-TEMPLATE_REPLACEMENT_CASES = next(
-    bundle.cases
-    for bundle in FIXTURE_BUNDLES
-    if bundle.expected_manifest_id == "conditional-group-exists-replacement-template-workflows"
-)
+REPLACEMENT_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
+TEMPLATE_REPLACEMENT_CASES = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "conditional-group-exists-replacement-template-workflows",
+).cases
+
+
 def _replacement_args(
     case: FixtureCase,
     *,
