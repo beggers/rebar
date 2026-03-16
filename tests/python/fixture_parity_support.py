@@ -212,13 +212,19 @@ def assert_fixture_bundle_contract(
     bundle: FixtureBundle,
     *,
     pattern_extractor: Callable[[FixtureCase], str | bytes],
+    expected_fixture_path: pathlib.Path | None = None,
+    expected_ordered_case_ids: tuple[str, ...] | None = None,
 ) -> None:
+    if expected_fixture_path is not None:
+        assert bundle.manifest.path == expected_fixture_path
     assert bundle.manifest.manifest_id == bundle.expected_manifest_id
     if bundle.expected_case_ids is None:
         assert len(bundle.cases) == sum(bundle.expected_operation_helper_counts.values())
     else:
         assert len(bundle.cases) == len(bundle.expected_case_ids)
         assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
+    if expected_ordered_case_ids is not None:
+        assert tuple(case.case_id for case in bundle.cases) == expected_ordered_case_ids
     assert {pattern_extractor(case) for case in bundle.cases} == bundle.expected_patterns
     if bundle.expected_text_models is not None:
         assert {case.text_model for case in bundle.cases} == bundle.expected_text_models

@@ -1,6 +1,6 @@
 # RBR-0461: Centralize selected-bundle path and order contracts
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -55,3 +55,8 @@ Created: 2026-03-16
   - `tests/python/test_parser_matrix_parity_suite.py:323-334`
   - `tests/python/test_fixture_parity_support_contract.py:619-622`
 - Those assertions are all checking data that is already present on `FixtureBundle` or derived from the selected-case bundle spec path, so they are a good bounded follow-on after `RBR-0427`, `RBR-0434`, `RBR-0438`, `RBR-0446`, `RBR-0448`, and `RBR-0451`.
+
+## Completion
+- Extended `assert_fixture_bundle_contract(...)` with optional expected fixture-path and ordered case-id validation so parity suites can route the remaining duplicated bundle-alignment checks through one shared support surface.
+- Added focused support coverage for selected-case path+order validation, whole-manifest path validation, and wrong-order failure behavior while preserving the existing published-path and bundle-order observations.
+- Verified with `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_module_workflow_parity_suite.py tests/python/test_parser_matrix_parity_suite.py` (`225 passed, 24 skipped`).

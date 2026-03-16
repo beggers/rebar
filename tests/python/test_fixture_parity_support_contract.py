@@ -605,21 +605,40 @@ def test_expected_fixture_bundle_contract_supports_exact_case_id_validation() ->
         ),
     )
 
-    assert bundle.manifest.path == FIXTURES_DIR / "named_backreference_workflows.py"
-    assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
+    assert_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=str_case_pattern,
+        expected_fixture_path=FIXTURES_DIR / "named_backreference_workflows.py",
+    )
     assert published_fixture_paths_from_bundles((bundle,)) == (
         FIXTURES_DIR / "named_backreference_workflows.py",
     )
 
 
-def test_selected_case_bundle_specs_derive_exact_case_ids_and_preserve_case_order() -> None:
+def test_fixture_bundle_contract_supports_selected_case_path_and_order_validation() -> None:
     (spec,) = _selected_case_bundle_specs()[:1]
     (bundle,) = load_selected_case_fixture_bundles((spec,))
 
-    assert bundle.manifest.path == FIXTURES_DIR / spec.fixture_name
     assert bundle.expected_case_ids == frozenset(spec.selected_case_ids)
-    assert tuple(case.case_id for case in bundle.cases) == spec.selected_case_ids
-    assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
+    assert_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=case_pattern,
+        expected_fixture_path=FIXTURES_DIR / spec.fixture_name,
+        expected_ordered_case_ids=spec.selected_case_ids,
+    )
+
+
+def test_fixture_bundle_contract_rejects_wrong_selected_case_order() -> None:
+    (spec,) = _selected_case_bundle_specs()[:1]
+    (bundle,) = load_selected_case_fixture_bundles((spec,))
+
+    with pytest.raises(AssertionError):
+        assert_fixture_bundle_contract(
+            bundle,
+            pattern_extractor=case_pattern,
+            expected_fixture_path=FIXTURES_DIR / spec.fixture_name,
+            expected_ordered_case_ids=tuple(reversed(spec.selected_case_ids)),
+        )
 
 
 def test_selected_case_bundle_specs_load_in_declared_bundle_order() -> None:
@@ -776,8 +795,12 @@ def test_module_workflow_surface_compile_case_selection_preserves_row_order() ->
         )
     )
 
-    assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
-    assert tuple(case.case_id for case in bundle.cases) == selected_case_ids
+    assert_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=case_pattern,
+        expected_fixture_path=FIXTURES_DIR / "module_workflow_surface.py",
+        expected_ordered_case_ids=selected_case_ids,
+    )
     assert tuple(case.case_id for case in fixture_cases_for_operation((bundle,), "compile")) == (
         selected_case_ids
     )
@@ -825,6 +848,9 @@ def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_ca
     assert_fixture_bundle_contract(
         open_ended_bundle,
         pattern_extractor=case_pattern,
+        expected_fixture_path=(
+            FIXTURES_DIR / "open_ended_quantified_group_alternation_workflows.py"
+        ),
     )
     assert tuple(
         path.name

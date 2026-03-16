@@ -272,14 +272,11 @@ def _assert_compile_error_parity(backend: object, case: FixtureCase) -> BaseExce
 
 
 def test_parser_matrix_parity_suite_stays_aligned_with_published_correctness_fixture() -> None:
-    bundle = PARSER_MATRIX_FIXTURE_BUNDLE
-
-    assert bundle.manifest.path == PARSER_MATRIX_FIXTURE_PATH
-    assert bundle.manifest.manifest_id == "parser-matrix"
-    assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
-    assert tuple(case.case_id for case in TARGET_CASES) == EXPECTED_CASE_IDS
-    assert Counter((case.operation, case.helper) for case in TARGET_CASES) == (
-        EXPECTED_PARSER_MATRIX_OPERATION_HELPER_COUNTS
+    assert_fixture_bundle_contract(
+        PARSER_MATRIX_FIXTURE_BUNDLE,
+        pattern_extractor=case_pattern,
+        expected_fixture_path=PARSER_MATRIX_FIXTURE_PATH,
+        expected_ordered_case_ids=EXPECTED_CASE_IDS,
     )
 
 
@@ -318,22 +315,11 @@ def test_parser_matrix_direct_test_buckets_cover_selected_frontier() -> None:
 
 
 def test_conditional_assertion_diagnostic_fixture_stays_aligned_with_published_correctness_fixture() -> None:
-    bundle = CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_BUNDLE
-
-    assert bundle.manifest.path == CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_PATH
-    assert (
-        bundle.manifest.manifest_id
-        == "conditional-group-exists-assertion-diagnostics"
-    )
-    assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
-    assert tuple(case.case_id for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES) == (
-        EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS
-    )
-    assert Counter(
-        (case.operation, case.helper) for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES
-    ) == EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_OPERATION_HELPER_COUNTS
-    assert {case_pattern(case) for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES} == (
-        EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_PATTERNS
+    assert_fixture_bundle_contract(
+        CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_BUNDLE,
+        pattern_extractor=case_pattern,
+        expected_fixture_path=CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_PATH,
+        expected_ordered_case_ids=EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS,
     )
 
 

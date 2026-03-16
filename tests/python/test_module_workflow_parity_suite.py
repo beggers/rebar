@@ -275,14 +275,11 @@ def _assert_verbose_compile_case_matches_cpython(
 
 
 def test_module_workflow_parity_suite_stays_aligned_with_published_fixture() -> None:
-    bundle = MODULE_WORKFLOW_BUNDLE
-
-    assert bundle.manifest.path == MODULE_WORKFLOW_FIXTURE_PATH
-    assert bundle.manifest.manifest_id == "module-workflow-surface"
-    assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
-    assert tuple(case.case_id for case in bundle.cases) == EXPECTED_CASE_IDS
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        EXPECTED_OPERATION_HELPER_COUNTS
+    assert_fixture_bundle_contract(
+        MODULE_WORKFLOW_BUNDLE,
+        pattern_extractor=case_pattern,
+        expected_fixture_path=MODULE_WORKFLOW_FIXTURE_PATH,
+        expected_ordered_case_ids=EXPECTED_CASE_IDS,
     )
 
 
