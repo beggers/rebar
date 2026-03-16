@@ -16,8 +16,10 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FixtureBundle,
+    assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
+    assert_valid_match_group_access_parity,
     bundle_patterns,
     case_replacement_argument,
     case_text_argument,
@@ -325,6 +327,8 @@ def _assert_callback_match_sequence_parity(
             check_regs=True,
         )
         assert_match_convenience_api_parity(observed, expected)
+        assert_valid_match_group_access_parity(observed, expected)
+        assert_invalid_match_group_access_parity(observed, expected)
 
 
 def assert_callable_replacement_match_parity(
