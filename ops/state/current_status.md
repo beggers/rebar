@@ -329,7 +329,7 @@ The published slice is still narrow: all 969 published correctness cases current
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The concrete surviving follow-on is `RBR-0493`, which should catch the just-landed nested grouped-alternation replacement-template slice up on the shared source-tree benchmark surface by converting the two remaining `grouped_alternation_replacement_boundary.py` gap rows into measured timings.
+- The concrete surviving follow-on is `RBR-0495`, which should publish the adjacent nested grouped-alternation wrapper-template pair already anchored on `grouped_alternation_boundary.py` (`module-sub-template-nested-grouped-alternation-warm-gap` and `pattern-subn-template-named-nested-grouped-alternation-purged-gap`) onto the correctness surface before Rust-backed parity or benchmark catch-up revisit that companion benchmark pair.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
