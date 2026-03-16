@@ -1,6 +1,6 @@
 # RBR-0454: Collapse the remaining full source-tree scorecard cases onto shared manifest expectations
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -60,3 +60,8 @@ Created: 2026-03-16
   - `post-parser-workflows`
   - `regression-pack-full`
   Those two cases still restate `selection_mode`, summary totals, and per-manifest `known_gap_count` bookkeeping that can be derived from the same live manifest documents and shared expectation map already used by the combined-boundary path and the single-manifest helper.
+
+## Completion
+- 2026-03-16: Replaced the single-manifest-only scorecard case shape with `_full_source_tree_scorecard_case_definition(...)`, and updated all seven scoped full source-tree scorecard cases to derive `manifest_ids`, `selection_mode`, `expected_summary`, and per-manifest `known_gap_count` blocks from the live manifest documents plus `SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS`.
+- 2026-03-16: Kept the intentionally narrower case-local frontier explicit by leaving the local deferred metadata, representative workload ids, and workload-note assertions in place for `compile-matrix`, `post-parser-workflows`, `nested-group-replacement-boundary`, `nested-group-callable-replacement-boundary`, and `regression-pack-full`.
+- 2026-03-16: Verified `PYTHONPATH=python .venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed (`4 passed, 394 subtests passed in 19.17s`).
