@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 960 cases across 107 manifests, with 960 passes, 0 failures, and 0 published correctness gaps; the main benchmark report now covers 588 workloads with 570 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- The concrete surviving follow-on is `RBR-0462`, which should republish the already-anchored parser-stress benchmark rows `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` as measured source-tree timings on the shared `compile-matrix` and `regression-matrix` surfaces, refreshing the shared benchmark expectations and publication without widening the manifest frontier.
+- The concrete surviving follow-on is `RBR-0464`, which should publish the exact bytes parser compile proxy `b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}"` on the shared `parser-matrix` correctness surface so the lone remaining `regression-parser-bytes-backreference-purged` benchmark gap has an adjacent correctness anchor before Rust-backed parity or later regression benchmark catch-up reopen that bytes backreference slice.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: all 960 published correctness cases now pas
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The concrete surviving follow-on is `RBR-0462`, which should republish the already-anchored parser-stress benchmark rows `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` as measured source-tree timings on the shared `compile-matrix` and `regression-matrix` surfaces, refreshing the shared benchmark expectations and publication without widening the manifest frontier.
+- The concrete surviving follow-on is `RBR-0464`, which should publish the exact bytes parser compile proxy `b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}"` on the shared `parser-matrix` correctness surface so the lone remaining `regression-parser-bytes-backreference-purged` benchmark gap has an adjacent correctness anchor before Rust-backed parity or later regression benchmark catch-up reopen that bytes backreference slice.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

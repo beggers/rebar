@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The concrete surviving follow-on is `RBR-0462`, which should republish the already-anchored parser-stress benchmark rows `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` as measured source-tree timings on the shared `compile-matrix` and `regression-matrix` surfaces, refreshing the shared benchmark expectations and publication without widening the manifest frontier.
+The concrete surviving follow-on is `RBR-0464`, which should publish the exact bytes parser compile proxy `b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}"` on the shared `parser-matrix` correctness surface so the lone remaining `regression-parser-bytes-backreference-purged` benchmark gap has an adjacent correctness anchor before Rust-backed parity or later regression benchmark catch-up reopen that bytes backreference slice.
 
 ## Ordered Work
-1. `RBR-0462` should update `tests/benchmarks/benchmark_expectations.py` and regenerate `reports/benchmarks/latest.py` so the existing `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` rows flip from explicit known gaps to measured source-tree timings on the shared `compile-matrix` and `regression-matrix` surfaces, while leaving `regression-parser-bytes-backreference-purged` as the only remaining `regression-matrix` known gap and avoiding any new benchmark manifests or workload rows.
+1. `RBR-0464` should add the exact bytes named-backreference compile case `b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}"` to `tests/conformance/fixtures/parser_matrix.py`, extend the shared parser-matrix expectations/parity suite just enough to keep that case visible as an honest compile-only gap, and regenerate `reports/correctness/latest.py` so the remaining `regression-parser-bytes-backreference-purged` benchmark gap has an adjacent correctness anchor without creating a new manifest or widening into module-helper execution.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
