@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 958 cases across 107 manifests, with 958 passes, 0 failures, and 0 published `unimplemented` outcomes; the main benchmark report now covers 588 workloads with 566 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | After the single ready anchored `module.compile("^abc$")` parity task `RBR-0449` drains, the concrete surviving follow-on is `RBR-0450`, which should catch the adjacent `module_boundary.py` compile rows up on the shared Python-path benchmark surface. |
-| Work queue | `0` ready, `0` in progress, `450` done, `0` blocked |
+| Delivery estimate | The published correctness slice now covers 958 cases across 107 manifests, with 958 passes, 0 failures, and 0 published `unimplemented` outcomes; the main benchmark report now covers 588 workloads with 569 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity. |
+| Current milestone | The concrete surviving follow-on is `RBR-0453`, which should publish the next public `module.compile()` correctness slice for the existing verbose regression pattern on the shared module-workflow surface before parity or regression benchmark catch-up reopen the compile frontier. |
+| Work queue | `0` ready, `0` in progress, `452` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,7 +28,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `107` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 958 cases across 107 manifests, with 958 passes, 0 failures, and 0 published `unimplemented` outcomes; the main benchmark report now covers 588 workloads with 566 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 958 cases across 107 manifests, with 958 passes, 0 failures, and 0 published `unimplemented` outcomes; the main benchmark report now covers 588 workloads with 569 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 
@@ -36,23 +36,23 @@ _These correctness counts cover only the published slice. Overall delivery estim
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
 | Published workloads | `588` |
-| Workloads with real `rebar` timings | `566` |
-| Known-gap workloads | `22` |
+| Workloads with real `rebar` timings | `569` |
+| Known-gap workloads | `19` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native smoke and full-suite modes remain available for ad hoc runs and tests via `--native-smoke` and `--native-full` when you pass an explicit `--report` path._
 
-_README speedup rollups stay omitted while only `566` of `588` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `569` of `588` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- With the queue drained, the concrete surviving follow-on is `RBR-0450`, which should turn the adjacent `module.compile("^abc$")` benchmark rows into measured source-tree timings.
+- The concrete surviving follow-on is `RBR-0453`, which should publish the verbose `module.compile()` regression slice on the shared module-workflow surface before parity or regression benchmark catch-up reopen the compile frontier.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 588 workloads and carries 22 explicit known-gap workloads.
+- The published benchmark surface is still bounded at 588 workloads and carries 19 explicit known-gap workloads.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
