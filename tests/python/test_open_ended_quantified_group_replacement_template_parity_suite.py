@@ -12,6 +12,7 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FixtureBundle,
+    WholeManifestBundleSpec,
     assert_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_parity,
@@ -19,9 +20,11 @@ from tests.python.fixture_parity_support import (
     case_replacement_argument,
     case_text_argument,
     compile_with_cpython_parity,
-    load_fixture_bundle,
+    fixture_cases_from_bundles,
+    load_whole_manifest_fixture_bundles,
     published_fixture_paths_from_bundles,
 )
+
 PUBLISHED_FIXTURE_PATHS = select_correctness_fixture_paths(
     OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR
 )
@@ -255,8 +258,8 @@ SUPPLEMENTAL_REPEATED_REPLACEMENT_CASES = (
 )
 
 
-FIXTURE_BUNDLES = (
-    load_fixture_bundle(
+FIXTURE_BUNDLE_SPECS = (
+    WholeManifestBundleSpec(
         "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
         expected_manifest_id=(
             "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows"
@@ -281,7 +284,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
         expected_manifest_id=(
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows"
@@ -306,7 +309,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
         expected_manifest_id=(
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-replacement-workflows"
@@ -332,10 +335,13 @@ FIXTURE_BUNDLES = (
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
 )
-PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
+FIXTURE_BUNDLES = load_whole_manifest_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 COMPILE_PATTERNS = tuple(sorted({case_pattern(case) for case in PUBLISHED_CASES}))
 MODULE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "module_call")
 PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pattern_call")
+
+
 def _search_match_for_case(
     backend_name: str,
     backend: object,

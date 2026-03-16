@@ -8,13 +8,17 @@ import pytest
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundle,
+    SelectedCaseBundleSpec,
+    WholeManifestBundleSpec,
     assert_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_parity,
     case_replacement_argument,
     case_text_argument,
     compile_with_cpython_parity,
-    load_fixture_bundle,
+    fixture_cases_from_bundles,
+    load_selected_case_fixture_bundles,
+    load_whole_manifest_fixture_bundles,
     str_case_pattern,
 )
 
@@ -55,34 +59,37 @@ EXPECTED_FIXTURE_REPLACEMENT_OPERATION_HELPER_COUNTS = Counter(
         ("pattern_call", "subn"): 2,
     }
 )
-GROUPED_TEMPLATE_BUNDLE = load_fixture_bundle(
-    "collection_replacement_workflows.py",
-    expected_manifest_id="collection-replacement-workflows",
-    selected_case_ids=(EXPECTED_GROUPED_TEMPLATE_CASE_ID,),
-    expected_case_ids=frozenset({EXPECTED_GROUPED_TEMPLATE_CASE_ID}),
-    expected_patterns=frozenset({"(abc)"}),
-    expected_operation_helper_counts=EXPECTED_GROUPED_TEMPLATE_OPERATION_HELPER_COUNTS,
-    expected_text_models=frozenset({"str"}),
+SELECTED_CASE_BUNDLE_SPECS = (
+    SelectedCaseBundleSpec(
+        "collection_replacement_workflows.py",
+        expected_manifest_id="collection-replacement-workflows",
+        selected_case_ids=(EXPECTED_GROUPED_TEMPLATE_CASE_ID,),
+        expected_patterns=frozenset({"(abc)"}),
+        expected_operation_helper_counts=EXPECTED_GROUPED_TEMPLATE_OPERATION_HELPER_COUNTS,
+        expected_text_models=frozenset({"str"}),
+    ),
+    SelectedCaseBundleSpec(
+        "grouped_match_workflows.py",
+        expected_manifest_id="grouped-match-workflows",
+        selected_case_ids=EXPECTED_SINGLE_CAPTURE_MATCH_CASE_IDS,
+        expected_patterns=frozenset({"(abc)"}),
+        expected_operation_helper_counts=EXPECTED_SINGLE_CAPTURE_OPERATION_HELPER_COUNTS,
+        expected_text_models=frozenset({"str"}),
+    ),
 )
-GROUPED_SINGLE_CAPTURE_BUNDLE = load_fixture_bundle(
-    "grouped_match_workflows.py",
-    expected_manifest_id="grouped-match-workflows",
-    selected_case_ids=EXPECTED_SINGLE_CAPTURE_MATCH_CASE_IDS,
-    expected_case_ids=frozenset(EXPECTED_SINGLE_CAPTURE_MATCH_CASE_IDS),
-    expected_patterns=frozenset({"(abc)"}),
-    expected_operation_helper_counts=EXPECTED_SINGLE_CAPTURE_OPERATION_HELPER_COUNTS,
-    expected_text_models=frozenset({"str"}),
+GROUPED_TEMPLATE_BUNDLE, GROUPED_SINGLE_CAPTURE_BUNDLE = load_selected_case_fixture_bundles(
+    SELECTED_CASE_BUNDLE_SPECS
 )
 GROUPED_TEMPLATE_CASE = GROUPED_TEMPLATE_BUNDLE.cases[0]
 GROUPED_SINGLE_CAPTURE_CASES = GROUPED_SINGLE_CAPTURE_BUNDLE.cases
-FIXTURE_BUNDLES = (
-    load_fixture_bundle(
+FIXTURE_BUNDLE_SPECS = (
+    WholeManifestBundleSpec(
         "grouped_alternation_replacement_workflows.py",
         expected_manifest_id="grouped-alternation-replacement-workflows",
         expected_patterns=frozenset(EXPECTED_GROUPED_ALTERNATION_COMPILE_PATTERNS),
         expected_operation_helper_counts=EXPECTED_FIXTURE_REPLACEMENT_OPERATION_HELPER_COUNTS,
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "nested_group_replacement_workflows.py",
         expected_manifest_id="nested-group-replacement-workflows",
         expected_patterns=frozenset(
@@ -90,7 +97,7 @@ FIXTURE_BUNDLES = (
         ),
         expected_operation_helper_counts=EXPECTED_FIXTURE_REPLACEMENT_OPERATION_HELPER_COUNTS,
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "quantified_nested_group_replacement_workflows.py",
         expected_manifest_id="quantified-nested-group-replacement-workflows",
         expected_patterns=frozenset(
@@ -99,9 +106,8 @@ FIXTURE_BUNDLES = (
         expected_operation_helper_counts=EXPECTED_FIXTURE_REPLACEMENT_OPERATION_HELPER_COUNTS,
     ),
 )
-FIXTURE_BACKED_GROUPED_REPLACEMENT_CASES = tuple(
-    case for bundle in FIXTURE_BUNDLES for case in bundle.cases
-)
+FIXTURE_BUNDLES = load_whole_manifest_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+FIXTURE_BACKED_GROUPED_REPLACEMENT_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 COMPILE_PATTERNS = (
     str_case_pattern(GROUPED_TEMPLATE_CASE),
     *tuple(
