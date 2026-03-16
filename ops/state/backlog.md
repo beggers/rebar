@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The concrete surviving follow-on is `RBR-0465`, which should convert the exact bytes parser compile proxy `b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}"` to real `rebar.compile()` parity on the shared `parser-matrix` path with CPython-matching bytes metadata before regression benchmark catch-up revisits `regression-parser-bytes-backreference-purged`.
+The concrete surviving follow-on is `RBR-0467`, which should republish `regression-parser-bytes-backreference-purged` as a measured source-tree timing on the shared `regression-matrix` surface once the exact bytes parser compile slice is live behind `rebar.compile()`.
 
 ## Ordered Work
-1. `RBR-0465` should convert the exact bytes named-backreference compile proxy `b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}"` into real Rust-backed `rebar.compile()` support with CPython-matching compile metadata (`flags == 0`, `groups == 1`, `groupindex == {"tag": 1}`) on the shared `parser-matrix` parity path, updating `tests/python/test_parser_matrix_parity_suite.py` and `reports/correctness/latest.py` without widening into bytes execution or new benchmark rows.
+1. `RBR-0467` should refresh `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` so `regression-parser-bytes-backreference-purged` stops publishing as the lone `regression-matrix` known gap and instead reports a measured source-tree timing on the existing regression surface without adding workload rows or another benchmark manifest.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
