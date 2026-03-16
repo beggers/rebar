@@ -29,6 +29,17 @@ MANIFEST = {
       ]
     },
     {
+      "id": "grouped-segment-leading-capture-module-search-str",
+      "operation": "module_call",
+      "family": "grouped_segment_leading_capture_module_workflow",
+      "helper": "search",
+      "args": ["(ab)c", "zabcz"],
+      "categories": ["grouped", "segment", "leading-capture", "search", "module", "str", "gap"],
+      "notes": [
+        "Publishes the exact leading-capture grouped-segment module.search helper already anchored as a known benchmark gap."
+      ]
+    },
+    {
       "id": "grouped-segment-pattern-fullmatch-str",
       "operation": "pattern_call",
       "family": "grouped_segment_pattern_workflow",
@@ -38,6 +49,18 @@ MANIFEST = {
       "categories": ["grouped", "segment", "fullmatch", "pattern", "str", "gap"],
       "notes": [
         "Documents the bound Pattern.fullmatch grouped-segment path for the same single-capture literal-prefix/suffix shape."
+      ]
+    },
+    {
+      "id": "grouped-segment-leading-capture-pattern-search-str",
+      "operation": "pattern_call",
+      "family": "grouped_segment_leading_capture_pattern_workflow",
+      "pattern": "(ab)c",
+      "helper": "search",
+      "args": ["zabcz"],
+      "categories": ["grouped", "segment", "leading-capture", "search", "pattern", "str", "gap"],
+      "notes": [
+        "Publishes the matching Pattern.search leading-capture grouped-segment helper so the existing benchmark gap pair stays visible on the correctness surface."
       ]
     },
     {

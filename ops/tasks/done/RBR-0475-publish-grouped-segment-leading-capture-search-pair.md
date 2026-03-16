@@ -1,8 +1,9 @@
 # RBR-0475: Publish the grouped-segment leading-capture search pair on the shared grouped-segment correctness surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
+Completed: 2026-03-16
 
 ## Goal
 - Extend the published correctness scorecard with the exact leading-capture grouped-segment search pair already exposed as `module-search-grouped-segment-cold-gap` and `pattern-search-grouped-segment-warm-gap` on `grouped-named-boundary`, while keeping the work on the ordinary `grouped-segment-workflows` correctness path before Rust-backed parity or source-tree benchmark catch-up revisit that captured-prefix slice.
@@ -37,3 +38,15 @@ Created: 2026-03-16
 - 2026-03-16 planning probe: the tracked benchmark manifest `benchmarks/workloads/grouped_named_boundary.py` already carries the exact gap rows `module-search-grouped-segment-cold-gap` and `pattern-search-grouped-segment-warm-gap`, both pinned to pattern `"(ab)c"`, haystack `"zabcz"`, and flags `0`.
 - 2026-03-16 planning probe: in the current checkout, CPython reports that both `re.search("(ab)c", "zabcz")` and `re.compile("(ab)c").search("zabcz")` return a match with span `(1, 4)`, `group(0) == "abc"`, and `group(1) == "ab"`, while `rebar.search("(ab)c", "zabcz")` and `rebar.compile("(ab)c").search("zabcz")` both raise `NotImplementedError: rebar.compile() is a scaffold placeholder; the \`re\`-compatible API is not implemented yet`.
 - The immediate follow-on after this publication should stay on the same exact leading-capture pair: first Rust-backed parity for the published `(ab)c` search helpers, then source-tree benchmark catch-up against the already-existing grouped-segment gap rows.
+
+## Completion
+- 2026-03-16: Added the exact two numbered `str` leading-capture grouped-segment search cases to `tests/conformance/fixtures/grouped_segment_workflows.py` without introducing named variants, a new manifest, or broader grouped execution shapes.
+- 2026-03-16: Updated `tests/conformance/correctness_expectations.py` so both new grouped-segment leading-capture case ids are part of the representative correctness publication surface.
+- 2026-03-16: Reworked `tests/python/test_grouped_capture_parity_suite.py` so the grouped-segment bundle publishes the new case ids through the existing fixture/frontier inventory checks while keeping them out of the direct compile, module-helper, pattern-helper, match-group-access, and supplemental-miss parametrizations that still require successful `rebar` grouped-segment behavior.
+- 2026-03-16: Republished the tracked combined correctness scorecard at `reports/correctness/latest.py`; the tracked diff includes that file, and the regenerated artifact now reports `965` total cases, `963` passes, `0` explicit failures, `2` unimplemented cases, and `107` manifests overall, while `match.grouped_segment` reports `8` total, `6` passed, `0` failed, and `2` unimplemented.
+
+## Verification
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` passed (`369 passed, 1055 subtests passed`).
+- `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/grouped_segment_workflows.py --report .rebar/tmp/rbr-0475-grouped-segment.py` passed and reported `8` total cases, `6` passes, `0` failures, and `2` unimplemented.
+- `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` republished the tracked scorecard and reported `965` total cases, `963` passes, `0` failures, and `2` unimplemented.
+- The acceptance note still referenced `tests/conformance/test_correctness_fixture_inventory_contract.py`, which no longer exists in this checkout, so the current equivalent inventory gates were run instead: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py::test_published_full_suite_fixture_selector_matches_tracked_fixture_inventory tests/python/test_fixture_parity_support_contract.py::test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids tests/python/test_fixture_parity_support_contract.py::test_manifest_case_helpers_cover_bundle_manifest_order_and_unselected_rows` (`3 passed`).

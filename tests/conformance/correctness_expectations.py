@@ -167,6 +167,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "grouped-segment-compile-metadata-str",
             "named-grouped-segment-compile-metadata-str",
             "grouped-segment-module-search-str",
+            "grouped-segment-leading-capture-module-search-str",
+            "grouped-segment-leading-capture-pattern-search-str",
             "named-grouped-segment-pattern-fullmatch-str",
         ),
     },

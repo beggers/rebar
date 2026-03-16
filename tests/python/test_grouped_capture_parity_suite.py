@@ -20,7 +20,6 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
-    fixture_cases_for_operation,
     fixture_cases_from_bundles,
     load_fixture_bundles,
     ordered_manifest_cases_from_bundles,
@@ -29,6 +28,23 @@ from tests.python.fixture_parity_support import (
 )
 PUBLISHED_GROUPED_CAPTURE_FIXTURE_PATHS = select_correctness_fixture_paths(
     GROUPED_CAPTURE_FIXTURE_SELECTOR
+)
+GROUPED_SEGMENT_LEADING_CAPTURE_PATTERN = r"(ab)c"
+GROUPED_SEGMENT_CASE_IDS = (
+    "grouped-segment-compile-metadata-str",
+    "grouped-segment-module-search-str",
+    "grouped-segment-leading-capture-module-search-str",
+    "grouped-segment-pattern-fullmatch-str",
+    "grouped-segment-leading-capture-pattern-search-str",
+    "named-grouped-segment-compile-metadata-str",
+    "named-grouped-segment-module-search-str",
+    "named-grouped-segment-pattern-fullmatch-str",
+)
+GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS = frozenset(
+    {
+        "grouped-segment-leading-capture-module-search-str",
+        "grouped-segment-leading-capture-pattern-search-str",
+    }
 )
 
 
@@ -93,25 +109,20 @@ SELECTED_CASE_BUNDLE_SPECS = (
     FixtureBundleSpec(
         fixture_name="grouped_segment_workflows.py",
         expected_manifest_id="grouped-segment-workflows",
-        selected_case_ids=(
-            "grouped-segment-compile-metadata-str",
-            "grouped-segment-module-search-str",
-            "grouped-segment-pattern-fullmatch-str",
-            "named-grouped-segment-compile-metadata-str",
-            "named-grouped-segment-module-search-str",
-            "named-grouped-segment-pattern-fullmatch-str",
-        ),
+        selected_case_ids=GROUPED_SEGMENT_CASE_IDS,
         expected_patterns=frozenset(
             {
                 r"a(b)c",
+                GROUPED_SEGMENT_LEADING_CAPTURE_PATTERN,
                 r"a(?P<word>b)c",
             }
         ),
         expected_operation_helper_counts=Counter(
             {
                 ("compile", None): 2,
-                ("module_call", "search"): 2,
+                ("module_call", "search"): 3,
                 ("pattern_call", "fullmatch"): 2,
+                ("pattern_call", "search"): 1,
             }
         ),
     ),
@@ -252,6 +263,11 @@ SELECTED_CASE_BUNDLE_SPECS = (
     ),
 )
 FIXTURE_BUNDLES = load_fixture_bundles(SELECTED_CASE_BUNDLE_SPECS)
+GROUPED_SEGMENT_FIXTURE_BUNDLE = next(
+    bundle
+    for bundle in FIXTURE_BUNDLES
+    if bundle.expected_manifest_id == "grouped-segment-workflows"
+)
 
 
 def _compile_cases(cases: tuple[FixtureCase, ...]) -> tuple[CompileCase, ...]:
@@ -273,9 +289,18 @@ def _compile_cases(cases: tuple[FixtureCase, ...]) -> tuple[CompileCase, ...]:
 
 
 PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
-COMPILE_CASES = _compile_cases(PUBLISHED_CASES)
-MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
-PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
+DIRECT_PARITY_CASES = tuple(
+    case
+    for case in PUBLISHED_CASES
+    if case.case_id not in GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS
+)
+COMPILE_CASES = _compile_cases(DIRECT_PARITY_CASES)
+MODULE_CASES = tuple(
+    case for case in DIRECT_PARITY_CASES if case.operation == "module_call"
+)
+PATTERN_CASES = tuple(
+    case for case in DIRECT_PARITY_CASES if case.operation == "pattern_call"
+)
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
 assert len(CASES_BY_ID) == len(PUBLISHED_CASES)
 SUPPLEMENTAL_MISS_CASES = (
@@ -547,6 +572,36 @@ def test_grouped_capture_parity_suite_uses_expected_published_fixture_paths() ->
         FIXTURE_BUNDLES
     )
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
+
+
+def test_grouped_segment_leading_capture_rows_stay_published_but_out_of_direct_parity_params() -> None:
+    assert tuple(case.case_id for case in GROUPED_SEGMENT_FIXTURE_BUNDLE.cases) == (
+        GROUPED_SEGMENT_CASE_IDS
+    )
+    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS <= frozenset(
+        case.case_id for case in GROUPED_SEGMENT_FIXTURE_BUNDLE.cases
+    )
+    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS.isdisjoint(
+        {case.id for case in COMPILE_CASES}
+    )
+    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS.isdisjoint(
+        {case.case_id for case in MODULE_CASES}
+    )
+    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS.isdisjoint(
+        {case.case_id for case in PATTERN_CASES}
+    )
+    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS.isdisjoint(
+        frozenset(MATCH_GROUP_ACCESS_CASE_IDS)
+    )
+    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS.isdisjoint(
+        {case.module_case_id for case in SUPPLEMENTAL_MISS_CASES}
+    )
+    assert GROUPED_SEGMENT_LEADING_CAPTURE_CASE_IDS.isdisjoint(
+        {case.pattern_case_id for case in SUPPLEMENTAL_MISS_CASES}
+    )
+    assert GROUPED_SEGMENT_LEADING_CAPTURE_PATTERN not in {
+        case.pattern for case in COMPILE_CASES
+    }
 
 
 def test_pattern_bounds_cases_stay_anchored_to_grouped_capture_patterns() -> None:
