@@ -123,6 +123,41 @@ class SourceTreeCombinedCase(SourceTreeBenchmarkCommonCase):
         )
 
 
+@dataclass(frozen=True, slots=True)
+class SourceTreeCombinedPatternGroupExpectation:
+    slice_id: str
+    patterns: tuple[str, ...]
+    minimum_rows: int
+    required_operations: tuple[str, ...]
+    required_categories: tuple[str, ...]
+    search_haystacks: tuple[str, ...]
+    search_haystack_substrings: tuple[str, ...]
+    pattern_haystacks: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class SourceTreeCombinedManifestShapeExpectation:
+    representative_measured_workload_ids: tuple[str, ...]
+    pattern_groups: tuple[SourceTreeCombinedPatternGroupExpectation, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class SourceTreeCombinedSliceExpectation:
+    manifest_id: str
+    slice_id: str
+    required_syntax_features: tuple[str, ...] = ()
+    excluded_syntax_features: tuple[str, ...] = ()
+    required_categories: tuple[str, ...] = ()
+    excluded_categories: tuple[str, ...] = ()
+    required_id_suffix: str | None = None
+    expected_workload_ids: tuple[str, ...] = ()
+    expected_patterns: frozenset[str] = frozenset()
+    expected_operations: frozenset[str] = frozenset()
+    expected_haystacks: frozenset[str] = frozenset()
+    required_row_categories: tuple[str, ...] = ()
+    expected_status: str = "measured"
+
+
 def _full_source_tree_scorecard_case_definition(
     *,
     manifest_ids: tuple[str, ...],
@@ -532,22 +567,34 @@ def _combined_slice_expectation(
     expected_haystacks: set[str],
     required_row_categories: tuple[str, ...],
     expected_status: str = "measured",
-) -> dict[str, Any]:
-    return {
-        "expected_haystacks": expected_haystacks,
-        "expected_operations": expected_operations,
-        "expected_patterns": expected_patterns,
-        "expected_status": expected_status,
-        "expected_workload_ids": expected_workload_ids,
-        "excluded_categories": excluded_categories,
-        "excluded_syntax_features": excluded_syntax_features,
-        "manifest_id": manifest_id,
-        "required_categories": required_categories,
-        "required_id_suffix": required_id_suffix,
-        "required_row_categories": required_row_categories,
-        "required_syntax_features": required_syntax_features,
-        "slice_id": slice_id,
-    }
+) -> SourceTreeCombinedSliceExpectation:
+    return SourceTreeCombinedSliceExpectation(
+        manifest_id=manifest_id,
+        slice_id=slice_id,
+        required_syntax_features=tuple(
+            str(feature) for feature in required_syntax_features
+        ),
+        excluded_syntax_features=tuple(
+            str(feature) for feature in excluded_syntax_features
+        ),
+        required_categories=tuple(str(category) for category in required_categories),
+        excluded_categories=tuple(str(category) for category in excluded_categories),
+        required_id_suffix=required_id_suffix,
+        expected_workload_ids=tuple(
+            str(workload_id) for workload_id in expected_workload_ids
+        ),
+        expected_patterns=frozenset(str(pattern) for pattern in expected_patterns),
+        expected_operations=frozenset(
+            str(operation) for operation in expected_operations
+        ),
+        expected_haystacks=frozenset(
+            str(haystack) for haystack in expected_haystacks
+        ),
+        required_row_categories=tuple(
+            str(category) for category in required_row_categories
+        ),
+        expected_status=expected_status,
+    )
 
 
 SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
@@ -1393,18 +1440,18 @@ def source_tree_combined_manifest_representative_measured_workload_ids(
         return explicit_workload_ids
 
     representative_ids: list[str] = []
-    shape_expectation = manifest_expectation.get("shape_expectation")
-    if shape_expectation is not None:
+    if manifest_expectation.get("shape_expectation") is not None:
+        shape_expectation = source_tree_combined_manifest_shape_expectation(manifest_id)
         _append_unique_workload_ids(
             representative_ids,
-            shape_expectation.get("representative_measured_workload_ids", ()),
+            shape_expectation.representative_measured_workload_ids,
         )
     for expectation in SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS:
-        if expectation["manifest_id"] != manifest_id:
+        if expectation.manifest_id != manifest_id:
             continue
         _append_unique_workload_ids(
             representative_ids,
-            expectation["expected_workload_ids"],
+            expectation.expected_workload_ids,
         )
     return tuple(representative_ids)
 
@@ -1859,24 +1906,64 @@ def source_tree_combined_case(target_manifest_id: str) -> SourceTreeCombinedCase
     )
 
 
-def source_tree_combined_manifest_shape_expectation(manifest_id: str) -> dict[str, Any]:
+def _source_tree_combined_pattern_group_expectation(
+    raw_group: dict[str, Any],
+) -> SourceTreeCombinedPatternGroupExpectation:
+    return SourceTreeCombinedPatternGroupExpectation(
+        slice_id=str(raw_group["slice_id"]),
+        patterns=tuple(str(pattern) for pattern in raw_group["patterns"]),
+        minimum_rows=int(raw_group["minimum_rows"]),
+        required_operations=tuple(
+            str(operation) for operation in raw_group["required_operations"]
+        ),
+        required_categories=tuple(
+            str(category) for category in raw_group["required_categories"]
+        ),
+        search_haystacks=tuple(
+            str(haystack) for haystack in raw_group["search_haystacks"]
+        ),
+        search_haystack_substrings=tuple(
+            str(snippet) for snippet in raw_group["search_haystack_substrings"]
+        ),
+        pattern_haystacks=tuple(
+            str(haystack) for haystack in raw_group["pattern_haystacks"]
+        ),
+    )
+
+
+@cache
+def source_tree_combined_manifest_shape_expectation(
+    manifest_id: str,
+) -> SourceTreeCombinedManifestShapeExpectation:
     manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
     if manifest_expectation is None:
         raise AssertionError(
             f"unknown source-tree combined manifest expectation {manifest_id!r}"
         )
-    shape_expectation = manifest_expectation.get("shape_expectation")
-    if shape_expectation is None:
+    raw_shape = manifest_expectation.get("shape_expectation")
+    if raw_shape is None:
         raise AssertionError(
             "source-tree combined manifest "
             f"{manifest_id!r} does not define shared shape expectations"
         )
-    return shape_expectation
+    return SourceTreeCombinedManifestShapeExpectation(
+        representative_measured_workload_ids=tuple(
+            str(workload_id)
+            for workload_id in raw_shape.get(
+                "representative_measured_workload_ids",
+                (),
+            )
+        ),
+        pattern_groups=tuple(
+            _source_tree_combined_pattern_group_expectation(raw_group)
+            for raw_group in raw_shape.get("pattern_groups", ())
+        ),
+    )
 
 
 def source_tree_combined_slice_manifest_ids() -> tuple[str, ...]:
     manifest_ids_with_expectations = {
-        expectation["manifest_id"] for expectation in SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
+        expectation.manifest_id for expectation in SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
     }
     combined_target_ids = source_tree_combined_target_manifest_ids()
     missing_manifest_ids = manifest_ids_with_expectations - set(combined_target_ids)
@@ -1905,11 +1992,11 @@ def source_tree_combined_slice_derived_manifest_ids() -> tuple[str, ...]:
 
 def source_tree_combined_slice_expectations(
     manifest_id: str,
-) -> tuple[dict[str, Any], ...]:
+) -> tuple[SourceTreeCombinedSliceExpectation, ...]:
     expectations = tuple(
         expectation
         for expectation in SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
-        if expectation["manifest_id"] == manifest_id
+        if expectation.manifest_id == manifest_id
     )
     if not expectations:
         raise AssertionError(
@@ -1920,26 +2007,26 @@ def source_tree_combined_slice_expectations(
 
 def _workload_matches_source_tree_combined_slice(
     workload: dict[str, Any],
-    expectation: dict[str, Any],
+    expectation: SourceTreeCombinedSliceExpectation,
 ) -> bool:
     workload_id = str(workload["id"])
-    required_id_suffix = expectation["required_id_suffix"]
+    required_id_suffix = expectation.required_id_suffix
     if required_id_suffix is not None and not workload_id.endswith(required_id_suffix):
         return False
 
     syntax_features = set(str(value) for value in workload["syntax_features"])
     categories = set(str(value) for value in workload["categories"])
     return (
-        set(expectation["required_syntax_features"]).issubset(syntax_features)
-        and syntax_features.isdisjoint(expectation["excluded_syntax_features"])
-        and set(expectation["required_categories"]).issubset(categories)
-        and categories.isdisjoint(expectation["excluded_categories"])
+        set(expectation.required_syntax_features).issubset(syntax_features)
+        and syntax_features.isdisjoint(expectation.excluded_syntax_features)
+        and set(expectation.required_categories).issubset(categories)
+        and categories.isdisjoint(expectation.excluded_categories)
     )
 
 
 def select_source_tree_combined_slice_rows(
     manifest_document: dict[str, Any],
-    expectation: dict[str, Any],
+    expectation: SourceTreeCombinedSliceExpectation,
 ) -> list[dict[str, Any]]:
     return [
         workload

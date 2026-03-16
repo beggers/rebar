@@ -1,6 +1,6 @@
 # RBR-0478: Collapse source-tree benchmark shape and slice accessors onto typed records
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -91,3 +91,8 @@ Created: 2026-03-16
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passes in the current checkout (`16 passed, 467 subtests passed in 19.76s`).
   - `rg -n 'expectation\\[\"(expected_workload_ids|required_categories|required_id_suffix|required_syntax_features|excluded_syntax_features|excluded_categories|expected_patterns|expected_operations|expected_haystacks|expected_status|required_row_categories|slice_id)\"\\]|shape_expectation\\[\"(representative_measured_workload_ids|pattern_groups)\"\\]|pattern_group\\[\"(slice_id|patterns|minimum_rows|required_operations|required_categories|search_haystacks|search_haystack_substrings|pattern_haystacks)\"\\]' tests/benchmarks/benchmark_expectations.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently returns `22` matches, which is the exact string-key benchmark plumbing this task should delete rather than rename.
   - The typed-record probe above currently fails with `AssertionError: <class 'dict'>`, which is the exact remaining accessor shape this task is meant to replace.
+
+## Completion
+- 2026-03-16: Added local typed dataclasses in `tests/benchmarks/benchmark_expectations.py` for combined slice expectations, manifest-shape expectations, and manifest shape pattern groups; `_combined_slice_expectation(...)` now constructs typed slice records, and `source_tree_combined_manifest_shape_expectation(...)` now normalizes raw nested shape payloads into typed records.
+- 2026-03-16: Rewired `source_tree_combined_manifest_representative_measured_workload_ids(...)`, `source_tree_combined_slice_expectations(...)`, `_workload_matches_source_tree_combined_slice(...)`, and `select_source_tree_combined_slice_rows(...)` to consume those records through attributes, then updated both benchmark suites to stop indexing slice and shape expectations through string keys.
+- 2026-03-16: Verified the cleanup with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`16 passed, 467 subtests passed in 19.71s`), the required `rg -n ...` check (no matches), and the typed-record probe from the task body (`ok`).

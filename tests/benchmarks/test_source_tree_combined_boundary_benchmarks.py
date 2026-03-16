@@ -8,6 +8,8 @@ TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 
 from tests.benchmarks.benchmark_expectations import (
     SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS,
+    SourceTreeCombinedPatternGroupExpectation,
+    SourceTreeCombinedSliceExpectation,
     representative_measured_workload_ids,
     run_source_tree_benchmark_scorecard,
     select_source_tree_combined_slice_rows,
@@ -152,7 +154,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             source_tree_combined_manifest_representative_measured_workload_ids(
                 "pattern-boundary"
             ),
-            shape_expectation["representative_measured_workload_ids"],
+            shape_expectation.representative_measured_workload_ids,
         )
 
     def test_regression_manifest_is_fully_measured_on_the_shared_surface(self) -> None:
@@ -201,7 +203,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                         for expectation in source_tree_combined_slice_expectations(
                             manifest_id
                         )
-                        for workload_id in expectation["expected_workload_ids"]
+                        for workload_id in expectation.expected_workload_ids
                     ),
                 )
 
@@ -286,7 +288,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 )
 
                 for expectation in source_tree_combined_slice_expectations(manifest_id):
-                    with self.subTest(slice_id=expectation["slice_id"]):
+                    with self.subTest(slice_id=expectation.slice_id):
                         self._assert_source_tree_combined_manifest_slice(
                             case.target_manifest,
                             scorecard,
@@ -298,11 +300,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         manifest_document: dict[str, object],
         scorecard: dict[str, object],
         *,
-        expectation: dict[str, object],
+        expectation: SourceTreeCombinedSliceExpectation,
     ) -> None:
-        manifest_id = str(expectation["manifest_id"])
-        expected_workload_ids = expectation["expected_workload_ids"]
-        expected_status = str(expectation.get("expected_status", "measured"))
+        manifest_id = expectation.manifest_id
+        expected_workload_ids = expectation.expected_workload_ids
+        expected_status = expectation.expected_status
         matched_rows = select_source_tree_combined_slice_rows(
             manifest_document,
             expectation,
@@ -314,11 +316,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(
             {workload["pattern"] for workload in matched_rows},
-            expectation["expected_patterns"],
+            expectation.expected_patterns,
         )
         self.assertEqual(
             {workload["operation"] for workload in matched_rows},
-            expectation["expected_operations"],
+            expectation.expected_operations,
         )
         self.assertEqual(
             {
@@ -326,15 +328,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 for workload in matched_rows
                 if workload.get("haystack") is not None
             },
-            expectation["expected_haystacks"],
+            expectation.expected_haystacks,
         )
 
         for workload in matched_rows:
             with self.subTest(
-                slice_id=expectation["slice_id"],
+                slice_id=expectation.slice_id,
                 workload_id=workload["id"],
             ):
-                for category in expectation["required_row_categories"]:
+                for category in expectation.required_row_categories:
                     self.assertIn(category, workload["categories"])
 
         scorecard_rows = [
@@ -350,7 +352,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
 
         for workload_id in expected_workload_ids:
             with self.subTest(
-                slice_id=expectation["slice_id"],
+                slice_id=expectation.slice_id,
                 workload_id=workload_id,
             ):
                 assert_benchmark_workload_contract(
@@ -384,7 +386,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             len(case.target_manifest["workloads"]),
         )
 
-        for workload_id in shape_expectation["representative_measured_workload_ids"]:
+        for workload_id in shape_expectation.representative_measured_workload_ids:
             with self.subTest(workload_id=workload_id):
                 assert_benchmark_workload_contract(
                     self,
@@ -397,8 +399,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     expected_status="measured",
                 )
 
-        for pattern_group in shape_expectation["pattern_groups"]:
-            with self.subTest(slice_id=pattern_group["slice_id"]):
+        for pattern_group in shape_expectation.pattern_groups:
+            with self.subTest(slice_id=pattern_group.slice_id):
                 self._assert_source_tree_combined_pattern_group(
                     case.target_manifest,
                     scorecard,
@@ -412,23 +414,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         scorecard: dict[str, object],
         *,
         manifest_id: str,
-        expectation: dict[str, object],
+        expectation: SourceTreeCombinedPatternGroupExpectation,
     ) -> None:
-        slice_id = str(expectation["slice_id"])
-        patterns = tuple(str(pattern) for pattern in expectation["patterns"])
-        required_operations = tuple(
-            str(operation) for operation in expectation["required_operations"]
-        )
-        required_categories = tuple(
-            str(category) for category in expectation["required_categories"]
-        )
-        search_haystacks = tuple(str(haystack) for haystack in expectation["search_haystacks"])
-        search_haystack_substrings = tuple(
-            str(snippet) for snippet in expectation["search_haystack_substrings"]
-        )
-        pattern_haystacks = tuple(
-            str(haystack) for haystack in expectation["pattern_haystacks"]
-        )
+        slice_id = expectation.slice_id
+        patterns = expectation.patterns
+        required_operations = expectation.required_operations
+        required_categories = expectation.required_categories
+        search_haystacks = expectation.search_haystacks
+        search_haystack_substrings = expectation.search_haystack_substrings
+        pattern_haystacks = expectation.pattern_haystacks
         manifest_rows = [
             workload
             for workload in manifest_document["workloads"]
@@ -437,7 +431,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertGreaterEqual(
             len(manifest_rows),
-            int(expectation["minimum_rows"]),
+            expectation.minimum_rows,
             f"expected benchmark rows for the {slice_id} slice",
         )
 

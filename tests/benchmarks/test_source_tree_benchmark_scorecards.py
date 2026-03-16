@@ -85,7 +85,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                     tuple(
                         workload_id
                         for expectation in source_tree_combined_slice_expectations(case_id)
-                        for workload_id in expectation["expected_workload_ids"]
+                        for workload_id in expectation.expected_workload_ids
                     ),
                 )
 
