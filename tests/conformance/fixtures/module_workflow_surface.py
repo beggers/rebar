@@ -19,6 +19,16 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-compile-str-anchored-literal",
+      "operation": "compile",
+      "family": "compile_workflow",
+      "pattern": "^abc$",
+      "categories": ["workflow", "compile", "literal", "anchored", "str"],
+      "notes": [
+        "Publishes the exact anchored module compile workflow that still blocks the adjacent module-boundary compile benchmark rows."
+      ]
+    },
+    {
       "id": "workflow-compile-bytes-literal",
       "operation": "compile",
       "family": "compile_workflow",

@@ -91,6 +91,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
     },
     "module-workflow-surface": {
         "representative_case_ids": (
+            "workflow-compile-str-anchored-literal",
             "workflow-cache-hit-str",
             "workflow-purge-reset-str",
             "workflow-pattern-search-str",

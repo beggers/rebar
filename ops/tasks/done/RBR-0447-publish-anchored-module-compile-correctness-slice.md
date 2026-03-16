@@ -1,6 +1,6 @@
 # RBR-0447: Publish anchored module.compile correctness coverage on the shared module-workflow surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -28,3 +28,6 @@ Created: 2026-03-16
 ## Notes
 - Direct inspection of the current checkout shows `rebar.compile("^abc$")` still raises `NotImplementedError`, while `benchmarks/workloads/module_boundary.py` already carries the three adjacent `module-compile-literal-{cold,warm,purged}` rows for that exact pattern.
 - The intended post-publication follow-on is `RBR-0449`, which should convert this newly published anchored literal compile case to real Rust-backed parity on the public `rebar.compile()` surface before the old `module_boundary.py` compile gaps are turned into measured source-tree timings.
+- Completed 2026-03-16: added `workflow-compile-str-anchored-literal` to `tests/conformance/fixtures/module_workflow_surface.py`, added it to the shared `module-workflow-surface` representative-case expectations, and republished `reports/correctness/latest.py`.
+- Verified publication from the tracked report artifact: combined summary is `958` total cases with `957` passes, `0` failures, and `1` `unimplemented`, and the `module.workflow` suite for `module-workflow-surface` is `11` total cases with `10` passes and `1` `unimplemented`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_correctness_fixture_inventory_contract.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0447-anchored-module-compile.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
