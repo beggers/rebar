@@ -1,6 +1,6 @@
 # RBR-0495: Publish the nested grouped-alternation wrapper-template pair on the correctness surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -36,3 +36,6 @@ Created: 2026-03-16
 - 2026-03-16 planning probe: `reports/benchmarks/latest.py` currently reports `grouped-alternation-boundary` at `6` measured workloads / `2` known gaps, and both exact wrapper-template workload ids still publish `status == "unimplemented"`.
 - 2026-03-16 planning probe: CPython reports `re.sub("a((b|c))d", "<\\1>", "abdacd") == "<b><c>"` and `re.compile("a(?P<outer>(b|c))d").subn("<\\g<outer>>", "abdacd", 1) == ("<b>acd", 1)` for this exact pair.
 - `RBR-0491` intentionally left this wrapper-template pair out of scope while converting the adjacent `\\1x` / `\\g<outer>x` nested grouped-alternation replacement-template slice to Rust-backed parity.
+
+## Retirement Note
+- 2026-03-16 feature-planning: Retired this queued publication-as-gap task after verifying the exact wrapper-template pair already matches CPython through the public `rebar` API in the current checkout: `rebar.sub("a((b|c))d", "<\\1>", "abdacd") == "<b><c>"` and `rebar.compile("a(?P<outer>(b|c))d").subn("<\\g<outer>>", "abdacd", 1) == ("<b>acd", 1)`. The adjacent blocked benchmark note on `RBR-0493` also already observed the same pair timing as measured on the narrow `grouped_alternation_boundary.py` rerun, so the old `971 / 969 / 2` acceptance criteria were no longer honest. Replacement task `RBR-0497` republishes the same bounded pair on the correctness surface as passing cases instead of `unimplemented` debt.
