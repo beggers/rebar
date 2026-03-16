@@ -1,6 +1,6 @@
 # RBR-0429: Fold quantified-alternation and branch-local parity suites into shared fixture bundles
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -60,3 +60,8 @@ Created: 2026-03-16
 - The queue was empty at the start of this run, recent runtime artifacts show no inherited-dirty or post-task refresh stall, and both tracked and live JSON counts are zero (`tracked_json_blob_count: 0`, `tracked_json_blob_delta: 0`, `git ls-files '*.json' | wc -l = 0`, `rg --files -g '*.json' | wc -l = 0`), so this run should seed one post-JSON duplicate-plumbing cleanup instead of no-oping.
 - [tests/python/test_quantified_alternation_parity_suite.py](/home/ubuntu/rebar/tests/python/test_quantified_alternation_parity_suite.py) and [tests/python/test_branch_local_backreference_parity_suite.py](/home/ubuntu/rebar/tests/python/test_branch_local_backreference_parity_suite.py) are the remaining whole-manifest parity suites still carrying local bundle dataclasses, manifest loaders, selector-path sorting, and repeated bundle-contract assertions after `RBR-0422` and `RBR-0427`.
 - `RBR-0428` is already reserved in tracked backlog/current-status text for the next feature-owned conditional replacement-template parity slice, so this architecture follow-on starts at `RBR-0429`.
+
+## Completion
+- 2026-03-16: Replaced both suites' local whole-manifest bundle dataclass/loader layers with `load_fixture_bundle(...)`, routed published-path checks through `published_fixture_paths_from_bundles(...)`, routed repeated manifest-alignment assertions through `assert_fixture_bundle_contract(...)`, and kept the quantified alternation backtracking/supplemental cases plus the branch-local convenience/group-access/bounds coverage intact.
+- 2026-03-16: Deleted the dead branch-local unsupported-backend metadata (`UNSUPPORTED_BACKENDS_BY_CASE_ID`, `UNSUPPORTED_BACKEND_REASONS_BY_CASE_ID`, `_skip_unsupported_backend(...)`) and ran `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py` (`748 passed in 0.56s`).
+- 2026-03-16: Verified the task-specific grep checks returned no matches for local `FixtureBundle` / `_fixture_bundle(...)` / inline sorted published-path assertions in the two suites, and no matches for `unsupported_backends`, `unsupported_backend_reason`, or `_skip_unsupported_backend` in the branch-local suite.

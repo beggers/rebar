@@ -9,36 +9,24 @@ import pytest
 from rebar_harness.correctness import (
     BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR,
     FixtureCase,
-    FixtureManifest,
-    load_fixture_manifest,
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
+    FixtureBundle,
+    assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
+    load_fixture_bundle,
+    published_fixture_paths_from_bundles,
     str_case_pattern,
 )
 PUBLISHED_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATHS = select_correctness_fixture_paths(
     BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR
 )
-
-
-@dataclass(frozen=True)
-class FixtureBundle:
-    manifest: FixtureManifest
-    cases: tuple[FixtureCase, ...]
-    expected_manifest_id: str
-    expected_case_ids: frozenset[str]
-    expected_compile_patterns: frozenset[str]
-    expected_operation_helper_counts: Counter[tuple[str, str | None]]
-    assert_match_convenience_api: bool = False
-    unsupported_backends: tuple[str, ...] = ()
-    unsupported_backend_reason: str | None = None
 
 
 @dataclass(frozen=True)
@@ -59,33 +47,8 @@ class BoundedPatternCase:
     bounds: tuple[int, ...]
 
 
-def _fixture_bundle(
-    fixture_name: str,
-    *,
-    expected_manifest_id: str,
-    expected_case_ids: frozenset[str],
-    expected_compile_patterns: frozenset[str],
-    expected_operation_helper_counts: Counter[tuple[str, str | None]],
-    assert_match_convenience_api: bool = False,
-    unsupported_backends: tuple[str, ...] = (),
-    unsupported_backend_reason: str | None = None,
-) -> FixtureBundle:
-    manifest, cases = load_fixture_manifest(FIXTURES_DIR / fixture_name)
-    return FixtureBundle(
-        manifest=manifest,
-        cases=tuple(cases),
-        expected_manifest_id=expected_manifest_id,
-        expected_case_ids=expected_case_ids,
-        expected_compile_patterns=expected_compile_patterns,
-        expected_operation_helper_counts=expected_operation_helper_counts,
-        assert_match_convenience_api=assert_match_convenience_api,
-        unsupported_backends=unsupported_backends,
-        unsupported_backend_reason=unsupported_backend_reason,
-    )
-
-
 FIXTURE_BUNDLES = (
-    _fixture_bundle(
+    load_fixture_bundle(
         "branch_local_backreference_workflows.py",
         expected_manifest_id="branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -98,7 +61,7 @@ FIXTURE_BUNDLES = (
                 "branch-local-named-backreference-pattern-fullmatch-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a((b)|c)\2d",
                 r"a(?P<outer>(?P<inner>b)|c)(?P=inner)d",
@@ -112,7 +75,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_fixture_bundle(
         "quantified_branch_local_backreference_workflows.py",
         expected_manifest_id="quantified-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -127,7 +90,7 @@ FIXTURE_BUNDLES = (
                 "quantified-branch-local-named-backreference-pattern-fullmatch-absent-branch-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a((b)+|c)\2d",
                 r"a(?P<outer>(?P<inner>b)+|c)(?P=inner)d",
@@ -140,9 +103,8 @@ FIXTURE_BUNDLES = (
                 ("pattern_call", "fullmatch"): 4,
             }
         ),
-        assert_match_convenience_api=True,
     ),
-    _fixture_bundle(
+    load_fixture_bundle(
         "optional_group_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="optional-group-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -159,7 +121,7 @@ FIXTURE_BUNDLES = (
                 "optional-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a((b|c)\2)?d",
                 r"a(?P<outer>(?P<inner>b|c)(?P=inner))?d",
@@ -173,7 +135,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_fixture_bundle(
         "conditional_group_exists_branch_local_backreference_workflows.py",
         expected_manifest_id="conditional-group-exists-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -186,7 +148,7 @@ FIXTURE_BUNDLES = (
                 "conditional-group-exists-branch-local-named-backreference-pattern-fullmatch-absent-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a((b)|c)\2(?(2)d|e)",
                 r"a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)",
@@ -200,7 +162,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    _fixture_bundle(
+    load_fixture_bundle(
         "nested_group_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="nested-group-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -215,7 +177,7 @@ FIXTURE_BUNDLES = (
                 "nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a((b|c))\2d",
                 r"a(?P<outer>(?P<inner>b|c))(?P=inner)d",
@@ -228,9 +190,8 @@ FIXTURE_BUNDLES = (
                 ("pattern_call", "fullmatch"): 4,
             }
         ),
-        assert_match_convenience_api=True,
     ),
-    _fixture_bundle(
+    load_fixture_bundle(
         "quantified_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="quantified-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -247,7 +208,7 @@ FIXTURE_BUNDLES = (
                 "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a((b|c)\2){1,2}d",
                 r"a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d",
@@ -260,9 +221,8 @@ FIXTURE_BUNDLES = (
                 ("pattern_call", "fullmatch"): 6,
             }
         ),
-        assert_match_convenience_api=True,
     ),
-    _fixture_bundle(
+    load_fixture_bundle(
         "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="quantified-nested-group-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -279,7 +239,7 @@ FIXTURE_BUNDLES = (
                 "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a((b|c)+)\2d",
                 r"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
@@ -292,9 +252,8 @@ FIXTURE_BUNDLES = (
                 ("pattern_call", "fullmatch"): 6,
             }
         ),
-        assert_match_convenience_api=True,
     ),
-    _fixture_bundle(
+    load_fixture_bundle(
         "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -315,7 +274,7 @@ FIXTURE_BUNDLES = (
                 "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-overflow-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a((b|c){1,4})\2d",
                 r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
@@ -328,9 +287,8 @@ FIXTURE_BUNDLES = (
                 ("pattern_call", "fullmatch"): 8,
             }
         ),
-        assert_match_convenience_api=True,
     ),
-    _fixture_bundle(
+    load_fixture_bundle(
         "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
         expected_manifest_id="nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-workflows",
         expected_case_ids=frozenset(
@@ -347,7 +305,7 @@ FIXTURE_BUNDLES = (
                 "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-one-repetition-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a((b|c){2,})\2d",
                 r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
@@ -360,9 +318,8 @@ FIXTURE_BUNDLES = (
                 ("pattern_call", "fullmatch"): 6,
             }
         ),
-        assert_match_convenience_api=True,
     ),
-    _fixture_bundle(
+    load_fixture_bundle(
         "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py",
         expected_manifest_id="nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows",
         expected_case_ids=frozenset(
@@ -379,7 +336,7 @@ FIXTURE_BUNDLES = (
                 "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-no-match-below-lower-bound-workflow-str",
             }
         ),
-        expected_compile_patterns=frozenset(
+        expected_patterns=frozenset(
             {
                 r"a((b|c){2,})\2(?(2)d|e)",
                 r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
@@ -392,29 +349,27 @@ FIXTURE_BUNDLES = (
                 ("pattern_call", "fullmatch"): 6,
             }
         ),
-        assert_match_convenience_api=True,
     ),
 )
 PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
-UNSUPPORTED_BACKENDS_BY_CASE_ID = {
-    case.case_id: bundle.unsupported_backends
-    for bundle in FIXTURE_BUNDLES
-    for case in bundle.cases
-    if bundle.unsupported_backends
-}
-UNSUPPORTED_BACKEND_REASONS_BY_CASE_ID = {
-    case.case_id: bundle.unsupported_backend_reason
-    for bundle in FIXTURE_BUNDLES
-    for case in bundle.cases
-    if bundle.unsupported_backends
-}
 COMPILE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "compile")
 WORKFLOW_CASES = tuple(case for case in PUBLISHED_CASES if case.operation != "compile")
+MATCH_CONVENIENCE_MANIFEST_IDS = frozenset(
+    {
+        "quantified-branch-local-backreference-workflows",
+        "nested-group-alternation-branch-local-backreference-workflows",
+        "quantified-alternation-branch-local-backreference-workflows",
+        "quantified-nested-group-alternation-branch-local-backreference-workflows",
+        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows",
+        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-workflows",
+        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows",
+    }
+)
 MATCH_CONVENIENCE_CASE_IDS = frozenset(
     case.case_id
     for bundle in FIXTURE_BUNDLES
-    if bundle.assert_match_convenience_api
+    if bundle.expected_manifest_id in MATCH_CONVENIENCE_MANIFEST_IDS
     for case in bundle.cases
     if case.operation != "compile"
 )
@@ -646,17 +601,6 @@ SUPPLEMENTAL_MISS_CASES = (
     ),
 )
 
-
-def _skip_unsupported_backend(case_id: str, backend_name: str) -> None:
-    unsupported_backends = UNSUPPORTED_BACKENDS_BY_CASE_ID.get(case_id, ())
-    if backend_name not in unsupported_backends:
-        return
-    reason = UNSUPPORTED_BACKEND_REASONS_BY_CASE_ID.get(case_id)
-    if reason is None:
-        reason = f"{backend_name} backend unsupported for this branch-local parity case"
-    pytest.skip(reason)
-
-
 def _load_match_group_access_cases() -> tuple[FixtureCase, ...]:
     missing_case_ids = tuple(
         case_id for case_id in MATCH_GROUP_ACCESS_CASE_IDS if case_id not in CASES_BY_ID
@@ -704,8 +648,8 @@ def _workflow_result_for_case(
 
 
 def test_expected_branch_local_backreference_fixtures_remain_published() -> None:
-    assert PUBLISHED_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATHS == tuple(
-        sorted((bundle.manifest.path for bundle in FIXTURE_BUNDLES), key=lambda path: path.name)
+    assert PUBLISHED_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATHS == (
+        published_fixture_paths_from_bundles(FIXTURE_BUNDLES)
     )
 
 
@@ -731,14 +675,7 @@ def test_pattern_bounds_cases_stay_anchored_to_supported_branch_local_patterns()
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     bundle: FixtureBundle,
 ) -> None:
-    assert bundle.manifest.path in PUBLISHED_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATHS
-    assert bundle.manifest.manifest_id == bundle.expected_manifest_id
-    assert len(bundle.cases) == len(bundle.expected_case_ids)
-    assert {case.case_id for case in bundle.cases} == bundle.expected_case_ids
-    assert {str_case_pattern(case) for case in bundle.cases} == bundle.expected_compile_patterns
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        bundle.expected_operation_helper_counts
-    )
+    assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
 
 
 @pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
@@ -747,7 +684,6 @@ def test_compile_metadata_matches_cpython(
     case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
-    _skip_unsupported_backend(case.case_id, backend_name)
     compile_with_cpython_parity(
         backend_name,
         backend,
@@ -762,7 +698,6 @@ def test_published_workflows_match_cpython(
     case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
-    _skip_unsupported_backend(case.case_id, backend_name)
     observed, expected = _workflow_result_for_case(backend_name, backend, case)
 
     assert_match_result_parity(backend_name, observed, expected, check_regs=True)
