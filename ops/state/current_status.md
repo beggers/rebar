@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 957 cases across 107 manifests, with 957 passes, 0 failures, and 0 published `unimplemented` outcomes; the main benchmark report now covers 584 workloads with 562 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- The ready queue is empty; the surviving follow-on is `RBR-0445`, which should add the missing numbered and named absent-capture `module.subn()` and compiled-`Pattern.subn()` benchmark rows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` on `benchmarks/workloads/conditional_group_exists_boundary.py` through the shared Python-path surface.
+- After the single ready conditional callable-replacement exception benchmark catch-up drains, the concrete surviving follow-on is `RBR-0447`, which should convert the three old `module.compile("^abc$")` cold/warm/purged gap rows on `benchmarks/workloads/module_boundary.py` into measured source-tree timings through the shared Python-path surface.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow, now lands all 957 of 957 published cases, a
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The ready queue is empty; the surviving follow-on is `RBR-0445`, which should add the missing numbered and named absent-capture `module.subn()` and compiled-`Pattern.subn()` benchmark rows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` on `benchmarks/workloads/conditional_group_exists_boundary.py` through the shared Python-path surface.
+- After the single ready conditional callable-replacement exception benchmark catch-up drains, the concrete surviving follow-on is `RBR-0447`, which should convert the three old `module.compile("^abc$")` cold/warm/purged gap rows on `benchmarks/workloads/module_boundary.py` into measured source-tree timings through the shared Python-path surface.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

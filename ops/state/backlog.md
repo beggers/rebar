@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 stays on the shared conditional replacement benchmark frontier; after the single ready quantified alternation-heavy benchmark catch-up drains, the concrete surviving follow-on is `RBR-0445`, which should use the already-published callable replacement slice to add the missing numbered and named absent-capture `module.subn()` and compiled-`Pattern.subn()` benchmark rows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` on `benchmarks/workloads/conditional_group_exists_boundary.py` through the Python-facing `rebar` path.
+After the single ready conditional callable-replacement exception benchmark catch-up drains, the concrete surviving follow-on is `RBR-0447`, which should convert the three old `module.compile("^abc$")` cold/warm/purged gap rows on `benchmarks/workloads/module_boundary.py` into measured source-tree timings through the Python-facing `rebar` path.
 
 ## Ordered Work
-1. `RBR-0445` should catch the remaining bounded two-arm conditional callable-replacement exception benchmark slice up on `benchmarks/workloads/conditional_group_exists_boundary.py` by adding the missing numbered and named absent-capture `module.subn()` and compiled-`Pattern.subn()` Python-path rows for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` with the existing `callable_match_group` helper, updating the shared source-tree benchmark expectations, and regenerating `reports/benchmarks/latest.py`.
+1. `RBR-0447` should catch the old `module-boundary` compile-benchmark hole up on `benchmarks/workloads/module_boundary.py` by converting the `module.compile("^abc$")` cold, warm, and purged rows from explicit gaps into measured source-tree timings, updating the shared source-tree benchmark expectations, and regenerating `reports/benchmarks/latest.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
