@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 957 cases across 107 manifests, with 949 passes, 0 failures, and 8 honest `unimplemented` outcomes; the main benchmark report now covers 576 workloads with 554 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | Milestone 2 stays on the bounded two-arm conditional replacement frontier for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; after the newly seeded `RBR-0439` quantified alternation-heavy replacement correctness pack drains, the concrete surviving follow-on is `RBR-0441`, which should convert that same bounded `sub()` / `subn()` slice for `a(b)?c(?(1)(de|df)|(eg|eh)){2}` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` behind `rebar._rebar` on the shared conditional-replacement parity surface. |
-| Work queue | `0` ready, `0` in progress, `440` done, `0` blocked |
+| Delivery estimate | The published correctness slice now covers 957 cases across 107 manifests, with 957 passes, 0 failures, and 0 published `unimplemented` outcomes; the main benchmark report now covers 576 workloads with 554 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity. |
+| Current milestone | Milestone 2 stays on the bounded two-arm conditional replacement frontier for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; after `RBR-0441` drains, the concrete surviving follow-on is `RBR-0443`, which should catch that same bounded quantified alternation-heavy `sub()` / `subn()` slice for `a(b)?c(?(1)(de|df)|(eg|eh)){2}` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` up on the shared `benchmarks/workloads/conditional_group_exists_boundary.py` benchmark surface through the Python-facing `rebar` path. |
+| Work queue | `0` ready, `0` in progress, `442` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -22,13 +22,13 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Metric | Value |
 | --- | --- |
 | Published cases | `957` |
-| Passing in published slice | `949` |
+| Passing in published slice | `957` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `8` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `107` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 957 cases across 107 manifests, with 949 passes, 0 failures, and 8 honest `unimplemented` outcomes; the main benchmark report now covers 576 workloads with 554 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 957 cases across 107 manifests, with 957 passes, 0 failures, and 0 published `unimplemented` outcomes; the main benchmark report now covers 576 workloads with 554 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `554` of `576` published workloa
 
 ### Immediate Next Steps
 
-- The ready queue is empty; the next intended follow-on is `RBR-0441`, which should convert the published quantified alternation-heavy conditional replacement `sub()` / `subn()` slice behind `rebar._rebar` on the shared replacement parity suite.
+- The ready queue is empty; the concrete surviving follow-on is `RBR-0443`, which should catch the published quantified alternation-heavy conditional replacement `sub()` / `subn()` slice up on `benchmarks/workloads/conditional_group_exists_boundary.py` through the shared Python-path benchmark surface.
 
 ### Current Risks
 
@@ -57,7 +57,7 @@ _README speedup rollups stay omitted while only `554` of `576` published workloa
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published correctness slice still carries honest `unimplemented` outcomes and is narrow enough that it should be read as evidence of steady parity work, not evidence of broad drop-in coverage.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published correctness slice is now fully passing, but it is still narrow enough that it should be read as evidence of steady parity work, not evidence of broad drop-in coverage.
 
 The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice: across eight published parser workloads it is about 2x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
