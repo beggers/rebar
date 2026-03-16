@@ -25,6 +25,37 @@ def _workload_signature(workload) -> tuple[str | bytes, int, str]:
     return (pattern, workload.flags, workload.text_model)
 
 
+EXPECTED_COMPILE_ANCHOR_CASE_IDS = {
+    ("compile_matrix.py", "compile-inline-locale-bytes-warm"): (
+        "bytes-inline-locale-flag-success",
+    ),
+    ("compile_matrix.py", "compile-lookbehind-cold"): (
+        "str-fixed-width-lookbehind-success",
+    ),
+    ("compile_matrix.py", "compile-character-class-ignorecase-warm"): (
+        "str-character-class-ignorecase-success",
+    ),
+    ("compile_matrix.py", "compile-possessive-quantifier-cold"): (
+        "str-possessive-quantifier-success",
+    ),
+    ("compile_matrix.py", "compile-atomic-group-purged"): (
+        "str-atomic-group-success",
+    ),
+    ("compile_matrix.py", "compile-parser-stress-cold"): (
+        "str-parser-stress-compile-proxy-success",
+    ),
+    ("regression_matrix.py", "regression-parser-atomic-lookbehind-cold"): (
+        "str-parser-stress-compile-proxy-success",
+    ),
+    ("regression_matrix.py", "regression-parser-bytes-backreference-purged"): (
+        "bytes-named-backreference-compile-proxy-success",
+    ),
+    ("regression_matrix.py", "regression-module-compile-verbose-purged"): (
+        "workflow-compile-str-verbose-regression",
+    ),
+}
+
+
 @cache
 def _published_compile_case_signatures() -> frozenset[tuple[str | bytes, int, str]]:
     signatures: set[tuple[str | bytes, int, str]] = set()
@@ -38,6 +69,25 @@ def _published_compile_case_signatures() -> frozenset[tuple[str | bytes, int, st
     return frozenset(signatures)
 
 
+@cache
+def _published_compile_case_ids_by_signature() -> dict[
+    tuple[str | bytes, int, str], tuple[str, ...]
+]:
+    case_ids_by_signature: dict[tuple[str | bytes, int, str], list[str]] = {}
+
+    for fixture_path in DEFAULT_FIXTURE_PATHS:
+        _, cases = load_fixture_manifest(fixture_path)
+        for case in cases:
+            if case.operation == "compile":
+                signature = _compile_case_signature(case)
+                case_ids_by_signature.setdefault(signature, []).append(case.case_id)
+
+    return {
+        signature: tuple(case_ids)
+        for signature, case_ids in case_ids_by_signature.items()
+    }
+
+
 def _unanchored_compile_workload_ids(manifest_path: pathlib.Path) -> tuple[str, ...]:
     _, workloads = load_manifest(manifest_path)
     compile_case_signatures = _published_compile_case_signatures()
@@ -48,6 +98,22 @@ def _unanchored_compile_workload_ids(manifest_path: pathlib.Path) -> tuple[str, 
         if workload.operation in {"compile", "module.compile"}
         and _workload_signature(workload) not in compile_case_signatures
     )
+
+
+def _anchored_compile_workload_case_ids(
+    manifest_path: pathlib.Path,
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    _, workloads = load_manifest(manifest_path)
+    case_ids_by_signature = _published_compile_case_ids_by_signature()
+
+    return {
+        (manifest_path.name, workload.workload_id): case_ids_by_signature.get(
+            _workload_signature(workload),
+            (),
+        )
+        for workload in workloads
+        if workload.operation in {"compile", "module.compile"}
+    }
 
 
 class CompileProxyCorrectnessAnchorContractTest(unittest.TestCase):
@@ -65,6 +131,19 @@ class CompileProxyCorrectnessAnchorContractTest(unittest.TestCase):
         self.assertEqual(
             _unanchored_compile_workload_ids(REGRESSION_MATRIX_MANIFEST_PATH),
             (),
+        )
+
+    def test_compile_rows_stay_pinned_to_exact_published_correctness_case_ids(
+        self,
+    ) -> None:
+        anchored_case_ids = {
+            **_anchored_compile_workload_case_ids(COMPILE_MATRIX_MANIFEST_PATH),
+            **_anchored_compile_workload_case_ids(REGRESSION_MATRIX_MANIFEST_PATH),
+        }
+
+        self.assertEqual(
+            anchored_case_ids,
+            EXPECTED_COMPILE_ANCHOR_CASE_IDS,
         )
 
 
