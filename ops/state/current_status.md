@@ -1,6 +1,6 @@
 # Current Status
 
-Updated: 2026-03-15
+Updated: 2026-03-16
 
 ## Phase
 Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while keeping the correctness and benchmark publications caught up with each newly supported slice.
@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 949 cases across 106 manifests, with 941 passes and 8 honest `unimplemented` gaps; the main benchmark report now covers 565 workloads with 542 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- Once `RBR-0426` lands, the concrete surviving follow-on is `RBR-0428`, which should convert that same numbered and named replacement-template `sub()` / `subn()` slice for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` to Rust-backed parity on the shared conditional replacement pytest path.
+- After `RBR-0430` drains, the concrete surviving follow-on is `RBR-0431`, which should catch the same bounded two-arm conditional replacement-template family up on `benchmarks/workloads/conditional_group_exists_boundary.py` by converting `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` into a real `rebar` timing.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow, currently lands 941 of 949 published cases 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Once `RBR-0426` lands, the concrete surviving follow-on is `RBR-0428`, which should convert that same numbered and named replacement-template `sub()` / `subn()` slice for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)` to Rust-backed parity on the shared conditional replacement pytest path.
+- After `RBR-0430` drains, the concrete surviving follow-on is `RBR-0431`, which should catch the same bounded two-arm conditional replacement-template family up on `benchmarks/workloads/conditional_group_exists_boundary.py` by converting `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` into a real `rebar` timing.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

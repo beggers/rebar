@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 stays on the bounded two-arm conditional replacement-template family for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; once `RBR-0426` lands, the concrete surviving follow-on is `RBR-0428`, which should convert that same numbered and named replacement-template `sub()` / `subn()` slice to Rust-backed parity on the shared conditional replacement pytest path before benchmark catch-up reuses the existing `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` anchor.
+Milestone 2 stays on the bounded two-arm conditional replacement-template family for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; after `RBR-0430` converts the published `\\1x` / `\\g<word>x` module and compiled-`Pattern` slice to Rust-backed parity on the shared conditional replacement pytest path, the concrete surviving follow-on is `RBR-0431`, which should catch that same family up on `benchmarks/workloads/conditional_group_exists_boundary.py` by converting `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` into a real `rebar` timing.
 
 ## Ordered Work
-1. After `RBR-0426` publishes the bounded numbered and named replacement-template `sub()` / `subn()` correctness slice for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`, `RBR-0428` should convert that exact `\\1x` / `\\g<word>x` module and compiled-`Pattern` slice to Rust-backed parity on the shared conditional replacement pytest path before the existing benchmark anchor is repointed.
+1. After `RBR-0430` converts the bounded numbered and named replacement-template `sub()` / `subn()` slice for `a(b)?c(?(1)d|e)` with `\\1x` and `a(?P<word>b)?c(?(word)d|e)` with `\\g<word>x` to Rust-backed parity on `tests/python/test_conditional_group_exists_replacement_parity_suite.py`, `RBR-0431` should catch that same family up on the existing `benchmarks/workloads/conditional_group_exists_boundary.py` path by clearing the `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` known-gap row and refreshing the shared benchmark expectations.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
