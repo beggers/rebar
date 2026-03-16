@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The concrete surviving follow-on is `RBR-0459`, which should publish the exact parser-stress compile proxy already anchored by `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` on the shared `parser-matrix` correctness surface.
+The concrete surviving follow-on is `RBR-0460`, which should convert the exact parser-stress compile proxy `(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\\d{2}))?(?:(?<=foo)bar)?(?P=lemma)` to real Rust-backed parity on the shared `parser-matrix` surface before Python-path benchmark catch-up revisits `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold`.
 
 ## Ordered Work
-1. `RBR-0459` should add the exact `(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\\d{2}))?(?:(?<=foo)bar)?(?P=lemma)` parser-stress compile proxy to `tests/conformance/fixtures/parser_matrix.py`, refresh the shared correctness/parity expectations in `tests/conformance/correctness_expectations.py` and `tests/python/test_parser_matrix_parity_suite.py`, and regenerate `reports/correctness/latest.py` so the existing `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` benchmark anchors gain a published correctness case before Rust-backed parity or later benchmark catch-up reopen that heavier parser frontier.
+1. `RBR-0460` should extend `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, and `tests/python/test_parser_matrix_parity_suite.py` just enough for `rebar.compile("(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\\d{2}))?(?:(?<=foo)bar)?(?P=lemma)")` to return CPython-matching compile metadata for that exact `str` parser-stress pattern while keeping the new parser row compile-only on the existing placeholder-search contract, then regenerate `reports/correctness/latest.py` so the published `parser-matrix` case flips from `unimplemented` to `pass` before Python-path benchmark catch-up revisits `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
