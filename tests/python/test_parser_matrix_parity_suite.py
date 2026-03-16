@@ -36,6 +36,12 @@ EXPECTED_CASE_IDS = (
     "bytes-inline-locale-flag-success",
     "bytes-unicode-escape-error",
 )
+# Keep the parser-focused direct parity suite on parser-specific rows; the literal
+# baseline compile rows are exercised elsewhere and stay intentionally out of scope here.
+KNOWN_UNCOVERED_PARSER_MATRIX_CASE_IDS = (
+    "str-literal-success",
+    "bytes-literal-success",
+)
 EXPECTED_PARSER_MATRIX_PATTERNS = frozenset(
     {
         "[A-Z_][a-z0-9_]+",
@@ -113,6 +119,23 @@ CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES = tuple(
     for case_id in EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS
 )
 
+
+def _raw_manifest_case_ids(bundle) -> tuple[str, ...]:
+    raw_cases = bundle.manifest.raw.get("cases", [])
+    assert isinstance(raw_cases, list)
+    return tuple(
+        str(raw_case["id"])
+        for raw_case in raw_cases
+        if isinstance(raw_case, dict) and "id" in raw_case
+    )
+
+
+def _case_ids(cases: tuple[FixtureCase, ...]) -> frozenset[str]:
+    return frozenset(case.case_id for case in cases)
+
+
+PARSER_MATRIX_PUBLISHED_CASE_IDS = _raw_manifest_case_ids(PARSER_MATRIX_FIXTURE_BUNDLE)
+
 COMPILE_METADATA_CASES = tuple(
     PARSER_MATRIX_CASES_BY_ID[case_id]
     for case_id in (
@@ -182,6 +205,15 @@ PLACEHOLDER_SEARCH_SUBJECTS = {
     "bytes-inline-locale-flag-success": b"a",
     "str-nested-set-warning": "[[a]",
 }
+PARSER_MATRIX_DIRECT_TEST_CASE_ID_BUCKETS = {
+    "compile-metadata": _case_ids(COMPILE_METADATA_CASES),
+    "warning-cache": frozenset({NESTED_SET_WARNING_CASE.case_id}),
+    "placeholder-search": _case_ids(PLACEHOLDER_SEARCH_CASES),
+    "ignorecase-cache-normalization": frozenset({CHARACTER_CLASS_CASE.case_id}),
+    "compile-cache": _case_ids(REPEATED_COMPILE_CACHE_CASES),
+    "compile-diagnostics": _case_ids(DIAGNOSTIC_CASES),
+    "no-stdlib-delegation": _case_ids(NO_STDLIB_DELEGATION_CASES),
+}
 
 
 @pytest.fixture
@@ -242,6 +274,40 @@ def test_parser_matrix_parity_suite_stays_aligned_with_published_correctness_fix
     assert Counter((case.operation, case.helper) for case in TARGET_CASES) == (
         EXPECTED_PARSER_MATRIX_OPERATION_HELPER_COUNTS
     )
+
+
+def test_parser_matrix_parity_suite_tracks_published_case_frontier() -> None:
+    selected_case_ids = frozenset(EXPECTED_CASE_IDS)
+    uncovered_case_ids = tuple(
+        case_id
+        for case_id in PARSER_MATRIX_PUBLISHED_CASE_IDS
+        if case_id not in selected_case_ids
+    )
+
+    assert not (
+        selected_case_ids & frozenset(KNOWN_UNCOVERED_PARSER_MATRIX_CASE_IDS)
+    )
+    assert uncovered_case_ids == KNOWN_UNCOVERED_PARSER_MATRIX_CASE_IDS
+    assert frozenset(PARSER_MATRIX_PUBLISHED_CASE_IDS) == (
+        selected_case_ids | frozenset(KNOWN_UNCOVERED_PARSER_MATRIX_CASE_IDS)
+    )
+
+
+def test_parser_matrix_direct_test_buckets_cover_selected_frontier() -> None:
+    bucket_case_ids = frozenset().union(
+        *PARSER_MATRIX_DIRECT_TEST_CASE_ID_BUCKETS.values()
+    )
+    missing_case_ids = tuple(
+        case_id for case_id in EXPECTED_CASE_IDS if case_id not in bucket_case_ids
+    )
+    unexpected_case_ids = tuple(
+        case_id
+        for case_id in sorted(bucket_case_ids)
+        if case_id not in frozenset(EXPECTED_CASE_IDS)
+    )
+
+    assert missing_case_ids == ()
+    assert unexpected_case_ids == ()
 
 
 def test_conditional_assertion_diagnostic_fixture_stays_aligned_with_published_correctness_fixture() -> None:
