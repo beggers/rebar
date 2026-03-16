@@ -19,14 +19,23 @@ def _duplicates(counter: Counter[str]) -> list[str]:
     return sorted(item for item, count in counter.items() if count > 1)
 
 
+def _tracked_fixture_paths() -> tuple[pathlib.Path, ...]:
+    return tuple(sorted(FIXTURES_ROOT.glob("*.py"), key=lambda path: path.name))
+
+
 class DefaultCorrectnessFixtureInventoryContractTest(unittest.TestCase):
     def test_published_full_suite_fixture_selector_is_unique_and_supported(self) -> None:
         published_fixture_paths = select_correctness_fixture_paths(
             PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
         )
+        tracked_fixture_paths = _tracked_fixture_paths()
 
         self.assertEqual(DEFAULT_FIXTURE_PATHS, published_fixture_paths)
-        self.assertEqual(len(published_fixture_paths), 105)
+        self.assertEqual(
+            set(published_fixture_paths),
+            set(tracked_fixture_paths),
+            "published full-suite selector should cover every tracked correctness fixture",
+        )
         self.assertEqual(len(published_fixture_paths), len(set(published_fixture_paths)))
 
         for path in published_fixture_paths:
