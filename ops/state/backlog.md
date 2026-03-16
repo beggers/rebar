@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The concrete surviving follow-on is `RBR-0467`, which should republish `regression-parser-bytes-backreference-purged` as a measured source-tree timing on the shared `regression-matrix` surface once the exact bytes parser compile slice is live behind `rebar.compile()`.
+The concrete surviving follow-on is `RBR-0468`, which should publish the exact `IGNORECASE|ASCII` literal helper pair from `literal-flag-boundary` on the shared `literal-flag-workflows` correctness surface before parity or benchmark catch-up reopen that flag-combination slice.
 
 ## Ordered Work
-1. `RBR-0467` should refresh `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py` so `regression-parser-bytes-backreference-purged` stops publishing as the lone `regression-matrix` known gap and instead reports a measured source-tree timing on the existing regression surface without adding workload rows or another benchmark manifest.
+1. `RBR-0468` should extend `tests/conformance/fixtures/literal_flag_workflows.py`, `tests/conformance/correctness_expectations.py`, `tests/python/test_literal_flag_parity_suite.py`, and `reports/correctness/latest.py` so the exact `module-search-ignorecase-ascii-cold-gap` / `pattern-search-ignorecase-ascii-warm-gap` pair is published as honest correctness coverage for `rebar.search("abc", "ABC", rebar.IGNORECASE | rebar.ASCII)` and `rebar.compile("abc", rebar.IGNORECASE | rebar.ASCII).search("ABC")` before Rust-backed parity or source-tree benchmark catch-up revisit that existing `literal-flag-boundary` gap surface.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
