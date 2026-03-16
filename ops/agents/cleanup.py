@@ -6,7 +6,8 @@ SPEC = {
     "cycle_order": 60,
     "prompt_path": "ops/agents/cleanup.md",
     "dispatch": {
-        "mode": "every_cycle",
+        "mode": "interval",
+        "interval_seconds": 7200,
         "allow_dirty_worktree": True,
         "timeout_seconds": 2700,
     },
