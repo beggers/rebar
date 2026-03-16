@@ -9,17 +9,17 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-The published correctness slice now covers 949 cases across 106 manifests, with 941 passes and 8 honest `unimplemented` gaps; the main benchmark report now covers 565 workloads with 542 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
+The published correctness slice now covers 949 cases across 106 manifests and is fully passing; the main benchmark report now covers 565 workloads with 542 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- After `RBR-0430` drains, the concrete surviving follow-on is `RBR-0431`, which should catch the same bounded two-arm conditional replacement-template family up on `benchmarks/workloads/conditional_group_exists_boundary.py` by converting `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` into a real `rebar` timing.
+- The next planned follow-on is `RBR-0431`, which should catch the same bounded two-arm conditional replacement-template family up on `benchmarks/workloads/conditional_group_exists_boundary.py` by converting `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` into a real `rebar` timing.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
 - The published benchmark surface is still bounded at 565 workloads and carries 23 explicit known-gap workloads.
 
 ## Compatibility Heuristic
-The published slice is still narrow, currently lands 941 of 949 published cases with 8 honest gaps, and still benchmarks mainly through the source-tree shim.
+The published slice is still narrow, now lands all 949 of 949 published cases, and still benchmarks mainly through the source-tree shim.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -310,7 +310,7 @@ The published slice is still narrow, currently lands 941 of 949 published cases 
 - Tracked state, task queue directories, and seeded ready tasks under `ops/`.
 
 ## What Does Not Exist Yet
-- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 106 manifests and 949 cases, with 941 passing, 0 explicit failures, and 8 honest `unimplemented` outcomes, and that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
+- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 106 manifests and 949 cases, with 949 passing, 0 explicit failures, and 0 honest `unimplemented` outcomes, and that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree shim while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
 - A primary benchmark publication: `reports/benchmarks/latest.py` now covers 565 workloads across 30 manifests with 542 real `rebar` timings and 23 explicit known gaps, so the published benchmark surface is still bounded even after the conditional callable-replacement benchmark catch-up landed.
@@ -329,7 +329,7 @@ The published slice is still narrow, currently lands 941 of 949 published cases 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- After `RBR-0430` drains, the concrete surviving follow-on is `RBR-0431`, which should catch the same bounded two-arm conditional replacement-template family up on `benchmarks/workloads/conditional_group_exists_boundary.py` by converting `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` into a real `rebar` timing.
+- The next planned follow-on is `RBR-0431`, which should catch the same bounded two-arm conditional replacement-template family up on `benchmarks/workloads/conditional_group_exists_boundary.py` by converting `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` into a real `rebar` timing.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
