@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import Counter
 import re
 from unittest import mock
 import warnings
@@ -7,33 +8,19 @@ import warnings
 import pytest
 
 import rebar
-from rebar_harness.correctness import FixtureCase, load_fixture_manifest
+from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
+    SelectedCaseBundleSpec,
+    assert_fixture_bundle_contract,
     assert_pattern_parity,
     case_pattern,
     compile_with_cpython_parity,
+    load_selected_case_fixture_bundles,
 )
 
 
 PARSER_MATRIX_FIXTURE_PATH = FIXTURES_DIR / "parser_matrix.py"
-PARSER_MATRIX_MANIFEST, PARSER_MATRIX_FIXTURE_CASES = load_fixture_manifest(
-    PARSER_MATRIX_FIXTURE_PATH
-)
-PARSER_MATRIX_CASES_BY_ID = {
-    case.case_id: case for case in PARSER_MATRIX_FIXTURE_CASES
-}
-CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_PATH = (
-    FIXTURES_DIR / "conditional_group_exists_assertion_diagnostics.py"
-)
-(
-    CONDITIONAL_ASSERTION_DIAGNOSTIC_MANIFEST,
-    CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_CASES,
-) = load_fixture_manifest(CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_PATH)
-CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES_BY_ID = {
-    case.case_id: case for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_CASES
-}
-
 EXPECTED_CASE_IDS = (
     "str-character-class-ignorecase-success",
     "str-possessive-quantifier-success",
@@ -49,14 +36,77 @@ EXPECTED_CASE_IDS = (
     "bytes-inline-locale-flag-success",
     "bytes-unicode-escape-error",
 )
-TARGET_CASES = tuple(PARSER_MATRIX_CASES_BY_ID[case_id] for case_id in EXPECTED_CASE_IDS)
+EXPECTED_PARSER_MATRIX_PATTERNS = frozenset(
+    {
+        "[A-Z_][a-z0-9_]+",
+        "a*+",
+        "(?>ab|a)b",
+        "(?<=ab)c",
+        "(?<=a+)b",
+        "[[a]",
+        "*abc",
+        "a(?i)b",
+        "(?u:a)",
+        "(?L:a)",
+        b"(?u:a)",
+        b"(?L:a)",
+        b"\\u1234",
+    }
+)
+EXPECTED_PARSER_MATRIX_OPERATION_HELPER_COUNTS = Counter(
+    {("compile", None): len(EXPECTED_CASE_IDS)}
+)
+CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_PATH = (
+    FIXTURES_DIR / "conditional_group_exists_assertion_diagnostics.py"
+)
 EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS = (
     "conditional-group-exists-assertion-positive-lookahead-error-str",
     "conditional-group-exists-assertion-negative-lookahead-error-str",
 )
-EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_PATTERNS = (
-    "a(?(?=b)b|c)d",
-    "a(?(?!b)b|c)d",
+EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_PATTERNS = frozenset(
+    {
+        "a(?(?=b)b|c)d",
+        "a(?(?!b)b|c)d",
+    }
+)
+EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_OPERATION_HELPER_COUNTS = Counter(
+    {("compile", None): len(EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS)}
+)
+SELECTED_CASE_BUNDLE_SPECS = (
+    SelectedCaseBundleSpec(
+        "parser_matrix.py",
+        expected_manifest_id="parser-matrix",
+        selected_case_ids=EXPECTED_CASE_IDS,
+        expected_patterns=EXPECTED_PARSER_MATRIX_PATTERNS,
+        expected_operation_helper_counts=(
+            EXPECTED_PARSER_MATRIX_OPERATION_HELPER_COUNTS
+        ),
+        expected_text_models=frozenset({"str", "bytes"}),
+    ),
+    SelectedCaseBundleSpec(
+        "conditional_group_exists_assertion_diagnostics.py",
+        expected_manifest_id="conditional-group-exists-assertion-diagnostics",
+        selected_case_ids=EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS,
+        expected_patterns=EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_PATTERNS,
+        expected_operation_helper_counts=(
+            EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_OPERATION_HELPER_COUNTS
+        ),
+        expected_text_models=frozenset({"str"}),
+    ),
+)
+(
+    PARSER_MATRIX_FIXTURE_BUNDLE,
+    CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_BUNDLE,
+) = load_selected_case_fixture_bundles(SELECTED_CASE_BUNDLE_SPECS)
+PARSER_MATRIX_CASES_BY_ID = {
+    case.case_id: case for case in PARSER_MATRIX_FIXTURE_BUNDLE.cases
+}
+CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES_BY_ID = {
+    case.case_id: case
+    for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_BUNDLE.cases
+}
+TARGET_CASES = tuple(
+    PARSER_MATRIX_CASES_BY_ID[case_id] for case_id in EXPECTED_CASE_IDS
 )
 CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES = tuple(
     CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES_BY_ID[case_id]
@@ -183,32 +233,33 @@ def _assert_compile_error_parity(backend: object, case: FixtureCase) -> BaseExce
 
 
 def test_parser_matrix_parity_suite_stays_aligned_with_published_correctness_fixture() -> None:
-    assert PARSER_MATRIX_MANIFEST.path == PARSER_MATRIX_FIXTURE_PATH
-    assert PARSER_MATRIX_MANIFEST.manifest_id == "parser-matrix"
-    assert len(TARGET_CASES) == len(EXPECTED_CASE_IDS)
-    assert {case.case_id for case in TARGET_CASES} == set(EXPECTED_CASE_IDS)
-    assert {case.operation for case in TARGET_CASES} == {"compile"}
-    assert {case.helper for case in TARGET_CASES} == {None}
+    bundle = PARSER_MATRIX_FIXTURE_BUNDLE
+
+    assert bundle.manifest.path == PARSER_MATRIX_FIXTURE_PATH
+    assert bundle.manifest.manifest_id == "parser-matrix"
+    assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
+    assert tuple(case.case_id for case in TARGET_CASES) == EXPECTED_CASE_IDS
+    assert Counter((case.operation, case.helper) for case in TARGET_CASES) == (
+        EXPECTED_PARSER_MATRIX_OPERATION_HELPER_COUNTS
+    )
 
 
 def test_conditional_assertion_diagnostic_fixture_stays_aligned_with_published_correctness_fixture() -> None:
+    bundle = CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_BUNDLE
+
+    assert bundle.manifest.path == CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_PATH
     assert (
-        CONDITIONAL_ASSERTION_DIAGNOSTIC_MANIFEST.path
-        == CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_PATH
-    )
-    assert (
-        CONDITIONAL_ASSERTION_DIAGNOSTIC_MANIFEST.manifest_id
+        bundle.manifest.manifest_id
         == "conditional-group-exists-assertion-diagnostics"
     )
-    assert len(CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES) == len(
+    assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
+    assert tuple(case.case_id for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES) == (
         EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS
     )
-    assert {case.case_id for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES} == set(
-        EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS
-    )
-    assert {case.operation for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES} == {"compile"}
-    assert {case.helper for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES} == {None}
-    assert {case_pattern(case) for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES} == set(
+    assert Counter(
+        (case.operation, case.helper) for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES
+    ) == EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_OPERATION_HELPER_COUNTS
+    assert {case_pattern(case) for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES} == (
         EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_PATTERNS
     )
 

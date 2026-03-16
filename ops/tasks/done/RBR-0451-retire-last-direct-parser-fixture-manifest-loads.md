@@ -1,6 +1,6 @@
 # RBR-0451: Retire the last direct parser parity fixture-manifest loads
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -41,3 +41,8 @@ Created: 2026-03-16
 - `rg -n "load_fixture_manifest\\(|load_fixture_manifests\\(" tests/python -S` currently shows direct manifest loads only in:
   `tests/python/test_parser_matrix_parity_suite.py`, `tests/python/fixture_parity_support.py`, and `tests/python/test_fixture_parity_support_contract.py`.
 - That leaves `tests/python/test_parser_matrix_parity_suite.py` as the last ordinary parity-suite bypass around the shared fixture-bundle path.
+
+## Completion
+- 2026-03-16: Rewrote `tests/python/test_parser_matrix_parity_suite.py` to load both `parser_matrix.py` and `conditional_group_exists_assertion_diagnostics.py` through file-local `SelectedCaseBundleSpec` entries plus `load_selected_case_fixture_bundles(...)`, preserving the existing selected case ids, case ordering, and suite-local compile/module grouping constants.
+- 2026-03-16: Kept the alignment assertions in that suite local by checking each bundle's manifest path, manifest id, explicit ordered case ids, expected pattern set, and compile-only `(operation, helper)` counter through the existing fixture-bundle contract helper.
+- 2026-03-16: Verified `rg -n 'load_fixture_manifest\\(' tests/python/test_parser_matrix_parity_suite.py` returned no matches, `rg -n 'load_fixture_manifest\\(' tests/python/*.py` now shows matches only in `tests/python/fixture_parity_support.py` and `tests/python/test_fixture_parity_support_contract.py`, and `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_parser_matrix_parity_suite.py` passed (`113 passed, 23 skipped in 0.16s`).
