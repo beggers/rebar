@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from functools import cache
 import pathlib
 import re
 import unittest
@@ -13,7 +12,13 @@ GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH = (
 )
 
 from rebar_harness.benchmarks import build_callable, load_manifest
-from rebar_harness.correctness import DEFAULT_FIXTURE_PATHS, load_fixture_manifest
+from tests.benchmarks.correctness_anchor_support import (
+    anchored_workload_case_ids,
+    freeze_signature_value,
+    published_case_ids_by_signature,
+    published_cases_by_id,
+    unanchored_workload_ids,
+)
 
 
 EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_WORKLOAD_IDS = frozenset(
@@ -69,19 +74,8 @@ EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_ANCHOR_CASE_IDS = {
 }
 
 
-def _freeze_signature_value(value: Any) -> Any:
-    if isinstance(value, dict):
-        return tuple(
-            (str(key), _freeze_signature_value(nested_value))
-            for key, nested_value in sorted(value.items())
-        )
-    if isinstance(value, list):
-        return tuple(_freeze_signature_value(item) for item in value)
-    return value
-
-
 def _correctness_case_signature(case: Any) -> tuple[Any, ...] | None:
-    kwargs_signature = _freeze_signature_value(case.serialized_kwargs())
+    kwargs_signature = freeze_signature_value(case.serialized_kwargs())
     flags = case.flags or 0
     text_model = case.text_model or "str"
 
@@ -89,7 +83,7 @@ def _correctness_case_signature(case: Any) -> tuple[Any, ...] | None:
         return (
             f"module.{case.helper}",
             case.pattern,
-            _freeze_signature_value(case.serialized_args()),
+            freeze_signature_value(case.serialized_args()),
             kwargs_signature,
             flags,
             text_model,
@@ -98,7 +92,7 @@ def _correctness_case_signature(case: Any) -> tuple[Any, ...] | None:
         return (
             f"pattern.{case.helper}",
             case.pattern,
-            _freeze_signature_value(case.serialized_args()),
+            freeze_signature_value(case.serialized_args()),
             kwargs_signature,
             flags,
             text_model,
@@ -119,7 +113,7 @@ def _benchmark_workload_args(workload: Any) -> tuple[Any, ...]:
 
     if workload.count:
         args.append(workload.count)
-    return _freeze_signature_value(args)
+    return freeze_signature_value(args)
 
 
 def _benchmark_workload_signature(workload: Any) -> tuple[Any, ...]:
@@ -145,39 +139,6 @@ def _benchmark_workload_signature(workload: Any) -> tuple[Any, ...]:
         "unexpected grouped-alternation replacement workload operation "
         f"{workload.operation!r}"
     )
-
-
-@cache
-def _published_anchor_case_ids_by_signature() -> dict[tuple[Any, ...], tuple[str, ...]]:
-    case_ids_by_signature: dict[tuple[Any, ...], list[str]] = {}
-
-    for fixture_path in DEFAULT_FIXTURE_PATHS:
-        for case in load_fixture_manifest(fixture_path).cases:
-            signature = _correctness_case_signature(case)
-            if signature is None:
-                continue
-            case_ids_by_signature.setdefault(signature, []).append(case.case_id)
-
-    return {
-        signature: tuple(sorted(case_ids))
-        for signature, case_ids in case_ids_by_signature.items()
-    }
-
-
-@cache
-def _published_cases_by_id() -> dict[str, Any]:
-    cases_by_id: dict[str, Any] = {}
-
-    for fixture_path in DEFAULT_FIXTURE_PATHS:
-        for case in load_fixture_manifest(fixture_path).cases:
-            if case.case_id in cases_by_id:
-                raise AssertionError(
-                    "duplicate published grouped-alternation replacement case id "
-                    f"{case.case_id!r}"
-                )
-            cases_by_id[case.case_id] = case
-
-    return cases_by_id
 
 
 def _run_correctness_case_with_cpython(case: Any) -> object:
@@ -225,50 +186,43 @@ def _measured_grouped_alternation_replacement_workload_ids(
 def _unanchored_measured_grouped_alternation_replacement_workload_ids(
     manifest_path: pathlib.Path,
 ) -> tuple[str, ...]:
-    workloads = load_manifest(manifest_path).workloads
-    anchor_case_ids = _published_anchor_case_ids_by_signature()
-
-    return tuple(
-        workload.workload_id
-        for workload in workloads
-        if workload.workload_id
-        not in EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_WORKLOAD_IDS
-        and _benchmark_workload_signature(workload) not in anchor_case_ids
+    return unanchored_workload_ids(
+        manifest_path,
+        anchor_case_ids=published_case_ids_by_signature(_correctness_case_signature),
+        workload_signature=_benchmark_workload_signature,
+        include_workload=lambda workload: (
+            workload.workload_id
+            not in EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_WORKLOAD_IDS
+        ),
     )
 
 
 def _anchored_grouped_alternation_replacement_workload_case_ids(
     manifest_path: pathlib.Path,
 ) -> dict[tuple[str, str], tuple[str, ...]]:
-    workloads = load_manifest(manifest_path).workloads
-    anchor_case_ids = _published_anchor_case_ids_by_signature()
-
-    return {
-        (manifest_path.name, workload.workload_id): anchor_case_ids.get(
-            _benchmark_workload_signature(workload),
-            (),
-        )
-        for workload in workloads
-        if workload.workload_id
-        not in EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_WORKLOAD_IDS
-    }
+    return anchored_workload_case_ids(
+        manifest_path,
+        anchor_case_ids=published_case_ids_by_signature(_correctness_case_signature),
+        workload_signature=_benchmark_workload_signature,
+        include_workload=lambda workload: (
+            workload.workload_id
+            not in EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_WORKLOAD_IDS
+        ),
+    )
 
 
 def _known_gap_grouped_alternation_replacement_workload_case_ids(
     manifest_path: pathlib.Path,
 ) -> dict[tuple[str, str], tuple[str, ...]]:
-    workloads = load_manifest(manifest_path).workloads
-    anchor_case_ids = _published_anchor_case_ids_by_signature()
-
-    return {
-        (manifest_path.name, workload.workload_id): anchor_case_ids.get(
-            _benchmark_workload_signature(workload),
-            (),
-        )
-        for workload in workloads
-        if workload.workload_id
-        in EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_WORKLOAD_IDS
-    }
+    return anchored_workload_case_ids(
+        manifest_path,
+        anchor_case_ids=published_case_ids_by_signature(_correctness_case_signature),
+        workload_signature=_benchmark_workload_signature,
+        include_workload=lambda workload: (
+            workload.workload_id
+            in EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_WORKLOAD_IDS
+        ),
+    )
 
 
 class GroupedAlternationReplacementBenchmarkCorrectnessAnchorContractTest(
@@ -338,7 +292,7 @@ class GroupedAlternationReplacementBenchmarkCorrectnessAnchorContractTest(
         workloads_by_id = {
             workload.workload_id: workload for workload in manifest.workloads
         }
-        published_cases_by_id = _published_cases_by_id()
+        published_cases = published_cases_by_id()
         anchored_case_ids = {
             **EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS,
             **EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_ANCHOR_CASE_IDS,
@@ -350,10 +304,10 @@ class GroupedAlternationReplacementBenchmarkCorrectnessAnchorContractTest(
 
             with self.subTest(workload_id=workload_id, case_id=case_id):
                 self.assertIn(workload_id, workloads_by_id)
-                self.assertIn(case_id, published_cases_by_id)
+                self.assertIn(case_id, published_cases)
                 self.assertEqual(
                     _run_benchmark_workload_with_cpython(workloads_by_id[workload_id]),
-                    _run_correctness_case_with_cpython(published_cases_by_id[case_id]),
+                    _run_correctness_case_with_cpython(published_cases[case_id]),
                 )
 
 

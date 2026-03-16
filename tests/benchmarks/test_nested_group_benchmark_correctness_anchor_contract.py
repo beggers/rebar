@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from functools import cache
 import pathlib
 import unittest
 from typing import Any
@@ -10,7 +9,12 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 NESTED_GROUP_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py"
 
 from rebar_harness.benchmarks import load_manifest
-from rebar_harness.correctness import DEFAULT_FIXTURE_PATHS, load_fixture_manifest
+from tests.benchmarks.correctness_anchor_support import (
+    anchored_workload_case_ids,
+    freeze_signature_value,
+    published_case_ids_by_signature,
+    unanchored_workload_ids,
+)
 
 
 EXPECTED_NESTED_GROUP_KNOWN_GAP_WORKLOAD_IDS = frozenset(
@@ -42,19 +46,8 @@ EXPECTED_NESTED_GROUP_ANCHOR_CASE_IDS = {
 }
 
 
-def _freeze_signature_value(value: Any) -> Any:
-    if isinstance(value, dict):
-        return tuple(
-            (str(key), _freeze_signature_value(nested_value))
-            for key, nested_value in sorted(value.items())
-        )
-    if isinstance(value, list):
-        return tuple(_freeze_signature_value(item) for item in value)
-    return value
-
-
 def _correctness_case_signature(case: Any) -> tuple[Any, ...] | None:
-    kwargs_signature = _freeze_signature_value(case.serialized_kwargs())
+    kwargs_signature = freeze_signature_value(case.serialized_kwargs())
     flags = case.flags or 0
     text_model = case.text_model or "str"
 
@@ -64,7 +57,7 @@ def _correctness_case_signature(case: Any) -> tuple[Any, ...] | None:
         return (
             "module.search",
             None,
-            _freeze_signature_value(case.serialized_args()),
+            freeze_signature_value(case.serialized_args()),
             kwargs_signature,
             flags,
             text_model,
@@ -73,7 +66,7 @@ def _correctness_case_signature(case: Any) -> tuple[Any, ...] | None:
         return (
             "pattern.fullmatch",
             case.pattern,
-            _freeze_signature_value(case.serialized_args()),
+            freeze_signature_value(case.serialized_args()),
             kwargs_signature,
             flags,
             text_model,
@@ -105,23 +98,6 @@ def _benchmark_workload_signature(workload: Any) -> tuple[Any, ...]:
     raise AssertionError(f"unexpected nested-group workload operation {workload.operation!r}")
 
 
-@cache
-def _published_anchor_case_ids_by_signature() -> dict[tuple[Any, ...], tuple[str, ...]]:
-    case_ids_by_signature: dict[tuple[Any, ...], list[str]] = {}
-
-    for fixture_path in DEFAULT_FIXTURE_PATHS:
-        for case in load_fixture_manifest(fixture_path).cases:
-            signature = _correctness_case_signature(case)
-            if signature is None:
-                continue
-            case_ids_by_signature.setdefault(signature, []).append(case.case_id)
-
-    return {
-        signature: tuple(sorted(case_ids))
-        for signature, case_ids in case_ids_by_signature.items()
-    }
-
-
 def _measured_nested_group_workload_ids(manifest_path: pathlib.Path) -> tuple[str, ...]:
     workloads = load_manifest(manifest_path).workloads
     return tuple(
@@ -134,31 +110,27 @@ def _measured_nested_group_workload_ids(manifest_path: pathlib.Path) -> tuple[st
 def _unanchored_measured_nested_group_workload_ids(
     manifest_path: pathlib.Path,
 ) -> tuple[str, ...]:
-    workloads = load_manifest(manifest_path).workloads
-    anchor_case_ids = _published_anchor_case_ids_by_signature()
-
-    return tuple(
-        workload.workload_id
-        for workload in workloads
-        if workload.workload_id not in EXPECTED_NESTED_GROUP_KNOWN_GAP_WORKLOAD_IDS
-        and _benchmark_workload_signature(workload) not in anchor_case_ids
+    return unanchored_workload_ids(
+        manifest_path,
+        anchor_case_ids=published_case_ids_by_signature(_correctness_case_signature),
+        workload_signature=_benchmark_workload_signature,
+        include_workload=lambda workload: (
+            workload.workload_id not in EXPECTED_NESTED_GROUP_KNOWN_GAP_WORKLOAD_IDS
+        ),
     )
 
 
 def _anchored_nested_group_workload_case_ids(
     manifest_path: pathlib.Path,
 ) -> dict[tuple[str, str], tuple[str, ...]]:
-    workloads = load_manifest(manifest_path).workloads
-    anchor_case_ids = _published_anchor_case_ids_by_signature()
-
-    return {
-        (manifest_path.name, workload.workload_id): anchor_case_ids.get(
-            _benchmark_workload_signature(workload),
-            (),
-        )
-        for workload in workloads
-        if workload.workload_id not in EXPECTED_NESTED_GROUP_KNOWN_GAP_WORKLOAD_IDS
-    }
+    return anchored_workload_case_ids(
+        manifest_path,
+        anchor_case_ids=published_case_ids_by_signature(_correctness_case_signature),
+        workload_signature=_benchmark_workload_signature,
+        include_workload=lambda workload: (
+            workload.workload_id not in EXPECTED_NESTED_GROUP_KNOWN_GAP_WORKLOAD_IDS
+        ),
+    )
 
 
 class NestedGroupBenchmarkCorrectnessAnchorContractTest(unittest.TestCase):

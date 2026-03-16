@@ -1,0 +1,90 @@
+from __future__ import annotations
+
+from collections.abc import Callable
+from functools import cache
+import pathlib
+from typing import Any
+
+from rebar_harness.benchmarks import load_manifest
+from rebar_harness.correctness import DEFAULT_FIXTURE_PATHS, load_fixture_manifest
+
+
+def freeze_signature_value(value: Any) -> Any:
+    if isinstance(value, dict):
+        return tuple(
+            (str(key), freeze_signature_value(nested_value))
+            for key, nested_value in sorted(value.items())
+        )
+    if isinstance(value, list):
+        return tuple(freeze_signature_value(item) for item in value)
+    return value
+
+
+@cache
+def published_case_ids_by_signature(
+    case_signature: Callable[[Any], tuple[Any, ...] | None],
+) -> dict[tuple[Any, ...], tuple[str, ...]]:
+    case_ids_by_signature: dict[tuple[Any, ...], list[str]] = {}
+
+    for fixture_path in DEFAULT_FIXTURE_PATHS:
+        for case in load_fixture_manifest(fixture_path).cases:
+            signature = case_signature(case)
+            if signature is None:
+                continue
+            case_ids_by_signature.setdefault(signature, []).append(case.case_id)
+
+    return {
+        signature: tuple(sorted(case_ids))
+        for signature, case_ids in case_ids_by_signature.items()
+    }
+
+
+@cache
+def published_cases_by_id() -> dict[str, Any]:
+    cases_by_id: dict[str, Any] = {}
+
+    for fixture_path in DEFAULT_FIXTURE_PATHS:
+        for case in load_fixture_manifest(fixture_path).cases:
+            if case.case_id in cases_by_id:
+                raise AssertionError(
+                    f"duplicate published correctness case id {case.case_id!r}"
+                )
+            cases_by_id[case.case_id] = case
+
+    return cases_by_id
+
+
+def anchored_workload_case_ids(
+    manifest_path: pathlib.Path,
+    *,
+    anchor_case_ids: dict[tuple[Any, ...], tuple[str, ...]],
+    workload_signature: Callable[[Any], tuple[Any, ...]],
+    include_workload: Callable[[Any], bool] | None = None,
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    workloads = load_manifest(manifest_path).workloads
+
+    return {
+        (manifest_path.name, workload.workload_id): anchor_case_ids.get(
+            workload_signature(workload),
+            (),
+        )
+        for workload in workloads
+        if include_workload is None or include_workload(workload)
+    }
+
+
+def unanchored_workload_ids(
+    manifest_path: pathlib.Path,
+    *,
+    anchor_case_ids: dict[tuple[Any, ...], tuple[str, ...]],
+    workload_signature: Callable[[Any], tuple[Any, ...]],
+    include_workload: Callable[[Any], bool] | None = None,
+) -> tuple[str, ...]:
+    workloads = load_manifest(manifest_path).workloads
+
+    return tuple(
+        workload.workload_id
+        for workload in workloads
+        if (include_workload is None or include_workload(workload))
+        and workload_signature(workload) not in anchor_case_ids
+    )
