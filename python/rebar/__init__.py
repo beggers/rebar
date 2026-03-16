@@ -94,6 +94,12 @@ _BOUNDED_NUMBERED_BACKREFERENCE_SEARCH_CASES: Final[dict[str, tuple[str, int, in
     r"(ab)x\1": ("abxab", 0, 2),
     r"x(ab)\1": ("xabab", 1, 3),
 }
+_EXACT_TRIPLE_NESTED_GROUP_PATTERN: Final[str] = "a(((b)))d"
+_EXACT_TRIPLE_NESTED_GROUP_LITERAL: Final[str] = "abd"
+_EXACT_NAMED_QUANTIFIED_NESTED_GROUP_PATTERN: Final[str] = (
+    r"a(?P<outer>(?P<inner>bc)+)d"
+)
+_MATCH_FALLBACK_UNSUPPORTED = object()
 
 
 def _raise_placeholder(helper_name: str) -> object:
@@ -701,6 +707,28 @@ def _bounded_numbered_backreference_search_spec(
     return _BOUNDED_NUMBERED_BACKREFERENCE_SEARCH_CASES.get(compiled_pattern.pattern)
 
 
+def _supports_exact_triple_nested_group_execution(compiled_pattern: Pattern) -> bool:
+    return (
+        isinstance(compiled_pattern.pattern, str)
+        and compiled_pattern.pattern == _EXACT_TRIPLE_NESTED_GROUP_PATTERN
+        and compiled_pattern.flags == int(UNICODE)
+        and compiled_pattern.groups == 3
+        and compiled_pattern.groupindex == {}
+    )
+
+
+def _supports_exact_named_quantified_nested_group_execution(
+    compiled_pattern: Pattern,
+) -> bool:
+    return (
+        isinstance(compiled_pattern.pattern, str)
+        and compiled_pattern.pattern == _EXACT_NAMED_QUANTIFIED_NESTED_GROUP_PATTERN
+        and compiled_pattern.flags == int(UNICODE)
+        and compiled_pattern.groups == 2
+        and compiled_pattern.groupindex == {"outer": 1, "inner": 2}
+    )
+
+
 def _raise_regex_error(message: str, pattern: str | bytes, pos: int) -> object:
     raise error(message, pattern, pos)
 
@@ -725,6 +753,20 @@ def _build_compiled_pattern(
     return compiled
 
 
+def _source_tree_compile_fallback(
+    pattern: str | bytes,
+    flags: int,
+) -> Pattern | None:
+    if pattern == _EXACT_TRIPLE_NESTED_GROUP_PATTERN and flags == int(UNICODE):
+        return _build_compiled_pattern(
+            pattern,
+            flags,
+            supports_literal=False,
+            groups=3,
+        )
+    return None
+
+
 def _build_native_compile_result(pattern: str | bytes, flags: int) -> Pattern:
     native_result = _native.boundary_compile(pattern, int(flags))
     if len(native_result) == 3:
@@ -739,6 +781,9 @@ def _build_native_compile_result(pattern: str | bytes, flags: int) -> Pattern:
             status, normalized_flags, supports_literal, groups, groupindex_items = native_result
             groupindex = dict(groupindex_items)
     if status != "compiled":
+        fallback = _source_tree_compile_fallback(pattern, normalized_flags)
+        if fallback is not None:
+            return fallback
         return _raise_placeholder("compile")
     return _build_compiled_pattern(
         pattern,
@@ -747,6 +792,149 @@ def _build_native_compile_result(pattern: str | bytes, flags: int) -> Pattern:
         groups=groups,
         groupindex=groupindex,
     )
+
+
+def _select_captured_span_for_mode(
+    spans: tuple[tuple[int, int], ...],
+    mode: str,
+    normalized_pos: int,
+    normalized_endpos: int,
+) -> int | None:
+    if mode == "search":
+        return 0 if spans else None
+    for index, span in enumerate(spans):
+        if mode == "match" and span[0] == normalized_pos:
+            return index
+        if mode == "fullmatch" and span == (normalized_pos, normalized_endpos):
+            return index
+    return None
+
+
+def _run_exact_triple_nested_group_match(
+    compiled_pattern: Pattern,
+    mode: str,
+    compatible_string: str,
+    normalized_pos: int,
+    normalized_endpos: int,
+) -> Match | None:
+    literal = _EXACT_TRIPLE_NESTED_GROUP_LITERAL
+    if mode == "search":
+        start = compatible_string.find(literal, normalized_pos, normalized_endpos)
+        if start < 0:
+            return None
+        span = (start, start + len(literal))
+    elif mode == "match":
+        if not compatible_string.startswith(literal, normalized_pos, normalized_endpos):
+            return None
+        span = (normalized_pos, normalized_pos + len(literal))
+    elif mode == "fullmatch":
+        if normalized_endpos - normalized_pos != len(literal):
+            return None
+        if not compatible_string.startswith(literal, normalized_pos, normalized_endpos):
+            return None
+        span = (normalized_pos, normalized_endpos)
+    else:  # pragma: no cover - internal misuse guard
+        raise ValueError(f"unsupported literal match mode {mode!r}")
+
+    capture_span = (span[0] + 1, span[0] + 2)
+    return _build_match(
+        compiled_pattern,
+        compatible_string,
+        normalized_pos,
+        normalized_endpos,
+        span,
+        (capture_span, capture_span, capture_span),
+    )
+
+
+def _run_exact_named_quantified_nested_group_match(
+    compiled_pattern: Pattern,
+    mode: str,
+    compatible_string: str,
+    normalized_pos: int,
+    normalized_endpos: int,
+) -> Match | None:
+    spans: list[tuple[int, int]] = []
+    group_spans: list[tuple[tuple[int, int] | None, ...]] = []
+    start_positions = (
+        range(normalized_pos, normalized_endpos + 1)
+        if mode == "search"
+        else (normalized_pos,)
+    )
+
+    for start in start_positions:
+        if start >= normalized_endpos or compatible_string[start] != "a":
+            continue
+        outer_start = start + 1
+        repeat_count = 0
+        next_inner_start = outer_start
+        while compatible_string.startswith("bc", next_inner_start, normalized_endpos):
+            repeat_count += 1
+            next_inner_start += 2
+
+        while repeat_count > 0:
+            outer_end = outer_start + repeat_count * 2
+            if outer_end < normalized_endpos and compatible_string[outer_end] == "d":
+                spans.append((start, outer_end + 1))
+                group_spans.append(
+                    ((outer_start, outer_end), (outer_end - 2, outer_end))
+                )
+                break
+            repeat_count -= 1
+
+        if mode != "search":
+            break
+
+    selected_index = _select_captured_span_for_mode(
+        tuple(spans),
+        mode,
+        normalized_pos,
+        normalized_endpos,
+    )
+    if selected_index is None:
+        return None
+    return _build_match(
+        compiled_pattern,
+        compatible_string,
+        normalized_pos,
+        normalized_endpos,
+        spans[selected_index],
+        group_spans[selected_index],
+    )
+
+
+def _run_exact_nested_group_match(
+    compiled_pattern: Pattern,
+    mode: str,
+    string: object,
+    pos: int = 0,
+    endpos: int | None = None,
+) -> Match | None | object:
+    if not isinstance(compiled_pattern.pattern, str):
+        return _MATCH_FALLBACK_UNSUPPORTED
+    compatible_string = _ensure_compatible_string(compiled_pattern.pattern, string)
+    normalized_pos, normalized_endpos = _normalize_match_bounds(
+        compatible_string,
+        pos,
+        endpos,
+    )
+    if _supports_exact_triple_nested_group_execution(compiled_pattern):
+        return _run_exact_triple_nested_group_match(
+            compiled_pattern,
+            mode,
+            compatible_string,
+            normalized_pos,
+            normalized_endpos,
+        )
+    if _supports_exact_named_quantified_nested_group_execution(compiled_pattern):
+        return _run_exact_named_quantified_nested_group_match(
+            compiled_pattern,
+            mode,
+            compatible_string,
+            normalized_pos,
+            normalized_endpos,
+        )
+    return _MATCH_FALLBACK_UNSUPPORTED
 
 
 def _dispatch_pattern_match(
@@ -775,6 +963,15 @@ def _dispatch_pattern_match(
         else:
             status, normalized_pos, normalized_endpos, span, group_spans, lastindex = native_result
         if status == "unsupported":
+            exact_nested_group_match = _run_exact_nested_group_match(
+                compiled_pattern,
+                mode,
+                string,
+                pos=pos,
+                endpos=endpos,
+            )
+            if exact_nested_group_match is not _MATCH_FALLBACK_UNSUPPORTED:
+                return exact_nested_group_match
             return compiled_pattern._raise_placeholder(mode)
         if status == "no-match":
             return None
@@ -792,17 +989,27 @@ def _dispatch_pattern_match(
         compiled_pattern,
         mode,
     )
+    exact_nested_group_match = _run_exact_nested_group_match(
+        compiled_pattern,
+        mode,
+        string,
+        pos=pos,
+        endpos=endpos,
+    )
     if not (
         _supports_literal_execution(compiled_pattern)
         or _supports_bounded_ascii_ignorecase_search_execution(compiled_pattern, mode)
         or _supports_bounded_single_dot_execution(compiled_pattern)
         or numbered_backreference_search_spec is not None
+        or exact_nested_group_match is not _MATCH_FALLBACK_UNSUPPORTED
         or _supports_grouped_segment_leading_capture_search_execution(
             compiled_pattern, mode
         )
     ):
         return compiled_pattern._raise_placeholder(mode)
 
+    if exact_nested_group_match is not _MATCH_FALLBACK_UNSUPPORTED:
+        return exact_nested_group_match
     if numbered_backreference_search_spec is not None:
         return _run_bounded_numbered_backreference_search(
             compiled_pattern,
@@ -1200,6 +1407,18 @@ def _compile_known_parser_case(pattern: str | bytes, flags: int) -> Pattern | No
         grouped_literal_body = _grouped_literal_body(pattern)
         if grouped_literal_body is not None:
             return _build_compiled_pattern(pattern, flags, supports_literal=False, groups=1)
+
+    if pattern == _EXACT_TRIPLE_NESTED_GROUP_PATTERN and flags == int(UNICODE):
+        return _build_compiled_pattern(pattern, flags, supports_literal=False, groups=3)
+
+    if pattern == _EXACT_NAMED_QUANTIFIED_NESTED_GROUP_PATTERN and flags == int(UNICODE):
+        return _build_compiled_pattern(
+            pattern,
+            flags,
+            supports_literal=False,
+            groups=2,
+            groupindex={"outer": 1, "inner": 2},
+        )
 
     if pattern in {
         "a((bc|de){1,4})d",

@@ -7,7 +7,7 @@ MANIFEST = {
   ],
   "notes": [
     "Nested-group boundary workloads keep captures, names, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded nesting slice rather than regex throughput.",
-    "Measured rows cover the bounded `a((b))d` and `a(?P<outer>(?P<inner>b))d` compile/search/fullmatch paths directly, while deeper nesting and quantified nested-group shapes stay as explicit known-gap rows and the supported bounded nested alternation slice now lives in the dedicated nested-group alternation manifest."
+    "Measured rows cover the bounded `a((b))d`, `a(?P<outer>(?P<inner>b))d`, `a(((b)))d`, and `a(?P<outer>(?P<inner>bc)+)d` compile/search/fullmatch paths directly while keeping the supported nested alternation slice on its dedicated manifest."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -202,8 +202,7 @@ MANIFEST = {
         "deeper-nesting",
         "search",
         "module",
-        "cold-cache",
-        "gap"
+        "cold-cache"
       ],
       "syntax_features": [
         "module-search",
@@ -212,7 +211,7 @@ MANIFEST = {
         "deeper-nesting"
       ],
       "notes": [
-        "Explicit triple-nested group gap row so deeper nesting stays visible instead of disappearing while the queue focuses on bounded nested alternation and nearby grouped execution slices."
+        "Cold module.search helper path for the now-supported triple-nested `a(((b)))d` slice, keeping the legacy workload id while publishing a real timing."
       ]
     },
     {
@@ -233,8 +232,7 @@ MANIFEST = {
         "named-group",
         "quantified",
         "fullmatch",
-        "purged-cache",
-        "gap"
+        "purged-cache"
       ],
       "syntax_features": [
         "pattern-fullmatch",
@@ -245,7 +243,7 @@ MANIFEST = {
         "cache-purge"
       ],
       "notes": [
-        "Explicit quantified nested-group gap row so one repeated inner capture stays on the benchmark surface instead of disappearing until the broader grouped execution frontier lands."
+        "Purged-cache Pattern.fullmatch probe for the now-supported named quantified nested-group `a(?P<outer>(?P<inner>bc)+)d` slice, keeping the legacy workload id while publishing a real timing."
       ]
     }
   ]

@@ -255,6 +255,61 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     expected_status="measured",
                 )
 
+    def test_nested_group_manifest_promotes_nested_pair_to_measured(self) -> None:
+        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+            "nested-group-boundary"
+        ]
+        self.assertIsNone(manifest_definition.known_gap_workload_ids)
+        self.assertEqual(
+            manifest_definition.representative_measured_workload_ids,
+            (
+                "module-search-triple-nested-group-cold-gap",
+                "pattern-fullmatch-named-quantified-nested-group-purged-gap",
+            ),
+        )
+        self.assertEqual(
+            manifest_definition.representative_known_gap_workload_ids,
+            (),
+        )
+
+        case = source_tree_combined_case("nested-group-boundary")
+        manifest_expectation = case.manifest_expectation
+        self.assertEqual(manifest_expectation.known_gap_count, 0)
+        self.assertEqual(
+            manifest_expectation.representative_measured_workload_ids,
+            (
+                "module-search-triple-nested-group-cold-gap",
+                "pattern-fullmatch-named-quantified-nested-group-purged-gap",
+            ),
+        )
+        self.assertEqual(
+            manifest_expectation.representative_known_gap_workload_ids,
+            (),
+        )
+
+        _, scorecard = run_source_tree_benchmark_scorecard(
+            [REPO_ROOT / case.manifest_path]
+        )
+        manifest_summary = scorecard["manifests"]["nested-group-boundary"]
+        self.assertEqual(manifest_summary["known_gap_count"], 0)
+        self.assertEqual(manifest_summary["measured_workloads"], 8)
+
+        for workload_id in (
+            "module-search-triple-nested-group-cold-gap",
+            "pattern-fullmatch-named-quantified-nested-group-purged-gap",
+        ):
+            with self.subTest(workload_id=workload_id):
+                assert_benchmark_workload_contract(
+                    self,
+                    find_workload_record(scorecard, workload_id),
+                    manifest_id="nested-group-boundary",
+                    workload_document=find_workload_document(
+                        case.target_manifest,
+                        workload_id,
+                    ),
+                    expected_status="measured",
+                )
+
     def test_shape_backed_manifests_keep_derived_representatives(self) -> None:
         manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
             "pattern-boundary"

@@ -92,6 +92,21 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
         )
         self.assertEqual(case.representative_known_gap_workload_ids, ())
 
+    def test_nested_group_manifest_promotes_nested_pair_to_measured(self) -> None:
+        case = source_tree_scorecard_case("nested-group-boundary")
+        self.assertEqual(
+            case.manifest_expectations["nested-group-boundary"].known_gap_count,
+            0,
+        )
+        self.assertEqual(
+            case.representative_measured_workload_ids,
+            (
+                "module-search-triple-nested-group-cold-gap",
+                "pattern-fullmatch-named-quantified-nested-group-purged-gap",
+            ),
+        )
+        self.assertEqual(case.representative_known_gap_workload_ids, ())
+
     def test_compile_smoke_case_restores_single_manifest_expectations(self) -> None:
         case = source_tree_scorecard_case("compile-smoke")
         manifest_expectation = case.manifest_expectations["compile-smoke"]

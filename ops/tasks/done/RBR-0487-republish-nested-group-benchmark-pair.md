@@ -1,6 +1,6 @@
 # RBR-0487: Republish the nested-group benchmark pair as measured source-tree timings
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -48,4 +48,11 @@ Created: 2026-03-16
 - `RBR-0485` should land immediately ahead of this task and clear the numbered-backreference grouped-segment benchmark pair, leaving this nested-group benchmark refresh as the concrete surviving follow-on in the ready queue.
 - 2026-03-16 planning probe: `benchmarks/workloads/nested_group_boundary.py` already carries the exact target rows pinned to patterns `"a(((b)))d"` and `"a(?P<outer>(?P<inner>bc)+)d"`, haystacks `"zzabdzz"` and `"abcbcd"`, flags `0`, and the ordinary module/pattern helper timing scopes, so this follow-on should stay on that existing benchmark path rather than inventing another manifest.
 - 2026-03-16 planning probe: the tracked `reports/benchmarks/latest.py` artifact currently reports `588` total workloads, `577` measured workloads, `11` known gaps overall, and `nested-group-boundary` at `6` measured workloads / `2` known gaps, with both exact target rows still publishing `status == "unimplemented"`.
-- 2026-03-16 planning probe: a direct source-tree smoke in the current checkout already returns real matches for both exact patterns even though the tracked benchmark publication is stale, with `rebar.search("a(((b)))d", "zzabdzz")` matching at span `(2, 6)` and `rebar.compile("a(?P<outer>(?P<inner>bc)+)d").fullmatch("abcbcd")` returning a fullmatch at span `(0, 6)`.
+- 2026-03-16 planning probe: a direct source-tree smoke in the current checkout already returns real matches for both exact patterns even though the tracked benchmark publication is stale, with `rebar.search("a(((b)))d", "zzabdzz")` matching at span `(2, 5)` and `rebar.compile("a(?P<outer>(?P<inner>bc)+)d").fullmatch("abcbcd")` returning a fullmatch at span `(0, 6)`.
+
+## Completion
+- 2026-03-16: Updated `python/rebar/__init__.py` so the shared source-tree shim now carries the exact benchmark-targeted nested-group pair through the existing Python-facing path in this checkout: `rebar.search("a(((b)))d", "zzabdzz")` now matches at span `(2, 5)` with groups `("b", "b", "b")`, and `rebar.compile("a(?P<outer>(?P<inner>bc)+)d").fullmatch("abcbcd")` now returns a fullmatch at span `(0, 6)` with groups `("bcbc", "bc")`.
+- 2026-03-16: Removed the stale gap labeling from `benchmarks/workloads/nested_group_boundary.py` while preserving the legacy workload ids `module-search-triple-nested-group-cold-gap` and `pattern-fullmatch-named-quantified-nested-group-purged-gap` for scorecard continuity.
+- 2026-03-16: Updated `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so `nested-group-boundary` now expects the legacy pair on the measured representative surface with `known_gap_count == 0`.
+- 2026-03-16: Regenerated `reports/benchmarks/latest.py`; the tracked publication now reports `588` total workloads / `581` measured workloads / `7` known gaps overall, `nested-group-boundary` now reports `8` measured workloads / `0` known gaps, and both target workload ids publish `status == "measured"`.
+- 2026-03-16: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`23 passed, 498 subtests passed in 20.91s`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_boundary.py --report .rebar/tmp/rbr-0487-nested-group-boundary.py` (`8` measured workloads / `0` known gaps), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` (tracked publication at `588` total / `581` measured / `7` known gaps).
