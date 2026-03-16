@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 stays on the bounded two-arm conditional replacement frontier for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; after the newly seeded `RBR-0439` quantified alternation-heavy replacement correctness pack drains, the concrete surviving follow-on is `RBR-0441`, which should convert that same bounded `sub()` / `subn()` slice for `a(b)?c(?(1)(de|df)|(eg|eh)){2}` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` behind `rebar._rebar` on the shared conditional-replacement parity surface.
+Milestone 2 stays on the bounded two-arm conditional replacement frontier for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; after `RBR-0441` drains, the concrete surviving follow-on is `RBR-0443`, which should catch that same bounded quantified alternation-heavy `sub()` / `subn()` slice for `a(b)?c(?(1)(de|df)|(eg|eh)){2}` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` up on the shared `benchmarks/workloads/conditional_group_exists_boundary.py` benchmark surface through the Python-facing `rebar` path.
 
 ## Ordered Work
-1. `RBR-0441` should convert the quantified alternation-heavy conditional replacement manifest published by `RBR-0439` into real Rust-backed behavior for the exact numbered and named module and compiled-`Pattern` `sub()` / `subn()` workflows on `a(b)?c(?(1)(de|df)|(eg|eh)){2}` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}`, wiring the cases through `tests/python/test_conditional_group_exists_replacement_parity_suite.py` and `reports/correctness/latest.py` while leaving later benchmark catch-up on `benchmarks/workloads/conditional_group_exists_boundary.py`.
+1. `RBR-0443` should catch the quantified alternation-heavy conditional replacement slice converted by `RBR-0441` up on `benchmarks/workloads/conditional_group_exists_boundary.py` by adding the missing numbered and named module and compiled-`Pattern` `sub()` / `subn()` workloads for `a(b)?c(?(1)(de|df)|(eg|eh)){2}` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}`, updating the shared source-tree benchmark expectations, and regenerating `reports/benchmarks/latest.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
