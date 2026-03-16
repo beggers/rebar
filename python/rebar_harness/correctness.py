@@ -592,6 +592,7 @@ _CORRECTNESS_FIXTURE_PATHS_BY_SELECTOR = {
         "conditional_group_exists_no_else_replacement_workflows.py",
         "conditional_group_exists_quantified_replacement_workflows.py",
         "conditional_group_exists_replacement_workflows.py",
+        "conditional_group_exists_replacement_template_workflows.py",
     ),
     GROUPED_CAPTURE_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
         "grouped_alternation_workflows.py",

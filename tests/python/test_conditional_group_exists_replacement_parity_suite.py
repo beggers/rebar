@@ -68,6 +68,29 @@ FIXTURE_BUNDLES = (
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
     load_fixture_bundle(
+        "conditional_group_exists_replacement_template_workflows.py",
+        expected_manifest_id="conditional-group-exists-replacement-template-workflows",
+        expected_case_ids=frozenset(
+            {
+                "module-sub-template-conditional-group-exists-replacement-present-str",
+                "module-subn-template-conditional-group-exists-replacement-absent-str",
+                "pattern-sub-template-conditional-group-exists-replacement-present-str",
+                "pattern-subn-template-conditional-group-exists-replacement-absent-str",
+                "module-sub-template-named-conditional-group-exists-replacement-present-str",
+                "module-subn-template-named-conditional-group-exists-replacement-absent-str",
+                "pattern-sub-template-named-conditional-group-exists-replacement-present-str",
+                "pattern-subn-template-named-conditional-group-exists-replacement-absent-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)d|e)",
+                r"a(?P<word>b)?c(?(word)d|e)",
+            }
+        ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
+    ),
+    load_fixture_bundle(
         "conditional_group_exists_no_else_replacement_workflows.py",
         expected_manifest_id="conditional-group-exists-no-else-replacement-workflows",
         expected_case_ids=frozenset(

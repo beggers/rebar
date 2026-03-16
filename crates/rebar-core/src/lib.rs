@@ -393,7 +393,11 @@ pub fn expand_literal_replacement_template_str(
             }
             Some(group) if group.is_ascii_digit() && group != '0' => {
                 let group_index = group.to_digit(10)? as usize;
-                expanded.push_str(numbered_captures.get(group_index - 1).copied().flatten()?);
+                match numbered_captures.get(group_index - 1).copied() {
+                    Some(Some(value)) => expanded.push_str(value),
+                    Some(None) => {}
+                    None => return None,
+                }
             }
             _ => return None,
         }

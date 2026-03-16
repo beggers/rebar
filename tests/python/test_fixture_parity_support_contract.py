@@ -91,6 +91,7 @@ SELECTOR_EXPECTATIONS = (
             "conditional_group_exists_nested_replacement_workflows.py",
             "conditional_group_exists_no_else_replacement_workflows.py",
             "conditional_group_exists_quantified_replacement_workflows.py",
+            "conditional_group_exists_replacement_template_workflows.py",
             "conditional_group_exists_replacement_workflows.py",
         ),
         id="conditional-replacement",

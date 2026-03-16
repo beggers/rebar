@@ -872,59 +872,76 @@ fn boundary_literal_template_subn(
                                 compile_outcome.named_groups,
                             )
                         } else {
-                            let grouped_alternation_outcome =
-                                core_grouped_alternation_find_spans_str(
+                            let conditional_group_exists_outcome =
+                                core_conditional_group_exists_find_spans_str(
                                     pattern_value,
                                     flags,
                                     string_value,
                                     0,
                                     None,
                                 );
-                            if grouped_alternation_outcome.status != MatchStatus::Unsupported {
+                            if conditional_group_exists_outcome.status != MatchStatus::Unsupported {
                                 (
-                                    grouped_alternation_outcome.status,
-                                    grouped_alternation_outcome
-                                        .matches
-                                        .into_iter()
-                                        .map(|matched| CapturedMatchSpan {
-                                            span: matched.span,
-                                            group_spans: vec![Some(matched.group_1_span)],
-                                        })
-                                        .collect(),
+                                    conditional_group_exists_outcome.status,
+                                    conditional_group_exists_outcome.matches,
                                     compile_outcome.group_count,
                                     compile_outcome.named_groups,
                                 )
                             } else {
-                                let branch_local_outcome =
-                                    core_nested_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_str(
+                                let grouped_alternation_outcome =
+                                    core_grouped_alternation_find_spans_str(
                                         pattern_value,
                                         flags,
                                         string_value,
                                         0,
                                         None,
                                     );
-                                if branch_local_outcome.status != MatchStatus::Unsupported {
+                                if grouped_alternation_outcome.status != MatchStatus::Unsupported {
                                     (
-                                        branch_local_outcome.status,
-                                        branch_local_outcome.matches,
+                                        grouped_alternation_outcome.status,
+                                        grouped_alternation_outcome
+                                            .matches
+                                            .into_iter()
+                                            .map(|matched| CapturedMatchSpan {
+                                                span: matched.span,
+                                                group_spans: vec![Some(matched.group_1_span)],
+                                            })
+                                            .collect(),
                                         compile_outcome.group_count,
                                         compile_outcome.named_groups,
                                     )
                                 } else {
-                                    let conditional_branch_local_outcome =
-                                        core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_str(
+                                    let branch_local_outcome =
+                                        core_nested_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_str(
                                             pattern_value,
                                             flags,
                                             string_value,
                                             0,
                                             None,
                                         );
-                                    (
-                                        conditional_branch_local_outcome.status,
-                                        conditional_branch_local_outcome.matches,
-                                        compile_outcome.group_count,
-                                        compile_outcome.named_groups,
-                                    )
+                                    if branch_local_outcome.status != MatchStatus::Unsupported {
+                                        (
+                                            branch_local_outcome.status,
+                                            branch_local_outcome.matches,
+                                            compile_outcome.group_count,
+                                            compile_outcome.named_groups,
+                                        )
+                                    } else {
+                                        let conditional_branch_local_outcome =
+                                            core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_str(
+                                                pattern_value,
+                                                flags,
+                                                string_value,
+                                                0,
+                                                None,
+                                            );
+                                        (
+                                            conditional_branch_local_outcome.status,
+                                            conditional_branch_local_outcome.matches,
+                                            compile_outcome.group_count,
+                                            compile_outcome.named_groups,
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -1012,9 +1029,7 @@ fn boundary_literal_template_subn(
                     .filter_map(|group| {
                         numbered_captures
                             .get(group.index - 1)
-                            .copied()
-                            .flatten()
-                            .map(|capture| (group.name.as_str(), capture))
+                            .map(|capture| (group.name.as_str(), capture.unwrap_or("")))
                     })
                     .collect::<Vec<_>>();
                 let expanded = core_expand_literal_replacement_template_str(

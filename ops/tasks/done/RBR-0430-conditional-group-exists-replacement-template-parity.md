@@ -1,6 +1,6 @@
 # RBR-0430: Add bounded two-arm conditional replacement-template parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -32,3 +32,9 @@ Created: 2026-03-16
 - Build on `RBR-0426`, `RBR-0423`, `RBR-0193`, and the existing shared conditional replacement parity surface.
 - Keep later benchmark catch-up on the existing `benchmarks/workloads/conditional_group_exists_boundary.py` path instead of forking another benchmark family.
 - The adjacent post-parity benchmark follow-on is the existing `module-sub-template-numbered-conditional-group-exists-replacement-warm-gap` row in `benchmarks/workloads/conditional_group_exists_boundary.py`.
+
+## Completion
+- Routed `boundary_literal_template_subn()` through the existing two-arm conditional capture-span collector and updated the core template expander plus named-capture marshalling so valid-but-absent `\\1` / `\\g<word>` references expand to the empty string instead of reporting `unsupported`.
+- Added `conditional_group_exists_replacement_template_workflows.py` to the shared conditional replacement fixture selector and parity suite, and kept `tests/python/test_fixture_parity_support_contract.py` aligned with the selector's sorted published-path contract.
+- Verified `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_replacement_parity_suite.py tests/python/test_fixture_parity_support_contract.py tests/conformance/test_combined_correctness_scorecards.py` (`498 passed, 1029 subtests passed`), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_replacement_template_workflows.py --report .rebar/tmp/rbr-0430-conditional-template-parity.py` (`8` passed / `0` unimplemented).
+- Republished the tracked combined correctness scorecard at `reports/correctness/latest.py`; the tracked artifact now reports `949` total cases across `106` manifests with `949` passes, `0` failures, and `0` unimplemented cases.
