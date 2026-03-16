@@ -16,9 +16,6 @@ from rebar_harness.correctness import (
     determine_phase,
     load_fixture_manifest,
 )
-from tests.harness_cli_test_support import run_harness_scorecard
-
-
 @lru_cache(maxsize=1)
 def build_rebar_extension() -> None:
     subprocess.run(
@@ -27,19 +24,6 @@ def build_rebar_extension() -> None:
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,
-    )
-
-
-def run_correctness_scorecard(
-    fixture_paths: Iterable[pathlib.Path],
-) -> tuple[dict[str, object], dict[str, object]]:
-    return run_harness_scorecard(
-        "rebar_harness.correctness",
-        [
-            "--fixtures",
-            *(str(path) for path in fixture_paths),
-        ],
-        report_name="correctness.json",
     )
 
 

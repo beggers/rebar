@@ -28,9 +28,9 @@ from tests.conformance.correctness_expectations import (
     build_rebar_extension,
     correctness_scorecard_case,
     correctness_scorecard_target_manifest_ids,
-    run_correctness_scorecard,
     tracked_correctness_scorecard_suites,
 )
+from tests.harness_cli_test_support import run_harness_scorecard
 from tests.report_assertions import (
     assert_correctness_case_record_matches,
     assert_correctness_fixture_contract,
@@ -67,7 +67,14 @@ def assert_correctness_scorecard_suite(
     for target_manifest_id in target_manifest_ids:
         with testcase.subTest(manifest_id=target_manifest_id):
             case = case_factory(target_manifest_id)
-            summary, scorecard = run_correctness_scorecard(case.fixture_paths)
+            summary, scorecard = run_harness_scorecard(
+                "rebar_harness.correctness",
+                [
+                    "--fixtures",
+                    *(str(path) for path in case.fixture_paths),
+                ],
+                report_name="correctness.json",
+            )
 
             assert_correctness_report_contract(
                 testcase,
@@ -157,8 +164,13 @@ class CorrectnessScorecardSuitesTest(unittest.TestCase):
     def test_tracked_report_keeps_numbered_backreference_manifest_fresh(self) -> None:
         build_rebar_extension()
         _, manifest_cases = load_fixture_manifest(NUMBERED_BACKREFERENCE_FIXTURE_PATH)
-        _, expected_scorecard = run_correctness_scorecard(
-            (NUMBERED_BACKREFERENCE_FIXTURE_PATH,)
+        _, expected_scorecard = run_harness_scorecard(
+            "rebar_harness.correctness",
+            [
+                "--fixtures",
+                str(NUMBERED_BACKREFERENCE_FIXTURE_PATH),
+            ],
+            report_name="correctness.json",
         )
         tracked_scorecard = CORRECTNESS_SCORECARD_REPORT.load(TRACKED_REPORT_PATH)
 
