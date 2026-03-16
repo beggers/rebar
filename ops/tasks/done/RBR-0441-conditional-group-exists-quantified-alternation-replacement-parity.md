@@ -1,6 +1,6 @@
 # RBR-0441: Add bounded quantified alternation-heavy conditional replacement parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -31,3 +31,9 @@ Created: 2026-03-16
 - Build on `RBR-0439`, `RBR-0196`, `RBR-0202`, and the existing shared conditional replacement parity surface.
 - Keep later benchmark catch-up on the existing `benchmarks/workloads/conditional_group_exists_boundary.py` path instead of forking another benchmark family.
 - The intended post-parity follow-on is `RBR-0443`, which should add the missing quantified alternation-heavy replacement `sub()` / `subn()` benchmark rows on that shared Python-path boundary.
+
+## Completion
+- Added a bounded Rust-side quantified-alternation replacement span collector for `a(b)?c(?(1)(de|df)|(eg|eh)){2}` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}`, then routed `boundary_literal_subn()` through that new native path so the published constant-replacement `sub()` / `subn()` workflows stop returning `unsupported`.
+- Folded `conditional_group_exists_quantified_alternation_replacement_workflows.py` into the shared conditional replacement parity suite and cleared the suite's known-uncovered published-fixture frontier without adding a manifest-specific parity module.
+- Verified `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`524 passed, 1038 subtests passed`), `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`3 passed, 266 subtests passed`), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/conditional_group_exists_quantified_alternation_replacement_workflows.py --report .rebar/tmp/rbr-0441-conditional-quantified-alternation-replacement-parity.py` (`8` passed / `0` unimplemented).
+- Republished the tracked combined correctness scorecard at `reports/correctness/latest.py`; the tracked artifact now reports `957` total cases across `107` manifests with `957` passes, `0` failures, and `0` unimplemented cases, and the quantified alternation-heavy conditional replacement manifest itself now reports `8` passes with `0` unimplemented cases.

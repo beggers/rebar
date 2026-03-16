@@ -7898,6 +7898,89 @@ pub fn conditional_group_exists_quantified_find_spans_str(
     }
 }
 
+/// Discover repeated spans for the bounded quantified alternation-heavy
+/// two-arm conditional replacement slice while preserving capture spans for
+/// result marshalling.
+#[must_use]
+pub fn conditional_group_exists_quantified_alternation_find_spans_str(
+    pattern: &str,
+    flags: i32,
+    string: &str,
+    pos: isize,
+    endpos: Option<isize>,
+) -> CapturedFindSpansOutcome {
+    let string_chars: Vec<char> = string.chars().collect();
+    let (normalized_pos, normalized_endpos) = normalize_bounds(string_chars.len(), pos, endpos);
+    let Some(grouped_pattern) = parse_quantified_conditional_group_exists_pattern_str(pattern)
+    else {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    };
+    if flags != FLAG_UNICODE
+        || grouped_pattern.conditional.yes_branch_alternation.is_none()
+        || grouped_pattern.conditional.no_branch_alternation.is_none()
+        || grouped_pattern.conditional.no_branch.is_none()
+        || grouped_pattern.conditional.nested_yes_branch.is_some()
+        || grouped_pattern.conditional.nested_no_branch.is_some()
+    {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    }
+
+    let mut matches = Vec::new();
+    let mut next_start = normalized_pos;
+    while let Some((match_start, capture_present, match_end, repeated_alternation_branches)) =
+        (next_start..=normalized_endpos).find_map(|candidate_start| {
+            quantified_conditional_group_exists_matches_at_str(
+                &grouped_pattern,
+                flags,
+                &string_chars,
+                candidate_start,
+                normalized_endpos,
+            )
+            .map(
+                |(capture_present, match_end, repeated_alternation_branches)| {
+                    (
+                        candidate_start,
+                        capture_present,
+                        match_end,
+                        repeated_alternation_branches,
+                    )
+                },
+            )
+        })
+    {
+        matches.push(CapturedMatchSpan {
+            span: (match_start, match_end),
+            group_spans: grouped_pattern.group_spans(
+                match_start,
+                capture_present,
+                repeated_alternation_branches,
+            ),
+        });
+        next_start = match_end;
+    }
+
+    CapturedFindSpansOutcome {
+        status: if matches.is_empty() {
+            MatchStatus::NoMatch
+        } else {
+            MatchStatus::Matched
+        },
+        pos: normalized_pos,
+        endpos: normalized_endpos,
+        matches,
+    }
+}
+
 /// Discover repeated spans for the bounded omitted-no-arm conditional
 /// replacement slice while preserving capture spans for result marshalling.
 #[must_use]

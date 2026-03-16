@@ -27,9 +27,7 @@ from tests.python.fixture_parity_support import (
 PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS = select_correctness_fixture_paths(
     CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR
 )
-KNOWN_UNCOVERED_PUBLISHED_FIXTURE_FILENAMES = (
-    "conditional_group_exists_quantified_alternation_replacement_workflows.py",
-)
+KNOWN_UNCOVERED_PUBLISHED_FIXTURE_FILENAMES: tuple[str, ...] = ()
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
         ("module_call", "sub"): 2,
@@ -297,6 +295,29 @@ FIXTURE_BUNDLE_SPECS = (
             {
                 r"a(b)?c(?(1)d|e){2}",
                 r"a(?P<word>b)?c(?(word)d|e){2}",
+            }
+        ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
+    ),
+    WholeManifestBundleSpec(
+        "conditional_group_exists_quantified_alternation_replacement_workflows.py",
+        expected_manifest_id="conditional-group-exists-quantified-alternation-replacement-workflows",
+        expected_case_ids=frozenset(
+            {
+                "module-sub-conditional-group-exists-quantified-alternation-replacement-present-first-arm-str",
+                "module-subn-conditional-group-exists-quantified-alternation-replacement-present-second-arm-str",
+                "pattern-sub-conditional-group-exists-quantified-alternation-replacement-absent-first-arm-str",
+                "pattern-subn-conditional-group-exists-quantified-alternation-replacement-absent-second-arm-str",
+                "module-sub-named-conditional-group-exists-quantified-alternation-replacement-present-first-arm-str",
+                "module-subn-named-conditional-group-exists-quantified-alternation-replacement-present-second-arm-str",
+                "pattern-sub-named-conditional-group-exists-quantified-alternation-replacement-absent-first-arm-str",
+                "pattern-subn-named-conditional-group-exists-quantified-alternation-replacement-absent-second-arm-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)(de|df)|(eg|eh)){2}",
+                r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}",
             }
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
