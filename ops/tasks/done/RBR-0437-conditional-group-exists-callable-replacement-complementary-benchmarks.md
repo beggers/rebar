@@ -1,6 +1,6 @@
 # RBR-0437: Expand bounded two-arm conditional callable-replacement benchmarks across complementary entrypoints
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -33,3 +33,9 @@ Created: 2026-03-16
 ## Notes
 - Build on `RBR-0424`, `RBR-0423`, and the existing `conditional_group_exists_boundary.py` benchmark surface.
 - The current tracked benchmark publication reports `572` total workloads, `550` measured workloads, `22` known gaps, and `60` measured workloads with `0` known gaps for `conditional-group-exists-boundary`; this task should extend that same benchmark boundary rather than reopen correctness.
+
+## Completion Notes
+- Added the four complementary callable rows on `benchmarks/workloads/conditional_group_exists_boundary.py`: numbered compiled-`Pattern` `sub()` / `subn()` plus named module `sub()` / `subn()` for the bounded two-arm conditional replacement family.
+- Updated the shared source-tree benchmark expectations so the minimal conditional callable-replacement slice now asserts the full eight-row cross-entrypoint matrix.
+- Regenerated the tracked benchmark publication in `reports/benchmarks/latest.py`; the tracked report now shows `576` total workloads, `554` measured workloads, `22` known gaps, and `64` measured workloads with `0` known gaps for `conditional-group-exists-boundary`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_python_benchmark_manifest_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/conditional_group_exists_boundary.py --report .rebar/tmp/rbr-0437-conditional-callable-bench.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
