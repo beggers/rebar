@@ -45,6 +45,8 @@ from tests.python.fixture_parity_support import (
     load_fixture_bundle,
     load_fixture_bundles,
     load_published_fixture_bundles,
+    manifest_case_ids,
+    ordered_manifest_cases_from_bundles,
     published_fixture_bundle_by_manifest_id,
     published_fixture_paths_from_bundles,
     raw_fixture_cases_by_id,
@@ -680,6 +682,71 @@ def test_bundle_pattern_projection_and_raw_case_lookup_helpers_cover_published_f
         "value": "x",
     }
     assert raw_cases["module-sub-grouping-template"]["args"][1] == r"\1x"
+
+
+def test_manifest_case_helpers_cover_bundle_manifest_order_and_unselected_rows() -> None:
+    specs = _selected_case_bundle_specs()
+    bundles = load_fixture_bundles(specs)
+
+    for spec, bundle in zip(specs, bundles, strict=True):
+        _, manifest_cases = load_fixture_manifest(FIXTURES_DIR / spec.fixture_name)
+        assert manifest_case_ids(bundle) == tuple(case.case_id for case in manifest_cases)
+
+    selected_case_ids = (
+        "grouped-pattern-search-single-capture-str",
+        "flag-unsupported-inline-flag-search",
+        "grouped-module-search-single-capture-str",
+    )
+    selected_cases = ordered_manifest_cases_from_bundles(
+        bundles,
+        selected_case_ids,
+        error_label="fixture parity support contract rows",
+    )
+
+    expected_cases_by_id: dict[str, FixtureCase] = {}
+    for spec in specs:
+        _, manifest_cases = load_fixture_manifest(FIXTURES_DIR / spec.fixture_name)
+        for case in manifest_cases:
+            if case.case_id in selected_case_ids:
+                expected_cases_by_id[case.case_id] = case
+
+    assert tuple(case.case_id for case in selected_cases) == selected_case_ids
+    for case in selected_cases:
+        expected = expected_cases_by_id[case.case_id]
+        assert case.operation == expected.operation
+        assert case.helper == expected.helper
+        assert case.args == expected.args
+        assert case.kwargs == expected.kwargs
+
+
+def test_ordered_manifest_cases_from_bundles_rejects_duplicate_case_ids() -> None:
+    (spec,) = _selected_case_bundle_specs()[1:]
+    (bundle,) = load_fixture_bundles((spec,))
+
+    with pytest.raises(
+        AssertionError,
+        match="fixture parity support contract rows contain duplicate case ids",
+    ):
+        ordered_manifest_cases_from_bundles(
+            (bundle, bundle),
+            ("grouped-module-search-single-capture-str",),
+            error_label="fixture parity support contract rows",
+        )
+
+
+def test_ordered_manifest_cases_from_bundles_rejects_missing_case_ids() -> None:
+    (spec,) = _selected_case_bundle_specs()[1:]
+    (bundle,) = load_fixture_bundles((spec,))
+
+    with pytest.raises(
+        AssertionError,
+        match="fixture parity support contract rows are missing case ids",
+    ):
+        ordered_manifest_cases_from_bundles(
+            (bundle,),
+            ("missing-case-id",),
+            error_label="fixture parity support contract rows",
+        )
 
 
 def test_case_argument_helpers_cover_module_and_pattern_replacement_rows() -> None:

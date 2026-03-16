@@ -196,6 +196,23 @@ def published_fixture_paths_from_bundles(
     return tuple(sorted((bundle.manifest.path for bundle in bundles), key=lambda path: path.name))
 
 
+def _manifest_raw_cases(bundle: FixtureBundle) -> tuple[dict[str, object], ...]:
+    raw_cases = bundle.manifest.raw.get("cases", [])
+    if not isinstance(raw_cases, list):
+        raise ValueError(
+            f"fixture manifest {bundle.manifest.manifest_id!r} raw cases must be a list"
+        )
+    return tuple(
+        raw_case
+        for raw_case in raw_cases
+        if isinstance(raw_case, dict) and "id" in raw_case
+    )
+
+
+def manifest_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
+    return tuple(str(raw_case["id"]) for raw_case in _manifest_raw_cases(bundle))
+
+
 def bundle_patterns(
     bundle: FixtureBundle,
     *,
@@ -205,22 +222,53 @@ def bundle_patterns(
 
 
 def raw_fixture_cases_by_id(bundle: FixtureBundle) -> dict[str, dict[str, object]]:
-    raw_cases = bundle.manifest.raw.get("cases", [])
-    if not isinstance(raw_cases, list):
-        raise ValueError(
-            f"fixture manifest {bundle.manifest.manifest_id!r} raw cases must be a list"
-        )
     selected_case_ids = {case.case_id for case in bundle.cases}
 
     return {
         str(raw_case["id"]): raw_case
-        for raw_case in raw_cases
-        if (
-            isinstance(raw_case, dict)
-            and "id" in raw_case
-            and str(raw_case["id"]) in selected_case_ids
-        )
+        for raw_case in _manifest_raw_cases(bundle)
+        if str(raw_case["id"]) in selected_case_ids
     }
+
+
+def ordered_manifest_cases_from_bundles(
+    bundles: Iterable[FixtureBundle],
+    case_ids: Iterable[str],
+    *,
+    error_label: str,
+) -> tuple[FixtureCase, ...]:
+    ordered_case_ids = tuple(case_ids)
+    selected_case_ids = frozenset(ordered_case_ids)
+    case_by_id: dict[str, FixtureCase] = {}
+    duplicate_case_ids: set[str] = set()
+
+    for bundle in bundles:
+        for raw_case in _manifest_raw_cases(bundle):
+            case_id = str(raw_case["id"])
+            if case_id not in selected_case_ids:
+                continue
+            if case_id in case_by_id:
+                duplicate_case_ids.add(case_id)
+                continue
+            case_by_id[case_id] = FixtureCase.from_dict(bundle.manifest, raw_case)
+
+    ordered_duplicate_case_ids = tuple(
+        case_id for case_id in ordered_case_ids if case_id in duplicate_case_ids
+    )
+    if ordered_duplicate_case_ids:
+        raise AssertionError(
+            f"{error_label} contain duplicate case ids: {ordered_duplicate_case_ids}"
+        )
+
+    missing_case_ids = tuple(
+        case_id for case_id in ordered_case_ids if case_id not in case_by_id
+    )
+    if missing_case_ids:
+        raise AssertionError(
+            f"{error_label} are missing case ids: {missing_case_ids}"
+        )
+
+    return tuple(case_by_id[case_id] for case_id in ordered_case_ids)
 
 
 def case_pattern(case: FixtureCase) -> str | bytes:

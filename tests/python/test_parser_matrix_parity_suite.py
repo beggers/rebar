@@ -17,6 +17,7 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     load_fixture_bundles,
+    manifest_case_ids,
 )
 
 
@@ -123,22 +124,11 @@ CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES = tuple(
     for case_id in EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS
 )
 
-
-def _raw_manifest_case_ids(bundle) -> tuple[str, ...]:
-    raw_cases = bundle.manifest.raw.get("cases", [])
-    assert isinstance(raw_cases, list)
-    return tuple(
-        str(raw_case["id"])
-        for raw_case in raw_cases
-        if isinstance(raw_case, dict) and "id" in raw_case
-    )
-
-
 def _case_ids(cases: tuple[FixtureCase, ...]) -> frozenset[str]:
     return frozenset(case.case_id for case in cases)
 
 
-PARSER_MATRIX_PUBLISHED_CASE_IDS = _raw_manifest_case_ids(PARSER_MATRIX_FIXTURE_BUNDLE)
+PARSER_MATRIX_PUBLISHED_CASE_IDS = manifest_case_ids(PARSER_MATRIX_FIXTURE_BUNDLE)
 
 COMPILE_METADATA_CASES = tuple(
     PARSER_MATRIX_CASES_BY_ID[case_id]
