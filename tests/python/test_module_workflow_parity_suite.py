@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from dataclasses import dataclass
 import re
 
 import pytest
@@ -76,12 +77,15 @@ SELECTED_CASE_BUNDLE_SPECS = (
 )
 
 COMPILE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "compile")
-UNIMPLEMENTED_COMPILE_CASE_ID = "workflow-compile-str-verbose-regression"
+VERBOSE_COMPILE_CASE_ID = "workflow-compile-str-verbose-regression"
 SUPPORTED_COMPILE_CASES = tuple(
-    case for case in COMPILE_CASES if case.case_id != UNIMPLEMENTED_COMPILE_CASE_ID
+    case for case in COMPILE_CASES if case.case_id != VERBOSE_COMPILE_CASE_ID
 )
 UNIMPLEMENTED_COMPILE_CASES = tuple(
-    case for case in COMPILE_CASES if case.case_id == UNIMPLEMENTED_COMPILE_CASE_ID
+    case for case in COMPILE_CASES if case.case_id == VERBOSE_COMPILE_CASE_ID
+)
+(VERBOSE_COMPILE_CASE,) = tuple(
+    case for case in COMPILE_CASES if case.case_id == VERBOSE_COMPILE_CASE_ID
 )
 PATTERN_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "pattern_call")
 CACHE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "cache_workflow")
@@ -91,6 +95,92 @@ ESCAPE_CASES = tuple(
     for case in fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "module_call")
     if case.helper == "escape"
 )
+VERBOSE_COMPILE_SKIP_REASON = (
+    "rebar does not yet support the published verbose module.compile() regression slice"
+)
+
+
+@dataclass(frozen=True)
+class VerboseCompileWorkflowCase:
+    case_id: str
+    helper: str
+    text: str
+    expected_group0: str | None
+    expected_key: str | None
+    expected_span: tuple[int, int] | None
+    unsupported_backends: tuple[str, ...] = ("rebar",)
+    unsupported_backend_reason: str | None = VERBOSE_COMPILE_SKIP_REASON
+
+
+VERBOSE_COMPILE_WORKFLOW_CASES = (
+    VerboseCompileWorkflowCase(
+        case_id="fullmatch-digits-without-literal-spaces",
+        helper="fullmatch",
+        text="ENV_VAR=123",
+        expected_group0="ENV_VAR=123",
+        expected_key="ENV_VAR",
+        expected_span=(0, 11),
+    ),
+    VerboseCompileWorkflowCase(
+        case_id="fullmatch-alpha-with-extra-whitespace",
+        helper="fullmatch",
+        text="ENV_VAR   =   ABCD",
+        expected_group0="ENV_VAR   =   ABCD",
+        expected_key="ENV_VAR",
+        expected_span=(0, 18),
+    ),
+    VerboseCompileWorkflowCase(
+        case_id="search-multiline-middle-line-digits",
+        helper="search",
+        text="prefix\nENV_VAR = 123\nsuffix",
+        expected_group0="ENV_VAR = 123",
+        expected_key="ENV_VAR",
+        expected_span=(7, 20),
+    ),
+    VerboseCompileWorkflowCase(
+        case_id="search-multiline-middle-line-alpha",
+        helper="search",
+        text="prefix\nENV_VAR=ABCD\nsuffix",
+        expected_group0="ENV_VAR=ABCD",
+        expected_key="ENV_VAR",
+        expected_span=(7, 19),
+    ),
+    VerboseCompileWorkflowCase(
+        case_id="fullmatch-rejects-lowercase-key",
+        helper="fullmatch",
+        text="env_var = 123",
+        expected_group0=None,
+        expected_key=None,
+        expected_span=None,
+    ),
+    VerboseCompileWorkflowCase(
+        case_id="search-rejects-too-many-digits",
+        helper="search",
+        text="prefix\nENV_VAR = 12345\nsuffix",
+        expected_group0=None,
+        expected_key=None,
+        expected_span=None,
+    ),
+)
+
+
+def _compile_verbose_regression_pattern(
+    backend_name: str,
+    backend: object,
+) -> tuple[object, re.Pattern[str]]:
+    pattern = case_pattern(VERBOSE_COMPILE_CASE)
+    assert isinstance(pattern, str)
+
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+        VERBOSE_COMPILE_CASE.flags or 0,
+    )
+
+    assert expected_pattern.flags == int(re.MULTILINE | re.VERBOSE | re.UNICODE)
+    assert expected_pattern.groupindex == {"key": 1}
+    return observed_pattern, expected_pattern
 
 
 def test_module_workflow_parity_suite_stays_aligned_with_published_fixture() -> None:
@@ -137,6 +227,38 @@ def test_unimplemented_compile_workflow_keeps_placeholder_message(
         rebar.compile(pattern, case.flags or 0)
 
     assert "rebar.compile() is a scaffold placeholder" in str(raised.value)
+
+
+@pytest.mark.parametrize(
+    "case", VERBOSE_COMPILE_WORKFLOW_CASES, ids=lambda case: case.case_id
+)
+def test_verbose_compile_workflow_contract_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: VerboseCompileWorkflowCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = _compile_verbose_regression_pattern(
+        backend_name,
+        backend,
+    )
+
+    observed = getattr(observed_pattern, case.helper)(case.text)
+    expected = getattr(expected_pattern, case.helper)(case.text)
+
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+
+    if case.expected_group0 is None:
+        assert observed is None
+        assert expected is None
+        return
+
+    assert observed is not None
+    assert expected is not None
+    assert observed.group(0) == expected.group(0) == case.expected_group0
+    assert observed.group("key") == expected.group("key") == case.expected_key
+    assert observed.groupdict() == expected.groupdict() == {"key": case.expected_key}
+    assert observed.span() == expected.span() == case.expected_span
+    assert_match_convenience_api_parity(observed, expected)
 
 
 @pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
