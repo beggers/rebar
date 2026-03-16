@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | The published correctness slice now covers 969 cases across 108 manifests, with all 969 passing and 0 honest `unimplemented` gaps; the main benchmark report covers 588 workloads with 581 real `rebar` timings and 7 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | The concrete surviving follow-on is `RBR-0493`, which should catch the just-landed nested grouped-alternation replacement-template slice up on the shared source-tree benchmark surface by converting the two remaining `grouped_alternation_replacement_boundary.py` gap rows into measured timings. |
-| Work queue | `1` ready, `0` in progress, `492` done, `0` blocked |
+| Current milestone | The concrete surviving follow-on is `RBR-0495`, which should publish the adjacent nested grouped-alternation wrapper-template pair from `grouped_alternation_boundary.py` on the correctness surface before parity or benchmark catch-up revisit that companion benchmark pair. |
+| Work queue | `1` ready, `0` in progress, `493` done, `1` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `581` of `588` published workloa
 
 ### Immediate Next Steps
 
-- The concrete surviving follow-on is `RBR-0493`, which should catch the just-landed nested grouped-alternation replacement-template slice up on the shared source-tree benchmark surface by converting the two remaining `grouped_alternation_replacement_boundary.py` gap rows into measured timings.
+- The concrete surviving follow-on is `RBR-0495`, which should publish the adjacent nested grouped-alternation wrapper-template pair from `grouped_alternation_boundary.py` on the correctness surface before parity or benchmark catch-up revisit that companion benchmark pair.
 
 ### Current Risks
 
@@ -57,7 +57,7 @@ _README speedup rollups stay omitted while only `581` of `588` published workloa
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published correctness slice now covers 969 cases across 108 manifests with all 969 passing, and the benchmark publication is still bounded at 588 workloads with 7 explicit source-tree known gaps. The only ready task is `RBR-0493`, which should catch that just-landed nested grouped-alternation replacement-template slice up on the benchmark surface.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published correctness slice now covers 969 cases across 108 manifests with all 969 passing, and the benchmark publication is still bounded at 588 workloads with 7 explicit source-tree known gaps. The only ready task is `RBR-0495`, which should publish the adjacent nested grouped-alternation wrapper-template pair on the correctness surface.
 
 The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice, where the published parser family is about 2.7x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 

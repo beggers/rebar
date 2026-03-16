@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 969 cases across 108 manifests, with all 969 passing and 0 honest `unimplemented` gaps; the main benchmark report covers 588 workloads with 581 real `rebar` timings and 7 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- The concrete surviving follow-on is `RBR-0493`, which should catch the just-landed nested grouped-alternation replacement-template slice up on the shared source-tree benchmark surface by converting the two remaining `grouped_alternation_replacement_boundary.py` gap rows into measured timings.
+- The concrete surviving follow-on is `RBR-0495`, which should publish the adjacent nested grouped-alternation wrapper-template pair from `grouped_alternation_boundary.py` on the correctness surface before parity or benchmark catch-up revisit that companion benchmark pair.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: all 969 published correctness cases current
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The concrete surviving follow-on is `RBR-0495`, which should publish the adjacent nested grouped-alternation wrapper-template pair already anchored on `grouped_alternation_boundary.py` (`module-sub-template-nested-grouped-alternation-warm-gap` and `pattern-subn-template-named-nested-grouped-alternation-purged-gap`) onto the correctness surface before Rust-backed parity or benchmark catch-up revisit that companion benchmark pair.
+- The concrete surviving follow-on is `RBR-0495`, which should publish the adjacent nested grouped-alternation wrapper-template pair from `grouped_alternation_boundary.py` on the correctness surface before parity or benchmark catch-up revisit that companion benchmark pair.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
