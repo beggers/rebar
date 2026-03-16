@@ -329,7 +329,7 @@ The published slice is still narrow: all 965 published correctness cases now pas
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The ready-head task is `RBR-0479`, which should republish the exact grouped-segment leading-capture `(ab)c` module/pattern `search()` benchmark pair as measured source-tree timings on `grouped-named-boundary`, moving the benchmark report from `588` total workloads / `575` measured / `13` known gaps to `588` / `577` / `11`.
+- The concrete surviving follow-on is `RBR-0481`, which should publish the exact numbered-backreference grouped-segment search pair on `numbered-backreference-workflows`, moving the combined correctness report from `965` total cases / `965` passes / `0` unimplemented to `967` / `965` / `2` while `match.numbered_backreference` moves from `3` total / `3` passed / `0` unimplemented to `5` / `3` / `2`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
