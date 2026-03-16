@@ -14,12 +14,15 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FixtureBundle,
+    WholeManifestBundleSpec,
     assert_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_parity,
     case_pattern,
     compile_with_cpython_parity,
-    load_fixture_bundle,
+    fixture_cases_for_operation,
+    fixture_cases_from_bundles,
+    load_whole_manifest_fixture_bundles,
     published_fixture_paths_from_bundles,
 )
 
@@ -55,8 +58,8 @@ class BacktrackingTraceCase:
     search_text: str
     fullmatch_text: str
 
-FIXTURE_BUNDLES = (
-    load_fixture_bundle(
+FIXTURE_BUNDLE_SPECS = (
+    WholeManifestBundleSpec(
         "wider_ranged_repeat_quantified_group_workflows.py",
         expected_manifest_id="wider-ranged-repeat-quantified-group-workflows",
         expected_patterns=frozenset(
@@ -73,7 +76,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
         expected_manifest_id=(
             "wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
@@ -92,7 +95,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
         expected_manifest_id=(
             "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
@@ -111,7 +114,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
         expected_manifest_id=(
             "broader-range-wider-ranged-repeat-quantified-group-alternation-workflows"
@@ -130,7 +133,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
         expected_manifest_id=(
             "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
@@ -149,7 +152,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
         expected_manifest_id=(
             "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
@@ -168,7 +171,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
         expected_manifest_id=(
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-workflows"
@@ -187,7 +190,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
         expected_manifest_id=(
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
@@ -206,7 +209,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
         expected_manifest_id=(
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
@@ -226,10 +229,11 @@ FIXTURE_BUNDLES = (
         ),
     ),
 )
-PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
-COMPILE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "compile")
-MODULE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "module_call")
-PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pattern_call")
+FIXTURE_BUNDLES = load_whole_manifest_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
+COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
+MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
+PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
 BROADER_RANGE_CONDITIONAL_BYTES_CASES = (
     SupplementalCase(
         id="broader-range-wider-ranged-repeat-conditional-numbered-bytes",

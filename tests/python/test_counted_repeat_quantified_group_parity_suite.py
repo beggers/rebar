@@ -12,11 +12,14 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FixtureBundle,
+    WholeManifestBundleSpec,
     assert_fixture_bundle_contract,
     assert_match_parity,
     case_pattern,
     compile_with_cpython_parity,
-    load_fixture_bundle,
+    fixture_cases_for_operation,
+    fixture_cases_from_bundles,
+    load_whole_manifest_fixture_bundles,
     published_fixture_paths_from_bundles,
 )
 
@@ -24,8 +27,8 @@ PUBLISHED_COUNTED_REPEAT_FIXTURE_PATHS = select_correctness_fixture_paths(
     COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR
 )
 
-FIXTURE_BUNDLES = (
-    load_fixture_bundle(
+FIXTURE_BUNDLE_SPECS = (
+    WholeManifestBundleSpec(
         "exact_repeat_quantified_group_workflows.py",
         expected_manifest_id="exact-repeat-quantified-group-workflows",
         expected_case_ids=frozenset(
@@ -52,7 +55,7 @@ FIXTURE_BUNDLES = (
             }
         ),
     ),
-    load_fixture_bundle(
+    WholeManifestBundleSpec(
         "ranged_repeat_quantified_group_workflows.py",
         expected_manifest_id="ranged-repeat-quantified-group-workflows",
         expected_case_ids=frozenset(
@@ -80,10 +83,11 @@ FIXTURE_BUNDLES = (
         ),
     ),
 )
-PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
-COMPILE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "compile")
-MODULE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "module_call")
-PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pattern_call")
+FIXTURE_BUNDLES = load_whole_manifest_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
+COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
+MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
+PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
 
 
 def test_counted_repeat_quantified_group_suite_uses_expected_published_fixtures() -> None:

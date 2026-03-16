@@ -1,8 +1,9 @@
 # RBR-0442: Remove direct whole-manifest bundle loads from remaining parity suites
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
+Completed: 2026-03-16
 
 ## Goal
 - Replace the remaining direct whole-manifest `load_fixture_bundle(...)` declarations in the oldest fixture-backed Python parity suites with the existing declarative bundle-spec helpers in `tests/python/fixture_parity_support.py`, so the post-JSON pytest surface stops drifting between helper-backed suites and older open-coded manifest loading.
@@ -51,3 +52,13 @@ Created: 2026-03-16
   - `2 tests/python/test_counted_repeat_quantified_group_parity_suite.py`
   - `2 tests/python/test_simple_backreference_parity_suite.py`
 - `ops/tasks/done/RBR-0422-centralize-whole-manifest-python-parity-bundles.md` describes this family's intended declarative end-state, but the live checkout has drifted back to direct whole-manifest loads in these suites. This follow-on should restore the shared helper shape without broadening behavior.
+
+## Completion
+- 2026-03-16: Switched all four targeted parity suites from inline `load_fixture_bundle(...)` declarations to explicit `FIXTURE_BUNDLE_SPECS` tuples of `WholeManifestBundleSpec(...)`, then rebuilt `FIXTURE_BUNDLES` through `load_whole_manifest_fixture_bundles(...)`.
+- 2026-03-16: Routed shared case fanout through `fixture_cases_from_bundles(...)` and `fixture_cases_for_operation(...)` in the counted-repeat, open-ended, and wider-ranged-repeat suites, while keeping the simple-backreference suite's `MATCH_CASES` derived from the shared `PUBLISHED_CASES` value.
+- 2026-03-16: Kept each suite's existing frontier local and unchanged, including explicit manifest ids, case-id sets, pattern sets, operation/helper counters, and the simple-backreference and wider-ranged-repeat supplemental case builders.
+
+## Verification
+- 2026-03-16: `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_counted_repeat_quantified_group_parity_suite.py tests/python/test_simple_backreference_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (`1388 passed`, `10 skipped`)
+- 2026-03-16: `rg -n 'load_fixture_bundle\\(' tests/python/test_counted_repeat_quantified_group_parity_suite.py tests/python/test_simple_backreference_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (no matches)
+- 2026-03-16: `rg -n 'case for bundle in FIXTURE_BUNDLES for case in bundle\\.cases' tests/python/test_counted_repeat_quantified_group_parity_suite.py tests/python/test_simple_backreference_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (no matches)
