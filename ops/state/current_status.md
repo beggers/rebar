@@ -329,7 +329,7 @@ The published slice is still narrow: all 967 published correctness cases now pas
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The concrete surviving follow-on is `RBR-0487`, which should republish the exact nested-group benchmark pair on `nested-group-boundary` as measured source-tree timings, moving the published benchmark report from `588` total / `579` measured / `9` known gaps to `588` / `581` / `7` while `nested-group-boundary` moves from `6` measured / `2` known gaps to `8` / `0`.
+- The concrete surviving follow-on is `RBR-0489`, which should publish the exact nested grouped-alternation replacement-template pair already anchored on `grouped-alternation-replacement-boundary` by adding `rebar.sub("a((b|c))d", "\\1x", "abdacd")` and `rebar.compile("a(?P<outer>(b|c))d").subn("\\g<outer>x", "acdabd", 1)` to the correctness surface, moving the published correctness report from `967` total / `967` passed / `0` unimplemented across `107` manifests to `969` / `967` / `2` across `108` while the new `nested-group-alternation-replacement-workflows` manifest publishes `2` total / `0` passed / `2` unimplemented.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
