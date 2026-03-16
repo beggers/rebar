@@ -39,6 +39,29 @@ MANIFEST = {
       "notes": [
         "Captures the bounded Pattern.search numbered-backreference path for the same tiny literal workflow while leaving broader grouped execution out of scope."
       ]
+    },
+    {
+      "id": "numbered-backreference-segment-module-search-str",
+      "operation": "module_call",
+      "family": "numbered_backreference_segment_module_workflow",
+      "helper": "search",
+      "args": ["(ab)x\\1", "zzabxabzz"],
+      "categories": ["grouped", "numbered-backreference", "segment", "search", "module", "str", "gap"],
+      "notes": [
+        "Publishes the exact grouped-segment module.search helper already anchored as a known benchmark gap so the bounded follow-on stays visible on the correctness surface."
+      ]
+    },
+    {
+      "id": "numbered-backreference-prefix-pattern-search-str",
+      "operation": "pattern_call",
+      "family": "numbered_backreference_prefix_pattern_workflow",
+      "pattern": "x(ab)\\1",
+      "helper": "search",
+      "args": ["zzxababzz"],
+      "categories": ["pattern", "grouped", "numbered-backreference", "segment", "leading-literal", "search", "str", "gap"],
+      "notes": [
+        "Publishes the matching Pattern.search grouped-segment helper so the existing numbered-backreference benchmark gap pair stays explicit without claiming runtime support yet."
+      ]
     }
   ]
 }

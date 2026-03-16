@@ -517,14 +517,16 @@ def _whole_manifest_backreference_bundle_specs() -> tuple[FixtureBundleSpec, ...
                     "numbered-backreference-compile-metadata-str",
                     "numbered-backreference-module-search-str",
                     "numbered-backreference-pattern-search-str",
+                    "numbered-backreference-segment-module-search-str",
+                    "numbered-backreference-prefix-pattern-search-str",
                 }
             ),
-            expected_patterns=frozenset({r"(ab)\1"}),
+            expected_patterns=frozenset({r"(ab)\1", r"(ab)x\1", r"x(ab)\1"}),
             expected_operation_helper_counts=Counter(
                 {
                     ("compile", None): 1,
-                    ("module_call", "search"): 1,
-                    ("pattern_call", "search"): 1,
+                    ("module_call", "search"): 2,
+                    ("pattern_call", "search"): 2,
                 }
             ),
             expected_text_models=frozenset({"str"}),
@@ -589,6 +591,8 @@ def test_fixture_case_fanout_from_bundles_preserves_bundle_then_case_order() -> 
         "numbered-backreference-compile-metadata-str",
         "numbered-backreference-module-search-str",
         "numbered-backreference-pattern-search-str",
+        "numbered-backreference-segment-module-search-str",
+        "numbered-backreference-prefix-pattern-search-str",
     )
 
 
@@ -602,6 +606,7 @@ def test_fixture_case_operation_selection_preserves_published_row_order() -> Non
     ) == (
         "named-backreference-pattern-search-str",
         "numbered-backreference-pattern-search-str",
+        "numbered-backreference-prefix-pattern-search-str",
     )
 
 

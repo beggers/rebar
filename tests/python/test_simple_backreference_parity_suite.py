@@ -23,12 +23,33 @@ from tests.python.fixture_parity_support import (
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
     load_fixture_bundles,
+    manifest_case_ids,
     published_fixture_paths_from_bundles,
     str_case_pattern,
 )
 
 PUBLISHED_SIMPLE_BACKREFERENCE_FIXTURE_PATHS = select_correctness_fixture_paths(
     SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR
+)
+TARGET_FIXTURE_CASE_IDS = (
+    "named-backreference-compile-metadata-str",
+    "named-backreference-module-search-str",
+    "named-backreference-pattern-search-str",
+    "numbered-backreference-compile-metadata-str",
+    "numbered-backreference-module-search-str",
+    "numbered-backreference-pattern-search-str",
+)
+KNOWN_UNSUPPORTED_CASE_IDS = (
+    "numbered-backreference-segment-module-search-str",
+    "numbered-backreference-prefix-pattern-search-str",
+)
+MATCH_CASE_ID_BUCKET = frozenset(
+    {
+        "named-backreference-module-search-str",
+        "named-backreference-pattern-search-str",
+        "numbered-backreference-module-search-str",
+        "numbered-backreference-pattern-search-str",
+    }
 )
 
 @dataclass(frozen=True)
@@ -42,6 +63,7 @@ FIXTURE_BUNDLE_SPECS = (
     FixtureBundleSpec(
         "named_backreference_workflows.py",
         expected_manifest_id="named-backreference-workflows",
+        selected_case_ids=TARGET_FIXTURE_CASE_IDS[:3],
         expected_case_ids=frozenset(
             {
                 "named-backreference-compile-metadata-str",
@@ -61,6 +83,7 @@ FIXTURE_BUNDLE_SPECS = (
     FixtureBundleSpec(
         "numbered_backreference_workflows.py",
         expected_manifest_id="numbered-backreference-workflows",
+        selected_case_ids=TARGET_FIXTURE_CASE_IDS[3:],
         expected_case_ids=frozenset(
             {
                 "numbered-backreference-compile-metadata-str",
@@ -79,12 +102,17 @@ FIXTURE_BUNDLE_SPECS = (
     ),
 )
 FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
-PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
+PUBLISHED_CASE_IDS = tuple(
+    case_id
+    for bundle in FIXTURE_BUNDLES
+    for case_id in manifest_case_ids(bundle)
+)
+SELECTED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
 MATCH_CASES = tuple(
-    case for case in PUBLISHED_CASES if case.operation in {"module_call", "pattern_call"}
+    case for case in SELECTED_CASES if case.operation in {"module_call", "pattern_call"}
 )
-CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
+CASES_BY_ID = {case.case_id: case for case in SELECTED_CASES}
 SUPPLEMENTAL_MISS_CASES = (
     SupplementalMissCase(
         id="named-backreference-search-misses",
@@ -149,7 +177,7 @@ def test_simple_backreference_suite_uses_expected_published_fixture_paths() -> N
     assert PUBLISHED_SIMPLE_BACKREFERENCE_FIXTURE_PATHS == published_fixture_paths_from_bundles(
         FIXTURE_BUNDLES
     )
-    assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
+    assert len(set(PUBLISHED_CASE_IDS)) == len(PUBLISHED_CASE_IDS)
 
 
 @pytest.mark.parametrize(
@@ -164,6 +192,32 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
         bundle,
         pattern_extractor=str_case_pattern,
     )
+
+
+def test_simple_backreference_parity_suite_tracks_published_case_frontier() -> None:
+    selected_case_ids = frozenset(TARGET_FIXTURE_CASE_IDS)
+    uncovered_case_ids = tuple(
+        case_id for case_id in PUBLISHED_CASE_IDS if case_id not in selected_case_ids
+    )
+
+    assert uncovered_case_ids == KNOWN_UNSUPPORTED_CASE_IDS
+    assert frozenset(PUBLISHED_CASE_IDS) == (
+        selected_case_ids | frozenset(KNOWN_UNSUPPORTED_CASE_IDS)
+    )
+
+
+def test_simple_backreference_direct_match_and_miss_parametrizations_stay_supported_only() -> None:
+    direct_match_case_ids = frozenset(case.case_id for case in MATCH_CASES)
+    supplemental_case_ids = frozenset(
+        case_id
+        for miss_case in SUPPLEMENTAL_MISS_CASES
+        for case_id in (miss_case.module_case_id, miss_case.pattern_case_id)
+    )
+
+    assert direct_match_case_ids == MATCH_CASE_ID_BUCKET
+    assert supplemental_case_ids == MATCH_CASE_ID_BUCKET
+    assert not (frozenset(KNOWN_UNSUPPORTED_CASE_IDS) & direct_match_case_ids)
+    assert not (frozenset(KNOWN_UNSUPPORTED_CASE_IDS) & supplemental_case_ids)
 
 
 @pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)

@@ -160,6 +160,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "numbered-backreference-compile-metadata-str",
             "numbered-backreference-module-search-str",
             "numbered-backreference-pattern-search-str",
+            "numbered-backreference-segment-module-search-str",
+            "numbered-backreference-prefix-pattern-search-str",
         ),
     },
     "grouped-segment-workflows": {
