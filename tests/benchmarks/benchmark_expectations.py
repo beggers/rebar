@@ -106,11 +106,8 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
             "compile-inline-locale-bytes-warm",
             "compile-lookbehind-cold",
             "compile-atomic-group-purged",
+            "compile-parser-stress-cold",
         ),
-        representative_known_gap_workload_ids=("compile-parser-stress-cold",),
-        workload_note_substrings={
-            "compile-parser-stress-cold": "outside the current rebar compile surface",
-        },
     ),
     "post-parser-workflows": _full_source_tree_scorecard_case_definition(
         manifest_ids=(
@@ -173,17 +170,18 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, dict[str, Any]] = {
             "regression-import-cold",
             "regression-parser-atomic-lookbehind-cold",
         ),
-        representative_measured_workload_ids=("regression-import-cold",),
-        representative_known_gap_workload_ids=(
+        representative_measured_workload_ids=(
+            "regression-import-cold",
             "regression-parser-atomic-lookbehind-cold",
         ),
+        representative_known_gap_workload_ids=(),
     ),
 }
 
 SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
     "compile-matrix": {
-        "known_gap_count": 1,
-        "representative_known_gap_workload_ids": ("compile-parser-stress-cold",),
+        "known_gap_count": 0,
+        "representative_known_gap_workload_ids": (),
         "representative_measured_workload_ids": (),
     },
     "module-boundary": {
@@ -480,13 +478,12 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         "representative_measured_workload_ids": (),
     },
     "regression-matrix": {
-        "known_gap_count": 2,
+        "known_gap_count": 1,
         "known_gap_workload_ids": (
-            "regression-parser-atomic-lookbehind-cold",
             "regression-parser-bytes-backreference-purged",
         ),
         "representative_known_gap_workload_ids": (
-            "regression-parser-atomic-lookbehind-cold",
+            "regression-parser-bytes-backreference-purged",
         ),
         "representative_measured_workload_ids": (),
     },

@@ -1,6 +1,6 @@
 # RBR-0462: Republish the parser-stress benchmark rows as measured source-tree timings
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -39,3 +39,9 @@ Created: 2026-03-16
 - 2026-03-16 planning probe: `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/regression_matrix.py --report .rebar/tmp/feature-planning-regression-matrix-probe.py` reports `5` total workloads with `4` measured and `1` known gap, confirming `regression-parser-atomic-lookbehind-cold` is already measured and `regression-parser-bytes-backreference-purged` is now the lone remaining `regression-matrix` gap.
 - `ops/tasks/blocked/RBR-0463-collapse-quantified-nested-group-benchmark-representatives-onto-slice-expectations.md` is blocked only because the full benchmark expectation tests still describe those two parser-stress rows as gaps.
 - The concrete surviving follow-on after this benchmark refresh is `RBR-0464`, which should publish the exact bytes parser compile proxy `b"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}"` on the shared `parser-matrix` correctness surface before Rust-backed parity or later regression benchmark catch-up reopen that bytes backreference slice.
+
+## Completion
+- 2026-03-16: Updated the shared source-tree benchmark expectations so `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` are treated as measured rows, while `regression-parser-bytes-backreference-purged` remains the lone `regression-matrix` known gap.
+- 2026-03-16: Refreshed the adjacent `compile-matrix` workload note so the tracked publication no longer labels `compile-parser-stress-cold` as an explicit known gap after the measured timing landed.
+- 2026-03-16: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/compile_matrix.py --report .rebar/tmp/rbr-0462-compile-matrix.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/regression_matrix.py --report .rebar/tmp/rbr-0462-regression-matrix.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
+- 2026-03-16: Republished the tracked benchmark scorecard at `reports/benchmarks/latest.py` with `588` total workloads, `572` measured `rebar` timings, and `16` known gaps; the tracked `compile-matrix` section now reports `6` measured workloads with `0` known gaps, and the tracked `regression-matrix` section now reports `4` measured workloads with `1` known gap (`regression-parser-bytes-backreference-purged`).

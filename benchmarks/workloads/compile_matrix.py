@@ -137,7 +137,7 @@ MANIFEST = {
         "flag-syntax"
       ],
       "notes": [
-        "Heavier parser-stress compile proxy stays as an explicit known gap until grouped backreference workflows land."
+        "Heavier parser-stress compile proxy keeps the combined parser feature mix visible on the shared compile surface."
       ]
     }
   ]
