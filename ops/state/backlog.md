@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-Milestone 2 stays on the bounded two-arm conditional replacement frontier for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; after the newly seeded `RBR-0437` callable benchmark entrypoint catch-up drains, the concrete surviving follow-on is `RBR-0439`, which should reopen that same family on the shared correctness/parity path by publishing quantified alternation-heavy `sub()` / `subn()` workflows for `a(b)?c(?(1)(de|df)|(eg|eh)){2}` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}`.
+Milestone 2 stays on the bounded two-arm conditional replacement frontier for `a(b)?c(?(1)d|e)` and `a(?P<word>b)?c(?(word)d|e)`; after the newly seeded `RBR-0439` quantified alternation-heavy replacement correctness pack drains, the concrete surviving follow-on is `RBR-0441`, which should convert that same bounded `sub()` / `subn()` slice for `a(b)?c(?(1)(de|df)|(eg|eh)){2}` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` behind `rebar._rebar` on the shared conditional-replacement parity surface.
 
 ## Ordered Work
-1. `RBR-0439` should reopen the bounded conditional replacement family on the existing shared correctness/parity path by publishing a quantified alternation-heavy replacement manifest for `a(b)?c(?(1)(de|df)|(eg|eh)){2}` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}` through module and compiled-`Pattern` `sub()` / `subn()` entrypoints, wiring it through `tests/python/test_conditional_group_exists_replacement_parity_suite.py`, the shared correctness expectations, and `reports/correctness/latest.py` instead of inventing another replacement-specific parity module.
+1. `RBR-0441` should convert the quantified alternation-heavy conditional replacement manifest published by `RBR-0439` into real Rust-backed behavior for the exact numbered and named module and compiled-`Pattern` `sub()` / `subn()` workflows on `a(b)?c(?(1)(de|df)|(eg|eh)){2}` and `a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}`, wiring the cases through `tests/python/test_conditional_group_exists_replacement_parity_suite.py` and `reports/correctness/latest.py` while leaving later benchmark catch-up on `benchmarks/workloads/conditional_group_exists_boundary.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

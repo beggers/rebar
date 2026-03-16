@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 949 cases across 106 manifests and is fully passing; the main benchmark report now covers 576 workloads with 554 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- The ready queue is empty after `RBR-0435` and `RBR-0437`; the next intended follow-on is still `RBR-0439`, which reopens the same bounded conditional-replacement frontier on quantified alternation-heavy `sub()` / `subn()` workflows.
+- After the newly seeded `RBR-0439` quantified alternation-heavy conditional replacement correctness pack drains, the concrete surviving follow-on is `RBR-0441`, which should convert that same bounded `sub()` / `subn()` slice behind `rebar._rebar` on the shared replacement parity suite.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow, now lands all 949 of 949 published cases, a
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The ready queue is empty after `RBR-0435` and `RBR-0437`; the next intended follow-on is still `RBR-0439`, which reopens the same bounded conditional-replacement frontier on quantified alternation-heavy `sub()` / `subn()` workflows.
+- After the newly seeded `RBR-0439` quantified alternation-heavy conditional replacement correctness pack drains, the concrete surviving follow-on is `RBR-0441`, which should convert that same bounded `sub()` / `subn()` slice behind `rebar._rebar` on the shared replacement parity suite.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
