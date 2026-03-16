@@ -208,45 +208,6 @@ def published_fixture_bundle_by_manifest_id(
     return matching_bundles[0]
 
 
-def load_published_fixture_cases(
-    fixture_paths: Iterable[pathlib.Path],
-    case_ids: Iterable[str],
-) -> tuple[FixtureCase, ...]:
-    requested_case_ids = tuple(case_ids)
-    selected_case_ids = frozenset(requested_case_ids)
-    case_by_id: dict[str, FixtureCase] = {}
-    duplicate_case_ids: set[str] = set()
-
-    for bundle in load_published_fixture_bundles(fixture_paths):
-        for case in bundle.cases:
-            if case.case_id not in selected_case_ids:
-                continue
-            if case.case_id in case_by_id:
-                duplicate_case_ids.add(case.case_id)
-                continue
-            case_by_id[case.case_id] = case
-
-    ordered_case_ids = tuple(dict.fromkeys(requested_case_ids))
-    ordered_duplicate_case_ids = tuple(
-        case_id for case_id in ordered_case_ids if case_id in duplicate_case_ids
-    )
-    if ordered_duplicate_case_ids:
-        raise ValueError(
-            "selected published fixtures contain duplicate case ids: "
-            f"{ordered_duplicate_case_ids}"
-        )
-
-    missing_case_ids = tuple(
-        case_id for case_id in ordered_case_ids if case_id not in case_by_id
-    )
-    if missing_case_ids:
-        raise ValueError(
-            f"selected published fixtures are missing case ids: {missing_case_ids}"
-        )
-
-    return tuple(case_by_id[case_id] for case_id in requested_case_ids)
-
-
 def select_published_fixture_cases_from_bundles(
     bundles: Iterable[FixtureBundle],
     case_ids: Iterable[str],

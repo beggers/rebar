@@ -47,7 +47,6 @@ from tests.python.fixture_parity_support import (
     load_selected_case_fixture_bundles,
     load_whole_manifest_fixture_bundles,
     load_published_fixture_bundles,
-    load_published_fixture_cases,
     published_fixture_bundle_by_manifest_id,
     published_fixture_paths_from_bundles,
     raw_fixture_cases_by_id,
@@ -407,60 +406,6 @@ def test_published_fixture_bundle_lookup_by_manifest_id_supports_success_and_cle
         ),
     ):
         published_fixture_bundle_by_manifest_id((bundles[0], bundles[0]), manifest_id)
-
-
-def test_published_fixture_case_selection_preserves_requested_order_across_manifests(
-) -> None:
-    selected_case_ids = (
-        "named-group-pattern-search-metadata-str",
-        "grouped-module-fullmatch-two-capture-gap-str",
-        "named-group-module-search-metadata-str",
-    )
-
-    cases = load_published_fixture_cases(
-        select_correctness_fixture_paths(GROUPED_CAPTURE_FIXTURE_SELECTOR),
-        selected_case_ids,
-    )
-
-    assert tuple(case.case_id for case in cases) == selected_case_ids
-    assert tuple(case.manifest_id for case in cases) == (
-        "named-group-workflows",
-        "grouped-match-workflows",
-        "named-group-workflows",
-    )
-
-
-def test_published_fixture_case_selection_rejects_missing_case_ids() -> None:
-    with pytest.raises(
-        ValueError,
-        match=re.escape(
-            "selected published fixtures are missing case ids: ('missing-case-id',)"
-        ),
-    ):
-        load_published_fixture_cases(
-            select_correctness_fixture_paths(GROUPED_CAPTURE_FIXTURE_SELECTOR),
-            (
-                "named-group-pattern-search-metadata-str",
-                "missing-case-id",
-            ),
-        )
-
-
-def test_published_fixture_case_selection_rejects_duplicate_case_ids() -> None:
-    duplicate_case_id = "grouped-module-fullmatch-two-capture-gap-str"
-    grouped_match_fixture_path = FIXTURES_DIR / "grouped_match_workflows.py"
-
-    with pytest.raises(
-        ValueError,
-        match=re.escape(
-            "selected published fixtures contain duplicate case ids: "
-            f"({duplicate_case_id!r},)"
-        ),
-    ):
-        load_published_fixture_cases(
-            (grouped_match_fixture_path, grouped_match_fixture_path),
-            (duplicate_case_id,),
-        )
 
 
 def test_bundle_backed_published_fixture_case_selection_preserves_requested_order(
