@@ -38,6 +38,7 @@ Constraints:
 
 Task-writing rules:
 - Use the next available `RBR-` identifier.
+- Before choosing that identifier, scan `ops/state/backlog.md` and `ops/state/current_status.md` for any concrete future `RBR-` IDs already named as feature follow-ons but not yet filed; treat those IDs as reserved and skip past them so architecture work does not steal planning-owned frontier numbers.
 - Set `Owner: architecture-implementation` for architecture tasks.
 - Name target files and acceptance criteria precisely enough that the Architecture Implementation Agent can execute without another planning pass.
 - Keep each task small enough for one worker run.
