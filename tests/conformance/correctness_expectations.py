@@ -57,6 +57,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "str-variable-width-lookbehind-error",
             "bytes-inline-unicode-flag-error",
             "bytes-inline-locale-flag-success",
+            "bytes-named-backreference-compile-proxy-success",
         ),
     },
     "public-api-surface": {

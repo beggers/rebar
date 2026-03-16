@@ -128,6 +128,16 @@ MANIFEST = {
       ]
     },
     {
+      "id": "bytes-named-backreference-compile-proxy-success",
+      "family": "backreferences",
+      "pattern": "(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}",
+      "text_model": "bytes",
+      "categories": ["valid", "bytes", "named-group", "backreference"],
+      "notes": [
+        "Publishes the exact bytes named-backreference compile proxy already anchored as regression-parser-bytes-backreference-purged on the shared regression benchmark surface."
+      ]
+    },
+    {
       "id": "bytes-inline-unicode-flag-error",
       "family": "flags",
       "pattern": "(?u:a)",
