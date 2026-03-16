@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | The published correctness slice now covers 961 cases across 107 manifests, with 961 passes, 0 failures, and 0 published correctness gaps; the main benchmark report now covers 588 workloads with 572 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | The concrete surviving follow-on is `RBR-0467`, which should republish `regression-parser-bytes-backreference-purged` as a measured source-tree timing on the shared `regression-matrix` surface once the exact bytes parser compile slice is live behind `rebar.compile()`. |
-| Work queue | `1` ready, `0` in progress, `465` done, `0` blocked |
+| Current milestone | The concrete surviving follow-on is `RBR-0468`, which should publish the exact `IGNORECASE|ASCII` literal helper pair from `literal-flag-boundary` on the shared `literal-flag-workflows` correctness surface before parity or benchmark catch-up reopen that flag-combination slice. |
+| Work queue | `1` ready, `0` in progress, `466` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `572` of `588` published workloa
 
 ### Immediate Next Steps
 
-- The concrete surviving queued follow-on is `RBR-0466`, which should single-source the source-tree benchmark known-gap inventories through explicit workload-id lists before the next measured catch-up broadens the frontier.
+- The concrete surviving follow-on is `RBR-0467`, which should republish `regression-parser-bytes-backreference-purged` as a measured source-tree `regression-matrix` row now that the exact bytes named-backreference compile slice is live behind `rebar.compile()`.
 
 ### Current Risks
 
@@ -57,7 +57,7 @@ _README speedup rollups stay omitted while only `572` of `588` published workloa
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published slice is fully green again at 961/961, but it still represents a narrow frontier rather than broad drop-in coverage. The immediate follow-on is a benchmark-reporting cleanup that single-sources source-tree known-gap inventories before the next measured catch-up task, not a broad new syntax push.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published slice is fully green again at 961/961, but it still represents a narrow frontier rather than broad drop-in coverage. The immediate follow-on is a narrow benchmark catch-up pass that republishes the bytes named-backreference regression row as a measured source-tree timing, not a broad new syntax push.
 
 The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice, where the published parser family is about 2.3x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
