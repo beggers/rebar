@@ -1,6 +1,6 @@
 # RBR-0470: Delete default source-tree benchmark measured representatives
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -83,9 +83,15 @@ Created: 2026-03-16
   - `tracked_json_blob_delta: 0`
   - `git ls-files '*.json' | wc -l = 0`
   - `rg --files -g '*.json' | wc -l = 0`
-- In the current checkout, the duplicate default measured metadata is still concentrated in `tests/benchmarks/benchmark_expectations.py`:
+- At task intake, the duplicate default measured metadata was concentrated in `tests/benchmarks/benchmark_expectations.py`:
   - `25` manifest entries still store raw `representative_measured_workload_ids: ()`; and
   - those entries include true zero-default manifests such as `collection-replacement-boundary` plus derived manifests such as `pattern-boundary` and `branch-local-backreference-boundary`, where the effective representative ids already come from shared shape/slice expectation data instead of the empty raw tuple.
-- 2026-03-16 verification:
+- 2026-03-16 intake verification:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_scorecards.py` passes in the current checkout (`11 passed, 464 subtests passed`).
   - the structural Python probe above currently fails exactly on the remaining duplication with the first stored-empty list entries `['branch-local-backreference-boundary', 'collection-replacement-boundary', 'compile-matrix', 'conditional-group-exists-boundary', 'conditional-group-exists-empty-else-boundary', ...]`.
+
+## Completion
+- 2026-03-16: Removed every raw `representative_measured_workload_ids: ()` entry from `SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS`, leaving the table with only real manifest-local overrides plus existing gap and shape metadata.
+- 2026-03-16: Reworked `pattern-boundary` to keep its representative pair on the existing `shape_expectation` path, updated `source_tree_combined_manifest_representative_measured_workload_ids(...)` to tolerate omitted raw representative tuples, and kept `_public_source_tree_manifest_expectation(...)` synthesizing `representative_measured_workload_ids == ()` for callers when the raw table omits that key.
+- 2026-03-16: Added focused regression coverage in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` that asserts the raw table no longer stores empty representative tuples, that a zero-default public manifest expectation still exposes `representative_measured_workload_ids == ()`, and that the shape-backed `pattern-boundary` helper still returns the same representative pair.
+- 2026-03-16: Verified the cleanup with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_scorecards.py` (`14 passed, 464 subtests passed in 19.51s`) and with the task's structural Python probe (`ok`).

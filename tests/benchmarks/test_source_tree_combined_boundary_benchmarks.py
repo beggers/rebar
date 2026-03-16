@@ -77,6 +77,16 @@ KNOWN_GAP_WORKLOAD_IDS_BY_MANIFEST = {
 class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     maxDiff = None
 
+    def test_raw_manifest_expectations_omit_empty_measured_representative_defaults(
+        self,
+    ) -> None:
+        stored_empty_representative_ids = sorted(
+            manifest_id
+            for manifest_id, expectation in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.items()
+            if expectation.get("representative_measured_workload_ids") == ()
+        )
+        self.assertEqual(stored_empty_representative_ids, [])
+
     def test_manifest_gap_inventories_derive_public_known_gap_counts(self) -> None:
         for manifest_id, expected_ids in KNOWN_GAP_WORKLOAD_IDS_BY_MANIFEST.items():
             with self.subTest(manifest_id=manifest_id):
@@ -103,6 +113,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         ]
         self.assertNotIn("known_gap_count", raw_manifest_expectation)
         self.assertNotIn(
+            "representative_measured_workload_ids",
+            raw_manifest_expectation,
+        )
+        self.assertNotIn(
             "representative_known_gap_workload_ids",
             raw_manifest_expectation,
         )
@@ -112,8 +126,34 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         ]
         self.assertEqual(manifest_expectation["known_gap_count"], 0)
         self.assertEqual(
+            manifest_expectation["representative_measured_workload_ids"],
+            (),
+        )
+        self.assertEqual(
             manifest_expectation["representative_known_gap_workload_ids"],
             (),
+        )
+
+    def test_zero_default_public_manifest_expectations_restore_empty_representative_ids(
+        self,
+    ) -> None:
+        manifest_expectation = source_tree_combined_case(
+            "collection-replacement-boundary"
+        )["manifest_expectation"]
+        self.assertEqual(
+            manifest_expectation["representative_measured_workload_ids"],
+            (),
+        )
+
+    def test_shape_backed_manifests_keep_derived_representatives(self) -> None:
+        shape_expectation = source_tree_combined_manifest_shape_expectation(
+            "pattern-boundary"
+        )
+        self.assertEqual(
+            source_tree_combined_manifest_representative_measured_workload_ids(
+                "pattern-boundary"
+            ),
+            shape_expectation["representative_measured_workload_ids"],
         )
 
     def test_regression_manifest_is_fully_measured_on_the_shared_surface(self) -> None:
