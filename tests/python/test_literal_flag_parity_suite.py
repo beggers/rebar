@@ -25,6 +25,7 @@ from tests.python.fixture_parity_support import (
     manifest_case_ids,
 )
 from tests.python.native_boundary_test_support import RecordingNativeBoundary
+from tests.python.published_case_handoffs import LITERAL_FLAG_DELEGATED_CASE_IDS
 
 
 IGNORECASE_FLAGS = int(rebar.IGNORECASE)
@@ -198,9 +199,6 @@ LITERAL_FLAG_FIXTURE_BUNDLE, = load_fixture_bundles(
 LITERAL_FLAG_CASES_BY_ID = {
     case.case_id: case for case in LITERAL_FLAG_FIXTURE_BUNDLE.cases
 }
-KNOWN_UNCOVERED_LITERAL_FLAG_CASE_IDS = (
-    "flag-unsupported-nonliteral-ignorecase-search",
-)
 LITERAL_FLAG_PUBLISHED_CASE_IDS = manifest_case_ids(LITERAL_FLAG_FIXTURE_BUNDLE)
 LITERAL_FLAG_DIRECT_TEST_CASE_ID_BUCKETS = {
     "module-ignorecase": frozenset(
@@ -412,12 +410,10 @@ def test_literal_flag_parity_suite_tracks_published_case_frontier() -> None:
         if case_id not in selected_case_ids
     )
 
-    assert not (
-        selected_case_ids & frozenset(KNOWN_UNCOVERED_LITERAL_FLAG_CASE_IDS)
-    )
-    assert uncovered_case_ids == KNOWN_UNCOVERED_LITERAL_FLAG_CASE_IDS
+    assert not (selected_case_ids & frozenset(LITERAL_FLAG_DELEGATED_CASE_IDS))
+    assert uncovered_case_ids == LITERAL_FLAG_DELEGATED_CASE_IDS
     assert frozenset(LITERAL_FLAG_PUBLISHED_CASE_IDS) == (
-        selected_case_ids | frozenset(KNOWN_UNCOVERED_LITERAL_FLAG_CASE_IDS)
+        selected_case_ids | frozenset(LITERAL_FLAG_DELEGATED_CASE_IDS)
     )
 
 

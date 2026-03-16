@@ -25,6 +25,7 @@ from tests.python.fixture_parity_support import (
     published_fixture_paths_from_bundles,
 )
 from tests.python.native_boundary_test_support import RecordingNativeBoundary
+from tests.python.published_case_handoffs import LITERAL_FLAG_DELEGATED_CASE_IDS
 
 
 PUBLISHED_BOUNDED_WILDCARD_FIXTURE_PATHS = select_correctness_fixture_paths(
@@ -80,7 +81,7 @@ SELECTED_CASE_BUNDLE_SPECS = (
     FixtureBundleSpec(
         "literal_flag_workflows.py",
         expected_manifest_id="literal-flag-workflows",
-        selected_case_ids=("flag-unsupported-nonliteral-ignorecase-search",),
+        selected_case_ids=LITERAL_FLAG_DELEGATED_CASE_IDS,
         expected_patterns=frozenset({"a.c"}),
         expected_operation_helper_counts=Counter({("module_call", "search"): 1}),
         expected_text_models=frozenset({"str"}),
@@ -174,6 +175,17 @@ def test_bounded_wildcard_suite_uses_expected_published_fixture_paths() -> None:
         FIXTURE_BUNDLES
     )
     assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
+
+
+def test_bounded_wildcard_suite_absorbs_delegated_literal_flag_case() -> None:
+    delegated_case_ids = tuple(
+        case.case_id
+        for bundle in FIXTURE_BUNDLES
+        if bundle.manifest.manifest_id == "literal-flag-workflows"
+        for case in bundle.cases
+    )
+
+    assert delegated_case_ids == LITERAL_FLAG_DELEGATED_CASE_IDS
 
 
 @pytest.mark.parametrize(
