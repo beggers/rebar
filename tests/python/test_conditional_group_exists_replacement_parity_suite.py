@@ -11,9 +11,11 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
+    assert_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_parity,
-    assert_fixture_bundle_contract,
+    case_replacement_argument,
+    case_text_argument,
     compile_with_cpython_parity,
     load_fixture_bundle,
     published_fixture_paths_from_bundles,
@@ -301,22 +303,6 @@ TEMPLATE_REPLACEMENT_CASES = next(
     for bundle in FIXTURE_BUNDLES
     if bundle.expected_manifest_id == "conditional-group-exists-replacement-template-workflows"
 )
-
-
-def _case_string(case: FixtureCase) -> str:
-    text_index = 2 if case.operation == "module_call" else 1
-    string = case.args[text_index]
-    assert isinstance(string, str)
-    return string
-
-
-def _replacement_template(case: FixtureCase) -> str:
-    template_index = 1 if case.operation == "module_call" else 0
-    template = case.args[template_index]
-    assert isinstance(template, str)
-    return template
-
-
 def _replacement_args(
     case: FixtureCase,
     *,
@@ -346,7 +332,8 @@ def _search_match_for_case(
     case: FixtureCase,
 ) -> tuple[object, re.Match[str]]:
     pattern = str_case_pattern(case)
-    string = _case_string(case)
+    string = case_text_argument(case)
+    assert isinstance(string, str)
 
     if case.operation == "module_call":
         observed = backend.search(pattern, string, case.flags or 0)
@@ -447,14 +434,16 @@ def test_replacement_template_match_expand_matches_cpython(
     case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
+    template = case_replacement_argument(case)
+    assert isinstance(template, str)
     observed_match, expected_match = _search_match_for_case(
         backend_name,
         backend,
         case,
     )
 
-    observed = observed_match.expand(_replacement_template(case))
-    expected = expected_match.expand(_replacement_template(case))
+    observed = observed_match.expand(template)
+    expected = expected_match.expand(template)
 
     assert type(observed) is type(expected)
     assert observed == expected

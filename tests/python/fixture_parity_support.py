@@ -243,6 +243,29 @@ def str_case_pattern(case: FixtureCase) -> str:
     return pattern
 
 
+def _case_argument_by_operation(
+    case: FixtureCase,
+    *,
+    module_index: int,
+    pattern_index: int,
+) -> object:
+    if case.operation == "module_call":
+        return case.args[module_index]
+    if case.operation == "pattern_call":
+        return case.args[pattern_index]
+    raise AssertionError(f"unsupported case operation {case.operation!r}")
+
+
+def case_replacement_argument(case: FixtureCase) -> object:
+    return _case_argument_by_operation(case, module_index=1, pattern_index=0)
+
+
+def case_text_argument(case: FixtureCase) -> str | bytes:
+    text = _case_argument_by_operation(case, module_index=2, pattern_index=1)
+    assert isinstance(text, (str, bytes))
+    return text
+
+
 def compile_with_cpython_parity(
     backend_name: str,
     backend: object,

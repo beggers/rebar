@@ -11,6 +11,8 @@ from tests.python.fixture_parity_support import (
     assert_fixture_bundle_contract,
     assert_match_convenience_api_parity,
     assert_match_parity,
+    case_replacement_argument,
+    case_text_argument,
     compile_with_cpython_parity,
     load_fixture_bundle,
     str_case_pattern,
@@ -194,20 +196,6 @@ NESTED_GROUP_NO_MATCH_CASES = (
     ),
 )
 
-def _replacement(case: FixtureCase) -> str:
-    replacement_index = 1 if case.operation == "module_call" else 0
-    replacement = case.args[replacement_index]
-    assert isinstance(replacement, str)
-    return replacement
-
-
-def _single_match_string(case: FixtureCase) -> str:
-    string_index = 2 if case.operation == "module_call" else 1
-    string = case.args[string_index]
-    assert isinstance(string, str)
-    return string
-
-
 def _compiled_pattern(case: FixtureCase) -> re.Pattern[str]:
     return re.compile(str_case_pattern(case), case.flags or 0)
 
@@ -261,7 +249,7 @@ def _assert_replacement_fixture_bundle_contract(bundle: FixtureBundle) -> None:
         if compiled.groupindex:
             assert "named-group" in case.categories
 
-        assert _replacement(case) == _expected_replacement(case)
+        assert case_replacement_argument(case) == _expected_replacement(case)
         if case.helper == "sub":
             assert len(case.args) == count_index
         else:
@@ -284,8 +272,8 @@ def test_grouped_literal_template_suite_stays_aligned_with_published_fixtures() 
     assert GROUPED_TEMPLATE_CASE.operation == "module_call"
     assert GROUPED_TEMPLATE_CASE.helper == "sub"
     assert str_case_pattern(GROUPED_TEMPLATE_CASE) == "(abc)"
-    assert _replacement(GROUPED_TEMPLATE_CASE) == r"\1x"
-    assert _single_match_string(GROUPED_TEMPLATE_CASE) == "abc"
+    assert case_replacement_argument(GROUPED_TEMPLATE_CASE) == r"\1x"
+    assert case_text_argument(GROUPED_TEMPLATE_CASE) == "abc"
     assert "replacement-template" in GROUPED_TEMPLATE_CASE.categories
     assert "grouping-dependent" in GROUPED_TEMPLATE_CASE.categories
 
@@ -332,8 +320,11 @@ def test_grouped_literal_template_replacement_matches_cpython(
 ) -> None:
     backend_name, backend = regex_backend
     pattern = str_case_pattern(GROUPED_TEMPLATE_CASE)
-    replacement = _replacement(GROUPED_TEMPLATE_CASE)
-    string = _single_match_string(GROUPED_TEMPLATE_CASE) * string_repetitions
+    replacement = case_replacement_argument(GROUPED_TEMPLATE_CASE)
+    string = case_text_argument(GROUPED_TEMPLATE_CASE) * string_repetitions
+
+    assert isinstance(replacement, str)
+    assert isinstance(string, str)
 
     if use_compiled_pattern:
         observed_pattern, expected_pattern = compile_with_cpython_parity(

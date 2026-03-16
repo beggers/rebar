@@ -19,6 +19,8 @@ from tests.python.fixture_parity_support import (
     assert_match_convenience_api_parity,
     assert_match_parity,
     bundle_patterns,
+    case_replacement_argument,
+    case_text_argument,
     load_fixture_bundle,
     load_published_fixture_bundles,
     published_fixture_bundle_by_manifest_id,
@@ -627,8 +629,7 @@ def _literal_callable_string() -> str:
 
 
 def _case_string(case: FixtureCase) -> str:
-    string_index = 2 if case.operation == "module_call" else 1
-    string = case.args[string_index]
+    string = case_text_argument(case)
     assert isinstance(string, str)
     return string
 
@@ -801,7 +802,7 @@ def test_literal_callable_case_stays_aligned_with_published_collection_fixture()
     assert case.helper == "sub"
     assert _literal_callable_pattern() == "abc"
     assert _literal_callable_string() == "abcabc"
-    assert callable(case.args[1])
+    assert callable(case_replacement_argument(case))
     assert "callable-replacement" in case.categories
     assert "str" in case.categories
     assert isinstance(raw_args, list)

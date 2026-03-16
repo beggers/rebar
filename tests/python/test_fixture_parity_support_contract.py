@@ -35,7 +35,9 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     bundle_patterns,
+    case_replacement_argument,
     case_pattern,
+    case_text_argument,
     compile_with_cpython_parity,
     load_fixture_bundle,
     load_published_fixture_bundles,
@@ -516,6 +518,35 @@ def test_bundle_pattern_projection_and_raw_case_lookup_helpers_cover_published_f
         "value": "x",
     }
     assert raw_cases["module-sub-grouping-template"]["args"][1] == r"\1x"
+
+
+def test_case_argument_helpers_cover_module_and_pattern_replacement_rows() -> None:
+    module_bundle = load_fixture_bundle(
+        "collection_replacement_workflows.py",
+        expected_manifest_id="collection-replacement-workflows",
+        expected_case_ids=frozenset({"module-sub-grouping-template"}),
+        expected_patterns=frozenset({"(abc)"}),
+        expected_operation_helper_counts=Counter({("module_call", "sub"): 1}),
+        selected_case_ids=("module-sub-grouping-template",),
+        expected_text_models=frozenset({"str"}),
+    )
+    pattern_bundle = load_fixture_bundle(
+        "named_group_replacement_workflows.py",
+        expected_manifest_id="named-group-replacement-workflows",
+        expected_case_ids=frozenset({"pattern-sub-template-named-group-str"}),
+        expected_patterns=frozenset({r"(?P<word>abc)"}),
+        expected_operation_helper_counts=Counter({("pattern_call", "sub"): 1}),
+        selected_case_ids=("pattern-sub-template-named-group-str",),
+        expected_text_models=frozenset({"str"}),
+    )
+
+    module_case = module_bundle.cases[0]
+    pattern_case = pattern_bundle.cases[0]
+
+    assert case_replacement_argument(module_case) == module_case.args[1]
+    assert case_text_argument(module_case) == module_case.args[2]
+    assert case_replacement_argument(pattern_case) == pattern_case.args[0]
+    assert case_text_argument(pattern_case) == pattern_case.args[1]
 
 
 def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_case_ids() -> None:

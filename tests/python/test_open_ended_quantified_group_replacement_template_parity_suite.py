@@ -16,6 +16,8 @@ from tests.python.fixture_parity_support import (
     assert_match_convenience_api_parity,
     assert_match_parity,
     case_pattern,
+    case_replacement_argument,
+    case_text_argument,
     compile_with_cpython_parity,
     load_fixture_bundle,
     published_fixture_paths_from_bundles,
@@ -334,21 +336,6 @@ PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.ca
 COMPILE_PATTERNS = tuple(sorted({case_pattern(case) for case in PUBLISHED_CASES}))
 MODULE_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "module_call")
 PATTERN_CASES = tuple(case for case in PUBLISHED_CASES if case.operation == "pattern_call")
-
-
-def _case_template_and_string(case: FixtureCase) -> tuple[str, str]:
-    if case.operation == "module_call":
-        template = case.args[1]
-        string = case.args[2]
-    else:
-        template = case.args[0]
-        string = case.args[1]
-
-    assert isinstance(template, str)
-    assert isinstance(string, str)
-    return template, string
-
-
 def _search_match_for_case(
     backend_name: str,
     backend: object,
@@ -356,7 +343,8 @@ def _search_match_for_case(
 ) -> tuple[object, re.Match[str]]:
     pattern = case_pattern(case)
     assert isinstance(pattern, str)
-    _, string = _case_template_and_string(case)
+    string = case_text_argument(case)
+    assert isinstance(string, str)
 
     if case.operation == "module_call":
         observed = backend.search(pattern, string, case.flags or 0)
@@ -441,7 +429,8 @@ def test_replacement_match_capture_and_expand_matches_cpython(
     case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
-    template, _ = _case_template_and_string(case)
+    template = case_replacement_argument(case)
+    assert isinstance(template, str)
     observed_match, expected_match = _search_match_for_case(
         backend_name,
         backend,
