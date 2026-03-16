@@ -13,15 +13,19 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
+    SelectedCaseBundleSpec,
     assert_fixture_bundle_contract,
     assert_finditer_parity,
     assert_match_convenience_api_parity,
     assert_match_result_parity,
     case_pattern,
     compile_with_cpython_parity,
-    load_fixture_bundle,
+    fixture_cases_from_bundles,
+    load_selected_case_fixture_bundles,
     published_fixture_paths_from_bundles,
 )
+
+
 PUBLISHED_BOUNDED_WILDCARD_FIXTURE_PATHS = select_correctness_fixture_paths(
     BOUNDED_WILDCARD_FIXTURE_SELECTOR
 )
@@ -86,25 +90,26 @@ class _FakeNativeBoundary:
         self.calls.append(("purge",))
 
 
-FIXTURE_BUNDLES = (
-    load_fixture_bundle(
+SELECTED_CASE_BUNDLE_SPECS = (
+    SelectedCaseBundleSpec(
         "literal_flag_workflows.py",
         expected_manifest_id="literal-flag-workflows",
         selected_case_ids=("flag-unsupported-nonliteral-ignorecase-search",),
-        expected_case_ids=frozenset({"flag-unsupported-nonliteral-ignorecase-search"}),
         expected_patterns=frozenset({"a.c"}),
         expected_operation_helper_counts=Counter({("module_call", "search"): 1}),
+        expected_text_models=frozenset({"str"}),
     ),
-    load_fixture_bundle(
+    SelectedCaseBundleSpec(
         "collection_replacement_workflows.py",
         expected_manifest_id="collection-replacement-workflows",
         selected_case_ids=("module-findall-nonliteral-str",),
-        expected_case_ids=frozenset({"module-findall-nonliteral-str"}),
         expected_patterns=frozenset({"a.c"}),
         expected_operation_helper_counts=Counter({("module_call", "findall"): 1}),
+        expected_text_models=frozenset({"str"}),
     ),
 )
-PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
+FIXTURE_BUNDLES = load_selected_case_fixture_bundles(SELECTED_CASE_BUNDLE_SPECS)
+PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 MODULE_SEARCH_CASES = tuple(case for case in PUBLISHED_CASES if case.helper == "search")
 MODULE_FINDALL_CASES = tuple(case for case in PUBLISHED_CASES if case.helper == "findall")
 
