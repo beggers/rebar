@@ -17,9 +17,9 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 import rebar
 from rebar_harness.descriptor_values import materialize_descriptor_value
-from rebar_harness.metadata import build_cpython_baseline
 from rebar_harness.scorecard_io import (
     ScorecardReportSpec,
+    build_cpython_baseline,
     load_python_dict_attribute,
 )
 

@@ -3,7 +3,9 @@ from __future__ import annotations
 import importlib.util
 import json
 import pathlib
+import platform
 import pprint
+import sys
 from dataclasses import dataclass
 from typing import Any
 
@@ -44,6 +46,25 @@ class ScorecardReportSpec:
 
     def remove_legacy_sidecar(self) -> bool:
         return remove_scorecard_sidecar(self.legacy_path)
+
+
+def build_cpython_baseline(*, version_family: str) -> dict[str, Any]:
+    """Collect exact interpreter provenance for scorecard baselines."""
+
+    build_name, build_date = platform.python_build()
+    return {
+        "python_implementation": platform.python_implementation(),
+        "python_version": platform.python_version(),
+        "python_version_family": version_family,
+        "python_build": {
+            "name": build_name,
+            "date": build_date,
+        },
+        "python_compiler": platform.python_compiler(),
+        "platform": platform.platform(),
+        "executable": sys.executable,
+        "re_module": "re",
+    }
 
 
 def validate_scorecard_report_path(
