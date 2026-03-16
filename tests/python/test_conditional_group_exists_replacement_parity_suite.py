@@ -41,6 +41,48 @@ NO_MATCH_TEXT_CANDIDATES = (
     "ae",
     "ad",
 )
+SUPPLEMENTAL_REPEATED_TEMPLATE_REPLACEMENT_CASES = (
+    pytest.param(
+        False,
+        "sub",
+        r"a(b)?c(?(1)d|e)",
+        r"\1x",
+        "abcdaceabcd",
+        0,
+        "bxxbx",
+        id="module-numbered-sub-repeated-template-present-absent-present",
+    ),
+    pytest.param(
+        False,
+        "subn",
+        r"a(?P<word>b)?c(?(word)d|e)",
+        r"\g<word>x",
+        "abcdaceabcd",
+        1,
+        ("bxaceabcd", 1),
+        id="module-named-subn-template-first-match-mixed-captures",
+    ),
+    pytest.param(
+        True,
+        "sub",
+        r"a(?P<word>b)?c(?(word)d|e)",
+        r"\g<word>x",
+        "abcdaceabcd",
+        0,
+        "bxxbx",
+        id="pattern-named-sub-repeated-template-present-absent-present",
+    ),
+    pytest.param(
+        True,
+        "subn",
+        r"a(b)?c(?(1)d|e)",
+        r"\1x",
+        "abcdaceabcd",
+        1,
+        ("bxaceabcd", 1),
+        id="pattern-numbered-subn-template-first-match-mixed-captures",
+    ),
+)
 
 
 FIXTURE_BUNDLES = (
@@ -434,5 +476,44 @@ def test_replacement_no_match_paths_leave_input_unchanged(
         expected_result = text
     else:
         expected_result = (text, 0)
+
+    assert observed == expected == expected_result
+
+
+@pytest.mark.parametrize(
+    (
+        "use_compiled_pattern",
+        "helper",
+        "pattern",
+        "replacement",
+        "string",
+        "count",
+        "expected_result",
+    ),
+    SUPPLEMENTAL_REPEATED_TEMPLATE_REPLACEMENT_CASES,
+)
+def test_repeated_replacement_template_paths_match_cpython(
+    regex_backend: tuple[str, object],
+    use_compiled_pattern: bool,
+    helper: str,
+    pattern: str,
+    replacement: str,
+    string: str,
+    count: int,
+    expected_result: str | tuple[str, int],
+) -> None:
+    backend_name, backend = regex_backend
+
+    if use_compiled_pattern:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+        )
+        observed = getattr(observed_pattern, helper)(replacement, string, count=count)
+        expected = getattr(expected_pattern, helper)(replacement, string, count=count)
+    else:
+        observed = getattr(backend, helper)(pattern, replacement, string, count=count)
+        expected = getattr(re, helper)(pattern, replacement, string, count=count)
 
     assert observed == expected == expected_result
