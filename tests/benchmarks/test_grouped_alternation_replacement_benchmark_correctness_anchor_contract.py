@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from functools import cache
 import pathlib
+import re
 import unittest
 from typing import Any
 
@@ -11,7 +12,7 @@ GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_replacement_boundary.py"
 )
 
-from rebar_harness.benchmarks import load_manifest
+from rebar_harness.benchmarks import build_callable, load_manifest
 from rebar_harness.correctness import DEFAULT_FIXTURE_PATHS, load_fixture_manifest
 
 
@@ -163,6 +164,52 @@ def _published_anchor_case_ids_by_signature() -> dict[tuple[Any, ...], tuple[str
     }
 
 
+@cache
+def _published_cases_by_id() -> dict[str, Any]:
+    cases_by_id: dict[str, Any] = {}
+
+    for fixture_path in DEFAULT_FIXTURE_PATHS:
+        for case in load_fixture_manifest(fixture_path).cases:
+            if case.case_id in cases_by_id:
+                raise AssertionError(
+                    "duplicate published grouped-alternation replacement case id "
+                    f"{case.case_id!r}"
+                )
+            cases_by_id[case.case_id] = case
+
+    return cases_by_id
+
+
+def _run_correctness_case_with_cpython(case: Any) -> object:
+    if case.operation == "module_call":
+        if case.helper is None:
+            raise AssertionError(
+                f"expected grouped-alternation replacement helper for {case.case_id!r}"
+            )
+        return getattr(re, case.helper)(*case.args, **case.kwargs)
+
+    if case.operation == "pattern_call":
+        if case.helper is None:
+            raise AssertionError(
+                f"expected grouped-alternation replacement helper for {case.case_id!r}"
+            )
+        compiled = re.compile(case.pattern_payload(), case.flags or 0)
+        return getattr(compiled, case.helper)(*case.args, **case.kwargs)
+
+    raise AssertionError(
+        "unexpected grouped-alternation replacement correctness operation "
+        f"{case.operation!r}"
+    )
+
+
+def _run_benchmark_workload_with_cpython(workload: Any) -> object:
+    re.purge()
+    callback = build_callable(re, "re", workload)
+    result = callback()
+    re.purge()
+    return result
+
+
 def _measured_grouped_alternation_replacement_workload_ids(
     manifest_path: pathlib.Path,
 ) -> tuple[str, ...]:
@@ -283,6 +330,31 @@ class GroupedAlternationReplacementBenchmarkCorrectnessAnchorContractTest(
             ),
             EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_ANCHOR_CASE_IDS,
         )
+
+    def test_grouped_alternation_replacement_workload_callbacks_match_anchor_case_results(
+        self,
+    ) -> None:
+        manifest = load_manifest(GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH)
+        workloads_by_id = {
+            workload.workload_id: workload for workload in manifest.workloads
+        }
+        published_cases_by_id = _published_cases_by_id()
+        anchored_case_ids = {
+            **EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS,
+            **EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_KNOWN_GAP_ANCHOR_CASE_IDS,
+        }
+
+        for (_, workload_id), case_ids in anchored_case_ids.items():
+            self.assertEqual(len(case_ids), 1)
+            case_id = case_ids[0]
+
+            with self.subTest(workload_id=workload_id, case_id=case_id):
+                self.assertIn(workload_id, workloads_by_id)
+                self.assertIn(case_id, published_cases_by_id)
+                self.assertEqual(
+                    _run_benchmark_workload_with_cpython(workloads_by_id[workload_id]),
+                    _run_correctness_case_with_cpython(published_cases_by_id[case_id]),
+                )
 
 
 if __name__ == "__main__":
