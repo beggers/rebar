@@ -20,6 +20,10 @@ const FUTURE_WARNING_MESSAGE: &str = "Possible nested set at position 1";
 const GROUPED_SEGMENT_LEADING_CAPTURE_PATTERN: &str = "(ab)c";
 const GROUPED_SEGMENT_LEADING_CAPTURE_LITERAL: &[char] = &['a', 'b', 'c'];
 const GROUPED_SEGMENT_LEADING_CAPTURE_GROUP_END_OFFSET: usize = 2;
+const NUMBERED_BACKREFERENCE_SEGMENT_PATTERN: &str = r"(ab)x\1";
+const NUMBERED_BACKREFERENCE_SEGMENT_LITERAL: &[char] = &['a', 'b', 'x', 'a', 'b'];
+const NUMBERED_BACKREFERENCE_PREFIX_PATTERN: &str = r"x(ab)\1";
+const NUMBERED_BACKREFERENCE_PREFIX_LITERAL: &[char] = &['x', 'a', 'b', 'a', 'b'];
 const VERBOSE_COMPILE_REGRESSION_PATTERN: &str =
     "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $";
 const VERBOSE_COMPILE_REGRESSION_FLAGS: i32 = FLAG_MULTILINE | FLAG_VERBOSE | FLAG_UNICODE;
@@ -2077,6 +2081,20 @@ fn compile_known_supported_case(
                 normalized_flags,
                 supports_literal: false,
                 group_count: grouped_pattern.group_count(),
+                named_groups: Vec::new(),
+                warning: None,
+            })
+        }
+        PatternRef::Str(pattern)
+            if (pattern == NUMBERED_BACKREFERENCE_SEGMENT_PATTERN
+                || pattern == NUMBERED_BACKREFERENCE_PREFIX_PATTERN)
+                && normalized_flags == FLAG_UNICODE =>
+        {
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: 1,
                 named_groups: Vec::new(),
                 warning: None,
             })
@@ -5741,6 +5759,54 @@ fn literal_match_str(
             );
             let group_spans = span
                 .map(|(start, _)| numbered_backreference_pattern.group_spans(start))
+                .unwrap_or_default();
+            (span, group_spans)
+        } else if pattern_value == NUMBERED_BACKREFERENCE_SEGMENT_PATTERN {
+            if flags != FLAG_UNICODE || mode != MatchMode::Search {
+                return MatchOutcome {
+                    status: MatchStatus::Unsupported,
+                    pos: normalized_pos,
+                    endpos: normalized_endpos,
+                    span: None,
+                    group_spans: Vec::new(),
+                    lastindex: None,
+                };
+            }
+
+            let span = find_match_span_str(
+                NUMBERED_BACKREFERENCE_SEGMENT_LITERAL,
+                flags,
+                mode,
+                &string_chars,
+                normalized_pos,
+                normalized_endpos,
+            );
+            let group_spans = span
+                .map(|(start, _)| vec![Some((start, start + 2))])
+                .unwrap_or_default();
+            (span, group_spans)
+        } else if pattern_value == NUMBERED_BACKREFERENCE_PREFIX_PATTERN {
+            if flags != FLAG_UNICODE || mode != MatchMode::Search {
+                return MatchOutcome {
+                    status: MatchStatus::Unsupported,
+                    pos: normalized_pos,
+                    endpos: normalized_endpos,
+                    span: None,
+                    group_spans: Vec::new(),
+                    lastindex: None,
+                };
+            }
+
+            let span = find_match_span_str(
+                NUMBERED_BACKREFERENCE_PREFIX_LITERAL,
+                flags,
+                mode,
+                &string_chars,
+                normalized_pos,
+                normalized_endpos,
+            );
+            let group_spans = span
+                .map(|(start, _)| vec![Some((start + 1, start + 3))])
                 .unwrap_or_default();
             (span, group_spans)
         } else if let Some(grouped_alternation_pattern) =

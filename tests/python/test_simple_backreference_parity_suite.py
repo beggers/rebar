@@ -38,17 +38,18 @@ TARGET_FIXTURE_CASE_IDS = (
     "numbered-backreference-compile-metadata-str",
     "numbered-backreference-module-search-str",
     "numbered-backreference-pattern-search-str",
-)
-KNOWN_UNSUPPORTED_CASE_IDS = (
     "numbered-backreference-segment-module-search-str",
     "numbered-backreference-prefix-pattern-search-str",
 )
+KNOWN_UNSUPPORTED_CASE_IDS: tuple[str, ...] = ()
 MATCH_CASE_ID_BUCKET = frozenset(
     {
         "named-backreference-module-search-str",
         "named-backreference-pattern-search-str",
         "numbered-backreference-module-search-str",
         "numbered-backreference-pattern-search-str",
+        "numbered-backreference-segment-module-search-str",
+        "numbered-backreference-prefix-pattern-search-str",
     }
 )
 
@@ -89,14 +90,16 @@ FIXTURE_BUNDLE_SPECS = (
                 "numbered-backreference-compile-metadata-str",
                 "numbered-backreference-module-search-str",
                 "numbered-backreference-pattern-search-str",
+                "numbered-backreference-segment-module-search-str",
+                "numbered-backreference-prefix-pattern-search-str",
             }
         ),
-        expected_patterns=frozenset({r"(ab)\1"}),
+        expected_patterns=frozenset({r"(ab)\1", r"(ab)x\1", r"x(ab)\1"}),
         expected_operation_helper_counts=Counter(
             {
                 ("compile", None): 1,
-                ("module_call", "search"): 1,
-                ("pattern_call", "search"): 1,
+                ("module_call", "search"): 2,
+                ("pattern_call", "search"): 2,
             }
         ),
     ),
@@ -124,6 +127,12 @@ SUPPLEMENTAL_MISS_CASES = (
         id="numbered-backreference-search-misses",
         module_case_id="numbered-backreference-module-search-str",
         pattern_case_id="numbered-backreference-pattern-search-str",
+        misses=("zzabzz", "zzz"),
+    ),
+    SupplementalMissCase(
+        id="numbered-backreference-grouped-segment-search-misses",
+        module_case_id="numbered-backreference-segment-module-search-str",
+        pattern_case_id="numbered-backreference-prefix-pattern-search-str",
         misses=("zzabzz", "zzz"),
     ),
 )
@@ -200,10 +209,8 @@ def test_simple_backreference_parity_suite_tracks_published_case_frontier() -> N
         case_id for case_id in PUBLISHED_CASE_IDS if case_id not in selected_case_ids
     )
 
-    assert uncovered_case_ids == KNOWN_UNSUPPORTED_CASE_IDS
-    assert frozenset(PUBLISHED_CASE_IDS) == (
-        selected_case_ids | frozenset(KNOWN_UNSUPPORTED_CASE_IDS)
-    )
+    assert uncovered_case_ids == ()
+    assert frozenset(PUBLISHED_CASE_IDS) == selected_case_ids
 
 
 def test_simple_backreference_direct_match_and_miss_parametrizations_stay_supported_only() -> None:

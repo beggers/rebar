@@ -1,6 +1,6 @@
 # RBR-0483: Convert the numbered-backreference grouped-segment search pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-16
 
@@ -39,3 +39,10 @@ Created: 2026-03-16
 - 2026-03-16 planning probe: CPython reports that `re.search("(ab)x\\1", "zzabxabzz")` returns a match with span `(2, 7)`, `group(0) == "abxab"`, `group(1) == "ab"`, and `groups() == ("ab",)`, while `re.compile("x(ab)\\1").search("zzxababzz")` returns a match with the same span and capture payload.
 - 2026-03-16 planning probe: before `RBR-0481`, the current checkout still exposes only the simpler `(ab)\\1` numbered-backreference cases on `numbered-backreference-workflows`, and the grouped-segment helpers `rebar.search("(ab)x\\1", "zzabxabzz")` and `rebar.compile("x(ab)\\1").search("zzxababzz")` still raise the scaffold placeholder instead of matching.
 - 2026-03-16 planning probe: the adjacent benchmark rows `module-search-numbered-backreference-segment-cold-gap` and `pattern-search-numbered-backreference-prefix-purged-gap` already exist on `benchmarks/workloads/numbered_backreference_boundary.py` and still publish as explicit source-tree known gaps in `reports/benchmarks/latest.py`; they should stay untouched here and become the benchmark catch-up target immediately after parity lands.
+
+## Completion
+- 2026-03-16: Extended the Rust-backed numbered-backreference compile/search boundary in `crates/rebar-core/src/lib.rs` to cover the exact grouped-segment search pair `"(ab)x\\1"` and `"x(ab)\\1"` while keeping non-`search()` modes unsupported and leaving benchmark files untouched for the queued `RBR-0485` follow-on.
+- 2026-03-16: Kept the source-tree shim aligned in `python/rebar/__init__.py` by teaching the fallback compile/search path the exact bounded numbered-backreference trio `"(ab)\\1"`, `"(ab)x\\1"`, and `"x(ab)\\1"` without widening into named grouped-segment backreferences or other grouped-reference shapes.
+- 2026-03-16: Promoted the two published grouped-segment ids onto the shared parity frontier in `tests/python/test_simple_backreference_parity_suite.py`, updated the numbered fixture contract to expect all five numbered-backreference cases, and added one supplemental grouped-segment miss parametrization so the direct supported-case inventory stays coherent.
+- 2026-03-16: Republished `reports/correctness/latest.py`; the tracked combined scorecard now reads `967` total cases / `967` passed / `0` failed / `0` unimplemented, and `match.numbered_backreference` now reads `5` total / `5` passed / `0` failed / `0` unimplemented.
+- 2026-03-16: Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_simple_backreference_parity_suite.py tests/python/test_fixture_parity_support_contract.py tests/conformance/test_combined_correctness_scorecards.py` (`128 passed, 1062 subtests passed in 21.22s`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/numbered_backreference_workflows.py --report .rebar/tmp/rbr-0483-numbered-backreference.py` (`5` total / `5` passed / `0` unimplemented), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`967` total / `967` passed / `0` unimplemented), and a direct source-tree shim smoke with `_native` temporarily forced to `None`, which returned the expected compile metadata plus `(2, 7)` / `"ab"` capture results for both exact grouped-segment searches.

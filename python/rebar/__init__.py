@@ -89,6 +89,11 @@ _ESCAPE_SPECIAL_CHARACTERS: Final[dict[int, str]] = {
     126: "\\~",
 }
 _COMPILE_CACHE: dict[tuple[type[str] | type[bytes], str | bytes, int], "Pattern"] = {}
+_BOUNDED_NUMBERED_BACKREFERENCE_SEARCH_CASES: Final[dict[str, tuple[str, int, int]]] = {
+    r"(ab)\1": ("abab", 0, 2),
+    r"(ab)x\1": ("abxab", 0, 2),
+    r"x(ab)\1": ("xabab", 1, 3),
+}
 
 
 def _raise_placeholder(helper_name: str) -> object:
@@ -683,6 +688,19 @@ def _supports_grouped_segment_leading_capture_search_execution(
     )
 
 
+def _bounded_numbered_backreference_search_spec(
+    compiled_pattern: Pattern,
+    mode: str,
+) -> tuple[str, int, int] | None:
+    if mode != "search" or not isinstance(compiled_pattern.pattern, str):
+        return None
+    if compiled_pattern.flags != int(UNICODE):
+        return None
+    if compiled_pattern.groups != 1 or compiled_pattern.groupindex != {}:
+        return None
+    return _BOUNDED_NUMBERED_BACKREFERENCE_SEARCH_CASES.get(compiled_pattern.pattern)
+
+
 def _raise_regex_error(message: str, pattern: str | bytes, pos: int) -> object:
     raise error(message, pattern, pos)
 
@@ -770,16 +788,29 @@ def _dispatch_pattern_match(
             lastindex=lastindex,
         )
 
+    numbered_backreference_search_spec = _bounded_numbered_backreference_search_spec(
+        compiled_pattern,
+        mode,
+    )
     if not (
         _supports_literal_execution(compiled_pattern)
         or _supports_bounded_ascii_ignorecase_search_execution(compiled_pattern, mode)
         or _supports_bounded_single_dot_execution(compiled_pattern)
+        or numbered_backreference_search_spec is not None
         or _supports_grouped_segment_leading_capture_search_execution(
             compiled_pattern, mode
         )
     ):
         return compiled_pattern._raise_placeholder(mode)
 
+    if numbered_backreference_search_spec is not None:
+        return _run_bounded_numbered_backreference_search(
+            compiled_pattern,
+            string,
+            numbered_backreference_search_spec,
+            pos=pos,
+            endpos=endpos,
+        )
     if _supports_grouped_segment_leading_capture_search_execution(compiled_pattern, mode):
         return _run_grouped_segment_leading_capture_search(
             compiled_pattern,
@@ -1155,6 +1186,13 @@ def _compile_known_parser_case(pattern: str | bytes, flags: int) -> Pattern | No
     if pattern == "a.c" and flags in (int(UNICODE), int(IGNORECASE | UNICODE)):
         return _build_compiled_pattern(pattern, flags, supports_literal=False)
 
+    if (
+        isinstance(pattern, str)
+        and pattern in _BOUNDED_NUMBERED_BACKREFERENCE_SEARCH_CASES
+        and flags == int(UNICODE)
+    ):
+        return _build_compiled_pattern(pattern, flags, supports_literal=False, groups=1)
+
     if pattern == "(ab)c" and flags == int(UNICODE):
         return _build_compiled_pattern(pattern, flags, supports_literal=False, groups=1)
 
@@ -1377,6 +1415,33 @@ def _run_grouped_segment_leading_capture_search(
         normalized_endpos,
         (start, start + 3),
         ((start, start + 2),),
+    )
+
+
+def _run_bounded_numbered_backreference_search(
+    compiled_pattern: Pattern,
+    string: object,
+    search_spec: tuple[str, int, int],
+    pos: int = 0,
+    endpos: int | None = None,
+) -> Match | None:
+    literal, group_start_offset, group_end_offset = search_spec
+    compatible_string = _ensure_compatible_string(compiled_pattern.pattern, string)
+    normalized_pos, normalized_endpos = _normalize_match_bounds(
+        compatible_string,
+        pos,
+        endpos,
+    )
+    start = compatible_string.find(literal, normalized_pos, normalized_endpos)
+    if start < 0:
+        return None
+    return _build_match(
+        compiled_pattern,
+        compatible_string,
+        normalized_pos,
+        normalized_endpos,
+        (start, start + len(literal)),
+        ((start + group_start_offset, start + group_end_offset),),
     )
 
 
