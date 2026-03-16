@@ -318,6 +318,40 @@ def _branch_local_named_backreference_match(
     )
 
 
+def _expand_match(
+    backend_name: str,
+    backend: object,
+    pattern: str | bytes,
+    text: str | bytes,
+    *,
+    helper: str = "search",
+    use_compiled_pattern: bool,
+) -> tuple[object, re.Match[str] | re.Match[bytes]]:
+    if use_compiled_pattern:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+        )
+        observed_match = getattr(observed_pattern, helper)(text)
+        expected_match = getattr(expected_pattern, helper)(text)
+    else:
+        observed_match = getattr(backend, helper)(pattern, text)
+        expected_match = getattr(re, helper)(pattern, text)
+
+    assert observed_match is not None
+    assert expected_match is not None
+    return observed_match, expected_match
+
+
+def _capture_expand_error(match: object, template: object) -> BaseException:
+    try:
+        match.expand(template)
+    except BaseException as error:  # noqa: BLE001 - parity helper compares exception details.
+        return error
+    raise AssertionError("expected match.expand() to raise")
+
+
 @pytest.mark.parametrize(("selector", "expected_filenames"), SELECTOR_EXPECTATIONS)
 def test_shared_correctness_fixture_selectors_resolve_expected_published_paths(
     selector: str,
@@ -999,6 +1033,141 @@ def test_match_parity_helpers_cover_bytes_match_object_contracts(
     assert_match_convenience_api_parity(observed, expected)
     assert_valid_match_group_access_parity(observed, expected)
     assert_invalid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    ("template", "use_compiled_pattern"),
+    (
+        pytest.param(b"<\\g<0>>", False, id="module-bytes-whole-match"),
+        pytest.param(b"<\\\\>", True, id="pattern-bytes-escaped-backslash"),
+        pytest.param(bytearray(b"<\\g<0>>"), False, id="module-bytes-bytearray"),
+        pytest.param(memoryview(b"<\\\\>"), True, id="pattern-bytes-memoryview"),
+    ),
+)
+def test_match_expand_bytes_templates_match_cpython(
+    regex_backend: tuple[str, object],
+    template: bytes | bytearray | memoryview,
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = _expand_match(
+        backend_name,
+        backend,
+        BYTES_LITERAL_PATTERN,
+        b"zzabczz",
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+    assert_match_parity(backend_name, observed, expected, check_regs=True)
+    assert_match_convenience_api_parity(observed, expected)
+
+    expanded = observed.expand(template)
+    expected_expanded = expected.expand(template)
+
+    assert type(expanded) is type(expected_expanded)
+    assert expanded == expected_expanded
+
+
+@pytest.mark.parametrize(
+    ("pattern", "text", "template", "use_compiled_pattern"),
+    (
+        pytest.param("(abc)", "abc", r"<\2>", False, id="str-invalid-numbered-reference"),
+        pytest.param(
+            r"(?P<word>abc)",
+            "abc",
+            r"<\g<missing>>",
+            True,
+            id="str-unknown-group-name",
+        ),
+        pytest.param(
+            r"(?P<word>abc)",
+            "abc",
+            r"<\g<word",
+            False,
+            id="str-unterminated-group-name",
+        ),
+        pytest.param("(abc)", "abc", r"<\x>", True, id="str-bad-escape"),
+        pytest.param(
+            BYTES_LITERAL_PATTERN,
+            b"abc",
+            b"<\\1>",
+            False,
+            id="bytes-invalid-numbered-reference",
+        ),
+        pytest.param(
+            BYTES_LITERAL_PATTERN,
+            b"abc",
+            b"<\\g<missing>>",
+            True,
+            id="bytes-unknown-group-name",
+        ),
+        pytest.param(
+            BYTES_LITERAL_PATTERN,
+            b"abc",
+            b"<\\g<0",
+            False,
+            id="bytes-unterminated-group-name",
+        ),
+        pytest.param(
+            BYTES_LITERAL_PATTERN,
+            b"abc",
+            bytearray(b"<\\1>"),
+            False,
+            id="bytes-invalid-numbered-reference-bytearray",
+        ),
+        pytest.param(
+            BYTES_LITERAL_PATTERN,
+            b"abc",
+            memoryview(b"<\\g<missing>>"),
+            True,
+            id="bytes-unknown-group-name-memoryview",
+        ),
+        pytest.param(
+            "(abc)",
+            "abc",
+            bytearray(b"<\\g<0>>"),
+            False,
+            id="str-bytearray-type-error",
+        ),
+        pytest.param(
+            "(abc)",
+            "abc",
+            memoryview(b"<\\g<0>>"),
+            True,
+            id="str-memoryview-type-error",
+        ),
+    ),
+)
+def test_match_expand_error_paths_match_cpython(
+    regex_backend: tuple[str, object],
+    pattern: str | bytes,
+    text: str | bytes,
+    template: str | bytes | bytearray | memoryview,
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = _expand_match(
+        backend_name,
+        backend,
+        pattern,
+        text,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+    assert_match_parity(backend_name, observed, expected, check_regs=True)
+
+    expected_error = _capture_expand_error(expected, template)
+
+    with pytest.raises(type(expected_error)) as observed_error_info:
+        observed.expand(template)
+
+    observed_error = observed_error_info.value
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args
+
+    if isinstance(expected_error, re.error):
+        assert observed_error.pattern == expected_error.pattern
+        assert observed_error.pos == expected_error.pos
 
 
 @pytest.mark.parametrize(
