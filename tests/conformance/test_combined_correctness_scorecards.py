@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
+from functools import partial
 import pathlib
 import unittest
 
@@ -14,26 +15,11 @@ from rebar_harness.correctness import (
 )
 from tests.conformance.correctness_expectations import (
     CorrectnessScorecardExpectation,
-    branch_local_backreference_scorecard_case,
-    branch_local_backreference_scorecard_target_manifest_ids,
     build_rebar_extension,
-    combined_correctness_case,
-    combined_target_manifest_ids,
-    conditional_alternation_scorecard_case,
-    conditional_alternation_scorecard_target_manifest_ids,
-    conditional_nested_quantified_scorecard_case,
-    conditional_nested_quantified_scorecard_target_manifest_ids,
-    conditional_replacement_scorecard_case,
-    conditional_replacement_scorecard_target_manifest_ids,
-    nested_broader_range_wider_ranged_repeat_quantified_group_alternation_scorecard_case,
-    nested_broader_range_wider_ranged_repeat_quantified_group_alternation_scorecard_target_manifest_ids,
-    open_ended_quantified_group_scorecard_case,
-    open_ended_quantified_group_scorecard_target_manifest_ids,
-    quantified_alternation_scorecard_case,
-    quantified_alternation_scorecard_target_manifest_ids,
+    correctness_scorecard_case,
+    correctness_scorecard_target_manifest_ids,
     run_correctness_scorecard,
-    wider_ranged_repeat_quantified_group_scorecard_case,
-    wider_ranged_repeat_quantified_group_scorecard_target_manifest_ids,
+    tracked_correctness_scorecard_suites,
 )
 from tests.report_assertions import (
     assert_correctness_case_record_matches,
@@ -137,92 +123,16 @@ def assert_correctness_scorecard_suite(
 class CorrectnessScorecardSuitesTest(unittest.TestCase):
     maxDiff = None
 
-    def test_runner_regenerates_combined_correctness_scorecards(self) -> None:
-        assert_correctness_scorecard_suite(
-            self,
-            target_manifest_ids=combined_target_manifest_ids(),
-            case_factory=combined_correctness_case,
-        )
-
-    def test_runner_regenerates_branch_local_backreference_correctness_scorecards(
-        self,
-    ) -> None:
-        assert_correctness_scorecard_suite(
-            self,
-            target_manifest_ids=(
-                branch_local_backreference_scorecard_target_manifest_ids()
-            ),
-            case_factory=branch_local_backreference_scorecard_case,
-        )
-
-    def test_runner_regenerates_conditional_replacement_correctness_scorecards(
-        self,
-    ) -> None:
-        assert_correctness_scorecard_suite(
-            self,
-            target_manifest_ids=conditional_replacement_scorecard_target_manifest_ids(),
-            case_factory=conditional_replacement_scorecard_case,
-        )
-
-    def test_runner_regenerates_conditional_alternation_correctness_scorecards(
-        self,
-    ) -> None:
-        assert_correctness_scorecard_suite(
-            self,
-            target_manifest_ids=conditional_alternation_scorecard_target_manifest_ids(),
-            case_factory=conditional_alternation_scorecard_case,
-        )
-
-    def test_runner_regenerates_conditional_nested_quantified_correctness_scorecards(
-        self,
-    ) -> None:
-        assert_correctness_scorecard_suite(
-            self,
-            target_manifest_ids=(
-                conditional_nested_quantified_scorecard_target_manifest_ids()
-            ),
-            case_factory=conditional_nested_quantified_scorecard_case,
-        )
-
-    def test_runner_regenerates_quantified_alternation_correctness_scorecards(
-        self,
-    ) -> None:
-        assert_correctness_scorecard_suite(
-            self,
-            target_manifest_ids=quantified_alternation_scorecard_target_manifest_ids(),
-            case_factory=quantified_alternation_scorecard_case,
-        )
-
-    def test_runner_regenerates_open_ended_quantified_group_scorecards(self) -> None:
-        assert_correctness_scorecard_suite(
-            self,
-            target_manifest_ids=open_ended_quantified_group_scorecard_target_manifest_ids(),
-            case_factory=open_ended_quantified_group_scorecard_case,
-        )
-
-    def test_runner_regenerates_wider_ranged_repeat_quantified_group_scorecards(
-        self,
-    ) -> None:
-        assert_correctness_scorecard_suite(
-            self,
-            target_manifest_ids=(
-                wider_ranged_repeat_quantified_group_scorecard_target_manifest_ids()
-            ),
-            case_factory=wider_ranged_repeat_quantified_group_scorecard_case,
-        )
-
-    def test_runner_regenerates_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_scorecards(
-        self,
-    ) -> None:
-        assert_correctness_scorecard_suite(
-            self,
-            target_manifest_ids=(
-                nested_broader_range_wider_ranged_repeat_quantified_group_alternation_scorecard_target_manifest_ids()
-            ),
-            case_factory=(
-                nested_broader_range_wider_ranged_repeat_quantified_group_alternation_scorecard_case
-            ),
-        )
+    def test_runner_regenerates_correctness_scorecards(self) -> None:
+        for suite in tracked_correctness_scorecard_suites():
+            with self.subTest(suite_id=suite.suite_id):
+                assert_correctness_scorecard_suite(
+                    self,
+                    target_manifest_ids=correctness_scorecard_target_manifest_ids(
+                        suite.suite_id
+                    ),
+                    case_factory=partial(correctness_scorecard_case, suite.suite_id),
+                )
 
 
 if __name__ == "__main__":

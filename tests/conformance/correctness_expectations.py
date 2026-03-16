@@ -1511,6 +1511,75 @@ class CorrectnessScorecardExpectation:
     target_suite_text_models: tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class CorrectnessScorecardSuiteDefinition:
+    suite_id: str
+    expectation_label: str
+    expectation_table: dict[str, dict[str, tuple[str, ...]]]
+
+
+CORRECTNESS_SCORECARD_SUITE_REGISTRY = (
+    CorrectnessScorecardSuiteDefinition(
+        suite_id="combined",
+        expectation_label="combined correctness",
+        expectation_table=COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
+    ),
+    CorrectnessScorecardSuiteDefinition(
+        suite_id="branch-local-backreference",
+        expectation_label="branch-local-backreference correctness scorecard",
+        expectation_table=BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS,
+    ),
+    CorrectnessScorecardSuiteDefinition(
+        suite_id="conditional-replacement",
+        expectation_label="conditional replacement correctness scorecard",
+        expectation_table=CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS,
+    ),
+    CorrectnessScorecardSuiteDefinition(
+        suite_id="conditional-alternation",
+        expectation_label="conditional-alternation correctness scorecard",
+        expectation_table=CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
+    ),
+    CorrectnessScorecardSuiteDefinition(
+        suite_id="conditional-nested-quantified",
+        expectation_label="conditional nested/quantified correctness scorecard",
+        expectation_table=CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS,
+    ),
+    CorrectnessScorecardSuiteDefinition(
+        suite_id="quantified-alternation",
+        expectation_label="quantified-alternation correctness scorecard",
+        expectation_table=QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
+    ),
+    CorrectnessScorecardSuiteDefinition(
+        suite_id="open-ended-quantified-group",
+        expectation_label="open-ended quantified-group scorecard",
+        expectation_table=OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
+    ),
+    CorrectnessScorecardSuiteDefinition(
+        suite_id="wider-ranged-repeat-quantified-group",
+        expectation_label="wider-ranged-repeat quantified-group scorecard",
+        expectation_table=WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
+    ),
+    CorrectnessScorecardSuiteDefinition(
+        suite_id=(
+            "nested-broader-range-wider-ranged-repeat-quantified-group-"
+            "alternation"
+        ),
+        expectation_label=(
+            "nested broader-range wider-ranged-repeat quantified-group "
+            "alternation scorecard"
+        ),
+        expectation_table=(
+            NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_SCORECARD_EXPECTATIONS
+        ),
+    ),
+)
+_CORRECTNESS_SCORECARD_SUITES_BY_ID = {
+    suite.suite_id: suite for suite in CORRECTNESS_SCORECARD_SUITE_REGISTRY
+}
+if len(_CORRECTNESS_SCORECARD_SUITES_BY_ID) != len(CORRECTNESS_SCORECARD_SUITE_REGISTRY):
+    raise AssertionError("duplicate correctness scorecard suite ids in registry")
+
+
 def _sorted_unique_strings(values: object) -> tuple[str, ...]:
     return tuple(sorted({str(value) for value in values if value is not None}))
 
@@ -1685,157 +1754,39 @@ def _build_scorecard_expectation(
     )
 
 
-def combined_target_manifest_ids() -> tuple[str, ...]:
+def tracked_correctness_scorecard_suites(
+) -> tuple[CorrectnessScorecardSuiteDefinition, ...]:
+    return CORRECTNESS_SCORECARD_SUITE_REGISTRY
+
+
+def _correctness_scorecard_suite_definition(
+    suite_id: str,
+) -> CorrectnessScorecardSuiteDefinition:
+    suite = _CORRECTNESS_SCORECARD_SUITES_BY_ID.get(suite_id)
+    if suite is None:
+        raise AssertionError(
+            f"unknown correctness scorecard suite {suite_id!r}; "
+            f"expected one of {sorted(_CORRECTNESS_SCORECARD_SUITES_BY_ID)}"
+        )
+    return suite
+
+
+@lru_cache(maxsize=None)
+def correctness_scorecard_target_manifest_ids(suite_id: str) -> tuple[str, ...]:
+    suite = _correctness_scorecard_suite_definition(suite_id)
     return _expected_target_manifest_ids(
-        COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
-        expectation_label="combined correctness",
+        suite.expectation_table,
+        expectation_label=suite.expectation_label,
     )
 
 
 @lru_cache(maxsize=None)
-def combined_correctness_case(target_manifest_id: str) -> CorrectnessScorecardExpectation:
-    return _build_scorecard_expectation(
-        target_manifest_id,
-        COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
-    )
-
-
-def branch_local_backreference_scorecard_target_manifest_ids() -> tuple[str, ...]:
-    return _expected_target_manifest_ids(
-        BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS,
-        expectation_label="branch-local-backreference correctness scorecard",
-    )
-
-
-@lru_cache(maxsize=None)
-def branch_local_backreference_scorecard_case(
+def correctness_scorecard_case(
+    suite_id: str,
     target_manifest_id: str,
 ) -> CorrectnessScorecardExpectation:
+    suite = _correctness_scorecard_suite_definition(suite_id)
     return _build_scorecard_expectation(
         target_manifest_id,
-        BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS,
-    )
-
-
-def conditional_nested_quantified_scorecard_target_manifest_ids() -> tuple[str, ...]:
-    return _expected_target_manifest_ids(
-        CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS,
-        expectation_label="conditional nested/quantified correctness scorecard",
-    )
-
-
-@lru_cache(maxsize=None)
-def conditional_nested_quantified_scorecard_case(
-    target_manifest_id: str,
-) -> CorrectnessScorecardExpectation:
-    return _build_scorecard_expectation(
-        target_manifest_id,
-        CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS,
-    )
-
-
-def quantified_alternation_scorecard_target_manifest_ids() -> tuple[str, ...]:
-    return _expected_target_manifest_ids(
-        QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
-        expectation_label="quantified-alternation correctness scorecard",
-    )
-
-
-@lru_cache(maxsize=None)
-def quantified_alternation_scorecard_case(
-    target_manifest_id: str,
-) -> CorrectnessScorecardExpectation:
-    return _build_scorecard_expectation(
-        target_manifest_id,
-        QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
-    )
-
-
-def conditional_alternation_scorecard_target_manifest_ids() -> tuple[str, ...]:
-    return _expected_target_manifest_ids(
-        CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
-        expectation_label="conditional-alternation correctness scorecard",
-    )
-
-
-@lru_cache(maxsize=None)
-def conditional_alternation_scorecard_case(
-    target_manifest_id: str,
-) -> CorrectnessScorecardExpectation:
-    return _build_scorecard_expectation(
-        target_manifest_id,
-        CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
-    )
-
-
-def conditional_replacement_scorecard_target_manifest_ids() -> tuple[str, ...]:
-    return _expected_target_manifest_ids(
-        CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS,
-        expectation_label="conditional replacement correctness scorecard",
-    )
-
-
-@lru_cache(maxsize=None)
-def conditional_replacement_scorecard_case(
-    target_manifest_id: str,
-) -> CorrectnessScorecardExpectation:
-    return _build_scorecard_expectation(
-        target_manifest_id,
-        CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS,
-    )
-
-
-def wider_ranged_repeat_quantified_group_scorecard_target_manifest_ids(
-) -> tuple[str, ...]:
-    return _expected_target_manifest_ids(
-        WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
-        expectation_label="wider-ranged-repeat quantified-group scorecard",
-    )
-
-
-@lru_cache(maxsize=None)
-def wider_ranged_repeat_quantified_group_scorecard_case(
-    target_manifest_id: str,
-) -> CorrectnessScorecardExpectation:
-    return _build_scorecard_expectation(
-        target_manifest_id,
-        WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
-    )
-
-
-def nested_broader_range_wider_ranged_repeat_quantified_group_alternation_scorecard_target_manifest_ids(
-) -> tuple[str, ...]:
-    return _expected_target_manifest_ids(
-        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_SCORECARD_EXPECTATIONS,
-        expectation_label=(
-            "nested broader-range wider-ranged-repeat quantified-group "
-            "alternation scorecard"
-        ),
-    )
-
-
-@lru_cache(maxsize=None)
-def nested_broader_range_wider_ranged_repeat_quantified_group_alternation_scorecard_case(
-    target_manifest_id: str,
-) -> CorrectnessScorecardExpectation:
-    return _build_scorecard_expectation(
-        target_manifest_id,
-        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_SCORECARD_EXPECTATIONS,
-    )
-
-
-def open_ended_quantified_group_scorecard_target_manifest_ids() -> tuple[str, ...]:
-    return _expected_target_manifest_ids(
-        OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
-        expectation_label="open-ended quantified-group scorecard",
-    )
-
-
-@lru_cache(maxsize=None)
-def open_ended_quantified_group_scorecard_case(
-    target_manifest_id: str,
-) -> CorrectnessScorecardExpectation:
-    return _build_scorecard_expectation(
-        target_manifest_id,
-        OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
+        suite.expectation_table,
     )
