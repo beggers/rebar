@@ -1514,52 +1514,84 @@ class CorrectnessScorecardExpectation:
 
 
 @dataclass(frozen=True)
+class CorrectnessScorecardManifestExpectation:
+    representative_case_ids: tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class CorrectnessScorecardSuiteDefinition:
     suite_id: str
     expectation_label: str
-    expectation_table: dict[str, dict[str, tuple[str, ...]]]
+    expectation_table: dict[str, CorrectnessScorecardManifestExpectation]
+
+
+def _public_scorecard_manifest_expectation_table(
+    raw_table: dict[str, dict[str, tuple[str, ...]]],
+) -> dict[str, CorrectnessScorecardManifestExpectation]:
+    return {
+        manifest_id: CorrectnessScorecardManifestExpectation(
+            representative_case_ids=tuple(entry["representative_case_ids"])
+        )
+        for manifest_id, entry in raw_table.items()
+    }
 
 
 CORRECTNESS_SCORECARD_SUITE_REGISTRY = (
     CorrectnessScorecardSuiteDefinition(
         suite_id="combined",
         expectation_label="combined correctness",
-        expectation_table=COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
+        expectation_table=_public_scorecard_manifest_expectation_table(
+            COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS
+        ),
     ),
     CorrectnessScorecardSuiteDefinition(
         suite_id="branch-local-backreference",
         expectation_label="branch-local-backreference correctness scorecard",
-        expectation_table=BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS,
+        expectation_table=_public_scorecard_manifest_expectation_table(
+            BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS
+        ),
     ),
     CorrectnessScorecardSuiteDefinition(
         suite_id="conditional-replacement",
         expectation_label="conditional replacement correctness scorecard",
-        expectation_table=CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS,
+        expectation_table=_public_scorecard_manifest_expectation_table(
+            CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS
+        ),
     ),
     CorrectnessScorecardSuiteDefinition(
         suite_id="conditional-alternation",
         expectation_label="conditional-alternation correctness scorecard",
-        expectation_table=CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
+        expectation_table=_public_scorecard_manifest_expectation_table(
+            CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS
+        ),
     ),
     CorrectnessScorecardSuiteDefinition(
         suite_id="conditional-nested-quantified",
         expectation_label="conditional nested/quantified correctness scorecard",
-        expectation_table=CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS,
+        expectation_table=_public_scorecard_manifest_expectation_table(
+            CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS
+        ),
     ),
     CorrectnessScorecardSuiteDefinition(
         suite_id="quantified-alternation",
         expectation_label="quantified-alternation correctness scorecard",
-        expectation_table=QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
+        expectation_table=_public_scorecard_manifest_expectation_table(
+            QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS
+        ),
     ),
     CorrectnessScorecardSuiteDefinition(
         suite_id="open-ended-quantified-group",
         expectation_label="open-ended quantified-group scorecard",
-        expectation_table=OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
+        expectation_table=_public_scorecard_manifest_expectation_table(
+            OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS
+        ),
     ),
     CorrectnessScorecardSuiteDefinition(
         suite_id="wider-ranged-repeat-quantified-group",
         expectation_label="wider-ranged-repeat quantified-group scorecard",
-        expectation_table=WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
+        expectation_table=_public_scorecard_manifest_expectation_table(
+            WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS
+        ),
     ),
     CorrectnessScorecardSuiteDefinition(
         suite_id=(
@@ -1570,7 +1602,7 @@ CORRECTNESS_SCORECARD_SUITE_REGISTRY = (
             "nested broader-range wider-ranged-repeat quantified-group "
             "alternation scorecard"
         ),
-        expectation_table=(
+        expectation_table=_public_scorecard_manifest_expectation_table(
             NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_SCORECARD_EXPECTATIONS
         ),
     ),
@@ -1596,7 +1628,7 @@ def _fixture_inventory() -> tuple[tuple[pathlib.Path, FixtureManifest, tuple[Fix
 
 
 def _expected_target_manifest_ids(
-    expectations: dict[str, dict[str, tuple[str, ...]]],
+    expectations: dict[str, CorrectnessScorecardManifestExpectation],
     *,
     expectation_label: str,
 ) -> tuple[str, ...]:
@@ -1616,7 +1648,7 @@ def _expected_target_manifest_ids(
 
 def _build_scorecard_expectation(
     target_manifest_id: str,
-    expectation_table: dict[str, dict[str, tuple[str, ...]]],
+    expectation_table: dict[str, CorrectnessScorecardManifestExpectation],
 ) -> CorrectnessScorecardExpectation:
     selected_paths: list[pathlib.Path] = []
     selected_manifests: list[FixtureManifest] = []
@@ -1638,11 +1670,11 @@ def _build_scorecard_expectation(
             f"target manifest {target_manifest_id!r} is not in DEFAULT_FIXTURE_PATHS"
         )
 
-    expectation = expectation_table.get(target_manifest_id)
-    if expectation is None:
+    manifest_expectation = expectation_table.get(target_manifest_id)
+    if manifest_expectation is None:
         raise AssertionError(f"missing correctness expectation for {target_manifest_id!r}")
 
-    representative_case_ids = expectation["representative_case_ids"]
+    representative_case_ids = manifest_expectation.representative_case_ids
     target_cases_by_id = {case.case_id: case for case in target_cases}
     missing_case_ids = sorted(
         case_id for case_id in representative_case_ids if case_id not in target_cases_by_id

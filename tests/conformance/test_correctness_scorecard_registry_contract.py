@@ -81,9 +81,13 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
                     manifest_id=target_manifest_id,
                 ):
                     case = correctness_scorecard_case(suite.suite_id, target_manifest_id)
-                    expected_representative_case_ids = suite.expectation_table[
+                    manifest_expectation = suite.expectation_table[
                         target_manifest_id
-                    ]["representative_case_ids"]
+                    ]
+                    self.assertNotIsInstance(manifest_expectation, dict)
+                    expected_representative_case_ids = (
+                        manifest_expectation.representative_case_ids
+                    )
                     target_index = fixture_manifest_ids.index(target_manifest_id)
                     expected_prefix_manifest_ids = fixture_manifest_ids[: target_index + 1]
                     expected_prefix_paths = fixture_paths[: target_index + 1]

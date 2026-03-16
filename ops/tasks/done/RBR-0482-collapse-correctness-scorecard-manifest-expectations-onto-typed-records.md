@@ -1,6 +1,6 @@
 # RBR-0482: Collapse correctness scorecard manifest expectations onto typed records
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -79,3 +79,8 @@ Created: 2026-03-16
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py tests/conformance/test_correctness_scorecard_registry_contract.py` passes in the current checkout (`5 passed, 1183 subtests passed in 25.68s`).
   - `rg -n 'expectation_table: dict\\[str, dict\\[str, tuple\\[str, \\.\\.\\.\\]\\]\\]|expectation\\["representative_case_ids"\\]|suite\\.expectation_table\\[[^]]+\\]\\["representative_case_ids"\\]' tests/conformance/correctness_expectations.py tests/conformance/test_correctness_scorecard_registry_contract.py` currently returns the three matches listed above, which is the exact string-key and dict-typed coupling this task should delete rather than rename.
   - The public typed-record probe above currently fails because `suite.expectation_table[...]` still returns a `dict`, which is the exact public-shape cleanup this task is meant to complete.
+
+## Completion
+- 2026-03-16: Added a local `CorrectnessScorecardManifestExpectation` dataclass in `tests/conformance/correctness_expectations.py` and converted the public `CorrectnessScorecardSuiteDefinition.expectation_table[...]` surface to typed records while leaving the raw expectation tables unchanged as the canonical data source in the same file.
+- 2026-03-16: Rewired `_build_scorecard_expectation(...)` and `tests/conformance/test_correctness_scorecard_registry_contract.py` to read `representative_case_ids` through attributes instead of string-key dict access, and tightened the registry contract test to reject dict-shaped manifest expectations.
+- 2026-03-16: Verified `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py tests/conformance/test_correctness_scorecard_registry_contract.py` passed with `5 passed, 1183 subtests passed in 25.62s`, the required `rg -n ...` check returned no matches, and the public typed-record probe printed `ok`.
