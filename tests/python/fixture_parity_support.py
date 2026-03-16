@@ -20,6 +20,12 @@ FIXTURES_DIR = CORRECTNESS_FIXTURES_ROOT
 _MISSING_GROUP_DEFAULT = object()
 _MATCH_ACCESSOR_NAMES = ("group", "span", "start", "end", "getitem")
 
+# These published correctness cases are covered by a sibling parity suite
+# instead of the manifest's primary suite.
+LITERAL_FLAG_DELEGATED_CASE_IDS: tuple[str, ...] = (
+    "flag-unsupported-nonliteral-ignorecase-search",
+)
+
 
 class RecordingNativeBoundary:
     def __init__(self, *, native_placeholder_messages: bool = False) -> None:

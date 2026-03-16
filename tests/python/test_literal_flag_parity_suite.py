@@ -15,6 +15,7 @@ from rebar_harness.correctness import (
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
     FixtureBundleSpec,
+    LITERAL_FLAG_DELEGATED_CASE_IDS,
     RecordingNativeBoundary,
     assert_fixture_bundle_contract,
     assert_match_convenience_api_parity,
@@ -25,7 +26,6 @@ from tests.python.fixture_parity_support import (
     load_fixture_bundles,
     manifest_case_ids,
 )
-from tests.python.published_case_handoffs import LITERAL_FLAG_DELEGATED_CASE_IDS
 
 
 IGNORECASE_FLAGS = int(rebar.IGNORECASE)

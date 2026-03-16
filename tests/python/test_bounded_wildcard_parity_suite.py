@@ -14,6 +14,7 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FixtureBundleSpec,
+    LITERAL_FLAG_DELEGATED_CASE_IDS,
     RecordingNativeBoundary,
     assert_fixture_bundle_contract,
     assert_finditer_parity,
@@ -25,7 +26,6 @@ from tests.python.fixture_parity_support import (
     load_fixture_bundles,
     published_fixture_paths_from_bundles,
 )
-from tests.python.published_case_handoffs import LITERAL_FLAG_DELEGATED_CASE_IDS
 
 
 PUBLISHED_BOUNDED_WILDCARD_FIXTURE_PATHS = select_correctness_fixture_paths(
