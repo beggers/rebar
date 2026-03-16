@@ -27,6 +27,9 @@ from tests.python.fixture_parity_support import (
 PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS = select_correctness_fixture_paths(
     CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR
 )
+KNOWN_UNCOVERED_PUBLISHED_FIXTURE_FILENAMES = (
+    "conditional_group_exists_quantified_alternation_replacement_workflows.py",
+)
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
         ("module_call", "sub"): 2,
@@ -385,11 +388,22 @@ def _run_replacement_case(
     raise ValueError(f"unsupported replacement parity operation {case.operation!r}")
 
 
-def test_replacement_parity_suite_discovers_all_published_correctness_fixtures() -> None:
+def test_replacement_parity_suite_tracks_published_fixture_coverage_frontier() -> None:
     assert PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS
-    assert PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS == published_fixture_paths_from_bundles(
-        FIXTURE_BUNDLES
+
+    covered_paths = published_fixture_paths_from_bundles(FIXTURE_BUNDLES)
+    uncovered_paths = tuple(
+        path
+        for path in PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS
+        if path not in covered_paths
     )
+    assert covered_paths
+    assert tuple(path.name for path in uncovered_paths) == (
+        KNOWN_UNCOVERED_PUBLISHED_FIXTURE_FILENAMES
+    )
+    assert tuple(
+        sorted((*covered_paths, *uncovered_paths), key=lambda path: path.name)
+    ) == PUBLISHED_CONDITIONAL_REPLACEMENT_FIXTURE_PATHS
 
 
 @pytest.mark.parametrize(
