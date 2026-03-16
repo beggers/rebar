@@ -9,11 +9,12 @@ import pytest
 import rebar
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
+    SelectedCaseBundleSpec,
     assert_fixture_bundle_contract,
     assert_finditer_parity,
     case_pattern,
     compile_with_cpython_parity,
-    load_fixture_bundle,
+    load_selected_case_fixture_bundles,
 )
 
 
@@ -112,22 +113,26 @@ TARGET_FIXTURE_CASE_IDS = (
     "module-finditer-str-repeated",
     "pattern-finditer-bytes-bounded",
 )
-COLLECTION_FIXTURE_BUNDLE = load_fixture_bundle(
-    "collection_replacement_workflows.py",
-    expected_manifest_id="collection-replacement-workflows",
-    selected_case_ids=TARGET_FIXTURE_CASE_IDS,
-    expected_case_ids=frozenset(TARGET_FIXTURE_CASE_IDS),
-    expected_patterns=frozenset({"abc", b"abc"}),
-    expected_operation_helper_counts=Counter(
-        {
-            ("module_call", "split"): 2,
-            ("pattern_call", "split"): 1,
-            ("module_call", "findall"): 1,
-            ("pattern_call", "findall"): 1,
-            ("module_call", "finditer"): 1,
-            ("pattern_call", "finditer"): 1,
-        }
-    ),
+COLLECTION_FIXTURE_BUNDLE, = load_selected_case_fixture_bundles(
+    (
+        SelectedCaseBundleSpec(
+            "collection_replacement_workflows.py",
+            expected_manifest_id="collection-replacement-workflows",
+            selected_case_ids=TARGET_FIXTURE_CASE_IDS,
+            expected_patterns=frozenset({"abc", b"abc"}),
+            expected_operation_helper_counts=Counter(
+                {
+                    ("module_call", "split"): 2,
+                    ("pattern_call", "split"): 1,
+                    ("module_call", "findall"): 1,
+                    ("pattern_call", "findall"): 1,
+                    ("module_call", "finditer"): 1,
+                    ("pattern_call", "finditer"): 1,
+                }
+            ),
+            expected_text_models=frozenset({"bytes", "str"}),
+        ),
+    )
 )
 PUBLISHED_MODULE_CASES = tuple(
     _module_case_from_fixture(case)

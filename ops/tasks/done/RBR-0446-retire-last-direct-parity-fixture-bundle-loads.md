@@ -1,8 +1,9 @@
 # RBR-0446: Retire the last direct parity fixture-bundle loads
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
+Completed: 2026-03-16
 
 ## Goal
 - Remove the last two Python parity/helper tests that still call `load_fixture_bundle(...)` directly, so ordinary parity coverage consistently uses the shared selected-case bundle-spec path and the low-level loader remains exercised only by its dedicated contract tests.
@@ -39,3 +40,4 @@ Created: 2026-03-16
 - Outside `tests/python/test_fixture_parity_support_contract.py`, the only remaining direct `load_fixture_bundle(...)` call sites under `tests/python/` are:
   - `tests/python/test_literal_collection_helpers.py`
   - `tests/python/test_callable_replacement_parity_suite.py`
+- Completed 2026-03-16: replaced the last two direct parity-test `load_fixture_bundle(...)` calls with explicit `SelectedCaseBundleSpec` inputs to `load_selected_case_fixture_bundles(...)`, kept the same selected case ids, manifest ids, pattern sets, operation/helper counters, and text-model expectations inline in both test files, confirmed `rg -n 'load_fixture_bundle\\(' tests/python/test_literal_collection_helpers.py tests/python/test_callable_replacement_parity_suite.py` returns no matches, and verified `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_literal_collection_helpers.py tests/python/test_callable_replacement_parity_suite.py` (`1086 passed`).

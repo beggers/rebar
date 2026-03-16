@@ -16,6 +16,7 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FixtureBundle,
+    SelectedCaseBundleSpec,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
@@ -23,7 +24,7 @@ from tests.python.fixture_parity_support import (
     bundle_patterns,
     case_replacement_argument,
     case_text_argument,
-    load_fixture_bundle,
+    load_selected_case_fixture_bundles,
     load_published_fixture_bundles,
     published_fixture_bundle_by_manifest_id,
     published_fixture_paths_from_bundles,
@@ -551,14 +552,17 @@ def _pending_rebar_compile_patterns() -> frozenset[str]:
         )
     )
 
-COLLECTION_REPLACEMENT_BUNDLE = load_fixture_bundle(
-    COLLECTION_REPLACEMENT_FIXTURE_NAME,
-    expected_manifest_id="collection-replacement-workflows",
-    selected_case_ids=("module-sub-callable-str",),
-    expected_case_ids=frozenset({"module-sub-callable-str"}),
-    expected_patterns=frozenset({"abc"}),
-    expected_operation_helper_counts=Counter({("module_call", "sub"): 1}),
-    expected_text_models=frozenset({"str"}),
+COLLECTION_REPLACEMENT_BUNDLE, = load_selected_case_fixture_bundles(
+    (
+        SelectedCaseBundleSpec(
+            COLLECTION_REPLACEMENT_FIXTURE_NAME,
+            expected_manifest_id="collection-replacement-workflows",
+            selected_case_ids=("module-sub-callable-str",),
+            expected_patterns=frozenset({"abc"}),
+            expected_operation_helper_counts=Counter({("module_call", "sub"): 1}),
+            expected_text_models=frozenset({"str"}),
+        ),
+    )
 )
 FIXTURE_BUNDLES = load_published_fixture_bundles(CALLABLE_FIXTURE_PATHS)
 
