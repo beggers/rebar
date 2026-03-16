@@ -89,7 +89,7 @@ def _published_compile_case_ids_by_signature() -> dict[
 
 
 def _unanchored_compile_workload_ids(manifest_path: pathlib.Path) -> tuple[str, ...]:
-    _, workloads = load_manifest(manifest_path)
+    workloads = load_manifest(manifest_path).workloads
     compile_case_signatures = _published_compile_case_signatures()
 
     return tuple(
@@ -103,7 +103,7 @@ def _unanchored_compile_workload_ids(manifest_path: pathlib.Path) -> tuple[str, 
 def _anchored_compile_workload_case_ids(
     manifest_path: pathlib.Path,
 ) -> dict[tuple[str, str], tuple[str, ...]]:
-    _, workloads = load_manifest(manifest_path)
+    workloads = load_manifest(manifest_path).workloads
     case_ids_by_signature = _published_compile_case_ids_by_signature()
 
     return {

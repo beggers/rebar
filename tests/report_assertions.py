@@ -6,7 +6,7 @@ import platform
 import sys
 from typing import Any
 
-from rebar_harness.benchmarks import BenchmarkManifest
+from rebar_harness.benchmarks import BenchmarkManifest, Workload, workload_to_payload
 
 _KNOWN_GAP_STATUSES = {"known-gap", "unimplemented"}
 
@@ -394,12 +394,8 @@ def _assert_benchmark_summary_consistent(
         )
 
 
-def _smoke_workload_ids(workloads: list[dict[str, Any]]) -> list[str]:
-    return [
-        str(workload["id"])
-        for workload in workloads
-        if bool(workload.get("smoke", False) or "smoke" in workload.get("categories", []))
-    ]
+def _smoke_workload_ids(workloads: list[Workload]) -> list[str]:
+    return [workload.workload_id for workload in workloads if workload.smoke]
 
 
 def _artifact_manifest_record(
@@ -420,20 +416,20 @@ def _selected_manifest_workloads(
     manifest: BenchmarkManifest,
     *,
     selected_workload_ids: tuple[str, ...] | None,
-) -> list[dict[str, Any]]:
+) -> list[Workload]:
     if selected_workload_ids is None:
         return list(manifest.workloads)
 
-    workload_documents = {
-        str(workload["id"]): workload for workload in manifest.workloads
+    workloads_by_id = {
+        workload.workload_id: workload for workload in manifest.workloads
     }
-    selected_workloads: list[dict[str, Any]] = []
+    selected_workloads: list[Workload] = []
     for workload_id in selected_workload_ids:
-        if workload_id not in workload_documents:
+        if workload_id not in workloads_by_id:
             raise AssertionError(
                 f"missing workload definition {workload_id!r} in {manifest.manifest_id!r}"
             )
-        selected_workloads.append(workload_documents[workload_id])
+        selected_workloads.append(workloads_by_id[workload_id])
     return selected_workloads
 
 
@@ -556,10 +552,10 @@ def assert_benchmark_manifest_contract(
         selected_workload_ids=selected_workload_ids,
     )
     smoke_ids = _smoke_workload_ids(workloads)
-    operations = sorted({workload["operation"] for workload in selected_workloads})
+    operations = sorted({workload.operation for workload in selected_workloads})
     families = sorted(
         {
-            str(workload.get("family", "parser"))
+            workload.family
             for workload in selected_workloads
         }
     )
@@ -594,33 +590,40 @@ def assert_benchmark_workload_contract(
     workload_record: dict[str, Any],
     *,
     manifest_id: str,
-    workload_document: dict[str, Any],
+    workload_document: Workload,
     expected_status: str,
 ) -> None:
-    expected_syntax_features = workload_document.get(
+    workload_payload = workload_to_payload(workload_document)
+    expected_syntax_features = workload_payload.get(
         "syntax_features",
-        workload_document.get("categories", []),
+        workload_payload.get("categories", []),
     )
     testcase.assertEqual(workload_record["manifest_id"], manifest_id)
     testcase.assertEqual(
         workload_record["family"],
-        workload_document.get("family", "parser"),
+        workload_payload.get("family", "parser"),
     )
-    testcase.assertEqual(workload_record["operation"], workload_document["operation"])
-    testcase.assertEqual(workload_record["pattern"], workload_document.get("pattern", ""))
-    testcase.assertEqual(workload_record["haystack"], workload_document.get("haystack"))
-    testcase.assertEqual(workload_record["replacement"], workload_document.get("replacement"))
-    testcase.assertEqual(workload_record["flags"], workload_document.get("flags", 0))
-    testcase.assertEqual(workload_record["count"], workload_document.get("count", 0))
-    testcase.assertEqual(workload_record["maxsplit"], workload_document.get("maxsplit", 0))
+    testcase.assertEqual(workload_record["operation"], workload_payload["operation"])
+    testcase.assertEqual(workload_record["pattern"], workload_payload.get("pattern", ""))
+    testcase.assertEqual(workload_record["haystack"], workload_payload.get("haystack"))
+    testcase.assertEqual(
+        workload_record["replacement"],
+        workload_payload.get("replacement"),
+    )
+    testcase.assertEqual(workload_record["flags"], workload_payload.get("flags", 0))
+    testcase.assertEqual(workload_record["count"], workload_payload.get("count", 0))
+    testcase.assertEqual(
+        workload_record["maxsplit"],
+        workload_payload.get("maxsplit", 0),
+    )
     testcase.assertEqual(
         workload_record["text_model"],
-        workload_document.get("text_model", "str"),
+        workload_payload.get("text_model", "str"),
     )
-    testcase.assertEqual(workload_record["cache_mode"], workload_document["cache_mode"])
+    testcase.assertEqual(workload_record["cache_mode"], workload_payload["cache_mode"])
     testcase.assertEqual(
         workload_record["timing_scope"],
-        workload_document.get("timing_scope", "compile-path-proxy"),
+        workload_payload.get("timing_scope", "compile-path-proxy"),
     )
     testcase.assertEqual(workload_record["syntax_features"], expected_syntax_features)
     testcase.assertEqual(workload_record["status"], expected_status)
@@ -661,9 +664,9 @@ def find_workload_record(scorecard: dict[str, Any], workload_id: str) -> dict[st
 def find_workload_document(
     manifest: BenchmarkManifest,
     workload_id: str,
-) -> dict[str, Any]:
+) -> Workload:
     for workload in manifest.workloads:
-        if workload["id"] == workload_id:
+        if workload.workload_id == workload_id:
             return workload
     raise AssertionError(
         f"missing workload definition {workload_id!r} in {manifest.manifest_id!r}"

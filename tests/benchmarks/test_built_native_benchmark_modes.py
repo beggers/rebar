@@ -263,7 +263,11 @@ class BuiltNativeFullSuiteBenchmarkTest(unittest.TestCase):
         published_manifest_paths = benchmarks.select_benchmark_manifest_paths(
             benchmarks.PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
         )
-        _, selected_workloads = benchmarks.load_manifests(list(published_manifest_paths))
+        selected_workloads = [
+            workload
+            for manifest in benchmarks.load_manifests(list(published_manifest_paths))
+            for workload in manifest.workloads
+        ]
         expected_total = len(selected_workloads)
         expected_parser = sum(1 for workload in selected_workloads if workload.family == "parser")
         expected_module = sum(1 for workload in selected_workloads if workload.family == "module")

@@ -157,7 +157,7 @@ def _published_anchor_case_ids_by_signature() -> dict[tuple[Any, ...], tuple[str
 def _measured_grouped_alternation_replacement_workload_ids(
     manifest_path: pathlib.Path,
 ) -> tuple[str, ...]:
-    _, workloads = load_manifest(manifest_path)
+    workloads = load_manifest(manifest_path).workloads
     return tuple(
         workload.workload_id
         for workload in workloads
@@ -169,7 +169,7 @@ def _measured_grouped_alternation_replacement_workload_ids(
 def _unanchored_measured_grouped_alternation_replacement_workload_ids(
     manifest_path: pathlib.Path,
 ) -> tuple[str, ...]:
-    _, workloads = load_manifest(manifest_path)
+    workloads = load_manifest(manifest_path).workloads
     anchor_case_ids = _published_anchor_case_ids_by_signature()
 
     return tuple(
@@ -184,7 +184,7 @@ def _unanchored_measured_grouped_alternation_replacement_workload_ids(
 def _anchored_grouped_alternation_replacement_workload_case_ids(
     manifest_path: pathlib.Path,
 ) -> dict[tuple[str, str], tuple[str, ...]]:
-    _, workloads = load_manifest(manifest_path)
+    workloads = load_manifest(manifest_path).workloads
     anchor_case_ids = _published_anchor_case_ids_by_signature()
 
     return {
@@ -206,7 +206,7 @@ class GroupedAlternationReplacementBenchmarkCorrectnessAnchorContractTest(
     def test_grouped_alternation_replacement_manifest_keeps_expected_nested_gap_pair_out_of_scope(
         self,
     ) -> None:
-        _, workloads = load_manifest(GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH)
+        workloads = load_manifest(GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH).workloads
         self.assertEqual(
             {
                 workload.workload_id

@@ -13,6 +13,7 @@ from rebar_harness.benchmarks import (
     BenchmarkManifest,
     COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR,
     PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR,
+    Workload,
     determine_phase,
     determine_runner_version,
     load_manifest,
@@ -1467,7 +1468,7 @@ def _published_full_suite_manifest_paths() -> tuple[pathlib.Path, ...]:
 def _source_tree_manifest_records() -> dict[str, tuple[pathlib.Path, BenchmarkManifest]]:
     records: dict[str, tuple[pathlib.Path, BenchmarkManifest]] = {}
     for path in (_compile_smoke_manifest_path(), *_published_full_suite_manifest_paths()):
-        manifest, _ = load_manifest(path)
+        manifest = load_manifest(path)
         manifest_id = manifest.manifest_id
         if manifest_id in records:
             raise AssertionError(f"duplicate benchmark manifest id {manifest_id!r}")
@@ -1512,10 +1513,10 @@ def run_source_tree_benchmark_scorecard(
     )
 
 
-def ordered_operations(workloads: list[dict[str, Any]]) -> list[str]:
+def ordered_operations(workloads: list[Workload]) -> list[str]:
     operations: list[str] = []
     for workload in workloads:
-        operation = str(workload["operation"])
+        operation = workload.operation
         if operation not in operations:
             operations.append(operation)
     return operations
@@ -1714,7 +1715,7 @@ def _source_tree_manifest_known_gap_counts(
 
 def _selected_workload_ids_by_manifest(
     manifests: list[BenchmarkManifest],
-    workloads: list[Any],
+    workloads: list[Workload],
 ) -> dict[str, tuple[str, ...]]:
     return {
         manifest.manifest_id: tuple(
@@ -1726,11 +1727,15 @@ def _selected_workload_ids_by_manifest(
     }
 
 
+def _flatten_manifest_workloads(manifests: list[BenchmarkManifest]) -> list[Workload]:
+    return [workload for manifest in manifests for workload in manifest.workloads]
+
+
 def _build_source_tree_benchmark_common_case(
     *,
     manifest_paths: list[pathlib.Path],
     manifests: list[BenchmarkManifest],
-    workloads: list[Any],
+    workloads: list[Workload],
     selected_workload_ids_by_manifest: dict[str, tuple[str, ...]],
     selection_mode: str,
     manifest_known_gap_counts: dict[str, int] | None = None,
@@ -1776,9 +1781,9 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
     case_definition = SOURCE_TREE_SCORECARD_EXPECTATIONS[case_id]
     manifest_ids = case_definition.manifest_ids
     manifest_paths = [manifest_path_for_id(manifest_id) for manifest_id in manifest_ids]
-    manifests, manifest_workloads = load_manifests(manifest_paths)
+    manifests = load_manifests(manifest_paths)
     selected_workloads = select_workloads(
-        manifest_workloads,
+        _flatten_manifest_workloads(manifests),
         smoke_only=case_definition.selection_mode == "smoke",
     )
     selected_workload_ids_by_manifest = _selected_workload_ids_by_manifest(
@@ -1913,7 +1918,7 @@ def expected_summary_for_manifests(
         if selected_workload_ids_by_manifest is not None
         else None
     )
-    workloads: list[dict[str, Any]] = []
+    workloads: list[Workload] = []
     regression_workloads = 0
     selected_manifest_ids: list[str] = []
     for manifest in manifests:
@@ -1925,7 +1930,7 @@ def expected_summary_for_manifests(
             selected_manifest_workloads = [
                 workload
                 for workload in manifest_workloads
-                if str(workload["id"]) in selected_workload_ids.get(manifest_id, set())
+                if workload.workload_id in selected_workload_ids.get(manifest_id, set())
             ]
         if selected_manifest_workloads:
             selected_manifest_ids.append(manifest_id)
@@ -1949,8 +1954,8 @@ def expected_summary_for_manifests(
     return {
         "known_gap_count": known_gap_count,
         "measured_workloads": len(workloads) - known_gap_count,
-        "module_workloads": sum(1 for workload in workloads if workload["family"] == "module"),
-        "parser_workloads": sum(1 for workload in workloads if workload["family"] == "parser"),
+        "module_workloads": sum(1 for workload in workloads if workload.family == "module"),
+        "parser_workloads": sum(1 for workload in workloads if workload.family == "parser"),
         "regression_workloads": regression_workloads,
         "total_workloads": len(workloads),
     }
@@ -1988,7 +1993,8 @@ def representative_measured_workload_ids(
 
 def source_tree_combined_case(target_manifest_id: str) -> SourceTreeCombinedCase:
     manifest_paths = selected_manifest_paths_for_target_manifest(target_manifest_id)
-    manifests, workloads = load_manifests(list(manifest_paths))
+    manifests = load_manifests(list(manifest_paths))
+    workloads = _flatten_manifest_workloads(manifests)
     target_manifest = next(
         manifest for manifest in manifests if manifest.manifest_id == target_manifest_id
     )
@@ -2077,16 +2083,16 @@ def source_tree_combined_slice_expectations(
 
 
 def _workload_matches_source_tree_combined_slice(
-    workload: dict[str, Any],
+    workload: Workload,
     expectation: SourceTreeCombinedSliceExpectation,
 ) -> bool:
-    workload_id = str(workload["id"])
+    workload_id = workload.workload_id
     required_id_suffix = expectation.required_id_suffix
     if required_id_suffix is not None and not workload_id.endswith(required_id_suffix):
         return False
 
-    syntax_features = set(str(value) for value in workload["syntax_features"])
-    categories = set(str(value) for value in workload["categories"])
+    syntax_features = set(workload.syntax_features)
+    categories = set(workload.categories)
     return (
         set(expectation.required_syntax_features).issubset(syntax_features)
         and syntax_features.isdisjoint(expectation.excluded_syntax_features)
@@ -2098,7 +2104,7 @@ def _workload_matches_source_tree_combined_slice(
 def select_source_tree_combined_slice_rows(
     manifest: BenchmarkManifest,
     expectation: SourceTreeCombinedSliceExpectation,
-) -> list[dict[str, Any]]:
+) -> list[Workload]:
     return [
         workload
         for workload in manifest.workloads

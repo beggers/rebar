@@ -93,9 +93,10 @@ class DefaultBenchmarkManifestInventoryContractTest(unittest.TestCase):
             PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
         )
         expected_manifest_ids = [
-            load_manifest(path)[0].manifest_id for path in published_manifest_paths
+            load_manifest(path).manifest_id for path in published_manifest_paths
         ]
-        manifests, workloads = load_manifests(list(published_manifest_paths))
+        manifests = load_manifests(list(published_manifest_paths))
+        workloads = [workload for manifest in manifests for workload in manifest.workloads]
 
         self.assertEqual(
             [manifest.manifest_id for manifest in manifests],

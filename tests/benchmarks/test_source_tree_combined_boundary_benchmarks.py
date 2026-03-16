@@ -481,22 +481,22 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
 
         self.assertEqual(
-            tuple(workload["id"] for workload in matched_rows),
+            tuple(workload.workload_id for workload in matched_rows),
             expected_workload_ids,
         )
         self.assertEqual(
-            {workload["pattern"] for workload in matched_rows},
+            {workload.pattern for workload in matched_rows},
             expectation.expected_patterns,
         )
         self.assertEqual(
-            {workload["operation"] for workload in matched_rows},
+            {workload.operation for workload in matched_rows},
             expectation.expected_operations,
         )
         self.assertEqual(
             {
-                str(workload["haystack"])
+                str(workload.haystack)
                 for workload in matched_rows
-                if workload.get("haystack") is not None
+                if workload.haystack is not None
             },
             expectation.expected_haystacks,
         )
@@ -504,10 +504,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         for workload in matched_rows:
             with self.subTest(
                 slice_id=expectation.slice_id,
-                workload_id=workload["id"],
+                workload_id=workload.workload_id,
             ):
                 for category in expectation.required_row_categories:
-                    self.assertIn(category, workload["categories"])
+                    self.assertIn(category, workload.categories)
 
         scorecard_rows = [
             workload
@@ -596,7 +596,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         manifest_rows = [
             workload
             for workload in manifest.workloads
-            if workload.get("pattern") in patterns
+            if workload.pattern in patterns
         ]
 
         self.assertGreaterEqual(
@@ -607,7 +607,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
 
         for pattern in patterns:
             pattern_rows = [
-                workload for workload in manifest_rows if workload["pattern"] == pattern
+                workload for workload in manifest_rows if workload.pattern == pattern
             ]
             self.assertGreaterEqual(
                 len(pattern_rows),
@@ -616,18 +616,18 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             )
             self.assertTrue(
                 set(required_operations).issubset(
-                    {workload["operation"] for workload in pattern_rows}
+                    {workload.operation for workload in pattern_rows}
                 )
             )
             for workload in pattern_rows:
-                with self.subTest(pattern=pattern, workload_id=workload["id"]):
+                with self.subTest(pattern=pattern, workload_id=workload.workload_id):
                     for category in required_categories:
-                        self.assertIn(category, workload["categories"])
+                        self.assertIn(category, workload.categories)
 
         manifest_search_haystacks = {
-            str(workload["haystack"])
+            str(workload.haystack)
             for workload in manifest_rows
-            if workload["operation"] == "module.search"
+            if workload.operation == "module.search"
         }
         for haystack in search_haystacks:
             self.assertIn(haystack, manifest_search_haystacks)
@@ -638,9 +638,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             )
 
         manifest_pattern_haystacks = {
-            str(workload["haystack"])
+            str(workload.haystack)
             for workload in manifest_rows
-            if workload["operation"] == "pattern.fullmatch"
+            if workload.operation == "pattern.fullmatch"
         }
         for haystack in pattern_haystacks:
             self.assertIn(haystack, manifest_pattern_haystacks)
@@ -653,7 +653,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         ]
         self.assertEqual(
             {workload["id"] for workload in scorecard_rows},
-            {workload["id"] for workload in manifest_rows},
+            {workload.workload_id for workload in manifest_rows},
         )
         for workload in scorecard_rows:
             with self.subTest(scorecard_workload_id=workload["id"]):

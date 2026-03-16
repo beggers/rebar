@@ -124,7 +124,7 @@ def _published_anchor_case_ids_by_signature() -> dict[tuple[Any, ...], tuple[str
 
 
 def _measured_nested_group_workload_ids(manifest_path: pathlib.Path) -> tuple[str, ...]:
-    _, workloads = load_manifest(manifest_path)
+    workloads = load_manifest(manifest_path).workloads
     return tuple(
         workload.workload_id
         for workload in workloads
@@ -135,7 +135,7 @@ def _measured_nested_group_workload_ids(manifest_path: pathlib.Path) -> tuple[st
 def _unanchored_measured_nested_group_workload_ids(
     manifest_path: pathlib.Path,
 ) -> tuple[str, ...]:
-    _, workloads = load_manifest(manifest_path)
+    workloads = load_manifest(manifest_path).workloads
     anchor_case_ids = _published_anchor_case_ids_by_signature()
 
     return tuple(
@@ -149,7 +149,7 @@ def _unanchored_measured_nested_group_workload_ids(
 def _anchored_nested_group_workload_case_ids(
     manifest_path: pathlib.Path,
 ) -> dict[tuple[str, str], tuple[str, ...]]:
-    _, workloads = load_manifest(manifest_path)
+    workloads = load_manifest(manifest_path).workloads
     anchor_case_ids = _published_anchor_case_ids_by_signature()
 
     return {
@@ -166,7 +166,7 @@ class NestedGroupBenchmarkCorrectnessAnchorContractTest(unittest.TestCase):
     maxDiff = None
 
     def test_nested_group_manifest_keeps_the_expected_gap_pair_out_of_scope(self) -> None:
-        _, workloads = load_manifest(NESTED_GROUP_MANIFEST_PATH)
+        workloads = load_manifest(NESTED_GROUP_MANIFEST_PATH).workloads
         self.assertEqual(
             {
                 workload.workload_id

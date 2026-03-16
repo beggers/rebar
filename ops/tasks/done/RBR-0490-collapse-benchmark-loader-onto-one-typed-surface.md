@@ -1,6 +1,6 @@
 # RBR-0490: Collapse the benchmark loader onto one typed manifest/workload surface
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -84,3 +84,12 @@ Created: 2026-03-16
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/pattern_boundary.py --report .rebar/tmp/rbr-0490-benchmark-loader-shape.py` currently succeeds and reports `{"known_gap_count": 0, "measured_workloads": 6, "module_workloads": 6, "parser_workloads": 0, "regression_workloads": 0, "total_workloads": 6}`.
   - The `rg -n ...` command above currently returns the old tuple signatures and tuple-unpack call sites, which is the exact surface this task should delete rather than wrap.
   - The typed-loader probe above currently fails with `AssertionError: <class 'tuple'>`, which is the exact public-shape cleanup this task is meant to complete.
+
+## Completion Notes
+- 2026-03-16: Collapsed the benchmark loader onto a single typed manifest surface by making `BenchmarkManifest.workloads` hold `Workload` records, changing `load_manifest(...)` and `load_manifests(...)` to return manifests only, and flattening workloads from `manifest.workloads` at benchmark execution time.
+- Updated benchmark expectation helpers, manifest/report assertion helpers, and the benchmark contract tests to stop unpacking loader tuples and to use `Workload` attributes for manifest-side workload lookup, filtering, and smoke-id selection.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/pattern_boundary.py --report .rebar/tmp/rbr-0490-benchmark-loader-shape.py`
+  - `rg -n 'def load_manifest\\(path: pathlib\\.Path\\) -> tuple\\[BenchmarkManifest, list\\[Workload\\]\\]|def load_manifests\\(paths: list\\[pathlib\\.Path\\]\\) -> tuple\\[list\\[BenchmarkManifest\\], list\\[Workload\\]\\]|manifest, workloads = load_manifest\\(|_, workloads = load_manifest\\(|manifests, workloads = load_manifests\\(|manifests, manifest_workloads = load_manifests\\(' python/rebar_harness/benchmarks.py tests/benchmarks/benchmark_expectations.py tests/benchmarks/test_built_native_benchmark_modes.py tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_grouped_alternation_replacement_benchmark_correctness_anchor_contract.py tests/benchmarks/test_nested_group_benchmark_correctness_anchor_contract.py tests/benchmarks/test_compile_proxy_correctness_anchor_contract.py tests/benchmarks/test_python_benchmark_manifest_contract.py` returned no matches.
+  - The typed-loader probe from the task prints `ok`.

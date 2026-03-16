@@ -221,13 +221,13 @@ class Workload:
 
 @dataclass(frozen=True, slots=True)
 class BenchmarkManifest:
-    """Typed benchmark manifest metadata plus raw workload documents."""
+    """Typed benchmark manifest metadata plus typed workload records."""
 
     path: pathlib.Path
     manifest_id: str
     schema_version: int
     defaults: dict[str, Any]
-    workloads: list[dict[str, Any]]
+    workloads: list[Workload]
     spec_refs: list[str]
     notes: list[str]
 
@@ -237,7 +237,7 @@ class BenchmarkManifest:
         *,
         path: pathlib.Path,
         raw_manifest: dict[str, Any],
-    ) -> tuple["BenchmarkManifest", list[Workload]]:
+    ) -> "BenchmarkManifest":
         schema_version = raw_manifest.get("schema_version")
         if schema_version != MANIFEST_SCHEMA_VERSION:
             raise ValueError(
@@ -251,34 +251,27 @@ class BenchmarkManifest:
 
         manifest_id_key = "manifest_id"
         manifest_id = str(raw_manifest[manifest_id_key])
-        workload_documents = list(raw_manifest.get("workloads", []))
+        raw_workloads = list(raw_manifest.get("workloads", []))
         workloads = [
             Workload.from_dict(
                 manifest_id=manifest_id,
                 raw_workload=raw_workload,
                 defaults=defaults,
             )
-            for raw_workload in workload_documents
+            for raw_workload in raw_workloads
         ]
-        return (
-            cls(
-                path=path,
-                manifest_id=manifest_id,
-                schema_version=MANIFEST_SCHEMA_VERSION,
-                defaults=dict(defaults),
-                workloads=workload_documents,
-                spec_refs=[str(ref) for ref in raw_manifest.get("spec_refs", [])],
-                notes=[str(note) for note in raw_manifest.get("notes", [])],
-            ),
-            workloads,
+        return cls(
+            path=path,
+            manifest_id=manifest_id,
+            schema_version=MANIFEST_SCHEMA_VERSION,
+            defaults=dict(defaults),
+            workloads=workloads,
+            spec_refs=[str(ref) for ref in raw_manifest.get("spec_refs", [])],
+            notes=[str(note) for note in raw_manifest.get("notes", [])],
         )
 
     def smoke_workload_ids(self) -> list[str]:
-        return [
-            str(workload["id"])
-            for workload in self.workloads
-            if bool(workload.get("smoke", False) or "smoke" in workload.get("categories", []))
-        ]
+        return [workload.workload_id for workload in self.workloads if workload.smoke]
 
 
 def normalize_workload_value(value: Any) -> Any:
@@ -391,7 +384,7 @@ def workload_from_payload(payload: dict[str, Any]) -> Workload:
     )
 
 
-def load_manifest(path: pathlib.Path) -> tuple[BenchmarkManifest, list[Workload]]:
+def load_manifest(path: pathlib.Path) -> BenchmarkManifest:
     if path.suffix != ".py":
         raise ValueError(
             f"unsupported benchmark manifest extension {path.suffix!r} for {path}"
@@ -407,28 +400,26 @@ def load_manifest(path: pathlib.Path) -> tuple[BenchmarkManifest, list[Workload]
     return BenchmarkManifest.from_dict(path=path, raw_manifest=raw_manifest)
 
 
-def load_manifests(paths: list[pathlib.Path]) -> tuple[list[BenchmarkManifest], list[Workload]]:
+def load_manifests(paths: list[pathlib.Path]) -> list[BenchmarkManifest]:
     manifests: list[BenchmarkManifest] = []
-    workloads: list[Workload] = []
     manifest_ids: set[str] = set()
     workload_ids: set[str] = set()
 
     for path in paths:
-        manifest, manifest_workloads = load_manifest(path)
+        manifest = load_manifest(path)
         manifest_id = manifest.manifest_id
         if manifest_id in manifest_ids:
             raise ValueError(f"duplicate benchmark manifest id {manifest_id!r}")
         manifest_ids.add(manifest_id)
 
-        for workload in manifest_workloads:
+        for workload in manifest.workloads:
             if workload.workload_id in workload_ids:
                 raise ValueError(f"duplicate benchmark workload id {workload.workload_id!r}")
             workload_ids.add(workload.workload_id)
 
         manifests.append(manifest)
-        workloads.extend(manifest_workloads)
 
-    return manifests, workloads
+    return manifests
 
 
 def select_workloads(workloads: list[Workload], *, smoke_only: bool) -> list[Workload]:
@@ -1581,8 +1572,11 @@ def run_benchmarks(
     resolved_report_path = (
         SCORECARD_REPORT.validate_path(report_path) if report_path is not None else None
     )
-    manifests, manifest_workloads = load_manifests(resolved_manifest_paths)
-    selected_manifest_workloads = select_workloads(manifest_workloads, smoke_only=smoke_only)
+    manifests = load_manifests(resolved_manifest_paths)
+    selected_manifest_workloads = select_workloads(
+        [workload for manifest in manifests for workload in manifest.workloads],
+        smoke_only=smoke_only,
+    )
     run_context = prepare_benchmark_run(
         workloads=selected_manifest_workloads,
         adapter_mode=adapter_mode,

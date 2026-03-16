@@ -115,7 +115,8 @@ class PythonBenchmarkManifestContractTest(unittest.TestCase):
                 "python_benchmark_loader_contract.py",
                 manifest_source,
             )
-            manifest, workloads = load_manifest(manifest_path)
+            manifest = load_manifest(manifest_path)
+            workloads = manifest.workloads
 
         self.assertEqual(manifest.manifest_id, "python-benchmark-loader-contract")
         self.assertEqual(manifest.defaults["warmup_iterations"], 2)
@@ -256,7 +257,7 @@ class PythonBenchmarkManifestContractTest(unittest.TestCase):
                 "python_benchmark_exception_contract.py",
                 manifest_source,
             )
-            _, workloads = load_manifest(manifest_path)
+            workloads = load_manifest(manifest_path).workloads
 
         workload = workloads[0]
         payload = workload_to_payload(workload)
@@ -333,7 +334,8 @@ class PythonBenchmarkManifestContractTest(unittest.TestCase):
                 "python_benchmark_nested_constant_contract.py",
                 manifest_source,
             )
-            manifest, workloads = load_manifest(manifest_path)
+            manifest = load_manifest(manifest_path)
+            workloads = manifest.workloads
 
         self.assertEqual(
             manifest.manifest_id,
@@ -430,7 +432,7 @@ class PythonBenchmarkManifestContractTest(unittest.TestCase):
                 "python_benchmark_invalid_text_model_contract.py",
                 manifest_source,
             )
-            _, workloads = load_manifest(manifest_path)
+            workloads = load_manifest(manifest_path).workloads
 
         with self.assertRaisesRegex(ValueError, r"unsupported text model 'utf-16'"):
             workloads[0].replacement_payload()
