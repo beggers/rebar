@@ -8,10 +8,34 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 from rebar_harness.correctness import DEFAULT_FIXTURE_PATHS, load_fixture_manifest
 from tests.conformance.correctness_expectations import (
+    BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS,
+    COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
+    CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
+    CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS,
+    CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS,
+    NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_SCORECARD_EXPECTATIONS,
+    OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
+    QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
+    WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
     correctness_scorecard_case,
     correctness_scorecard_target_manifest_ids,
     tracked_correctness_scorecard_suites,
 )
+
+
+EXPECTED_SUITE_TABLES = {
+    "combined": COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
+    "branch-local-backreference": BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS,
+    "conditional-replacement": CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS,
+    "conditional-alternation": CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
+    "conditional-nested-quantified": CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS,
+    "quantified-alternation": QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
+    "open-ended-quantified-group": OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
+    "wider-ranged-repeat-quantified-group": WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation": (
+        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_SCORECARD_EXPECTATIONS
+    ),
+}
 
 
 def _fixture_inventory() -> tuple[tuple[pathlib.Path, str], ...]:
@@ -24,6 +48,20 @@ def _fixture_inventory() -> tuple[tuple[pathlib.Path, str], ...]:
 
 class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
     maxDiff = None
+
+    def test_suite_registry_reuses_canonical_expectation_tables(self) -> None:
+        suites_by_id = {
+            suite.suite_id: suite for suite in tracked_correctness_scorecard_suites()
+        }
+
+        self.assertEqual(set(suites_by_id), set(EXPECTED_SUITE_TABLES))
+
+        for suite_id, expectation_table in EXPECTED_SUITE_TABLES.items():
+            with self.subTest(suite_id=suite_id):
+                suite = suites_by_id[suite_id]
+                self.assertIs(suite.expectation_table, expectation_table)
+                manifest_id = next(iter(expectation_table))
+                self.assertNotIsInstance(expectation_table[manifest_id], dict)
 
     def test_suite_registry_target_manifests_follow_default_fixture_order(self) -> None:
         inventory = _fixture_inventory()

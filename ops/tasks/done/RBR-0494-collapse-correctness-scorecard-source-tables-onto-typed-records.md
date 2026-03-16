@@ -1,6 +1,6 @@
 # RBR-0494: Collapse correctness scorecard source tables onto typed records
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -83,3 +83,12 @@ Created: 2026-03-16
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py tests/conformance/test_correctness_scorecard_registry_contract.py` passes in the current checkout (`6 passed, 1194 subtests passed in 25.17s`).
   - The `rg -n ...` command above currently returns the helper definition plus the nine suite-registry call sites, which is the exact import-time conversion layer this task should delete.
   - The typed-table probe above currently fails with `AssertionError: <class 'dict'>`, which is the exact canonical-table shape cleanup this task is meant to complete.
+
+## Completion Notes
+- 2026-03-16: Collapsed the nine canonical correctness scorecard tables onto direct `CorrectnessScorecardManifestExpectation` records and moved the dataclass definition ahead of the tables so the canonical table objects themselves are the typed public surface.
+- Deleted `_public_scorecard_manifest_expectation_table(...)` and updated `CORRECTNESS_SCORECARD_SUITE_REGISTRY` to point at the canonical typed tables directly instead of rebuilding copy tables at import time.
+- Tightened `tests/conformance/test_correctness_scorecard_registry_contract.py` to assert the suite registry reuses the canonical tables by object identity while preserving the existing representative-case ordering checks.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py tests/conformance/test_correctness_scorecard_registry_contract.py`
+  - `rg -n '_public_scorecard_manifest_expectation_table|raw_table: dict\\[str, dict\\[str, tuple\\[str, \\.\\.\\.\\]\\]\\]|entry\\[\"representative_case_ids\"\\]|expectation_table=_public_scorecard_manifest_expectation_table\\(' tests/conformance/correctness_expectations.py` returned no matches.
+  - The typed-table probe from the task prints `ok`.

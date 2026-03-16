@@ -5,9 +5,6 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from functools import lru_cache
 
-
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-
 from rebar_harness.correctness import (
     DEFAULT_FIXTURE_PATHS,
     FixtureCase,
@@ -17,9 +14,17 @@ from rebar_harness.correctness import (
 )
 
 
+REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
+
+
+@dataclass(frozen=True)
+class CorrectnessScorecardManifestExpectation:
+    representative_case_ids: tuple[str, ...]
+
+
 COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
-    "parser-matrix": {
-        "representative_case_ids": (
+    "parser-matrix": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "str-literal-success",
             "str-inline-unicode-flag-success",
             "str-character-class-ignorecase-success",
@@ -33,40 +38,40 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "bytes-inline-locale-flag-success",
             "bytes-named-backreference-compile-proxy-success",
         ),
-    },
-    "public-api-surface": {
-        "representative_case_ids": (
+    ),
+    "public-api-surface": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "compile-pattern-scaffold-success",
             "purge-noop-success",
             "search-literal-success",
             "escape-success",
         ),
-    },
-    "match-behavior-smoke": {
-        "representative_case_ids": (
+    ),
+    "match-behavior-smoke": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "search-str-success-literal",
             "match-str-no-match",
             "fullmatch-bytes-success-literal",
         ),
-    },
-    "exported-symbol-surface": {
-        "representative_case_ids": (
+    ),
+    "exported-symbol-surface": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "regexflag-type-metadata",
             "error-type-metadata",
             "ascii-constant-value",
             "pattern-type-metadata",
             "pattern-constructor-guard",
         ),
-    },
-    "pattern-object-surface": {
-        "representative_case_ids": (
+    ),
+    "pattern-object-surface": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "pattern-object-str-metadata",
             "pattern-object-bytes-ignorecase-metadata",
             "pattern-search-literal-success",
         ),
-    },
-    "module-workflow-surface": {
-        "representative_case_ids": (
+    ),
+    "module-workflow-surface": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "workflow-compile-str-anchored-literal",
             "workflow-compile-str-verbose-regression",
             "workflow-cache-hit-str",
@@ -75,9 +80,9 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-pattern-fullmatch-bytes",
             "workflow-escape-bytes",
         ),
-    },
-    "collection-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "collection-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-finditer-str-repeated",
             "pattern-split-bytes-maxsplit",
             "module-subn-bytes-count",
@@ -86,9 +91,9 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-sub-grouping-template",
             "module-findall-nonliteral-str",
         ),
-    },
-    "literal-flag-workflows": {
-        "representative_case_ids": (
+    ),
+    "literal-flag-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "flag-module-search-ignorecase-str-hit",
             "flag-module-search-ignorecase-ascii-str-hit",
             "flag-pattern-search-ignorecase-ascii-str-hit",
@@ -99,47 +104,47 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "flag-unsupported-locale-bytes-search",
             "flag-unsupported-nonliteral-ignorecase-search",
         ),
-    },
-    "grouped-match-workflows": {
-        "representative_case_ids": (
+    ),
+    "grouped-match-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "grouped-module-search-single-capture-str",
             "grouped-pattern-match-single-capture-str",
             "grouped-module-fullmatch-two-capture-gap-str",
         ),
-    },
-    "named-group-workflows": {
-        "representative_case_ids": (
+    ),
+    "named-group-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "named-group-compile-metadata-str",
             "named-group-module-search-metadata-str",
             "named-group-pattern-search-metadata-str",
         ),
-    },
-    "named-group-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "named-group-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-template-named-group-str",
             "module-subn-template-named-group-str",
             "pattern-sub-template-named-group-str",
             "pattern-subn-template-named-group-str",
         ),
-    },
-    "named-backreference-workflows": {
-        "representative_case_ids": (
+    ),
+    "named-backreference-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "named-backreference-compile-metadata-str",
             "named-backreference-module-search-str",
             "named-backreference-pattern-search-str",
         ),
-    },
-    "numbered-backreference-workflows": {
-        "representative_case_ids": (
+    ),
+    "numbered-backreference-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "numbered-backreference-compile-metadata-str",
             "numbered-backreference-module-search-str",
             "numbered-backreference-pattern-search-str",
             "numbered-backreference-segment-module-search-str",
             "numbered-backreference-prefix-pattern-search-str",
         ),
-    },
-    "grouped-segment-workflows": {
-        "representative_case_ids": (
+    ),
+    "grouped-segment-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "grouped-segment-compile-metadata-str",
             "named-grouped-segment-compile-metadata-str",
             "grouped-segment-module-search-str",
@@ -147,47 +152,47 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "grouped-segment-leading-capture-pattern-search-str",
             "named-grouped-segment-pattern-fullmatch-str",
         ),
-    },
-    "nested-group-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-group-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "nested-group-compile-metadata-str",
             "named-nested-group-compile-metadata-str",
             "nested-group-module-search-str",
             "named-nested-group-pattern-fullmatch-str",
         ),
-    },
-    "literal-alternation-workflows": {
-        "representative_case_ids": (
+    ),
+    "literal-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "literal-alternation-compile-metadata-str",
             "literal-alternation-module-search-str",
             "literal-alternation-pattern-fullmatch-str",
         ),
-    },
-    "grouped-alternation-workflows": {
-        "representative_case_ids": (
+    ),
+    "grouped-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "grouped-alternation-compile-metadata-str",
             "named-grouped-alternation-compile-metadata-str",
             "grouped-alternation-module-search-str",
             "named-grouped-alternation-pattern-fullmatch-str",
         ),
-    },
-    "grouped-alternation-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "grouped-alternation-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-template-grouped-alternation-str",
             "module-subn-template-grouped-alternation-str",
             "pattern-sub-template-named-grouped-alternation-str",
             "pattern-subn-template-named-grouped-alternation-str",
         ),
-    },
-    "grouped-alternation-callable-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "grouped-alternation-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-callable-grouped-alternation-str",
             "module-subn-callable-grouped-alternation-str",
             "pattern-sub-callable-named-grouped-alternation-str",
         ),
-    },
-    "branch-local-backreference-workflows": {
-        "representative_case_ids": (
+    ),
+    "branch-local-backreference-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "branch-local-numbered-backreference-compile-metadata-str",
             "branch-local-numbered-backreference-module-search-str",
             "branch-local-numbered-backreference-pattern-fullmatch-str",
@@ -195,9 +200,9 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "branch-local-named-backreference-module-search-str",
             "branch-local-named-backreference-pattern-fullmatch-str",
         ),
-    },
-    "optional-group-workflows": {
-        "representative_case_ids": (
+    ),
+    "optional-group-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "optional-group-compile-metadata-str",
             "optional-group-module-search-present-str",
             "optional-group-pattern-fullmatch-absent-str",
@@ -207,9 +212,9 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "systematic-optional-group-numbered-pattern-fullmatch-present-str",
             "systematic-optional-group-named-module-search-present-str",
         ),
-    },
-    "exact-repeat-quantified-group-workflows": {
-        "representative_case_ids": (
+    ),
+    "exact-repeat-quantified-group-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "exact-repeat-numbered-group-compile-metadata-str",
             "exact-repeat-numbered-group-module-search-str",
             "exact-repeat-numbered-group-pattern-fullmatch-str",
@@ -217,9 +222,9 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "exact-repeat-named-group-module-search-str",
             "exact-repeat-named-group-pattern-fullmatch-str",
         ),
-    },
-    "exact-repeat-quantified-group-alternation-workflows": {
-        "representative_case_ids": (
+    ),
+    "exact-repeat-quantified-group-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "exact-repeat-quantified-group-alternation-numbered-compile-metadata-str",
             "exact-repeat-quantified-group-alternation-numbered-module-search-bc-bc-str",
             "exact-repeat-quantified-group-alternation-numbered-module-search-bc-de-str",
@@ -231,9 +236,9 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "exact-repeat-quantified-group-alternation-named-pattern-fullmatch-de-de-str",
             "exact-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-extra-repetition-str",
         ),
-    },
-    "ranged-repeat-quantified-group-workflows": {
-        "representative_case_ids": (
+    ),
+    "ranged-repeat-quantified-group-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "ranged-repeat-numbered-group-compile-metadata-str",
             "ranged-repeat-numbered-group-module-search-lower-bound-str",
             "ranged-repeat-numbered-group-pattern-fullmatch-upper-bound-str",
@@ -241,84 +246,84 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "ranged-repeat-named-group-module-search-upper-bound-str",
             "ranged-repeat-named-group-pattern-fullmatch-lower-bound-str",
         ),
-    },
-    "wider-ranged-repeat-quantified-group-workflows": {
-        "representative_case_ids": (
+    ),
+    "wider-ranged-repeat-quantified-group-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "wider-ranged-repeat-numbered-group-compile-metadata-str",
             "wider-ranged-repeat-numbered-group-pattern-fullmatch-upper-bound-str",
             "wider-ranged-repeat-named-group-module-search-upper-bound-str",
             "wider-ranged-repeat-named-group-pattern-fullmatch-lower-bound-str",
         ),
-    },
-    "nested-group-alternation-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-group-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "nested-group-alternation-compile-metadata-str",
             "named-nested-group-alternation-pattern-fullmatch-str",
         ),
-    },
-    "nested-group-alternation-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-group-alternation-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-template-nested-group-alternation-numbered-outer-str",
             "pattern-subn-template-nested-group-alternation-named-outer-first-match-only-str",
         ),
-    },
-    "nested-group-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-group-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-template-nested-group-numbered-str",
             "module-subn-template-nested-group-numbered-str",
             "pattern-sub-template-nested-group-named-str",
             "pattern-subn-template-nested-group-named-str",
         ),
-    },
-    "quantified-nested-group-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "quantified-nested-group-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-template-quantified-nested-group-numbered-lower-bound-str",
             "module-subn-template-quantified-nested-group-numbered-first-match-only-str",
             "pattern-sub-template-quantified-nested-group-named-repeated-outer-capture-str",
             "pattern-subn-template-quantified-nested-group-named-first-match-only-str",
         ),
-    },
-    "quantified-nested-group-callable-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "quantified-nested-group-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-callable-quantified-nested-group-numbered-lower-bound-str",
             "module-subn-callable-quantified-nested-group-numbered-first-match-only-str",
             "pattern-sub-callable-quantified-nested-group-named-repeated-outer-capture-str",
             "pattern-subn-callable-quantified-nested-group-named-first-match-only-str",
         ),
-    },
-    "nested-group-callable-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-group-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-callable-nested-group-numbered-str",
             "module-subn-callable-nested-group-numbered-str",
             "pattern-sub-callable-nested-group-named-str",
         ),
-    },
-    "nested-group-alternation-callable-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-group-alternation-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-callable-nested-group-alternation-numbered-b-branch-str",
             "pattern-sub-callable-nested-group-alternation-numbered-mixed-branches-str",
             "module-sub-callable-nested-group-alternation-named-c-branch-str",
             "pattern-subn-callable-nested-group-alternation-named-b-branch-first-match-only-str",
         ),
-    },
-    "nested-group-alternation-branch-local-backreference-callable-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-group-alternation-branch-local-backreference-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-callable-nested-group-alternation-branch-local-backreference-numbered-b-branch-str",
             "module-subn-callable-nested-group-alternation-branch-local-backreference-numbered-first-match-only-str",
             "module-sub-callable-nested-group-alternation-branch-local-backreference-named-c-branch-str",
             "pattern-subn-callable-nested-group-alternation-branch-local-backreference-named-b-branch-first-match-only-str",
         ),
-    },
-    "quantified-nested-group-alternation-callable-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "quantified-nested-group-alternation-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-callable-quantified-nested-group-alternation-numbered-lower-bound-b-branch-str",
             "pattern-sub-callable-quantified-nested-group-alternation-numbered-mixed-branches-str",
             "module-sub-callable-quantified-nested-group-alternation-named-lower-bound-c-branch-str",
             "pattern-subn-callable-quantified-nested-group-alternation-named-first-match-only-c-branch-str",
         ),
-    },
-    "optional-group-alternation-workflows": {
-        "representative_case_ids": (
+    ),
+    "optional-group-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "optional-group-alternation-compile-metadata-str",
             "optional-group-alternation-module-search-present-str",
             "optional-group-alternation-pattern-fullmatch-absent-str",
@@ -326,9 +331,9 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "named-optional-group-alternation-module-search-present-str",
             "named-optional-group-alternation-pattern-fullmatch-absent-str",
         ),
-    },
-    "conditional-group-exists-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-compile-metadata-str",
             "conditional-group-exists-module-search-present-str",
             "conditional-group-exists-pattern-fullmatch-absent-str",
@@ -336,9 +341,9 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "named-conditional-group-exists-module-search-present-str",
             "named-conditional-group-exists-pattern-fullmatch-absent-str",
         ),
-    },
-    "conditional-group-exists-no-else-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-no-else-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-no-else-compile-metadata-str",
             "conditional-group-exists-no-else-module-search-present-str",
             "conditional-group-exists-no-else-pattern-fullmatch-absent-str",
@@ -346,9 +351,9 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "named-conditional-group-exists-no-else-module-search-present-str",
             "named-conditional-group-exists-no-else-pattern-fullmatch-absent-str",
         ),
-    },
-    "conditional-group-exists-empty-else-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-empty-else-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-empty-else-compile-metadata-str",
             "conditional-group-exists-empty-else-module-search-present-str",
             "conditional-group-exists-empty-else-pattern-fullmatch-absent-str",
@@ -356,9 +361,9 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "named-conditional-group-exists-empty-else-module-search-present-str",
             "named-conditional-group-exists-empty-else-pattern-fullmatch-absent-str",
         ),
-    },
-    "conditional-group-exists-empty-yes-else-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-empty-yes-else-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-empty-yes-else-compile-metadata-str",
             "conditional-group-exists-empty-yes-else-module-search-present-str",
             "conditional-group-exists-empty-yes-else-pattern-fullmatch-absent-str",
@@ -366,9 +371,9 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "named-conditional-group-exists-empty-yes-else-module-search-present-str",
             "named-conditional-group-exists-empty-yes-else-pattern-fullmatch-absent-str",
         ),
-    },
-    "conditional-group-exists-fully-empty-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-fully-empty-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-fully-empty-compile-metadata-str",
             "conditional-group-exists-fully-empty-module-search-present-str",
             "conditional-group-exists-fully-empty-pattern-fullmatch-absent-str",
@@ -376,24 +381,24 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "named-conditional-group-exists-fully-empty-module-search-present-str",
             "named-conditional-group-exists-fully-empty-pattern-fullmatch-absent-str",
         ),
-    },
-    "conditional-group-exists-assertion-diagnostics": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-assertion-diagnostics": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-assertion-positive-lookahead-error-str",
             "conditional-group-exists-assertion-negative-lookahead-error-str",
         ),
-    },
-    "quantified-alternation-workflows": {
-        "representative_case_ids": (
+    ),
+    "quantified-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "quantified-alternation-numbered-module-search-lower-bound-str",
             "quantified-alternation-numbered-pattern-fullmatch-second-repetition-str",
             "quantified-alternation-named-compile-metadata-str",
             "quantified-alternation-named-module-search-second-repetition-str",
             "quantified-alternation-named-pattern-fullmatch-lower-bound-str",
         ),
-    },
-    "quantified-nested-group-alternation-workflows": {
-        "representative_case_ids": (
+    ),
+    "quantified-nested-group-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "quantified-nested-group-alternation-numbered-compile-metadata-str",
             "quantified-nested-group-alternation-numbered-module-search-lower-bound-b-str",
             "quantified-nested-group-alternation-numbered-pattern-fullmatch-repeated-mixed-str",
@@ -401,9 +406,9 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "quantified-nested-group-alternation-named-module-search-lower-bound-c-str",
             "quantified-nested-group-alternation-named-pattern-fullmatch-repeated-mixed-str",
         ),
-    },
-    "nested-group-alternation-branch-local-backreference-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-group-alternation-branch-local-backreference-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "nested-group-alternation-branch-local-numbered-backreference-compile-metadata-str",
             "nested-group-alternation-branch-local-numbered-backreference-module-search-b-branch-str",
             "nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-c-branch-str",
@@ -413,9 +418,9 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-b-branch-str",
             "nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
         ),
-    },
-    "quantified-nested-group-alternation-branch-local-backreference-workflows": {
-        "representative_case_ids": (
+    ),
+    "quantified-nested-group-alternation-branch-local-backreference-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "quantified-nested-group-alternation-branch-local-numbered-backreference-compile-metadata-str",
             "quantified-nested-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
             "quantified-nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-lower-bound-c-branch-str",
@@ -427,17 +432,17 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-second-iteration-mixed-branches-str",
             "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
         ),
-    },
-    "quantified-nested-group-alternation-branch-local-backreference-callable-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "quantified-nested-group-alternation-branch-local-backreference-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-callable-quantified-nested-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
             "pattern-sub-callable-quantified-nested-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
             "module-sub-callable-quantified-nested-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
             "pattern-subn-callable-quantified-nested-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
         ),
-    },
-    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-compile-metadata-str",
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-c-branch-str",
@@ -453,33 +458,33 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-missing-replay-mixed-str",
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-overflow-str",
         ),
-    },
-    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
             "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
             "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
             "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
         ),
-    },
-    "nested-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
             "pattern-sub-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
             "module-sub-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
             "pattern-subn-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
         ),
-    },
-    "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
             "pattern-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
             "module-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
             "pattern-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
         ),
-    },
-    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-compile-metadata-str",
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-lower-bound-c-branch-str",
@@ -491,9 +496,9 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-third-repetition-mixed-branches-str",
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-one-repetition-str",
         ),
-    },
-    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-compile-metadata-str",
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-module-search-lower-bound-b-branch-workflow-str",
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-lower-bound-c-branch-workflow-str",
@@ -505,61 +510,61 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-mixed-branches-workflow-str",
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-no-match-below-lower-bound-workflow-str",
         ),
-    },
-    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
             "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
             "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
             "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
         ),
-    },
-    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-lower-bound-b-branch-str",
             "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-mixed-branches-str",
             "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-mixed-branches-str",
             "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-str",
         ),
-    },
-    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
             "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
             "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
             "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
         ),
-    },
-    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-lower-bound-b-branch-str",
             "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-mixed-branches-str",
             "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-mixed-branches-str",
             "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-str",
         ),
-    },
-    "conditional-group-exists-callable-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-callable-conditional-group-exists-present-str",
             "pattern-subn-callable-conditional-group-exists-absent-str",
             "module-sub-callable-named-conditional-group-exists-present-str",
             "pattern-subn-callable-named-conditional-group-exists-absent-str",
         ),
-    },
-    "conditional-group-exists-replacement-template-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-replacement-template-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-template-conditional-group-exists-replacement-present-str",
             "pattern-subn-template-conditional-group-exists-replacement-absent-str",
             "module-sub-template-named-conditional-group-exists-replacement-present-str",
             "pattern-subn-template-named-conditional-group-exists-replacement-absent-str",
         ),
-    },
+    ),
 }
 
 
 BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS = {
-    "conditional-group-exists-branch-local-backreference-workflows": {
-        "representative_case_ids": (
+    "conditional-group-exists-branch-local-backreference-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-branch-local-numbered-backreference-compile-metadata-str",
             "conditional-group-exists-branch-local-numbered-backreference-module-search-present-str",
             "conditional-group-exists-branch-local-numbered-backreference-pattern-fullmatch-absent-str",
@@ -567,9 +572,9 @@ BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "conditional-group-exists-branch-local-named-backreference-module-search-present-str",
             "conditional-group-exists-branch-local-named-backreference-pattern-fullmatch-absent-str",
         ),
-    },
-    "optional-group-alternation-branch-local-backreference-workflows": {
-        "representative_case_ids": (
+    ),
+    "optional-group-alternation-branch-local-backreference-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "optional-group-alternation-branch-local-numbered-backreference-compile-metadata-str",
             "optional-group-alternation-branch-local-numbered-backreference-module-search-b-branch-str",
             "optional-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-c-branch-str",
@@ -581,9 +586,9 @@ BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "optional-group-alternation-branch-local-named-backreference-pattern-fullmatch-absent-group-str",
             "optional-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
         ),
-    },
-    "quantified-branch-local-backreference-workflows": {
-        "representative_case_ids": (
+    ),
+    "quantified-branch-local-backreference-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "quantified-branch-local-numbered-backreference-compile-metadata-str",
             "quantified-branch-local-numbered-backreference-module-search-lower-bound-str",
             "quantified-branch-local-numbered-backreference-pattern-fullmatch-second-iteration-str",
@@ -593,9 +598,9 @@ BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "quantified-branch-local-named-backreference-pattern-fullmatch-second-iteration-str",
             "quantified-branch-local-named-backreference-pattern-fullmatch-absent-branch-str",
         ),
-    },
-    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-compile-metadata-str",
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-module-search-lower-bound-b-branch-workflow-str",
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-lower-bound-c-branch-workflow-str",
@@ -607,13 +612,13 @@ BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-mixed-branches-workflow-str",
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-no-match-below-lower-bound-workflow-str",
         ),
-    },
+    ),
 }
 
 
 CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS = {
-    "conditional-group-exists-nested-workflows": {
-        "representative_case_ids": (
+    "conditional-group-exists-nested-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-nested-compile-metadata-str",
             "conditional-group-exists-nested-module-search-present-str",
             "conditional-group-exists-nested-module-fullmatch-absent-str",
@@ -623,9 +628,9 @@ CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "named-conditional-group-exists-nested-module-fullmatch-absent-str",
             "named-conditional-group-exists-nested-pattern-fullmatch-unreachable-inner-else-str",
         ),
-    },
-    "conditional-group-exists-no-else-nested-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-no-else-nested-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-no-else-nested-compile-metadata-str",
             "conditional-group-exists-no-else-nested-module-search-present-str",
             "conditional-group-exists-no-else-nested-module-fullmatch-missing-suffix-str",
@@ -635,9 +640,9 @@ CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "named-conditional-group-exists-no-else-nested-module-fullmatch-missing-suffix-str",
             "named-conditional-group-exists-no-else-nested-pattern-fullmatch-absent-str",
         ),
-    },
-    "conditional-group-exists-quantified-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-quantified-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-quantified-compile-metadata-str",
             "conditional-group-exists-quantified-module-search-present-str",
             "conditional-group-exists-quantified-module-fullmatch-absent-str",
@@ -647,9 +652,9 @@ CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "named-conditional-group-exists-quantified-module-fullmatch-absent-str",
             "named-conditional-group-exists-quantified-pattern-fullmatch-missing-repeat-str",
         ),
-    },
-    "conditional-group-exists-no-else-quantified-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-no-else-quantified-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-no-else-quantified-compile-metadata-str",
             "conditional-group-exists-no-else-quantified-module-search-present-str",
             "conditional-group-exists-no-else-quantified-module-fullmatch-absent-str",
@@ -659,9 +664,9 @@ CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "named-conditional-group-exists-no-else-quantified-module-fullmatch-absent-str",
             "named-conditional-group-exists-no-else-quantified-pattern-fullmatch-missing-repeat-str",
         ),
-    },
-    "conditional-group-exists-empty-else-nested-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-empty-else-nested-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-empty-else-nested-compile-metadata-str",
             "conditional-group-exists-empty-else-nested-module-search-present-str",
             "conditional-group-exists-empty-else-nested-module-fullmatch-missing-suffix-str",
@@ -671,9 +676,9 @@ CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "named-conditional-group-exists-empty-else-nested-module-fullmatch-missing-suffix-str",
             "named-conditional-group-exists-empty-else-nested-pattern-fullmatch-absent-str",
         ),
-    },
-    "conditional-group-exists-empty-else-quantified-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-empty-else-quantified-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-empty-else-quantified-compile-metadata-str",
             "conditional-group-exists-empty-else-quantified-module-search-present-str",
             "conditional-group-exists-empty-else-quantified-module-fullmatch-absent-str",
@@ -683,9 +688,9 @@ CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "named-conditional-group-exists-empty-else-quantified-module-fullmatch-absent-str",
             "named-conditional-group-exists-empty-else-quantified-pattern-fullmatch-missing-repeat-str",
         ),
-    },
-    "conditional-group-exists-empty-yes-else-nested-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-empty-yes-else-nested-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-empty-yes-else-nested-compile-metadata-str",
             "conditional-group-exists-empty-yes-else-nested-module-search-present-str",
             "conditional-group-exists-empty-yes-else-nested-module-fullmatch-absent-str",
@@ -695,9 +700,9 @@ CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "named-conditional-group-exists-empty-yes-else-nested-module-fullmatch-absent-str",
             "named-conditional-group-exists-empty-yes-else-nested-pattern-fullmatch-absent-failure-str",
         ),
-    },
-    "conditional-group-exists-empty-yes-else-quantified-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-empty-yes-else-quantified-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-empty-yes-else-quantified-compile-metadata-str",
             "conditional-group-exists-empty-yes-else-quantified-module-fullmatch-present-str",
             "conditional-group-exists-empty-yes-else-quantified-module-fullmatch-absent-str",
@@ -707,9 +712,9 @@ CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "named-conditional-group-exists-empty-yes-else-quantified-module-fullmatch-absent-str",
             "named-conditional-group-exists-empty-yes-else-quantified-pattern-fullmatch-mixed-str",
         ),
-    },
-    "conditional-group-exists-fully-empty-nested-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-fully-empty-nested-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-fully-empty-nested-compile-metadata-str",
             "conditional-group-exists-fully-empty-nested-module-search-present-str",
             "conditional-group-exists-fully-empty-nested-module-fullmatch-absent-str",
@@ -719,9 +724,9 @@ CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "named-conditional-group-exists-fully-empty-nested-module-fullmatch-absent-str",
             "named-conditional-group-exists-fully-empty-nested-pattern-fullmatch-extra-suffix-failure-str",
         ),
-    },
-    "conditional-group-exists-fully-empty-quantified-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-fully-empty-quantified-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-fully-empty-quantified-compile-metadata-str",
             "conditional-group-exists-fully-empty-quantified-module-fullmatch-present-str",
             "conditional-group-exists-fully-empty-quantified-module-fullmatch-absent-str",
@@ -733,13 +738,13 @@ CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "named-conditional-group-exists-fully-empty-quantified-pattern-fullmatch-mixed-str",
             "named-conditional-group-exists-fully-empty-quantified-pattern-fullmatch-extra-suffix-failure-str",
         ),
-    },
+    ),
 }
 
 
 CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
-    "conditional-group-exists-no-else-alternation-workflows": {
-        "representative_case_ids": (
+    "conditional-group-exists-no-else-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-no-else-alternation-compile-metadata-str",
             "conditional-group-exists-no-else-alternation-module-search-first-arm-str",
             "conditional-group-exists-no-else-alternation-module-search-second-arm-str",
@@ -749,9 +754,9 @@ CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "named-conditional-group-exists-no-else-alternation-module-search-second-arm-str",
             "named-conditional-group-exists-no-else-alternation-pattern-fullmatch-absent-str",
         ),
-    },
-    "conditional-group-exists-empty-else-alternation-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-empty-else-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-empty-else-alternation-compile-metadata-str",
             "conditional-group-exists-empty-else-alternation-module-search-first-arm-str",
             "conditional-group-exists-empty-else-alternation-module-search-second-arm-str",
@@ -761,9 +766,9 @@ CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "named-conditional-group-exists-empty-else-alternation-module-search-second-arm-str",
             "named-conditional-group-exists-empty-else-alternation-pattern-fullmatch-absent-str",
         ),
-    },
-    "conditional-group-exists-empty-yes-else-alternation-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-empty-yes-else-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-empty-yes-else-alternation-compile-metadata-str",
             "conditional-group-exists-empty-yes-else-alternation-module-search-present-str",
             "conditional-group-exists-empty-yes-else-alternation-module-search-absent-first-arm-str",
@@ -773,9 +778,9 @@ CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "named-conditional-group-exists-empty-yes-else-alternation-module-search-absent-first-arm-str",
             "named-conditional-group-exists-empty-yes-else-alternation-pattern-fullmatch-absent-second-arm-str",
         ),
-    },
-    "conditional-group-exists-fully-empty-alternation-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-fully-empty-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-fully-empty-alternation-compile-metadata-str",
             "conditional-group-exists-fully-empty-alternation-module-search-present-str",
             "conditional-group-exists-fully-empty-alternation-module-fullmatch-absent-str",
@@ -785,9 +790,9 @@ CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "named-conditional-group-exists-fully-empty-alternation-module-fullmatch-absent-str",
             "named-conditional-group-exists-fully-empty-alternation-pattern-fullmatch-extra-suffix-failure-str",
         ),
-    },
-    "conditional-group-exists-alternation-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-alternation-compile-metadata-str",
             "conditional-group-exists-alternation-module-search-present-first-arm-str",
             "conditional-group-exists-alternation-pattern-fullmatch-present-second-arm-str",
@@ -799,9 +804,9 @@ CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "named-conditional-group-exists-alternation-module-search-absent-first-arm-str",
             "named-conditional-group-exists-alternation-pattern-fullmatch-absent-second-arm-str",
         ),
-    },
-    "conditional-group-exists-quantified-alternation-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-quantified-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "conditional-group-exists-quantified-alternation-compile-metadata-str",
             "conditional-group-exists-quantified-alternation-module-search-present-first-arm-str",
             "conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
@@ -813,13 +818,13 @@ CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "named-conditional-group-exists-quantified-alternation-module-search-absent-first-arm-str",
             "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
         ),
-    },
+    ),
 }
 
 
 QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
-    "quantified-alternation-broader-range-workflows": {
-        "representative_case_ids": (
+    "quantified-alternation-broader-range-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "quantified-alternation-broader-range-numbered-compile-metadata-str",
             "quantified-alternation-broader-range-numbered-module-search-lower-bound-b-str",
             "quantified-alternation-broader-range-numbered-module-search-lower-bound-c-str",
@@ -837,9 +842,9 @@ QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "quantified-alternation-broader-range-named-pattern-fullmatch-no-match-below-lower-bound-str",
             "quantified-alternation-broader-range-named-pattern-fullmatch-no-match-overflow-str",
         ),
-    },
-    "quantified-alternation-open-ended-workflows": {
-        "representative_case_ids": (
+    ),
+    "quantified-alternation-open-ended-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "quantified-alternation-open-ended-numbered-compile-metadata-str",
             "quantified-alternation-open-ended-numbered-module-search-lower-bound-b-str",
             "quantified-alternation-open-ended-numbered-module-search-lower-bound-c-str",
@@ -857,9 +862,9 @@ QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "quantified-alternation-open-ended-named-pattern-fullmatch-no-match-below-lower-bound-str",
             "quantified-alternation-open-ended-named-pattern-fullmatch-no-match-invalid-branch-str",
         ),
-    },
-    "quantified-alternation-nested-branch-workflows": {
-        "representative_case_ids": (
+    ),
+    "quantified-alternation-nested-branch-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "quantified-alternation-nested-branch-numbered-compile-metadata-str",
             "quantified-alternation-nested-branch-numbered-module-search-lower-bound-inner-branch-str",
             "quantified-alternation-nested-branch-numbered-pattern-fullmatch-lower-bound-literal-branch-str",
@@ -871,9 +876,9 @@ QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "quantified-alternation-nested-branch-named-pattern-fullmatch-second-repetition-mixed-branches-str",
             "quantified-alternation-nested-branch-named-pattern-fullmatch-no-match-str",
         ),
-    },
-    "quantified-alternation-backtracking-heavy-workflows": {
-        "representative_case_ids": (
+    ),
+    "quantified-alternation-backtracking-heavy-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "quantified-alternation-backtracking-heavy-numbered-compile-metadata-str",
             "quantified-alternation-backtracking-heavy-numbered-module-search-lower-bound-b-branch-str",
             "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-lower-bound-bc-branch-str",
@@ -887,9 +892,9 @@ QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "quantified-alternation-backtracking-heavy-named-pattern-fullmatch-second-repetition-bc-then-b-str",
             "quantified-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-str",
         ),
-    },
-    "quantified-alternation-conditional-workflows": {
-        "representative_case_ids": (
+    ),
+    "quantified-alternation-conditional-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "quantified-alternation-conditional-numbered-compile-metadata-str",
             "quantified-alternation-conditional-numbered-module-search-absent-workflow-str",
             "quantified-alternation-conditional-numbered-module-search-lower-bound-b-workflow-str",
@@ -903,9 +908,9 @@ QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "quantified-alternation-conditional-named-pattern-fullmatch-second-repetition-mixed-workflow-str",
             "quantified-alternation-conditional-named-pattern-fullmatch-no-match-workflow-str",
         ),
-    },
-    "quantified-alternation-branch-local-backreference-workflows": {
-        "representative_case_ids": (
+    ),
+    "quantified-alternation-branch-local-backreference-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "quantified-alternation-branch-local-numbered-backreference-compile-metadata-str",
             "quantified-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
             "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-lower-bound-c-branch-str",
@@ -917,13 +922,13 @@ QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-second-repetition-mixed-branches-str",
             "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
         ),
-    },
+    ),
 }
 
 
 CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS = {
-    "conditional-group-exists-replacement-workflows": {
-        "representative_case_ids": (
+    "conditional-group-exists-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-conditional-group-exists-replacement-present-str",
             "module-subn-conditional-group-exists-replacement-absent-str",
             "pattern-sub-conditional-group-exists-replacement-present-str",
@@ -933,9 +938,9 @@ CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "pattern-sub-named-conditional-group-exists-replacement-present-str",
             "pattern-subn-named-conditional-group-exists-replacement-absent-str",
         ),
-    },
-    "conditional-group-exists-replacement-template-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-replacement-template-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-template-conditional-group-exists-replacement-present-str",
             "module-subn-template-conditional-group-exists-replacement-absent-str",
             "pattern-sub-template-conditional-group-exists-replacement-present-str",
@@ -945,9 +950,9 @@ CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "pattern-sub-template-named-conditional-group-exists-replacement-present-str",
             "pattern-subn-template-named-conditional-group-exists-replacement-absent-str",
         ),
-    },
-    "conditional-group-exists-no-else-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-no-else-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-conditional-group-exists-no-else-replacement-present-str",
             "module-subn-conditional-group-exists-no-else-replacement-absent-str",
             "pattern-sub-conditional-group-exists-no-else-replacement-present-str",
@@ -957,9 +962,9 @@ CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "pattern-sub-named-conditional-group-exists-no-else-replacement-present-str",
             "pattern-subn-named-conditional-group-exists-no-else-replacement-absent-str",
         ),
-    },
-    "conditional-group-exists-empty-else-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-empty-else-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-conditional-group-exists-empty-else-replacement-present-str",
             "module-subn-conditional-group-exists-empty-else-replacement-absent-str",
             "pattern-sub-conditional-group-exists-empty-else-replacement-present-str",
@@ -969,9 +974,9 @@ CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "pattern-sub-named-conditional-group-exists-empty-else-replacement-present-str",
             "pattern-subn-named-conditional-group-exists-empty-else-replacement-absent-str",
         ),
-    },
-    "conditional-group-exists-empty-yes-else-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-empty-yes-else-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-conditional-group-exists-empty-yes-else-replacement-present-str",
             "module-subn-conditional-group-exists-empty-yes-else-replacement-absent-str",
             "pattern-sub-conditional-group-exists-empty-yes-else-replacement-present-str",
@@ -981,9 +986,9 @@ CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "pattern-sub-named-conditional-group-exists-empty-yes-else-replacement-present-str",
             "pattern-subn-named-conditional-group-exists-empty-yes-else-replacement-absent-str",
         ),
-    },
-    "conditional-group-exists-fully-empty-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-fully-empty-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-conditional-group-exists-fully-empty-replacement-present-str",
             "module-subn-conditional-group-exists-fully-empty-replacement-absent-str",
             "pattern-sub-conditional-group-exists-fully-empty-replacement-present-str",
@@ -993,9 +998,9 @@ CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "pattern-sub-named-conditional-group-exists-fully-empty-replacement-present-str",
             "pattern-subn-named-conditional-group-exists-fully-empty-replacement-absent-str",
         ),
-    },
-    "conditional-group-exists-alternation-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-alternation-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-conditional-group-exists-alternation-replacement-present-first-arm-str",
             "module-subn-conditional-group-exists-alternation-replacement-present-second-arm-str",
             "pattern-sub-conditional-group-exists-alternation-replacement-absent-first-arm-str",
@@ -1005,9 +1010,9 @@ CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "pattern-sub-named-conditional-group-exists-alternation-replacement-absent-first-arm-str",
             "pattern-subn-named-conditional-group-exists-alternation-replacement-absent-second-arm-str",
         ),
-    },
-    "conditional-group-exists-nested-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-nested-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-conditional-group-exists-nested-replacement-present-str",
             "module-subn-conditional-group-exists-nested-replacement-absent-str",
             "pattern-sub-conditional-group-exists-nested-replacement-present-str",
@@ -1017,9 +1022,9 @@ CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "pattern-sub-named-conditional-group-exists-nested-replacement-present-str",
             "pattern-subn-named-conditional-group-exists-nested-replacement-absent-str",
         ),
-    },
-    "conditional-group-exists-quantified-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-quantified-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-conditional-group-exists-quantified-replacement-present-str",
             "module-subn-conditional-group-exists-quantified-replacement-absent-str",
             "pattern-sub-conditional-group-exists-quantified-replacement-present-str",
@@ -1029,9 +1034,9 @@ CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "pattern-sub-named-conditional-group-exists-quantified-replacement-present-str",
             "pattern-subn-named-conditional-group-exists-quantified-replacement-absent-str",
         ),
-    },
-    "conditional-group-exists-quantified-alternation-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "conditional-group-exists-quantified-alternation-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-conditional-group-exists-quantified-alternation-replacement-present-first-arm-str",
             "module-subn-conditional-group-exists-quantified-alternation-replacement-present-second-arm-str",
             "pattern-sub-conditional-group-exists-quantified-alternation-replacement-absent-first-arm-str",
@@ -1041,13 +1046,13 @@ CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "pattern-sub-named-conditional-group-exists-quantified-alternation-replacement-absent-first-arm-str",
             "pattern-subn-named-conditional-group-exists-quantified-alternation-replacement-absent-second-arm-str",
         ),
-    },
+    ),
 }
 
 
 WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
-    "wider-ranged-repeat-quantified-group-alternation-workflows": {
-        "representative_case_ids": (
+    "wider-ranged-repeat-quantified-group-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "wider-ranged-repeat-quantified-group-alternation-numbered-compile-metadata-str",
             "wider-ranged-repeat-quantified-group-alternation-numbered-module-search-lower-bound-bc-str",
             "wider-ranged-repeat-quantified-group-alternation-numbered-module-search-lower-bound-de-str",
@@ -1059,9 +1064,9 @@ WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-upper-bound-de-str",
             "wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-overflow-str",
         ),
-    },
-    "wider-ranged-repeat-quantified-group-alternation-conditional-workflows": {
-        "representative_case_ids": (
+    ),
+    "wider-ranged-repeat-quantified-group-alternation-conditional-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "wider-ranged-repeat-quantified-group-alternation-conditional-numbered-compile-metadata-str",
             "wider-ranged-repeat-quantified-group-alternation-conditional-numbered-module-search-absent-workflow-str",
             "wider-ranged-repeat-quantified-group-alternation-conditional-numbered-module-search-lower-bound-bc-workflow-str",
@@ -1075,9 +1080,9 @@ WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "wider-ranged-repeat-quantified-group-alternation-conditional-named-pattern-fullmatch-mixed-workflow-str",
             "wider-ranged-repeat-quantified-group-alternation-conditional-named-pattern-fullmatch-no-match-short-workflow-str",
         ),
-    },
-    "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows": {
-        "representative_case_ids": (
+    ),
+    "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-str",
             "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-short-branch-str",
             "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-lower-bound-long-branch-str",
@@ -1091,9 +1096,9 @@ WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-third-repetition-short-short-long-str",
             "wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-module-search-no-match-invalid-tail-str",
         ),
-    },
-    "broader-range-wider-ranged-repeat-quantified-group-alternation-workflows": {
-        "representative_case_ids": (
+    ),
+    "broader-range-wider-ranged-repeat-quantified-group-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-compile-metadata-str",
             "broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-module-search-lower-bound-bc-str",
             "broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-module-search-lower-bound-de-str",
@@ -1105,9 +1110,9 @@ WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "broader-range-wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-upper-bound-mixed-str",
             "broader-range-wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-overflow-str",
         ),
-    },
-    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-compile-metadata-str",
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-c-branch-str",
@@ -1123,9 +1128,9 @@ WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-missing-replay-mixed-str",
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-overflow-str",
         ),
-    },
-    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
             "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
             "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
@@ -1135,9 +1140,9 @@ WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-upper-bound-c-branch-str",
             "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
         ),
-    },
-    "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows": {
-        "representative_case_ids": (
+    ),
+    "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-compile-metadata-str",
             "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-module-search-absent-workflow-str",
             "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-module-search-lower-bound-bc-workflow-str",
@@ -1153,9 +1158,9 @@ WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-pattern-fullmatch-no-match-short-workflow-str",
             "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-pattern-fullmatch-no-match-overflow-workflow-str",
         ),
-    },
-    "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows": {
-        "representative_case_ids": (
+    ),
+    "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-str",
             "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-short-branch-str",
             "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-long-branch-str",
@@ -1171,13 +1176,13 @@ WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-invalid-tail-str",
             "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-overflow-str",
         ),
-    },
+    ),
 }
 
 
 NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_SCORECARD_EXPECTATIONS = {
-    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-workflows": {
-        "representative_case_ids": (
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-compile-metadata-str",
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-module-search-lower-bound-bc-str",
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-module-search-lower-bound-de-str",
@@ -1193,9 +1198,9 @@ NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_SCORECARD_
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-short-str",
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-overflow-str",
         ),
-    },
-    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-compile-metadata-str",
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-module-search-absent-workflow-str",
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-numbered-module-search-lower-bound-bc-workflow-str",
@@ -1211,9 +1216,9 @@ NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_SCORECARD_
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-pattern-fullmatch-no-match-short-workflow-str",
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-named-pattern-fullmatch-no-match-overflow-workflow-str",
         ),
-    },
-    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-str",
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-short-branch-str",
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-long-branch-str",
@@ -1229,13 +1234,13 @@ NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_SCORECARD_
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-invalid-tail-str",
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-overflow-str",
         ),
-    },
+    ),
 }
 
 
 OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
-    "open-ended-quantified-group-alternation-workflows": {
-        "representative_case_ids": (
+    "open-ended-quantified-group-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "open-ended-quantified-group-alternation-numbered-compile-metadata-str",
             "open-ended-quantified-group-alternation-numbered-module-search-lower-bound-bc-str",
             "open-ended-quantified-group-alternation-numbered-module-search-lower-bound-de-str",
@@ -1253,9 +1258,9 @@ OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "open-ended-quantified-group-alternation-named-pattern-fullmatch-no-match-below-lower-bound-str",
             "open-ended-quantified-group-alternation-named-pattern-fullmatch-no-match-invalid-branch-str",
         ),
-    },
-    "nested-open-ended-quantified-group-alternation-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-open-ended-quantified-group-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "nested-open-ended-quantified-group-alternation-numbered-compile-metadata-str",
             "nested-open-ended-quantified-group-alternation-numbered-module-search-lower-bound-bc-str",
             "nested-open-ended-quantified-group-alternation-numbered-module-search-lower-bound-de-str",
@@ -1271,9 +1276,9 @@ OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "nested-open-ended-quantified-group-alternation-named-pattern-fullmatch-no-match-short-str",
             "nested-open-ended-quantified-group-alternation-named-pattern-fullmatch-no-match-missing-trailing-d-str",
         ),
-    },
-    "nested-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
             "module-subn-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
             "pattern-sub-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
@@ -1283,9 +1288,9 @@ OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "pattern-sub-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
             "pattern-subn-callable-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
         ),
-    },
-    "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
             "module-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
             "pattern-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
@@ -1295,9 +1300,9 @@ OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "pattern-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
             "pattern-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
         ),
-    },
-    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-compile-metadata-str",
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-str",
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-lower-bound-c-branch-str",
@@ -1309,9 +1314,9 @@ OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-third-repetition-mixed-branches-str",
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-one-repetition-str",
         ),
-    },
-    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-compile-metadata-str",
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-module-search-lower-bound-b-branch-workflow-str",
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-lower-bound-c-branch-workflow-str",
@@ -1323,9 +1328,9 @@ OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-mixed-branches-workflow-str",
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-no-match-below-lower-bound-workflow-str",
         ),
-    },
-    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
             "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
             "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
@@ -1335,9 +1340,9 @@ OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
             "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
         ),
-    },
-    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-lower-bound-b-branch-str",
             "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-first-match-only-b-branch-str",
             "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-mixed-branches-str",
@@ -1347,9 +1352,9 @@ OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-lower-bound-c-branch-str",
             "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-str",
         ),
-    },
-    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
             "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
             "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
@@ -1359,9 +1364,9 @@ OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
             "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
         ),
-    },
-    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows": {
-        "representative_case_ids": (
+    ),
+    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-lower-bound-b-branch-str",
             "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-first-match-only-b-branch-str",
             "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-mixed-branches-str",
@@ -1371,9 +1376,9 @@ OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-lower-bound-c-branch-str",
             "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-str",
         ),
-    },
-    "broader-range-open-ended-quantified-group-alternation-workflows": {
-        "representative_case_ids": (
+    ),
+    "broader-range-open-ended-quantified-group-alternation-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "broader-range-open-ended-quantified-group-alternation-numbered-compile-metadata-str",
             "broader-range-open-ended-quantified-group-alternation-numbered-module-search-lower-bound-bc-str",
             "broader-range-open-ended-quantified-group-alternation-numbered-module-search-lower-bound-de-str",
@@ -1391,9 +1396,9 @@ OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "broader-range-open-ended-quantified-group-alternation-named-pattern-fullmatch-no-match-one-repetition-str",
             "broader-range-open-ended-quantified-group-alternation-named-pattern-fullmatch-no-match-zero-repetition-str",
         ),
-    },
-    "open-ended-quantified-group-alternation-conditional-workflows": {
-        "representative_case_ids": (
+    ),
+    "open-ended-quantified-group-alternation-conditional-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "open-ended-quantified-group-alternation-conditional-numbered-compile-metadata-str",
             "open-ended-quantified-group-alternation-conditional-numbered-module-search-absent-workflow-str",
             "open-ended-quantified-group-alternation-conditional-numbered-module-search-lower-bound-bc-workflow-str",
@@ -1408,9 +1413,9 @@ OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "open-ended-quantified-group-alternation-conditional-named-pattern-fullmatch-third-repetition-mixed-workflow-str",
             "open-ended-quantified-group-alternation-conditional-named-pattern-fullmatch-no-match-short-workflow-str",
         ),
-    },
-    "broader-range-open-ended-quantified-group-alternation-conditional-workflows": {
-        "representative_case_ids": (
+    ),
+    "broader-range-open-ended-quantified-group-alternation-conditional-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "broader-range-open-ended-quantified-group-alternation-conditional-numbered-compile-metadata-str",
             "broader-range-open-ended-quantified-group-alternation-conditional-numbered-module-search-absent-workflow-str",
             "broader-range-open-ended-quantified-group-alternation-conditional-numbered-module-search-lower-bound-bc-workflow-str",
@@ -1426,9 +1431,9 @@ OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "broader-range-open-ended-quantified-group-alternation-conditional-named-pattern-fullmatch-third-repetition-mixed-workflow-str",
             "broader-range-open-ended-quantified-group-alternation-conditional-named-pattern-fullmatch-no-match-short-workflow-str",
         ),
-    },
-    "open-ended-quantified-group-alternation-backtracking-heavy-workflows": {
-        "representative_case_ids": (
+    ),
+    "open-ended-quantified-group-alternation-backtracking-heavy-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "open-ended-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-str",
             "open-ended-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-short-branch-str",
             "open-ended-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-lower-bound-long-branch-str",
@@ -1442,9 +1447,9 @@ OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "open-ended-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-fourth-repetition-short-only-str",
             "open-ended-quantified-group-alternation-backtracking-heavy-named-module-search-no-match-invalid-tail-str",
         ),
-    },
-    "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows": {
-        "representative_case_ids": (
+    ),
+    "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
             "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-str",
             "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-short-branch-str",
             "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-long-branch-str",
@@ -1460,7 +1465,7 @@ OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
             "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-one-repetition-str",
             "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-module-search-no-match-invalid-tail-str",
         ),
-    },
+    ),
 }
 
 
@@ -1496,84 +1501,52 @@ class CorrectnessScorecardExpectation:
 
 
 @dataclass(frozen=True)
-class CorrectnessScorecardManifestExpectation:
-    representative_case_ids: tuple[str, ...]
-
-
-@dataclass(frozen=True)
 class CorrectnessScorecardSuiteDefinition:
     suite_id: str
     expectation_label: str
     expectation_table: dict[str, CorrectnessScorecardManifestExpectation]
 
 
-def _public_scorecard_manifest_expectation_table(
-    raw_table: dict[str, dict[str, tuple[str, ...]]],
-) -> dict[str, CorrectnessScorecardManifestExpectation]:
-    return {
-        manifest_id: CorrectnessScorecardManifestExpectation(
-            representative_case_ids=tuple(entry["representative_case_ids"])
-        )
-        for manifest_id, entry in raw_table.items()
-    }
-
-
 CORRECTNESS_SCORECARD_SUITE_REGISTRY = (
     CorrectnessScorecardSuiteDefinition(
         suite_id="combined",
         expectation_label="combined correctness",
-        expectation_table=_public_scorecard_manifest_expectation_table(
-            COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS
-        ),
+        expectation_table=COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
     ),
     CorrectnessScorecardSuiteDefinition(
         suite_id="branch-local-backreference",
         expectation_label="branch-local-backreference correctness scorecard",
-        expectation_table=_public_scorecard_manifest_expectation_table(
-            BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS
-        ),
+        expectation_table=BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS,
     ),
     CorrectnessScorecardSuiteDefinition(
         suite_id="conditional-replacement",
         expectation_label="conditional replacement correctness scorecard",
-        expectation_table=_public_scorecard_manifest_expectation_table(
-            CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS
-        ),
+        expectation_table=CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS,
     ),
     CorrectnessScorecardSuiteDefinition(
         suite_id="conditional-alternation",
         expectation_label="conditional-alternation correctness scorecard",
-        expectation_table=_public_scorecard_manifest_expectation_table(
-            CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS
-        ),
+        expectation_table=CONDITIONAL_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
     ),
     CorrectnessScorecardSuiteDefinition(
         suite_id="conditional-nested-quantified",
         expectation_label="conditional nested/quantified correctness scorecard",
-        expectation_table=_public_scorecard_manifest_expectation_table(
-            CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS
-        ),
+        expectation_table=CONDITIONAL_NESTED_QUANTIFIED_CORRECTNESS_SCORECARD_EXPECTATIONS,
     ),
     CorrectnessScorecardSuiteDefinition(
         suite_id="quantified-alternation",
         expectation_label="quantified-alternation correctness scorecard",
-        expectation_table=_public_scorecard_manifest_expectation_table(
-            QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS
-        ),
+        expectation_table=QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
     ),
     CorrectnessScorecardSuiteDefinition(
         suite_id="open-ended-quantified-group",
         expectation_label="open-ended quantified-group scorecard",
-        expectation_table=_public_scorecard_manifest_expectation_table(
-            OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS
-        ),
+        expectation_table=OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
     ),
     CorrectnessScorecardSuiteDefinition(
         suite_id="wider-ranged-repeat-quantified-group",
         expectation_label="wider-ranged-repeat quantified-group scorecard",
-        expectation_table=_public_scorecard_manifest_expectation_table(
-            WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS
-        ),
+        expectation_table=WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
     ),
     CorrectnessScorecardSuiteDefinition(
         suite_id=(
@@ -1584,7 +1557,7 @@ CORRECTNESS_SCORECARD_SUITE_REGISTRY = (
             "nested broader-range wider-ranged-repeat quantified-group "
             "alternation scorecard"
         ),
-        expectation_table=_public_scorecard_manifest_expectation_table(
+        expectation_table=(
             NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_SCORECARD_EXPECTATIONS
         ),
     ),
