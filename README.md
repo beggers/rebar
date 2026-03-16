@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 959 cases across 107 manifests, with 959 passes, 0 failures, and 0 published correctness gaps; the main benchmark report now covers 588 workloads with 570 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | The concrete surviving follow-on is `RBR-0459`, which should publish the exact parser-stress compile proxy already anchored by `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` on the shared `parser-matrix` correctness surface. |
-| Work queue | `0` ready, `0` in progress, `457` done, `1` blocked |
+| Delivery estimate | The published correctness slice now covers 960 cases across 107 manifests, with 959 passes, 0 failures, and 1 published correctness gap; the main benchmark report now covers 588 workloads with 570 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity. |
+| Current milestone | The concrete surviving follow-on is `RBR-0460`, which should convert the exact parser-stress compile proxy `(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\\d{2}))?(?:(?<=foo)bar)?(?P=lemma)` to real Rust-backed parity on the shared `parser-matrix` surface before Python-path benchmark catch-up revisits `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold`. |
+| Work queue | `0` ready, `0` in progress, `459` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `959` |
+| Published cases | `960` |
 | Passing in published slice | `959` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
+| Honest gaps (`unimplemented`) | `1` |
 | Covered manifests | `107` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 959 cases across 107 manifests, with 959 passes, 0 failures, and 0 published correctness gaps; the main benchmark report now covers 588 workloads with 570 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 960 cases across 107 manifests, with 959 passes, 0 failures, and 1 published correctness gap; the main benchmark report now covers 588 workloads with 570 real `rebar` timings through the source-tree shim, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `570` of `588` published workloa
 
 ### Immediate Next Steps
 
-- The concrete surviving follow-on is `RBR-0459`, which should publish the exact parser-stress compile proxy already anchored by `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold` on the shared `parser-matrix` correctness surface.
+- The concrete surviving follow-on is `RBR-0460`, which should convert the exact parser-stress compile proxy `(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\\d{2}))?(?:(?<=foo)bar)?(?P=lemma)` to real Rust-backed parity on the shared `parser-matrix` surface before Python-path benchmark catch-up revisits `compile-parser-stress-cold` and `regression-parser-atomic-lookbehind-cold`.
 
 ### Current Risks
 
@@ -57,7 +57,7 @@ _README speedup rollups stay omitted while only `570` of `588` published workloa
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published correctness slice now fully passes, but it is still narrow enough that it should be read as evidence of steady parity work, not evidence of broad drop-in coverage.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published correctness slice is now 959/960, with one explicit `unimplemented` parser-stress compile gap, so it should be read as evidence of steady parity work rather than broad drop-in coverage.
 
 The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice: across eight published parser workloads it is about 2x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
