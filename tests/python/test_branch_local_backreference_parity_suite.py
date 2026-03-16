@@ -23,6 +23,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
+    load_published_fixture_cases,
     load_whole_manifest_fixture_bundles,
     published_fixture_paths_from_bundles,
     str_case_pattern,
@@ -602,20 +603,10 @@ SUPPLEMENTAL_MISS_CASES = (
         text="accccccd",
     ),
 )
-
-def _load_match_group_access_cases() -> tuple[FixtureCase, ...]:
-    missing_case_ids = tuple(
-        case_id for case_id in MATCH_GROUP_ACCESS_CASE_IDS if case_id not in CASES_BY_ID
-    )
-    if missing_case_ids:
-        raise ValueError(
-            "branch-local match-group-access coverage is missing expected fixture rows: "
-            f"{missing_case_ids}"
-        )
-    return tuple(CASES_BY_ID[case_id] for case_id in MATCH_GROUP_ACCESS_CASE_IDS)
-
-
-MATCH_GROUP_ACCESS_CASES = _load_match_group_access_cases()
+MATCH_GROUP_ACCESS_CASES = load_published_fixture_cases(
+    PUBLISHED_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATHS,
+    MATCH_GROUP_ACCESS_CASE_IDS,
+)
 
 
 def _bounded_pattern(case: BoundedPatternCase) -> str:

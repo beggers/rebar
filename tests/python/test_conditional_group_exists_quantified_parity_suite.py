@@ -18,7 +18,9 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
+    load_published_fixture_cases,
     load_whole_manifest_fixture_bundles,
+    published_fixture_paths_from_bundles,
     str_case_pattern,
 )
 QUANTIFIED_ALTERNATION_NUMBERED_PATTERN = r"a(b)?c(?(1)(de|df)|(eg|eh)){2}"
@@ -248,21 +250,10 @@ MATCH_API_CASE_IDS = (
     "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
     "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
 )
-
-
-def _load_match_api_cases() -> tuple[FixtureCase, ...]:
-    case_by_id = {case.case_id: case for case in PUBLISHED_CASES}
-    missing_case_ids = tuple(case_id for case_id in MATCH_API_CASE_IDS if case_id not in case_by_id)
-    if missing_case_ids:
-        raise ValueError(
-            "quantified conditional match-api coverage is missing expected fixture rows: "
-            f"{missing_case_ids}"
-        )
-
-    return tuple(case_by_id[case_id] for case_id in MATCH_API_CASE_IDS)
-
-
-MATCH_API_CASES = _load_match_api_cases()
+MATCH_API_CASES = load_published_fixture_cases(
+    published_fixture_paths_from_bundles(FIXTURE_BUNDLES),
+    MATCH_API_CASE_IDS,
+)
 
 # Preserve the extra module.fullmatch mixed-iteration checks that only lived in
 # the superseded singleton files and were never promoted into scorecard fixtures.
