@@ -1,6 +1,6 @@
 # RBR-0434: Centralize selector-backed parity fixture selection
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -48,3 +48,8 @@ Created: 2026-03-16
 - After `RBR-0427` and `RBR-0432`, the remaining selector-backed published-fixture loops in `tests/python/` are concentrated in:
   - `tests/python/test_callable_replacement_parity_suite.py`; and
   - `tests/python/test_grouped_capture_parity_suite.py`.
+
+## Completion
+- 2026-03-16: Added shared selector-backed fixture helpers to `tests/python/fixture_parity_support.py` for ordered whole-manifest bundle loading, manifest-id lookup with clear missing/duplicate errors, and ordered cross-manifest case selection with clear missing/duplicate case-id errors.
+- 2026-03-16: Swapped `tests/python/test_callable_replacement_parity_suite.py` over to `load_published_fixture_bundles(...)` and `published_fixture_bundle_by_manifest_id(...)`, and swapped `tests/python/test_grouped_capture_parity_suite.py` over to `load_published_fixture_cases(...)`, removing the last suite-local selector-backed manifest loops while preserving the existing case membership and parity assertions.
+- 2026-03-16: Added focused helper-contract coverage in `tests/python/test_fixture_parity_support_contract.py`, including duplicate-case failure coverage, verified `rg -n 'load_fixture_manifest|def _fixture_bundle_by_manifest_id|def _load_match_group_access_cases' tests/python/test_callable_replacement_parity_suite.py tests/python/test_grouped_capture_parity_suite.py` returned no matches, and `PYTHONPATH=python .venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_callable_replacement_parity_suite.py tests/python/test_grouped_capture_parity_suite.py` passed (`1388 passed in 1.04s`).

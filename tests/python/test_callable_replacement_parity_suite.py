@@ -11,7 +11,6 @@ from rebar_harness.correctness import (
     FixtureCase,
     RebarAdapter,
     evaluate_case,
-    load_fixture_manifest,
     normalize_exception,
     select_correctness_fixture_paths,
 )
@@ -21,6 +20,8 @@ from tests.python.fixture_parity_support import (
     assert_match_parity,
     bundle_patterns,
     load_fixture_bundle,
+    load_published_fixture_bundles,
+    published_fixture_bundle_by_manifest_id,
     published_fixture_paths_from_bundles,
     raw_fixture_cases_by_id,
     str_case_pattern,
@@ -544,15 +545,6 @@ def _pending_rebar_compile_patterns() -> frozenset[str]:
         )
     )
 
-
-def _fixture_bundle_by_manifest_id(manifest_id: str) -> FixtureBundle:
-    bundles = [
-        bundle for bundle in FIXTURE_BUNDLES if bundle.manifest.manifest_id == manifest_id
-    ]
-    assert len(bundles) == 1
-    return bundles[0]
-
-
 COLLECTION_REPLACEMENT_BUNDLE = load_fixture_bundle(
     COLLECTION_REPLACEMENT_FIXTURE_NAME,
     expected_manifest_id="collection-replacement-workflows",
@@ -562,22 +554,7 @@ COLLECTION_REPLACEMENT_BUNDLE = load_fixture_bundle(
     expected_operation_helper_counts=Counter({("module_call", "sub"): 1}),
     expected_text_models=frozenset({"str"}),
 )
-_fixture_bundles: list[FixtureBundle] = []
-for path in CALLABLE_FIXTURE_PATHS:
-    manifest, cases = load_fixture_manifest(path)
-    _fixture_bundles.append(
-        load_fixture_bundle(
-            path.name,
-            expected_manifest_id=manifest.manifest_id,
-            expected_patterns=frozenset(str_case_pattern(case) for case in cases),
-            expected_operation_helper_counts=Counter(
-                (case.operation, case.helper) for case in cases
-            ),
-            expected_text_models=frozenset({"str"}),
-        )
-    )
-FIXTURE_BUNDLES = tuple(_fixture_bundles)
-del _fixture_bundles
+FIXTURE_BUNDLES = load_published_fixture_bundles(CALLABLE_FIXTURE_PATHS)
 
 COMPILE_PATTERNS = tuple(
     sorted(
@@ -832,7 +809,8 @@ def test_literal_callable_case_stays_aligned_with_published_collection_fixture()
 
 
 def test_quantified_nested_group_alternation_callable_cases_stay_aligned_with_published_fixture() -> None:
-    bundle = _fixture_bundle_by_manifest_id(
+    bundle = published_fixture_bundle_by_manifest_id(
+        FIXTURE_BUNDLES,
         QUANTIFIED_NESTED_GROUP_ALTERNATION_CALLABLE_MANIFEST_ID
     )
 
@@ -853,7 +831,10 @@ def test_quantified_nested_group_alternation_callable_cases_stay_aligned_with_pu
 
 def test_conditional_group_exists_callable_cases_stay_aligned_with_published_fixture(
 ) -> None:
-    bundle = _fixture_bundle_by_manifest_id(CONDITIONAL_GROUP_EXISTS_CALLABLE_MANIFEST_ID)
+    bundle = published_fixture_bundle_by_manifest_id(
+        FIXTURE_BUNDLES,
+        CONDITIONAL_GROUP_EXISTS_CALLABLE_MANIFEST_ID,
+    )
 
     assert bundle.manifest.manifest_id == CONDITIONAL_GROUP_EXISTS_CALLABLE_MANIFEST_ID
     assert len(bundle.cases) == len(CONDITIONAL_GROUP_EXISTS_CALLABLE_EXPECTED_CASE_IDS)
@@ -870,7 +851,8 @@ def test_conditional_group_exists_callable_cases_stay_aligned_with_published_fix
 
 def test_nested_broader_range_open_ended_callable_cases_stay_aligned_with_published_fixture(
 ) -> None:
-    bundle = _fixture_bundle_by_manifest_id(
+    bundle = published_fixture_bundle_by_manifest_id(
+        FIXTURE_BUNDLES,
         NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_MANIFEST_ID
     )
 
@@ -893,7 +875,8 @@ def test_nested_broader_range_open_ended_callable_cases_stay_aligned_with_publis
 
 def test_nested_broader_range_open_ended_conditional_callable_cases_stay_aligned_with_published_fixture(
 ) -> None:
-    bundle = _fixture_bundle_by_manifest_id(
+    bundle = published_fixture_bundle_by_manifest_id(
+        FIXTURE_BUNDLES,
         NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_CALLABLE_MANIFEST_ID
     )
 

@@ -9,7 +9,6 @@ import pytest
 from rebar_harness.correctness import (
     FixtureCase,
     GROUPED_CAPTURE_FIXTURE_SELECTOR,
-    load_fixture_manifest,
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
@@ -22,6 +21,7 @@ from tests.python.fixture_parity_support import (
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
     load_fixture_bundle,
+    load_published_fixture_cases,
     published_fixture_paths_from_bundles,
     str_case_pattern,
 )
@@ -561,31 +561,10 @@ PATTERN_BOUNDS_NO_MATCH_CASES = (
         bounds=(-100, 999),
     ),
 )
-
-
-def _load_match_group_access_cases() -> tuple[FixtureCase, ...]:
-    expected_case_ids = frozenset(MATCH_GROUP_ACCESS_CASE_IDS)
-    case_by_id: dict[str, FixtureCase] = {}
-
-    for path in PUBLISHED_GROUPED_CAPTURE_FIXTURE_PATHS:
-        _, cases = load_fixture_manifest(path)
-        for case in cases:
-            if case.case_id in expected_case_ids:
-                case_by_id.setdefault(case.case_id, case)
-
-    missing_case_ids = tuple(
-        case_id for case_id in MATCH_GROUP_ACCESS_CASE_IDS if case_id not in case_by_id
-    )
-    if missing_case_ids:
-        raise ValueError(
-            "grouped-capture match-group-access coverage is missing expected fixture rows: "
-            f"{missing_case_ids}"
-        )
-
-    return tuple(case_by_id[case_id] for case_id in MATCH_GROUP_ACCESS_CASE_IDS)
-
-
-MATCH_GROUP_ACCESS_CASES = _load_match_group_access_cases()
+MATCH_GROUP_ACCESS_CASES = load_published_fixture_cases(
+    PUBLISHED_GROUPED_CAPTURE_FIXTURE_PATHS,
+    MATCH_GROUP_ACCESS_CASE_IDS,
+)
 
 
 def _module_call_with_text(regex_api: object, case: FixtureCase, text: str) -> object:

@@ -32,6 +32,27 @@ class FixtureBundle:
     expected_text_models: frozenset[str] | None = None
 
 
+def _fixture_bundle(
+    *,
+    manifest: FixtureManifest,
+    cases: tuple[FixtureCase, ...],
+    expected_manifest_id: str,
+    expected_patterns: frozenset[str | bytes],
+    expected_operation_helper_counts: Counter[tuple[str, str | None]],
+    expected_case_ids: frozenset[str] | None = None,
+    expected_text_models: frozenset[str] | None = None,
+) -> FixtureBundle:
+    return FixtureBundle(
+        manifest=manifest,
+        cases=cases,
+        expected_manifest_id=expected_manifest_id,
+        expected_patterns=expected_patterns,
+        expected_operation_helper_counts=expected_operation_helper_counts,
+        expected_case_ids=expected_case_ids,
+        expected_text_models=expected_text_models,
+    )
+
+
 def load_fixture_bundle(
     fixture_name: str,
     *,
@@ -57,17 +78,105 @@ def load_fixture_bundle(
             )
         bundle_cases = tuple(case_by_id[case_id] for case_id in selected_case_ids)
 
-    return FixtureBundle(
+    bundle_text_models = expected_text_models
+    if bundle_text_models is None and selected_case_ids is None:
+        bundle_text_models = frozenset({"str"})
+
+    return _fixture_bundle(
         manifest=manifest,
         cases=bundle_cases,
         expected_manifest_id=expected_manifest_id,
         expected_patterns=expected_patterns,
         expected_operation_helper_counts=expected_operation_helper_counts,
         expected_case_ids=expected_case_ids,
-        expected_text_models=(
-            frozenset({"str"}) if selected_case_ids is None else expected_text_models
-        ),
+        expected_text_models=bundle_text_models,
     )
+
+
+def load_published_fixture_bundles(
+    fixture_paths: Iterable[pathlib.Path],
+) -> tuple[FixtureBundle, ...]:
+    bundles: list[FixtureBundle] = []
+
+    for path in fixture_paths:
+        manifest, cases = load_fixture_manifest(path)
+        loaded_cases = tuple(cases)
+        bundles.append(
+            _fixture_bundle(
+                manifest=manifest,
+                cases=loaded_cases,
+                expected_manifest_id=manifest.manifest_id,
+                expected_patterns=frozenset(
+                    case_pattern(case) for case in loaded_cases
+                ),
+                expected_operation_helper_counts=Counter(
+                    (case.operation, case.helper) for case in loaded_cases
+                ),
+                expected_text_models=frozenset(
+                    case.text_model for case in loaded_cases
+                ),
+            )
+        )
+
+    return tuple(bundles)
+
+
+def published_fixture_bundle_by_manifest_id(
+    bundles: Iterable[FixtureBundle],
+    manifest_id: str,
+) -> FixtureBundle:
+    loaded_bundles = tuple(bundles)
+    matching_bundles = tuple(
+        bundle for bundle in loaded_bundles if bundle.manifest.manifest_id == manifest_id
+    )
+    if not matching_bundles:
+        raise ValueError(
+            f"published fixture bundles do not contain manifest_id {manifest_id!r}"
+        )
+    if len(matching_bundles) > 1:
+        raise ValueError(
+            f"published fixture bundles contain duplicate manifest_id {manifest_id!r}"
+        )
+    return matching_bundles[0]
+
+
+def load_published_fixture_cases(
+    fixture_paths: Iterable[pathlib.Path],
+    case_ids: Iterable[str],
+) -> tuple[FixtureCase, ...]:
+    requested_case_ids = tuple(case_ids)
+    selected_case_ids = frozenset(requested_case_ids)
+    case_by_id: dict[str, FixtureCase] = {}
+    duplicate_case_ids: set[str] = set()
+
+    for bundle in load_published_fixture_bundles(fixture_paths):
+        for case in bundle.cases:
+            if case.case_id not in selected_case_ids:
+                continue
+            if case.case_id in case_by_id:
+                duplicate_case_ids.add(case.case_id)
+                continue
+            case_by_id[case.case_id] = case
+
+    ordered_case_ids = tuple(dict.fromkeys(requested_case_ids))
+    ordered_duplicate_case_ids = tuple(
+        case_id for case_id in ordered_case_ids if case_id in duplicate_case_ids
+    )
+    if ordered_duplicate_case_ids:
+        raise ValueError(
+            "selected published fixtures contain duplicate case ids: "
+            f"{ordered_duplicate_case_ids}"
+        )
+
+    missing_case_ids = tuple(
+        case_id for case_id in ordered_case_ids if case_id not in case_by_id
+    )
+    if missing_case_ids:
+        raise ValueError(
+            f"selected published fixtures are missing case ids: {missing_case_ids}"
+        )
+
+    return tuple(case_by_id[case_id] for case_id in requested_case_ids)
 
 
 def assert_fixture_bundle_contract(

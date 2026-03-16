@@ -38,6 +38,9 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     load_fixture_bundle,
+    load_published_fixture_bundles,
+    load_published_fixture_cases,
+    published_fixture_bundle_by_manifest_id,
     published_fixture_paths_from_bundles,
     raw_fixture_cases_by_id,
     str_case_pattern,
@@ -316,6 +319,99 @@ def test_case_pattern_helpers_extract_str_and_bytes_patterns_from_published_fixt
     assert case_pattern(pattern_case) == r"(?P<word>abc)"
     assert str_case_pattern(pattern_case) == r"(?P<word>abc)"
     assert case_pattern(bytes_case) == b"abc"
+
+
+def test_published_fixture_bundle_loading_preserves_selector_path_order() -> None:
+    fixture_paths = tuple(
+        reversed(select_correctness_fixture_paths(CALLABLE_REPLACEMENT_FIXTURE_SELECTOR)[:2])
+    )
+
+    bundles = load_published_fixture_bundles(fixture_paths)
+
+    assert tuple(bundle.manifest.path for bundle in bundles) == fixture_paths
+    for bundle in bundles:
+        assert bundle.expected_case_ids is None
+        assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
+
+
+def test_published_fixture_bundle_lookup_by_manifest_id_supports_success_and_clear_failures(
+) -> None:
+    bundles = load_published_fixture_bundles(
+        select_correctness_fixture_paths(CALLABLE_REPLACEMENT_FIXTURE_SELECTOR)[:2]
+    )
+    manifest_id = bundles[0].manifest.manifest_id
+
+    assert published_fixture_bundle_by_manifest_id(bundles, manifest_id) is bundles[0]
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "published fixture bundles do not contain manifest_id 'missing-manifest-id'"
+        ),
+    ):
+        published_fixture_bundle_by_manifest_id(bundles, "missing-manifest-id")
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            f"published fixture bundles contain duplicate manifest_id {manifest_id!r}"
+        ),
+    ):
+        published_fixture_bundle_by_manifest_id((bundles[0], bundles[0]), manifest_id)
+
+
+def test_published_fixture_case_selection_preserves_requested_order_across_manifests(
+) -> None:
+    selected_case_ids = (
+        "named-group-pattern-search-metadata-str",
+        "grouped-module-fullmatch-two-capture-gap-str",
+        "named-group-module-search-metadata-str",
+    )
+
+    cases = load_published_fixture_cases(
+        select_correctness_fixture_paths(GROUPED_CAPTURE_FIXTURE_SELECTOR),
+        selected_case_ids,
+    )
+
+    assert tuple(case.case_id for case in cases) == selected_case_ids
+    assert tuple(case.manifest_id for case in cases) == (
+        "named-group-workflows",
+        "grouped-match-workflows",
+        "named-group-workflows",
+    )
+
+
+def test_published_fixture_case_selection_rejects_missing_case_ids() -> None:
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "selected published fixtures are missing case ids: ('missing-case-id',)"
+        ),
+    ):
+        load_published_fixture_cases(
+            select_correctness_fixture_paths(GROUPED_CAPTURE_FIXTURE_SELECTOR),
+            (
+                "named-group-pattern-search-metadata-str",
+                "missing-case-id",
+            ),
+        )
+
+
+def test_published_fixture_case_selection_rejects_duplicate_case_ids() -> None:
+    duplicate_case_id = "grouped-module-fullmatch-two-capture-gap-str"
+    grouped_match_fixture_path = FIXTURES_DIR / "grouped_match_workflows.py"
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "selected published fixtures contain duplicate case ids: "
+            f"({duplicate_case_id!r},)"
+        ),
+    ):
+        load_published_fixture_cases(
+            (grouped_match_fixture_path, grouped_match_fixture_path),
+            (duplicate_case_id,),
+        )
 
 
 def test_whole_manifest_bundle_contract_supports_exact_case_id_validation() -> None:
