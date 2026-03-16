@@ -161,6 +161,14 @@ class SourceTreeCombinedManifestShapeExpectation:
 
 
 @dataclass(frozen=True, slots=True)
+class SourceTreeCombinedManifestExpectationDefinition:
+    known_gap_workload_ids: tuple[str, ...] | None = None
+    representative_measured_workload_ids: tuple[str, ...] | None = None
+    representative_known_gap_workload_ids: tuple[str, ...] | None = None
+    shape_expectation: SourceTreeCombinedManifestShapeExpectation | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class SourceTreeCombinedSliceExpectation:
     manifest_id: str
     slice_id: str
@@ -269,10 +277,61 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, _SourceTreeScorecardDefinition] = 
     ),
 }
 
-SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
-    "compile-matrix": {},
-    "module-boundary": {
-        "representative_measured_workload_ids": (
+def _combined_manifest_definition(
+    *,
+    known_gap_workload_ids: tuple[str, ...] | None = None,
+    representative_measured_workload_ids: tuple[str, ...] | None = None,
+    representative_known_gap_workload_ids: tuple[str, ...] | None = None,
+    shape_expectation: SourceTreeCombinedManifestShapeExpectation | None = None,
+) -> SourceTreeCombinedManifestExpectationDefinition:
+    return SourceTreeCombinedManifestExpectationDefinition(
+        known_gap_workload_ids=known_gap_workload_ids,
+        representative_measured_workload_ids=representative_measured_workload_ids,
+        representative_known_gap_workload_ids=representative_known_gap_workload_ids,
+        shape_expectation=shape_expectation,
+    )
+
+
+def _combined_manifest_shape(
+    *,
+    representative_measured_workload_ids: tuple[str, ...],
+    pattern_groups: tuple[SourceTreeCombinedPatternGroupExpectation, ...] = (),
+) -> SourceTreeCombinedManifestShapeExpectation:
+    return SourceTreeCombinedManifestShapeExpectation(
+        representative_measured_workload_ids=representative_measured_workload_ids,
+        pattern_groups=pattern_groups,
+    )
+
+
+def _combined_pattern_group(
+    *,
+    slice_id: str,
+    patterns: tuple[str, ...],
+    minimum_rows: int,
+    required_operations: tuple[str, ...],
+    required_categories: tuple[str, ...],
+    search_haystacks: tuple[str, ...] = (),
+    search_haystack_substrings: tuple[str, ...] = (),
+    pattern_haystacks: tuple[str, ...] = (),
+) -> SourceTreeCombinedPatternGroupExpectation:
+    return SourceTreeCombinedPatternGroupExpectation(
+        slice_id=slice_id,
+        patterns=patterns,
+        minimum_rows=minimum_rows,
+        required_operations=required_operations,
+        required_categories=required_categories,
+        search_haystacks=search_haystacks,
+        search_haystack_substrings=search_haystack_substrings,
+        pattern_haystacks=pattern_haystacks,
+    )
+
+
+SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS: dict[
+    str, SourceTreeCombinedManifestExpectationDefinition
+] = {
+    "compile-matrix": _combined_manifest_definition(),
+    "module-boundary": _combined_manifest_definition(
+        representative_measured_workload_ids=(
             "module-compile-literal-cold",
             "module-compile-literal-warm",
             "module-compile-literal-purged",
@@ -281,92 +340,92 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
             "module-search-literal-warm-hit",
             "module-search-bytes-cold-miss",
         ),
-    },
-    "pattern-boundary": {
-        "shape_expectation": {
-            "representative_measured_workload_ids": (
+    ),
+    "pattern-boundary": _combined_manifest_definition(
+        shape_expectation=_combined_manifest_shape(
+            representative_measured_workload_ids=(
                 "pattern-search-literal-warm-hit",
                 "pattern-fullmatch-bytes-purged-hit",
             ),
-        },
-    },
-    "collection-replacement-boundary": {},
-    "literal-flag-boundary": {},
-    "grouped-named-boundary": {
-        "representative_measured_workload_ids": (
+        ),
+    ),
+    "collection-replacement-boundary": _combined_manifest_definition(),
+    "literal-flag-boundary": _combined_manifest_definition(),
+    "grouped-named-boundary": _combined_manifest_definition(
+        representative_measured_workload_ids=(
             "module-search-grouped-segment-cold-gap",
             "pattern-search-grouped-segment-warm-gap",
         ),
-    },
-    "numbered-backreference-boundary": {
-        "known_gap_workload_ids": (
+    ),
+    "numbered-backreference-boundary": _combined_manifest_definition(
+        known_gap_workload_ids=(
             "module-search-numbered-backreference-segment-cold-gap",
             "pattern-search-numbered-backreference-prefix-purged-gap",
         ),
-        "representative_known_gap_workload_ids": (
+        representative_known_gap_workload_ids=(
             "module-search-numbered-backreference-segment-cold-gap",
         ),
-    },
-    "grouped-segment-boundary": {},
-    "literal-alternation-boundary": {},
-    "grouped-alternation-boundary": {
-        "known_gap_workload_ids": (
+    ),
+    "grouped-segment-boundary": _combined_manifest_definition(),
+    "literal-alternation-boundary": _combined_manifest_definition(),
+    "grouped-alternation-boundary": _combined_manifest_definition(
+        known_gap_workload_ids=(
             "module-sub-template-nested-grouped-alternation-warm-gap",
             "pattern-subn-template-named-nested-grouped-alternation-purged-gap",
         ),
-        "representative_known_gap_workload_ids": (
+        representative_known_gap_workload_ids=(
             "module-sub-template-nested-grouped-alternation-warm-gap",
         ),
-    },
-    "grouped-alternation-replacement-boundary": {
-        "known_gap_workload_ids": (
+    ),
+    "grouped-alternation-replacement-boundary": _combined_manifest_definition(
+        known_gap_workload_ids=(
             "module-sub-template-nested-grouped-alternation-cold-gap",
             "pattern-subn-template-named-nested-grouped-alternation-replacement-purged-gap",
         ),
-        "representative_known_gap_workload_ids": (
+        representative_known_gap_workload_ids=(
             "module-sub-template-nested-grouped-alternation-cold-gap",
         ),
-    },
-    "grouped-alternation-callable-replacement-boundary": {},
-    "nested-group-boundary": {
-        "known_gap_workload_ids": (
+    ),
+    "grouped-alternation-callable-replacement-boundary": _combined_manifest_definition(),
+    "nested-group-boundary": _combined_manifest_definition(
+        known_gap_workload_ids=(
             "module-search-triple-nested-group-cold-gap",
             "pattern-fullmatch-named-quantified-nested-group-purged-gap",
         ),
-        "representative_known_gap_workload_ids": (
+        representative_known_gap_workload_ids=(
             "module-search-triple-nested-group-cold-gap",
         ),
-    },
-    "nested-group-alternation-boundary": {},
-    "nested-group-replacement-boundary": {},
-    "nested-group-callable-replacement-boundary": {},
-    "branch-local-backreference-boundary": {},
-    "optional-group-boundary": {
-        "known_gap_workload_ids": (
+    ),
+    "nested-group-alternation-boundary": _combined_manifest_definition(),
+    "nested-group-replacement-boundary": _combined_manifest_definition(),
+    "nested-group-callable-replacement-boundary": _combined_manifest_definition(),
+    "branch-local-backreference-boundary": _combined_manifest_definition(),
+    "optional-group-boundary": _combined_manifest_definition(
+        known_gap_workload_ids=(
             "module-search-numbered-optional-group-conditional-cold-gap",
         ),
-        "representative_known_gap_workload_ids": (
+        representative_known_gap_workload_ids=(
             "module-search-numbered-optional-group-conditional-cold-gap",
         ),
-    },
-    "exact-repeat-quantified-group-boundary": {
-        "known_gap_workload_ids": (
+    ),
+    "exact-repeat-quantified-group-boundary": _combined_manifest_definition(
+        known_gap_workload_ids=(
             "module-search-numbered-broader-ranged-repeat-group-cold-gap",
         ),
-        "representative_known_gap_workload_ids": (
+        representative_known_gap_workload_ids=(
             "module-search-numbered-broader-ranged-repeat-group-cold-gap",
         ),
-    },
-    "ranged-repeat-quantified-group-boundary": {
-        "known_gap_workload_ids": (
+    ),
+    "ranged-repeat-quantified-group-boundary": _combined_manifest_definition(
+        known_gap_workload_ids=(
             "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
         ),
-        "representative_known_gap_workload_ids": (
+        representative_known_gap_workload_ids=(
             "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
         ),
-    },
-    "wider-ranged-repeat-quantified-group-boundary": {
-        "representative_measured_workload_ids": (
+    ),
+    "wider-ranged-repeat-quantified-group-boundary": _combined_manifest_definition(
+        representative_measured_workload_ids=(
             "module-search-numbered-wider-ranged-repeat-group-broader-range-cold-gap",
             "pattern-fullmatch-numbered-wider-ranged-repeat-group-broader-range-third-repetition-mixed-purged-str",
             "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-upper-bound-mixed-purged-str",
@@ -383,57 +442,56 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
             "pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-gap",
             "pattern-fullmatch-named-wider-ranged-repeat-group-open-ended-fourth-repetition-de-purged-str",
         ),
-        "shape_expectation": {
-            "representative_measured_workload_ids": (
+        shape_expectation=_combined_manifest_shape(
+            representative_measured_workload_ids=(
                 "module-search-numbered-wider-ranged-repeat-group-broader-range-cold-gap",
                 "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-upper-bound-mixed-purged-str",
                 "pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-gap",
                 "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-conditional-absent-warm-str",
                 "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-fourth-repetition-mixed-purged-str",
             ),
-            "pattern_groups": (
-                {
-                    "slice_id": "nested-broader-range-grouped-alternation",
-                    "patterns": (
+            pattern_groups=(
+                _combined_pattern_group(
+                    slice_id="nested-broader-range-grouped-alternation",
+                    patterns=(
                         "a((bc|de){1,4})d",
                         "a(?P<outer>(bc|de){1,4})d",
                     ),
-                    "minimum_rows": 6,
-                    "required_operations": (
+                    minimum_rows=6,
+                    required_operations=(
                         "module.compile",
                         "module.search",
                         "pattern.fullmatch",
                     ),
-                    "required_categories": (
+                    required_categories=(
                         "nested-group",
                         "alternation",
                         "ranged-repeat",
                         "broader-range",
                         "counted-repeat",
                     ),
-                    "search_haystacks": (),
-                    "search_haystack_substrings": (
+                    search_haystack_substrings=(
                         "abcd",
                         "aded",
                     ),
-                    "pattern_haystacks": (
+                    pattern_haystacks=(
                         "abcbcded",
                         "adedededed",
                     ),
-                },
-                {
-                    "slice_id": "nested-broader-range-grouped-conditional",
-                    "patterns": (
+                ),
+                _combined_pattern_group(
+                    slice_id="nested-broader-range-grouped-conditional",
+                    patterns=(
                         "a(((bc|de){1,4})d)?(?(1)e|f)",
                         "a(?P<outer>((bc|de){1,4})d)?(?(outer)e|f)",
                     ),
-                    "minimum_rows": 7,
-                    "required_operations": (
+                    minimum_rows=7,
+                    required_operations=(
                         "module.compile",
                         "module.search",
                         "pattern.fullmatch",
                     ),
-                    "required_categories": (
+                    required_categories=(
                         "nested-group",
                         "alternation",
                         "conditional",
@@ -442,30 +500,29 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
                         "broader-range",
                         "counted-repeat",
                     ),
-                    "search_haystacks": (
+                    search_haystacks=(
                         "zzafzz",
                         "zzabcdezz",
                         "zzadedezz",
                     ),
-                    "search_haystack_substrings": (),
-                    "pattern_haystacks": (
+                    pattern_haystacks=(
                         "abcbcdede",
                         "adedededede",
                     ),
-                },
-                {
-                    "slice_id": "nested-broader-range-grouped-backtracking-heavy",
-                    "patterns": (
+                ),
+                _combined_pattern_group(
+                    slice_id="nested-broader-range-grouped-backtracking-heavy",
+                    patterns=(
                         "a(((bc|b)c){1,4})d",
                         "a(?P<outer>((bc|b)c){1,4})d",
                     ),
-                    "minimum_rows": 7,
-                    "required_operations": (
+                    minimum_rows=7,
+                    required_operations=(
                         "module.compile",
                         "module.search",
                         "pattern.fullmatch",
                     ),
-                    "required_categories": (
+                    required_categories=(
                         "grouped",
                         "nested-group",
                         "alternation",
@@ -474,33 +531,32 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
                         "broader-range",
                         "counted-repeat",
                     ),
-                    "search_haystacks": (
+                    search_haystacks=(
                         "zzabcdzz",
                         "zzabccdzz",
                     ),
-                    "search_haystack_substrings": (),
-                    "pattern_haystacks": (
+                    pattern_haystacks=(
                         "abcbccd",
                         "abccbcd",
                         "abcbccbccbcd",
                     ),
-                },
+                ),
             ),
-        },
-    },
-    "open-ended-quantified-group-boundary": {},
-    "quantified-alternation-boundary": {},
-    "optional-group-alternation-boundary": {},
-    "conditional-group-exists-boundary": {},
-    "conditional-group-exists-no-else-boundary": {},
-    "conditional-group-exists-empty-else-boundary": {},
-    "conditional-group-exists-empty-yes-else-boundary": {},
-    "conditional-group-exists-fully-empty-boundary": {},
-    "regression-matrix": {
-        "representative_measured_workload_ids": (
+        ),
+    ),
+    "open-ended-quantified-group-boundary": _combined_manifest_definition(),
+    "quantified-alternation-boundary": _combined_manifest_definition(),
+    "optional-group-alternation-boundary": _combined_manifest_definition(),
+    "conditional-group-exists-boundary": _combined_manifest_definition(),
+    "conditional-group-exists-no-else-boundary": _combined_manifest_definition(),
+    "conditional-group-exists-empty-else-boundary": _combined_manifest_definition(),
+    "conditional-group-exists-empty-yes-else-boundary": _combined_manifest_definition(),
+    "conditional-group-exists-fully-empty-boundary": _combined_manifest_definition(),
+    "regression-matrix": _combined_manifest_definition(
+        representative_measured_workload_ids=(
             "regression-parser-bytes-backreference-purged",
         ),
-    },
+    ),
 }
 
 
@@ -1476,16 +1532,13 @@ def _append_unique_workload_ids(
             representative_ids.append(normalized_workload_id)
 
 
-def _source_tree_manifest_expectation_workload_ids(
-    raw_expectation: dict[str, Any],
-    field_name: str,
+def _filter_manifest_workload_ids(
+    workload_ids: tuple[str, ...] | None,
     *,
     selected_workload_ids: Iterable[str] | None = None,
 ) -> tuple[str, ...]:
-    workload_ids = tuple(
-        str(workload_id)
-        for workload_id in raw_expectation.get(field_name, ())
-    )
+    if workload_ids is None:
+        return ()
     if selected_workload_ids is None or not workload_ids:
         return workload_ids
 
@@ -1508,19 +1561,13 @@ def source_tree_combined_manifest_representative_measured_workload_ids(
             f"unknown source-tree combined manifest expectation {manifest_id!r}"
         )
 
-    explicit_workload_ids = tuple(
-        str(workload_id)
-        for workload_id in manifest_expectation.get(
-            "representative_measured_workload_ids",
-            (),
-        )
-    )
-    if explicit_workload_ids:
+    explicit_workload_ids = manifest_expectation.representative_measured_workload_ids
+    if explicit_workload_ids is not None:
         return explicit_workload_ids
 
     representative_ids: list[str] = []
-    if manifest_expectation.get("shape_expectation") is not None:
-        shape_expectation = source_tree_combined_manifest_shape_expectation(manifest_id)
+    shape_expectation = manifest_expectation.shape_expectation
+    if shape_expectation is not None:
         _append_unique_workload_ids(
             representative_ids,
             shape_expectation.representative_measured_workload_ids,
@@ -1536,39 +1583,36 @@ def source_tree_combined_manifest_representative_measured_workload_ids(
 
 
 def _source_tree_manifest_known_gap_count(
-    raw_expectation: dict[str, Any],
+    manifest_expectation: SourceTreeCombinedManifestExpectationDefinition,
     *,
     selected_workload_ids: Iterable[str] | None = None,
 ) -> int:
     return len(
-        _source_tree_manifest_expectation_workload_ids(
-            raw_expectation,
-            "known_gap_workload_ids",
+        _filter_manifest_workload_ids(
+            manifest_expectation.known_gap_workload_ids,
             selected_workload_ids=selected_workload_ids,
         )
     )
 
 
 def _source_tree_manifest_representative_measured_workload_ids(
-    raw_expectation: dict[str, Any],
+    manifest_expectation: SourceTreeCombinedManifestExpectationDefinition,
     *,
     selected_workload_ids: Iterable[str] | None = None,
 ) -> tuple[str, ...]:
-    return _source_tree_manifest_expectation_workload_ids(
-        raw_expectation,
-        "representative_measured_workload_ids",
+    return _filter_manifest_workload_ids(
+        manifest_expectation.representative_measured_workload_ids,
         selected_workload_ids=selected_workload_ids,
     )
 
 
 def _source_tree_manifest_representative_known_gap_workload_ids(
-    raw_expectation: dict[str, Any],
+    manifest_expectation: SourceTreeCombinedManifestExpectationDefinition,
     *,
     selected_workload_ids: Iterable[str] | None = None,
 ) -> tuple[str, ...]:
-    return _source_tree_manifest_expectation_workload_ids(
-        raw_expectation,
-        "representative_known_gap_workload_ids",
+    return _filter_manifest_workload_ids(
+        manifest_expectation.representative_known_gap_workload_ids,
         selected_workload_ids=selected_workload_ids,
     )
 
@@ -1968,31 +2012,6 @@ def source_tree_combined_case(target_manifest_id: str) -> SourceTreeCombinedCase
     )
 
 
-def _source_tree_combined_pattern_group_expectation(
-    raw_group: dict[str, Any],
-) -> SourceTreeCombinedPatternGroupExpectation:
-    return SourceTreeCombinedPatternGroupExpectation(
-        slice_id=str(raw_group["slice_id"]),
-        patterns=tuple(str(pattern) for pattern in raw_group["patterns"]),
-        minimum_rows=int(raw_group["minimum_rows"]),
-        required_operations=tuple(
-            str(operation) for operation in raw_group["required_operations"]
-        ),
-        required_categories=tuple(
-            str(category) for category in raw_group["required_categories"]
-        ),
-        search_haystacks=tuple(
-            str(haystack) for haystack in raw_group["search_haystacks"]
-        ),
-        search_haystack_substrings=tuple(
-            str(snippet) for snippet in raw_group["search_haystack_substrings"]
-        ),
-        pattern_haystacks=tuple(
-            str(haystack) for haystack in raw_group["pattern_haystacks"]
-        ),
-    )
-
-
 @cache
 def source_tree_combined_manifest_shape_expectation(
     manifest_id: str,
@@ -2002,25 +2021,13 @@ def source_tree_combined_manifest_shape_expectation(
         raise AssertionError(
             f"unknown source-tree combined manifest expectation {manifest_id!r}"
         )
-    raw_shape = manifest_expectation.get("shape_expectation")
-    if raw_shape is None:
+    shape_expectation = manifest_expectation.shape_expectation
+    if shape_expectation is None:
         raise AssertionError(
             "source-tree combined manifest "
             f"{manifest_id!r} does not define shared shape expectations"
         )
-    return SourceTreeCombinedManifestShapeExpectation(
-        representative_measured_workload_ids=tuple(
-            str(workload_id)
-            for workload_id in raw_shape.get(
-                "representative_measured_workload_ids",
-                (),
-            )
-        ),
-        pattern_groups=tuple(
-            _source_tree_combined_pattern_group_expectation(raw_group)
-            for raw_group in raw_shape.get("pattern_groups", ())
-        ),
-    )
+    return shape_expectation
 
 
 def source_tree_combined_slice_manifest_ids() -> tuple[str, ...]:
@@ -2045,10 +2052,12 @@ def source_tree_combined_slice_derived_manifest_ids() -> tuple[str, ...]:
     return tuple(
         manifest_id
         for manifest_id in source_tree_combined_slice_manifest_ids()
-        if "representative_measured_workload_ids"
-        not in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
-        and "shape_expectation"
-        not in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
+        if SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+            manifest_id
+        ].representative_measured_workload_ids
+        is None
+        and SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id].shape_expectation
+        is None
     )
 
 

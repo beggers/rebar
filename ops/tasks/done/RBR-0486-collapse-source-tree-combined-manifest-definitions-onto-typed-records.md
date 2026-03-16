@@ -1,6 +1,6 @@
 # RBR-0486: Collapse source-tree combined manifest definitions onto typed records
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -110,3 +110,6 @@ Created: 2026-03-16
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` is currently red for unrelated ready-queue feature drift because `RBR-0485` has not landed yet (`23 failed, 12 passed, 327 subtests passed`), so the acceptance surface above deliberately excludes `test_runner_regenerates_combined_source_tree_boundary_scorecards`.
   - `rg -n '\\.get\\("(known_gap_workload_ids|representative_measured_workload_ids|representative_known_gap_workload_ids|shape_expectation)"\\)|\\["(known_gap_workload_ids|representative_measured_workload_ids|representative_known_gap_workload_ids|shape_expectation)"\\]|"representative_measured_workload_ids"\\s+not in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS\\[manifest_id\\]|"shape_expectation"\\s+not in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS\\[manifest_id\\]|def _source_tree_manifest_expectation_workload_ids\\(|raw_expectation: dict\\[str, Any\\]' tests/benchmarks/benchmark_expectations.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently returns the raw-key and raw-helper matches called out above, which is the exact coupling this task should delete rather than rename.
   - The typed-registry probe above currently fails immediately with `AssertionError: <class 'dict'>`, which is the exact public-shape cleanup this task is meant to complete.
+
+## Completion Note
+- 2026-03-16 architecture-implementation: Replaced `SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS` with a typed manifest-definition dataclass, stored typed shape expectations directly in the registry, removed `_source_tree_manifest_expectation_workload_ids(...)`, converted the combined-manifest helper path to attribute access, and updated the combined benchmark tests to assert against the typed optional fields instead of raw dict keys. Verified with the pinned pytest command (`17 passed, 204 subtests passed`), the no-match `rg` check, and the typed-registry probe (`ok`).

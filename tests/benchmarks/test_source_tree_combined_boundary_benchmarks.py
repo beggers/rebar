@@ -43,19 +43,19 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         stored_empty_representative_ids = sorted(
             manifest_id
             for manifest_id, expectation in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.items()
-            if expectation.get("representative_measured_workload_ids") == ()
+            if expectation.representative_measured_workload_ids == ()
         )
         self.assertEqual(stored_empty_representative_ids, [])
 
     def test_manifest_gap_inventories_derive_public_known_gap_counts(self) -> None:
-        for manifest_id, raw_manifest_expectation in (
+        for manifest_id, manifest_definition in (
             SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.items()
         ):
-            if "known_gap_workload_ids" not in raw_manifest_expectation:
+            expected_ids = manifest_definition.known_gap_workload_ids
+            if expected_ids is None:
                 continue
             with self.subTest(manifest_id=manifest_id):
-                expected_ids = raw_manifest_expectation["known_gap_workload_ids"]
-                self.assertNotIn("known_gap_count", raw_manifest_expectation)
+                self.assertFalse(hasattr(manifest_definition, "known_gap_count"))
                 self.assertEqual(
                     source_tree_combined_case(manifest_id).manifest_expectation.known_gap_count,
                     len(expected_ids),
@@ -64,17 +64,14 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_zero_gap_manifests_omit_raw_defaults_but_public_case_restores_them(
         self,
     ) -> None:
-        raw_manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
             "pattern-boundary"
         ]
-        self.assertNotIn("known_gap_count", raw_manifest_expectation)
-        self.assertNotIn(
-            "representative_measured_workload_ids",
-            raw_manifest_expectation,
-        )
-        self.assertNotIn(
-            "representative_known_gap_workload_ids",
-            raw_manifest_expectation,
+        self.assertFalse(hasattr(manifest_definition, "known_gap_count"))
+        self.assertIsNone(manifest_definition.known_gap_workload_ids)
+        self.assertIsNone(manifest_definition.representative_measured_workload_ids)
+        self.assertIsNone(
+            manifest_definition.representative_known_gap_workload_ids
         )
 
         manifest_expectation = source_tree_combined_case(
@@ -104,13 +101,12 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_literal_flag_manifest_no_longer_classifies_ascii_pair_as_known_gaps(
         self,
     ) -> None:
-        raw_manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
             "literal-flag-boundary"
         ]
-        self.assertNotIn("known_gap_workload_ids", raw_manifest_expectation)
-        self.assertNotIn(
-            "representative_known_gap_workload_ids",
-            raw_manifest_expectation,
+        self.assertIsNone(manifest_definition.known_gap_workload_ids)
+        self.assertIsNone(
+            manifest_definition.representative_known_gap_workload_ids
         )
 
         case = source_tree_combined_case("literal-flag-boundary")
@@ -147,16 +143,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_grouped_named_manifest_promotes_legacy_grouped_segment_pair_to_measured(
         self,
     ) -> None:
-        raw_manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
             "grouped-named-boundary"
         ]
-        self.assertNotIn("known_gap_workload_ids", raw_manifest_expectation)
-        self.assertNotIn(
-            "representative_known_gap_workload_ids",
-            raw_manifest_expectation,
+        self.assertIsNone(manifest_definition.known_gap_workload_ids)
+        self.assertIsNone(
+            manifest_definition.representative_known_gap_workload_ids
         )
         self.assertEqual(
-            raw_manifest_expectation["representative_measured_workload_ids"],
+            manifest_definition.representative_measured_workload_ids,
             (
                 "module-search-grouped-segment-cold-gap",
                 "pattern-search-grouped-segment-warm-gap",
@@ -202,9 +197,13 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 )
 
     def test_shape_backed_manifests_keep_derived_representatives(self) -> None:
+        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+            "pattern-boundary"
+        ]
         shape_expectation = source_tree_combined_manifest_shape_expectation(
             "pattern-boundary"
         )
+        self.assertIs(manifest_definition.shape_expectation, shape_expectation)
         self.assertEqual(
             source_tree_combined_manifest_representative_measured_workload_ids(
                 "pattern-boundary"
