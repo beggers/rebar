@@ -134,6 +134,16 @@ FIXTURE_BUNDLE_SPECS = (
         ),
     ),
     FixtureBundleSpec(
+        "nested_group_alternation_wrapper_replacement_workflows.py",
+        expected_manifest_id="nested-group-alternation-wrapper-replacement-workflows",
+        expected_patterns=frozenset(
+            EXPECTED_NESTED_GROUP_ALTERNATION_REPLACEMENT_COMPILE_PATTERNS
+        ),
+        expected_operation_helper_counts=(
+            EXPECTED_NESTED_GROUP_ALTERNATION_REPLACEMENT_OPERATION_HELPER_COUNTS
+        ),
+    ),
+    FixtureBundleSpec(
         "quantified_nested_group_replacement_workflows.py",
         expected_manifest_id="quantified-nested-group-replacement-workflows",
         expected_patterns=frozenset(
@@ -265,8 +275,12 @@ def _expected_replacement(case: FixtureCase) -> str:
         group_names_by_index = {
             index: group_name for group_name, index in compiled.groupindex.items()
         }
-        return rf"\g<{group_names_by_index[target_group_index]}>x"
-    return rf"\{target_group_index}x"
+        replacement = rf"\g<{group_names_by_index[target_group_index]}>"
+    else:
+        replacement = rf"\{target_group_index}"
+    if "wrapper-template" in case.categories:
+        return f"<{replacement}>"
+    return f"{replacement}x"
 
 
 def _assert_replacement_fixture_bundle_contract(bundle: FixtureBundle) -> None:
@@ -274,7 +288,10 @@ def _assert_replacement_fixture_bundle_contract(bundle: FixtureBundle) -> None:
     expected_group_kind_counts = (
         EXPECTED_NESTED_GROUP_ALTERNATION_REPLACEMENT_GROUP_KIND_COUNTS
         if bundle.expected_manifest_id
-        == "nested-group-alternation-replacement-workflows"
+        in {
+            "nested-group-alternation-replacement-workflows",
+            "nested-group-alternation-wrapper-replacement-workflows",
+        }
         else EXPECTED_SHARED_REPLACEMENT_GROUP_KIND_COUNTS
     )
     assert Counter(
