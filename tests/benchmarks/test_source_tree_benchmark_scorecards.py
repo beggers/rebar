@@ -119,6 +119,11 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             manifest_expectation.representative_known_gap_workload_ids,
             ("compile-character-class-warm",),
         )
+        self.assertIsNotNone(case.expected_first_deferred)
+        assert case.expected_first_deferred is not None
+        self.assertEqual(case.expected_first_deferred.area, "module-boundary")
+        self.assertEqual(case.expected_first_deferred.follow_up, "RBR-0015")
+        self.assertFalse(hasattr(case, "workload_note_substrings"))
 
     def test_single_manifest_scorecards_keep_slice_backed_representatives(self) -> None:
         for case_id in (
@@ -172,11 +177,11 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                     self.assertGreaterEqual(len(scorecard["deferred"]), 1)
                     self.assertEqual(
                         scorecard["deferred"][0]["area"],
-                        expected_first_deferred["area"],
+                        expected_first_deferred.area,
                     )
                     self.assertEqual(
                         scorecard["deferred"][0]["follow_up"],
-                        expected_first_deferred["follow_up"],
+                        expected_first_deferred.follow_up,
                     )
 
                 expected_workload_order = case.expected_workload_order
@@ -214,20 +219,17 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
         case: SourceTreeScorecardCase,
         scorecard: dict[str, object],
     ) -> None:
-        note_expectations = case.workload_note_substrings or {}
         self._assert_workloads(
             case,
             scorecard,
             case.representative_measured_workload_ids,
             expected_status="measured",
-            note_expectations=note_expectations,
         )
         self._assert_workloads(
             case,
             scorecard,
             case.representative_known_gap_workload_ids,
             expected_status="unimplemented",
-            note_expectations=note_expectations,
         )
 
     def _assert_workloads(
@@ -237,7 +239,6 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
         workload_ids: tuple[str, ...],
         *,
         expected_status: str,
-        note_expectations: dict[str, str],
     ) -> None:
         for workload_id in workload_ids:
             with self.subTest(workload_id=workload_id):
@@ -251,12 +252,6 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                     workload_document=find_workload_document(manifest, workload_id),
                     expected_status=expected_status,
                 )
-
-                note_substring = note_expectations.get(workload_id)
-                if note_substring is not None:
-                    self.assertTrue(
-                        any(note_substring in note for note in workload_record["notes"])
-                    )
 
 
 if __name__ == "__main__":

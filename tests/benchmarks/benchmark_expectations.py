@@ -43,21 +43,6 @@ class SourceTreeBenchmarkCommonCase:
     selected_workload_ids_by_manifest: dict[str, tuple[str, ...]]
     selection_mode: str
 
-    def init_kwargs(self) -> dict[str, Any]:
-        return {
-            "expected_adapter": self.expected_adapter,
-            "expected_manifest_paths": self.expected_manifest_paths,
-            "expected_phase": self.expected_phase,
-            "expected_runner_version": self.expected_runner_version,
-            "expected_summary": self.expected_summary,
-            "manifests": self.manifests,
-            "manifests_by_id": self.manifests_by_id,
-            "manifest_paths": self.manifest_paths,
-            "manifest_paths_by_id": self.manifest_paths_by_id,
-            "selected_workload_ids_by_manifest": self.selected_workload_ids_by_manifest,
-            "selection_mode": self.selection_mode,
-        }
-
 
 @dataclass(frozen=True, slots=True)
 class SourceTreeManifestExpectation:
@@ -67,14 +52,25 @@ class SourceTreeManifestExpectation:
 
 
 @dataclass(frozen=True, slots=True)
+class SourceTreeDeferredExpectation:
+    area: str
+    follow_up: str
+
+
+@dataclass(frozen=True, slots=True)
+class _SourceTreeManifestKnownGapCountOverride:
+    manifest_id: str
+    known_gap_count: int
+
+
+@dataclass(frozen=True, slots=True)
 class SourceTreeScorecardCase(SourceTreeBenchmarkCommonCase):
     case_id: str
     manifest_expectations: dict[str, SourceTreeManifestExpectation]
     representative_measured_workload_ids: tuple[str, ...]
     representative_known_gap_workload_ids: tuple[str, ...]
-    expected_first_deferred: dict[str, str] | None = None
+    expected_first_deferred: SourceTreeDeferredExpectation | None = None
     expected_workload_order: tuple[str, ...] | None = None
-    workload_note_substrings: dict[str, str] | None = None
 
     @classmethod
     def from_common_case(
@@ -85,19 +81,27 @@ class SourceTreeScorecardCase(SourceTreeBenchmarkCommonCase):
         manifest_expectations: dict[str, SourceTreeManifestExpectation],
         representative_measured_workload_ids: tuple[str, ...],
         representative_known_gap_workload_ids: tuple[str, ...],
-        expected_first_deferred: dict[str, str] | None = None,
+        expected_first_deferred: SourceTreeDeferredExpectation | None = None,
         expected_workload_order: tuple[str, ...] | None = None,
-        workload_note_substrings: dict[str, str] | None = None,
     ) -> SourceTreeScorecardCase:
         return cls(
-            **common_case.init_kwargs(),
+            expected_adapter=common_case.expected_adapter,
+            expected_manifest_paths=common_case.expected_manifest_paths,
+            expected_phase=common_case.expected_phase,
+            expected_runner_version=common_case.expected_runner_version,
+            expected_summary=common_case.expected_summary,
+            manifests=common_case.manifests,
+            manifests_by_id=common_case.manifests_by_id,
+            manifest_paths=common_case.manifest_paths,
+            manifest_paths_by_id=common_case.manifest_paths_by_id,
+            selected_workload_ids_by_manifest=common_case.selected_workload_ids_by_manifest,
+            selection_mode=common_case.selection_mode,
             case_id=case_id,
             manifest_expectations=manifest_expectations,
             representative_measured_workload_ids=representative_measured_workload_ids,
             representative_known_gap_workload_ids=representative_known_gap_workload_ids,
             expected_first_deferred=expected_first_deferred,
             expected_workload_order=expected_workload_order,
-            workload_note_substrings=workload_note_substrings,
         )
 
 
@@ -107,10 +111,11 @@ class _SourceTreeScorecardDefinition:
     selection_mode: str = "full"
     representative_measured_workload_ids: tuple[str, ...] = ()
     representative_known_gap_workload_ids: tuple[str, ...] = ()
-    expected_first_deferred: dict[str, str] | None = None
+    expected_first_deferred: SourceTreeDeferredExpectation | None = None
     expected_workload_order: tuple[str, ...] | None = None
-    workload_note_substrings: dict[str, str] | None = None
-    _derived_manifest_known_gap_counts: dict[str, int] | None = None
+    _manifest_known_gap_count_overrides: tuple[
+        _SourceTreeManifestKnownGapCountOverride, ...
+    ] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -131,7 +136,17 @@ class SourceTreeCombinedCase(SourceTreeBenchmarkCommonCase):
         target_manifest: BenchmarkManifest,
     ) -> SourceTreeCombinedCase:
         return cls(
-            **common_case.init_kwargs(),
+            expected_adapter=common_case.expected_adapter,
+            expected_manifest_paths=common_case.expected_manifest_paths,
+            expected_phase=common_case.expected_phase,
+            expected_runner_version=common_case.expected_runner_version,
+            expected_summary=common_case.expected_summary,
+            manifests=common_case.manifests,
+            manifests_by_id=common_case.manifests_by_id,
+            manifest_paths=common_case.manifest_paths,
+            manifest_paths_by_id=common_case.manifest_paths_by_id,
+            selected_workload_ids_by_manifest=common_case.selected_workload_ids_by_manifest,
+            selection_mode=common_case.selection_mode,
             manifest_expectation=manifest_expectation,
             manifest_id=manifest_id,
             manifest_path=manifest_path,
@@ -186,20 +201,25 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS: dict[str, _SourceTreeScorecardDefinition] = 
     "compile-smoke": _SourceTreeScorecardDefinition(
         manifest_ids=("compile-smoke",),
         selection_mode="full",
-        _derived_manifest_known_gap_counts={"compile-smoke": 1},
-        expected_first_deferred={
-            "area": "module-boundary",
-            "follow_up": "RBR-0015",
-        },
+        _manifest_known_gap_count_overrides=(
+            _SourceTreeManifestKnownGapCountOverride(
+                manifest_id="compile-smoke",
+                known_gap_count=1,
+            ),
+        ),
+        expected_first_deferred=SourceTreeDeferredExpectation(
+            area="module-boundary",
+            follow_up="RBR-0015",
+        ),
         representative_measured_workload_ids=("compile-literal-cold",),
         representative_known_gap_workload_ids=("compile-character-class-warm",),
     ),
     "compile-matrix": _SourceTreeScorecardDefinition(
         manifest_ids=("compile-matrix",),
-        expected_first_deferred={
-            "area": "module-boundary",
-            "follow_up": "RBR-0015",
-        },
+        expected_first_deferred=SourceTreeDeferredExpectation(
+            area="module-boundary",
+            follow_up="RBR-0015",
+        ),
         representative_measured_workload_ids=(
             "compile-inline-locale-bytes-warm",
             "compile-lookbehind-cold",
@@ -1683,11 +1703,14 @@ def _source_tree_manifest_known_gap_counts(
     *,
     selected_workload_ids_by_manifest: dict[str, tuple[str, ...]] | None = None,
 ) -> dict[str, int]:
-    explicit_known_gap_counts = case_definition._derived_manifest_known_gap_counts or {}
+    explicit_known_gap_counts = {
+        override.manifest_id: override.known_gap_count
+        for override in case_definition._manifest_known_gap_count_overrides
+    }
     known_gap_counts: dict[str, int] = {}
     for manifest_id in manifest_ids:
         if manifest_id in explicit_known_gap_counts:
-            known_gap_counts[manifest_id] = int(explicit_known_gap_counts[manifest_id])
+            known_gap_counts[manifest_id] = explicit_known_gap_counts[manifest_id]
             continue
         manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
         if manifest_expectation is None:
@@ -1846,7 +1869,6 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
         representative_known_gap_workload_ids=representative_known_gap_workload_ids,
         expected_first_deferred=case_definition.expected_first_deferred,
         expected_workload_order=case_definition.expected_workload_order,
-        workload_note_substrings=case_definition.workload_note_substrings,
     )
 
 

@@ -1,6 +1,6 @@
 # RBR-0496: Collapse source-tree benchmark case metadata onto typed records
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-16
 
@@ -80,3 +80,6 @@ Created: 2026-03-16
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_python_benchmark_manifest_contract.py` passes in the current checkout (`20 passed, 798 subtests passed in 1.50s`).
   - The `rg -n ...` command above currently returns the dead/dynamic metadata matches that this task should delete rather than wrap.
   - The typed-metadata probe above currently fails at `assert not hasattr(SourceTreeBenchmarkCommonCase, "init_kwargs")`, which is the exact constructor-plumbing cleanup this task should complete.
+
+## Completion Note
+- 2026-03-16: Replaced the remaining source-tree scorecard dict metadata with typed records, removed the `init_kwargs()` and `workload_note_substrings` plumbing, preserved the compile-smoke known-gap override through typed override records, and updated the scorecard test to read deferred metadata via attributes. Verified with the required pytest slice (`20 passed, 798 subtests passed`), the required `rg -n ...` probe (no matches), and the typed inline Python probe (`ok`).
