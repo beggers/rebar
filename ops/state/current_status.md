@@ -329,7 +329,7 @@ The published slice is still narrow: all 967 published correctness cases now pas
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The concrete surviving follow-on is `RBR-0489`, which should publish the exact nested grouped-alternation replacement-template pair already anchored on `grouped-alternation-replacement-boundary` so that pair stops existing only as benchmark-only debt and instead appears on the correctness surface.
+- The concrete surviving follow-on is `RBR-0491`, which should convert the exact nested grouped-alternation replacement-template pair that `RBR-0489` publishes on the correctness surface into real Rust-backed parity on the shared grouped replacement pytest path before the existing source-tree benchmark gap rows are republished.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
