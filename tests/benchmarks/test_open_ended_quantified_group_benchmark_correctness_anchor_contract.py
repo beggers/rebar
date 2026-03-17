@@ -28,6 +28,7 @@ from tests.python.fixture_parity_support import (
     assert_pattern_parity,
 )
 from tests.python.test_open_ended_quantified_group_parity_suite import (
+    BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
     OPEN_ENDED_ALTERNATION_BYTES_CASES,
@@ -37,7 +38,7 @@ from tests.python.test_open_ended_quantified_group_parity_suite import (
 
 
 # These rows intentionally do not anchor to the published correctness fixtures yet:
-# twenty bytes follow-on workloads are covered through direct parity cases in the
+# twenty-four bytes follow-on workloads are covered through direct parity cases in the
 # Python suite, and two str rows are benchmark-specific follow-ons that still need
 # explicit benchmark-side pinning.
 EXPECTED_SPECIAL_UNANCHORED_WORKLOAD_IDS = (
@@ -45,6 +46,10 @@ EXPECTED_SPECIAL_UNANCHORED_WORKLOAD_IDS = (
     "pattern-fullmatch-numbered-open-ended-group-alternation-third-repetition-mixed-purged-bytes",
     "module-search-named-open-ended-group-alternation-lower-bound-de-warm-bytes",
     "pattern-fullmatch-named-open-ended-group-alternation-fourth-repetition-de-purged-bytes",
+    "module-search-numbered-open-ended-group-broader-range-lower-bound-bc-warm-bytes",
+    "pattern-fullmatch-numbered-open-ended-group-broader-range-third-repetition-mixed-purged-bytes",
+    "module-search-named-open-ended-group-broader-range-lower-bound-de-warm-bytes",
+    "pattern-fullmatch-named-open-ended-group-broader-range-third-repetition-de-purged-bytes",
     "module-search-numbered-open-ended-group-broader-range-conditional-second-repetition-bc-warm-bytes",
     "pattern-fullmatch-numbered-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
     "module-search-named-open-ended-group-broader-range-conditional-fourth-repetition-de-warm-bytes",
@@ -126,6 +131,14 @@ EXPECTED_OPEN_ENDED_ANCHOR_CASE_IDS = {
         "open_ended_quantified_group_boundary.py",
         "pattern-fullmatch-named-open-ended-group-broader-range-third-repetition-de-purged-str",
     ): ("broader-range-open-ended-quantified-group-alternation-named-pattern-fullmatch-fourth-repetition-de-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-numbered-open-ended-group-broader-range-cold-bytes",
+    ): ("broader-range-open-ended-quantified-group-alternation-numbered-compile-metadata-bytes",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-named-open-ended-group-broader-range-warm-bytes",
+    ): ("broader-range-open-ended-quantified-group-alternation-named-compile-metadata-bytes",),
     (
         "open_ended_quantified_group_boundary.py",
         "module-compile-numbered-open-ended-group-broader-range-conditional-cold-str",
@@ -266,6 +279,7 @@ DIRECT_PARITY_BYTES_CASES = (
     *OPEN_ENDED_ALTERNATION_BYTES_CASES,
     *OPEN_ENDED_CONDITIONAL_BYTES_CASES,
     *OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    *BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
     *BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
     *BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
 )

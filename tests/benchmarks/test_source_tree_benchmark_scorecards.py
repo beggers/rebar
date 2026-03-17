@@ -254,6 +254,36 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                     case.manifest_expectation.representative_measured_workload_ids,
                 )
 
+    def test_open_ended_manifest_exposes_broader_range_grouped_alternation_bytes_rows_as_measured(
+        self,
+    ) -> None:
+        manifest_id = "open-ended-quantified-group-boundary"
+        expected_workload_ids = (
+            "module-compile-numbered-open-ended-group-broader-range-cold-bytes",
+            "module-search-numbered-open-ended-group-broader-range-lower-bound-bc-warm-bytes",
+            "pattern-fullmatch-numbered-open-ended-group-broader-range-third-repetition-mixed-purged-bytes",
+            "module-compile-named-open-ended-group-broader-range-warm-bytes",
+            "module-search-named-open-ended-group-broader-range-lower-bound-de-warm-bytes",
+            "pattern-fullmatch-named-open-ended-group-broader-range-third-repetition-de-purged-bytes",
+        )
+        case = source_tree_combined_case(manifest_id)
+        public_representatives = (
+            source_tree_combined_manifest_representative_measured_workload_ids(
+                manifest_id
+            )
+        )
+
+        self.assertEqual(case.manifest_expectation.known_gap_count, 0)
+        self.assertEqual(case.manifest_expectation.representative_known_gap_workload_ids, ())
+
+        for workload_id in expected_workload_ids:
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(workload_id, public_representatives)
+                self.assertIn(
+                    workload_id,
+                    case.manifest_expectation.representative_measured_workload_ids,
+                )
+
     def test_open_ended_manifest_exposes_grouped_conditional_bytes_rows_as_measured(
         self,
     ) -> None:

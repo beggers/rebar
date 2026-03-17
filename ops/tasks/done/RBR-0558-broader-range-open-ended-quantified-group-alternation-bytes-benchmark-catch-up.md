@@ -1,6 +1,6 @@
 # RBR-0558: Catch the broader-range open-ended grouped-alternation bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -53,3 +53,9 @@ Created: 2026-03-17
   - `reports/benchmarks/latest.py` currently publishes `open-ended-quantified-group-boundary` at `66` total workloads / `66` measured workloads / `0` known gaps and the combined source-tree report at `656` total / `656` measured / `0` known gaps; and
   - `ops/tasks/done/RBR-0556-broader-range-open-ended-quantified-group-alternation-bytes-parity.md` already records successful public-API parity for `rb"a(bc|de){2,}d"` and `rb"a(?P<word>bc|de){2,}d"`, so these benchmark rows should measure rather than reopen a runtime gap.
 - No post-drain feature follow-on is concrete enough in tracked state to queue safely from this run alone once this benchmark catch-up lands.
+
+## Completion Notes
+- Added the six broader-range open-ended `{2,}` grouped-alternation bytes benchmark mirrors to `benchmarks/workloads/open_ended_quantified_group_boundary.py`, reusing the existing Python-path patterns and haystacks for the numbered and named bytes pair already landed by `RBR-0556`.
+- Updated the benchmark expectation and anchor-contract coverage so the two compile rows stay mapped to published broader-range bytes compile metadata cases, the four `module.search()` / `Pattern.fullmatch()` rows stay explicitly unanchored but covered through `BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES`, and the open-ended manifest continues to publish zero known gaps.
+- Regenerated the tracked benchmark publication in `reports/benchmarks/latest.py`; the tracked artifact now shows `open-ended-quantified-group-boundary` at `72` total workloads / `72` measured workloads / `0` known gaps and the combined source-tree report at `662` total / `662` measured / `0` known gaps, with all six new bytes rows carrying `implementation_timing.status == "measured"`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/open_ended_quantified_group_boundary.py --report .rebar/tmp/rbr-0558-broader-range-open-ended-grouped-alternation-bytes-benchmarks.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
