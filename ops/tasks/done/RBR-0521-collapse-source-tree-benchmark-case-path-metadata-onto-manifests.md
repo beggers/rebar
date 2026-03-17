@@ -1,6 +1,6 @@
 # RBR-0521: Collapse source-tree benchmark case path metadata onto manifests
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -82,3 +82,7 @@ Created: 2026-03-17
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passes (`37 passed, 1279 subtests passed in 21.98s`).
   - The inline `relative_manifest_path(...)` probe above currently prints `ok`.
   - `rg -n "expected_manifest_paths|manifest_paths_by_id|manifest_path: str|manifest_path=common_case\\.manifest_paths_by_id|REPO_ROOT / case\\.manifest_path|relative_manifest_path\\(" tests/benchmarks -g '*.py'` currently returns the duplicate case-path fields and call sites listed above, which is the exact cleanup this task is meant to delete.
+
+## Completion Notes
+- 2026-03-17: Removed the duplicate source-tree case path caches from `tests/benchmarks/benchmark_expectations.py` and updated the source-tree scorecard tests to derive runner inputs and artifact-path assertions directly from `BenchmarkManifest.path`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`37 passed, 1279 subtests passed in 21.89s`), the required `rg -n ...` acceptance grep returned no matches, and the inline `relative_manifest_path(...)` probe printed `ok`.

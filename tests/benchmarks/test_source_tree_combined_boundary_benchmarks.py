@@ -12,6 +12,7 @@ from tests.benchmarks.benchmark_expectations import (
     SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS,
     SourceTreeCombinedPatternGroupExpectation,
     SourceTreeCombinedSliceExpectation,
+    relative_manifest_path,
     representative_measured_workload_ids,
     run_source_tree_benchmark_scorecard,
     select_source_tree_combined_slice_rows,
@@ -34,6 +35,14 @@ from tests.report_assertions import (
 )
 
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"
+
+
+def _case_manifest_paths(case) -> list[pathlib.Path]:
+    return [manifest.path for manifest in case.manifests]
+
+
+def _case_relative_manifest_paths(case) -> list[str]:
+    return [relative_manifest_path(manifest.path) for manifest in case.manifests]
 
 
 class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
@@ -120,7 +129,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
 
         _, scorecard = run_source_tree_benchmark_scorecard(
-            [REPO_ROOT / case.manifest_path]
+            [case.target_manifest.path]
         )
         manifest_summary = scorecard["manifests"]["literal-flag-boundary"]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
@@ -176,7 +185,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
 
         _, scorecard = run_source_tree_benchmark_scorecard(
-            [REPO_ROOT / case.manifest_path]
+            [case.target_manifest.path]
         )
         manifest_summary = scorecard["manifests"]["grouped-named-boundary"]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
@@ -233,7 +242,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
 
         _, scorecard = run_source_tree_benchmark_scorecard(
-            [REPO_ROOT / case.manifest_path]
+            [case.target_manifest.path]
         )
         manifest_summary = scorecard["manifests"]["numbered-backreference-boundary"]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
@@ -288,7 +297,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
 
         _, scorecard = run_source_tree_benchmark_scorecard(
-            [REPO_ROOT / case.manifest_path]
+            [case.target_manifest.path]
         )
         manifest_summary = scorecard["manifests"]["nested-group-boundary"]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
@@ -339,7 +348,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
 
         _, scorecard = run_source_tree_benchmark_scorecard(
-            [REPO_ROOT / case.manifest_path]
+            [case.target_manifest.path]
         )
         manifest_summary = scorecard["manifests"]["optional-group-boundary"]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
@@ -403,7 +412,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 )
 
                 _, scorecard = run_source_tree_benchmark_scorecard(
-                    [REPO_ROOT / case.manifest_path]
+                    [case.target_manifest.path]
                 )
                 manifest_summary = scorecard["manifests"][manifest_id]
                 self.assertEqual(manifest_summary["known_gap_count"], 0)
@@ -463,7 +472,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 )
 
         _, scorecard = run_source_tree_benchmark_scorecard(
-            [REPO_ROOT / case.manifest_path]
+            [case.target_manifest.path]
         )
         manifest_summary = scorecard["manifests"][WIDER_RANGED_REPEAT_MANIFEST_ID]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
@@ -523,7 +532,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 )
 
         _, scorecard = run_source_tree_benchmark_scorecard(
-            [REPO_ROOT / case.manifest_path]
+            [case.target_manifest.path]
         )
         manifest_summary = scorecard["manifests"][WIDER_RANGED_REPEAT_MANIFEST_ID]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
@@ -584,7 +593,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 )
 
         _, scorecard = run_source_tree_benchmark_scorecard(
-            [REPO_ROOT / case.manifest_path]
+            [case.target_manifest.path]
         )
         manifest_summary = scorecard["manifests"][WIDER_RANGED_REPEAT_MANIFEST_ID]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
@@ -675,7 +684,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 case = source_tree_combined_case(target_manifest_id)
                 manifest_expectation = case.manifest_expectation
                 summary, scorecard = run_source_tree_benchmark_scorecard(
-                    case.manifest_paths,
+                    _case_manifest_paths(case),
                 )
 
                 assert_source_tree_benchmark_contract(
@@ -686,7 +695,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     expected_runner_version=case.expected_runner_version,
                     expected_adapter=case.expected_adapter,
                     expected_manifests=case.manifests,
-                    expected_manifest_paths=case.expected_manifest_paths,
+                    expected_manifest_paths=_case_relative_manifest_paths(case),
                     expected_selection_mode=case.selection_mode,
                     tracked_report_path=TRACKED_REPORT_PATH,
                 )
@@ -700,7 +709,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     manifest_summary,
                     manifest_record,
                     manifest=case.target_manifest,
-                    manifest_path=case.manifest_path,
+                    manifest_path=relative_manifest_path(case.target_manifest.path),
                     known_gap_count=manifest_expectation.known_gap_count,
                     selection_mode=case.selection_mode,
                     selected_workload_ids=case.selected_workload_ids_by_manifest[manifest_id],
@@ -743,7 +752,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         for manifest_id in source_tree_combined_slice_manifest_ids():
             with self.subTest(manifest_id=manifest_id):
                 case = source_tree_combined_case(manifest_id)
-                _, scorecard = run_source_tree_benchmark_scorecard(case.manifest_paths)
+                _, scorecard = run_source_tree_benchmark_scorecard(
+                    _case_manifest_paths(case)
+                )
 
                 manifest_summary = scorecard["manifests"][manifest_id]
                 self.assertEqual(
@@ -837,7 +848,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         shape_expectation = source_tree_combined_manifest_shape_expectation(
             WIDER_RANGED_REPEAT_MANIFEST_ID
         )
-        _, scorecard = run_source_tree_benchmark_scorecard(case.manifest_paths)
+        _, scorecard = run_source_tree_benchmark_scorecard(_case_manifest_paths(case))
 
         manifest_summary = scorecard["manifests"][WIDER_RANGED_REPEAT_MANIFEST_ID]
         self.assertEqual(manifest_summary["known_gap_count"], 0)

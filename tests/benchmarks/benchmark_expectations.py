@@ -31,14 +31,11 @@ BASE_SOURCE_TREE_MANIFEST_IDS = frozenset({"compile-matrix", "regression-matrix"
 @dataclass(frozen=True, slots=True)
 class SourceTreeBenchmarkCommonCase:
     expected_adapter: str
-    expected_manifest_paths: list[str]
     expected_phase: str
     expected_runner_version: str
     expected_summary: dict[str, int]
     manifests: list[BenchmarkManifest]
     manifests_by_id: dict[str, BenchmarkManifest]
-    manifest_paths: list[pathlib.Path]
-    manifest_paths_by_id: dict[str, str]
     selected_workload_ids_by_manifest: dict[str, tuple[str, ...]]
     selection_mode: str
 
@@ -85,14 +82,11 @@ class SourceTreeScorecardCase(SourceTreeBenchmarkCommonCase):
     ) -> SourceTreeScorecardCase:
         return cls(
             expected_adapter=common_case.expected_adapter,
-            expected_manifest_paths=common_case.expected_manifest_paths,
             expected_phase=common_case.expected_phase,
             expected_runner_version=common_case.expected_runner_version,
             expected_summary=common_case.expected_summary,
             manifests=common_case.manifests,
             manifests_by_id=common_case.manifests_by_id,
-            manifest_paths=common_case.manifest_paths,
-            manifest_paths_by_id=common_case.manifest_paths_by_id,
             selected_workload_ids_by_manifest=common_case.selected_workload_ids_by_manifest,
             selection_mode=common_case.selection_mode,
             case_id=case_id,
@@ -121,7 +115,6 @@ class _SourceTreeScorecardDefinition:
 class SourceTreeCombinedCase(SourceTreeBenchmarkCommonCase):
     manifest_expectation: SourceTreeManifestExpectation
     manifest_id: str
-    manifest_path: str
     target_manifest: BenchmarkManifest
 
     @classmethod
@@ -131,24 +124,19 @@ class SourceTreeCombinedCase(SourceTreeBenchmarkCommonCase):
         *,
         manifest_expectation: SourceTreeManifestExpectation,
         manifest_id: str,
-        manifest_path: str,
         target_manifest: BenchmarkManifest,
     ) -> SourceTreeCombinedCase:
         return cls(
             expected_adapter=common_case.expected_adapter,
-            expected_manifest_paths=common_case.expected_manifest_paths,
             expected_phase=common_case.expected_phase,
             expected_runner_version=common_case.expected_runner_version,
             expected_summary=common_case.expected_summary,
             manifests=common_case.manifests,
             manifests_by_id=common_case.manifests_by_id,
-            manifest_paths=common_case.manifest_paths,
-            manifest_paths_by_id=common_case.manifest_paths_by_id,
             selected_workload_ids_by_manifest=common_case.selected_workload_ids_by_manifest,
             selection_mode=common_case.selection_mode,
             manifest_expectation=manifest_expectation,
             manifest_id=manifest_id,
-            manifest_path=manifest_path,
             target_manifest=target_manifest,
         )
 
@@ -1784,7 +1772,6 @@ def _flatten_manifest_workloads(manifests: list[BenchmarkManifest]) -> list[Work
 
 def _build_source_tree_benchmark_common_case(
     *,
-    manifest_paths: list[pathlib.Path],
     manifests: list[BenchmarkManifest],
     workloads: list[Workload],
     selected_workload_ids_by_manifest: dict[str, tuple[str, ...]],
@@ -1799,9 +1786,6 @@ def _build_source_tree_benchmark_common_case(
             if any(workload.family == "module" for workload in workloads)
             else "rebar.compile"
         ),
-        expected_manifest_paths=[
-            relative_manifest_path(path) for path in manifest_paths
-        ],
         expected_phase=determine_phase(workload_payloads),
         expected_runner_version=determine_runner_version(workload_payloads),
         expected_summary=(
@@ -1815,11 +1799,6 @@ def _build_source_tree_benchmark_common_case(
         ),
         manifests=manifests,
         manifests_by_id={manifest.manifest_id: manifest for manifest in manifests},
-        manifest_paths=manifest_paths,
-        manifest_paths_by_id={
-            manifest.manifest_id: relative_manifest_path(path)
-            for path, manifest in zip(manifest_paths, manifests, strict=True)
-        },
         selected_workload_ids_by_manifest=selected_workload_ids_by_manifest,
         selection_mode=selection_mode,
     )
@@ -1889,7 +1868,6 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
                 )
             )
     common_case = _build_source_tree_benchmark_common_case(
-        manifest_paths=manifest_paths,
         manifests=manifests,
         workloads=selected_workloads,
         selected_workload_ids_by_manifest=selected_workload_ids_by_manifest,
@@ -1924,7 +1902,7 @@ def source_tree_combined_target_manifest_ids() -> tuple[str, ...]:
 
 
 def selected_manifest_paths_for_target_manifest(target_manifest_id: str) -> list[pathlib.Path]:
-    manifest_paths: list[pathlib.Path] = []
+    selected_paths: list[pathlib.Path] = []
     published_manifest_paths = _published_full_suite_manifest_paths()
     regression_path = next(
         (
@@ -1938,7 +1916,7 @@ def selected_manifest_paths_for_target_manifest(target_manifest_id: str) -> list
         manifest_id = manifest_id_for_path(path)
         if manifest_id == "regression-matrix":
             continue
-        manifest_paths.append(path)
+        selected_paths.append(path)
         if manifest_id == target_manifest_id:
             break
     else:
@@ -1950,8 +1928,8 @@ def selected_manifest_paths_for_target_manifest(target_manifest_id: str) -> list
             raise AssertionError(
                 "the published full-suite selector is missing the regression-matrix manifest"
             )
-        manifest_paths.append(regression_path)
-    return manifest_paths
+        selected_paths.append(regression_path)
+    return selected_paths
 
 
 def expected_summary_for_manifests(
@@ -2053,7 +2031,6 @@ def source_tree_combined_case(target_manifest_id: str) -> SourceTreeCombinedCase
         workloads,
     )
     common_case = _build_source_tree_benchmark_common_case(
-        manifest_paths=manifest_paths,
         manifests=manifests,
         workloads=workloads,
         selected_workload_ids_by_manifest=selected_workload_ids_by_manifest,
@@ -2063,7 +2040,6 @@ def source_tree_combined_case(target_manifest_id: str) -> SourceTreeCombinedCase
         common_case,
         manifest_expectation=_public_source_tree_manifest_expectation(target_manifest_id),
         manifest_id=target_manifest_id,
-        manifest_path=common_case.manifest_paths_by_id[target_manifest_id],
         target_manifest=target_manifest,
     )
 

@@ -10,6 +10,7 @@ TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 from tests.benchmarks.benchmark_expectations import (
     SOURCE_TREE_SCORECARD_EXPECTATIONS,
     SourceTreeScorecardCase,
+    relative_manifest_path,
     run_source_tree_benchmark_scorecard,
     source_tree_combined_case,
     source_tree_combined_manifest_representative_measured_workload_ids,
@@ -25,6 +26,14 @@ from tests.report_assertions import (
     find_workload_document,
     find_workload_record,
 )
+
+
+def _case_manifest_paths(case: SourceTreeScorecardCase) -> list[pathlib.Path]:
+    return [manifest.path for manifest in case.manifests]
+
+
+def _case_relative_manifest_paths(case: SourceTreeScorecardCase) -> list[str]:
+    return [relative_manifest_path(manifest.path) for manifest in case.manifests]
 
 
 class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
@@ -273,7 +282,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             with self.subTest(case_id=case_id):
                 case = source_tree_scorecard_case(case_id)
                 summary, scorecard = run_source_tree_benchmark_scorecard(
-                    case.manifest_paths,
+                    _case_manifest_paths(case),
                     smoke=case.selection_mode == "smoke",
                 )
 
@@ -285,7 +294,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                     expected_runner_version=case.expected_runner_version,
                     expected_adapter=case.expected_adapter,
                     expected_manifests=case.manifests,
-                    expected_manifest_paths=case.expected_manifest_paths,
+                    expected_manifest_paths=_case_relative_manifest_paths(case),
                     expected_selection_mode=case.selection_mode,
                     tracked_report_path=TRACKED_REPORT_PATH,
                 )
@@ -327,7 +336,9 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                 manifest_summary,
                 manifest_record,
                 manifest=case.manifests_by_id[manifest_id],
-                manifest_path=case.manifest_paths_by_id[manifest_id],
+                manifest_path=relative_manifest_path(
+                    case.manifests_by_id[manifest_id].path
+                ),
                 known_gap_count=manifest_expectation.known_gap_count,
                 selection_mode=case.selection_mode,
                 selected_workload_ids=case.selected_workload_ids_by_manifest[manifest_id],
