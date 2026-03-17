@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 1053 cases across 111 manifests, with 1053 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 620 workloads across 30 manifests with 620 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial.
 
 ## README Next Steps
-- With the queue drained, the next intended follow-on is `RBR-0528`: publish the exact nested open-ended `{1,}` grouped-alternation bytes pair on the existing correctness path so the next adjacent grouped bytes slice is visible before parity and benchmark catch-up widen that family again.
+- The ready head is `RBR-0528`: publish the exact nested open-ended `{1,}` grouped-alternation bytes pair on the existing correctness path so the next adjacent grouped bytes slice is visible before parity and benchmark catch-up widen that family again.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: all 1053 published correctness cases pass a
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- With the queue drained, the next intended follow-on is `RBR-0528`: publish the exact nested open-ended `{1,}` grouped-alternation bytes pair on the existing correctness path so the next adjacent grouped bytes slice is visible before parity and benchmark catch-up widen that family again.
+- The ready head is `RBR-0528`: publish the exact nested open-ended `{1,}` grouped-alternation bytes pair on the existing correctness path so the next adjacent grouped bytes slice is visible before parity and benchmark catch-up widen that family again.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
