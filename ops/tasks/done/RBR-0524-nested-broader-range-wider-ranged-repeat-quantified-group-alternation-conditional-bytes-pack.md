@@ -1,6 +1,6 @@
 # RBR-0524: Publish the nested broader-range wider-ranged-repeat grouped-conditional bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -38,3 +38,5 @@ Created: 2026-03-17
   - `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` currently expects the nested broader grouped-conditional bundle to stay `str`-only at `2` compile / `6` module / `6` pattern cases and does not yet carry `NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES`; and
   - `reports/correctness/latest.py` currently publishes `match.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional` at `14` total / `14` passed / `0` `unimplemented` with `['str']` coverage.
 - The intended post-publication follow-on is `RBR-0525`, which should convert the same bytes pair behind `rebar._rebar` on the existing wider-ranged-repeat parity suite before benchmark catch-up or broader bytes follow-ons reopen that family.
+- Completed 2026-03-17: added the 14 bounded bytes mirror cases to the existing manifest, updated the wider-ranged-repeat parity suite to keep the mixed `str`/`bytes` bundle contract honest and route the pending bytes follow-on through `NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES` with `rebar` skipped pending `RBR-0525`, refreshed the nested broader correctness scorecard expectations, and republished `reports/correctness/latest.py`.
+- Verified 2026-03-17 with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py --report .rebar/tmp/rbr-0524-nested-broader-range-conditional-bytes.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`; the published report now reads `1053` total / `1039` passed / `14` unimplemented overall and `28` total / `14` passed / `14` unimplemented with `['bytes', 'str']` text-model coverage for `match.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional`.
