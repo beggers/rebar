@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0556` should convert the broader-range open-ended `{2,}` grouped-alternation bytes pair behind `rebar._rebar` on the existing correctness/parity path.
+`RBR-0558` should catch the broader-range open-ended `{2,}` grouped-alternation bytes pair up on the existing Python-path benchmark surface on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
 
 ## Ordered Work
-1. `RBR-0556` should convert the broader-range open-ended `{2,}` grouped-alternation bytes pair behind `rebar._rebar` on the existing correctness/parity path.
+1. `RBR-0558` should catch the broader-range open-ended `{2,}` grouped-alternation bytes pair up on the existing Python-path benchmark surface on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
