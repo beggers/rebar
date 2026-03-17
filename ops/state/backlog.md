@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0566` should publish the quantified-alternation broader-range bytes pair for `rb"a(b|c){1,3}d"` and `rb"a(?P<word>b|c){1,3}d"` on the existing `quantified_alternation_broader_range_workflows.py` correctness/parity surface before Rust-backed bytes parity and later benchmark catch-up reopen the same family.
+`RBR-0568` should convert the quantified-alternation broader-range bytes pair for `rb"a(b|c){1,3}d"` and `rb"a(?P<word>b|c){1,3}d"` to real Rust-backed parity on the existing quantified-alternation correctness/parity surface before Python-path benchmark catch-up reopens the same family.
 
 ## Ordered Work
-1. `RBR-0566` should publish the quantified-alternation broader-range bytes pair for `rb"a(b|c){1,3}d"` and `rb"a(?P<word>b|c){1,3}d"` through the 16 directly adjacent bytes compile/search/fullmatch rows on `tests/conformance/fixtures/quantified_alternation_broader_range_workflows.py` and `tests/python/test_quantified_alternation_parity_suite.py` before Rust-backed bytes parity or another quantified-alternation bytes family broadens the frontier.
+1. `RBR-0568` should convert the quantified-alternation broader-range bytes pair for `rb"a(b|c){1,3}d"` and `rb"a(?P<word>b|c){1,3}d"` through the direct `QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES` anchor on `tests/python/test_quantified_alternation_parity_suite.py`, landing the bounded bytes compile/search/fullmatch parity slice before Python-path benchmark catch-up or another quantified-alternation bytes family broadens the frontier.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
