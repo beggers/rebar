@@ -18,7 +18,9 @@ from tests.benchmarks.correctness_anchor_support import (
     anchored_workload_case_ids,
     freeze_signature_value,
     published_case_ids_by_signature,
+    published_cases_by_id,
     run_benchmark_workload_with_cpython,
+    run_correctness_case_with_cpython,
     unanchored_workload_ids,
 )
 from tests.python.fixture_parity_support import (
@@ -356,6 +358,37 @@ def test_open_ended_manifest_keeps_expected_special_unanchored_workloads_explici
 
 def test_open_ended_anchored_workloads_stay_pinned_to_exact_case_ids() -> None:
     assert _anchored_workload_case_ids() == EXPECTED_OPEN_ENDED_ANCHOR_CASE_IDS
+
+
+def test_open_ended_anchored_workloads_match_anchor_case_results() -> None:
+    workloads_by_id = {
+        workload_id: workload
+        for workload_id, workload in _manifest_workloads_by_id().items()
+        if workload_id not in EXPECTED_SPECIAL_UNANCHORED_WORKLOAD_IDS
+    }
+    published_cases = published_cases_by_id()
+
+    for (_, workload_id), case_ids in EXPECTED_OPEN_ENDED_ANCHOR_CASE_IDS.items():
+        assert len(case_ids) == 1
+        case_id = case_ids[0]
+
+        assert workload_id in workloads_by_id
+        assert case_id in published_cases
+
+        workload = workloads_by_id[workload_id]
+        case = published_cases[case_id]
+        observed = run_benchmark_workload_with_cpython(workload)
+        expected = run_correctness_case_with_cpython(case)
+
+        if workload.operation == "module.compile":
+            assert_pattern_parity("stdlib", observed, expected)
+        else:
+            assert_match_result_parity(
+                "stdlib",
+                observed,
+                expected,
+                check_regs=True,
+            )
 
 
 @pytest.mark.parametrize(
