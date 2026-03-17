@@ -123,6 +123,14 @@ class CompiledPatternModuleHelperCase:
     result_kind: str
 
 
+@dataclass(frozen=True)
+class CompiledPatternModuleHelperErrorCase:
+    case_id: str
+    helper: str
+    pattern: str | bytes
+    args: tuple[object, ...]
+
+
 VERBOSE_COMPILE_WORKFLOW_CASES = (
     VerboseCompileWorkflowCase(
         case_id="fullmatch-digits-without-literal-spaces",
@@ -231,6 +239,56 @@ COMPILED_PATTERN_MODULE_HELPER_CASES = (
         result_kind="value",
     ),
 )
+COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES = (
+    CompiledPatternModuleHelperErrorCase(
+        case_id="compiled-pattern-search-str-on-bytes-string",
+        helper="search",
+        pattern="abc",
+        args=(b"abc",),
+    ),
+    CompiledPatternModuleHelperErrorCase(
+        case_id="compiled-pattern-match-bytes-on-str-string",
+        helper="match",
+        pattern=b"abc",
+        args=("abc",),
+    ),
+    CompiledPatternModuleHelperErrorCase(
+        case_id="compiled-pattern-fullmatch-str-on-bytes-string",
+        helper="fullmatch",
+        pattern="abc",
+        args=(b"abc",),
+    ),
+    CompiledPatternModuleHelperErrorCase(
+        case_id="compiled-pattern-split-str-on-bytes-string",
+        helper="split",
+        pattern="abc",
+        args=(b"zabczz", 1),
+    ),
+    CompiledPatternModuleHelperErrorCase(
+        case_id="compiled-pattern-findall-bytes-on-str-string",
+        helper="findall",
+        pattern=b"abc",
+        args=("zabczz",),
+    ),
+    CompiledPatternModuleHelperErrorCase(
+        case_id="compiled-pattern-finditer-str-on-bytes-string",
+        helper="finditer",
+        pattern="abc",
+        args=(b"zabczz",),
+    ),
+    CompiledPatternModuleHelperErrorCase(
+        case_id="compiled-pattern-sub-str-on-bytes-string",
+        helper="sub",
+        pattern="abc",
+        args=("x", b"zabczz", 1),
+    ),
+    CompiledPatternModuleHelperErrorCase(
+        case_id="compiled-pattern-subn-bytes-on-str-string",
+        helper="subn",
+        pattern=b"abc",
+        args=(b"x", "zabczz", 1),
+    ),
+)
 
 
 def _compile_verbose_regression_pattern(
@@ -259,6 +317,14 @@ def _compile_compiled_pattern_case(
     compiled = regex_api.compile(pattern)
     assert regex_api.compile(compiled) is compiled
     return compiled
+
+
+def _capture_error(callback) -> BaseException:
+    try:
+        callback()
+    except BaseException as error:  # noqa: BLE001 - parity helper compares exception details.
+        return error
+    raise AssertionError("expected call to raise")
 
 
 def _assert_verbose_compile_case_matches_cpython(
@@ -539,6 +605,32 @@ def test_module_helpers_reject_flags_for_compiled_patterns_like_cpython(
         )
 
     assert str(observed_error.value) == str(expected_error.value)
+
+
+@pytest.mark.parametrize(
+    "case",
+    COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_module_helpers_preserve_compiled_pattern_type_errors_like_cpython(
+    regex_backend: tuple[str, object],
+    case: CompiledPatternModuleHelperErrorCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern = _compile_compiled_pattern_case(backend, case.pattern)
+    expected_pattern = _compile_compiled_pattern_case(re, case.pattern)
+
+    assert_pattern_parity(backend_name, observed_pattern, expected_pattern)
+
+    observed_error = _capture_error(
+        lambda: getattr(backend, case.helper)(observed_pattern, *case.args)
+    )
+    expected_error = _capture_error(
+        lambda: getattr(re, case.helper)(expected_pattern, *case.args)
+    )
+
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args
 
 
 @pytest.mark.parametrize("case", CACHE_CASES, ids=lambda case: case.case_id)
