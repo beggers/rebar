@@ -159,11 +159,14 @@ class RecordingNativeBoundary:
 class FixtureBundle:
     manifest: FixtureManifest
     cases: tuple[FixtureCase, ...]
-    expected_manifest_id: str
     expected_patterns: frozenset[str | bytes]
     expected_operation_helper_counts: Counter[tuple[str, str | None]]
     expected_case_ids: frozenset[str] | None = None
     expected_text_models: frozenset[str] | None = None
+
+    @property
+    def expected_manifest_id(self) -> str:
+        return self.manifest.manifest_id
 
 
 @dataclass(frozen=True)
@@ -175,6 +178,41 @@ class FixtureBundleSpec:
     selected_case_ids: tuple[str, ...] | None = None
     expected_case_ids: frozenset[str] | None = None
     expected_text_models: frozenset[str] | None = None
+
+
+def _build_fixture_bundle(
+    manifest: FixtureManifest,
+    cases: tuple[FixtureCase, ...],
+    *,
+    expected_manifest_id: str | None = None,
+    expected_patterns: frozenset[str | bytes],
+    expected_operation_helper_counts: Counter[tuple[str, str | None]],
+    selected_case_ids: tuple[str, ...] | None = None,
+    expected_case_ids: frozenset[str] | None = None,
+    expected_text_models: frozenset[str] | None = None,
+) -> FixtureBundle:
+    if expected_manifest_id is not None and manifest.manifest_id != expected_manifest_id:
+        raise ValueError(
+            f"{manifest.path.name} expected_manifest_id {expected_manifest_id!r} "
+            f"does not match loaded manifest_id {manifest.manifest_id!r}"
+        )
+
+    bundle_text_models = expected_text_models
+    if bundle_text_models is None and selected_case_ids is None:
+        bundle_text_models = frozenset({"str"})
+
+    bundle_case_ids = expected_case_ids
+    if bundle_case_ids is None and selected_case_ids is not None:
+        bundle_case_ids = frozenset(selected_case_ids)
+
+    return FixtureBundle(
+        manifest=manifest,
+        cases=cases,
+        expected_patterns=expected_patterns,
+        expected_operation_helper_counts=expected_operation_helper_counts,
+        expected_case_ids=bundle_case_ids,
+        expected_text_models=bundle_text_models,
+    )
 
 
 def load_fixture_bundles(
@@ -210,23 +248,16 @@ def load_fixture_bundles(
             bundle_cases = tuple(
                 case_by_id[case_id] for case_id in spec.selected_case_ids
             )
-
-        bundle_text_models = spec.expected_text_models
-        if bundle_text_models is None and spec.selected_case_ids is None:
-            bundle_text_models = frozenset({"str"})
-        bundle_case_ids = spec.expected_case_ids
-        if bundle_case_ids is None and spec.selected_case_ids is not None:
-            bundle_case_ids = frozenset(spec.selected_case_ids)
-
         bundles.append(
-            FixtureBundle(
-                manifest=manifest,
-                cases=bundle_cases,
+            _build_fixture_bundle(
+                manifest,
+                bundle_cases,
                 expected_manifest_id=spec.expected_manifest_id,
                 expected_patterns=spec.expected_patterns,
                 expected_operation_helper_counts=spec.expected_operation_helper_counts,
-                expected_case_ids=bundle_case_ids,
-                expected_text_models=bundle_text_models,
+                selected_case_ids=spec.selected_case_ids,
+                expected_case_ids=spec.expected_case_ids,
+                expected_text_models=spec.expected_text_models,
             )
         )
     return tuple(bundles)
@@ -256,10 +287,9 @@ def load_published_fixture_bundles(
         manifest = load_fixture_manifest(path)
         loaded_cases = tuple(manifest.cases)
         bundles.append(
-            FixtureBundle(
-                manifest=manifest,
-                cases=loaded_cases,
-                expected_manifest_id=manifest.manifest_id,
+            _build_fixture_bundle(
+                manifest,
+                loaded_cases,
                 expected_patterns=frozenset(
                     case_pattern(case) for case in loaded_cases
                 ),

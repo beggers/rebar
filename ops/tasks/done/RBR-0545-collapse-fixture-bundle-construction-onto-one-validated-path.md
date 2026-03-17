@@ -1,8 +1,9 @@
 # RBR-0545: Collapse fixture-bundle construction onto one validated path
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
+Completed: 2026-03-17
 
 ## Goal
 - Remove the last duplicated `FixtureBundle` construction path in `tests/python/fixture_parity_support.py` so whole-manifest and selected-case parity helpers materialize bundles through one shared builder instead of two hand-built constructors, and stop storing a second copy of each bundle's manifest id when the typed `FixtureManifest` already owns it.
@@ -104,3 +105,12 @@ Created: 2026-03-17
 - 2026-03-17 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_public_surface_parity_suite.py tests/python/test_callable_replacement_parity_suite.py` passes (`1129 passed in 0.89s`).
   - The inline probe in this task currently fails immediately at `assert "expected_manifest_id" not in {field.name for field in fields(FixtureBundle)}`, which is the exact redundant-field cleanup this task is meant to complete before the mismatch-validation branch can turn green.
+
+## Completion
+- Replaced the duplicate direct `FixtureBundle(...)` construction sites with one shared `_build_fixture_bundle(...)` helper that now owns bundle materialization, the existing `expected_case_ids` and `expected_text_models` defaults, and manifest-id validation for spec-backed loads.
+- Removed `expected_manifest_id` from the `FixtureBundle` dataclass fields while preserving the existing `bundle.expected_manifest_id` surface as a read-only property derived from `bundle.manifest.manifest_id`.
+- Added focused contract coverage for the derived manifest-id surface and the new manifest-id mismatch failure without changing parity-suite expectations or fixture contents.
+
+## Verification
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_public_surface_parity_suite.py tests/python/test_callable_replacement_parity_suite.py` (`1131 passed in 0.94s`)
+- `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` task probe (`ok`)

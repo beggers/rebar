@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from dataclasses import fields
 import pathlib
 import re
 
@@ -31,6 +32,7 @@ from rebar_harness.correctness import (
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
     _match_api_templates,
+    FixtureBundle,
     FixtureBundleSpec,
     RecordingNativeBoundary,
     assert_fixture_bundle_contract,
@@ -969,6 +971,30 @@ def test_fixture_bundle_contract_supports_selected_case_path_and_order_validatio
     )
 
 
+def test_fixture_bundle_exposes_derived_manifest_id_without_storing_duplicate_field() -> None:
+    field_names = {field.name for field in fields(FixtureBundle)}
+    (bundle,) = load_fixture_bundles(
+        (
+            FixtureBundleSpec(
+                fixture_name="named_backreference_workflows.py",
+                expected_manifest_id="named-backreference-workflows",
+                expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
+                expected_operation_helper_counts=Counter(
+                    {
+                        ("compile", None): 1,
+                        ("module_call", "search"): 1,
+                        ("pattern_call", "search"): 1,
+                    }
+                ),
+            ),
+        )
+    )
+
+    assert "expected_manifest_id" not in field_names
+    assert bundle.expected_manifest_id == "named-backreference-workflows"
+    assert bundle.expected_manifest_id == bundle.manifest.manifest_id
+
+
 def test_load_fixture_bundles_rejects_duplicate_selected_case_ids() -> None:
     with pytest.raises(
         ValueError,
@@ -991,6 +1017,33 @@ def test_load_fixture_bundles_rejects_duplicate_selected_case_ids() -> None:
                         {("module_call", "search"): 2}
                     ),
                     expected_text_models=frozenset({"str"}),
+                ),
+            )
+        )
+
+
+def test_load_fixture_bundles_rejects_mismatched_expected_manifest_id() -> None:
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "named_backreference_workflows.py expected_manifest_id "
+            "'wrong-manifest-id' does not match loaded manifest_id "
+            "'named-backreference-workflows'"
+        ),
+    ):
+        load_fixture_bundles(
+            (
+                FixtureBundleSpec(
+                    fixture_name="named_backreference_workflows.py",
+                    expected_manifest_id="wrong-manifest-id",
+                    expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
+                    expected_operation_helper_counts=Counter(
+                        {
+                            ("compile", None): 1,
+                            ("module_call", "search"): 1,
+                            ("pattern_call", "search"): 1,
+                        }
+                    ),
                 ),
             )
         )
