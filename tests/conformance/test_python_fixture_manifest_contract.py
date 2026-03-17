@@ -411,6 +411,59 @@ class PythonFixtureManifestContractTest(unittest.TestCase):
             },
         )
 
+    def test_python_fixture_case_pattern_payload_supports_encoding_override_and_clear_errors(
+        self,
+    ) -> None:
+        fixture_source = """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "pattern-payload-contract",
+            "defaults": {
+                "operation": "compile",
+                "text_model": "bytes",
+                "pattern_encoding": "latin-1",
+            },
+            "cases": [
+                {
+                    "id": "compile-pattern-utf8-bytes",
+                    "pattern": "caf\\u00e9",
+                    "pattern_encoding": "utf-8",
+                },
+                {
+                    "id": "compile-pattern-invalid-text-model",
+                    "pattern": "abc",
+                    "text_model": "utf-16",
+                },
+                {
+                    "id": "compile-pattern-missing-pattern",
+                },
+            ],
+        }
+        """
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_path = self._write_fixture(
+                pathlib.Path(temp_dir),
+                "pattern_payload_contract.py",
+                fixture_source,
+            )
+            cases = load_fixture_manifest(fixture_path).cases
+
+        encoded_case, invalid_text_model_case, missing_pattern_case = cases
+
+        self.assertEqual(encoded_case.pattern, "caf\u00e9")
+        self.assertEqual(encoded_case.pattern_encoding, "utf-8")
+        self.assertEqual(encoded_case.pattern_payload(), b"caf\xc3\xa9")
+
+        with self.assertRaisesRegex(ValueError, r"unsupported text model 'utf-16'"):
+            invalid_text_model_case.pattern_payload()
+
+        with self.assertRaisesRegex(
+            ValueError,
+            r"case 'compile-pattern-missing-pattern' is missing a pattern payload",
+        ):
+            missing_pattern_case.pattern_payload()
+
     def test_python_fixture_manifest_defaults_suite_id_from_layer_and_operation(
         self,
     ) -> None:
