@@ -1173,20 +1173,81 @@ def test_manifest_case_helpers_cover_bundle_manifest_order_and_unselected_rows()
         assert case.kwargs == expected.kwargs
 
 
-def test_published_case_frontier_helper_preserves_ordered_uncovered_case_ids() -> None:
+def _grouped_match_bundle_and_uncovered_case_ids(
+) -> tuple[FixtureBundleSpec, FixtureBundle, tuple[str, ...]]:
     (spec,) = _selected_case_bundle_specs()[1:]
     (bundle,) = load_fixture_bundles((spec,))
+    selected_case_ids = frozenset(spec.selected_case_ids)
+    uncovered_case_ids = tuple(
+        case_id for case_id in manifest_case_ids(bundle) if case_id not in selected_case_ids
+    )
+    return spec, bundle, uncovered_case_ids
+
+
+def test_published_case_frontier_helper_preserves_ordered_uncovered_case_ids() -> None:
+    spec, bundle, uncovered_case_ids = _grouped_match_bundle_and_uncovered_case_ids()
 
     assert_fixture_bundle_tracks_published_case_frontier(
         bundle,
         selected_case_ids=spec.selected_case_ids,
-        expected_uncovered_case_ids=(
-            "grouped-module-search-single-capture-str",
-            "grouped-module-fullmatch-single-capture-str",
-            "grouped-pattern-search-single-capture-str",
-            "grouped-pattern-match-single-capture-str",
-        ),
+        expected_uncovered_case_ids=uncovered_case_ids,
     )
+
+
+def test_published_case_frontier_helper_rejects_selected_and_uncovered_overlap() -> None:
+    spec, bundle, _ = _grouped_match_bundle_and_uncovered_case_ids()
+    overlapping_case_ids = (spec.selected_case_ids[0],)
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "grouped-match-workflows selected and uncovered case ids overlap: "
+            f"{overlapping_case_ids}"
+        ),
+    ):
+        assert_fixture_bundle_tracks_published_case_frontier(
+            bundle,
+            selected_case_ids=spec.selected_case_ids,
+            expected_uncovered_case_ids=overlapping_case_ids,
+        )
+
+
+def test_published_case_frontier_helper_reports_missing_and_unexpected_case_ids() -> None:
+    spec, bundle, uncovered_case_ids = _grouped_match_bundle_and_uncovered_case_ids()
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "grouped-match-workflows published frontier drifted; "
+            "missing published case ids: ('missing-case-id',); "
+            f"unexpected published case ids: {uncovered_case_ids}"
+        ),
+    ):
+        assert_fixture_bundle_tracks_published_case_frontier(
+            bundle,
+            selected_case_ids=spec.selected_case_ids,
+            expected_uncovered_case_ids=("missing-case-id",),
+        )
+
+
+def test_published_case_frontier_helper_reports_uncovered_order_drift() -> None:
+    spec, bundle, uncovered_case_ids = _grouped_match_bundle_and_uncovered_case_ids()
+    reordered_uncovered_case_ids = tuple(reversed(uncovered_case_ids))
+
+    assert reordered_uncovered_case_ids != uncovered_case_ids
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "grouped-match-workflows uncovered published case ids changed; "
+            f"expected {reordered_uncovered_case_ids}, got {uncovered_case_ids}"
+        ),
+    ):
+        assert_fixture_bundle_tracks_published_case_frontier(
+            bundle,
+            selected_case_ids=spec.selected_case_ids,
+            expected_uncovered_case_ids=reordered_uncovered_case_ids,
+        )
 
 
 def test_direct_test_case_id_bucket_helper_accepts_exact_selected_frontier_coverage(
