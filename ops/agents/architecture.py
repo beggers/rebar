@@ -6,8 +6,7 @@ SPEC = {
     "cycle_order": 20,
     "prompt_path": "ops/agents/architecture.md",
     "dispatch": {
-        "mode": "interval",
-        "interval_seconds": 3600,
+        "mode": "every_cycle",
         "timeout_seconds": 2700,
     },
     "codex": {
