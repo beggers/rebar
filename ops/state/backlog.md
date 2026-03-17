@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0570` should catch the quantified-alternation broader-range bytes pair for `rb"a(b|c){1,3}d"` and `rb"a(?P<word>b|c){1,3}d"` up on the existing Python-path benchmark surface, mirroring the six adjacent broader-range workload rows before another quantified-alternation bytes family broadens the frontier.
+`RBR-0572` should publish the bounded quantified-alternation bytes pair for `rb"a(b|c){1,2}d"` and `rb"a(?P<word>b|c){1,2}d"` on the existing correctness/parity path, reopening the quantified-alternation frontier through one exact mixed `str`/`bytes` manifest before Rust-backed bytes parity and later Python-path benchmark catch-up land.
 
 ## Ordered Work
-1. `RBR-0570` should catch the quantified-alternation broader-range bytes pair for `rb"a(b|c){1,3}d"` and `rb"a(?P<word>b|c){1,3}d"` up on `benchmarks/workloads/quantified_alternation_boundary.py`, mirroring the six adjacent broader-range `str` workload rows through the existing Python-path benchmark surface before another quantified-alternation bytes family broadens the frontier.
+1. `RBR-0572` should publish the bounded quantified-alternation bytes pair for `rb"a(b|c){1,2}d"` and `rb"a(?P<word>b|c){1,2}d"` on `tests/conformance/fixtures/quantified_alternation_workflows.py`, extending the existing quantified-alternation manifest and parity suite through one explicit direct-bytes follow-on anchor before Rust-backed bytes parity and the later Python-path benchmark catch-up mirror the six adjacent bounded `str` workload rows.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

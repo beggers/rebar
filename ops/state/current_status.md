@@ -329,7 +329,7 @@ The published frontier is still narrow: all 1184 published correctness cases acr
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0570` should catch the quantified-alternation broader-range bytes pair for `rb"a(b|c){1,3}d"` and `rb"a(?P<word>b|c){1,3}d"` up on the existing Python-path benchmark surface, mirroring the six adjacent broader-range workload rows before another quantified-alternation bytes family broadens the frontier.
+- `RBR-0572` should publish the bounded quantified-alternation bytes pair for `rb"a(b|c){1,2}d"` and `rb"a(?P<word>b|c){1,2}d"` on the existing correctness/parity path, reopening that manifest through one explicit direct-bytes follow-on anchor before Rust-backed bytes parity and the later Python-path benchmark catch-up land.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
