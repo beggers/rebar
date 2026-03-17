@@ -42,6 +42,10 @@ const BYTES_NAMED_BACKREFERENCE_COMPILE_PROXY_PATTERN: &[u8] =
 const OPEN_ENDED_GROUPED_CONDITIONAL_NUMBERED_BYTES_PATTERN: &[u8] = br"a((bc|de){1,})?(?(1)d|e)";
 const OPEN_ENDED_GROUPED_CONDITIONAL_NAMED_BYTES_PATTERN: &[u8] =
     br"a(?P<outer>(bc|de){1,})?(?(outer)d|e)";
+const BROADER_RANGE_OPEN_ENDED_GROUPED_CONDITIONAL_NUMBERED_BYTES_PATTERN: &[u8] =
+    br"a((bc|de){2,})?(?(1)d|e)";
+const BROADER_RANGE_OPEN_ENDED_GROUPED_CONDITIONAL_NAMED_BYTES_PATTERN: &[u8] =
+    br"a(?P<outer>(bc|de){2,})?(?(outer)d|e)";
 const OPEN_ENDED_GROUPED_CONDITIONAL_OUTER_NAME: &str = "outer";
 const OPEN_ENDED_GROUPED_CONDITIONAL_PREFIX_BYTES: &[u8] = b"a";
 const OPEN_ENDED_GROUPED_CONDITIONAL_BRANCHES_BYTES: [&[u8]; 2] = [b"bc", b"de"];
@@ -704,6 +708,7 @@ struct QuantifiedAlternationConditionalPattern<'a> {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct OpenEndedGroupedConditionalBytesPattern {
     outer_name: Option<&'static str>,
+    min_repeat: usize,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -5046,11 +5051,27 @@ fn parse_open_ended_grouped_conditional_pattern_bytes(
 ) -> Option<OpenEndedGroupedConditionalBytesPattern> {
     match pattern {
         OPEN_ENDED_GROUPED_CONDITIONAL_NUMBERED_BYTES_PATTERN => {
-            Some(OpenEndedGroupedConditionalBytesPattern { outer_name: None })
+            Some(OpenEndedGroupedConditionalBytesPattern {
+                outer_name: None,
+                min_repeat: 1,
+            })
         }
         OPEN_ENDED_GROUPED_CONDITIONAL_NAMED_BYTES_PATTERN => {
             Some(OpenEndedGroupedConditionalBytesPattern {
                 outer_name: Some(OPEN_ENDED_GROUPED_CONDITIONAL_OUTER_NAME),
+                min_repeat: 1,
+            })
+        }
+        BROADER_RANGE_OPEN_ENDED_GROUPED_CONDITIONAL_NUMBERED_BYTES_PATTERN => {
+            Some(OpenEndedGroupedConditionalBytesPattern {
+                outer_name: None,
+                min_repeat: 2,
+            })
+        }
+        BROADER_RANGE_OPEN_ENDED_GROUPED_CONDITIONAL_NAMED_BYTES_PATTERN => {
+            Some(OpenEndedGroupedConditionalBytesPattern {
+                outer_name: Some(OPEN_ENDED_GROUPED_CONDITIONAL_OUTER_NAME),
+                min_repeat: 2,
             })
         }
         _ => None,
@@ -11599,6 +11620,7 @@ fn open_ended_grouped_conditional_matches_exact_repeats_bytes(
 }
 
 fn open_ended_grouped_conditional_matches_at_bytes(
+    pattern: &OpenEndedGroupedConditionalBytesPattern,
     flags: i32,
     string: &[u8],
     start: usize,
@@ -11622,7 +11644,7 @@ fn open_ended_grouped_conditional_matches_at_bytes(
         endpos,
     );
 
-    for candidate_count in (1..=max_repeat).rev() {
+    for candidate_count in (pattern.min_repeat..=max_repeat).rev() {
         if let Some((last_branch_span, repeated_end)) =
             open_ended_grouped_conditional_matches_exact_repeats_bytes(
                 flags,
@@ -12413,33 +12435,32 @@ fn find_open_ended_grouped_conditional_match_span_bytes(
 ) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
     match mode {
         MatchMode::Search => (pos..=endpos).find_map(|start| {
-            open_ended_grouped_conditional_matches_at_bytes(flags, string, start, endpos).map(
-                |(outer_span, inner_span, match_end)| {
+            open_ended_grouped_conditional_matches_at_bytes(pattern, flags, string, start, endpos)
+                .map(|(outer_span, inner_span, match_end)| {
                     (
                         (start, match_end),
                         pattern.group_spans(outer_span, inner_span),
                     )
-                },
-            )
+                })
         }),
-        MatchMode::Match => open_ended_grouped_conditional_matches_at_bytes(
-            flags, string, pos, endpos,
-        )
-        .map(|(outer_span, inner_span, match_end)| {
-            (
-                (pos, match_end),
-                pattern.group_spans(outer_span, inner_span),
-            )
-        }),
-        MatchMode::Fullmatch => open_ended_grouped_conditional_matches_at_bytes(
-            flags, string, pos, endpos,
-        )
-        .and_then(|(outer_span, inner_span, match_end)| {
-            (match_end == endpos).then_some((
-                (pos, match_end),
-                pattern.group_spans(outer_span, inner_span),
-            ))
-        }),
+        MatchMode::Match => {
+            open_ended_grouped_conditional_matches_at_bytes(pattern, flags, string, pos, endpos)
+                .map(|(outer_span, inner_span, match_end)| {
+                    (
+                        (pos, match_end),
+                        pattern.group_spans(outer_span, inner_span),
+                    )
+                })
+        }
+        MatchMode::Fullmatch => {
+            open_ended_grouped_conditional_matches_at_bytes(pattern, flags, string, pos, endpos)
+                .and_then(|(outer_span, inner_span, match_end)| {
+                    (match_end == endpos).then_some((
+                        (pos, match_end),
+                        pattern.group_spans(outer_span, inner_span),
+                    ))
+                })
+        }
     }
 }
 
@@ -16771,6 +16792,32 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_broader_range_open_ended_quantified_group_alternation_conditional_bytes_cases(
+    ) {
+        let numbered_outcome = compile(PatternRef::Bytes(br"a((bc|de){2,})?(?(1)d|e)"), 0).unwrap();
+        assert_eq!(numbered_outcome.status, CompileStatus::Compiled);
+        assert_eq!(numbered_outcome.normalized_flags, 0);
+        assert_eq!(numbered_outcome.group_count, 2);
+        assert!(numbered_outcome.named_groups.is_empty());
+
+        let named_outcome = compile(
+            PatternRef::Bytes(br"a(?P<outer>(bc|de){2,})?(?(outer)d|e)"),
+            0,
+        )
+        .unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, 0);
+        assert_eq!(named_outcome.group_count, 2);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "outer".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
     fn compile_accepts_broader_range_open_ended_quantified_group_alternation_cases() {
         let numbered_outcome = compile(PatternRef::Str("a(bc|de){2,}d"), 0).unwrap();
         assert_eq!(numbered_outcome.status, CompileStatus::Compiled);
@@ -17536,6 +17583,63 @@ mod tests {
     ) {
         let outcome = literal_match(
             PatternRef::Bytes(br"a(?P<outer>(bc|de){1,})?(?(outer)d|e)"),
+            0,
+            MatchMode::Search,
+            PatternRef::Bytes(b"zzadedededzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 10)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 9)), Some((7, 9))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn broader_range_open_ended_quantified_group_alternation_conditional_bytes_search_reports_absent_groups(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Bytes(br"a((bc|de){2,})?(?(1)d|e)"),
+            0,
+            MatchMode::Search,
+            PatternRef::Bytes(b"zzaezz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 4)));
+        assert_eq!(outcome.group_spans, vec![None, None]);
+        assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
+    fn broader_range_open_ended_quantified_group_alternation_conditional_bytes_fullmatch_reports_outer_and_inner_spans(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Bytes(br"a((bc|de){2,})?(?(1)d|e)"),
+            0,
+            MatchMode::Fullmatch,
+            PatternRef::Bytes(b"abcbcded"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 8)));
+        assert_eq!(outcome.group_spans, vec![Some((1, 7)), Some((5, 7))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn named_broader_range_open_ended_quantified_group_alternation_conditional_bytes_search_reports_named_outer_lastindex(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Bytes(br"a(?P<outer>(bc|de){2,})?(?(outer)d|e)"),
             0,
             MatchMode::Search,
             PatternRef::Bytes(b"zzadedededzz"),

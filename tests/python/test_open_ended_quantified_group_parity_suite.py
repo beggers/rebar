@@ -245,9 +245,6 @@ OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
         fullmatch_misses=(b"ad",),
     ),
 )
-BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_REBAR_UNSUPPORTED_REASON = (
-    "broader-range open-ended grouped-conditional bytes parity is pending RBR-0537"
-)
 BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
     SupplementalCase(
         id="broader-range-open-ended-grouped-conditional-numbered-bytes",
@@ -255,10 +252,6 @@ BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
         search_matches=(b"zzaezz", b"zzabcbcdzz", b"zzadededzz"),
         fullmatch_matches=(b"abcded", b"abcbcded"),
         fullmatch_misses=(b"abcdede", b"abcd"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_REBAR_UNSUPPORTED_REASON
-        ),
     ),
     SupplementalCase(
         id="broader-range-open-ended-grouped-conditional-named-bytes",
@@ -266,10 +259,6 @@ BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
         search_matches=(b"zzaezz", b"zzadededzz", b"zzadedededzz"),
         fullmatch_matches=(b"abcbcded",),
         fullmatch_misses=(b"ad",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_REBAR_UNSUPPORTED_REASON
-        ),
     ),
 )
 DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS = frozenset(
@@ -561,11 +550,8 @@ def test_broader_range_open_ended_conditional_bytes_cases_stay_explicit_with_one
     )
 
     for case in BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert (
-            case.unsupported_backend_reason
-            == BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_REBAR_UNSUPPORTED_REASON
-        )
+        assert case.unsupported_backends == ()
+        assert case.unsupported_backend_reason is None
         assert case.search_misses == ()
         assert set(case.search_matches).isdisjoint(case.search_misses)
         assert set(case.fullmatch_matches).isdisjoint(case.fullmatch_misses)

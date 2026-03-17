@@ -1,6 +1,6 @@
 # RBR-0537: Convert the broader-range open-ended grouped-alternation-plus-conditional bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -36,6 +36,16 @@ Created: 2026-03-17
 - Keep this slice Rust-backed, not Python-only.
 
 ## Notes
+- 2026-03-17 completion:
+  - Added bounded Rust compile and match support for the exact broader-range open-ended `{2,}` grouped-alternation-plus-conditional bytes pair in `crates/rebar-core/src/lib.rs`, keeping the slice limited to `rb"a((bc|de){2,})?(?(1)d|e)"` and `rb"a(?P<outer>(bc|de){2,})?(?(outer)d|e)"`.
+  - Updated `tests/python/test_open_ended_quantified_group_parity_suite.py` so `BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES` stays the direct bytes anchor but now runs as ordinary backend parity coverage instead of an explicit `rebar` unsupported follow-on.
+  - No code changes were required in `crates/rebar-cpython/src/lib.rs` or `python/rebar/__init__.py`; the existing native compile and literal-match marshalling already handled this bytes slice once the core returned supported outcomes.
+  - Regenerated the tracked combined scorecard in `reports/correctness/latest.py`; the published report now shows `1094` total / `1094` passed / `0` unimplemented across `111` manifests, and `match.broader_range_open_ended_quantified_group_alternation_conditional` now shows `28` total / `28` passed / `0` unimplemented.
+  - Verified with:
+    - `cargo build -p rebar-cpython`
+    - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+    - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/broader_range_open_ended_quantified_group_alternation_conditional_workflows.py --report .rebar/tmp/rbr-0537-broader-range-open-ended-grouped-conditional-bytes-parity.py`
+    - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
 - Build on `RBR-0535`.
 - 2026-03-17 feature-planning probes confirm this task is not stale:
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`;
