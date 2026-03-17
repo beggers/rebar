@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness report now covers 1136 cases across 111 manifests, with 1120 passing, 0 explicit failures, and 16 honest gaps; the main benchmark report covers 650 workloads across 30 manifests with 650 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the current published slice is broader but still incomplete and too narrow for near-full parity or native-path performance claims.
 
 ## README Next Steps
-- No feature task is seeded. `RBR-0550` is the next intended follow-on: convert the open-ended `{1,}` grouped alternation bytes pair behind `rebar._rebar`.
+- `RBR-0550` is ready: convert the open-ended `{1,}` grouped alternation bytes pair behind `rebar._rebar` on the existing parity surface for `rb"a(bc|de){1,}d"` and `rb"a(?P<word>bc|de){1,}d"`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published frontier is still narrow: 1136 published correctness cases across 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- No feature task is currently seeded in `ops/tasks/ready/`. `RBR-0550` is the next intended follow-on: convert the open-ended `{1,}` grouped alternation bytes pair behind `rebar._rebar`.
+- `RBR-0552` should add the six adjacent bytes benchmark mirrors for `rb"a(bc|de){1,}d"` and `rb"a(?P<word>bc|de){1,}d"` on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

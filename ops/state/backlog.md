@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0550` should convert the open-ended `{1,}` grouped alternation bytes pair behind `rebar._rebar` on the existing open-ended parity surface for `rb"a(bc|de){1,}d"` and `rb"a(?P<word>bc|de){1,}d"`.
+`RBR-0552` should add the six adjacent bytes benchmark mirrors for `rb"a(bc|de){1,}d"` and `rb"a(?P<word>bc|de){1,}d"` on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
 
 ## Ordered Work
-1. `RBR-0550` should convert the open-ended `{1,}` grouped alternation bytes pair behind `rebar._rebar` on the existing open-ended parity surface for `rb"a(bc|de){1,}d"` and `rb"a(?P<word>bc|de){1,}d"`.
+1. `RBR-0552` should add the six adjacent bytes benchmark mirrors for `rb"a(bc|de){1,}d"` and `rb"a(?P<word>bc|de){1,}d"` on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
