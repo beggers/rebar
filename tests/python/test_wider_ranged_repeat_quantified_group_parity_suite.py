@@ -343,11 +343,6 @@ NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES = (
         search_matches=(b"zzafzz", b"zzabcdezz", b"zzadedezz"),
         fullmatch_matches=(b"abcbcdede",),
         fullmatch_misses=(b"abcbcded", b"ae"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            "rebar backend does not yet support nested broader grouped-conditional "
-            "bytes parity"
-        ),
     ),
     SupplementalCase(
         id="nested-broader-range-wider-ranged-repeat-grouped-conditional-named-bytes",
@@ -355,11 +350,6 @@ NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES = (
         search_matches=(b"zzafzz", b"zzadedezz", b"zzadededededezz"),
         fullmatch_matches=(b"abcbcdede",),
         fullmatch_misses=(b"ae", b"abcbcbcbcbcde"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            "rebar backend does not yet support nested broader grouped-conditional "
-            "bytes parity"
-        ),
     ),
 )
 NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES = (
@@ -877,12 +867,8 @@ def test_nested_broader_range_conditional_bytes_cases_stay_explicit_with_one_dir
     )
 
     for case in NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert (
-            case.unsupported_backend_reason
-            == "rebar backend does not yet support nested broader grouped-conditional "
-            "bytes parity"
-        )
+        assert case.unsupported_backends == ()
+        assert case.unsupported_backend_reason is None
         assert case.search_misses == ()
         assert len(case.search_matches) == 3
         assert len(case.fullmatch_matches) == 1

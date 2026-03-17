@@ -79,6 +79,18 @@ const NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_BRAN
     [&[u8]; 2] = [b"bc", b"de"];
 const NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_SUFFIX_BYTES: &[u8] =
     b"d";
+const NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_CONDITIONAL_NUMBERED_BYTES_PATTERN: &[u8] =
+    br"a(((bc|de){1,4})d)?(?(1)e|f)";
+const NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_CONDITIONAL_NAMED_BYTES_PATTERN:
+    &[u8] = br"a(?P<outer>((bc|de){1,4})d)?(?(outer)e|f)";
+const NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_CONDITIONAL_OUTER_NAME:
+    &str = "outer";
+const NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_CONDITIONAL_PREFIX_BYTES:
+    &[u8] = b"a";
+const NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_CONDITIONAL_YES_BRANCH_BYTES:
+    &[u8] = b"e";
+const NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_CONDITIONAL_NO_BRANCH_BYTES:
+    &[u8] = b"f";
 
 /// Borrowed pattern or subject input.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -2279,6 +2291,29 @@ fn compile_known_supported_case(
                     pattern,
                 )
                 .expect("guarded nested broader-range grouped alternation bytes literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
+                warning: None,
+            })
+        }
+        PatternRef::Bytes(pattern)
+            if parse_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_pattern_bytes(
+                pattern,
+            )
+            .is_some()
+                && normalized_flags == 0 =>
+        {
+            let grouped_pattern =
+                parse_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_pattern_bytes(
+                    pattern,
+                )
+                .expect(
+                    "guarded nested broader-range grouped alternation conditional bytes literal",
+                );
             Some(CompileOutcome {
                 status: CompileStatus::Compiled,
                 normalized_flags,
@@ -5005,6 +5040,45 @@ fn parse_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_p
     }
 }
 
+fn parse_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_pattern_bytes(
+    pattern: &[u8],
+) -> Option<NestedBroaderRangeWiderRangedRepeatQuantifiedGroupAlternationConditionalPattern<'static>>
+{
+    match pattern {
+        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_CONDITIONAL_NUMBERED_BYTES_PATTERN => {
+            Some(
+                NestedBroaderRangeWiderRangedRepeatQuantifiedGroupAlternationConditionalPattern {
+                    prefix: "a",
+                    outer_name: None,
+                    branches: vec!["bc", "de"],
+                    middle: "d",
+                    yes_branch: "e",
+                    no_branch: "f",
+                    min_repeat: 1,
+                    max_repeat: 4,
+                },
+            )
+        }
+        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_CONDITIONAL_NAMED_BYTES_PATTERN => {
+            Some(
+                NestedBroaderRangeWiderRangedRepeatQuantifiedGroupAlternationConditionalPattern {
+                    prefix: "a",
+                    outer_name: Some(
+                        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_CONDITIONAL_OUTER_NAME,
+                    ),
+                    branches: vec!["bc", "de"],
+                    middle: "d",
+                    yes_branch: "e",
+                    no_branch: "f",
+                    min_repeat: 1,
+                    max_repeat: 4,
+                },
+            )
+        }
+        _ => None,
+    }
+}
+
 fn parse_optional_group_conditional_pattern_str(
     pattern: &str,
 ) -> Option<OptionalGroupConditionalPattern<'_>> {
@@ -7635,6 +7709,53 @@ fn literal_match_bytes(
 
         let (span, group_spans) =
             find_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_match_span_bytes(
+                &grouped_pattern,
+                flags,
+                mode,
+                string,
+                normalized_pos,
+                normalized_endpos,
+            )
+            .map_or((None, Vec::new()), |(span, group_spans)| {
+                (Some(span), group_spans)
+            });
+        let lastindex = if span.is_some() {
+            grouped_pattern.matched_lastindex(&group_spans)
+        } else {
+            None
+        };
+        return MatchOutcome {
+            status: if span.is_some() {
+                MatchStatus::Matched
+            } else {
+                MatchStatus::NoMatch
+            },
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            span,
+            group_spans,
+            lastindex,
+        };
+    }
+
+    if let Some(grouped_pattern) =
+        parse_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_pattern_bytes(
+            pattern,
+        )
+    {
+        if flags != 0 {
+            return MatchOutcome {
+                status: MatchStatus::Unsupported,
+                pos: normalized_pos,
+                endpos: normalized_endpos,
+                span: None,
+                group_spans: Vec::new(),
+                lastindex: None,
+            };
+        }
+
+        let (span, group_spans) =
+            find_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_match_span_bytes(
                 &grouped_pattern,
                 flags,
                 mode,
@@ -11522,6 +11643,76 @@ fn nested_broader_range_wider_ranged_repeat_quantified_group_alternation_matches
     None
 }
 
+fn nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_matches_at_bytes(
+    flags: i32,
+    string: &[u8],
+    start: usize,
+    endpos: usize,
+) -> Option<(
+    Option<(usize, usize)>,
+    Option<(usize, usize)>,
+    Option<(usize, usize)>,
+    usize,
+)> {
+    if !literal_matches_at_bytes(
+        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_CONDITIONAL_PREFIX_BYTES,
+        flags,
+        string,
+        start,
+        endpos,
+    ) {
+        return None;
+    }
+
+    let repetition_start = start
+        + NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_CONDITIONAL_PREFIX_BYTES
+            .len();
+    for candidate_count in (1..=4).rev() {
+        if let Some((branch_span, outer_end)) =
+            nested_broader_range_wider_ranged_repeat_quantified_group_alternation_matches_exact_repeats_bytes(
+                flags,
+                string,
+                repetition_start,
+                endpos,
+                candidate_count,
+            )
+        {
+            if literal_matches_at_bytes(
+                NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_CONDITIONAL_YES_BRANCH_BYTES,
+                flags,
+                string,
+                outer_end,
+                endpos,
+            ) {
+                return Some((
+                    Some((repetition_start, outer_end)),
+                    Some((repetition_start, branch_span.1)),
+                    Some(branch_span),
+                    outer_end
+                        + NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_CONDITIONAL_YES_BRANCH_BYTES
+                            .len(),
+                ));
+            }
+        }
+    }
+
+    literal_matches_at_bytes(
+        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_CONDITIONAL_NO_BRANCH_BYTES,
+        flags,
+        string,
+        repetition_start,
+        endpos,
+    )
+    .then_some((
+        None,
+        None,
+        None,
+        repetition_start
+            + NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_CONDITIONAL_NO_BRANCH_BYTES
+                .len(),
+    ))
+}
+
 fn quantified_branch_local_backreference_matches_at_str(
     pattern: &QuantifiedBranchLocalBackreferencePattern<'_>,
     flags: i32,
@@ -11881,6 +12072,51 @@ fn find_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_ma
                 (match_end == endpos).then_some((
                     (pos, match_end),
                     pattern.group_spans(outer_span, inner_span),
+                ))
+            })
+        }
+    }
+}
+
+fn find_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_match_span_bytes(
+    pattern: &NestedBroaderRangeWiderRangedRepeatQuantifiedGroupAlternationConditionalPattern<'_>,
+    flags: i32,
+    mode: MatchMode,
+    string: &[u8],
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    match mode {
+        MatchMode::Search => (pos..=endpos).find_map(|start| {
+            nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_matches_at_bytes(
+                flags, string, start, endpos,
+            )
+            .map(|(outer_span, inner_span, branch_span, match_end)| {
+                (
+                    (start, match_end),
+                    pattern.group_spans(outer_span, inner_span, branch_span),
+                )
+            })
+        }),
+        MatchMode::Match => {
+            nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_matches_at_bytes(
+                flags, string, pos, endpos,
+            )
+            .map(|(outer_span, inner_span, branch_span, match_end)| {
+                (
+                    (pos, match_end),
+                    pattern.group_spans(outer_span, inner_span, branch_span),
+                )
+            })
+        }
+        MatchMode::Fullmatch => {
+            nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_matches_at_bytes(
+                flags, string, pos, endpos,
+            )
+            .and_then(|(outer_span, inner_span, branch_span, match_end)| {
+                (match_end == endpos).then_some((
+                    (pos, match_end),
+                    pattern.group_spans(outer_span, inner_span, branch_span),
                 ))
             })
         }

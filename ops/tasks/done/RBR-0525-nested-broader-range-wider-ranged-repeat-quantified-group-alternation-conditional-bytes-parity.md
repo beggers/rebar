@@ -1,6 +1,6 @@
 # RBR-0525: Convert the nested broader-range wider-ranged-repeat grouped-conditional bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -41,4 +41,9 @@ Created: 2026-03-17
   - `reports/correctness/latest.py` currently publishes `match.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional` at `28` total / `14` passed / `14` unimplemented, with the bytes subset still at `14` total / `0` passed / `14` unimplemented;
   - `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` still marks `NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES` as unsupported for `rebar`; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`.
+- 2026-03-17 completion:
+  - Landed the bounded bytes parser and match path in `crates/rebar-core/src/lib.rs` for `rb"a(((bc|de){1,4})d)?(?(1)e|f)"` and `rb"a(?P<outer>((bc|de){1,4})d)?(?(outer)e|f)"`, including compile metadata, search/fullmatch execution, capture spans, and `lastindex` parity through the existing native boundary.
+  - Dropped the temporary `rebar` unsupported gating from `NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES` in `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`; no `crates/rebar-cpython/src/lib.rs` or `python/rebar/__init__.py` change was needed because the generic native compile/match paths already forward bytes patterns through `core_compile()` and `core_literal_match()`.
+  - Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py --report .rebar/tmp/rbr-0525-nested-broader-range-grouped-conditional-bytes-parity.py` (`28` total / `28` passed / `0` unimplemented), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
+  - Republished `reports/correctness/latest.py`; the tracked report now reads `1053` total / `1053` passed / `0` unimplemented overall, and `match.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional` now reads `28` total / `28` passed / `0` unimplemented.
 - The surviving follow-on after this task is `RBR-0527`, which should add the six bytes mirrors of the current nested broader grouped-conditional source-tree benchmark rows on `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py` before nested broader grouped backtracking-heavy or deeper bytes slices reopen that family.
