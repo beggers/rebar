@@ -39,6 +39,14 @@ const PARSER_STRESS_COMPILE_PROXY_PATTERN: &str =
     r"(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\d{2}))?(?:(?<=foo)bar)?(?P=lemma)";
 const BYTES_NAMED_BACKREFERENCE_COMPILE_PROXY_PATTERN: &[u8] =
     br"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}";
+const OPEN_ENDED_GROUPED_CONDITIONAL_NUMBERED_BYTES_PATTERN: &[u8] = br"a((bc|de){1,})?(?(1)d|e)";
+const OPEN_ENDED_GROUPED_CONDITIONAL_NAMED_BYTES_PATTERN: &[u8] =
+    br"a(?P<outer>(bc|de){1,})?(?(outer)d|e)";
+const OPEN_ENDED_GROUPED_CONDITIONAL_OUTER_NAME: &str = "outer";
+const OPEN_ENDED_GROUPED_CONDITIONAL_PREFIX_BYTES: &[u8] = b"a";
+const OPEN_ENDED_GROUPED_CONDITIONAL_BRANCHES_BYTES: [&[u8]; 2] = [b"bc", b"de"];
+const OPEN_ENDED_GROUPED_CONDITIONAL_YES_BRANCH_BYTES: &[u8] = b"d";
+const OPEN_ENDED_GROUPED_CONDITIONAL_NO_BRANCH_BYTES: &[u8] = b"e";
 const BROADER_RANGE_GROUPED_BACKTRACKING_HEAVY_NUMBERED_BYTES_PATTERN: &[u8] = br"a((bc|b)c){1,4}d";
 const BROADER_RANGE_GROUPED_BACKTRACKING_HEAVY_NAMED_BYTES_PATTERN: &[u8] =
     br"a(?P<word>(bc|b)c){1,4}d";
@@ -691,6 +699,11 @@ struct QuantifiedAlternationConditionalPattern<'a> {
     no_branch: &'a str,
     min_repeat: usize,
     max_repeat: Option<usize>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct OpenEndedGroupedConditionalBytesPattern {
+    outer_name: Option<&'static str>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1592,6 +1605,35 @@ impl<'a> QuantifiedAlternationConditionalPattern<'a> {
     }
 }
 
+impl OpenEndedGroupedConditionalBytesPattern {
+    fn group_count(&self) -> usize {
+        2
+    }
+
+    fn named_groups(&self) -> Vec<NamedGroup> {
+        self.outer_name
+            .map(|name| {
+                vec![NamedGroup {
+                    name: name.to_string(),
+                    index: 1,
+                }]
+            })
+            .unwrap_or_default()
+    }
+
+    fn group_spans(
+        &self,
+        outer_span: Option<(usize, usize)>,
+        inner_span: Option<(usize, usize)>,
+    ) -> Vec<Option<(usize, usize)>> {
+        vec![outer_span, inner_span]
+    }
+
+    fn matched_lastindex(&self, group_spans: &[Option<(usize, usize)>]) -> Option<usize> {
+        group_spans.first().copied().flatten().map(|_| 1)
+    }
+}
+
 impl BroaderRangeGroupedConditionalBytesPattern {
     fn group_count(&self) -> usize {
         2
@@ -2231,6 +2273,21 @@ fn compile_known_supported_case(
                     name: "tag".to_string(),
                     index: 1,
                 }],
+                warning: None,
+            })
+        }
+        PatternRef::Bytes(pattern)
+            if parse_open_ended_grouped_conditional_pattern_bytes(pattern).is_some()
+                && normalized_flags == 0 =>
+        {
+            let grouped_pattern = parse_open_ended_grouped_conditional_pattern_bytes(pattern)
+                .expect("guarded open-ended grouped conditional bytes literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
                 warning: None,
             })
         }
@@ -4982,6 +5039,22 @@ fn parse_quantified_alternation_conditional_pattern_str(
         min_repeat,
         max_repeat,
     })
+}
+
+fn parse_open_ended_grouped_conditional_pattern_bytes(
+    pattern: &[u8],
+) -> Option<OpenEndedGroupedConditionalBytesPattern> {
+    match pattern {
+        OPEN_ENDED_GROUPED_CONDITIONAL_NUMBERED_BYTES_PATTERN => {
+            Some(OpenEndedGroupedConditionalBytesPattern { outer_name: None })
+        }
+        OPEN_ENDED_GROUPED_CONDITIONAL_NAMED_BYTES_PATTERN => {
+            Some(OpenEndedGroupedConditionalBytesPattern {
+                outer_name: Some(OPEN_ENDED_GROUPED_CONDITIONAL_OUTER_NAME),
+            })
+        }
+        _ => None,
+    }
 }
 
 fn parse_broader_range_grouped_conditional_pattern_bytes(
@@ -7908,6 +7981,48 @@ fn literal_match_bytes(
             .map_or((None, Vec::new()), |(span, group_spans)| {
                 (Some(span), group_spans)
             });
+        let lastindex = if span.is_some() {
+            grouped_pattern.matched_lastindex(&group_spans)
+        } else {
+            None
+        };
+        return MatchOutcome {
+            status: if span.is_some() {
+                MatchStatus::Matched
+            } else {
+                MatchStatus::NoMatch
+            },
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            span,
+            group_spans,
+            lastindex,
+        };
+    }
+
+    if let Some(grouped_pattern) = parse_open_ended_grouped_conditional_pattern_bytes(pattern) {
+        if flags != 0 {
+            return MatchOutcome {
+                status: MatchStatus::Unsupported,
+                pos: normalized_pos,
+                endpos: normalized_endpos,
+                span: None,
+                group_spans: Vec::new(),
+                lastindex: None,
+            };
+        }
+
+        let (span, group_spans) = find_open_ended_grouped_conditional_match_span_bytes(
+            &grouped_pattern,
+            flags,
+            mode,
+            string,
+            normalized_pos,
+            normalized_endpos,
+        )
+        .map_or((None, Vec::new()), |(span, group_spans)| {
+            (Some(span), group_spans)
+        });
         let lastindex = if span.is_some() {
             grouped_pattern.matched_lastindex(&group_spans)
         } else {
@@ -11431,6 +11546,122 @@ fn quantified_alternation_conditional_matches_at_str<'a>(
     .then_some((None, None, branch_start + no_branch_chars.len()))
 }
 
+fn open_ended_grouped_conditional_open_ended_max_repeats_bytes(
+    flags: i32,
+    string: &[u8],
+    start: usize,
+    endpos: usize,
+) -> usize {
+    let mut cursor = start;
+    let mut repeat_count = 0;
+
+    loop {
+        let Some(branch) = OPEN_ENDED_GROUPED_CONDITIONAL_BRANCHES_BYTES
+            .iter()
+            .copied()
+            .find(|branch| literal_matches_at_bytes(branch, flags, string, cursor, endpos))
+        else {
+            break;
+        };
+
+        repeat_count += 1;
+        cursor += branch.len();
+    }
+
+    repeat_count
+}
+
+fn open_ended_grouped_conditional_matches_exact_repeats_bytes(
+    flags: i32,
+    string: &[u8],
+    start: usize,
+    endpos: usize,
+    repeat_count: usize,
+) -> Option<((usize, usize), usize)> {
+    let mut cursor = start;
+    let mut last_branch_span = None;
+
+    for _ in 0..repeat_count {
+        let Some(branch) = OPEN_ENDED_GROUPED_CONDITIONAL_BRANCHES_BYTES
+            .iter()
+            .copied()
+            .find(|branch| literal_matches_at_bytes(branch, flags, string, cursor, endpos))
+        else {
+            return None;
+        };
+
+        let branch_end = cursor + branch.len();
+        last_branch_span = Some((cursor, branch_end));
+        cursor = branch_end;
+    }
+
+    last_branch_span.map(|span| (span, cursor))
+}
+
+fn open_ended_grouped_conditional_matches_at_bytes(
+    flags: i32,
+    string: &[u8],
+    start: usize,
+    endpos: usize,
+) -> Option<(Option<(usize, usize)>, Option<(usize, usize)>, usize)> {
+    if !literal_matches_at_bytes(
+        OPEN_ENDED_GROUPED_CONDITIONAL_PREFIX_BYTES,
+        flags,
+        string,
+        start,
+        endpos,
+    ) {
+        return None;
+    }
+
+    let branch_start = start + OPEN_ENDED_GROUPED_CONDITIONAL_PREFIX_BYTES.len();
+    let max_repeat = open_ended_grouped_conditional_open_ended_max_repeats_bytes(
+        flags,
+        string,
+        branch_start,
+        endpos,
+    );
+
+    for candidate_count in (1..=max_repeat).rev() {
+        if let Some((last_branch_span, repeated_end)) =
+            open_ended_grouped_conditional_matches_exact_repeats_bytes(
+                flags,
+                string,
+                branch_start,
+                endpos,
+                candidate_count,
+            )
+        {
+            if literal_matches_at_bytes(
+                OPEN_ENDED_GROUPED_CONDITIONAL_YES_BRANCH_BYTES,
+                flags,
+                string,
+                repeated_end,
+                endpos,
+            ) {
+                return Some((
+                    Some((branch_start, repeated_end)),
+                    Some(last_branch_span),
+                    repeated_end + OPEN_ENDED_GROUPED_CONDITIONAL_YES_BRANCH_BYTES.len(),
+                ));
+            }
+        }
+    }
+
+    literal_matches_at_bytes(
+        OPEN_ENDED_GROUPED_CONDITIONAL_NO_BRANCH_BYTES,
+        flags,
+        string,
+        branch_start,
+        endpos,
+    )
+    .then_some((
+        None,
+        None,
+        branch_start + OPEN_ENDED_GROUPED_CONDITIONAL_NO_BRANCH_BYTES.len(),
+    ))
+}
+
 fn broader_range_grouped_conditional_matches_at_bytes(
     flags: i32,
     string: &[u8],
@@ -12161,6 +12392,46 @@ fn find_broader_range_grouped_conditional_match_span_bytes(
             )
         }),
         MatchMode::Fullmatch => broader_range_grouped_conditional_matches_at_bytes(
+            flags, string, pos, endpos,
+        )
+        .and_then(|(outer_span, inner_span, match_end)| {
+            (match_end == endpos).then_some((
+                (pos, match_end),
+                pattern.group_spans(outer_span, inner_span),
+            ))
+        }),
+    }
+}
+
+fn find_open_ended_grouped_conditional_match_span_bytes(
+    pattern: &OpenEndedGroupedConditionalBytesPattern,
+    flags: i32,
+    mode: MatchMode,
+    string: &[u8],
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    match mode {
+        MatchMode::Search => (pos..=endpos).find_map(|start| {
+            open_ended_grouped_conditional_matches_at_bytes(flags, string, start, endpos).map(
+                |(outer_span, inner_span, match_end)| {
+                    (
+                        (start, match_end),
+                        pattern.group_spans(outer_span, inner_span),
+                    )
+                },
+            )
+        }),
+        MatchMode::Match => open_ended_grouped_conditional_matches_at_bytes(
+            flags, string, pos, endpos,
+        )
+        .map(|(outer_span, inner_span, match_end)| {
+            (
+                (pos, match_end),
+                pattern.group_spans(outer_span, inner_span),
+            )
+        }),
+        MatchMode::Fullmatch => open_ended_grouped_conditional_matches_at_bytes(
             flags, string, pos, endpos,
         )
         .and_then(|(outer_span, inner_span, match_end)| {
@@ -16475,6 +16746,31 @@ mod tests {
     }
 
     #[test]
+    fn compile_accepts_open_ended_quantified_group_alternation_conditional_bytes_cases() {
+        let numbered_outcome = compile(PatternRef::Bytes(br"a((bc|de){1,})?(?(1)d|e)"), 0).unwrap();
+        assert_eq!(numbered_outcome.status, CompileStatus::Compiled);
+        assert_eq!(numbered_outcome.normalized_flags, 0);
+        assert_eq!(numbered_outcome.group_count, 2);
+        assert!(numbered_outcome.named_groups.is_empty());
+
+        let named_outcome = compile(
+            PatternRef::Bytes(br"a(?P<outer>(bc|de){1,})?(?(outer)d|e)"),
+            0,
+        )
+        .unwrap();
+        assert_eq!(named_outcome.status, CompileStatus::Compiled);
+        assert_eq!(named_outcome.normalized_flags, 0);
+        assert_eq!(named_outcome.group_count, 2);
+        assert_eq!(
+            named_outcome.named_groups,
+            vec![NamedGroup {
+                name: "outer".to_string(),
+                index: 1,
+            }]
+        );
+    }
+
+    #[test]
     fn compile_accepts_broader_range_open_ended_quantified_group_alternation_cases() {
         let numbered_outcome = compile(PatternRef::Str("a(bc|de){2,}d"), 0).unwrap();
         assert_eq!(numbered_outcome.status, CompileStatus::Compiled);
@@ -17187,6 +17483,62 @@ mod tests {
             FLAG_UNICODE,
             MatchMode::Search,
             PatternRef::Str("zzadedededzz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 10)));
+        assert_eq!(outcome.group_spans, vec![Some((3, 9)), Some((7, 9))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn open_ended_quantified_group_alternation_conditional_bytes_search_reports_absent_groups() {
+        let outcome = literal_match(
+            PatternRef::Bytes(br"a((bc|de){1,})?(?(1)d|e)"),
+            0,
+            MatchMode::Search,
+            PatternRef::Bytes(b"zzaezz"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((2, 4)));
+        assert_eq!(outcome.group_spans, vec![None, None]);
+        assert_eq!(outcome.lastindex, None);
+    }
+
+    #[test]
+    fn open_ended_quantified_group_alternation_conditional_bytes_fullmatch_reports_outer_and_inner_spans(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Bytes(br"a((bc|de){1,})?(?(1)d|e)"),
+            0,
+            MatchMode::Fullmatch,
+            PatternRef::Bytes(b"abcbcded"),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert_eq!(outcome.status, MatchStatus::Matched);
+        assert_eq!(outcome.span, Some((0, 8)));
+        assert_eq!(outcome.group_spans, vec![Some((1, 7)), Some((5, 7))]);
+        assert_eq!(outcome.lastindex, Some(1));
+    }
+
+    #[test]
+    fn named_open_ended_quantified_group_alternation_conditional_bytes_search_reports_named_outer_lastindex(
+    ) {
+        let outcome = literal_match(
+            PatternRef::Bytes(br"a(?P<outer>(bc|de){1,})?(?(outer)d|e)"),
+            0,
+            MatchMode::Search,
+            PatternRef::Bytes(b"zzadedededzz"),
             0,
             None,
         )

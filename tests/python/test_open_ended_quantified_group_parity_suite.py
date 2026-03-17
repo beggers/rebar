@@ -6,7 +6,6 @@ from itertools import product
 import re
 
 import pytest
-import rebar
 
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
@@ -226,9 +225,6 @@ NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES = (
 DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS = frozenset(
     {"open-ended-quantified-group-alternation-conditional-workflows"}
 )
-PENDING_REBAR_CONDITIONAL_BYTES_REASON = (
-    "rebar bytes parity for the open-ended grouped conditional remains queued behind RBR-0533"
-)
 OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
     SupplementalCase(
         id="open-ended-grouped-conditional-numbered-bytes",
@@ -236,8 +232,6 @@ OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
         search_matches=(b"zzaezz", b"zzabcdzz", b"zzadedzz"),
         fullmatch_matches=(b"abcded", b"abcbcded"),
         fullmatch_misses=(b"abcde",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=PENDING_REBAR_CONDITIONAL_BYTES_REASON,
     ),
     SupplementalCase(
         id="open-ended-grouped-conditional-named-bytes",
@@ -245,18 +239,8 @@ OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
         search_matches=(b"zzaezz", b"zzadedzz", b"zzadedededzz"),
         fullmatch_matches=(b"abcbcded",),
         fullmatch_misses=(b"ad",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=PENDING_REBAR_CONDITIONAL_BYTES_REASON,
     ),
 )
-
-
-@pytest.fixture
-def rebar_backend() -> object:
-    if not rebar.native_module_loaded():
-        pytest.skip("backend parity requires rebar._rebar")
-    return rebar
-
 
 def _uses_direct_bytes_follow_on(case: FixtureCase) -> bool:
     return (
@@ -429,8 +413,8 @@ def test_open_ended_conditional_bytes_cases_stay_explicit_with_one_direct_follow
     )
 
     for case in OPEN_ENDED_CONDITIONAL_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert case.unsupported_backend_reason == PENDING_REBAR_CONDITIONAL_BYTES_REASON
+        assert case.unsupported_backends == ()
+        assert case.unsupported_backend_reason is None
         assert case.search_misses == ()
         assert set(case.search_matches).isdisjoint(case.search_misses)
         assert set(case.fullmatch_matches).isdisjoint(case.fullmatch_misses)
@@ -775,27 +759,6 @@ def test_open_ended_conditional_bytes_pattern_fullmatch_match_group_access_match
         assert observed is not None
         assert expected is not None
         _assert_match_group_access_apis_match_cpython(observed, expected)
-
-
-@pytest.mark.parametrize(
-    "case",
-    OPEN_ENDED_CONDITIONAL_BYTES_CASES,
-    ids=lambda case: case.id,
-)
-def test_open_ended_conditional_bytes_remain_explicitly_unimplemented_for_rebar(
-    rebar_backend: object,
-    case: SupplementalCase,
-) -> None:
-    placeholder = r"rebar\.compile\(\) is a scaffold placeholder"
-
-    with pytest.raises(NotImplementedError, match=placeholder):
-        rebar_backend.compile(case.pattern)
-
-    with pytest.raises(NotImplementedError, match=placeholder):
-        rebar_backend.search(case.pattern, case.search_matches[0])
-
-    with pytest.raises(NotImplementedError, match=placeholder):
-        rebar_backend.fullmatch(case.pattern, case.fullmatch_misses[0])
 
 
 @pytest.mark.parametrize(
