@@ -224,6 +224,7 @@ class Pattern:
             unsupported=self._raise_placeholder,
             helper_name="sub",
             allow_native_template_passthrough=_allow_native_template_passthrough(self.pattern),
+            defer_cross_type_mismatch=True,
         )
         if _native is not None:
             return _run_native_literal_sub(self, compatible_replacement, string, count=count)
@@ -238,6 +239,7 @@ class Pattern:
             unsupported=self._raise_placeholder,
             helper_name="subn",
             allow_native_template_passthrough=_allow_native_template_passthrough(self.pattern),
+            defer_cross_type_mismatch=True,
         )
         if _native is not None:
             return _run_native_literal_subn(self, compatible_replacement, string, count=count)
@@ -1131,6 +1133,15 @@ def _run_native_literal_subn(
     *,
     helper_name: str = "subn",
 ) -> tuple[str | bytes, int]:
+    deferred_cross_type_result = _deferred_cross_type_replacement_result(
+        compiled_pattern,
+        repl,
+        string,
+        count,
+    )
+    if deferred_cross_type_result is not _DEFERRED_CROSS_TYPE_REPLACEMENT_UNHANDLED:
+        return deferred_cross_type_result
+
     if callable(repl):
         return _run_native_literal_callable_subn(
             compiled_pattern,
@@ -1745,6 +1756,7 @@ def _ensure_literal_replacement_payload(
     unsupported,
     helper_name: str,
     allow_native_template_passthrough: bool = False,
+    defer_cross_type_mismatch: bool = False,
 ) -> object:
     if callable(repl):
         if isinstance(pattern, bytes):
@@ -1754,6 +1766,8 @@ def _ensure_literal_replacement_payload(
 
     if isinstance(pattern, str):
         if not isinstance(repl, str):
+            if defer_cross_type_mismatch and isinstance(repl, (bytes, bytearray, memoryview)):
+                return repl
             raise TypeError(f"sequence item 0: expected str instance, {type(repl).__name__} found")
         if (
             "\\" in repl
@@ -1765,11 +1779,53 @@ def _ensure_literal_replacement_payload(
         return repl
 
     if not isinstance(repl, bytes):
+        if defer_cross_type_mismatch and isinstance(repl, str):
+            return repl
         raise TypeError(f"sequence item 0: expected a bytes-like object, {type(repl).__name__} found")
     if b"\\" in repl:
         unsupported(helper_name)
         raise AssertionError("unsupported() should raise")  # pragma: no cover
     return repl
+
+
+_DEFERRED_CROSS_TYPE_REPLACEMENT_UNHANDLED = object()
+
+
+def _deferred_cross_type_replacement_result(
+    compiled_pattern: Pattern,
+    repl: object,
+    string: object,
+    count: int,
+) -> tuple[str | bytes, int] | object:
+    pattern = compiled_pattern.pattern
+    if isinstance(pattern, str):
+        if not isinstance(repl, (bytes, bytearray, memoryview)):
+            return _DEFERRED_CROSS_TYPE_REPLACEMENT_UNHANDLED
+    elif not isinstance(repl, str):
+        return _DEFERRED_CROSS_TYPE_REPLACEMENT_UNHANDLED
+
+    compatible_string = _ensure_compatible_string(pattern, string)
+    normalized_count = operator.index(count)
+    if normalized_count < 0:
+        return compatible_string, 0
+
+    first_match = _dispatch_pattern_match(
+        compiled_pattern,
+        "search",
+        compatible_string,
+    )
+    if first_match is None:
+        return compatible_string, 0
+
+    item_index = 0 if first_match.start() == 0 else 1
+    if isinstance(pattern, str):
+        raise TypeError(
+            f"sequence item {item_index}: expected str instance, {type(repl).__name__} found"
+        )
+    raise TypeError(
+        "sequence item "
+        f"{item_index}: expected a bytes-like object, {type(repl).__name__} found"
+    )
 
 
 def _expand_literal_replacement_template(template: str, whole_match: str) -> str | None:
@@ -1834,6 +1890,15 @@ def _run_literal_subn(
     *,
     helper_name: str = "subn",
 ) -> tuple[str | bytes, int]:
+    deferred_cross_type_result = _deferred_cross_type_replacement_result(
+        compiled_pattern,
+        repl,
+        string,
+        count,
+    )
+    if deferred_cross_type_result is not _DEFERRED_CROSS_TYPE_REPLACEMENT_UNHANDLED:
+        return deferred_cross_type_result
+
     compatible_string = _ensure_compatible_string(compiled_pattern.pattern, string)
     normalized_count = operator.index(count)
     if normalized_count < 0:
@@ -1861,6 +1926,7 @@ def _run_literal_subn(
         repl,
         unsupported=compiled_pattern._raise_placeholder,
         helper_name=helper_name,
+        defer_cross_type_mismatch=True,
     )
     remaining = None if normalized_count == 0 else normalized_count
     parts: list[str] | list[bytes] = []
@@ -2038,6 +2104,7 @@ def _validate_module_literal_replacement_request(
         unsupported=_raise_placeholder,
         helper_name=helper_name,
         allow_native_template_passthrough=_allow_native_template_passthrough(pattern),
+        defer_cross_type_mismatch=True,
     )
     if (
         isinstance(pattern, str)
