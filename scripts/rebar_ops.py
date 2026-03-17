@@ -2755,7 +2755,7 @@ def load_correctness_harness_module() -> Any:
 
 def expected_correctness_manifest_ids(correctness_harness: Any) -> list[str]:
     fixture_paths = tuple(Path(path) for path in correctness_harness.DEFAULT_FIXTURE_PATHS)
-    manifests, _ = correctness_harness.load_fixture_manifests(fixture_paths)
+    manifests = correctness_harness.load_fixture_manifests(fixture_paths)
     return [
         manifest_id
         for manifest_id in (

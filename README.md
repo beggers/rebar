@@ -13,7 +13,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | The published correctness slice now covers 977 cases across 110 manifests, with all 977 passing and no current `unimplemented` gaps; the main benchmark report covers 588 workloads with 585 real `rebar` timings and 3 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | The ready queue is empty; the surviving intended follow-on is `RBR-0503`, the bounded Python-path benchmark republish for that same optional-group conditional pair now that it is Rust-backed. |
+| Current milestone | The surviving frontier is `RBR-0503`: republish the exact optional-group conditional pair `a(b)?(?(1)c|d)e` and `a(?P<word>b)?(?(word)c|d)e` on the existing `benchmarks/workloads/optional_group_boundary.py` Python-path benchmark surface, anchored to `module-search-numbered-optional-group-conditional-cold-gap`, once that pair is Rust-backed. |
 | Work queue | `0` ready, `0` in progress, `502` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `585` of `588` published workloa
 
 ### Immediate Next Steps
 
-- The surviving intended follow-on is `RBR-0503`: republish the exact optional-group conditional pair `a(b)?(?(1)c|d)e` / `a(?P<word>b)?(?(word)c|d)e` on the existing `optional-group-boundary` Python-path benchmark surface.
+- The surviving post-drain frontier is `RBR-0503`: republish the exact optional-group conditional pair `a(b)?(?(1)c|d)e` / `a(?P<word>b)?(?(word)c|d)e` on the existing `optional_group_boundary.py` benchmark surface.
 
 ### Current Risks
 
