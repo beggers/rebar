@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0568` should convert the quantified-alternation broader-range bytes pair for `rb"a(b|c){1,3}d"` and `rb"a(?P<word>b|c){1,3}d"` to real Rust-backed parity on the existing quantified-alternation correctness/parity surface before Python-path benchmark catch-up reopens the same family.
+`RBR-0570` should catch the quantified-alternation broader-range bytes pair for `rb"a(b|c){1,3}d"` and `rb"a(?P<word>b|c){1,3}d"` up on the existing Python-path benchmark surface, mirroring the six adjacent broader-range workload rows before another quantified-alternation bytes family broadens the frontier.
 
 ## Ordered Work
-1. `RBR-0568` should convert the quantified-alternation broader-range bytes pair for `rb"a(b|c){1,3}d"` and `rb"a(?P<word>b|c){1,3}d"` through the direct `QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES` anchor on `tests/python/test_quantified_alternation_parity_suite.py`, landing the bounded bytes compile/search/fullmatch parity slice before Python-path benchmark catch-up or another quantified-alternation bytes family broadens the frontier.
+1. `RBR-0570` should catch the quantified-alternation broader-range bytes pair for `rb"a(b|c){1,3}d"` and `rb"a(?P<word>b|c){1,3}d"` up on `benchmarks/workloads/quantified_alternation_boundary.py`, mirroring the six adjacent broader-range `str` workload rows through the existing Python-path benchmark surface before another quantified-alternation bytes family broadens the frontier.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
