@@ -196,19 +196,6 @@ def _sorted_published_fixture_subset(
     return selected_filenames
 
 
-def _published_callable_replacement_fixture_filenames() -> tuple[str, ...]:
-    published_fixture_filenames = _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR[
-        PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
-    ]
-    return tuple(
-        sorted(
-            filename
-            for filename in published_fixture_filenames
-            if filename.endswith("_callable_replacement_workflows.py")
-        )
-    )
-
-
 _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
     {
         COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
@@ -283,7 +270,20 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
         LITERAL_FLAG_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
             "literal_flag_workflows.py",
         ),
-        CALLABLE_REPLACEMENT_FIXTURE_SELECTOR: _published_callable_replacement_fixture_filenames(),
+        CALLABLE_REPLACEMENT_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
+            "conditional_group_exists_callable_replacement_workflows.py",
+            "grouped_alternation_callable_replacement_workflows.py",
+            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
+            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+            "nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+            "nested_group_alternation_callable_replacement_workflows.py",
+            "nested_group_callable_replacement_workflows.py",
+            "nested_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+            "quantified_nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+            "quantified_nested_group_alternation_callable_replacement_workflows.py",
+            "quantified_nested_group_callable_replacement_workflows.py",
+        ),
         OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR: (
             _sorted_published_fixture_subset(
                 "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
