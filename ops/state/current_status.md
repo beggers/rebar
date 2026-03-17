@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 1080 cases across 111 manifests, with 1067 passing, 0 explicit failures, and 13 honest gaps; the main benchmark report covers 626 workloads across 30 manifests with 626 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the project is broader again but still clearly partial.
 
 ## README Next Steps
-- With the queue drained, the surviving frontier is `RBR-0533`: convert the reopened 13-case open-ended grouped-alternation-plus-conditional bytes pair behind `rebar._rebar` and return the published correctness slice to `1080/1080` before bytes benchmark catch-up widens that family.
+- Next ready head is `RBR-0533`: convert the reopened 13-case open-ended grouped-alternation-plus-conditional bytes pair behind `rebar._rebar` and return the published correctness slice to `1080/1080` before bytes benchmark catch-up widens that family.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: 1067 of 1080 published correctness cases pa
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- With the queue drained, the surviving frontier is `RBR-0533`: convert the reopened 13-case open-ended grouped-alternation-plus-conditional bytes pair behind `rebar._rebar` and return `reports/correctness/latest.py` to `1080/1080` before bytes benchmark catch-up widens that family.
+- After ready `RBR-0533` drains, the surviving frontier is `RBR-0534`: add the six adjacent bytes benchmark mirrors for the same open-ended grouped-alternation-plus-conditional pair on `benchmarks/workloads/open_ended_quantified_group_boundary.py` so that manifest moves from `36` total / `36` measured / `0` known gaps to `42` / `42` / `0` and the combined source-tree report moves from `626` / `626` / `0` to `632` / `632` / `0` before broader-range open-ended grouped work widens that family.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
