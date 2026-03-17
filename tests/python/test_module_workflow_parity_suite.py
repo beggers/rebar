@@ -345,6 +345,16 @@ ESCAPE_COMPATIBLE_INPUT_CASES = (
     ),
 )
 
+# CPython accepts multiple zero-valued flag spellings for compiled-pattern entry
+# points; keep those variants covered in one place so helper wrappers do not
+# drift into special-casing only one form.
+COMPILED_PATTERN_ZERO_FLAG_MODES = (
+    pytest.param("default", id="default"),
+    pytest.param("noflag", id="explicit-noflag"),
+    pytest.param("int-zero", id="explicit-int-zero"),
+    pytest.param("bool-false", id="explicit-bool-false"),
+)
+
 
 def _compile_verbose_regression_pattern(
     backend_name: str,
@@ -385,7 +395,27 @@ def _compile_with_flag_mode(
         return regex_api.compile(pattern, regex_api.NOFLAG)
     if flag_mode == "int-zero":
         return regex_api.compile(pattern, int(regex_api.NOFLAG))
+    if flag_mode == "bool-false":
+        return regex_api.compile(pattern, False)
     raise AssertionError(f"unsupported compile flag mode {flag_mode!r}")
+
+
+def _call_module_helper_with_flag_mode(
+    regex_api: object,
+    compiled_pattern: object,
+    case: CompiledPatternModuleHelperCase,
+    flag_mode: str,
+) -> object:
+    helper = getattr(regex_api, case.helper)
+    if flag_mode == "default":
+        return helper(compiled_pattern, *case.args)
+    if flag_mode == "noflag":
+        return helper(compiled_pattern, *case.args, flags=regex_api.NOFLAG)
+    if flag_mode == "int-zero":
+        return helper(compiled_pattern, *case.args, flags=int(regex_api.NOFLAG))
+    if flag_mode == "bool-false":
+        return helper(compiled_pattern, *case.args, flags=False)
+    raise AssertionError(f"unsupported module helper flag mode {flag_mode!r}")
 
 
 def _capture_error(callback) -> BaseException:
@@ -501,11 +531,7 @@ def test_explicit_noflag_compile_workflows_match_default_and_cpython(
 
 @pytest.mark.parametrize(
     "flag_mode",
-    (
-        pytest.param("default", id="default"),
-        pytest.param("noflag", id="explicit-noflag"),
-        pytest.param("int-zero", id="explicit-int-zero"),
-    ),
+    COMPILED_PATTERN_ZERO_FLAG_MODES,
 )
 @pytest.mark.parametrize(
     "case",
@@ -637,6 +663,10 @@ def test_compiled_pattern_workflows_match_cpython(
 
 
 @pytest.mark.parametrize(
+    "flag_mode",
+    COMPILED_PATTERN_ZERO_FLAG_MODES,
+)
+@pytest.mark.parametrize(
     "case",
     COMPILED_PATTERN_MODULE_HELPER_CASES,
     ids=lambda case: case.case_id,
@@ -644,6 +674,7 @@ def test_compiled_pattern_workflows_match_cpython(
 def test_module_helpers_accept_compiled_patterns_with_cpython_parity(
     regex_backend: tuple[str, object],
     case: CompiledPatternModuleHelperCase,
+    flag_mode: str,
 ) -> None:
     backend_name, backend = regex_backend
     observed_pattern = _compile_compiled_pattern_case(backend, case.pattern)
@@ -651,46 +682,17 @@ def test_module_helpers_accept_compiled_patterns_with_cpython_parity(
 
     assert_pattern_parity(backend_name, observed_pattern, expected_pattern)
 
-    observed = getattr(backend, case.helper)(observed_pattern, *case.args)
-    expected = getattr(re, case.helper)(expected_pattern, *case.args)
-
-    if case.result_kind == "match":
-        assert_match_result_parity(backend_name, observed, expected, check_regs=True)
-        assert expected is not None
-        assert_match_convenience_api_parity(observed, expected)
-        return
-
-    if case.result_kind == "iter":
-        assert_finditer_parity(backend_name, observed, expected, check_regs=True)
-        return
-
-    assert observed == expected
-
-
-@pytest.mark.parametrize(
-    "case",
-    COMPILED_PATTERN_MODULE_HELPER_CASES,
-    ids=lambda case: case.case_id,
-)
-def test_module_helpers_accept_explicit_noflag_for_compiled_patterns_like_cpython(
-    regex_backend: tuple[str, object],
-    case: CompiledPatternModuleHelperCase,
-) -> None:
-    backend_name, backend = regex_backend
-    observed_pattern = _compile_compiled_pattern_case(backend, case.pattern)
-    expected_pattern = _compile_compiled_pattern_case(re, case.pattern)
-
-    assert_pattern_parity(backend_name, observed_pattern, expected_pattern)
-
-    observed = getattr(backend, case.helper)(
+    observed = _call_module_helper_with_flag_mode(
+        backend,
         observed_pattern,
-        *case.args,
-        flags=backend.NOFLAG,
+        case,
+        flag_mode,
     )
-    expected = getattr(re, case.helper)(
+    expected = _call_module_helper_with_flag_mode(
+        re,
         expected_pattern,
-        *case.args,
-        flags=re.NOFLAG,
+        case,
+        flag_mode,
     )
 
     if case.result_kind == "match":
