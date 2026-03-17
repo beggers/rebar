@@ -480,6 +480,12 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS: dict[
             "module-search-numbered-wider-ranged-repeat-group-open-ended-lower-bound-bc-warm-str",
             "pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-gap",
             "pattern-fullmatch-named-wider-ranged-repeat-group-open-ended-fourth-repetition-de-purged-str",
+            "module-compile-numbered-wider-ranged-repeat-group-open-ended-cold-bytes",
+            "module-search-numbered-wider-ranged-repeat-group-open-ended-lower-bound-bc-warm-bytes",
+            "pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-bytes",
+            "module-compile-named-wider-ranged-repeat-group-open-ended-warm-bytes",
+            "module-search-named-wider-ranged-repeat-group-open-ended-lower-bound-de-warm-bytes",
+            "pattern-fullmatch-named-wider-ranged-repeat-group-open-ended-fourth-repetition-de-purged-bytes",
         ),
         shape_expectation=_combined_manifest_shape(
             representative_measured_workload_ids=(

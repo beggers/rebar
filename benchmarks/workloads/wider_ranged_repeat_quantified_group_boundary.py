@@ -1730,6 +1730,232 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-compile-numbered-wider-ranged-repeat-group-open-ended-cold-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a((bc|de){1,})d",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "nested-group",
+        "bytes",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation"
+      ],
+      "notes": [
+        "Cold bytes module.compile benchmark for the bounded numbered nested open-ended grouped-alternation slice so compile metadata timing reaches the published benchmark report on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-numbered-wider-ranged-repeat-group-open-ended-lower-bound-bc-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a((bc|de){1,})d",
+      "haystack": "zzabcdzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "nested-group",
+        "search",
+        "module",
+        "lower-bound",
+        "bc",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the bounded numbered nested open-ended grouped-alternation workflow at the one-repetition `bc` lower bound."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a((bc|de){1,})d",
+      "haystack": "abcbcded",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "nested-group",
+        "fullmatch",
+        "mixed",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the bounded numbered nested open-ended grouped-alternation workflow on a mixed `bc`, `bc`, then `de` branch order."
+      ]
+    },
+    {
+      "id": "module-compile-named-wider-ranged-repeat-group-open-ended-warm-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<outer>(bc|de){1,})d",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "nested-group",
+        "named-group",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm bytes module.compile benchmark for the bounded named nested open-ended grouped-alternation slice so the visible `outer` capture reaches the published benchmark report on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-named-wider-ranged-repeat-group-open-ended-lower-bound-de-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<outer>(bc|de){1,})d",
+      "haystack": "zzadedzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "alternation",
+        "grouped",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "nested-group",
+        "named-group",
+        "search",
+        "module",
+        "lower-bound",
+        "de",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the bounded named nested open-ended grouped-alternation workflow at the one-repetition `de` lower bound."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-wider-ranged-repeat-group-open-ended-fourth-repetition-de-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<outer>(bc|de){1,})d",
+      "haystack": "adededed",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "nested-group",
+        "named-group",
+        "fullmatch",
+        "de",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the bounded named nested open-ended grouped-alternation workflow after four `de` branch repetitions."
+      ]
+    },
+    {
       "id": "module-compile-numbered-wider-ranged-repeat-group-conditional-cold-str",
       "bucket": "module-compile",
       "family": "module",

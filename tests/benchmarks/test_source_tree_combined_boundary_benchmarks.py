@@ -468,8 +468,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
         manifest_summary = scorecard["manifests"][WIDER_RANGED_REPEAT_MANIFEST_ID]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
-        self.assertEqual(manifest_summary["measured_workloads"], 94)
-        self.assertEqual(manifest_summary["workload_count"], 94)
+        self.assertEqual(manifest_summary["measured_workloads"], 100)
+        self.assertEqual(manifest_summary["workload_count"], 100)
 
         for workload_id in expected_workload_ids:
             with self.subTest(measured_workload_id=workload_id):
@@ -528,8 +528,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
         manifest_summary = scorecard["manifests"][WIDER_RANGED_REPEAT_MANIFEST_ID]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
-        self.assertEqual(manifest_summary["measured_workloads"], 94)
-        self.assertEqual(manifest_summary["workload_count"], 94)
+        self.assertEqual(manifest_summary["measured_workloads"], 100)
+        self.assertEqual(manifest_summary["workload_count"], 100)
 
         for workload_id in expected_workload_ids:
             with self.subTest(measured_workload_id=workload_id):
@@ -589,8 +589,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
         manifest_summary = scorecard["manifests"][WIDER_RANGED_REPEAT_MANIFEST_ID]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
-        self.assertEqual(manifest_summary["measured_workloads"], 94)
-        self.assertEqual(manifest_summary["workload_count"], 94)
+        self.assertEqual(manifest_summary["measured_workloads"], 100)
+        self.assertEqual(manifest_summary["workload_count"], 100)
 
         for workload_id in expected_workload_ids:
             with self.subTest(measured_workload_id=workload_id):
@@ -649,8 +649,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
         manifest_summary = scorecard["manifests"][WIDER_RANGED_REPEAT_MANIFEST_ID]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
-        self.assertEqual(manifest_summary["measured_workloads"], 94)
-        self.assertEqual(manifest_summary["workload_count"], 94)
+        self.assertEqual(manifest_summary["measured_workloads"], 100)
+        self.assertEqual(manifest_summary["workload_count"], 100)
 
         for workload_id in expected_workload_ids:
             with self.subTest(measured_workload_id=workload_id):
@@ -710,8 +710,68 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
         manifest_summary = scorecard["manifests"][WIDER_RANGED_REPEAT_MANIFEST_ID]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
-        self.assertEqual(manifest_summary["measured_workloads"], 94)
-        self.assertEqual(manifest_summary["workload_count"], 94)
+        self.assertEqual(manifest_summary["measured_workloads"], 100)
+        self.assertEqual(manifest_summary["workload_count"], 100)
+
+        for workload_id in expected_workload_ids:
+            with self.subTest(measured_workload_id=workload_id):
+                assert_benchmark_workload_contract(
+                    self,
+                    find_workload_record(scorecard, workload_id),
+                    manifest_id=WIDER_RANGED_REPEAT_MANIFEST_ID,
+                    workload_document=find_workload_document(
+                        case.target_manifest,
+                        workload_id,
+                    ),
+                    expected_status="measured",
+                )
+
+    def test_wider_ranged_repeat_manifest_promotes_nested_open_ended_grouped_alternation_bytes_rows_to_measured(
+        self,
+    ) -> None:
+        expected_workload_ids = (
+            "module-compile-numbered-wider-ranged-repeat-group-open-ended-cold-bytes",
+            "module-search-numbered-wider-ranged-repeat-group-open-ended-lower-bound-bc-warm-bytes",
+            "pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-bytes",
+            "module-compile-named-wider-ranged-repeat-group-open-ended-warm-bytes",
+            "module-search-named-wider-ranged-repeat-group-open-ended-lower-bound-de-warm-bytes",
+            "pattern-fullmatch-named-wider-ranged-repeat-group-open-ended-fourth-repetition-de-purged-bytes",
+        )
+        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+            WIDER_RANGED_REPEAT_MANIFEST_ID
+        ]
+        self.assertIsNone(manifest_definition.known_gap_workload_ids)
+        self.assertIsNone(
+            manifest_definition.representative_known_gap_workload_ids
+        )
+        for workload_id in expected_workload_ids:
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(
+                    workload_id,
+                    manifest_definition.representative_measured_workload_ids,
+                )
+
+        case = source_tree_combined_case(WIDER_RANGED_REPEAT_MANIFEST_ID)
+        manifest_expectation = case.manifest_expectation
+        self.assertEqual(manifest_expectation.known_gap_count, 0)
+        self.assertEqual(
+            manifest_expectation.representative_known_gap_workload_ids,
+            (),
+        )
+        for workload_id in expected_workload_ids:
+            with self.subTest(public_workload_id=workload_id):
+                self.assertIn(
+                    workload_id,
+                    manifest_expectation.representative_measured_workload_ids,
+                )
+
+        _, scorecard = run_source_tree_benchmark_scorecard(
+            [case.target_manifest.path]
+        )
+        manifest_summary = scorecard["manifests"][WIDER_RANGED_REPEAT_MANIFEST_ID]
+        self.assertEqual(manifest_summary["known_gap_count"], 0)
+        self.assertEqual(manifest_summary["measured_workloads"], 100)
+        self.assertEqual(manifest_summary["workload_count"], 100)
 
         for workload_id in expected_workload_ids:
             with self.subTest(measured_workload_id=workload_id):

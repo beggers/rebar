@@ -1,6 +1,6 @@
 # RBR-0530: Catch the nested open-ended grouped-alternation bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -47,3 +47,6 @@ Created: 2026-03-17
   - `reports/benchmarks/latest.py` currently publishes `wider-ranged-repeat-quantified-group-boundary` at `94` total workloads / `94` measured workloads / `0` known gaps and the combined source-tree report at `620` total workloads / `620` measured workloads / `0` known gaps; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this run show both target bytes patterns compile plus representative `search()` / `fullmatch()` calls succeed through `rebar`, so these benchmark rows should measure rather than reopen a runtime gap.
 - The surviving follow-on after this task is `RBR-0532`, which should publish the open-ended `{1,}` grouped-alternation-plus-conditional bytes pair on the existing open-ended correctness/parity path before bytes parity or benchmark catch-up widen that family.
+
+## Completion Notes
+- 2026-03-17: Added the six nested open-ended grouped-alternation bytes benchmark mirrors to `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py`, updated the wider-ranged source-tree benchmark expectations/tests, and regenerated `reports/benchmarks/latest.py`. Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py --report .rebar/tmp/rbr-0530-nested-open-ended-grouped-alternation-bytes-benchmarks.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`. The tracked benchmark publication now shows `wider-ranged-repeat-quantified-group-boundary` at `100` total / `100` measured / `0` known gaps and the combined source-tree report at `626` total / `626` measured / `0` known gaps.
