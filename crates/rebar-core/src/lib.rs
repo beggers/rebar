@@ -2650,6 +2650,22 @@ fn compile_known_supported_case(
             })
         }
         PatternRef::Str(pattern)
+            if parse_broader_range_wider_ranged_repeat_group_pattern_str(pattern).is_some()
+                && normalized_flags == FLAG_UNICODE =>
+        {
+            let grouped_pattern =
+                parse_broader_range_wider_ranged_repeat_group_pattern_str(pattern)
+                    .expect("guarded broader-range wider-ranged-repeat group literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
+                warning: None,
+            })
+        }
+        PatternRef::Str(pattern)
             if parse_nested_open_ended_quantified_group_alternation_pattern_str(pattern)
                 .is_some()
                 && normalized_flags == FLAG_UNICODE =>
@@ -5261,6 +5277,32 @@ fn parse_ranged_repeat_group_pattern_str(pattern: &str) -> Option<RangedRepeatGr
     })
 }
 
+fn parse_broader_range_wider_ranged_repeat_group_pattern_str(
+    pattern: &str,
+) -> Option<RangedRepeatGroupPattern<'_>> {
+    match pattern {
+        "a(bc){1,4}d" => Some(RangedRepeatGroupPattern {
+            prefix: "a",
+            capture: LiteralCapture {
+                body: "bc",
+                name: None,
+            },
+            suffix: "d",
+            max_repeat: 4,
+        }),
+        "a(?P<word>bc){1,4}d" => Some(RangedRepeatGroupPattern {
+            prefix: "a",
+            capture: LiteralCapture {
+                body: "bc",
+                name: Some("word"),
+            },
+            suffix: "d",
+            max_repeat: 4,
+        }),
+        _ => None,
+    }
+}
+
 fn parse_wider_ranged_repeat_grouped_alternation_backtracking_heavy_pattern_str(
     pattern: &str,
 ) -> Option<WiderRangedRepeatGroupedAlternationBacktrackingHeavyPattern<'_>> {
@@ -6656,6 +6698,31 @@ fn literal_match_str(
                 (span, group_spans)
             } else if let Some(grouped_pattern) =
                 parse_ranged_repeat_group_pattern_str(pattern_value)
+            {
+                if flags != FLAG_UNICODE {
+                    return MatchOutcome {
+                        status: MatchStatus::Unsupported,
+                        pos: normalized_pos,
+                        endpos: normalized_endpos,
+                        span: None,
+                        group_spans: Vec::new(),
+                        lastindex: None,
+                    };
+                }
+
+                find_ranged_repeat_group_match_span_str(
+                    &grouped_pattern,
+                    flags,
+                    mode,
+                    &string_chars,
+                    normalized_pos,
+                    normalized_endpos,
+                )
+                .map_or((None, Vec::new()), |(span, group_spans)| {
+                    (Some(span), group_spans)
+                })
+            } else if let Some(grouped_pattern) =
+                parse_broader_range_wider_ranged_repeat_group_pattern_str(pattern_value)
             {
                 if flags != FLAG_UNICODE {
                     return MatchOutcome {

@@ -67,6 +67,25 @@ FIXTURE_BUNDLE_SPECS = (
         ),
     ),
     FixtureBundleSpec(
+        "broader_range_wider_ranged_repeat_quantified_group_workflows.py",
+        expected_manifest_id=(
+            "broader-range-wider-ranged-repeat-quantified-group-workflows"
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(bc){1,4}d",
+                r"a(?P<word>bc){1,4}d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 2,
+            }
+        ),
+    ),
+    FixtureBundleSpec(
         "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
         expected_manifest_id=(
             "wider-ranged-repeat-quantified-group-alternation-conditional-workflows"

@@ -1,6 +1,6 @@
 # RBR-0507: Add broader-range wider-ranged-repeat quantified-group parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -36,3 +36,10 @@ Created: 2026-03-17
 - Build on `RBR-0505`.
 - Keep the follow-on benchmark catch-up on the existing workload ids `module-search-numbered-broader-ranged-repeat-group-cold-gap` and `module-search-numbered-ranged-repeat-group-wider-range-cold-gap` in `benchmarks/workloads/exact_repeat_quantified_group_boundary.py` and `benchmarks/workloads/ranged_repeat_quantified_group_boundary.py` instead of inventing another benchmark family for this bounded slice.
 - 2026-03-17 feature-planning probe: the tracked `reports/correctness/latest.py` publication still shows `match.broader_range_wider_ranged_repeat_quantified_group` at `6` total / `0` passed / `6` unimplemented, so this task is not stale.
+
+## Completion Note
+- 2026-03-17 feature-implementation: added a narrow Rust parser/dispatch path for `a(bc){1,4}d` and `a(?P<word>bc){1,4}d` in `crates/rebar-core/src/lib.rs` by reusing the existing ranged-repeat grouped matcher without broadening grouped alternation, grouped conditionals, backtracking-heavy grouped execution, open-ended repeats, or bytes support.
+- Updated `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` to load `broader_range_wider_ranged_repeat_quantified_group_workflows.py` on the existing backend-parameterized wider-ranged-repeat parity surface.
+- Verified `cargo build -p rebar-cpython`, then `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`926 passed, 10 skipped, 1089 subtests passed in 21.86s`).
+- Verified `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/broader_range_wider_ranged_repeat_quantified_group_workflows.py --report .rebar/tmp/rbr-0507-broader-range-wider-ranged-repeat.py` produced `6` total / `6` passed / `0` unimplemented.
+- Verified the tracked `reports/correctness/latest.py` publication now reports `983` total / `983` passed / `0` unimplemented overall, and `match.broader_range_wider_ranged_repeat_quantified_group` at `6` total / `6` passed / `0` unimplemented.
