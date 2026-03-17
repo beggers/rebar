@@ -12,7 +12,7 @@ import warnings
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from functools import lru_cache
-from typing import Any, Iterable, Sequence
+from typing import Any, Callable, Iterable, Sequence
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -726,13 +726,20 @@ class Adapter:
         raise ValueError(f"unsupported operation {case.operation!r}")
 
     def observe_compile(self, case: FixtureCase) -> dict[str, Any]:
-        raise NotImplementedError
+        return self._observe_compiled_pattern(case, normalize_pattern_metadata)
 
     def observe_pattern_metadata(self, case: FixtureCase) -> dict[str, Any]:
-        raise NotImplementedError
+        return self._observe_compiled_pattern(case, normalize_pattern_object_metadata)
 
     def observe_pattern_call(self, case: FixtureCase) -> dict[str, Any]:
-        raise NotImplementedError
+        if case.helper is None:
+            raise ValueError(f"case {case.case_id!r} requires a helper name")
+
+        def observe_bound_helper(compiled_pattern: Any) -> Any:
+            result = getattr(compiled_pattern, case.helper)(*case.args, **case.kwargs)
+            return _normalize_value(result)
+
+        return self._observe_compiled_pattern(case, observe_bound_helper)
 
     def observe_cache_workflow(self, case: FixtureCase) -> dict[str, Any]:
         raise NotImplementedError
@@ -822,6 +829,36 @@ class Adapter:
         purge_helper = getattr(self.module, "purge")
         return purge_helper()
 
+    def _observe_compiled_pattern(
+        self,
+        case: FixtureCase,
+        observe_compiled_pattern: Callable[[Any], Any],
+    ) -> dict[str, Any]:
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            try:
+                compiled_pattern = self._compile_pattern(case)
+                result = observe_compiled_pattern(compiled_pattern)
+            except Exception as exc:  # pragma: no cover - exercised by fixtures
+                return finalize_observation(
+                    adapter=self.adapter_name,
+                    case=case,
+                    outcome=self._observation_outcome_for_exception(exc),
+                    warnings_payload=normalize_warning_records(caught),
+                    exception=normalize_exception(exc),
+                )
+
+        return finalize_observation(
+            adapter=self.adapter_name,
+            case=case,
+            outcome="success",
+            warnings_payload=normalize_warning_records(caught),
+            result=result,
+        )
+
+    def _observation_outcome_for_exception(self, exc: BaseException) -> str:
+        return "exception"
+
 
 class CpythonReAdapter(Adapter):
     adapter_name = "cpython.re"
@@ -829,76 +866,6 @@ class CpythonReAdapter(Adapter):
 
     def _compile_pattern(self, case: FixtureCase) -> Any:
         return cpython_re.compile(case.pattern_payload(), case.flags or 0)
-
-    def observe_compile(self, case: FixtureCase) -> dict[str, Any]:
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            try:
-                compiled = self._compile_pattern(case)
-            except Exception as exc:  # pragma: no cover - exercised by fixtures
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="exception",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-
-        return finalize_observation(
-            adapter=self.adapter_name,
-            case=case,
-            outcome="success",
-            warnings_payload=normalize_warning_records(caught),
-            result=normalize_pattern_metadata(compiled),
-        )
-
-    def observe_pattern_metadata(self, case: FixtureCase) -> dict[str, Any]:
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            try:
-                compiled = self._compile_pattern(case)
-            except Exception as exc:  # pragma: no cover - exercised by fixtures
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="exception",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-
-        return finalize_observation(
-            adapter=self.adapter_name,
-            case=case,
-            outcome="success",
-            warnings_payload=normalize_warning_records(caught),
-            result=normalize_pattern_object_metadata(compiled),
-        )
-
-    def observe_pattern_call(self, case: FixtureCase) -> dict[str, Any]:
-        if case.helper is None:
-            raise ValueError(f"case {case.case_id!r} requires a helper name")
-
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            try:
-                compiled = self._compile_pattern(case)
-                result = getattr(compiled, case.helper)(*case.args, **case.kwargs)
-            except Exception as exc:  # pragma: no cover - exercised by fixtures
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="exception",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-
-        return finalize_observation(
-            adapter=self.adapter_name,
-            case=case,
-            outcome="success",
-            warnings_payload=normalize_warning_records(caught),
-            result=_normalize_value(result),
-        )
 
     def observe_cache_workflow(self, case: FixtureCase) -> dict[str, Any]:
         with warnings.catch_warnings(record=True) as caught:
@@ -1007,99 +974,10 @@ class RebarAdapter(Adapter):
     def _compile_pattern(self, case: FixtureCase) -> Any:
         return rebar.compile(case.pattern_payload(), case.flags or 0)
 
-    def observe_compile(self, case: FixtureCase) -> dict[str, Any]:
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            try:
-                compiled = self._compile_pattern(case)
-            except NotImplementedError as exc:
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="unimplemented",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-            except Exception as exc:
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="exception",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-
-        return finalize_observation(
-            adapter=self.adapter_name,
-            case=case,
-            outcome="success",
-            warnings_payload=normalize_warning_records(caught),
-            result=normalize_pattern_metadata(compiled),
-        )
-
-    def observe_pattern_metadata(self, case: FixtureCase) -> dict[str, Any]:
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            try:
-                compiled = self._compile_pattern(case)
-            except NotImplementedError as exc:
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="unimplemented",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-            except Exception as exc:
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="exception",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-
-        return finalize_observation(
-            adapter=self.adapter_name,
-            case=case,
-            outcome="success",
-            warnings_payload=normalize_warning_records(caught),
-            result=normalize_pattern_object_metadata(compiled),
-        )
-
-    def observe_pattern_call(self, case: FixtureCase) -> dict[str, Any]:
-        if case.helper is None:
-            raise ValueError(f"case {case.case_id!r} requires a helper name")
-
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            try:
-                compiled = self._compile_pattern(case)
-                result = getattr(compiled, case.helper)(*case.args, **case.kwargs)
-            except NotImplementedError as exc:
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="unimplemented",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-            except Exception as exc:
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="exception",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-
-        return finalize_observation(
-            adapter=self.adapter_name,
-            case=case,
-            outcome="success",
-            warnings_payload=normalize_warning_records(caught),
-            result=_normalize_value(result),
-        )
+    def _observation_outcome_for_exception(self, exc: BaseException) -> str:
+        if isinstance(exc, NotImplementedError):
+            return "unimplemented"
+        return "exception"
 
     def observe_cache_workflow(self, case: FixtureCase) -> dict[str, Any]:
         with warnings.catch_warnings(record=True) as caught:

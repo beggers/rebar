@@ -1,6 +1,6 @@
 # RBR-0563: Collapse compiled-pattern correctness observations onto one adapter helper
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -119,3 +119,9 @@ Created: 2026-03-17
   - the AST probe above currently fails exactly on the missing-helper cleanup with `Adapter:missing:_observe_compiled_pattern`, `Adapter:missing:_observation_outcome_for_exception`, the three `Adapter:*:missing-compiled-helper` failures, and the current subclass override failures for both adapters.
 - 2026-03-17 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py tests/conformance/test_correctness_observation_contract.py` passes (`9 passed, 1260 subtests passed in 28.67s`).
+
+## Completion Notes
+- Added `Adapter._observe_compiled_pattern(...)` and `Adapter._observation_outcome_for_exception(...)` so the shared warning-capture, single-compile, callback, and finalize flow now lives in one adapter helper.
+- Made `Adapter.observe_compile(...)`, `Adapter.observe_pattern_metadata(...)`, and `Adapter.observe_pattern_call(...)` concrete delegators, keeping normalized compile metadata, normalized pattern-object metadata, and normalized bound-helper results unchanged while preserving the existing missing-helper `ValueError` surface for pattern calls.
+- Removed the duplicated compiled-pattern overrides from `CpythonReAdapter` and `RebarAdapter`; only `RebarAdapter._observation_outcome_for_exception(...)` remains to preserve `NotImplementedError -> "unimplemented"` on those observation paths.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py tests/conformance/test_correctness_observation_contract.py` (`9 passed, 1260 subtests passed in 28.79s`) and the task AST probe (`ok`).
