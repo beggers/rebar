@@ -28,6 +28,138 @@ from tests.report_assertions import (
     find_workload_record,
 )
 
+ZERO_GAP_REPRESENTATIVE_BYTES_CASES = (
+    (
+        "wider-ranged-repeat-quantified-group-boundary",
+        (
+            "module-compile-numbered-wider-ranged-repeat-group-broader-range-conditional-cold-bytes",
+            "module-search-numbered-wider-ranged-repeat-group-broader-range-conditional-absent-warm-bytes",
+            "pattern-fullmatch-numbered-wider-ranged-repeat-group-broader-range-conditional-lower-bound-bc-purged-bytes",
+            "module-compile-named-wider-ranged-repeat-group-broader-range-conditional-warm-bytes",
+            "module-search-named-wider-ranged-repeat-group-broader-range-conditional-upper-bound-mixed-warm-bytes",
+            "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-conditional-upper-bound-mixed-purged-bytes",
+        ),
+    ),
+    (
+        "open-ended-quantified-group-boundary",
+        (
+            "module-compile-numbered-open-ended-group-alternation-cold-bytes",
+            "module-search-numbered-open-ended-group-alternation-lower-bound-bc-warm-bytes",
+            "pattern-fullmatch-numbered-open-ended-group-alternation-third-repetition-mixed-purged-bytes",
+            "module-compile-named-open-ended-group-alternation-warm-bytes",
+            "module-search-named-open-ended-group-alternation-lower-bound-de-warm-bytes",
+            "pattern-fullmatch-named-open-ended-group-alternation-fourth-repetition-de-purged-bytes",
+        ),
+    ),
+    (
+        "open-ended-quantified-group-boundary",
+        (
+            "module-compile-numbered-open-ended-group-broader-range-cold-bytes",
+            "module-search-numbered-open-ended-group-broader-range-lower-bound-bc-warm-bytes",
+            "pattern-fullmatch-numbered-open-ended-group-broader-range-third-repetition-mixed-purged-bytes",
+            "module-compile-named-open-ended-group-broader-range-warm-bytes",
+            "module-search-named-open-ended-group-broader-range-lower-bound-de-warm-bytes",
+            "pattern-fullmatch-named-open-ended-group-broader-range-third-repetition-de-purged-bytes",
+        ),
+    ),
+    (
+        "open-ended-quantified-group-boundary",
+        (
+            "module-compile-numbered-open-ended-group-conditional-cold-bytes",
+            "module-search-numbered-open-ended-group-conditional-second-repetition-bc-warm-bytes",
+            "pattern-fullmatch-numbered-open-ended-group-conditional-third-repetition-mixed-purged-bytes",
+            "module-compile-named-open-ended-group-conditional-warm-bytes",
+            "module-search-named-open-ended-group-conditional-fourth-repetition-de-warm-bytes",
+            "pattern-fullmatch-named-open-ended-group-conditional-third-repetition-mixed-purged-bytes",
+            "module-compile-numbered-open-ended-group-broader-range-conditional-cold-bytes",
+            "module-search-numbered-open-ended-group-broader-range-conditional-second-repetition-bc-warm-bytes",
+            "pattern-fullmatch-numbered-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
+            "module-compile-named-open-ended-group-broader-range-conditional-warm-bytes",
+            "module-search-named-open-ended-group-broader-range-conditional-fourth-repetition-de-warm-bytes",
+            "pattern-fullmatch-named-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
+        ),
+    ),
+    (
+        "open-ended-quantified-group-boundary",
+        (
+            "module-compile-numbered-open-ended-group-broader-range-backtracking-heavy-cold-bytes",
+            "module-search-numbered-open-ended-group-broader-range-backtracking-heavy-lower-bound-b-branch-warm-bytes",
+            "pattern-fullmatch-numbered-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-purged-bytes",
+            "module-compile-named-open-ended-group-broader-range-backtracking-heavy-warm-bytes",
+            "module-search-named-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-warm-bytes",
+            "pattern-fullmatch-named-open-ended-group-broader-range-backtracking-heavy-purged-bytes",
+        ),
+    ),
+    (
+        "open-ended-quantified-group-boundary",
+        (
+            "module-compile-numbered-open-ended-group-backtracking-heavy-cold-bytes",
+            "module-search-numbered-open-ended-group-backtracking-heavy-lower-bound-b-branch-warm-bytes",
+            "pattern-fullmatch-numbered-open-ended-group-backtracking-heavy-second-repetition-b-then-bc-purged-bytes",
+            "module-compile-named-open-ended-group-backtracking-heavy-warm-bytes",
+            "module-search-named-open-ended-group-backtracking-heavy-third-repetition-mixed-warm-bytes",
+            "pattern-fullmatch-named-open-ended-group-backtracking-heavy-purged-bytes",
+        ),
+    ),
+    (
+        "wider-ranged-repeat-quantified-group-boundary",
+        (
+            "module-compile-numbered-wider-ranged-repeat-group-broader-range-backtracking-heavy-cold-bytes",
+            "module-search-numbered-wider-ranged-repeat-group-broader-range-backtracking-heavy-lower-bound-b-branch-warm-bytes",
+            "pattern-fullmatch-numbered-wider-ranged-repeat-group-broader-range-backtracking-heavy-second-repetition-b-then-bc-purged-bytes",
+            "module-compile-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-warm-bytes",
+            "module-search-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-lower-bound-bc-branch-warm-bytes",
+            "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-fourth-repetition-mixed-purged-bytes",
+        ),
+    ),
+    (
+        "wider-ranged-repeat-quantified-group-boundary",
+        (
+            "module-compile-numbered-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-cold-bytes",
+            "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-lower-bound-b-branch-warm-bytes",
+            "pattern-fullmatch-numbered-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-second-repetition-b-then-bc-purged-bytes",
+            "pattern-fullmatch-numbered-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-fourth-repetition-mixed-purged-bytes",
+            "module-compile-named-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-warm-bytes",
+            "module-search-named-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-lower-bound-bc-branch-warm-bytes",
+            "pattern-fullmatch-named-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-second-repetition-bc-then-b-purged-bytes",
+        ),
+    ),
+    (
+        "wider-ranged-repeat-quantified-group-boundary",
+        (
+            "module-compile-numbered-wider-ranged-repeat-group-nested-broader-range-cold-bytes",
+            "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-lower-bound-bc-warm-bytes",
+            "pattern-fullmatch-numbered-wider-ranged-repeat-group-nested-broader-range-third-repetition-mixed-purged-bytes",
+            "module-compile-named-wider-ranged-repeat-group-nested-broader-range-warm-bytes",
+            "module-search-named-wider-ranged-repeat-group-nested-broader-range-lower-bound-de-warm-bytes",
+            "pattern-fullmatch-named-wider-ranged-repeat-group-nested-broader-range-upper-bound-all-de-purged-bytes",
+        ),
+    ),
+    (
+        "wider-ranged-repeat-quantified-group-boundary",
+        (
+            "module-compile-numbered-wider-ranged-repeat-group-nested-broader-range-conditional-cold-bytes",
+            "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-conditional-absent-warm-bytes",
+            "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-conditional-lower-bound-bc-warm-bytes",
+            "pattern-fullmatch-numbered-wider-ranged-repeat-group-nested-broader-range-conditional-mixed-purged-bytes",
+            "module-compile-named-wider-ranged-repeat-group-nested-broader-range-conditional-warm-bytes",
+            "module-search-named-wider-ranged-repeat-group-nested-broader-range-conditional-lower-bound-de-warm-bytes",
+            "pattern-fullmatch-named-wider-ranged-repeat-group-nested-broader-range-conditional-upper-bound-all-de-purged-bytes",
+        ),
+    ),
+    (
+        "wider-ranged-repeat-quantified-group-boundary",
+        (
+            "module-compile-numbered-wider-ranged-repeat-group-open-ended-cold-bytes",
+            "module-search-numbered-wider-ranged-repeat-group-open-ended-lower-bound-bc-warm-bytes",
+            "pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-bytes",
+            "module-compile-named-wider-ranged-repeat-group-open-ended-warm-bytes",
+            "module-search-named-wider-ranged-repeat-group-open-ended-lower-bound-de-warm-bytes",
+            "pattern-fullmatch-named-wider-ranged-repeat-group-open-ended-fourth-repetition-de-purged-bytes",
+        ),
+    ),
+)
+
 
 class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
     maxDiff = None
@@ -195,18 +327,11 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             ),
         )
 
-    def test_wider_ranged_manifest_exposes_broader_range_conditional_bytes_rows_as_measured(
+    def _assert_zero_gap_representative_workload_subset(
         self,
+        manifest_id: str,
+        expected_workload_ids: tuple[str, ...],
     ) -> None:
-        manifest_id = "wider-ranged-repeat-quantified-group-boundary"
-        expected_workload_ids = (
-            "module-compile-numbered-wider-ranged-repeat-group-broader-range-conditional-cold-bytes",
-            "module-search-numbered-wider-ranged-repeat-group-broader-range-conditional-absent-warm-bytes",
-            "pattern-fullmatch-numbered-wider-ranged-repeat-group-broader-range-conditional-lower-bound-bc-purged-bytes",
-            "module-compile-named-wider-ranged-repeat-group-broader-range-conditional-warm-bytes",
-            "module-search-named-wider-ranged-repeat-group-broader-range-conditional-upper-bound-mixed-warm-bytes",
-            "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-conditional-upper-bound-mixed-purged-bytes",
-        )
         case = source_tree_combined_case(manifest_id)
         public_representatives = (
             source_tree_combined_manifest_representative_measured_workload_ids(
@@ -218,71 +343,21 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
         self.assertEqual(case.manifest_expectation.representative_known_gap_workload_ids, ())
 
         for workload_id in expected_workload_ids:
-            with self.subTest(workload_id=workload_id):
+            with self.subTest(manifest_id=manifest_id, workload_id=workload_id):
                 self.assertIn(workload_id, public_representatives)
                 self.assertIn(
                     workload_id,
                     case.manifest_expectation.representative_measured_workload_ids,
                 )
 
-    def test_open_ended_manifest_exposes_grouped_alternation_bytes_rows_as_measured(
+    def test_zero_gap_source_tree_manifests_keep_selected_bytes_representatives_publicly_measured(
         self,
     ) -> None:
-        manifest_id = "open-ended-quantified-group-boundary"
-        expected_workload_ids = (
-            "module-compile-numbered-open-ended-group-alternation-cold-bytes",
-            "module-search-numbered-open-ended-group-alternation-lower-bound-bc-warm-bytes",
-            "pattern-fullmatch-numbered-open-ended-group-alternation-third-repetition-mixed-purged-bytes",
-            "module-compile-named-open-ended-group-alternation-warm-bytes",
-            "module-search-named-open-ended-group-alternation-lower-bound-de-warm-bytes",
-            "pattern-fullmatch-named-open-ended-group-alternation-fourth-repetition-de-purged-bytes",
-        )
-        case = source_tree_combined_case(manifest_id)
-        public_representatives = (
-            source_tree_combined_manifest_representative_measured_workload_ids(
-                manifest_id
-            )
-        )
-
-        self.assertEqual(case.manifest_expectation.known_gap_count, 0)
-        self.assertEqual(case.manifest_expectation.representative_known_gap_workload_ids, ())
-
-        for workload_id in expected_workload_ids:
-            with self.subTest(workload_id=workload_id):
-                self.assertIn(workload_id, public_representatives)
-                self.assertIn(
-                    workload_id,
-                    case.manifest_expectation.representative_measured_workload_ids,
-                )
-
-    def test_open_ended_manifest_exposes_broader_range_grouped_alternation_bytes_rows_as_measured(
-        self,
-    ) -> None:
-        manifest_id = "open-ended-quantified-group-boundary"
-        expected_workload_ids = (
-            "module-compile-numbered-open-ended-group-broader-range-cold-bytes",
-            "module-search-numbered-open-ended-group-broader-range-lower-bound-bc-warm-bytes",
-            "pattern-fullmatch-numbered-open-ended-group-broader-range-third-repetition-mixed-purged-bytes",
-            "module-compile-named-open-ended-group-broader-range-warm-bytes",
-            "module-search-named-open-ended-group-broader-range-lower-bound-de-warm-bytes",
-            "pattern-fullmatch-named-open-ended-group-broader-range-third-repetition-de-purged-bytes",
-        )
-        case = source_tree_combined_case(manifest_id)
-        public_representatives = (
-            source_tree_combined_manifest_representative_measured_workload_ids(
-                manifest_id
-            )
-        )
-
-        self.assertEqual(case.manifest_expectation.known_gap_count, 0)
-        self.assertEqual(case.manifest_expectation.representative_known_gap_workload_ids, ())
-
-        for workload_id in expected_workload_ids:
-            with self.subTest(workload_id=workload_id):
-                self.assertIn(workload_id, public_representatives)
-                self.assertIn(
-                    workload_id,
-                    case.manifest_expectation.representative_measured_workload_ids,
+        for manifest_id, expected_workload_ids in ZERO_GAP_REPRESENTATIVE_BYTES_CASES:
+            with self.subTest(manifest_id=manifest_id):
+                self._assert_zero_gap_representative_workload_subset(
+                    manifest_id,
+                    expected_workload_ids,
                 )
 
     def test_quantified_alternation_manifest_exposes_open_ended_bytes_rows_as_measured(
@@ -348,254 +423,6 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                         workload_id,
                     ),
                     expected_status="measured",
-                )
-
-    def test_open_ended_manifest_exposes_grouped_conditional_bytes_rows_as_measured(
-        self,
-    ) -> None:
-        manifest_id = "open-ended-quantified-group-boundary"
-        expected_workload_ids = (
-            "module-compile-numbered-open-ended-group-conditional-cold-bytes",
-            "module-search-numbered-open-ended-group-conditional-second-repetition-bc-warm-bytes",
-            "pattern-fullmatch-numbered-open-ended-group-conditional-third-repetition-mixed-purged-bytes",
-            "module-compile-named-open-ended-group-conditional-warm-bytes",
-            "module-search-named-open-ended-group-conditional-fourth-repetition-de-warm-bytes",
-            "pattern-fullmatch-named-open-ended-group-conditional-third-repetition-mixed-purged-bytes",
-            "module-compile-numbered-open-ended-group-broader-range-conditional-cold-bytes",
-            "module-search-numbered-open-ended-group-broader-range-conditional-second-repetition-bc-warm-bytes",
-            "pattern-fullmatch-numbered-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
-            "module-compile-named-open-ended-group-broader-range-conditional-warm-bytes",
-            "module-search-named-open-ended-group-broader-range-conditional-fourth-repetition-de-warm-bytes",
-            "pattern-fullmatch-named-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
-        )
-        case = source_tree_combined_case(manifest_id)
-        public_representatives = (
-            source_tree_combined_manifest_representative_measured_workload_ids(
-                manifest_id
-            )
-        )
-
-        self.assertEqual(case.manifest_expectation.known_gap_count, 0)
-        self.assertEqual(case.manifest_expectation.representative_known_gap_workload_ids, ())
-
-        for workload_id in expected_workload_ids:
-            with self.subTest(workload_id=workload_id):
-                self.assertIn(workload_id, public_representatives)
-                self.assertIn(
-                    workload_id,
-                    case.manifest_expectation.representative_measured_workload_ids,
-                )
-
-    def test_open_ended_manifest_exposes_broader_range_backtracking_heavy_bytes_rows_as_measured(
-        self,
-    ) -> None:
-        manifest_id = "open-ended-quantified-group-boundary"
-        expected_workload_ids = (
-            "module-compile-numbered-open-ended-group-broader-range-backtracking-heavy-cold-bytes",
-            "module-search-numbered-open-ended-group-broader-range-backtracking-heavy-lower-bound-b-branch-warm-bytes",
-            "pattern-fullmatch-numbered-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-purged-bytes",
-            "module-compile-named-open-ended-group-broader-range-backtracking-heavy-warm-bytes",
-            "module-search-named-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-warm-bytes",
-            "pattern-fullmatch-named-open-ended-group-broader-range-backtracking-heavy-purged-bytes",
-        )
-        case = source_tree_combined_case(manifest_id)
-        public_representatives = (
-            source_tree_combined_manifest_representative_measured_workload_ids(
-                manifest_id
-            )
-        )
-
-        self.assertEqual(case.manifest_expectation.known_gap_count, 0)
-        self.assertEqual(case.manifest_expectation.representative_known_gap_workload_ids, ())
-
-        for workload_id in expected_workload_ids:
-            with self.subTest(workload_id=workload_id):
-                self.assertIn(workload_id, public_representatives)
-                self.assertIn(
-                    workload_id,
-                    case.manifest_expectation.representative_measured_workload_ids,
-                )
-
-    def test_open_ended_manifest_exposes_grouped_backtracking_heavy_bytes_rows_as_measured(
-        self,
-    ) -> None:
-        manifest_id = "open-ended-quantified-group-boundary"
-        expected_workload_ids = (
-            "module-compile-numbered-open-ended-group-backtracking-heavy-cold-bytes",
-            "module-search-numbered-open-ended-group-backtracking-heavy-lower-bound-b-branch-warm-bytes",
-            "pattern-fullmatch-numbered-open-ended-group-backtracking-heavy-second-repetition-b-then-bc-purged-bytes",
-            "module-compile-named-open-ended-group-backtracking-heavy-warm-bytes",
-            "module-search-named-open-ended-group-backtracking-heavy-third-repetition-mixed-warm-bytes",
-            "pattern-fullmatch-named-open-ended-group-backtracking-heavy-purged-bytes",
-        )
-        case = source_tree_combined_case(manifest_id)
-        public_representatives = (
-            source_tree_combined_manifest_representative_measured_workload_ids(
-                manifest_id
-            )
-        )
-
-        self.assertEqual(case.manifest_expectation.known_gap_count, 0)
-        self.assertEqual(case.manifest_expectation.representative_known_gap_workload_ids, ())
-
-        for workload_id in expected_workload_ids:
-            with self.subTest(workload_id=workload_id):
-                self.assertIn(workload_id, public_representatives)
-                self.assertIn(
-                    workload_id,
-                    case.manifest_expectation.representative_measured_workload_ids,
-                )
-
-    def test_wider_ranged_manifest_exposes_broader_range_backtracking_heavy_bytes_rows_as_measured(
-        self,
-    ) -> None:
-        manifest_id = "wider-ranged-repeat-quantified-group-boundary"
-        expected_workload_ids = (
-            "module-compile-numbered-wider-ranged-repeat-group-broader-range-backtracking-heavy-cold-bytes",
-            "module-search-numbered-wider-ranged-repeat-group-broader-range-backtracking-heavy-lower-bound-b-branch-warm-bytes",
-            "pattern-fullmatch-numbered-wider-ranged-repeat-group-broader-range-backtracking-heavy-second-repetition-b-then-bc-purged-bytes",
-            "module-compile-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-warm-bytes",
-            "module-search-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-lower-bound-bc-branch-warm-bytes",
-            "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-fourth-repetition-mixed-purged-bytes",
-        )
-        case = source_tree_combined_case(manifest_id)
-        public_representatives = (
-            source_tree_combined_manifest_representative_measured_workload_ids(
-                manifest_id
-            )
-        )
-
-        self.assertEqual(case.manifest_expectation.known_gap_count, 0)
-        self.assertEqual(case.manifest_expectation.representative_known_gap_workload_ids, ())
-
-        for workload_id in expected_workload_ids:
-            with self.subTest(workload_id=workload_id):
-                self.assertIn(workload_id, public_representatives)
-                self.assertIn(
-                    workload_id,
-                    case.manifest_expectation.representative_measured_workload_ids,
-                )
-
-    def test_wider_ranged_manifest_exposes_nested_broader_range_backtracking_heavy_bytes_rows_as_measured(
-        self,
-    ) -> None:
-        manifest_id = "wider-ranged-repeat-quantified-group-boundary"
-        expected_workload_ids = (
-            "module-compile-numbered-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-cold-bytes",
-            "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-lower-bound-b-branch-warm-bytes",
-            "pattern-fullmatch-numbered-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-second-repetition-b-then-bc-purged-bytes",
-            "pattern-fullmatch-numbered-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-fourth-repetition-mixed-purged-bytes",
-            "module-compile-named-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-warm-bytes",
-            "module-search-named-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-lower-bound-bc-branch-warm-bytes",
-            "pattern-fullmatch-named-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-second-repetition-bc-then-b-purged-bytes",
-        )
-        case = source_tree_combined_case(manifest_id)
-        public_representatives = (
-            source_tree_combined_manifest_representative_measured_workload_ids(
-                manifest_id
-            )
-        )
-
-        self.assertEqual(case.manifest_expectation.known_gap_count, 0)
-        self.assertEqual(case.manifest_expectation.representative_known_gap_workload_ids, ())
-
-        for workload_id in expected_workload_ids:
-            with self.subTest(workload_id=workload_id):
-                self.assertIn(workload_id, public_representatives)
-                self.assertIn(
-                    workload_id,
-                    case.manifest_expectation.representative_measured_workload_ids,
-                )
-
-    def test_wider_ranged_manifest_exposes_nested_broader_range_grouped_alternation_bytes_rows_as_measured(
-        self,
-    ) -> None:
-        manifest_id = "wider-ranged-repeat-quantified-group-boundary"
-        expected_workload_ids = (
-            "module-compile-numbered-wider-ranged-repeat-group-nested-broader-range-cold-bytes",
-            "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-lower-bound-bc-warm-bytes",
-            "pattern-fullmatch-numbered-wider-ranged-repeat-group-nested-broader-range-third-repetition-mixed-purged-bytes",
-            "module-compile-named-wider-ranged-repeat-group-nested-broader-range-warm-bytes",
-            "module-search-named-wider-ranged-repeat-group-nested-broader-range-lower-bound-de-warm-bytes",
-            "pattern-fullmatch-named-wider-ranged-repeat-group-nested-broader-range-upper-bound-all-de-purged-bytes",
-        )
-        case = source_tree_combined_case(manifest_id)
-        public_representatives = (
-            source_tree_combined_manifest_representative_measured_workload_ids(
-                manifest_id
-            )
-        )
-
-        self.assertEqual(case.manifest_expectation.known_gap_count, 0)
-        self.assertEqual(case.manifest_expectation.representative_known_gap_workload_ids, ())
-
-        for workload_id in expected_workload_ids:
-            with self.subTest(workload_id=workload_id):
-                self.assertIn(workload_id, public_representatives)
-                self.assertIn(
-                    workload_id,
-                    case.manifest_expectation.representative_measured_workload_ids,
-                )
-
-    def test_wider_ranged_manifest_exposes_nested_broader_range_conditional_bytes_rows_as_measured(
-        self,
-    ) -> None:
-        manifest_id = "wider-ranged-repeat-quantified-group-boundary"
-        expected_workload_ids = (
-            "module-compile-numbered-wider-ranged-repeat-group-nested-broader-range-conditional-cold-bytes",
-            "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-conditional-absent-warm-bytes",
-            "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-conditional-lower-bound-bc-warm-bytes",
-            "pattern-fullmatch-numbered-wider-ranged-repeat-group-nested-broader-range-conditional-mixed-purged-bytes",
-            "module-compile-named-wider-ranged-repeat-group-nested-broader-range-conditional-warm-bytes",
-            "module-search-named-wider-ranged-repeat-group-nested-broader-range-conditional-lower-bound-de-warm-bytes",
-            "pattern-fullmatch-named-wider-ranged-repeat-group-nested-broader-range-conditional-upper-bound-all-de-purged-bytes",
-        )
-        case = source_tree_combined_case(manifest_id)
-        public_representatives = (
-            source_tree_combined_manifest_representative_measured_workload_ids(
-                manifest_id
-            )
-        )
-
-        self.assertEqual(case.manifest_expectation.known_gap_count, 0)
-        self.assertEqual(case.manifest_expectation.representative_known_gap_workload_ids, ())
-
-        for workload_id in expected_workload_ids:
-            with self.subTest(workload_id=workload_id):
-                self.assertIn(workload_id, public_representatives)
-                self.assertIn(
-                    workload_id,
-                    case.manifest_expectation.representative_measured_workload_ids,
-                )
-
-    def test_wider_ranged_manifest_exposes_nested_open_ended_grouped_alternation_bytes_rows_as_measured(
-        self,
-    ) -> None:
-        manifest_id = "wider-ranged-repeat-quantified-group-boundary"
-        expected_workload_ids = (
-            "module-compile-numbered-wider-ranged-repeat-group-open-ended-cold-bytes",
-            "module-search-numbered-wider-ranged-repeat-group-open-ended-lower-bound-bc-warm-bytes",
-            "pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-bytes",
-            "module-compile-named-wider-ranged-repeat-group-open-ended-warm-bytes",
-            "module-search-named-wider-ranged-repeat-group-open-ended-lower-bound-de-warm-bytes",
-            "pattern-fullmatch-named-wider-ranged-repeat-group-open-ended-fourth-repetition-de-purged-bytes",
-        )
-        case = source_tree_combined_case(manifest_id)
-        public_representatives = (
-            source_tree_combined_manifest_representative_measured_workload_ids(
-                manifest_id
-            )
-        )
-
-        self.assertEqual(case.manifest_expectation.known_gap_count, 0)
-        self.assertEqual(case.manifest_expectation.representative_known_gap_workload_ids, ())
-
-        for workload_id in expected_workload_ids:
-            with self.subTest(workload_id=workload_id):
-                self.assertIn(workload_id, public_representatives)
-                self.assertIn(
-                    workload_id,
-                    case.manifest_expectation.representative_measured_workload_ids,
                 )
 
     def test_combined_cases_treat_counted_repeat_manifest_pair_as_fully_measured(

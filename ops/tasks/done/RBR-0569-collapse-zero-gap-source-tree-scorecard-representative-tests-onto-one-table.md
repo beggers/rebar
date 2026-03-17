@@ -1,6 +1,6 @@
 # RBR-0569: Collapse the zero-gap source-tree scorecard representative tests onto one table
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -147,3 +147,9 @@ Created: 2026-03-17
     - `test_wider_ranged_manifest_exposes_nested_open_ended_grouped_alternation_bytes_rows_as_measured`
 - 2026-03-17 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py` passes (`25 passed, 228 subtests passed in 1.49s`).
+
+## Completion Notes
+- 2026-03-17: Collapsed the eleven repeated zero-gap representative workload checks in `tests/benchmarks/test_source_tree_benchmark_scorecards.py` onto the new module-level `ZERO_GAP_REPRESENTATIVE_BYTES_CASES` table, the shared `SourceTreeBenchmarkScorecardTest._assert_zero_gap_representative_workload_subset(...)` helper, and the looped `test_zero_gap_source_tree_manifests_keep_selected_bytes_representatives_publicly_measured(...)` test while keeping `test_quantified_alternation_manifest_exposes_open_ended_bytes_rows_as_measured(...)` as the dedicated richer special case.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py` (`15 passed, 239 subtests passed in 1.49s`)
+  - Task acceptance AST probe (`ok`)
