@@ -1,6 +1,6 @@
 # RBR-0570: Catch the quantified-alternation broader-range bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -47,3 +47,4 @@ Created: 2026-03-17
   - the benchmark expectation and shared source-tree benchmark suites currently contain no exact-id coverage for those six broader-range bytes rows, so the follow-on can stay on the existing quantified-alternation manifest/test surface instead of inventing another benchmark family;
   - `reports/benchmarks/latest.py` currently publishes `quantified-alternation-boundary` at `48` total workloads / `48` measured workloads / `0` known gaps and the combined source-tree report at `668` / `668` / `0`; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so this benchmark follow-on stays sequenced behind `RBR-0568` until parity lands.
+- 2026-03-17: Added the six broader-range `{1,3}` quantified-alternation bytes workload mirrors to `benchmarks/workloads/quantified_alternation_boundary.py`, expanded the quantified-alternation source-tree representative expectations in `tests/benchmarks/benchmark_expectations.py`, updated the zero-gap source-tree manifest assertions in `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and republished `reports/benchmarks/latest.py`. The tracked quantified-alternation manifest now reads `54` total / `54` measured / `0` known gaps, the tracked combined source-tree report now reads `674` total / `674` measured / `0` known gaps, and all six broader-range bytes rows publish `implementation_timing.status == "measured"`. Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/quantified_alternation_boundary.py --report .rebar/tmp/rbr-0570-quantified-alternation-broader-range-bytes-benchmarks.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`. `reports/correctness/latest.py` was not changed in this task.

@@ -606,6 +606,12 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS: dict[
     ),
     "quantified-alternation-boundary": _combined_manifest_definition(
         representative_measured_workload_ids=(
+            "module-compile-numbered-quantified-alternation-broader-range-cold-bytes",
+            "module-search-numbered-quantified-alternation-broader-range-third-repetition-cold-bytes",
+            "pattern-fullmatch-numbered-quantified-alternation-broader-range-third-repetition-bcb-purged-bytes",
+            "module-compile-named-quantified-alternation-broader-range-warm-bytes",
+            "module-search-named-quantified-alternation-broader-range-third-repetition-bcc-warm-bytes",
+            "pattern-fullmatch-named-quantified-alternation-broader-range-third-repetition-bbb-purged-bytes",
             "module-compile-numbered-quantified-alternation-open-ended-cold-bytes",
             "module-search-numbered-quantified-alternation-open-ended-lower-bound-b-warm-bytes",
             "pattern-fullmatch-numbered-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",

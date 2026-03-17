@@ -418,6 +418,222 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-compile-numbered-quantified-alternation-broader-range-cold-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(b|c){1,3}d",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "broader-range",
+        "bytes",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats"
+      ],
+      "notes": [
+        "Cold bytes module.compile benchmark for the bounded numbered quantified-alternation broader-range slice so compile metadata timing reaches the published benchmark report on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-numbered-quantified-alternation-broader-range-third-repetition-cold-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(b|c){1,3}d",
+      "haystack": "zzabccdzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "broader-range",
+        "search",
+        "module",
+        "third-repetition",
+        "mixed-branches",
+        "bytes",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats"
+      ],
+      "notes": [
+        "Cold bytes module.search helper path for the bounded numbered quantified-alternation broader-range workflow when the third repetition mixes `b` then `c` branches before the trailing literal."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-quantified-alternation-broader-range-third-repetition-bcb-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(b|c){1,3}d",
+      "haystack": "abcbd",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "broader-range",
+        "fullmatch",
+        "third-repetition",
+        "bcb",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the bounded numbered quantified-alternation broader-range workflow when the third repetition ends back on the `b` branch."
+      ]
+    },
+    {
+      "id": "module-compile-named-quantified-alternation-broader-range-warm-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<word>b|c){1,3}d",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "broader-range",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm bytes module.compile benchmark for the bounded named quantified-alternation broader-range slice so named compile metadata joins the published report on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-named-quantified-alternation-broader-range-third-repetition-bcc-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>b|c){1,3}d",
+      "haystack": "zzabccdzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "broader-range",
+        "search",
+        "module",
+        "third-repetition",
+        "bcc",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the bounded named quantified-alternation broader-range workflow when the third repetition ends on the `c` branch."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-quantified-alternation-broader-range-third-repetition-bbb-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>b|c){1,3}d",
+      "haystack": "abbbd",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "broader-range",
+        "fullmatch",
+        "third-repetition",
+        "bbb",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the bounded named quantified-alternation broader-range workflow after three `b` branch repetitions."
+      ]
+    },
+    {
       "id": "module-compile-numbered-quantified-alternation-open-ended-cold-str",
       "bucket": "module-compile",
       "family": "module",

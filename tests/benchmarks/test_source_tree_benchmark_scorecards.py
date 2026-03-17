@@ -360,11 +360,17 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                     expected_workload_ids,
                 )
 
-    def test_quantified_alternation_manifest_exposes_open_ended_bytes_rows_as_measured(
+    def test_quantified_alternation_manifest_exposes_broader_range_and_open_ended_bytes_rows_as_measured(
         self,
     ) -> None:
         manifest_id = "quantified-alternation-boundary"
         expected_workload_ids = (
+            "module-compile-numbered-quantified-alternation-broader-range-cold-bytes",
+            "module-search-numbered-quantified-alternation-broader-range-third-repetition-cold-bytes",
+            "pattern-fullmatch-numbered-quantified-alternation-broader-range-third-repetition-bcb-purged-bytes",
+            "module-compile-named-quantified-alternation-broader-range-warm-bytes",
+            "module-search-named-quantified-alternation-broader-range-third-repetition-bcc-warm-bytes",
+            "pattern-fullmatch-named-quantified-alternation-broader-range-third-repetition-bbb-purged-bytes",
             "module-compile-numbered-quantified-alternation-open-ended-cold-bytes",
             "module-search-numbered-quantified-alternation-open-ended-lower-bound-b-warm-bytes",
             "pattern-fullmatch-numbered-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
@@ -410,8 +416,8 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             selection_mode=case.selection_mode,
             selected_workload_ids=case.selected_workload_ids_for_manifest(manifest_id),
         )
-        self.assertEqual(manifest_summary["measured_workloads"], 48)
-        self.assertEqual(manifest_summary["workload_count"], 48)
+        self.assertEqual(manifest_summary["measured_workloads"], 54)
+        self.assertEqual(manifest_summary["workload_count"], 54)
         for workload_id in expected_workload_ids:
             with self.subTest(measured_workload_id=workload_id):
                 assert_benchmark_workload_contract(
