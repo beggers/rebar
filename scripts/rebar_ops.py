@@ -1820,6 +1820,29 @@ def agent_is_due(agent: AgentSpec, loop_state: dict[str, Any], *, force: bool = 
     raise RuntimeError(f"Unsupported dispatch mode for {agent.name}: {mode}")
 
 
+def reporting_needs_same_cycle_refresh(
+    agent: AgentSpec,
+    commit_actions: list[dict[str, Any]],
+) -> bool:
+    if agent.kind != "reporting_worker":
+        return False
+    if str(agent.dispatch.get("mode", "every_cycle")) != "interval":
+        return False
+    for action in commit_actions:
+        changed_files = action.get("changed_files", [])
+        if not isinstance(changed_files, list):
+            continue
+        for path in changed_files:
+            if not isinstance(path, str):
+                continue
+            if path.startswith(("reports/", "ops/tasks/")) or path in {
+                "ops/state/backlog.md",
+                "ops/state/current_status.md",
+            }:
+                return True
+    return False
+
+
 def dispatch_agent(
     agent: AgentSpec,
     config: dict[str, Any],
@@ -2874,7 +2897,14 @@ def run_cycle(
     skipped_dirty_autocommit_agents: list[str] = []
     forced = force_agents or set()
     for agent in agents:
-        force = agent.name in forced or (force_supervisor and agent.kind == "supervisor")
+        same_cycle_reporting_refresh = reporting_needs_same_cycle_refresh(agent, commit_actions)
+        if same_cycle_reporting_refresh and agent_in_environment_backoff(agent, loop_state):
+            same_cycle_reporting_refresh = False
+        force = (
+            agent.name in forced
+            or (force_supervisor and agent.kind == "supervisor")
+            or same_cycle_reporting_refresh
+        )
         worktree_dirty_before_agent = git_worktree_dirty()
         inherited_dirty_before_agent = cycle_inherited_dirty and worktree_dirty_before_agent
         if (
