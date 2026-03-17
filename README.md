@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 1053 cases across 111 manifests, with 1053 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 613 workloads across 30 manifests with 613 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial. |
-| Current milestone | After ready `RBR-0525` drains, the surviving frontier is `RBR-0527`: catch the exact nested broader `{1,4}` grouped-conditional bytes pair up on the existing wider-ranged-repeat benchmark path so the same bounded bytes slice reaches the published Python-path timing report immediately after parity. |
-| Work queue | `0` ready, `0` in progress, `526` done, `0` blocked |
+| Delivery estimate | The published correctness slice now covers 1053 cases across 111 manifests, with 1053 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 620 workloads across 30 manifests with 620 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial. |
+| Current milestone | After ready `RBR-0527` drains, the surviving frontier is `RBR-0528`: publish the exact nested open-ended `{1,}` grouped-alternation bytes pair on the existing correctness/parity path so the next adjacent grouped bytes slice is visible on the tracked correctness surface before Rust-backed parity and later benchmark catch-up widen that family again. |
+| Work queue | `0` ready, `0` in progress, `527` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,15 +28,15 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `111` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 1053 cases across 111 manifests, with 1053 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 613 workloads across 30 manifests with 613 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 1053 cases across 111 manifests, with 1053 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 620 workloads across 30 manifests with 620 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `613` |
-| Workloads with real `rebar` timings | `613` |
+| Published workloads | `620` |
+| Workloads with real `rebar` timings | `620` |
 | Known-gap workloads | `0` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
@@ -45,17 +45,17 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- With the ready queue empty, the next intended follow-on is `RBR-0527`: add the six bytes mirrors of the existing nested broader `{1,4}` grouped-conditional source-tree benchmark rows on the wider-ranged-repeat manifest so the same bounded slice reaches the published Python-path benchmark report.
+- With the queue drained, the next intended follow-on is `RBR-0528`: publish the exact nested open-ended `{1,}` grouped-alternation bytes pair on the existing correctness path so the next adjacent grouped bytes slice is visible before parity and benchmark catch-up widen that family again.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 613 workloads even though the report no longer carries explicit known-gap rows.
+- The published benchmark surface is still bounded at 620 workloads even though the report no longer carries explicit known-gap rows.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current published correctness slice is still tightly bounded but now gap-free at the frontier: all 1053 published cases pass today across 111 manifests, with `RBR-0527` as the next intended follow-on for benchmark catch-up on that same nested broader `{1,4}` grouped-conditional bytes slice. The main benchmark report spans 613 workloads through the source-tree shim.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current published correctness slice is still tightly bounded but now gap-free at the frontier: all 1053 published cases pass today across 111 manifests, with `RBR-0528` as the next intended follow-on for the adjacent nested open-ended `{1,}` grouped-alternation bytes slice. The main benchmark report spans 620 workloads through the source-tree shim.
 
 The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice, where the published parser family is about 2.9x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
