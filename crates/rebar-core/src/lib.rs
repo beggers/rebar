@@ -24,6 +24,14 @@ const NUMBERED_BACKREFERENCE_SEGMENT_PATTERN: &str = r"(ab)x\1";
 const NUMBERED_BACKREFERENCE_SEGMENT_LITERAL: &[char] = &['a', 'b', 'x', 'a', 'b'];
 const NUMBERED_BACKREFERENCE_PREFIX_PATTERN: &str = r"x(ab)\1";
 const NUMBERED_BACKREFERENCE_PREFIX_LITERAL: &[char] = &['x', 'a', 'b', 'a', 'b'];
+const OPTIONAL_GROUP_CONDITIONAL_PATTERN: &str = "a(b)?(?(1)c|d)e";
+const NAMED_OPTIONAL_GROUP_CONDITIONAL_PATTERN: &str = "a(?P<word>b)?(?(word)c|d)e";
+const OPTIONAL_GROUP_CONDITIONAL_CAPTURE_NAME: &str = "word";
+const OPTIONAL_GROUP_CONDITIONAL_PREFIX_LITERAL: &[char] = &['a'];
+const OPTIONAL_GROUP_CONDITIONAL_CAPTURE_LITERAL: &[char] = &['b'];
+const OPTIONAL_GROUP_CONDITIONAL_YES_BRANCH_LITERAL: &[char] = &['c'];
+const OPTIONAL_GROUP_CONDITIONAL_NO_BRANCH_LITERAL: &[char] = &['d'];
+const OPTIONAL_GROUP_CONDITIONAL_SUFFIX_LITERAL: &[char] = &['e'];
 const VERBOSE_COMPILE_REGRESSION_PATTERN: &str =
     "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $";
 const VERBOSE_COMPILE_REGRESSION_FLAGS: i32 = FLAG_MULTILINE | FLAG_VERBOSE | FLAG_UNICODE;
@@ -560,6 +568,11 @@ struct OptionalGroupPattern<'a> {
     prefix: &'a str,
     capture: LiteralCapture<'a>,
     suffix: &'a str,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct OptionalGroupConditionalPattern<'a> {
+    capture_name: Option<&'a str>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1268,6 +1281,37 @@ impl<'a> OptionalGroupPattern<'a> {
 
         let start = match_start + self.prefix.chars().count();
         let end = start + self.capture.body.chars().count();
+        vec![Some((start, end))]
+    }
+}
+
+impl<'a> OptionalGroupConditionalPattern<'a> {
+    fn group_count(&self) -> usize {
+        1
+    }
+
+    fn named_groups(&self) -> Vec<NamedGroup> {
+        self.capture_name
+            .map(|name| {
+                vec![NamedGroup {
+                    name: name.to_string(),
+                    index: 1,
+                }]
+            })
+            .unwrap_or_default()
+    }
+
+    fn group_spans(
+        &self,
+        match_start: usize,
+        capture_present: bool,
+    ) -> Vec<Option<(usize, usize)>> {
+        if !capture_present {
+            return vec![None];
+        }
+
+        let start = match_start + OPTIONAL_GROUP_CONDITIONAL_PREFIX_LITERAL.len();
+        let end = start + OPTIONAL_GROUP_CONDITIONAL_CAPTURE_LITERAL.len();
         vec![Some((start, end))]
     }
 }
@@ -2490,6 +2534,21 @@ fn compile_known_supported_case(
                 .expect(
                     "guarded optional-group alternation branch-local named backreference literal",
                 );
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
+                warning: None,
+            })
+        }
+        PatternRef::Str(pattern)
+            if parse_optional_group_conditional_pattern_str(pattern).is_some()
+                && normalized_flags == FLAG_UNICODE =>
+        {
+            let grouped_pattern = parse_optional_group_conditional_pattern_str(pattern)
+                .expect("guarded optional-group conditional literal");
             Some(CompileOutcome {
                 status: CompileStatus::Compiled,
                 normalized_flags,
@@ -4631,6 +4690,20 @@ fn parse_quantified_alternation_conditional_pattern_str(
     })
 }
 
+fn parse_optional_group_conditional_pattern_str(
+    pattern: &str,
+) -> Option<OptionalGroupConditionalPattern<'_>> {
+    match pattern {
+        OPTIONAL_GROUP_CONDITIONAL_PATTERN => {
+            Some(OptionalGroupConditionalPattern { capture_name: None })
+        }
+        NAMED_OPTIONAL_GROUP_CONDITIONAL_PATTERN => Some(OptionalGroupConditionalPattern {
+            capture_name: Some(OPTIONAL_GROUP_CONDITIONAL_CAPTURE_NAME),
+        }),
+        _ => None,
+    }
+}
+
 fn parse_quantified_alternation_branch_local_numbered_backreference_pattern_str(
     pattern: &str,
 ) -> Option<QuantifiedAlternationBranchLocalBackreferencePattern<'_>> {
@@ -6395,6 +6468,31 @@ fn literal_match_str(
                 }
 
                 find_optional_group_alternation_branch_local_backreference_match_span_str(
+                    &grouped_pattern,
+                    flags,
+                    mode,
+                    &string_chars,
+                    normalized_pos,
+                    normalized_endpos,
+                )
+                .map_or((None, Vec::new()), |(span, group_spans)| {
+                    (Some(span), group_spans)
+                })
+            } else if let Some(grouped_pattern) =
+                parse_optional_group_conditional_pattern_str(pattern_value)
+            {
+                if flags != FLAG_UNICODE {
+                    return MatchOutcome {
+                        status: MatchStatus::Unsupported,
+                        pos: normalized_pos,
+                        endpos: normalized_endpos,
+                        span: None,
+                        group_spans: Vec::new(),
+                        lastindex: None,
+                    };
+                }
+
+                find_optional_group_conditional_match_span_str(
                     &grouped_pattern,
                     flags,
                     mode,
@@ -8916,6 +9014,108 @@ fn find_optional_group_alternation_branch_local_backreference_match_span_str(
                     .then_some(((pos, match_end), pattern.group_spans(pos, matched_branch)))
             })
         }
+    }
+}
+
+fn optional_group_conditional_matches_at_str(
+    flags: i32,
+    string: &[char],
+    start: usize,
+    endpos: usize,
+) -> Option<(bool, usize)> {
+    if !literal_matches_at_str(
+        OPTIONAL_GROUP_CONDITIONAL_PREFIX_LITERAL,
+        flags,
+        string,
+        start,
+        endpos,
+    ) {
+        return None;
+    }
+
+    let branch_start = start + OPTIONAL_GROUP_CONDITIONAL_PREFIX_LITERAL.len();
+    if literal_matches_at_str(
+        OPTIONAL_GROUP_CONDITIONAL_CAPTURE_LITERAL,
+        flags,
+        string,
+        branch_start,
+        endpos,
+    ) {
+        let yes_start = branch_start + OPTIONAL_GROUP_CONDITIONAL_CAPTURE_LITERAL.len();
+        let suffix_start = yes_start + OPTIONAL_GROUP_CONDITIONAL_YES_BRANCH_LITERAL.len();
+        if literal_matches_at_str(
+            OPTIONAL_GROUP_CONDITIONAL_YES_BRANCH_LITERAL,
+            flags,
+            string,
+            yes_start,
+            endpos,
+        ) && literal_matches_at_str(
+            OPTIONAL_GROUP_CONDITIONAL_SUFFIX_LITERAL,
+            flags,
+            string,
+            suffix_start,
+            endpos,
+        ) {
+            return Some((
+                true,
+                suffix_start + OPTIONAL_GROUP_CONDITIONAL_SUFFIX_LITERAL.len(),
+            ));
+        }
+    }
+
+    let suffix_start = branch_start + OPTIONAL_GROUP_CONDITIONAL_NO_BRANCH_LITERAL.len();
+    if literal_matches_at_str(
+        OPTIONAL_GROUP_CONDITIONAL_NO_BRANCH_LITERAL,
+        flags,
+        string,
+        branch_start,
+        endpos,
+    ) && literal_matches_at_str(
+        OPTIONAL_GROUP_CONDITIONAL_SUFFIX_LITERAL,
+        flags,
+        string,
+        suffix_start,
+        endpos,
+    ) {
+        Some((
+            false,
+            suffix_start + OPTIONAL_GROUP_CONDITIONAL_SUFFIX_LITERAL.len(),
+        ))
+    } else {
+        None
+    }
+}
+
+fn find_optional_group_conditional_match_span_str(
+    pattern: &OptionalGroupConditionalPattern<'_>,
+    flags: i32,
+    mode: MatchMode,
+    string: &[char],
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    match mode {
+        MatchMode::Search => (pos..=endpos).find_map(|start| {
+            optional_group_conditional_matches_at_str(flags, string, start, endpos).map(
+                |(capture_present, match_end)| {
+                    (
+                        (start, match_end),
+                        pattern.group_spans(start, capture_present),
+                    )
+                },
+            )
+        }),
+        MatchMode::Match => optional_group_conditional_matches_at_str(flags, string, pos, endpos)
+            .map(|(capture_present, match_end)| {
+                ((pos, match_end), pattern.group_spans(pos, capture_present))
+            }),
+        MatchMode::Fullmatch => optional_group_conditional_matches_at_str(
+            flags, string, pos, endpos,
+        )
+        .and_then(|(capture_present, match_end)| {
+            (match_end == endpos)
+                .then_some(((pos, match_end), pattern.group_spans(pos, capture_present)))
+        }),
     }
 }
 

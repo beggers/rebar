@@ -1,6 +1,6 @@
 # RBR-0501: Add bounded optional-group conditional parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -37,3 +37,12 @@ Created: 2026-03-17
 - Keep the follow-on on the existing conditional parity path in `tests/python/test_conditional_group_exists_parity_suite.py` instead of creating a second one-off parity suite unless the current helper structure cannot express the exact pair cleanly.
 - `benchmarks/workloads/optional_group_boundary.py` already carries the existing Python-path benchmark anchor `module-search-numbered-optional-group-conditional-cold-gap`; later benchmark catch-up should stay on that manifest instead of inventing another benchmark family for this same bounded slice.
 - 2026-03-17 feature-planning probe: direct public-API checks in the current checkout still raise `NotImplementedError` for both target patterns at `rebar.compile(...)`, so this task is not stale.
+
+## Completion
+- Landed Rust-backed compile and match parity for `a(b)?(?(1)c|d)e` and `a(?P<word>b)?(?(word)c|d)e` through the existing native compile and `boundary_literal_match` path, while keeping broader optional-group conditional shapes unsupported.
+- Extended `tests/python/test_conditional_group_exists_parity_suite.py` to load `optional_group_conditional_workflows.py` plus bounded-window/no-match checks for the numbered and named pair.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/optional_group_conditional_workflows.py --report .rebar/tmp/rbr-0501-optional-group-conditional.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+- Published correctness report now reads `977` total / `977` passed / `0` unimplemented overall, and `match.optional_group_conditional` reads `6` total / `6` passed / `0` unimplemented in the tracked artifact.

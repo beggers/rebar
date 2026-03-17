@@ -43,6 +43,27 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
 
 FIXTURE_BUNDLE_SPECS = (
     FixtureBundleSpec(
+        "optional_group_conditional_workflows.py",
+        expected_manifest_id="optional-group-conditional-workflows",
+        expected_case_ids=frozenset(
+            {
+                "optional-group-conditional-compile-metadata-str",
+                "optional-group-conditional-module-search-present-str",
+                "optional-group-conditional-pattern-fullmatch-absent-str",
+                "named-optional-group-conditional-compile-metadata-str",
+                "named-optional-group-conditional-module-search-present-str",
+                "named-optional-group-conditional-pattern-fullmatch-absent-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?(?(1)c|d)e",
+                r"a(?P<word>b)?(?(word)c|d)e",
+            }
+        ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
+    ),
+    FixtureBundleSpec(
         "conditional_group_exists_workflows.py",
         expected_manifest_id="conditional-group-exists-workflows",
         expected_case_ids=frozenset(
@@ -157,6 +178,20 @@ CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
 
 PATTERN_BOUNDS_MATCH_CASES = (
     BoundedPatternCase(
+        id="optional-group-conditional-search-normalizes-negative-and-oversized-bounds",
+        pattern_case_id="optional-group-conditional-compile-metadata-str",
+        helper="search",
+        string="zzabcezz",
+        bounds=(-100, 999),
+    ),
+    BoundedPatternCase(
+        id="named-optional-group-conditional-fullmatch-preserves-absent-group-metadata-in-window",
+        pattern_case_id="named-optional-group-conditional-compile-metadata-str",
+        helper="fullmatch",
+        string="zzadezz",
+        bounds=(2, 5),
+    ),
+    BoundedPatternCase(
         id="conditional-group-exists-search-normalizes-negative-and-oversized-bounds",
         pattern_case_id="conditional-group-exists-compile-metadata-str",
         helper="search",
@@ -194,6 +229,20 @@ PATTERN_BOUNDS_MATCH_CASES = (
 )
 
 PATTERN_BOUNDS_NO_MATCH_CASES = (
+    BoundedPatternCase(
+        id="named-optional-group-conditional-search-skips-match-before-pos",
+        pattern_case_id="named-optional-group-conditional-compile-metadata-str",
+        helper="search",
+        string="zzadezz",
+        bounds=(3, 7),
+    ),
+    BoundedPatternCase(
+        id="optional-group-conditional-match-fails-when-endpos-truncates-suffix",
+        pattern_case_id="optional-group-conditional-compile-metadata-str",
+        helper="match",
+        string="zzabcezz",
+        bounds=(2, 5),
+    ),
     BoundedPatternCase(
         id="named-conditional-group-exists-search-skips-match-before-pos",
         pattern_case_id="named-conditional-group-exists-compile-metadata-str",
@@ -254,7 +303,13 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     )
 
 
-def test_pattern_bounds_cases_stay_anchored_to_conditional_group_exists_patterns() -> None:
+def test_pattern_bounds_cases_stay_anchored_to_published_conditional_patterns() -> None:
+    assert str_case_pattern(
+        CASES_BY_ID["optional-group-conditional-compile-metadata-str"]
+    ) == r"a(b)?(?(1)c|d)e"
+    assert str_case_pattern(
+        CASES_BY_ID["named-optional-group-conditional-compile-metadata-str"]
+    ) == r"a(?P<word>b)?(?(word)c|d)e"
     assert str_case_pattern(CASES_BY_ID["conditional-group-exists-compile-metadata-str"]) == (
         r"a(b)?c(?(1)d|e)"
     )
