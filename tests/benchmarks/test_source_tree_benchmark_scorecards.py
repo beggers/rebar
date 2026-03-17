@@ -331,14 +331,13 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
         for manifest_id, manifest_expectation in manifest_expectations.items():
             manifest_summary = scorecard["manifests"][manifest_id]
             manifest_record = find_manifest_record(scorecard, manifest_id)
+            manifest = case.manifest_for_id(manifest_id)
             assert_benchmark_manifest_contract(
                 self,
                 manifest_summary,
                 manifest_record,
-                manifest=case.manifests_by_id[manifest_id],
-                manifest_path=relative_manifest_path(
-                    case.manifests_by_id[manifest_id].path
-                ),
+                manifest=manifest,
+                manifest_path=relative_manifest_path(manifest.path),
                 known_gap_count=manifest_expectation.known_gap_count,
                 selection_mode=case.selection_mode,
                 selected_workload_ids=case.selected_workload_ids_by_manifest[manifest_id],
@@ -374,7 +373,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             with self.subTest(workload_id=workload_id):
                 workload_record = find_workload_record(scorecard, workload_id)
                 manifest_id = workload_record["manifest_id"]
-                manifest = case.manifests_by_id[manifest_id]
+                manifest = case.manifest_for_id(manifest_id)
                 assert_benchmark_workload_contract(
                     self,
                     workload_record,

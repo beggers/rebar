@@ -35,9 +35,14 @@ class SourceTreeBenchmarkCommonCase:
     expected_runner_version: str
     expected_summary: dict[str, int]
     manifests: list[BenchmarkManifest]
-    manifests_by_id: dict[str, BenchmarkManifest]
     selected_workload_ids_by_manifest: dict[str, tuple[str, ...]]
     selection_mode: str
+
+    def manifest_for_id(self, manifest_id: str) -> BenchmarkManifest:
+        for manifest in self.manifests:
+            if manifest.manifest_id == manifest_id:
+                return manifest
+        raise AssertionError(f"unknown source-tree benchmark manifest {manifest_id!r}")
 
 
 @dataclass(frozen=True, slots=True)
@@ -86,7 +91,6 @@ class SourceTreeScorecardCase(SourceTreeBenchmarkCommonCase):
             expected_runner_version=common_case.expected_runner_version,
             expected_summary=common_case.expected_summary,
             manifests=common_case.manifests,
-            manifests_by_id=common_case.manifests_by_id,
             selected_workload_ids_by_manifest=common_case.selected_workload_ids_by_manifest,
             selection_mode=common_case.selection_mode,
             case_id=case_id,
@@ -132,7 +136,6 @@ class SourceTreeCombinedCase(SourceTreeBenchmarkCommonCase):
             expected_runner_version=common_case.expected_runner_version,
             expected_summary=common_case.expected_summary,
             manifests=common_case.manifests,
-            manifests_by_id=common_case.manifests_by_id,
             selected_workload_ids_by_manifest=common_case.selected_workload_ids_by_manifest,
             selection_mode=common_case.selection_mode,
             manifest_expectation=manifest_expectation,
@@ -1798,7 +1801,6 @@ def _build_source_tree_benchmark_common_case(
             )
         ),
         manifests=manifests,
-        manifests_by_id={manifest.manifest_id: manifest for manifest in manifests},
         selected_workload_ids_by_manifest=selected_workload_ids_by_manifest,
         selection_mode=selection_mode,
     )

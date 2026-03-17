@@ -651,7 +651,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             ),
             manifest_id="regression-matrix",
             workload_document=find_workload_document(
-                scorecard_case.manifests_by_id["regression-matrix"],
+                scorecard_case.manifest_for_id("regression-matrix"),
                 "regression-parser-bytes-backreference-purged",
             ),
             expected_status="measured",
