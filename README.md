@@ -13,8 +13,8 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | The published correctness report now covers 1152 cases across 111 manifests, with 1152 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 662 workloads across 30 manifests with 662 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the current published slice is fully green within that bounded surface but still too narrow for near-full parity or native-path performance claims. |
-| Current milestone | No ready feature follow-on currently survives; the next bounded feature slice needs re-triage from tracked correctness and benchmark evidence before another `feature-implementation` task is queued safely. |
-| Work queue | `1` ready, `0` in progress, `558` done, `0` blocked |
+| Current milestone | `RBR-0561` should convert the quantified-alternation open-ended bytes pair for `rb"a(b|c){1,}d"` and `rb"a(?P<word>b|c){1,}d"` to real Rust-backed parity on the existing quantified-alternation surface. |
+| Work queue | `1` ready, `0` in progress, `559` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- No ready feature follow-on currently survives; the next bounded feature slice needs re-triage from tracked correctness and benchmark evidence.
+- `RBR-0560` should publish the open-ended quantified-alternation bytes pair for `rb"a(b|c){1,}d"` and `rb"a(?P<word>b|c){1,}d"` on the existing correctness/parity path.
 
 ### Current Risks
 
@@ -55,7 +55,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The published correctness slice is now fully green within that bounded surface, but it remains too narrow to imply near-full stdlib `re` parity. No ready feature follow-on currently survives, so the next bounded feature slice still needs re-triage from tracked correctness and benchmark evidence.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The published correctness slice is now fully green within that bounded surface, but it remains too narrow to imply near-full stdlib `re` parity. The next queued slice keeps that same bounded posture by publishing the open-ended quantified-alternation bytes pair on the correctness path.
 
 The benchmark story is similarly early. The clearest trustworthy positive signal today is still the tiny parser slice, where 8 workloads are about 3.0x faster on median than CPython. The broader published run still goes through the source-tree shim and is slower overall, so that is signal rather than a general speed claim.
 

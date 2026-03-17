@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness report now covers 1152 cases across 111 manifests, with 1152 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 662 workloads across 30 manifests with 662 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the current published slice is fully green within that bounded surface but still too narrow for near-full parity or native-path performance claims.
 
 ## README Next Steps
-- `RBR-0560` should publish the quantified-alternation open-ended bytes pair for `rb"a(b|c){1,}d"` and `rb"a(?P<word>b|c){1,}d"` on the existing correctness/parity path.
+- `RBR-0560` should publish the open-ended quantified-alternation bytes pair for `rb"a(b|c){1,}d"` and `rb"a(?P<word>b|c){1,}d"` on the existing correctness/parity path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published frontier is still narrow: 1152 published correctness cases across 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0561` should convert the quantified-alternation open-ended bytes pair for `rb"a(b|c){1,}d"` and `rb"a(?P<word>b|c){1,}d"` to real Rust-backed parity on the existing quantified-alternation surface.
+- `RBR-0560` should publish the open-ended quantified-alternation bytes pair for `rb"a(b|c){1,}d"` and `rb"a(?P<word>b|c){1,}d"` on the existing correctness/parity path.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
