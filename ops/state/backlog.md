@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0558` should catch the broader-range open-ended `{2,}` grouped-alternation bytes pair up on the existing Python-path benchmark surface on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
+No ready feature follow-on currently survives; the next bounded feature slice needs re-triage from tracked correctness and benchmark evidence before another `feature-implementation` task is queued safely.
 
 ## Ordered Work
-1. `RBR-0558` should catch the broader-range open-ended `{2,}` grouped-alternation bytes pair up on the existing Python-path benchmark surface on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
+1. No ready feature follow-on currently survives; re-triage the next bounded feature slice from tracked correctness and benchmark evidence before queuing another `feature-implementation` task.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

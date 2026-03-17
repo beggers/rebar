@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness report now covers 1152 cases across 111 manifests, with 1152 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 656 workloads across 30 manifests with 656 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the current published slice is fully green within that bounded surface but still too narrow for near-full parity or native-path performance claims.
 
 ## README Next Steps
-- No feature task is seeded; `RBR-0558` is the next intended benchmark catch-up follow-on for the broader-range open-ended `{2,}` grouped-alternation bytes pair.
+- `RBR-0558` is queued to catch the broader-range open-ended `{2,}` grouped-alternation bytes pair up on the existing Python-path benchmark surface on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published frontier is still narrow: 1152 published correctness cases across 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0558` should catch the broader-range open-ended `{2,}` grouped-alternation bytes pair up on the existing Python-path benchmark surface on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
+- No ready feature follow-on currently survives; the next bounded feature slice will need re-triage from tracked correctness and benchmark evidence before another feature task is queued safely.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
