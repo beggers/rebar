@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 1108 cases across 111 manifests, with 1108 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 638 workloads across 30 manifests with 638 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is fully green but still narrow and not yet a near-full parity or native-path performance claim.
 
 ## README Next Steps
-- With the ready queue drained, the surviving follow-on is `RBR-0542`: add the six adjacent bytes benchmark mirrors for the same broader-range open-ended `{2,}` grouped backtracking-heavy pair so `open-ended-quantified-group-boundary` moves from `48` / `48` / `0` to `54` / `54` / `0` and the combined source-tree report moves from `638` / `638` / `0` to `644` / `644` / `0`.
+- Ready `RBR-0542` should add the six adjacent bytes benchmark mirrors for the same broader-range open-ended `{2,}` grouped backtracking-heavy pair so `open-ended-quantified-group-boundary` moves from `48` / `48` / `0` to `54` / `54` / `0` and the combined source-tree report moves from `638` / `638` / `0` to `644` / `644` / `0`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: 1108 of 1108 published correctness cases cu
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- With the ready queue drained, the surviving feature follow-on is `RBR-0542`: add the six adjacent bytes benchmark mirrors for the same broader-range open-ended `{2,}` grouped backtracking-heavy pair on `benchmarks/workloads/open_ended_quantified_group_boundary.py` so `open-ended-quantified-group-boundary` moves from `48` / `48` / `0` to `54` / `54` / `0` and the combined source-tree report moves from `638` / `638` / `0` to `644` / `644` / `0`.
+- After ready `RBR-0542` drains, no concrete ready feature follow-on currently survives. If that queued benchmark catch-up lands, `open-ended-quantified-group-boundary` will close at `54` total workloads / `54` measured workloads / `0` known gaps and the combined source-tree report will move to `644` / `644` / `0`, but this run's bounded sweep across the adjacent open-ended manifests, scorecards, and parity anchors did not yet pin another exact next slice safely enough to queue.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
