@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0554` should publish the broader-range open-ended `{2,}` grouped-alternation bytes pair on the existing correctness/parity path.
+`RBR-0556` should convert the broader-range open-ended `{2,}` grouped-alternation bytes pair behind `rebar._rebar` on the existing correctness/parity path.
 
 ## Ordered Work
-1. `RBR-0554` should publish the broader-range open-ended `{2,}` grouped-alternation bytes pair on the existing correctness/parity path.
+1. `RBR-0556` should convert the broader-range open-ended `{2,}` grouped-alternation bytes pair behind `rebar._rebar` on the existing correctness/parity path.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness report now covers 1136 cases across 111 manifests, with 1136 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 656 workloads across 30 manifests with 656 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the current published slice is broader and internally green but still incomplete and too narrow for near-full parity or native-path performance claims.
 
 ## README Next Steps
-- No feature task is seeded; `RBR-0554` is the next intended follow-on: publish the broader-range open-ended `{2,}` grouped-alternation bytes pair on the existing correctness/parity path.
+- `RBR-0554` is ready: publish the broader-range open-ended `{2,}` grouped-alternation bytes pair on the existing correctness/parity path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published frontier is still narrow: 1136 published correctness cases across 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0554` should publish the broader-range open-ended `{2,}` grouped-alternation bytes pair on the existing correctness/parity path.
+- `RBR-0556` should convert the broader-range open-ended `{2,}` grouped-alternation bytes pair behind `rebar._rebar` on the existing correctness/parity path.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
