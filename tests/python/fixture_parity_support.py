@@ -425,11 +425,27 @@ def assert_direct_test_case_id_buckets_cover_selected_frontier(
     selected_case_id_set = frozenset(ordered_selected_case_ids)
 
     if isinstance(direct_test_case_id_buckets, Mapping):
-        bucket_case_id_sets = tuple(direct_test_case_id_buckets.values())
+        bucket_entries = tuple(
+            (str(bucket_label), frozenset(bucket_case_ids))
+            for bucket_label, bucket_case_ids in direct_test_case_id_buckets.items()
+        )
     else:
-        bucket_case_id_sets = tuple(direct_test_case_id_buckets)
+        bucket_entries = tuple(
+            (f"bucket[{index}]", frozenset(bucket_case_ids))
+            for index, bucket_case_ids in enumerate(direct_test_case_id_buckets)
+        )
 
-    bucket_case_ids = frozenset().union(*bucket_case_id_sets)
+    bucket_labels_by_case_id: dict[str, list[str]] = {}
+    for bucket_label, bucket_case_ids in bucket_entries:
+        for case_id in bucket_case_ids:
+            bucket_labels_by_case_id.setdefault(case_id, []).append(bucket_label)
+
+    duplicate_case_ids = tuple(
+        (case_id, tuple(bucket_labels_by_case_id[case_id]))
+        for case_id in sorted(bucket_labels_by_case_id)
+        if len(bucket_labels_by_case_id[case_id]) > 1
+    )
+    bucket_case_ids = frozenset(bucket_labels_by_case_id)
     missing_case_ids = tuple(
         case_id
         for case_id in ordered_selected_case_ids
@@ -438,10 +454,15 @@ def assert_direct_test_case_id_buckets_cover_selected_frontier(
     unexpected_case_ids = tuple(
         case_id for case_id in sorted(bucket_case_ids) if case_id not in selected_case_id_set
     )
-    if missing_case_ids or unexpected_case_ids:
+    if duplicate_case_ids or missing_case_ids or unexpected_case_ids:
+        message_parts: list[str] = []
+        if duplicate_case_ids:
+            message_parts.append(f"duplicate case ids: {duplicate_case_ids}")
+        if missing_case_ids or unexpected_case_ids:
+            message_parts.append(f"missing case ids: {missing_case_ids}")
+            message_parts.append(f"unexpected case ids: {unexpected_case_ids}")
         raise AssertionError(
-            f"{coverage_label} drifted; missing case ids: {missing_case_ids}; "
-            f"unexpected case ids: {unexpected_case_ids}"
+            f"{coverage_label} drifted; " + "; ".join(message_parts)
         )
 
 

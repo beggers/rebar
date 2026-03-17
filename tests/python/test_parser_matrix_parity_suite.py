@@ -208,14 +208,13 @@ PLACEHOLDER_SEARCH_SUBJECTS = {
     "bytes-inline-locale-flag-success": b"a",
     "str-nested-set-warning": "[[a]",
 }
+# Keep the frontier coverage buckets disjoint even though several parser rows
+# are exercised by additional focused tests in this module.
 PARSER_MATRIX_DIRECT_TEST_CASE_ID_BUCKETS = {
-    "compile-metadata": _case_ids(COMPILE_METADATA_CASES),
     "warning-cache": frozenset({NESTED_SET_WARNING_CASE.case_id}),
-    "placeholder-search": _case_ids(PLACEHOLDER_SEARCH_CASES),
     "ignorecase-cache-normalization": frozenset({CHARACTER_CLASS_CASE.case_id}),
     "compile-cache": _case_ids(REPEATED_COMPILE_CACHE_CASES),
     "compile-diagnostics": _case_ids(DIAGNOSTIC_CASES),
-    "no-stdlib-delegation": _case_ids(NO_STDLIB_DELEGATION_CASES),
 }
 
 

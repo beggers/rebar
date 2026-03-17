@@ -1242,6 +1242,44 @@ def test_direct_test_case_id_bucket_helper_reports_missing_and_unexpected_ids_cl
         )
 
 
+def test_direct_test_case_id_bucket_helper_rejects_duplicate_ids_across_named_buckets(
+) -> None:
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "fixture parity support contract buckets drifted; "
+            "duplicate case ids: (('grouped-module-fullmatch-two-capture-gap-str', ('module', 'pattern')),)"
+        ),
+    ):
+        assert_direct_test_case_id_buckets_cover_selected_frontier(
+            {
+                "module": frozenset({"grouped-module-fullmatch-two-capture-gap-str"}),
+                "pattern": frozenset({"grouped-module-fullmatch-two-capture-gap-str"}),
+            },
+            selected_case_ids=("grouped-module-fullmatch-two-capture-gap-str",),
+            coverage_label="fixture parity support contract buckets",
+        )
+
+
+def test_direct_test_case_id_bucket_helper_rejects_duplicate_ids_across_positional_buckets(
+) -> None:
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "fixture parity support contract buckets drifted; "
+            "duplicate case ids: (('grouped-pattern-fullmatch-two-capture-gap-str', ('bucket[0]', 'bucket[1]')),)"
+        ),
+    ):
+        assert_direct_test_case_id_buckets_cover_selected_frontier(
+            (
+                frozenset({"grouped-pattern-fullmatch-two-capture-gap-str"}),
+                frozenset({"grouped-pattern-fullmatch-two-capture-gap-str"}),
+            ),
+            selected_case_ids=("grouped-pattern-fullmatch-two-capture-gap-str",),
+            coverage_label="fixture parity support contract buckets",
+        )
+
+
 def test_ordered_manifest_cases_from_bundles_rejects_duplicate_case_ids() -> None:
     (spec,) = _selected_case_bundle_specs()[1:]
     (bundle,) = load_fixture_bundles((spec,))
