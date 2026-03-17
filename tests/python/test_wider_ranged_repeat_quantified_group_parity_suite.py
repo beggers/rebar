@@ -242,6 +242,20 @@ FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
 COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
 MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
 PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
+FIXTURE_BUNDLES_BY_MANIFEST_ID = {
+    bundle.manifest.manifest_id: bundle for bundle in FIXTURE_BUNDLES
+}
+BROADER_RANGE_CONDITIONAL_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
+    "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
+]
+BACKTRACKING_TRACE_BUNDLES = (
+    FIXTURE_BUNDLES_BY_MANIFEST_ID[
+        "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
+    ],
+    FIXTURE_BUNDLES_BY_MANIFEST_ID[
+        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
+    ],
+)
 BROADER_RANGE_CONDITIONAL_BYTES_CASES = (
     SupplementalCase(
         id="broader-range-wider-ranged-repeat-conditional-numbered-bytes",
@@ -305,6 +319,11 @@ BACKTRACKING_TRACE_CASES = (
         named_pattern=r"a(?P<outer>((bc|b)c){1,4})d",
     ),
 )
+EXPECTED_BACKTRACKING_FULLMATCH_TEXTS = frozenset(
+    f"a{''.join(BACKTRACKING_BRANCH_TEXT[branch] for branch in branch_order)}d"
+    for repetition_count in range(1, 5)
+    for branch_order in product(("short", "long"), repeat=repetition_count)
+)
 
 
 @pytest.mark.parametrize(
@@ -319,6 +338,78 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
         bundle,
         pattern_extractor=case_pattern,
     )
+
+
+def test_broader_range_conditional_bytes_cases_stay_explicit_and_rebar_gated() -> None:
+    expected_compile_patterns = frozenset(
+        case_pattern(case).encode()
+        for case in fixture_cases_for_operation((BROADER_RANGE_CONDITIONAL_BUNDLE,), "compile")
+    )
+
+    assert len(BROADER_RANGE_CONDITIONAL_BYTES_CASES) == 2
+    assert {case.id for case in BROADER_RANGE_CONDITIONAL_BYTES_CASES} == {
+        "broader-range-wider-ranged-repeat-conditional-numbered-bytes",
+        "broader-range-wider-ranged-repeat-conditional-named-bytes",
+    }
+    assert {case.pattern for case in BROADER_RANGE_CONDITIONAL_BYTES_CASES} == (
+        expected_compile_patterns
+    )
+
+    for case in BROADER_RANGE_CONDITIONAL_BYTES_CASES:
+        assert case.unsupported_backends == ("rebar",)
+        assert case.unsupported_backend_reason == BROADER_RANGE_BYTES_SKIP_REASON
+        assert len(case.search_matches) == 4
+        assert len(case.search_misses) == 2
+        assert len(case.fullmatch_matches) == 4
+        assert len(case.fullmatch_misses) == 3
+        assert b"zzaezz" in case.search_matches
+        assert b"zzabcdedededzz" in case.search_matches
+        assert b"zzadzz" in case.search_misses
+        assert b"zzabcbcbcbcbcdzz" in case.search_misses
+        assert b"ae" in case.fullmatch_matches
+        assert b"abcdededed" in case.fullmatch_matches
+        assert b"ad" in case.fullmatch_misses
+        assert b"abcbcbcbcbcd" in case.fullmatch_misses
+        assert set(case.search_matches).isdisjoint(case.search_misses)
+        assert set(case.fullmatch_matches).isdisjoint(case.fullmatch_misses)
+        assert all(
+            isinstance(text, bytes)
+            for text in (
+                *case.search_matches,
+                *case.search_misses,
+                *case.fullmatch_matches,
+                *case.fullmatch_misses,
+            )
+        )
+
+
+def test_backtracking_trace_cases_cover_all_declared_branch_orders() -> None:
+    expected_patterns = frozenset(
+        case_pattern(case)
+        for bundle in BACKTRACKING_TRACE_BUNDLES
+        for case in fixture_cases_for_operation((bundle,), "compile")
+    )
+
+    assert len(EXPECTED_BACKTRACKING_FULLMATCH_TEXTS) == 30
+    assert len(BACKTRACKING_TRACE_CASES) == (
+        len(expected_patterns) * len(EXPECTED_BACKTRACKING_FULLMATCH_TEXTS)
+    )
+    assert len({case.id for case in BACKTRACKING_TRACE_CASES}) == len(
+        BACKTRACKING_TRACE_CASES
+    )
+    assert {case.pattern for case in BACKTRACKING_TRACE_CASES} == expected_patterns
+
+    for pattern in expected_patterns:
+        matching_cases = tuple(
+            case for case in BACKTRACKING_TRACE_CASES if case.pattern == pattern
+        )
+        assert len(matching_cases) == len(EXPECTED_BACKTRACKING_FULLMATCH_TEXTS)
+        assert {case.fullmatch_text for case in matching_cases} == (
+            EXPECTED_BACKTRACKING_FULLMATCH_TEXTS
+        )
+        assert {case.search_text for case in matching_cases} == {
+            f"zz{text}zz" for text in EXPECTED_BACKTRACKING_FULLMATCH_TEXTS
+        }
 
 
 @pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
