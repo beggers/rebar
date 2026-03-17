@@ -255,6 +255,16 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "wider-ranged-repeat-named-group-pattern-fullmatch-lower-bound-str",
         ),
     ),
+    "broader-range-wider-ranged-repeat-quantified-group-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
+            "broader-range-wider-ranged-repeat-numbered-group-compile-metadata-str",
+            "broader-range-wider-ranged-repeat-numbered-group-module-search-upper-bound-str",
+            "broader-range-wider-ranged-repeat-numbered-group-pattern-fullmatch-lower-bound-str",
+            "broader-range-wider-ranged-repeat-named-group-compile-metadata-str",
+            "broader-range-wider-ranged-repeat-named-group-module-search-upper-bound-str",
+            "broader-range-wider-ranged-repeat-named-group-pattern-fullmatch-lower-bound-str",
+        ),
+    ),
     "nested-group-alternation-workflows": CorrectnessScorecardManifestExpectation(
         representative_case_ids=(
             "nested-group-alternation-compile-metadata-str",
@@ -1067,6 +1077,16 @@ CONDITIONAL_REPLACEMENT_CORRECTNESS_SCORECARD_EXPECTATIONS = {
 
 
 WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS = {
+    "broader-range-wider-ranged-repeat-quantified-group-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
+            "broader-range-wider-ranged-repeat-numbered-group-compile-metadata-str",
+            "broader-range-wider-ranged-repeat-numbered-group-module-search-upper-bound-str",
+            "broader-range-wider-ranged-repeat-numbered-group-pattern-fullmatch-lower-bound-str",
+            "broader-range-wider-ranged-repeat-named-group-compile-metadata-str",
+            "broader-range-wider-ranged-repeat-named-group-module-search-upper-bound-str",
+            "broader-range-wider-ranged-repeat-named-group-pattern-fullmatch-lower-bound-str",
+        ),
+    ),
     "wider-ranged-repeat-quantified-group-alternation-workflows": CorrectnessScorecardManifestExpectation(
         representative_case_ids=(
             "wider-ranged-repeat-quantified-group-alternation-numbered-compile-metadata-str",

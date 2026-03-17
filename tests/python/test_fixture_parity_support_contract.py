@@ -57,10 +57,10 @@ from tests.python.fixture_parity_support import (
 OPTIONAL_NAMED_GROUP_PATTERN = r"a(?P<word>b)?d"
 BYTES_LITERAL_PATTERN = b"abc"
 EXPECTED_PUBLISHED_FULL_SUITE_SELECTOR = {
-    "count": 110,
+    "count": 111,
     "first": "parser_matrix.py",
     "last": "conditional_group_exists_callable_replacement_workflows.py",
-    "sha256": "879e65e2881dfb84897621dcf7878e0c5f2861c7e6547b312c5db911bb8cf078",
+    "sha256": "46e38ee1928ec958db51665efa67a1d5a006fdb9884a98235119aab2f1485bba",
 }
 SELECTOR_EXPECTATIONS = (
     pytest.param(
@@ -122,6 +122,7 @@ SELECTOR_EXPECTATIONS = (
             "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
             "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
             "broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
+            "broader_range_wider_ranged_repeat_quantified_group_workflows.py",
             "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
             "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
             "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py",
