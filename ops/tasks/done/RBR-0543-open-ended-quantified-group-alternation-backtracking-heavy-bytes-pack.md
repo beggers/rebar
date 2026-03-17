@@ -1,6 +1,6 @@
 # RBR-0543: Publish the open-ended grouped backtracking-heavy bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -40,3 +40,9 @@ Created: 2026-03-17
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`; and
   - `benchmarks/workloads/open_ended_quantified_group_boundary.py` already publishes the six adjacent measured `str` backtracking-heavy rows for this exact `{1,}` slice, so later benchmark catch-up should reuse that existing Python-path manifest instead of inventing another benchmark family.
 - The surviving follow-on after this task is `RBR-0544`, which should convert the same bytes pair behind `rebar._rebar` on the existing open-ended parity surface before benchmark catch-up mirrors the existing source-tree backtracking-heavy rows onto the bytes path.
+- Completed 2026-03-17:
+  - Added the 12 bytes mirrors for `rb"a((bc|b)c){1,}d"` and `rb"a(?P<word>(bc|b)c){1,}d"` to the existing `open_ended_quantified_group_alternation_backtracking_heavy_workflows.py` manifest without forking a second fixture.
+  - Updated `tests/python/test_open_ended_quantified_group_parity_suite.py` so the mixed manifest now expects `4` compile / `10` module / `10` pattern rows, routes the new bytes cases through `OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES`, and skips the `rebar` backend there explicitly pending `RBR-0544`.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`1566 passed, 14 skipped, 1172 subtests passed`).
+  - Verified the focused manifest report at `.rebar/tmp/rbr-0543-open-ended-grouped-backtracking-heavy-bytes.py`, which now publishes `24` total / `12` passed / `12` unimplemented for this manifest-local slice.
+  - Regenerated the tracked `reports/correctness/latest.py`; the published combined scorecard now reports `1120` total / `1108` passed / `12` unimplemented across `111` manifests, and `match.open_ended_quantified_group_alternation_backtracking_heavy` now reports `24` total / `12` passed / `12` unimplemented with `['bytes', 'str']` coverage.

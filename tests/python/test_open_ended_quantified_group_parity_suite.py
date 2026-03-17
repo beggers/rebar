@@ -109,15 +109,18 @@ FIXTURE_BUNDLE_SPECS = (
             {
                 r"a((bc|b)c){1,}d",
                 r"a(?P<word>(bc|b)c){1,}d",
+                rb"a((bc|b)c){1,}d",
+                rb"a(?P<word>(bc|b)c){1,}d",
             }
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("compile", None): 2,
-                ("module_call", "search"): 5,
-                ("pattern_call", "fullmatch"): 5,
+                ("compile", None): 4,
+                ("module_call", "search"): 10,
+                ("pattern_call", "fullmatch"): 10,
             }
         ),
+        expected_text_models=frozenset({"bytes", "str"}),
     ),
     FixtureBundleSpec(
         "broader_range_open_ended_quantified_group_alternation_workflows.py",
@@ -262,6 +265,26 @@ OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
         fullmatch_misses=(b"ad",),
     ),
 )
+OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
+    SupplementalCase(
+        id="open-ended-grouped-backtracking-heavy-numbered-bytes",
+        pattern=rb"a((bc|b)c){1,}d",
+        fullmatch_matches=(b"abccd", b"abcbcd", b"abcbccd"),
+        fullmatch_misses=(b"abcccd",),
+        search_matches=(b"zzabcdzz",),
+        unsupported_backends=("rebar",),
+        unsupported_backend_reason="rebar backend unsupported pending RBR-0544",
+    ),
+    SupplementalCase(
+        id="open-ended-grouped-backtracking-heavy-named-bytes",
+        pattern=rb"a(?P<word>(bc|b)c){1,}d",
+        search_matches=(b"zzabccdzz", b"zzabccbcdzz", b"zzabcbccbcdzz"),
+        search_misses=(b"zzabccbdzz",),
+        fullmatch_matches=(b"abcbcbcbcd",),
+        unsupported_backends=("rebar",),
+        unsupported_backend_reason="rebar backend unsupported pending RBR-0544",
+    ),
+)
 BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
     SupplementalCase(
         id="broader-range-open-ended-grouped-conditional-numbered-bytes",
@@ -297,6 +320,7 @@ BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
 )
 DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS = frozenset(
     {
+        "open-ended-quantified-group-alternation-backtracking-heavy-workflows",
         "broader-range-open-ended-quantified-group-alternation-conditional-workflows",
         "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows",
     }
@@ -611,6 +635,115 @@ def test_open_ended_conditional_bytes_fixture_rows_run_through_generic_case_buck
     } == {
         case.case_id for case in bundle_bytes_cases if case.operation == "pattern_call"
     }
+
+
+def test_open_ended_backtracking_heavy_bytes_cases_stay_explicit_with_one_direct_follow_on_anchor(
+) -> None:
+    bundle_str_cases = tuple(
+        case
+        for case in OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE.cases
+        if case.text_model == "str"
+    )
+    bundle_bytes_cases = tuple(
+        case
+        for case in OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE.cases
+        if case.text_model == "bytes"
+    )
+    expected_compile_patterns = frozenset(
+        case_pattern(case)
+        for case in fixture_cases_for_operation(
+            (OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,),
+            "compile",
+        )
+        if case.text_model == "bytes"
+    )
+
+    assert len(OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES) == 2
+    assert {case.id for case in OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES} == {
+        "open-ended-grouped-backtracking-heavy-numbered-bytes",
+        "open-ended-grouped-backtracking-heavy-named-bytes",
+    }
+    assert {case.pattern for case in OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES} == (
+        expected_compile_patterns
+    )
+    assert len(bundle_str_cases) == len(bundle_bytes_cases) == 12
+    assert {case.case_id for case in bundle_bytes_cases} == {
+        f"{case.case_id.removesuffix('-str')}-bytes" for case in bundle_str_cases
+    }
+    assert Counter((case.operation, case.helper) for case in bundle_bytes_cases) == Counter(
+        {
+            ("compile", None): 2,
+            ("module_call", "search"): 5,
+            ("pattern_call", "fullmatch"): 5,
+        }
+    )
+
+    for case in OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES:
+        assert case.unsupported_backends == ("rebar",)
+        assert case.unsupported_backend_reason == (
+            "rebar backend unsupported pending RBR-0544"
+        )
+        assert set(case.search_matches).isdisjoint(case.search_misses)
+        assert set(case.fullmatch_matches).isdisjoint(case.fullmatch_misses)
+        assert all(
+            isinstance(text, bytes)
+            for text in (
+                *case.search_matches,
+                *case.search_misses,
+                *case.fullmatch_matches,
+                *case.fullmatch_misses,
+            )
+        )
+
+    published_module_texts_by_pattern: dict[bytes, set[bytes]] = {}
+    published_fullmatch_texts_by_pattern: dict[bytes, set[bytes]] = {}
+    for case in bundle_bytes_cases:
+        pattern = case_pattern(case)
+        assert isinstance(pattern, bytes)
+        if case.operation == "module_call":
+            text = case.args[1]
+            assert isinstance(text, bytes)
+            published_module_texts_by_pattern.setdefault(pattern, set()).add(text)
+        elif case.operation == "pattern_call":
+            text = case.args[0]
+            assert isinstance(text, bytes)
+            published_fullmatch_texts_by_pattern.setdefault(pattern, set()).add(text)
+
+    numbered_case, named_case = OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES
+    assert published_module_texts_by_pattern == {
+        numbered_case.pattern: {b"zzabcdzz"},
+        named_case.pattern: {
+            b"zzabccdzz",
+            b"zzabccbcdzz",
+            b"zzabcbccbcdzz",
+            b"zzabccbdzz",
+        },
+    }
+    assert published_fullmatch_texts_by_pattern == {
+        numbered_case.pattern: {b"abccd", b"abcbcd", b"abcbccd", b"abcccd"},
+        named_case.pattern: {b"abcbcbcbcd"},
+    }
+
+
+def test_open_ended_backtracking_heavy_bytes_fixture_rows_route_through_direct_follow_on_anchor(
+) -> None:
+    bundle_manifest_id = OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE.manifest.manifest_id
+
+    assert {
+        case.case_id
+        for case in COMPILE_CASES
+        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
+    } == set()
+    assert {
+        case.case_id
+        for case in MODULE_CASES
+        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
+    } == set()
+    assert {
+        case.case_id
+        for case in PATTERN_CASES
+        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
+    } == set()
 
 
 def test_broader_range_open_ended_conditional_bytes_cases_stay_explicit_with_one_direct_follow_on_anchor(
@@ -1167,6 +1300,163 @@ def test_open_ended_conditional_bytes_pattern_fullmatch_convenience_api_matches_
     ids=lambda case: case.id,
 )
 def test_open_ended_conditional_bytes_pattern_fullmatch_match_group_access_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    for text in case.fullmatch_matches:
+        observed = observed_pattern.fullmatch(text)
+        expected = expected_pattern.fullmatch(text)
+
+        assert observed is not None
+        assert expected is not None
+        _assert_match_group_access_apis_match_cpython(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_open_ended_backtracking_heavy_bytes_compile_metadata_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    compile_with_cpython_parity(backend_name, backend, case.pattern)
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_open_ended_backtracking_heavy_bytes_module_search_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    for text in case.search_matches:
+        observed = backend.search(case.pattern, text)
+        expected = re.search(case.pattern, text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_match_parity(backend_name, observed, expected, check_regs=True)
+
+    for text in case.search_misses:
+        assert backend.search(case.pattern, text) is None
+        assert re.search(case.pattern, text) is None
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_open_ended_backtracking_heavy_bytes_module_search_convenience_api_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalCase,
+) -> None:
+    _, backend = regex_backend
+
+    for text in case.search_matches:
+        observed = backend.search(case.pattern, text)
+        expected = re.search(case.pattern, text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_open_ended_backtracking_heavy_bytes_module_search_match_group_access_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalCase,
+) -> None:
+    _, backend = regex_backend
+
+    for text in case.search_matches:
+        observed = backend.search(case.pattern, text)
+        expected = re.search(case.pattern, text)
+
+        assert observed is not None
+        assert expected is not None
+        _assert_match_group_access_apis_match_cpython(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_open_ended_backtracking_heavy_bytes_pattern_fullmatch_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    for text in case.fullmatch_matches:
+        observed = observed_pattern.fullmatch(text)
+        expected = expected_pattern.fullmatch(text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_match_parity(backend_name, observed, expected, check_regs=True)
+
+    for text in case.fullmatch_misses:
+        assert observed_pattern.fullmatch(text) is None
+        assert expected_pattern.fullmatch(text) is None
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_open_ended_backtracking_heavy_bytes_pattern_fullmatch_convenience_api_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    for text in case.fullmatch_matches:
+        observed = observed_pattern.fullmatch(text)
+        expected = expected_pattern.fullmatch(text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_open_ended_backtracking_heavy_bytes_pattern_fullmatch_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
     case: SupplementalCase,
 ) -> None:
