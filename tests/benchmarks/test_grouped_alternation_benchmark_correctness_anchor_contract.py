@@ -1,14 +1,20 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+from dataclasses import dataclass
 import pathlib
 import re
-import unittest
 from typing import Any
+
+import pytest
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 GROUPED_ALTERNATION_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.py"
+)
+GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_replacement_boundary.py"
 )
 
 from rebar_harness.benchmarks import load_manifest
@@ -20,6 +26,18 @@ from tests.benchmarks.correctness_anchor_support import (
     run_benchmark_workload_with_cpython,
     unanchored_workload_ids,
 )
+
+
+@dataclass(frozen=True, slots=True)
+class GroupedAlternationBenchmarkAnchorContractDefinition:
+    name: str
+    manifest_path: pathlib.Path
+    legacy_workload_ids: frozenset[str]
+    expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]]
+    expected_legacy_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]]
+    callback_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]]
+    correctness_case_signature: Callable[[Any], tuple[Any, ...] | None]
+    workload_signature: Callable[[Any], tuple[Any, ...]]
 
 
 EXPECTED_GROUPED_ALTERNATION_LEGACY_WRAPPER_WORKLOAD_IDS = frozenset(
@@ -61,7 +79,9 @@ EXPECTED_GROUPED_ALTERNATION_ANCHOR_CASE_IDS = {
     (
         "grouped_alternation_boundary.py",
         "pattern-subn-template-named-nested-grouped-alternation-purged-gap",
-    ): ("pattern-subn-template-nested-group-alternation-named-wrapper-first-match-only-str",),
+    ): (
+        "pattern-subn-template-nested-group-alternation-named-wrapper-first-match-only-str",
+    ),
 }
 
 EXPECTED_GROUPED_ALTERNATION_LEGACY_WRAPPER_ANCHOR_CASE_IDS = {
@@ -72,15 +92,80 @@ EXPECTED_GROUPED_ALTERNATION_LEGACY_WRAPPER_ANCHOR_CASE_IDS = {
     (
         "grouped_alternation_boundary.py",
         "pattern-subn-template-named-nested-grouped-alternation-purged-gap",
-    ): ("pattern-subn-template-nested-group-alternation-named-wrapper-first-match-only-str",),
+    ): (
+        "pattern-subn-template-nested-group-alternation-named-wrapper-first-match-only-str",
+    ),
 }
 
-EXPECTED_GROUPED_ALTERNATION_MEASURED_WORKLOAD_IDS = tuple(
-    workload_id for _, workload_id in EXPECTED_GROUPED_ALTERNATION_ANCHOR_CASE_IDS
+EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_LEGACY_NESTED_WORKLOAD_IDS = frozenset(
+    {
+        "module-sub-template-nested-grouped-alternation-cold-gap",
+        "pattern-subn-template-named-nested-grouped-alternation-replacement-purged-gap",
+    }
 )
 
+EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS = {
+    (
+        "grouped_alternation_replacement_boundary.py",
+        "module-sub-template-grouped-alternation-warm-str",
+    ): ("module-sub-template-grouped-alternation-str",),
+    (
+        "grouped_alternation_replacement_boundary.py",
+        "module-subn-template-grouped-alternation-warm-str",
+    ): ("module-subn-template-grouped-alternation-str",),
+    (
+        "grouped_alternation_replacement_boundary.py",
+        "pattern-sub-template-grouped-alternation-purged-str",
+    ): ("pattern-sub-template-grouped-alternation-str",),
+    (
+        "grouped_alternation_replacement_boundary.py",
+        "pattern-subn-template-grouped-alternation-purged-str",
+    ): ("pattern-subn-template-grouped-alternation-str",),
+    (
+        "grouped_alternation_replacement_boundary.py",
+        "module-sub-template-named-grouped-alternation-warm-str",
+    ): ("module-sub-template-named-grouped-alternation-str",),
+    (
+        "grouped_alternation_replacement_boundary.py",
+        "module-subn-template-named-grouped-alternation-warm-str",
+    ): ("module-subn-template-named-grouped-alternation-str",),
+    (
+        "grouped_alternation_replacement_boundary.py",
+        "pattern-sub-template-named-grouped-alternation-purged-str",
+    ): ("pattern-sub-template-named-grouped-alternation-str",),
+    (
+        "grouped_alternation_replacement_boundary.py",
+        "pattern-subn-template-named-grouped-alternation-purged-str",
+    ): ("pattern-subn-template-named-grouped-alternation-str",),
+    (
+        "grouped_alternation_replacement_boundary.py",
+        "module-sub-template-nested-grouped-alternation-cold-gap",
+    ): ("module-sub-template-nested-group-alternation-numbered-outer-str",),
+    (
+        "grouped_alternation_replacement_boundary.py",
+        "pattern-subn-template-named-nested-grouped-alternation-replacement-purged-gap",
+    ): (
+        "pattern-subn-template-nested-group-alternation-named-outer-first-match-only-str",
+    ),
+}
 
-def _correctness_case_signature(case: Any) -> tuple[Any, ...] | None:
+EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_LEGACY_NESTED_ANCHOR_CASE_IDS = {
+    (
+        "grouped_alternation_replacement_boundary.py",
+        "module-sub-template-nested-grouped-alternation-cold-gap",
+    ): ("module-sub-template-nested-group-alternation-numbered-outer-str",),
+    (
+        "grouped_alternation_replacement_boundary.py",
+        "pattern-subn-template-named-nested-grouped-alternation-replacement-purged-gap",
+    ): (
+        "pattern-subn-template-nested-group-alternation-named-outer-first-match-only-str",
+    ),
+}
+
+
+def _grouped_alternation_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
     kwargs_signature = freeze_signature_value(case.serialized_kwargs())
     flags = case.flags or 0
     text_model = case.text_model or "str"
@@ -108,7 +193,7 @@ def _correctness_case_signature(case: Any) -> tuple[Any, ...] | None:
     return None
 
 
-def _benchmark_workload_args(workload: Any) -> tuple[Any, ...]:
+def _grouped_alternation_workload_args(workload: Any) -> tuple[Any, ...]:
     if workload.operation == "module.compile":
         return ()
     if workload.operation == "module.search":
@@ -130,14 +215,14 @@ def _benchmark_workload_args(workload: Any) -> tuple[Any, ...]:
     )
 
 
-def _benchmark_workload_signature(workload: Any) -> tuple[Any, ...]:
+def _grouped_alternation_workload_signature(workload: Any) -> tuple[Any, ...]:
     if workload.operation == "module.compile":
         return ("module.compile", workload.pattern, (), (), workload.flags, workload.text_model)
     if workload.operation in {"module.search", "module.sub", "module.subn"}:
         return (
             workload.operation,
             None,
-            _benchmark_workload_args(workload),
+            _grouped_alternation_workload_args(workload),
             (),
             workload.flags,
             workload.text_model,
@@ -146,7 +231,7 @@ def _benchmark_workload_signature(workload: Any) -> tuple[Any, ...]:
         return (
             workload.operation,
             workload.pattern,
-            _benchmark_workload_args(workload),
+            _grouped_alternation_workload_args(workload),
             (),
             workload.flags,
             workload.text_model,
@@ -156,135 +241,230 @@ def _benchmark_workload_signature(workload: Any) -> tuple[Any, ...]:
     )
 
 
-def _run_correctness_case_with_cpython(case: Any) -> object:
+def _grouped_alternation_replacement_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    kwargs_signature = freeze_signature_value(case.serialized_kwargs())
+    flags = case.flags or 0
+    text_model = case.text_model or "str"
+
+    if case.operation == "module_call" and case.helper in {"sub", "subn"}:
+        return (
+            f"module.{case.helper}",
+            case.pattern,
+            freeze_signature_value(case.serialized_args()),
+            kwargs_signature,
+            flags,
+            text_model,
+        )
+    if case.operation == "pattern_call" and case.helper in {"sub", "subn"}:
+        return (
+            f"pattern.{case.helper}",
+            case.pattern,
+            freeze_signature_value(case.serialized_args()),
+            kwargs_signature,
+            flags,
+            text_model,
+        )
+    return None
+
+
+def _grouped_alternation_replacement_workload_args(workload: Any) -> tuple[Any, ...]:
+    if workload.operation in {"module.sub", "module.subn"}:
+        args = [workload.pattern, workload.replacement, workload.haystack]
+    elif workload.operation in {"pattern.sub", "pattern.subn"}:
+        args = [workload.replacement, workload.haystack]
+    else:
+        raise AssertionError(
+            "unexpected grouped-alternation replacement workload operation "
+            f"{workload.operation!r}"
+        )
+
+    if workload.count:
+        args.append(workload.count)
+    return freeze_signature_value(args)
+
+
+def _grouped_alternation_replacement_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    if workload.operation in {"module.sub", "module.subn"}:
+        return (
+            workload.operation,
+            None,
+            _grouped_alternation_replacement_workload_args(workload),
+            (),
+            workload.flags,
+            workload.text_model,
+        )
+    if workload.operation in {"pattern.sub", "pattern.subn"}:
+        return (
+            workload.operation,
+            workload.pattern,
+            _grouped_alternation_replacement_workload_args(workload),
+            (),
+            workload.flags,
+            workload.text_model,
+        )
+    raise AssertionError(
+        "unexpected grouped-alternation replacement workload operation "
+        f"{workload.operation!r}"
+    )
+
+
+def _run_grouped_alternation_anchor_case_with_cpython(case: Any) -> object:
     if case.operation == "module_call":
         if case.helper is None:
-            raise AssertionError(
-                f"expected grouped-alternation helper for {case.case_id!r}"
-            )
+            raise AssertionError(f"expected helper for {case.case_id!r}")
         return getattr(re, case.helper)(*case.args, **case.kwargs)
 
     if case.operation == "pattern_call":
         if case.helper is None:
-            raise AssertionError(
-                f"expected grouped-alternation helper for {case.case_id!r}"
-            )
+            raise AssertionError(f"expected helper for {case.case_id!r}")
         compiled = re.compile(case.pattern_payload(), case.flags or 0)
         return getattr(compiled, case.helper)(*case.args, **case.kwargs)
 
-    raise AssertionError(
-        "unexpected grouped-alternation correctness operation "
-        f"{case.operation!r}"
-    )
+    raise AssertionError(f"unexpected correctness operation {case.operation!r}")
 
 
-def _measured_grouped_alternation_workload_ids(
-    manifest_path: pathlib.Path,
-) -> tuple[str, ...]:
-    workloads = load_manifest(manifest_path).workloads
-    return tuple(workload.workload_id for workload in workloads)
-
-
-def _unanchored_measured_grouped_alternation_workload_ids(
-    manifest_path: pathlib.Path,
-) -> tuple[str, ...]:
-    return unanchored_workload_ids(
-        manifest_path,
-        anchor_case_ids=published_case_ids_by_signature(_correctness_case_signature),
-        workload_signature=_benchmark_workload_signature,
-        include_workload=lambda workload: True,
-    )
-
-
-def _anchored_grouped_alternation_workload_case_ids(
-    manifest_path: pathlib.Path,
+def _anchored_case_ids(
+    definition: GroupedAlternationBenchmarkAnchorContractDefinition,
 ) -> dict[tuple[str, str], tuple[str, ...]]:
     return anchored_workload_case_ids(
-        manifest_path,
-        anchor_case_ids=published_case_ids_by_signature(_correctness_case_signature),
-        workload_signature=_benchmark_workload_signature,
-        include_workload=lambda workload: True,
+        definition.manifest_path,
+        anchor_case_ids=published_case_ids_by_signature(
+            definition.correctness_case_signature
+        ),
+        workload_signature=definition.workload_signature,
     )
 
 
-class GroupedAlternationBenchmarkCorrectnessAnchorContractTest(unittest.TestCase):
-    maxDiff = None
+def _unanchored_case_ids(
+    definition: GroupedAlternationBenchmarkAnchorContractDefinition,
+) -> tuple[str, ...]:
+    return unanchored_workload_ids(
+        definition.manifest_path,
+        anchor_case_ids=published_case_ids_by_signature(
+            definition.correctness_case_signature
+        ),
+        workload_signature=definition.workload_signature,
+    )
 
-    def test_grouped_alternation_manifest_keeps_legacy_wrapper_pair_on_measured_surface(
-        self,
-    ) -> None:
-        workloads = load_manifest(GROUPED_ALTERNATION_MANIFEST_PATH).workloads
-        self.assertEqual(
-            {
-                workload.workload_id
-                for workload in workloads
-                if workload.workload_id
-                in EXPECTED_GROUPED_ALTERNATION_LEGACY_WRAPPER_WORKLOAD_IDS
-            },
-            EXPECTED_GROUPED_ALTERNATION_LEGACY_WRAPPER_WORKLOAD_IDS,
+
+def _expected_measured_workload_ids(
+    expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]],
+) -> tuple[str, ...]:
+    return tuple(workload_id for _, workload_id in expected_anchor_case_ids)
+
+
+GROUPED_ALTERNATION_DEFINITIONS = (
+    GroupedAlternationBenchmarkAnchorContractDefinition(
+        name="grouped-alternation",
+        manifest_path=GROUPED_ALTERNATION_MANIFEST_PATH,
+        legacy_workload_ids=EXPECTED_GROUPED_ALTERNATION_LEGACY_WRAPPER_WORKLOAD_IDS,
+        expected_anchor_case_ids=EXPECTED_GROUPED_ALTERNATION_ANCHOR_CASE_IDS,
+        expected_legacy_anchor_case_ids=(
+            EXPECTED_GROUPED_ALTERNATION_LEGACY_WRAPPER_ANCHOR_CASE_IDS
+        ),
+        callback_anchor_case_ids=EXPECTED_GROUPED_ALTERNATION_LEGACY_WRAPPER_ANCHOR_CASE_IDS,
+        correctness_case_signature=_grouped_alternation_correctness_case_signature,
+        workload_signature=_grouped_alternation_workload_signature,
+    ),
+    GroupedAlternationBenchmarkAnchorContractDefinition(
+        name="grouped-alternation-replacement",
+        manifest_path=GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+        legacy_workload_ids=(
+            EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_LEGACY_NESTED_WORKLOAD_IDS
+        ),
+        expected_anchor_case_ids=EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS,
+        expected_legacy_anchor_case_ids=(
+            EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_LEGACY_NESTED_ANCHOR_CASE_IDS
+        ),
+        callback_anchor_case_ids=EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS,
+        correctness_case_signature=(
+            _grouped_alternation_replacement_correctness_case_signature
+        ),
+        workload_signature=_grouped_alternation_replacement_workload_signature,
+    ),
+)
+
+
+@pytest.mark.parametrize(
+    "definition",
+    GROUPED_ALTERNATION_DEFINITIONS,
+    ids=lambda definition: definition.name,
+)
+def test_grouped_alternation_manifest_keeps_expected_legacy_workloads_on_measured_surface(
+    definition: GroupedAlternationBenchmarkAnchorContractDefinition,
+) -> None:
+    workloads = load_manifest(definition.manifest_path).workloads
+    assert {
+        workload.workload_id
+        for workload in workloads
+        if workload.workload_id in definition.legacy_workload_ids
+    } == definition.legacy_workload_ids
+    assert tuple(workload.workload_id for workload in workloads) == (
+        _expected_measured_workload_ids(definition.expected_anchor_case_ids)
+    )
+
+
+@pytest.mark.parametrize(
+    "definition",
+    GROUPED_ALTERNATION_DEFINITIONS,
+    ids=lambda definition: definition.name,
+)
+def test_grouped_alternation_workloads_stay_anchored_to_published_correctness_cases(
+    definition: GroupedAlternationBenchmarkAnchorContractDefinition,
+) -> None:
+    assert _unanchored_case_ids(definition) == ()
+
+
+@pytest.mark.parametrize(
+    "definition",
+    GROUPED_ALTERNATION_DEFINITIONS,
+    ids=lambda definition: definition.name,
+)
+def test_grouped_alternation_workloads_stay_pinned_to_exact_case_ids(
+    definition: GroupedAlternationBenchmarkAnchorContractDefinition,
+) -> None:
+    assert _anchored_case_ids(definition) == definition.expected_anchor_case_ids
+
+
+@pytest.mark.parametrize(
+    "definition",
+    GROUPED_ALTERNATION_DEFINITIONS,
+    ids=lambda definition: definition.name,
+)
+def test_grouped_alternation_legacy_workloads_stay_pinned_to_published_case_ids(
+    definition: GroupedAlternationBenchmarkAnchorContractDefinition,
+) -> None:
+    assert {
+        key: case_ids
+        for key, case_ids in _anchored_case_ids(definition).items()
+        if key[1] in definition.legacy_workload_ids
+    } == definition.expected_legacy_anchor_case_ids
+
+
+@pytest.mark.parametrize(
+    "definition",
+    GROUPED_ALTERNATION_DEFINITIONS,
+    ids=lambda definition: definition.name,
+)
+def test_grouped_alternation_workload_callbacks_match_anchor_case_results(
+    definition: GroupedAlternationBenchmarkAnchorContractDefinition,
+) -> None:
+    manifest = load_manifest(definition.manifest_path)
+    workloads_by_id = {
+        workload.workload_id: workload for workload in manifest.workloads
+    }
+    published_cases = published_cases_by_id()
+
+    for (_, workload_id), case_ids in definition.callback_anchor_case_ids.items():
+        assert len(case_ids) == 1
+        case_id = case_ids[0]
+
+        assert workload_id in workloads_by_id
+        assert case_id in published_cases
+        assert run_benchmark_workload_with_cpython(workloads_by_id[workload_id]) == (
+            _run_grouped_alternation_anchor_case_with_cpython(published_cases[case_id])
         )
-        self.assertEqual(
-            _measured_grouped_alternation_workload_ids(
-                GROUPED_ALTERNATION_MANIFEST_PATH
-            ),
-            EXPECTED_GROUPED_ALTERNATION_MEASURED_WORKLOAD_IDS,
-        )
-
-    def test_measured_grouped_alternation_workloads_stay_anchored_to_published_correctness_cases(
-        self,
-    ) -> None:
-        self.assertEqual(
-            _unanchored_measured_grouped_alternation_workload_ids(
-                GROUPED_ALTERNATION_MANIFEST_PATH
-            ),
-            (),
-        )
-
-    def test_measured_grouped_alternation_workloads_stay_pinned_to_exact_case_ids(
-        self,
-    ) -> None:
-        self.assertEqual(
-            _anchored_grouped_alternation_workload_case_ids(
-                GROUPED_ALTERNATION_MANIFEST_PATH
-            ),
-            EXPECTED_GROUPED_ALTERNATION_ANCHOR_CASE_IDS,
-        )
-
-    def test_legacy_wrapper_workloads_stay_pinned_to_published_wrapper_case_ids(
-        self,
-    ) -> None:
-        self.assertEqual(
-            {
-                key: case_ids
-                for key, case_ids in _anchored_grouped_alternation_workload_case_ids(
-                    GROUPED_ALTERNATION_MANIFEST_PATH
-                ).items()
-                if key[1] in EXPECTED_GROUPED_ALTERNATION_LEGACY_WRAPPER_WORKLOAD_IDS
-            },
-            EXPECTED_GROUPED_ALTERNATION_LEGACY_WRAPPER_ANCHOR_CASE_IDS,
-        )
-
-    def test_legacy_wrapper_workload_callbacks_match_anchor_case_results(self) -> None:
-        manifest = load_manifest(GROUPED_ALTERNATION_MANIFEST_PATH)
-        workloads_by_id = {
-            workload.workload_id: workload for workload in manifest.workloads
-        }
-        published_cases = published_cases_by_id()
-
-        for (_, workload_id), case_ids in (
-            EXPECTED_GROUPED_ALTERNATION_LEGACY_WRAPPER_ANCHOR_CASE_IDS.items()
-        ):
-            self.assertEqual(len(case_ids), 1)
-            case_id = case_ids[0]
-
-            with self.subTest(workload_id=workload_id, case_id=case_id):
-                self.assertIn(workload_id, workloads_by_id)
-                self.assertIn(case_id, published_cases)
-                self.assertEqual(
-                    run_benchmark_workload_with_cpython(workloads_by_id[workload_id]),
-                    _run_correctness_case_with_cpython(published_cases[case_id]),
-                )
-
-
-if __name__ == "__main__":
-    unittest.main()
