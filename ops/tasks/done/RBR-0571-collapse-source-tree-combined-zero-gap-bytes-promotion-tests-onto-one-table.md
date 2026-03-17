@@ -1,6 +1,6 @@
 # RBR-0571: Collapse the source-tree combined zero-gap bytes promotion tests onto one table
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -156,3 +156,9 @@ Created: 2026-03-17
     - `module:missing:ZERO_GAP_BYTES_PROMOTION_CASES`
     - `class:missing:_assert_zero_gap_bytes_representative_subset,test_zero_gap_bytes_manifest_promotions_keep_selected_rows_publicly_measured`
     - `class:still-has-old-pure-tests:...` for the eleven listed methods.
+
+## Completion Notes
+- 2026-03-17: Collapsed the eleven repeated zero-gap bytes-promotion checks in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` onto the new module-level `ZERO_GAP_BYTES_PROMOTION_CASES` table, the shared `SourceTreeCombinedBoundaryBenchmarkSuiteTest._assert_zero_gap_bytes_representative_subset(...)` helper, and the looped `test_zero_gap_bytes_manifest_promotions_keep_selected_rows_publicly_measured(...)` method while keeping `test_quantified_alternation_manifest_promotes_open_ended_bytes_rows_to_measured(...)` as the richer exact-equality special case.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`19 passed, 686 subtests passed in 20.96s`)
+  - Task acceptance AST probe (`ok`)
