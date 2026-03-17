@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 1067 cases across 111 manifests, with 1067 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 626 workloads across 30 manifests with 626 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial while the surviving next step reopens bytes correctness on the open-ended grouped-conditional path.
 
 ## README Next Steps
-- With the queue drained, the surviving frontier is `RBR-0532`: publish the open-ended `{1,}` grouped-alternation-plus-conditional bytes pair on the existing open-ended correctness/parity path so bytes coverage reopens before parity or benchmark catch-up widens that family.
+- Ready `RBR-0532` publishes the open-ended `{1,}` grouped-alternation-plus-conditional bytes pair on the existing open-ended correctness/parity path so bytes coverage reopens before parity or benchmark catch-up widens that family.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow, but the tracked frontier is now gap-free: 1
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- With the queue drained, the surviving frontier is `RBR-0532`: publish the open-ended `{1,}` grouped-alternation-plus-conditional bytes pair on the existing open-ended correctness/parity path by adding the 13 bytes mirrors of the current `str` cases for `rb"a((bc|de){1,})?(?(1)d|e)"` and `rb"a(?P<outer>(bc|de){1,})?(?(outer)d|e)"`, so correctness reopens before bytes parity or benchmark catch-up widens that family.
+- After ready `RBR-0532` lands, the surviving frontier is `RBR-0533`: convert the same open-ended `{1,}` grouped-alternation-plus-conditional bytes pair behind `rebar._rebar` on `tests/python/test_open_ended_quantified_group_parity_suite.py` so the reopened 13-case bytes slice returns `reports/correctness/latest.py` to a gap-free `1080` passes before bytes benchmark catch-up widens that family.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
