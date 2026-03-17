@@ -40,6 +40,7 @@ from tests.python.fixture_parity_support import (
     assert_match_convenience_api_parity,
     assert_match_parity,
     assert_match_result_parity,
+    assert_pattern_parity,
     assert_valid_match_group_access_parity,
     bundle_patterns,
     case_replacement_argument,
@@ -1268,6 +1269,82 @@ def test_compile_with_cpython_parity_covers_representative_supported_patterns(
         assert observed.groupindex == expected.groupindex == {"word": 1}
     else:
         assert observed.groupindex == expected.groupindex == {}
+
+
+@pytest.mark.parametrize(
+    ("pattern", "flags", "expected_groups", "expected_groupindex"),
+    (
+        pytest.param("abc", 0, 0, {}, id="literal-str"),
+        pytest.param(r"(?P<word>abc)", 0, 1, {"word": 1}, id="named-group-str"),
+        pytest.param(b"abc", 0, 0, {}, id="literal-bytes"),
+    ),
+)
+def test_pattern_parity_helper_accepts_supported_pattern_metadata(
+    regex_backend: tuple[str, object],
+    pattern: str | bytes,
+    flags: int,
+    expected_groups: int,
+    expected_groupindex: dict[str, int],
+) -> None:
+    backend_name, backend = regex_backend
+
+    observed = backend.compile(pattern, flags)
+    expected = re.compile(pattern, flags)
+
+    assert_pattern_parity(backend_name, observed, expected)
+    assert observed.groups == expected.groups == expected_groups
+    assert observed.groupindex == expected.groupindex == expected_groupindex
+
+
+def test_pattern_parity_helper_rejects_stdlib_patterns_for_rebar_backend() -> None:
+    observed = re.compile("abc")
+    expected = re.compile("abc")
+
+    with pytest.raises(AssertionError):
+        assert_pattern_parity("rebar", observed, expected)
+
+
+@pytest.mark.parametrize(
+    ("pattern", "flags", "mutator"),
+    (
+        pytest.param(
+            "abc",
+            0,
+            lambda compiled: setattr(compiled, "pattern", "abd"),
+            id="pattern-mismatch",
+        ),
+        pytest.param(
+            "abc",
+            0,
+            lambda compiled: setattr(compiled, "flags", compiled.flags | int(re.IGNORECASE)),
+            id="flags-mismatch",
+        ),
+        pytest.param(
+            r"(?P<word>abc)",
+            0,
+            lambda compiled: setattr(compiled, "groups", compiled.groups + 1),
+            id="groups-mismatch",
+        ),
+        pytest.param(
+            r"(?P<word>abc)",
+            0,
+            lambda compiled: setattr(compiled, "groupindex", {"other": 1}),
+            id="groupindex-mismatch",
+        ),
+    ),
+)
+def test_pattern_parity_helper_rejects_rebar_pattern_metadata_mismatches(
+    pattern: str,
+    flags: int,
+    mutator,
+) -> None:
+    observed = rebar.compile(pattern, flags)
+    expected = re.compile(pattern, flags)
+
+    mutator(observed)
+
+    with pytest.raises(AssertionError):
+        assert_pattern_parity("rebar", observed, expected)
 
 
 @pytest.mark.parametrize(
