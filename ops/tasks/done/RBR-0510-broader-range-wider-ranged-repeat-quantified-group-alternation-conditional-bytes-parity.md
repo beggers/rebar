@@ -1,6 +1,6 @@
 # RBR-0510: Convert the broader-range wider-ranged-repeat grouped-conditional bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -38,3 +38,9 @@ Created: 2026-03-17
 - Build on `RBR-0509`.
 - 2026-03-17 feature-planning probe: `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... rebar.compile(pattern) ... PY` still raises `NotImplementedError: rebar.compile() is a scaffold placeholder; the \`re\`-compatible API is not implemented yet` for both published bytes patterns, so this task is not stale.
 - The surviving follow-on after this task is `RBR-0512`, which should add the six bytes mirrors of the current broader-range grouped-conditional source-tree benchmark rows on `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py` before broader bytes follow-ons reopen that family.
+- 2026-03-17 feature-implementation completed this bounded bytes-parity slice by adding exact Rust-core compile/match support for `rb"a((bc|de){1,4})?(?(1)d|e)"` and `rb"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)"`, removing the old `rebar` skip gating from `BROADER_RANGE_CONDITIONAL_BYTES_CASES`, and republishing `reports/correctness/latest.py` to `997` total / `997` passed / `0` unimplemented overall with `match.broader_range_wider_ranged_repeat_quantified_group_alternation_conditional` at `28` total / `28` passed / `0` unimplemented. The existing `rebar._rebar` boundary and `python/rebar/__init__.py` marshalling paths already carried the new core behavior, so no Python-side runtime expansion was needed.
+- Verification:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py --report .rebar/tmp/rbr-0510-broader-range-conditional-bytes-parity.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

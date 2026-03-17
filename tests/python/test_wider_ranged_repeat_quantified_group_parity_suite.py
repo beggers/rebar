@@ -19,10 +19,6 @@ from tests.python.fixture_parity_support import (
     fixture_cases_for_operation,
     load_fixture_bundles,
 )
-BROADER_RANGE_BYTES_SKIP_REASON = (
-    "rebar does not yet support broader-range wider-ranged-repeat "
-    "grouped-conditional bytes parity"
-)
 BACKTRACKING_BRANCH_TEXT = {
     "short": "bc",
     "long": "bcc",
@@ -264,8 +260,6 @@ BROADER_RANGE_CONDITIONAL_BYTES_CASES = (
         search_misses=(b"zzadzz", b"zzabcbcbcbcbcdzz"),
         fullmatch_matches=(b"ae", b"abcded", b"abcbcded", b"abcdededed"),
         fullmatch_misses=(b"ad", b"abcdede", b"abcbcbcbcbcd"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=BROADER_RANGE_BYTES_SKIP_REASON,
     ),
     SupplementalCase(
         id="broader-range-wider-ranged-repeat-conditional-named-bytes",
@@ -274,8 +268,6 @@ BROADER_RANGE_CONDITIONAL_BYTES_CASES = (
         search_misses=(b"zzadzz", b"zzabcbcbcbcbcdzz"),
         fullmatch_matches=(b"ae", b"abcded", b"abcbcded", b"abcdededed"),
         fullmatch_misses=(b"ad", b"abcdede", b"abcbcbcbcbcd"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=BROADER_RANGE_BYTES_SKIP_REASON,
     ),
 )
 
@@ -289,8 +281,8 @@ def _uses_direct_bytes_follow_on(case: FixtureCase) -> bool:
 
 
 # Keep the shared manifest contract honest, but route the published bytes slice
-# through the explicit supplemental parity anchor until Rust-backed bytes support
-# lands for these patterns.
+# through one explicit supplemental parity anchor so the direct bytes contract
+# stays covered without duplicating the shared manifest rows in this suite.
 COMPILE_CASES = tuple(
     case
     for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
@@ -368,7 +360,7 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     )
 
 
-def test_broader_range_conditional_bytes_cases_stay_explicit_and_rebar_gated() -> None:
+def test_broader_range_conditional_bytes_cases_stay_explicit_without_skip_gating() -> None:
     bundle_str_cases = tuple(
         case for case in BROADER_RANGE_CONDITIONAL_BUNDLE.cases if case.text_model == "str"
     )
@@ -402,8 +394,8 @@ def test_broader_range_conditional_bytes_cases_stay_explicit_and_rebar_gated() -
     )
 
     for case in BROADER_RANGE_CONDITIONAL_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert case.unsupported_backend_reason == BROADER_RANGE_BYTES_SKIP_REASON
+        assert case.unsupported_backends == ()
+        assert case.unsupported_backend_reason is None
         assert len(case.search_matches) == 4
         assert len(case.search_misses) == 2
         assert len(case.fullmatch_matches) == 4
