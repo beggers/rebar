@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives; the next bounded feature slice needs re-triage from tracked correctness and benchmark evidence before another `feature-implementation` task is queued safely.
+`RBR-0561` should convert the quantified-alternation open-ended bytes pair for `rb"a(b|c){1,}d"` and `rb"a(?P<word>b|c){1,}d"` to real Rust-backed parity on the existing quantified-alternation surface.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives; re-triage the next bounded feature slice from tracked correctness and benchmark evidence before queuing another `feature-implementation` task.
+1. `RBR-0561` should convert the quantified-alternation open-ended bytes pair for `rb"a(b|c){1,}d"` and `rb"a(?P<word>b|c){1,}d"` to real Rust-backed parity before later benchmark catch-up mirrors the six adjacent `quantified_alternation_boundary.py` `str` rows on the Python-path benchmark surface.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
