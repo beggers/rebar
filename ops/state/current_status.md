@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 1039 cases across 111 manifests, with 1025 passing, 0 explicit failures, and 14 honest gaps; the main benchmark report covers 607 workloads across 30 manifests with 607 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial.
 
 ## README Next Steps
-- The ready queue is empty; the next intended follow-on is `RBR-0522`, which converts the same nested broader `{1,4}` grouped-alternation bytes pair behind `rebar._rebar` before benchmark catch-up or nested broader grouped-conditionals broaden that family.
+- Ready `RBR-0522` should convert the same nested broader `{1,4}` grouped-alternation bytes pair behind `rebar._rebar` on the existing wider-ranged-repeat parity surface before benchmark catch-up revisits that family.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow and not yet gap-free: 1025 of 1039 published
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The ready queue is empty; the next intended follow-on is `RBR-0522`: convert the same nested broader `{1,4}` grouped-alternation bytes pair behind `rebar._rebar` on the existing wider-ranged-repeat parity surface before benchmark catch-up or nested broader grouped-conditionals broaden that family.
+- After ready `RBR-0522` drains, the surviving frontier is `RBR-0523`: add the six bytes mirrors of the current nested broader `{1,4}` grouped-alternation benchmark rows on `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py` so the same bytes pair reaches the published Python-path benchmark surface before nested broader grouped-conditionals reopen correctness work.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
