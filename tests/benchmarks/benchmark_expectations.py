@@ -86,33 +86,6 @@ class SourceTreeScorecardCase(SourceTreeBenchmarkCommonCase):
     expected_first_deferred: SourceTreeDeferredExpectation | None = None
     expected_workload_order: tuple[str, ...] | None = None
 
-    @classmethod
-    def from_common_case(
-        cls,
-        common_case: SourceTreeBenchmarkCommonCase,
-        *,
-        case_id: str,
-        manifest_expectations: dict[str, SourceTreeManifestExpectation],
-        representative_measured_workload_ids: tuple[str, ...],
-        representative_known_gap_workload_ids: tuple[str, ...],
-        expected_first_deferred: SourceTreeDeferredExpectation | None = None,
-        expected_workload_order: tuple[str, ...] | None = None,
-    ) -> SourceTreeScorecardCase:
-        return cls(
-            expected_adapter=common_case.expected_adapter,
-            expected_phase=common_case.expected_phase,
-            expected_runner_version=common_case.expected_runner_version,
-            expected_summary=common_case.expected_summary,
-            manifests=common_case.manifests,
-            selection_mode=common_case.selection_mode,
-            case_id=case_id,
-            manifest_expectations=manifest_expectations,
-            representative_measured_workload_ids=representative_measured_workload_ids,
-            representative_known_gap_workload_ids=representative_known_gap_workload_ids,
-            expected_first_deferred=expected_first_deferred,
-            expected_workload_order=expected_workload_order,
-        )
-
 
 @dataclass(frozen=True, slots=True)
 class _SourceTreeScorecardDefinition:
@@ -132,27 +105,6 @@ class SourceTreeCombinedCase(SourceTreeBenchmarkCommonCase):
     manifest_expectation: SourceTreeManifestExpectation
     manifest_id: str
     target_manifest: BenchmarkManifest
-
-    @classmethod
-    def from_common_case(
-        cls,
-        common_case: SourceTreeBenchmarkCommonCase,
-        *,
-        manifest_expectation: SourceTreeManifestExpectation,
-        manifest_id: str,
-        target_manifest: BenchmarkManifest,
-    ) -> SourceTreeCombinedCase:
-        return cls(
-            expected_adapter=common_case.expected_adapter,
-            expected_phase=common_case.expected_phase,
-            expected_runner_version=common_case.expected_runner_version,
-            expected_summary=common_case.expected_summary,
-            manifests=common_case.manifests,
-            selection_mode=common_case.selection_mode,
-            manifest_expectation=manifest_expectation,
-            manifest_id=manifest_id,
-            target_manifest=target_manifest,
-        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -1853,24 +1805,24 @@ def _flatten_manifest_workloads(manifests: list[BenchmarkManifest]) -> list[Work
     return [workload for manifest in manifests for workload in manifest.workloads]
 
 
-def _build_source_tree_benchmark_common_case(
+def _source_tree_benchmark_common_case_kwargs(
     *,
     manifests: list[BenchmarkManifest],
     workloads: list[Workload],
     selection_mode: str,
     manifest_known_gap_counts: dict[str, int] | None = None,
     expected_summary: dict[str, int] | None = None,
-) -> SourceTreeBenchmarkCommonCase:
+) -> dict[str, Any]:
     workload_payloads = [workload_to_payload(workload) for workload in workloads]
-    return SourceTreeBenchmarkCommonCase(
-        expected_adapter=(
+    return {
+        "expected_adapter": (
             "rebar.module-surface"
             if any(workload.family == "module" for workload in workloads)
             else "rebar.compile"
         ),
-        expected_phase=determine_phase(workload_payloads),
-        expected_runner_version=determine_runner_version(workload_payloads),
-        expected_summary=(
+        "expected_phase": determine_phase(workload_payloads),
+        "expected_runner_version": determine_runner_version(workload_payloads),
+        "expected_summary": (
             expected_summary
             if expected_summary is not None
             else expected_summary_for_manifests(
@@ -1879,9 +1831,9 @@ def _build_source_tree_benchmark_common_case(
                 manifest_known_gap_counts=manifest_known_gap_counts,
             )
         ),
-        manifests=manifests,
-        selection_mode=selection_mode,
-    )
+        "manifests": manifests,
+        "selection_mode": selection_mode,
+    }
 
 
 def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
@@ -1943,14 +1895,14 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
                     manifest_expectation
                 )
             )
-    common_case = _build_source_tree_benchmark_common_case(
+    common_case_kwargs = _source_tree_benchmark_common_case_kwargs(
         manifests=manifests,
         workloads=selected_workloads,
         selection_mode=case_definition.selection_mode,
         manifest_known_gap_counts=manifest_known_gap_counts,
     )
-    return SourceTreeScorecardCase.from_common_case(
-        common_case,
+    return SourceTreeScorecardCase(
+        **common_case_kwargs,
         case_id=case_id,
         manifest_expectations=manifest_expectations,
         representative_measured_workload_ids=representative_measured_workload_ids,
@@ -2093,13 +2045,13 @@ def source_tree_combined_case(target_manifest_id: str) -> SourceTreeCombinedCase
     target_manifest = next(
         manifest for manifest in manifests if manifest.manifest_id == target_manifest_id
     )
-    common_case = _build_source_tree_benchmark_common_case(
+    common_case_kwargs = _source_tree_benchmark_common_case_kwargs(
         manifests=manifests,
         workloads=workloads,
         selection_mode="full",
     )
-    return SourceTreeCombinedCase.from_common_case(
-        common_case,
+    return SourceTreeCombinedCase(
+        **common_case_kwargs,
         manifest_expectation=_public_source_tree_manifest_expectation(target_manifest_id),
         manifest_id=target_manifest_id,
         target_manifest=target_manifest,

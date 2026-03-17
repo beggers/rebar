@@ -1,8 +1,9 @@
 # RBR-0548: Collapse the source-tree benchmark common-case copy layer
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
+Completed: 2026-03-17
 
 ## Goal
 - Remove the remaining build-and-copy wrapper layer in `tests/benchmarks/benchmark_expectations.py` now that the source-tree benchmark cases already share one base dataclass. The intended end state is that `source_tree_scorecard_case(...)` and `source_tree_combined_case(...)` build their concrete case records directly instead of first allocating a `SourceTreeBenchmarkCommonCase` and then copying its fields through one-off `from_common_case(...)` constructors.
@@ -83,3 +84,13 @@ Created: 2026-03-17
 - 2026-03-17 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passes (`53 passed, 1523 subtests passed in 22.00s`).
   - The inline manifest-order probe above prints `ok`.
+
+## Completion
+- Removed `SourceTreeScorecardCase.from_common_case(...)` and `SourceTreeCombinedCase.from_common_case(...)` from `tests/benchmarks/benchmark_expectations.py`.
+- Replaced `_build_source_tree_benchmark_common_case(...)` with `_source_tree_benchmark_common_case_kwargs(...)`, so the shared helper now returns constructor kwargs instead of materializing an intermediate `SourceTreeBenchmarkCommonCase`.
+- Updated `source_tree_scorecard_case(...)` and `source_tree_combined_case(...)` to instantiate `SourceTreeScorecardCase` and `SourceTreeCombinedCase` directly while preserving the existing manifest ordering, target-manifest selection, and expected scorecard metadata.
+
+## Verification
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`53 passed, 1523 subtests passed in 21.83s`)
+- The inline `source_tree_scorecard_case("post-parser-workflows")` / `source_tree_combined_case("literal-flag-boundary")` manifest-order probe from the task text (`ok`)
+- `rg -n "def from_common_case\(|def _build_source_tree_benchmark_common_case\(|return SourceTreeScorecardCase\.from_common_case\(|return SourceTreeCombinedCase\.from_common_case\(" tests/benchmarks/benchmark_expectations.py` (no matches)
