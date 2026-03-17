@@ -6,8 +6,10 @@ import pathlib
 import subprocess
 import unittest
 
+from rebar_harness import correctness
+
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
+TRACKED_REPORT_PATH = correctness.SCORECARD_REPORT.published_path
 NUMBERED_BACKREFERENCE_FIXTURE_PATH = (
     REPO_ROOT
     / "tests"
@@ -20,13 +22,9 @@ NUMBERED_BACKREFERENCE_SUITE_ID = "match.numbered_backreference"
 from rebar_harness.correctness import (
     CpythonReAdapter,
     RebarAdapter,
-    SCORECARD_KIND as CORRECTNESS_SCORECARD_KIND,
-    SCORECARD_MODULE_NAME_PREFIX as CORRECTNESS_SCORECARD_MODULE_NAME_PREFIX,
-    SCORECARD_REPORT_ATTRIBUTE as CORRECTNESS_SCORECARD_REPORT_ATTRIBUTE,
     evaluate_case,
     load_fixture_manifest,
 )
-from rebar_harness.scorecard_io import load_scorecard_report
 from tests.conformance.correctness_expectations import (
     CorrectnessScorecardExpectation,
     correctness_scorecard_case,
@@ -176,12 +174,7 @@ class CorrectnessScorecardSuitesTest(unittest.TestCase):
             ],
             report_name="correctness.json",
         )
-        tracked_scorecard = load_scorecard_report(
-            TRACKED_REPORT_PATH,
-            module_name_prefix=CORRECTNESS_SCORECARD_MODULE_NAME_PREFIX,
-            report_attribute=CORRECTNESS_SCORECARD_REPORT_ATTRIBUTE,
-            scorecard_kind=CORRECTNESS_SCORECARD_KIND,
-        )
+        tracked_scorecard = correctness.SCORECARD_REPORT.load(TRACKED_REPORT_PATH)
 
         expected_suite = find_correctness_suite_record(
             expected_scorecard,

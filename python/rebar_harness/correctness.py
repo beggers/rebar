@@ -11,8 +11,6 @@ import sys
 import warnings
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
-from functools import partial
-from types import SimpleNamespace
 from typing import Any, Iterable, Sequence
 
 
@@ -22,48 +20,21 @@ import rebar
 from rebar_harness.descriptor_values import materialize_descriptor_value
 from rebar_harness.scorecard_io import (
     build_cpython_baseline,
-    load_scorecard_report,
+    build_scorecard_report_descriptor,
     load_python_dict_attribute,
-    remove_scorecard_sidecar,
-    validate_scorecard_report_path,
-    write_scorecard_report,
 )
 
 
 TARGET_CPYTHON_SERIES = "3.12.x"
 REPORT_SCHEMA_VERSION = "1.0"
 FIXTURE_SCHEMA_VERSION = 1
-DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
-LEGACY_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
-LEGACY_REPORT_PATH_ERROR = (
-    "reports/correctness/latest.json is a retired legacy published scorecard path; "
-    "use reports/correctness/latest.py for the tracked published scorecard or a "
-    "non-tracked temporary .json path for scratch output."
+SCORECARD_REPORT = build_scorecard_report_descriptor(
+    published_path=REPO_ROOT / "reports" / "correctness" / "latest.py",
+    legacy_path=REPO_ROOT / "reports" / "correctness" / "latest.json",
+    scorecard_kind="correctness",
 )
-SCORECARD_MODULE_NAME_PREFIX = "_rebar_correctness_scorecard"
-SCORECARD_REPORT_ATTRIBUTE = "REPORT"
-SCORECARD_KIND = "correctness"
-SCORECARD_REPORT = SimpleNamespace(
-    published_path=DEFAULT_REPORT_PATH,
-    legacy_path=LEGACY_REPORT_PATH,
-    validate_path=partial(
-        validate_scorecard_report_path,
-        legacy_path=LEGACY_REPORT_PATH,
-        legacy_path_error=LEGACY_REPORT_PATH_ERROR,
-    ),
-    load=partial(
-        load_scorecard_report,
-        module_name_prefix=SCORECARD_MODULE_NAME_PREFIX,
-        report_attribute=SCORECARD_REPORT_ATTRIBUTE,
-        scorecard_kind=SCORECARD_KIND,
-    ),
-    write=partial(
-        write_scorecard_report,
-        report_attribute=SCORECARD_REPORT_ATTRIBUTE,
-        scorecard_kind=SCORECARD_KIND,
-    ),
-    remove_legacy_sidecar=partial(remove_scorecard_sidecar, LEGACY_REPORT_PATH),
-)
+DEFAULT_REPORT_PATH = SCORECARD_REPORT.published_path
+LEGACY_REPORT_PATH = SCORECARD_REPORT.legacy_path
 CORRECTNESS_FIXTURES_ROOT = REPO_ROOT / "tests" / "conformance" / "fixtures"
 PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR = "published-full-suite"
 COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR = "counted-repeat-quantified-group"
@@ -1563,25 +1534,16 @@ def run_correctness_harness(
     report_path: pathlib.Path = DEFAULT_REPORT_PATH,
 ) -> dict[str, Any]:
     resolved_fixture_paths = [path.resolve() for path in fixture_paths]
-    report_path = validate_scorecard_report_path(
-        report_path,
-        legacy_path=LEGACY_REPORT_PATH,
-        legacy_path_error=LEGACY_REPORT_PATH_ERROR,
-    )
+    report_path = SCORECARD_REPORT.validate_path(report_path)
     manifests = load_fixture_manifests(resolved_fixture_paths)
     cases = [case for manifest in manifests for case in manifest.cases]
     cpython_adapter = CpythonReAdapter()
     rebar_adapter = RebarAdapter()
     case_results = [evaluate_case(case, cpython_adapter, rebar_adapter) for case in cases]
     scorecard = build_scorecard(manifests=manifests, case_results=case_results)
-    write_scorecard_report(
-        scorecard,
-        report_path,
-        report_attribute=SCORECARD_REPORT_ATTRIBUTE,
-        scorecard_kind=SCORECARD_KIND,
-    )
-    if report_path == DEFAULT_REPORT_PATH:
-        remove_scorecard_sidecar(LEGACY_REPORT_PATH)
+    SCORECARD_REPORT.write(scorecard, report_path)
+    if report_path == SCORECARD_REPORT.published_path:
+        SCORECARD_REPORT.remove_legacy_sidecar()
     return scorecard
 
 
@@ -1606,11 +1568,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     try:
-        report_path = validate_scorecard_report_path(
-            args.report,
-            legacy_path=LEGACY_REPORT_PATH,
-            legacy_path_error=LEGACY_REPORT_PATH_ERROR,
-        )
+        report_path = SCORECARD_REPORT.validate_path(args.report)
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2

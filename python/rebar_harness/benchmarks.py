@@ -18,8 +18,6 @@ import tempfile
 import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from functools import partial
-from types import SimpleNamespace
 from typing import Any, Callable
 
 
@@ -29,48 +27,21 @@ PYTHON_SOURCE = REPO_ROOT / "python"
 from rebar_harness.descriptor_values import materialize_descriptor_value
 from rebar_harness.scorecard_io import (
     build_cpython_baseline,
-    load_scorecard_report,
+    build_scorecard_report_descriptor,
     load_python_dict_attribute,
-    remove_scorecard_sidecar,
-    validate_scorecard_report_path,
-    write_scorecard_report,
 )
 
 
 TARGET_CPYTHON_SERIES = "3.12.x"
 REPORT_SCHEMA_VERSION = "1.0"
 MANIFEST_SCHEMA_VERSION = 1
-DEFAULT_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
-LEGACY_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
-LEGACY_REPORT_PATH_ERROR = (
-    "reports/benchmarks/latest.json is a retired legacy published scorecard path; "
-    "use reports/benchmarks/latest.py for the tracked published scorecard or a "
-    "non-tracked temporary .json path for scratch output."
+SCORECARD_REPORT = build_scorecard_report_descriptor(
+    published_path=REPO_ROOT / "reports" / "benchmarks" / "latest.py",
+    legacy_path=REPO_ROOT / "reports" / "benchmarks" / "latest.json",
+    scorecard_kind="benchmark",
 )
-SCORECARD_MODULE_NAME_PREFIX = "_rebar_benchmark_scorecard"
-SCORECARD_REPORT_ATTRIBUTE = "REPORT"
-SCORECARD_KIND = "benchmark"
-SCORECARD_REPORT = SimpleNamespace(
-    published_path=DEFAULT_REPORT_PATH,
-    legacy_path=LEGACY_REPORT_PATH,
-    validate_path=partial(
-        validate_scorecard_report_path,
-        legacy_path=LEGACY_REPORT_PATH,
-        legacy_path_error=LEGACY_REPORT_PATH_ERROR,
-    ),
-    load=partial(
-        load_scorecard_report,
-        module_name_prefix=SCORECARD_MODULE_NAME_PREFIX,
-        report_attribute=SCORECARD_REPORT_ATTRIBUTE,
-        scorecard_kind=SCORECARD_KIND,
-    ),
-    write=partial(
-        write_scorecard_report,
-        report_attribute=SCORECARD_REPORT_ATTRIBUTE,
-        scorecard_kind=SCORECARD_KIND,
-    ),
-    remove_legacy_sidecar=partial(remove_scorecard_sidecar, LEGACY_REPORT_PATH),
-)
+DEFAULT_REPORT_PATH = SCORECARD_REPORT.published_path
+LEGACY_REPORT_PATH = SCORECARD_REPORT.legacy_path
 BENCHMARK_WORKLOADS_ROOT = REPO_ROOT / "benchmarks" / "workloads"
 PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR = "published-full-suite"
 BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR = "built-native-smoke"
@@ -1591,11 +1562,7 @@ def run_benchmarks(
         path.resolve() for path in (manifest_paths or default_manifest_paths)
     ]
     resolved_report_path = (
-        validate_scorecard_report_path(
-            report_path,
-            legacy_path=LEGACY_REPORT_PATH,
-            legacy_path_error=LEGACY_REPORT_PATH_ERROR,
-        )
+        SCORECARD_REPORT.validate_path(report_path)
         if report_path is not None
         else None
     )
@@ -1626,14 +1593,9 @@ def run_benchmarks(
             execution_model=run_context.execution_model,
         )
         if resolved_report_path is not None:
-            write_scorecard_report(
-                scorecard,
-                resolved_report_path,
-                report_attribute=SCORECARD_REPORT_ATTRIBUTE,
-                scorecard_kind=SCORECARD_KIND,
-            )
-            if resolved_report_path == DEFAULT_REPORT_PATH:
-                remove_scorecard_sidecar(LEGACY_REPORT_PATH)
+            SCORECARD_REPORT.write(scorecard, resolved_report_path)
+            if resolved_report_path == SCORECARD_REPORT.published_path:
+                SCORECARD_REPORT.remove_legacy_sidecar()
         return scorecard
     finally:
         run_context.cleanup()

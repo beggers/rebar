@@ -2828,7 +2828,7 @@ def published_correctness_report_needs_refresh(correctness_harness: Any) -> bool
 
     try:
         payload = correctness_harness.SCORECARD_REPORT.load(
-            Path(correctness_harness.DEFAULT_REPORT_PATH)
+            correctness_harness.SCORECARD_REPORT.published_path
         )
     except (ImportError, OSError, SyntaxError, TypeError, ValueError, json.JSONDecodeError):
         return True
@@ -2856,7 +2856,7 @@ def refresh_published_correctness_scorecard() -> dict[str, Any] | None:
     if not published_correctness_report_needs_refresh(correctness_harness):
         if removed_legacy_report:
             return correctness_harness.SCORECARD_REPORT.load(
-                Path(correctness_harness.DEFAULT_REPORT_PATH)
+                correctness_harness.SCORECARD_REPORT.published_path
             )
         return None
     scorecard = correctness_harness.run_correctness_harness()

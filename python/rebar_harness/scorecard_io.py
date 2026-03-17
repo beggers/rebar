@@ -6,6 +6,7 @@ import pathlib
 import platform
 import pprint
 import sys
+from dataclasses import dataclass
 from typing import Any
 
 
@@ -144,3 +145,73 @@ def remove_scorecard_sidecar(legacy_path: pathlib.Path) -> bool:
     except FileNotFoundError:
         return False
     return True
+
+
+def _display_scorecard_path(path: pathlib.Path) -> str:
+    try:
+        reports_root_index = path.parts.index("reports")
+    except ValueError:
+        return path.as_posix()
+    return pathlib.PurePosixPath(*path.parts[reports_root_index:]).as_posix()
+
+
+@dataclass(frozen=True, slots=True)
+class ScorecardReportDescriptor:
+    published_path: pathlib.Path
+    legacy_path: pathlib.Path
+    legacy_path_error: str
+    report_attribute: str
+    scorecard_kind: str
+    module_name_prefix: str
+
+    def validate_path(self, report_path: pathlib.Path | str) -> pathlib.Path:
+        return validate_scorecard_report_path(
+            pathlib.Path(report_path),
+            legacy_path=self.legacy_path,
+            legacy_path_error=self.legacy_path_error,
+        )
+
+    def load(self, report_path: pathlib.Path | str) -> dict[str, Any]:
+        return load_scorecard_report(
+            pathlib.Path(report_path),
+            module_name_prefix=self.module_name_prefix,
+            report_attribute=self.report_attribute,
+            scorecard_kind=self.scorecard_kind,
+        )
+
+    def write(self, scorecard: dict[str, Any], report_path: pathlib.Path | str) -> None:
+        write_scorecard_report(
+            scorecard,
+            pathlib.Path(report_path),
+            report_attribute=self.report_attribute,
+            scorecard_kind=self.scorecard_kind,
+        )
+
+    def remove_legacy_sidecar(self) -> bool:
+        return remove_scorecard_sidecar(self.legacy_path)
+
+
+def build_scorecard_report_descriptor(
+    *,
+    published_path: pathlib.Path,
+    legacy_path: pathlib.Path,
+    scorecard_kind: str,
+    report_attribute: str = "REPORT",
+    module_name_prefix: str | None = None,
+) -> ScorecardReportDescriptor:
+    published_path = pathlib.Path(published_path)
+    legacy_path = pathlib.Path(legacy_path)
+    module_name_prefix = module_name_prefix or f"_rebar_{scorecard_kind}_scorecard"
+    return ScorecardReportDescriptor(
+        published_path=published_path,
+        legacy_path=legacy_path,
+        legacy_path_error=(
+            f"{_display_scorecard_path(legacy_path)} is a retired legacy published "
+            "scorecard path; use "
+            f"{_display_scorecard_path(published_path)} for the tracked published "
+            "scorecard or a non-tracked temporary .json path for scratch output."
+        ),
+        report_attribute=report_attribute,
+        scorecard_kind=scorecard_kind,
+        module_name_prefix=module_name_prefix,
+    )

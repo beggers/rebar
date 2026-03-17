@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import unittest
 
+from rebar_harness import benchmarks, correctness
 from tests.harness_cli_test_support import (
     REPO_ROOT,
     load_rebar_ops_module,
@@ -10,50 +11,23 @@ from tests.harness_cli_test_support import (
     run_harness_scorecard,
 )
 
-CORRECTNESS_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.py"
-LEGACY_CORRECTNESS_REPORT_PATH = REPO_ROOT / "reports" / "correctness" / "latest.json"
-BENCHMARK_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
-LEGACY_BENCHMARK_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
 PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py"
-
-from rebar_harness.benchmarks import (
-    SCORECARD_KIND as BENCHMARK_SCORECARD_KIND,
-    SCORECARD_MODULE_NAME_PREFIX as BENCHMARK_SCORECARD_MODULE_NAME_PREFIX,
-    SCORECARD_REPORT_ATTRIBUTE as BENCHMARK_SCORECARD_REPORT_ATTRIBUTE,
-)
-from rebar_harness.correctness import (
-    SCORECARD_KIND as CORRECTNESS_SCORECARD_KIND,
-    SCORECARD_MODULE_NAME_PREFIX as CORRECTNESS_SCORECARD_MODULE_NAME_PREFIX,
-    SCORECARD_REPORT_ATTRIBUTE as CORRECTNESS_SCORECARD_REPORT_ATTRIBUTE,
-)
-from rebar_harness.scorecard_io import load_scorecard_report, write_scorecard_report
+CORRECTNESS_REPORT_PATH = correctness.SCORECARD_REPORT.published_path
+LEGACY_CORRECTNESS_REPORT_PATH = correctness.SCORECARD_REPORT.legacy_path
+BENCHMARK_REPORT_PATH = benchmarks.SCORECARD_REPORT.published_path
+LEGACY_BENCHMARK_REPORT_PATH = benchmarks.SCORECARD_REPORT.legacy_path
 
 
 def _load_correctness_scorecard(report_path):
-    return load_scorecard_report(
-        report_path,
-        module_name_prefix=CORRECTNESS_SCORECARD_MODULE_NAME_PREFIX,
-        report_attribute=CORRECTNESS_SCORECARD_REPORT_ATTRIBUTE,
-        scorecard_kind=CORRECTNESS_SCORECARD_KIND,
-    )
+    return correctness.SCORECARD_REPORT.load(report_path)
 
 
 def _write_correctness_scorecard(scorecard, report_path) -> None:
-    write_scorecard_report(
-        scorecard,
-        report_path,
-        report_attribute=CORRECTNESS_SCORECARD_REPORT_ATTRIBUTE,
-        scorecard_kind=CORRECTNESS_SCORECARD_KIND,
-    )
+    correctness.SCORECARD_REPORT.write(scorecard, report_path)
 
 
 def _load_benchmark_scorecard(report_path):
-    return load_scorecard_report(
-        report_path,
-        module_name_prefix=BENCHMARK_SCORECARD_MODULE_NAME_PREFIX,
-        report_attribute=BENCHMARK_SCORECARD_REPORT_ATTRIBUTE,
-        scorecard_kind=BENCHMARK_SCORECARD_KIND,
-    )
+    return benchmarks.SCORECARD_REPORT.load(report_path)
 
 
 class ReadmeReportingTest(unittest.TestCase):

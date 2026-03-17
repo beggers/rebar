@@ -1,6 +1,6 @@
 # RBR-0516: Collapse scorecard report config onto one shared descriptor
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -73,3 +73,9 @@ Created: 2026-03-17
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_readme_reporting.py tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_built_native_benchmark_modes.py` passes (`15 passed, 2 skipped, 1117 subtests passed in 27.12s`).
   - The inline `SCORECARD_REPORT.published_path` / `.legacy_path` / `.load(...)` probe above currently prints `ok`.
   - `rg -n "SCORECARD_REPORT = SimpleNamespace|LEGACY_REPORT_PATH_ERROR = \\(|SCORECARD_MODULE_NAME_PREFIX =|SCORECARD_REPORT_ATTRIBUTE =|SCORECARD_KIND =|Path\\(correctness_harness\\.DEFAULT_REPORT_PATH\\)" python/rebar_harness/correctness.py python/rebar_harness/benchmarks.py scripts/rebar_ops.py tests/python/test_readme_reporting.py tests/conformance/test_combined_correctness_scorecards.py` currently returns the duplicated config and bypass matches listed above, and `rg -n "load_scorecard_report\\(|write_scorecard_report\\(" tests/python/test_readme_reporting.py tests/conformance/test_combined_correctness_scorecards.py` currently returns the remaining manual test call sites this task should delete.
+
+## Completion Notes
+- Added `ScorecardReportDescriptor` plus `build_scorecard_report_descriptor(...)` to `python/rebar_harness/scorecard_io.py`, so one shared surface now owns published-path metadata, the retired legacy-path rejection text, the report attribute/module prefix, and the bound `validate_path(...)`, `load(...)`, `write(...)`, and `remove_legacy_sidecar()` helpers.
+- Replaced the handwritten `SimpleNamespace` scorecard config in `python/rebar_harness/correctness.py` and `python/rebar_harness/benchmarks.py` with the shared descriptor, aliased `DEFAULT_REPORT_PATH` and `LEGACY_REPORT_PATH` off descriptor fields, and routed harness validation/writes/legacy-sidecar cleanup through `SCORECARD_REPORT` instead of the raw helper functions and per-module constants.
+- Updated `scripts/rebar_ops.py` to refresh the tracked correctness publication through `correctness_harness.SCORECARD_REPORT.published_path`, and rewired `tests/python/test_readme_reporting.py` plus `tests/conformance/test_combined_correctness_scorecards.py` to use `correctness.SCORECARD_REPORT.load(...)`, `.write(...)`, and `benchmarks.SCORECARD_REPORT.load(...)` rather than rebuilding scorecard IO metadata in test code.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_readme_reporting.py tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_built_native_benchmark_modes.py`, the inline `SCORECARD_REPORT.published_path` / `.legacy_path` / `.load(...)` probe (`ok`), `rg -n "SCORECARD_REPORT = SimpleNamespace|LEGACY_REPORT_PATH_ERROR = \\(|SCORECARD_MODULE_NAME_PREFIX =|SCORECARD_REPORT_ATTRIBUTE =|SCORECARD_KIND =|Path\\(correctness_harness\\.DEFAULT_REPORT_PATH\\)" python/rebar_harness/correctness.py python/rebar_harness/benchmarks.py scripts/rebar_ops.py tests/python/test_readme_reporting.py tests/conformance/test_combined_correctness_scorecards.py`, and `rg -n "load_scorecard_report\\(|write_scorecard_report\\(" tests/python/test_readme_reporting.py tests/conformance/test_combined_correctness_scorecards.py`, which now both return no matches.
