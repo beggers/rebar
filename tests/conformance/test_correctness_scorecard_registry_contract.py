@@ -153,6 +153,44 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
                         {target_manifest_id},
                     )
 
+    def test_open_ended_scorecard_mixed_text_manifests_mirror_representative_bytes_rows(
+        self,
+    ) -> None:
+        manifests_by_id = {
+            manifest.manifest_id: manifest
+            for _, manifest in published_fixture_inventory()
+        }
+
+        for manifest_id, manifest_expectation in (
+            OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS.items()
+        ):
+            manifest = manifests_by_id[manifest_id]
+            text_models = {case.text_model for case in manifest.cases}
+            if text_models != {"bytes", "str"}:
+                continue
+
+            with self.subTest(manifest_id=manifest_id):
+                representative_case_ids = manifest_expectation.representative_case_ids
+                representative_str_case_ids = tuple(
+                    case_id
+                    for case_id in representative_case_ids
+                    if case_id.endswith("-str")
+                )
+                representative_bytes_case_ids = tuple(
+                    case_id
+                    for case_id in representative_case_ids
+                    if case_id.endswith("-bytes")
+                )
+
+                self.assertNotEqual(representative_str_case_ids, ())
+                self.assertEqual(
+                    representative_bytes_case_ids,
+                    tuple(
+                        f"{case_id.removesuffix('-str')}-bytes"
+                        for case_id in representative_str_case_ids
+                    ),
+                )
+
 
 if __name__ == "__main__":
     unittest.main()
