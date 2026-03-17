@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 1094 cases across 111 manifests, with 1094 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 638 workloads across 30 manifests with 638 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is internally green but still clearly partial.
 
 ## README Next Steps
-- With the queue drained, the surviving frontier is `RBR-0539`: publish the broader-range open-ended `{2,}` grouped backtracking-heavy bytes pair on the existing open-ended correctness/parity path so the combined correctness report moves from `1094` / `1094` / `0` to `1108` / `1094` / `14`.
+- Ready head `RBR-0539` publishes the broader-range open-ended `{2,}` grouped backtracking-heavy bytes pair on the existing open-ended correctness/parity path so the combined correctness report moves from `1094` / `1094` / `0` to `1108` / `1094` / `14`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: 1094 of 1094 published correctness cases no
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- With the queue drained, the surviving frontier is `RBR-0539`: publish the broader-range open-ended `{2,}` grouped backtracking-heavy bytes pair on the existing open-ended correctness/parity path so the combined correctness report moves from `1094` / `1094` / `0` to `1108` / `1094` / `14`.
+- After ready `RBR-0539` drains, the surviving frontier is `RBR-0540`: convert the same broader-range open-ended `{2,}` grouped backtracking-heavy bytes pair behind `rebar._rebar` so the combined correctness report moves from `1108` / `1094` / `14` to `1108` / `1108` / `0`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
