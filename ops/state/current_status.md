@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 1067 cases across 111 manifests, with 1067 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 620 workloads across 30 manifests with 620 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial while benchmark catch-up remains the next frontier.
 
 ## README Next Steps
-- With the queue drained, the surviving frontier is `RBR-0530`: add the six bytes mirrors of the current nested open-ended grouped-alternation wider-ranged-repeat benchmark rows so the newly landed bytes parity slice reaches published timings before deeper bytes work reopens that family.
+- Ready head `RBR-0530`: add the six bytes mirrors of the current nested open-ended grouped-alternation wider-ranged-repeat benchmark rows so that manifest moves from `94` to `100` measured workloads and the combined source-tree report from `620` to `626` without reopening correctness or a new benchmark family.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow, but the tracked frontier is now gap-free: 1
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- With the queue drained, the surviving frontier is `RBR-0530`: add the six bytes mirrors of the current nested open-ended grouped-alternation `str` benchmark rows on `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py` so that manifest moves from `94` to `100` measured workloads and the combined source-tree report from `620` to `626` without reopening correctness or a new benchmark family.
+- After ready `RBR-0530` drains, the surviving frontier is `RBR-0532`: publish the open-ended `{1,}` grouped-alternation-plus-conditional bytes pair on the existing open-ended correctness/parity path by adding the 13 bytes mirrors of the current `str` cases for `rb"a((bc|de){1,})?(?(1)d|e)"` and `rb"a(?P<outer>(bc|de){1,})?(?(outer)d|e)"`, so correctness reopens before bytes parity or benchmark catch-up widen that family.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
