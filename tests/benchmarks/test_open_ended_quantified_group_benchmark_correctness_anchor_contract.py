@@ -27,6 +27,12 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_pattern_parity,
 )
+from tests.python.test_open_ended_quantified_group_parity_suite import (
+    BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+)
 
 
 # These rows intentionally do not anchor to the published correctness fixtures yet:
@@ -243,6 +249,13 @@ EXPECTED_OPEN_ENDED_ANCHOR_CASE_IDS = {
     ): ("open-ended-quantified-group-alternation-backtracking-heavy-named-compile-metadata-bytes",),
 }
 
+DIRECT_PARITY_BYTES_CASES = (
+    *OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    *OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    *BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    *BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+)
+
 
 def _correctness_case_signature(case: Any) -> tuple[Any, ...] | None:
     kwargs_signature = freeze_signature_value(case.serialized_kwargs())
@@ -322,6 +335,29 @@ def _manifest_workloads_by_id() -> dict[str, Any]:
     }
 
 
+@cache
+def _direct_parity_bytes_case_ids_by_signature(
+) -> dict[tuple[str, bytes, bytes], tuple[str, ...]]:
+    case_ids_by_signature: dict[tuple[str, bytes, bytes], list[str]] = {}
+
+    for case in DIRECT_PARITY_BYTES_CASES:
+        for haystack in case.search_matches + case.search_misses:
+            case_ids_by_signature.setdefault(
+                ("module.search", case.pattern, haystack),
+                [],
+            ).append(case.id)
+        for haystack in case.fullmatch_matches + case.fullmatch_misses:
+            case_ids_by_signature.setdefault(
+                ("pattern.fullmatch", case.pattern, haystack),
+                [],
+            ).append(case.id)
+
+    return {
+        signature: tuple(case_ids)
+        for signature, case_ids in case_ids_by_signature.items()
+    }
+
+
 def _anchored_workload_case_ids() -> dict[tuple[str, str], tuple[str, ...]]:
     return anchored_workload_case_ids(
         OPEN_ENDED_MANIFEST_PATH,
@@ -366,6 +402,31 @@ def test_open_ended_manifest_keeps_expected_special_unanchored_workloads_explici
         for workload_id in _manifest_workloads_by_id()
         if workload_id not in EXPECTED_SPECIAL_UNANCHORED_WORKLOAD_IDS
     )
+
+
+def test_open_ended_special_unanchored_bytes_workloads_stay_covered_by_direct_parity_cases() -> None:
+    workloads_by_id = _manifest_workloads_by_id()
+    direct_parity_case_ids = _direct_parity_bytes_case_ids_by_signature()
+    uncovered_workload_ids: list[str] = []
+
+    for workload_id in EXPECTED_SPECIAL_UNANCHORED_WORKLOAD_IDS:
+        workload = workloads_by_id[workload_id]
+        if workload.text_model != "bytes":
+            continue
+
+        signature = (
+            workload.operation,
+            workload.pattern_payload(),
+            workload.haystack_payload(),
+        )
+        case_ids = direct_parity_case_ids.get(signature)
+        if case_ids is None:
+            uncovered_workload_ids.append(workload_id)
+            continue
+
+        assert len(case_ids) == 1
+
+    assert uncovered_workload_ids == []
 
 
 def test_open_ended_anchored_workloads_stay_pinned_to_exact_case_ids() -> None:

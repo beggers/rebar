@@ -253,7 +253,7 @@ OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
     SupplementalCase(
         id="open-ended-grouped-conditional-numbered-bytes",
         pattern=rb"a((bc|de){1,})?(?(1)d|e)",
-        search_matches=(b"zzaezz", b"zzabcdzz", b"zzadedzz"),
+        search_matches=(b"zzaezz", b"zzabcdzz", b"zzabcbcdzz", b"zzadedzz"),
         fullmatch_matches=(b"abcded", b"abcbcded"),
         fullmatch_misses=(b"abcde",),
     ),
@@ -310,7 +310,7 @@ BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
         pattern=rb"a(?P<word>(bc|b)c){2,}d",
         search_matches=(b"zzabcbccdzz", b"zzabccbcdzz", b"zzabcbcbcbcdzz"),
         search_misses=(b"zzabccbdzz",),
-        fullmatch_matches=(b"abcbccd",),
+        fullmatch_matches=(b"abcbccd", b"abcbcbcbcd"),
         fullmatch_misses=(b"abcd",),
     ),
 )
