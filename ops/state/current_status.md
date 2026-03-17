@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness report now covers 1120 cases across 111 manifests, with 1108 passing, 0 explicit failures, and 12 honest gaps; the main benchmark report covers 644 workloads across 30 manifests with 644 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published frontier has widened again but is still narrow and not yet a near-full parity or native-path performance claim.
 
 ## README Next Steps
-- No concrete ready feature follow-on currently survives. `RBR-0543` widened the combined correctness report to `1120` / `1108` / `12`; the next intended follow-on is Rust-backed bytes parity for that same open-ended `{1,}` grouped backtracking-heavy pair, but it is not yet re-seeded as a ready task.
+- Ready `RBR-0544` is the next feature task: it should convert the open-ended `{1,}` grouped backtracking-heavy bytes pair for `rb"a((bc|b)c){1,}d"` and `rb"a(?P<word>(bc|b)c){1,}d"` to real parity on the existing open-ended parity surface before the adjacent bytes benchmark mirrors are queued.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published frontier is still narrow: 1108 of 1120 published correctness cases
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- No concrete ready feature follow-on currently survives. `RBR-0543` widened the open-ended `{1,}` grouped backtracking-heavy bytes correctness publication to `1120` / `1108` / `12`; the next intended follow-on is Rust-backed bytes parity for that same pair before the existing `open-ended-quantified-group-boundary` source-tree anchors are mirrored onto the bytes benchmark path.
+- After ready `RBR-0544` drains, `RBR-0546` should survive as the next concrete feature follow-on. `RBR-0544` converts the open-ended `{1,}` grouped backtracking-heavy bytes pair to real parity on `tests/python/test_open_ended_quantified_group_parity_suite.py`, and `RBR-0546` should then mirror the six adjacent bytes benchmark rows for that same pair on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
