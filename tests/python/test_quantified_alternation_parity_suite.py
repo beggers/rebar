@@ -12,8 +12,11 @@ from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
     assert_fixture_bundle_contract,
+    assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
+    assert_match_result_parity,
+    assert_valid_match_group_access_parity,
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
@@ -42,6 +45,15 @@ class SupplementalNoMatchCase:
     target: str
     pattern: str
     text: str
+
+
+@dataclass(frozen=True)
+class BoundedPatternCase:
+    id: str
+    pattern_case_id: str
+    helper: str
+    string: str
+    bounds: tuple[int, int]
 
 
 FIXTURE_BUNDLE_SPECS = (
@@ -325,6 +337,9 @@ FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
 COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
 MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
 PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
+MATCH_GROUP_ACCESS_CASES = tuple(
+    case for case in (*MODULE_CASES, *PATTERN_CASES) if "no-match" not in case.case_id
+)
 COMPILE_CASES_BY_ID = {case.case_id: case for case in COMPILE_CASES}
 REGS_PARITY_CASE_IDS = frozenset(
     {
@@ -341,6 +356,66 @@ BACKTRACKING_HEAVY_BUNDLE = published_fixture_bundle_by_manifest_id(
 BACKTRACKING_HEAVY_COMPILE_CASES = fixture_cases_for_operation(
     (BACKTRACKING_HEAVY_BUNDLE,),
     "compile",
+)
+PATTERN_BOUNDS_MATCH_CASES = (
+    BoundedPatternCase(
+        id="quantified-alternation-search-normalizes-negative-and-oversized-bounds",
+        pattern_case_id="quantified-alternation-numbered-compile-metadata-str",
+        helper="search",
+        string="xxabcdzz",
+        bounds=(-50, 999),
+    ),
+    BoundedPatternCase(
+        id="quantified-alternation-broader-range-named-fullmatch-honors-narrowed-window",
+        pattern_case_id="quantified-alternation-broader-range-named-compile-metadata-str",
+        helper="fullmatch",
+        string="yyabccdzz",
+        bounds=(2, 7),
+    ),
+    BoundedPatternCase(
+        id="quantified-alternation-conditional-match-honors-else-window",
+        pattern_case_id="quantified-alternation-conditional-numbered-compile-metadata-str",
+        helper="match",
+        string="xxaezz",
+        bounds=(2, 4),
+    ),
+    BoundedPatternCase(
+        id="quantified-alternation-nested-branch-search-normalizes-negative-and-oversized-bounds",
+        pattern_case_id="quantified-alternation-nested-branch-named-compile-metadata-str",
+        helper="search",
+        string="xxabcdzz",
+        bounds=(-50, 999),
+    ),
+)
+PATTERN_BOUNDS_NO_MATCH_CASES = (
+    BoundedPatternCase(
+        id="quantified-alternation-search-skips-match-before-pos",
+        pattern_case_id="quantified-alternation-numbered-compile-metadata-str",
+        helper="search",
+        string="xxabcdzz",
+        bounds=(3, 8),
+    ),
+    BoundedPatternCase(
+        id="quantified-alternation-broader-range-named-fullmatch-does-not-expand-to-whole-string",
+        pattern_case_id="quantified-alternation-broader-range-named-compile-metadata-str",
+        helper="fullmatch",
+        string="yyabccdzz",
+        bounds=(-50, 999),
+    ),
+    BoundedPatternCase(
+        id="quantified-alternation-conditional-match-fails-when-endpos-truncates-yes-arm",
+        pattern_case_id="quantified-alternation-conditional-numbered-compile-metadata-str",
+        helper="match",
+        string="xxabcdzz",
+        bounds=(2, 5),
+    ),
+    BoundedPatternCase(
+        id="quantified-alternation-nested-branch-search-fails-when-endpos-truncates-tail",
+        pattern_case_id="quantified-alternation-nested-branch-numbered-compile-metadata-str",
+        helper="search",
+        string="xxabcdzz",
+        bounds=(2, 5),
+    ),
 )
 
 
@@ -376,6 +451,14 @@ def _compile_pattern(case_id: str) -> str:
     pattern = case_pattern(COMPILE_CASES_BY_ID[case_id])
     assert isinstance(pattern, str)
     return pattern
+
+
+def _bounded_pattern(case: BoundedPatternCase) -> str:
+    return _compile_pattern(case.pattern_case_id)
+
+
+def _invoke_bounded_pattern_case(compiled_pattern: object, case: BoundedPatternCase) -> object:
+    return getattr(compiled_pattern, case.helper)(case.string, *case.bounds)
 
 
 def _build_supplemental_no_match_cases() -> tuple[SupplementalNoMatchCase, ...]:
@@ -584,6 +667,95 @@ def test_pattern_fullmatch_match_convenience_api_matches_cpython(
         return
 
     assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    MATCH_GROUP_ACCESS_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_match_group_access_apis_match_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+
+    if case.operation == "module_call":
+        observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
+        expected = getattr(re, case.helper)(*case.args, **case.kwargs)
+    else:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            case_pattern(case),
+            case.flags or 0,
+        )
+        observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
+        expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=case.case_id in REGS_PARITY_CASE_IDS,
+    )
+    assert_valid_match_group_access_parity(observed, expected)
+    assert_invalid_match_group_access_parity(observed, expected)
+
+
+def test_pattern_bounds_cases_stay_anchored_to_quantified_alternation_patterns() -> None:
+    assert _bounded_pattern(PATTERN_BOUNDS_MATCH_CASES[0]) == r"a(b|c){1,2}d"
+    assert _bounded_pattern(PATTERN_BOUNDS_MATCH_CASES[1]) == r"a(?P<word>b|c){1,3}d"
+    assert _bounded_pattern(PATTERN_BOUNDS_MATCH_CASES[2]) == r"a((b|c){1,2})?(?(1)d|e)"
+    assert _bounded_pattern(PATTERN_BOUNDS_MATCH_CASES[3]) == r"a(?P<word>(b|c)|de){1,2}d"
+    assert _bounded_pattern(PATTERN_BOUNDS_NO_MATCH_CASES[3]) == r"a((b|c)|de){1,2}d"
+
+
+@pytest.mark.parametrize("case", PATTERN_BOUNDS_MATCH_CASES, ids=lambda case: case.id)
+def test_pattern_bounds_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: BoundedPatternCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        _bounded_pattern(case),
+    )
+
+    observed = _invoke_bounded_pattern_case(observed_pattern, case)
+    expected = _invoke_bounded_pattern_case(expected_pattern, case)
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_parity(backend_name, observed, expected, check_regs=True)
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+    assert_match_convenience_api_parity(observed, expected)
+    assert_valid_match_group_access_parity(observed, expected)
+    assert_invalid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize("case", PATTERN_BOUNDS_NO_MATCH_CASES, ids=lambda case: case.id)
+def test_pattern_bounds_misses_match_cpython(
+    regex_backend: tuple[str, object],
+    case: BoundedPatternCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        _bounded_pattern(case),
+    )
+
+    observed = _invoke_bounded_pattern_case(observed_pattern, case)
+    expected = _invoke_bounded_pattern_case(expected_pattern, case)
+
+    assert observed is None
+    assert expected is None
+    assert_match_result_parity(backend_name, observed, expected)
 
 
 @pytest.mark.parametrize("case", BACKTRACKING_TRACE_CASES, ids=lambda case: case.id)
