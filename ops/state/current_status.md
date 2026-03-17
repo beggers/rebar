@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 1011 cases across 111 manifests, with all 1011 passing, 0 explicit failures, and 0 `unimplemented` gaps; the main benchmark report covers 594 workloads with 594 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is now gap-free but still far from drop-in `re` parity.
 
 ## README Next Steps
-- The surviving frontier is `RBR-0515`: benchmark catch-up for the broader `{1,4}` bytes grouped backtracking-heavy pair on the existing wider-ranged-repeat benchmark surface.
+- The ready head is `RBR-0515`: benchmark catch-up for the broader `{1,4}` bytes grouped backtracking-heavy pair on the existing wider-ranged-repeat benchmark surface.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: all 1011 published correctness cases now pa
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The surviving frontier is `RBR-0515`: catch the same broader `{1,4}` bytes grouped backtracking-heavy pair up on the existing wider-ranged-repeat benchmark surface before nested broader bytes follow-ons reopen that family.
+- After ready `RBR-0515` drains, the surviving frontier is `RBR-0517`: publish the nested broader `{1,4}` bytes grouped backtracking-heavy pair on the existing wider-ranged-repeat correctness/parity surface before bytes parity or benchmark catch-up revisit that family.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
