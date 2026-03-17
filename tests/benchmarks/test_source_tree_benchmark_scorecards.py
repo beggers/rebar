@@ -146,6 +146,34 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
         )
         self.assertEqual(combined_case.target_manifest.manifest_id, "literal-flag-boundary")
 
+    def test_case_selection_helpers_derive_workload_ids_from_manifests(self) -> None:
+        compile_smoke = source_tree_scorecard_case("compile-smoke")
+        self.assertEqual(
+            compile_smoke.selected_workload_ids_for_manifest("compile-smoke"),
+            (
+                "compile-literal-cold",
+                "compile-character-class-warm",
+            ),
+        )
+
+        post_parser = source_tree_scorecard_case("post-parser-workflows")
+        self.assertEqual(
+            post_parser.selected_workload_ids_for_manifest("module-boundary"),
+            tuple(
+                workload.workload_id
+                for workload in post_parser.manifest_for_id("module-boundary").workloads
+            ),
+        )
+
+        combined_case = source_tree_combined_case("literal-flag-boundary")
+        self.assertEqual(
+            combined_case.selected_workload_ids_for_manifest("regression-matrix"),
+            tuple(
+                workload.workload_id
+                for workload in combined_case.manifest_for_id("regression-matrix").workloads
+            ),
+        )
+
     def test_wider_ranged_manifest_exposes_broader_range_conditional_bytes_rows_as_measured(
         self,
     ) -> None:
@@ -490,7 +518,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                 manifest_path=relative_manifest_path(manifest.path),
                 known_gap_count=manifest_expectation.known_gap_count,
                 selection_mode=case.selection_mode,
-                selected_workload_ids=case.selected_workload_ids_by_manifest[manifest_id],
+                selected_workload_ids=case.selected_workload_ids_for_manifest(manifest_id),
             )
 
     def _assert_representative_workloads(

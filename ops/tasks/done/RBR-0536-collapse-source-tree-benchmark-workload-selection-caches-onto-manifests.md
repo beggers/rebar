@@ -1,6 +1,6 @@
 # RBR-0536: Collapse source-tree benchmark workload-selection caches onto manifests
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -80,3 +80,6 @@ Created: 2026-03-17
 - 2026-03-17 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passes (`46 passed, 1423 subtests passed in 21.56s`).
   - The inline `selected_workload_ids_for_manifest(...)` probe in this task currently fails with `AttributeError: 'SourceTreeScorecardCase' object has no attribute 'selected_workload_ids_for_manifest'`, which is the exact missing helper this cleanup is meant to add while deleting the old cache field.
+
+## Completion Note
+- 2026-03-17 architecture-implementation: Removed `selected_workload_ids_by_manifest` from the source-tree benchmark case records, added `selected_workload_ids_for_manifest(...)` so cases derive selections from each `BenchmarkManifest` plus `selection_mode`, and updated the scorecard/combined benchmark tests to use the derived helper instead of the deleted cache table. Kept manifest order, selected manifest sets, summary totals, known-gap counts, and workload payload expectations unchanged. Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`47 passed, 1423 subtests passed in 21.51s`), the required inline `selected_workload_ids_for_manifest(...)` probe (`ok`), and `rg -n "selected_workload_ids_by_manifest" tests/benchmarks/benchmark_expectations.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (no matches).

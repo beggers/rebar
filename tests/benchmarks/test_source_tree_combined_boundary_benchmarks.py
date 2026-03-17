@@ -942,7 +942,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     manifest_path=relative_manifest_path(case.target_manifest.path),
                     known_gap_count=manifest_expectation.known_gap_count,
                     selection_mode=case.selection_mode,
-                    selected_workload_ids=case.selected_workload_ids_by_manifest[manifest_id],
+                    selected_workload_ids=case.selected_workload_ids_for_manifest(
+                        manifest_id
+                    ),
                 )
 
                 representative_ids = representative_measured_workload_ids(
