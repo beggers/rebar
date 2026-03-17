@@ -2865,6 +2865,295 @@ MANIFEST = {
       "notes": [
         "Purged-cache Pattern.fullmatch probe for the bounded named nested broader grouped backtracking-heavy workflow after one longer `bc`-branch repetition followed by one shorter `b`-branch repetition."
       ]
+    },
+    {
+      "id": "module-compile-numbered-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-cold-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(((bc|b)c){1,4})d",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "nested-group",
+        "alternation",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "broader-range",
+        "backtracking-heavy",
+        "bytes",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation"
+      ],
+      "notes": [
+        "Cold bytes module.compile benchmark for the bounded numbered nested broader `{1,4}` grouped backtracking-heavy slice so the visible outer-capture compile path reaches the published benchmark report on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-lower-bound-b-branch-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(((bc|b)c){1,4})d",
+      "haystack": "zzabcdzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "nested-group",
+        "alternation",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "broader-range",
+        "backtracking-heavy",
+        "search",
+        "module",
+        "lower-bound",
+        "b-branch",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the bounded numbered nested broader grouped backtracking-heavy workflow on the lower-bound shorter `b`-branch success case under the outer capture."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-second-repetition-b-then-bc-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(((bc|b)c){1,4})d",
+      "haystack": "abcbccd",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "nested-group",
+        "alternation",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "broader-range",
+        "backtracking-heavy",
+        "fullmatch",
+        "second-repetition",
+        "b-then-bc",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the bounded numbered nested broader grouped backtracking-heavy workflow after one shorter `b`-branch repetition followed by one longer `bc`-branch repetition."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-fourth-repetition-mixed-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(((bc|b)c){1,4})d",
+      "haystack": "abcbccbccbcd",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "nested-group",
+        "alternation",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "broader-range",
+        "backtracking-heavy",
+        "fullmatch",
+        "fourth-repetition",
+        "upper-bound",
+        "mixed-branches",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the bounded numbered nested broader grouped backtracking-heavy workflow at a mixed four-repetition branch order under the outer capture."
+      ]
+    },
+    {
+      "id": "module-compile-named-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-warm-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<outer>((bc|b)c){1,4})d",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "nested-group",
+        "alternation",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "broader-range",
+        "named-group",
+        "backtracking-heavy",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm bytes module.compile benchmark for the bounded named nested broader `{1,4}` grouped backtracking-heavy slice so the visible `outer` capture metadata reaches the published benchmark report on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-named-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-lower-bound-bc-branch-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<outer>((bc|b)c){1,4})d",
+      "haystack": "zzabccdzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "nested-group",
+        "alternation",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "broader-range",
+        "named-group",
+        "backtracking-heavy",
+        "search",
+        "module",
+        "lower-bound",
+        "bc-branch",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the bounded named nested broader grouped backtracking-heavy workflow on the lower-bound longer `bc`-branch success case under the visible outer capture."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-second-repetition-bc-then-b-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<outer>((bc|b)c){1,4})d",
+      "haystack": "abccbcd",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "nested-group",
+        "alternation",
+        "quantifier",
+        "ranged-repeat",
+        "counted-repeat",
+        "wider-range",
+        "broader-range",
+        "named-group",
+        "backtracking-heavy",
+        "fullmatch",
+        "second-repetition",
+        "bc-then-b",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "ranged-repeats",
+        "alternation",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the bounded named nested broader grouped backtracking-heavy workflow after one longer `bc`-branch repetition followed by one shorter `b`-branch repetition."
+      ]
     }
   ]
 }

@@ -1,6 +1,6 @@
 # RBR-0519: Catch the nested broader-range wider-ranged-repeat grouped backtracking-heavy bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -48,3 +48,10 @@ Created: 2026-03-17
   - `reports/benchmarks/latest.py` currently publishes `wider-ranged-repeat-quantified-group-boundary` at `74` total workloads / `74` measured workloads / `0` known gaps and the combined source-tree report at `600` total workloads / `600` measured workloads / `0` known gaps; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes now show both target bytes patterns compile and search successfully through `rebar`, so these benchmark rows should measure rather than reopen a runtime gap.
 - The surviving follow-on after this task is `RBR-0520`, which should publish the nested broader `{1,4}` grouped-alternation bytes pair on the existing wider-ranged-repeat correctness/parity path before nested broader grouped-conditionals or benchmark catch-up broaden that family.
+
+## Completion
+- Added only the seven bytes mirrors for the nested broader `{1,4}` grouped backtracking-heavy numbered/named pair on `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py`.
+- Updated the wider-ranged source-tree benchmark expectations and focused tests so the new bytes rows are treated as measured and the nested grouped backtracking-heavy shape now requires the expanded row set.
+- Verified `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `32` tests and `612` subtests.
+- Verified the narrowed publication at `.rebar/tmp/rbr-0519-nested-broader-range-backtracking-heavy-bytes-benchmarks.py` reported `81` total workloads / `81` measured workloads / `0` known gaps.
+- Regenerated the tracked publication at `reports/benchmarks/latest.py` and verified the tracked artifact now reports `607` total workloads / `607` measured workloads / `0` known gaps overall, with `wider-ranged-repeat-quantified-group-boundary` at `81` / `81` / `0` and all seven new bytes rows publishing `implementation_timing.status == "measured"`.
