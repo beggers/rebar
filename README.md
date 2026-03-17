@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 1094 cases across 111 manifests, with 1094 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 638 workloads across 30 manifests with 638 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is internally green but still clearly partial. |
-| Current milestone | After ready `RBR-0538` drains, the surviving frontier is `RBR-0539`: publish the broader-range open-ended `{2,}` grouped backtracking-heavy bytes pair on the existing open-ended correctness/parity path so `match.broader_range_open_ended_quantified_group_alternation_backtracking_heavy` moves from `14` total cases / `14` passing / `0` unimplemented with `text_models == ['str']` to `28` / `14` / `14` with mixed `str`/`bytes` coverage, and the combined correctness report moves from `1094` / `1094` / `0` to `1108` / `1094` / `14` across the same `111` manifests. |
-| Work queue | `0` ready, `0` in progress, `538` done, `0` blocked |
+| Delivery estimate | The published correctness slice now covers 1108 cases across 111 manifests, with 1094 passing, 0 explicit failures, and 14 honest gaps; the main benchmark report covers 638 workloads across 30 manifests with 638 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is still partial and not yet fully Rust-backed. |
+| Current milestone | After ready `RBR-0539` drains, the surviving frontier is `RBR-0540`: convert the broader-range open-ended `{2,}` grouped backtracking-heavy bytes pair behind `rebar._rebar` on the existing open-ended correctness/parity path so `match.broader_range_open_ended_quantified_group_alternation_backtracking_heavy` moves from `28` total cases / `14` passing / `14` unimplemented with mixed `str`/`bytes` coverage to `28` / `28` / `0`, and the combined correctness report moves from `1108` / `1094` / `14` to `1108` / `1108` / `0` across the same `111` manifests. |
+| Work queue | `0` ready, `0` in progress, `539` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1094` |
+| Published cases | `1108` |
 | Passing in published slice | `1094` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
+| Honest gaps (`unimplemented`) | `14` |
 | Covered manifests | `111` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 1094 cases across 111 manifests, with 1094 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 638 workloads across 30 manifests with 638 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is internally green but still clearly partial._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 1108 cases across 111 manifests, with 1094 passing, 0 explicit failures, and 14 honest gaps; the main benchmark report covers 638 workloads across 30 manifests with 638 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is still partial and not yet fully Rust-backed._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- With the queue drained, the surviving frontier is `RBR-0539`: publish the broader-range open-ended `{2,}` grouped backtracking-heavy bytes pair on the existing open-ended correctness/parity path so the combined correctness report moves from `1094` / `1094` / `0` to `1108` / `1094` / `14`.
+- With the ready queue drained, the surviving follow-on is `RBR-0540`: convert the broader-range open-ended `{2,}` grouped backtracking-heavy bytes pair behind `rebar._rebar` so the combined correctness report moves from `1108` / `1094` / `14` to `1108` / `1108` / `0`.
 
 ### Current Risks
 
@@ -55,7 +55,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The published correctness slice is now fully green, but it is still a bounded slice rather than anything close to full stdlib `re` parity. With the queue currently drained, the surviving follow-on is `RBR-0539`, which reopens the broader-range open-ended grouped backtracking-heavy bytes slice on the correctness/parity path.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The published correctness slice is still bounded and still carries honest gaps on the newest broader-range open-ended grouped backtracking-heavy bytes publication, so it is not close to full stdlib `re` parity. With the queue currently drained, the surviving follow-on is `RBR-0540`, which converts that bytes pair behind `rebar._rebar`.
 
 The benchmark story is similarly early. The clearest positive speed signal today is still the tiny parser-tagged slice, where 8 workloads are about 3.0x faster on median than CPython. The broader 638-workload publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
