@@ -1,6 +1,6 @@
 # RBR-0546: Catch the open-ended grouped backtracking-heavy bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -49,3 +49,11 @@ Created: 2026-03-17
   - `tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py` currently covers only the matching `str` open-ended grouped backtracking-heavy workloads plus older explicit special-unanchored rows, so the bytes benchmark mirrors still need direct benchmark-anchor handling;
   - `reports/benchmarks/latest.py` currently publishes `open-ended-quantified-group-boundary` at `54` total workloads / `54` measured workloads / `0` known gaps and the combined source-tree report at `644` total / `644` measured / `0` known gaps; and
   - `ops/tasks/done/RBR-0544-open-ended-quantified-group-alternation-backtracking-heavy-bytes-parity.md` already records successful public-API parity for both target bytes patterns, so these benchmark rows should measure rather than reopen a runtime gap.
+- Completed 2026-03-17:
+  - Added the six bounded bytes mirrors for `a((bc|b)c){1,}d` and `a(?P<word>(bc|b)c){1,}d` on `benchmarks/workloads/open_ended_quantified_group_boundary.py`, keeping the existing Python-path patterns and haystacks and leaving the manifest on the source-tree shim publication path.
+  - Updated the benchmark expectation and scorecard tests so the open-ended manifest treats the six new bytes rows as measured, keeps zero known gaps, and advances the manifest-level counts from `54` / `54` / `0` to `60` / `60` / `0`.
+  - Updated the open-ended benchmark anchor contract so the two new compile rows pin to the published bytes compile-metadata correctness cases while the four new `module.search()` / `Pattern.fullmatch()` rows remain explicitly unanchored and parity-checked through the direct CPython dispatch path.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`69 passed, 813 subtests passed`).
+  - Verified the focused manifest report at `.rebar/tmp/rbr-0546-open-ended-grouped-backtracking-heavy-bytes-benchmarks.py`, which now reports `60` total / `60` measured / `0` known gaps for `open-ended-quantified-group-boundary`.
+  - Regenerated the tracked `reports/benchmarks/latest.py`; the published combined source-tree report now reports `650` total / `650` measured / `0` known gaps, and the tracked `open-ended-quantified-group-boundary` manifest now reports `60` selected workloads / `60` measured workloads / `0` known gaps.
+  - Left `reports/correctness/latest.py` unchanged because this run only caught the benchmark surface up to already-landed parity.

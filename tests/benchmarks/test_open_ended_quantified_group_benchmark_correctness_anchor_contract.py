@@ -30,7 +30,7 @@ from tests.python.fixture_parity_support import (
 
 
 # These rows intentionally do not anchor to the published correctness fixtures yet:
-# twelve bytes follow-on workloads are covered through direct parity cases in the
+# sixteen bytes follow-on workloads are covered through direct parity cases in the
 # Python suite, and two str rows are benchmark-specific follow-ons that still need
 # explicit benchmark-side pinning.
 EXPECTED_SPECIAL_UNANCHORED_WORKLOAD_IDS = (
@@ -48,6 +48,10 @@ EXPECTED_SPECIAL_UNANCHORED_WORKLOAD_IDS = (
     "pattern-fullmatch-numbered-open-ended-group-conditional-third-repetition-mixed-purged-bytes",
     "module-search-named-open-ended-group-conditional-fourth-repetition-de-warm-bytes",
     "pattern-fullmatch-named-open-ended-group-conditional-third-repetition-mixed-purged-bytes",
+    "module-search-numbered-open-ended-group-backtracking-heavy-lower-bound-b-branch-warm-bytes",
+    "pattern-fullmatch-numbered-open-ended-group-backtracking-heavy-second-repetition-b-then-bc-purged-bytes",
+    "module-search-named-open-ended-group-backtracking-heavy-third-repetition-mixed-warm-bytes",
+    "pattern-fullmatch-named-open-ended-group-backtracking-heavy-purged-bytes",
 )
 
 EXPECTED_OPEN_ENDED_ANCHOR_CASE_IDS = {
@@ -229,6 +233,14 @@ EXPECTED_OPEN_ENDED_ANCHOR_CASE_IDS = {
         "open_ended_quantified_group_boundary.py",
         "pattern-fullmatch-named-open-ended-group-backtracking-heavy-purged-gap",
     ): ("open-ended-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-fourth-repetition-short-only-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-numbered-open-ended-group-backtracking-heavy-cold-bytes",
+    ): ("open-ended-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-bytes",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-named-open-ended-group-backtracking-heavy-warm-bytes",
+    ): ("open-ended-quantified-group-alternation-backtracking-heavy-named-compile-metadata-bytes",),
 }
 
 
