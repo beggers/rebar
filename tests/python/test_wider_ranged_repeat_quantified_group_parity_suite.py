@@ -51,9 +51,9 @@ class BacktrackingTraceCase:
 @dataclass(frozen=True)
 class BoundedPatternCase:
     id: str
-    pattern: str
+    pattern: str | bytes
     helper: str
-    string: str
+    string: str | bytes
     bounds: tuple[int, int]
 
 FIXTURE_BUNDLE_SPECS = (
@@ -428,6 +428,30 @@ PATTERN_BOUNDS_MATCH_CASES = (
         string="yyabcbccbccbcdzz",
         bounds=(2, 14),
     ),
+    BoundedPatternCase(
+        id="broader-range-conditional-bytes-search-normalizes-negative-and-oversized-bounds",
+        pattern=rb"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
+        helper="search",
+        string=b"xxaezz",
+        bounds=(-50, 999),
+    ),
+    BoundedPatternCase(
+        id="broader-range-backtracking-heavy-bytes-match-honors-narrowed-window",
+        pattern=rb"a((bc|b)c){1,4}d",
+        helper="match",
+        string=b"yyabccbcdzz",
+        bounds=(2, 9),
+    ),
+    BoundedPatternCase(
+        id=(
+            "nested-broader-range-backtracking-heavy-bytes-fullmatch-preserves-"
+            "visible-outer-capture-window"
+        ),
+        pattern=rb"a(?P<outer>((bc|b)c){1,4})d",
+        helper="fullmatch",
+        string=b"yyabcbccbccbcdzz",
+        bounds=(2, 14),
+    ),
 )
 PATTERN_BOUNDS_NO_MATCH_CASES = (
     BoundedPatternCase(
@@ -449,6 +473,30 @@ PATTERN_BOUNDS_NO_MATCH_CASES = (
         pattern=r"a(((bc|b)c){1,4})d",
         helper="fullmatch",
         string="yyabccbcdzz",
+        bounds=(-50, 999),
+    ),
+    BoundedPatternCase(
+        id="broader-range-conditional-bytes-match-fails-when-endpos-truncates-the-yes-arm",
+        pattern=rb"a((bc|de){1,4})?(?(1)d|e)",
+        helper="match",
+        string=b"xxabcdzz",
+        bounds=(2, 5),
+    ),
+    BoundedPatternCase(
+        id="broader-range-backtracking-heavy-bytes-search-skips-match-before-pos",
+        pattern=rb"a(?P<word>(bc|b)c){1,4}d",
+        helper="search",
+        string=b"yyabcbccdzz",
+        bounds=(3, 11),
+    ),
+    BoundedPatternCase(
+        id=(
+            "nested-broader-range-backtracking-heavy-bytes-fullmatch-does-"
+            "not-expand-to-whole-string"
+        ),
+        pattern=rb"a(((bc|b)c){1,4})d",
+        helper="fullmatch",
+        string=b"yyabccbcdzz",
         bounds=(-50, 999),
     ),
 )
