@@ -489,6 +489,44 @@ EXPECTED_BROADER_RANGE_OPEN_ENDED_FULLMATCH_TEXTS = frozenset(
 )
 
 
+def _build_broader_range_open_ended_conditional_trace_cases(
+) -> tuple[OpenEndedTraceCase, ...]:
+    cases: list[OpenEndedTraceCase] = []
+    for case in fixture_cases_for_operation(
+        (BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BUNDLE,),
+        "compile",
+    ):
+        if case.text_model != "str":
+            continue
+        pattern = case_pattern(case)
+        assert isinstance(pattern, str)
+        prefix = _compile_case_prefix(case)
+        for repetition_count in range(2, 6):
+            for branch_order in product(OPEN_ENDED_BRANCH_TEXT, repeat=repetition_count):
+                body = "".join(OPEN_ENDED_BRANCH_TEXT[branch] for branch in branch_order)
+                branch_id = "-".join(branch_order)
+                fullmatch_text = f"a{body}d"
+                cases.append(
+                    OpenEndedTraceCase(
+                        id=f"{prefix}-{branch_id}",
+                        pattern=pattern,
+                        search_text=f"zz{fullmatch_text}zz",
+                        fullmatch_text=fullmatch_text,
+                    )
+                )
+    return tuple(cases)
+
+
+BROADER_RANGE_OPEN_ENDED_CONDITIONAL_TRACE_CASES = (
+    _build_broader_range_open_ended_conditional_trace_cases()
+)
+EXPECTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_FULLMATCH_TEXTS = frozenset(
+    f"a{''.join(OPEN_ENDED_BRANCH_TEXT[branch] for branch in branch_order)}d"
+    for repetition_count in range(2, 6)
+    for branch_order in product(OPEN_ENDED_BRANCH_TEXT, repeat=repetition_count)
+)
+
+
 def _build_open_ended_bytes_trace_cases() -> tuple[OpenEndedTraceCase, ...]:
     cases: list[OpenEndedTraceCase] = []
     for bundle in OPEN_ENDED_TRACE_BUNDLES:
@@ -520,6 +558,46 @@ OPEN_ENDED_BYTES_TRACE_CASES = _build_open_ended_bytes_trace_cases()
 EXPECTED_OPEN_ENDED_BYTES_FULLMATCH_TEXTS = frozenset(
     b"a" + b"".join(OPEN_ENDED_BRANCH_BYTES[branch] for branch in branch_order) + b"d"
     for repetition_count in range(1, 5)
+    for branch_order in product(OPEN_ENDED_BRANCH_BYTES, repeat=repetition_count)
+)
+
+
+def _build_broader_range_open_ended_conditional_bytes_trace_cases(
+) -> tuple[OpenEndedTraceCase, ...]:
+    cases: list[OpenEndedTraceCase] = []
+    for case in fixture_cases_for_operation(
+        (BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BUNDLE,),
+        "compile",
+    ):
+        if case.text_model != "bytes":
+            continue
+        pattern = case_pattern(case)
+        assert isinstance(pattern, bytes)
+        prefix = _compile_case_prefix(case)
+        for repetition_count in range(2, 6):
+            for branch_order in product(OPEN_ENDED_BRANCH_BYTES, repeat=repetition_count):
+                body = b"".join(
+                    OPEN_ENDED_BRANCH_BYTES[branch] for branch in branch_order
+                )
+                branch_id = "-".join(branch_order)
+                fullmatch_text = b"a" + body + b"d"
+                cases.append(
+                    OpenEndedTraceCase(
+                        id=f"{prefix}-bytes-{branch_id}",
+                        pattern=pattern,
+                        search_text=b"zz" + fullmatch_text + b"zz",
+                        fullmatch_text=fullmatch_text,
+                    )
+                )
+    return tuple(cases)
+
+
+BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_TRACE_CASES = (
+    _build_broader_range_open_ended_conditional_bytes_trace_cases()
+)
+EXPECTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_FULLMATCH_TEXTS = frozenset(
+    b"a" + b"".join(OPEN_ENDED_BRANCH_BYTES[branch] for branch in branch_order) + b"d"
+    for repetition_count in range(2, 6)
     for branch_order in product(OPEN_ENDED_BRANCH_BYTES, repeat=repetition_count)
 )
 
@@ -1506,6 +1584,47 @@ def test_broader_range_open_ended_trace_cases_cover_all_declared_branch_orders()
         }
 
 
+def test_broader_range_open_ended_conditional_trace_cases_cover_all_declared_branch_orders(
+) -> None:
+    expected_patterns = frozenset(
+        case_pattern(case)
+        for case in fixture_cases_for_operation(
+            (BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BUNDLE,),
+            "compile",
+        )
+        if case.text_model == "str"
+    )
+
+    assert len(EXPECTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_FULLMATCH_TEXTS) == 60
+    assert len(BROADER_RANGE_OPEN_ENDED_CONDITIONAL_TRACE_CASES) == (
+        len(expected_patterns)
+        * len(EXPECTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_FULLMATCH_TEXTS)
+    )
+    assert len(
+        {case.id for case in BROADER_RANGE_OPEN_ENDED_CONDITIONAL_TRACE_CASES}
+    ) == len(BROADER_RANGE_OPEN_ENDED_CONDITIONAL_TRACE_CASES)
+    assert {case.pattern for case in BROADER_RANGE_OPEN_ENDED_CONDITIONAL_TRACE_CASES} == (
+        expected_patterns
+    )
+
+    for pattern in expected_patterns:
+        matching_cases = tuple(
+            case
+            for case in BROADER_RANGE_OPEN_ENDED_CONDITIONAL_TRACE_CASES
+            if case.pattern == pattern
+        )
+        assert len(matching_cases) == len(
+            EXPECTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_FULLMATCH_TEXTS
+        )
+        assert {case.fullmatch_text for case in matching_cases} == (
+            EXPECTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_FULLMATCH_TEXTS
+        )
+        assert {case.search_text for case in matching_cases} == {
+            f"zz{text}zz"
+            for text in EXPECTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_FULLMATCH_TEXTS
+        }
+
+
 def test_open_ended_backtracking_trace_cases_cover_all_declared_branch_orders() -> None:
     expected_patterns = frozenset(
         case_pattern(case)
@@ -1571,6 +1690,47 @@ def test_open_ended_bytes_trace_cases_cover_all_declared_branch_orders() -> None
         )
         assert {case.search_text for case in matching_cases} == {
             b"zz" + text + b"zz" for text in EXPECTED_OPEN_ENDED_BYTES_FULLMATCH_TEXTS
+        }
+
+
+def test_broader_range_open_ended_conditional_bytes_trace_cases_cover_all_declared_branch_orders(
+) -> None:
+    expected_patterns = frozenset(
+        case_pattern(case)
+        for case in fixture_cases_for_operation(
+            (BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BUNDLE,),
+            "compile",
+        )
+        if case.text_model == "bytes"
+    )
+
+    assert len(EXPECTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_FULLMATCH_TEXTS) == 60
+    assert len(BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_TRACE_CASES) == (
+        len(expected_patterns)
+        * len(EXPECTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_FULLMATCH_TEXTS)
+    )
+    assert len(
+        {case.id for case in BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_TRACE_CASES}
+    ) == len(BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_TRACE_CASES)
+    assert {
+        case.pattern for case in BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_TRACE_CASES
+    } == expected_patterns
+
+    for pattern in expected_patterns:
+        matching_cases = tuple(
+            case
+            for case in BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_TRACE_CASES
+            if case.pattern == pattern
+        )
+        assert len(matching_cases) == len(
+            EXPECTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_FULLMATCH_TEXTS
+        )
+        assert {case.fullmatch_text for case in matching_cases} == (
+            EXPECTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_FULLMATCH_TEXTS
+        )
+        assert {case.search_text for case in matching_cases} == {
+            b"zz" + text + b"zz"
+            for text in EXPECTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_FULLMATCH_TEXTS
         }
 
 
@@ -2921,6 +3081,96 @@ def test_broader_range_open_ended_pattern_fullmatch_branch_traces_match_cpython(
     assert observed is not None
     assert expected is not None
     assert_match_parity(backend_name, observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    BROADER_RANGE_OPEN_ENDED_CONDITIONAL_TRACE_CASES,
+    ids=lambda case: case.id,
+)
+def test_broader_range_open_ended_conditional_module_search_branch_traces_match_cpython(
+    regex_backend: tuple[str, object],
+    case: OpenEndedTraceCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    observed = backend.search(case.pattern, case.search_text)
+    expected = re.search(case.pattern, case.search_text)
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_parity(backend_name, observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    BROADER_RANGE_OPEN_ENDED_CONDITIONAL_TRACE_CASES,
+    ids=lambda case: case.id,
+)
+def test_broader_range_open_ended_conditional_pattern_fullmatch_branch_traces_match_cpython(
+    regex_backend: tuple[str, object],
+    case: OpenEndedTraceCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    observed = observed_pattern.fullmatch(case.fullmatch_text)
+    expected = expected_pattern.fullmatch(case.fullmatch_text)
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_parity(backend_name, observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_TRACE_CASES,
+    ids=lambda case: case.id,
+)
+def test_broader_range_open_ended_conditional_bytes_module_search_branch_traces_match_cpython(
+    regex_backend: tuple[str, object],
+    case: OpenEndedTraceCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert isinstance(case.pattern, bytes)
+    assert isinstance(case.search_text, bytes)
+
+    observed = backend.search(case.pattern, case.search_text)
+    expected = re.search(case.pattern, case.search_text)
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_parity(backend_name, observed, expected, check_regs=True)
+
+
+@pytest.mark.parametrize(
+    "case",
+    BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_TRACE_CASES,
+    ids=lambda case: case.id,
+)
+def test_broader_range_open_ended_conditional_bytes_pattern_fullmatch_branch_traces_match_cpython(
+    regex_backend: tuple[str, object],
+    case: OpenEndedTraceCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert isinstance(case.pattern, bytes)
+    assert isinstance(case.fullmatch_text, bytes)
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    observed = observed_pattern.fullmatch(case.fullmatch_text)
+    expected = expected_pattern.fullmatch(case.fullmatch_text)
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_parity(backend_name, observed, expected, check_regs=True)
 
 
 @pytest.mark.parametrize("case", OPEN_ENDED_BYTES_TRACE_CASES, ids=lambda case: case.id)
