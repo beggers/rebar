@@ -2247,7 +2247,8 @@ def escape(pattern: object) -> str | bytes:
     if _native is not None:
         if isinstance(pattern, str):
             return _native.boundary_escape(pattern)
-        return _native.boundary_escape(bytes(pattern))
+        decoded_pattern = str(pattern, "latin-1")
+        return _native.boundary_escape(decoded_pattern).encode("latin-1")
 
     if isinstance(pattern, str):
         return pattern.translate(_ESCAPE_SPECIAL_CHARACTERS)
