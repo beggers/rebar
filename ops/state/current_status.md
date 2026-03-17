@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 1080 cases across 111 manifests, with all 1080 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 632 workloads across 30 manifests with 632 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the project is broader again but still clearly partial.
 
 ## README Next Steps
-- With the queue drained, the surviving frontier is `RBR-0535`: publish the broader-range open-ended `{2,}` grouped-alternation-plus-conditional bytes pair on the existing correctness path so the combined report would move from `1080` / `1080` / `0` to `1094` / `1080` / `14` before bytes parity or benchmark catch-up widen that family.
+- Ready head `RBR-0535` should publish the broader-range open-ended `{2,}` grouped-alternation-plus-conditional bytes pair on the existing correctness path so the combined report moves from `1080` / `1080` / `0` to `1094` / `1080` / `14`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: all 1080 published correctness cases pass a
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- With the queue drained, the surviving frontier is `RBR-0535`: publish the broader-range open-ended `{2,}` grouped-alternation-plus-conditional bytes pair on the existing correctness path so the combined report would move from `1080` / `1080` / `0` to `1094` / `1080` / `14` before bytes parity or benchmark catch-up widen that family.
+- After ready `RBR-0535` drains, the surviving frontier is `RBR-0537`: convert the same broader-range open-ended `{2,}` grouped-alternation-plus-conditional bytes pair to real parity on the existing correctness/parity path so the combined report would move from `1094` / `1080` / `14` to `1094` / `1094` / `0` before bytes benchmark catch-up widens that family.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
