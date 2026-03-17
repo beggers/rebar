@@ -329,7 +329,7 @@ The published frontier is still narrow: 1168 published correctness cases across 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0561` should convert the quantified-alternation open-ended bytes pair for `rb"a(b|c){1,}d"` and `rb"a(?P<word>b|c){1,}d"` to real Rust-backed parity on the existing quantified-alternation surface.
+- `RBR-0564` should catch the quantified-alternation open-ended bytes pair for `rb"a(b|c){1,}d"` and `rb"a(?P<word>b|c){1,}d"` up on the existing `quantified_alternation_boundary.py` Python-path benchmark surface.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

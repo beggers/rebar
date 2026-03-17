@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0561` should convert the quantified-alternation open-ended bytes pair for `rb"a(b|c){1,}d"` and `rb"a(?P<word>b|c){1,}d"` to real Rust-backed parity on the existing quantified-alternation surface.
+`RBR-0564` should catch the quantified-alternation open-ended bytes pair for `rb"a(b|c){1,}d"` and `rb"a(?P<word>b|c){1,}d"` up on the existing `quantified_alternation_boundary.py` Python-path benchmark surface.
 
 ## Ordered Work
-1. `RBR-0561` should convert the quantified-alternation open-ended bytes pair for `rb"a(b|c){1,}d"` and `rb"a(?P<word>b|c){1,}d"` to real Rust-backed parity before later benchmark catch-up mirrors the six adjacent `quantified_alternation_boundary.py` `str` rows on the Python-path benchmark surface.
+1. `RBR-0564` should catch the quantified-alternation open-ended bytes pair for `rb"a(b|c){1,}d"` and `rb"a(?P<word>b|c){1,}d"` up on the existing `quantified_alternation_boundary.py` Python-path benchmark surface through the six directly adjacent compile/search/fullmatch rows before another quantified-alternation bytes family broadens the frontier.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
