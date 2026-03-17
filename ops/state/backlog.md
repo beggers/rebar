@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The surviving frontier is `RBR-0503`: republish the exact optional-group conditional pair `a(b)?(?(1)c|d)e` and `a(?P<word>b)?(?(word)c|d)e` on the existing `benchmarks/workloads/optional_group_boundary.py` Python-path benchmark surface, anchored to `module-search-numbered-optional-group-conditional-cold-gap`, once that pair is Rust-backed.
+After the queued `RBR-0503` benchmark-publication catch-up drains, the surviving frontier is `RBR-0505`: publish the broader counted-repeat pair `a(bc){1,4}d` and `a(?P<word>bc){1,4}d` on the correctness surface via `tests/conformance/fixtures/broader_range_wider_ranged_repeat_quantified_group_workflows.py`, keeping later parity and benchmark catch-up anchored to `module-search-numbered-broader-ranged-repeat-group-cold-gap` and `module-search-numbered-ranged-repeat-group-wider-range-cold-gap`.
 
 ## Ordered Work
-1. `RBR-0503` should keep the same bounded numbered/named optional-group conditional pair on `benchmarks/workloads/optional_group_boundary.py`, reuse `module-search-numbered-optional-group-conditional-cold-gap` as the existing benchmark anchor, and land only the direct `tests/benchmarks/benchmark_expectations.py` / `reports/benchmarks/latest.py` catch-up needed to publish that exact slice cleanly on the current source-tree benchmark path. Do not broaden into counted-repeat `{1,4}` follow-ons, a new benchmark family, or unrelated benchmark-harness cleanup in that run.
+1. `RBR-0505` should add only the minimal numbered and named compile / `module.search()` / `Pattern.fullmatch()` correctness cases for `a(bc){1,4}d` and `a(?P<word>bc){1,4}d` on a new `tests/conformance/fixtures/broader_range_wider_ranged_repeat_quantified_group_workflows.py` manifest, register that manifest through `python/rebar_harness/correctness.py`, `tests/conformance/correctness_expectations.py`, and `tests/conformance/test_combined_correctness_scorecards.py`, and regenerate `reports/correctness/latest.py`. Do not broaden into grouped alternation, grouped conditionals, benchmark updates, or unrelated harness cleanup in that run.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 977 cases across 110 manifests, with all 977 passing and no current `unimplemented` gaps; the main benchmark report covers 588 workloads with 585 real `rebar` timings and 3 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- The surviving post-drain frontier is `RBR-0503`: republish the exact optional-group conditional pair `a(b)?(?(1)c|d)e` / `a(?P<word>b)?(?(word)c|d)e` on the existing `optional_group_boundary.py` benchmark surface.
+- The next ready task is `RBR-0503`: republish the measured optional-group conditional benchmark anchor on the existing `optional_group_boundary.py` surface so tracked benchmark expectations and `reports/benchmarks/latest.py` catch up to the live source-tree row.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: all 977 of 977 published correctness cases 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The surviving post-drain frontier is `RBR-0503`: republish the exact numbered/named optional-group conditional pair `a(b)?(?(1)c|d)e` / `a(?P<word>b)?(?(word)c|d)e` on the existing `benchmarks/workloads/optional_group_boundary.py` Python-path benchmark surface, anchored to `module-search-numbered-optional-group-conditional-cold-gap`.
+- After the queued `RBR-0503` benchmark-publication catch-up drains, the surviving frontier is `RBR-0505`: publish the broader counted-repeat pair `a(bc){1,4}d` / `a(?P<word>bc){1,4}d` on the correctness surface via `tests/conformance/fixtures/broader_range_wider_ranged_repeat_quantified_group_workflows.py`, keeping later parity and benchmark catch-up anchored to `module-search-numbered-broader-ranged-repeat-group-cold-gap` and `module-search-numbered-ranged-repeat-group-wider-range-cold-gap`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
