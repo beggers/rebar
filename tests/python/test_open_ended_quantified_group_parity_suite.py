@@ -10,8 +10,10 @@ from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
     assert_fixture_bundle_contract,
+    assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
+    assert_valid_match_group_access_parity,
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
@@ -149,6 +151,14 @@ MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
 PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
 
 
+def _assert_match_group_access_apis_match_cpython(
+    observed: object,
+    expected: re.Match[str],
+) -> None:
+    assert_valid_match_group_access_parity(observed, expected)
+    assert_invalid_match_group_access_parity(observed, expected)
+
+
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
@@ -208,6 +218,24 @@ def test_module_search_match_convenience_api_matches_cpython(
     assert_match_convenience_api_parity(observed, expected)
 
 
+@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
+def test_module_search_match_group_access_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    _, backend = regex_backend
+    assert case.helper == "search"
+
+    observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
+    expected = getattr(re, case.helper)(*case.args, **case.kwargs)
+
+    assert (observed is None) == (expected is None)
+    if expected is None:
+        return
+
+    _assert_match_group_access_apis_match_cpython(observed, expected)
+
+
 @pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
 def test_pattern_fullmatch_matches_cpython(
     regex_backend: tuple[str, object],
@@ -254,3 +282,27 @@ def test_pattern_fullmatch_match_convenience_api_matches_cpython(
         return
 
     assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
+def test_pattern_fullmatch_match_group_access_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper == "fullmatch"
+
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case_pattern(case),
+        case.flags or 0,
+    )
+    observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
+    expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
+
+    assert (observed is None) == (expected is None)
+    if expected is None:
+        return
+
+    _assert_match_group_access_apis_match_cpython(observed, expected)
