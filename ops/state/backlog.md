@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0572` should publish the bounded quantified-alternation bytes pair for `rb"a(b|c){1,2}d"` and `rb"a(?P<word>b|c){1,2}d"` on the existing correctness/parity path, reopening the quantified-alternation frontier through one exact mixed `str`/`bytes` manifest before Rust-backed bytes parity and later Python-path benchmark catch-up land.
+`RBR-0574` should convert the bounded quantified-alternation bytes pair for `rb"a(b|c){1,2}d"` and `rb"a(?P<word>b|c){1,2}d"` to real parity on the existing quantified-alternation surface, so the mixed `str`/`bytes` manifest returns to zero-gap publication before Python-path benchmark catch-up mirrors the six adjacent bounded `str` rows.
 
 ## Ordered Work
-1. `RBR-0572` should publish the bounded quantified-alternation bytes pair for `rb"a(b|c){1,2}d"` and `rb"a(?P<word>b|c){1,2}d"` on `tests/conformance/fixtures/quantified_alternation_workflows.py`, extending the existing quantified-alternation manifest and parity suite through one explicit direct-bytes follow-on anchor before Rust-backed bytes parity and the later Python-path benchmark catch-up mirror the six adjacent bounded `str` workload rows.
+1. `RBR-0574` should convert the bounded quantified-alternation bytes pair for `rb"a(b|c){1,2}d"` and `rb"a(?P<word>b|c){1,2}d"` on `tests/python/test_quantified_alternation_parity_suite.py`, turning that manifest's direct bytes follow-on anchor into real Rust-backed parity before a later benchmark task mirrors the six adjacent bounded `str` rows on `benchmarks/workloads/quantified_alternation_boundary.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
