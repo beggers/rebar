@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 977 cases across 110 manifests, with all 977 passing and no current `unimplemented` gaps; the main benchmark report covers 588 workloads with 585 real `rebar` timings and 3 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | The surviving frontier is `RBR-0503`: republish the exact optional-group conditional pair `a(b)?(?(1)c|d)e` and `a(?P<word>b)?(?(word)c|d)e` on the existing `benchmarks/workloads/optional_group_boundary.py` Python-path benchmark surface, anchored to `module-search-numbered-optional-group-conditional-cold-gap`, once that pair is Rust-backed. |
-| Work queue | `0` ready, `0` in progress, `502` done, `0` blocked |
+| Delivery estimate | The published correctness slice now covers 977 cases across 110 manifests, with all 977 passing and no current `unimplemented` gaps; the main benchmark report covers 588 workloads with 586 real `rebar` timings and 2 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity. |
+| Current milestone | The surviving frontier is `RBR-0505`: publish the broader counted-repeat pair `a(bc){1,4}d` and `a(?P<word>bc){1,4}d` on the correctness surface before that slice’s Rust-backed parity and benchmark catch-up follow-ons reopen. |
+| Work queue | `0` ready, `0` in progress, `504` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,7 +28,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `110` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 977 cases across 110 manifests, with all 977 passing and no current `unimplemented` gaps; the main benchmark report covers 588 workloads with 585 real `rebar` timings and 3 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 977 cases across 110 manifests, with all 977 passing and no current `unimplemented` gaps; the main benchmark report covers 588 workloads with 586 real `rebar` timings and 2 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 
@@ -36,28 +36,28 @@ _These correctness counts cover only the published slice. Overall delivery estim
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
 | Published workloads | `588` |
-| Workloads with real `rebar` timings | `585` |
-| Known-gap workloads | `3` |
+| Workloads with real `rebar` timings | `586` |
+| Known-gap workloads | `2` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
 
 _Full-suite benchmark publication still runs through the source-tree shim; strict built-native smoke and full-suite modes remain available for ad hoc runs and tests via `--native-smoke` and `--native-full` when you pass an explicit `--report` path._
 
-_README speedup rollups stay omitted while only `585` of `588` published workloads have real `rebar` timings._
+_README speedup rollups stay omitted while only `586` of `588` published workloads have real `rebar` timings._
 
 ### Immediate Next Steps
 
-- The surviving post-drain frontier is `RBR-0503`: republish the exact optional-group conditional pair `a(b)?(?(1)c|d)e` / `a(?P<word>b)?(?(word)c|d)e` on the existing `optional_group_boundary.py` benchmark surface.
+- The surviving post-drain frontier is `RBR-0505`: publish the broader counted-repeat pair `a(bc){1,4}d` / `a(?P<word>bc){1,4}d` on the correctness surface.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 588 workloads and carries 3 explicit known-gap workloads.
+- The published benchmark surface is still bounded at 588 workloads and carries 2 explicit known-gap workloads.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published correctness slice now covers 977 cases across 110 manifests with all 977 passing and no current `unimplemented` gaps, and the benchmark publication covers 588 workloads with 585 real `rebar` timings and 3 explicit source-tree known gaps. The task queue is empty, and backlog now points to `RBR-0503` as the next benchmark catch-up follow-on for that same optional-group conditional pair.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published correctness slice now covers 977 cases across 110 manifests with all 977 passing and no current `unimplemented` gaps, and the benchmark publication covers 588 workloads with 586 real `rebar` timings and 2 explicit source-tree known gaps. The task queue is empty, and backlog now points to `RBR-0505` as the next broader counted-repeat correctness follow-on.
 
 The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice, where the published parser family is about 2.8x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
