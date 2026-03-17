@@ -226,7 +226,6 @@ class BenchmarkManifest:
     path: pathlib.Path
     manifest_id: str
     schema_version: int
-    defaults: dict[str, Any]
     workloads: list[Workload]
     spec_refs: list[str]
     notes: list[str]
@@ -264,7 +263,6 @@ class BenchmarkManifest:
             path=path,
             manifest_id=manifest_id,
             schema_version=MANIFEST_SCHEMA_VERSION,
-            defaults=dict(defaults),
             workloads=workloads,
             spec_refs=[str(ref) for ref in raw_manifest.get("spec_refs", [])],
             notes=[str(note) for note in raw_manifest.get("notes", [])],

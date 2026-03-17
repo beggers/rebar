@@ -119,7 +119,7 @@ class PythonBenchmarkManifestContractTest(unittest.TestCase):
             workloads = manifest.workloads
 
         self.assertEqual(manifest.manifest_id, "python-benchmark-loader-contract")
-        self.assertEqual(manifest.defaults["warmup_iterations"], 2)
+        self.assertFalse(hasattr(manifest, "defaults"))
         self.assertEqual([workload.workload_id for workload in workloads], [
             "module-sub-callable-numbered-contract-str",
             "pattern-subn-callable-named-contract-str",
