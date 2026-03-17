@@ -236,10 +236,6 @@ OPEN_ENDED_TRACE_BUNDLES = (
     OPEN_ENDED_ALTERNATION_BUNDLE,
     NESTED_OPEN_ENDED_ALTERNATION_BUNDLE,
 )
-OPEN_ENDED_ALTERNATION_BYTES_UNSUPPORTED_REASON = (
-    "rebar backend does not yet implement the open-ended grouped alternation bytes pair "
-    "(pending RBR-0550)"
-)
 OPEN_ENDED_ALTERNATION_BYTES_CASES = (
     SupplementalCase(
         id="open-ended-grouped-alternation-numbered-bytes",
@@ -247,8 +243,6 @@ OPEN_ENDED_ALTERNATION_BYTES_CASES = (
         search_matches=(b"zzabcdzz", b"zzadedzz"),
         fullmatch_matches=(b"abcbcd", b"abcded", b"abcbcded"),
         fullmatch_misses=(b"ad", b"abed"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=OPEN_ENDED_ALTERNATION_BYTES_UNSUPPORTED_REASON,
     ),
     SupplementalCase(
         id="open-ended-grouped-alternation-named-bytes",
@@ -256,8 +250,6 @@ OPEN_ENDED_ALTERNATION_BYTES_CASES = (
         search_matches=(b"zzabcdzz", b"zzadedzz"),
         fullmatch_matches=(b"abcded", b"abcbcded", b"adededed"),
         fullmatch_misses=(b"ad", b"abed"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=OPEN_ENDED_ALTERNATION_BYTES_UNSUPPORTED_REASON,
     ),
 )
 NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES = (
@@ -343,7 +335,6 @@ BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
 )
 DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS = frozenset(
     {
-        "open-ended-quantified-group-alternation-workflows",
         "open-ended-quantified-group-alternation-backtracking-heavy-workflows",
         "broader-range-open-ended-quantified-group-alternation-conditional-workflows",
         "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows",
@@ -547,7 +538,7 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     )
 
 
-def test_open_ended_alternation_bytes_cases_stay_explicit_with_one_direct_follow_on_anchor(
+def test_open_ended_alternation_bytes_cases_stay_explicit_with_mixed_manifest_coverage(
 ) -> None:
     bundle_str_cases = tuple(
         case for case in OPEN_ENDED_ALTERNATION_BUNDLE.cases if case.text_model == "str"
@@ -587,10 +578,8 @@ def test_open_ended_alternation_bytes_cases_stay_explicit_with_one_direct_follow
     )
 
     for case in OPEN_ENDED_ALTERNATION_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert case.unsupported_backend_reason == (
-            OPEN_ENDED_ALTERNATION_BYTES_UNSUPPORTED_REASON
-        )
+        assert case.unsupported_backends == ()
+        assert case.unsupported_backend_reason is None
         assert case.search_misses == ()
         assert len(case.search_matches) == 2
         assert len(case.fullmatch_matches) == 3
@@ -632,25 +621,36 @@ def test_open_ended_alternation_bytes_cases_stay_explicit_with_one_direct_follow
     }
 
 
-def test_open_ended_alternation_bytes_fixture_rows_route_through_direct_follow_on_anchor(
+def test_open_ended_alternation_bytes_fixture_rows_run_through_generic_case_buckets(
 ) -> None:
     bundle_manifest_id = OPEN_ENDED_ALTERNATION_BUNDLE.manifest.manifest_id
+    bundle_bytes_cases = tuple(
+        case
+        for case in OPEN_ENDED_ALTERNATION_BUNDLE.cases
+        if case.text_model == "bytes"
+    )
 
     assert {
         case.case_id
         for case in COMPILE_CASES
         if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
-    } == set()
+    } == {
+        case.case_id for case in bundle_bytes_cases if case.operation == "compile"
+    }
     assert {
         case.case_id
         for case in MODULE_CASES
         if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
-    } == set()
+    } == {
+        case.case_id for case in bundle_bytes_cases if case.operation == "module_call"
+    }
     assert {
         case.case_id
         for case in PATTERN_CASES
         if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
-    } == set()
+    } == {
+        case.case_id for case in bundle_bytes_cases if case.operation == "pattern_call"
+    }
 
 
 def test_open_ended_conditional_bytes_cases_stay_explicit_with_one_direct_follow_on_anchor(

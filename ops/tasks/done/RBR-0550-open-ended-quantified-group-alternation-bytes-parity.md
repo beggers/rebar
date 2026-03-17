@@ -1,6 +1,6 @@
 # RBR-0550: Convert the open-ended grouped alternation bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -43,3 +43,10 @@ Created: 2026-03-17
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`; and
   - `benchmarks/workloads/open_ended_quantified_group_boundary.py` already publishes the six adjacent measured `str` open-ended grouped-alternation rows for this exact `{1,}` slice, so the surviving benchmark follow-on should reuse that existing Python-path manifest instead of inventing another benchmark family.
 - The surviving follow-on after this task is `RBR-0552`, which should add the six adjacent bytes benchmark mirrors for the same open-ended grouped-alternation pair on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
+
+## Completion Notes
+- Landed bounded Rust-backed compile and match support for `rb"a(bc|de){1,}d"` and `rb"a(?P<word>bc|de){1,}d"` in `crates/rebar-core/src/lib.rs`, including bytes compile metadata plus `search()` and `fullmatch()` capture reporting for the exact published `{1,}` grouped-alternation pair.
+- Updated `tests/python/test_open_ended_quantified_group_parity_suite.py` to drop the `rebar`-only bytes placeholder gating for `OPEN_ENDED_ALTERNATION_BYTES_CASES` and let the manifest-backed bytes rows run through the normal generic compile/module/pattern parity buckets while keeping the direct bytes anchor in place.
+- Republished the tracked combined correctness report in `reports/correctness/latest.py`; the tracked artifact now reads `1136` total / `1136` passed / `0` failed / `0` unimplemented overall, and `match.open_ended_quantified_group_alternation` now reads `32` total / `32` passed / `0` unimplemented with `['bytes', 'str']` coverage.
+- Existing native bridge and Python wrapper paths were sufficient once the Rust core recognized this slice, so no slice-specific changes were required in `crates/rebar-cpython/src/lib.rs` or `python/rebar/__init__.py`.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/open_ended_quantified_group_alternation_workflows.py --report .rebar/tmp/rbr-0550-open-ended-grouped-alternation-bytes-parity.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
