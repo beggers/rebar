@@ -132,21 +132,30 @@ FIXTURE_BUNDLE_SPECS = (
                 "quantified-alternation-named-compile-metadata-str",
                 "quantified-alternation-named-module-search-second-repetition-str",
                 "quantified-alternation-named-pattern-fullmatch-lower-bound-str",
+                "quantified-alternation-numbered-compile-metadata-bytes",
+                "quantified-alternation-numbered-module-search-lower-bound-bytes",
+                "quantified-alternation-numbered-pattern-fullmatch-second-repetition-bytes",
+                "quantified-alternation-named-compile-metadata-bytes",
+                "quantified-alternation-named-module-search-second-repetition-bytes",
+                "quantified-alternation-named-pattern-fullmatch-lower-bound-bytes",
             }
         ),
         expected_patterns=frozenset(
             {
                 r"a(b|c){1,2}d",
                 r"a(?P<word>b|c){1,2}d",
+                rb"a(b|c){1,2}d",
+                rb"a(?P<word>b|c){1,2}d",
             }
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 2,
+                ("compile", None): 4,
+                ("module_call", "search"): 4,
+                ("pattern_call", "fullmatch"): 4,
             }
         ),
+        expected_text_models=frozenset({"bytes", "str"}),
     ),
     FixtureBundleSpec(
         "quantified_nested_group_alternation_workflows.py",
@@ -386,6 +395,10 @@ FIXTURE_BUNDLE_SPECS = (
     ),
 )
 FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "quantified-alternation-workflows",
+)
 QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "quantified-alternation-broader-range-workflows",
@@ -393,6 +406,30 @@ QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE = published_fixture_bundle_by_manife
 QUANTIFIED_ALTERNATION_OPEN_ENDED_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "quantified-alternation-open-ended-workflows",
+)
+QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES = (
+    QuantifiedAlternationBytesCase(
+        id="quantified-alternation-numbered-bytes",
+        pattern=rb"a(b|c){1,2}d",
+        search_matches=(b"zzacdz",),
+        fullmatch_matches=(b"abcd",),
+        fullmatch_misses=(),
+        unsupported_backends=("rebar",),
+        unsupported_backend_reason=(
+            "bounded quantified-alternation bytes parity is not implemented yet"
+        ),
+    ),
+    QuantifiedAlternationBytesCase(
+        id="quantified-alternation-named-bytes",
+        pattern=rb"a(?P<word>b|c){1,2}d",
+        search_matches=(b"zzacbdzz",),
+        fullmatch_matches=(b"abd",),
+        fullmatch_misses=(),
+        unsupported_backends=("rebar",),
+        unsupported_backend_reason=(
+            "bounded quantified-alternation bytes parity is not implemented yet"
+        ),
+    ),
 )
 QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES = (
     QuantifiedAlternationBytesCase(
@@ -428,11 +465,16 @@ QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES = (
 )
 DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS = frozenset(
     {
+        "quantified-alternation-workflows",
         "quantified-alternation-broader-range-workflows",
         "quantified-alternation-open-ended-workflows",
     }
 )
 DIRECT_BYTES_FOLLOW_ON_SPECS = (
+    (
+        QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE,
+        QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES,
+    ),
     (
         QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE,
         QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES,
@@ -443,6 +485,7 @@ DIRECT_BYTES_FOLLOW_ON_SPECS = (
     ),
 )
 DIRECT_BYTES_FOLLOW_ON_SPEC_IDS = (
+    "bounded",
     "broader-range",
     "open-ended",
 )
@@ -481,6 +524,11 @@ QUANTIFIED_ALTERNATION_DIRECT_TEST_CASE_ID_BUCKETS = {
     "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
     "shared-module-search": frozenset(case.case_id for case in MODULE_CASES),
     "shared-pattern-fullmatch": frozenset(case.case_id for case in PATTERN_CASES),
+    "bounded-bytes-follow-on": frozenset(
+        case.case_id
+        for case in QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE.cases
+        if case.text_model == "bytes"
+    ),
     "broader-range-bytes-follow-on": frozenset(
         case.case_id
         for case in QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE.cases
@@ -766,6 +814,84 @@ def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_c
         for case in fixture_cases_for_operation((bundle,), "compile")
         if case.text_model == "bytes"
     )
+
+
+def test_quantified_alternation_bounded_bytes_cases_stay_explicit_with_one_direct_follow_on_anchor(
+) -> None:
+    bundle_str_cases = tuple(
+        case
+        for case in QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE.cases
+        if case.text_model == "str"
+    )
+    bundle_bytes_cases = tuple(
+        case
+        for case in QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE.cases
+        if case.text_model == "bytes"
+    )
+    expected_compile_patterns = frozenset(
+        case_pattern(case)
+        for case in fixture_cases_for_operation(
+            (QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE,),
+            "compile",
+        )
+        if case.text_model == "bytes"
+    )
+
+    assert len(QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES) == 2
+    assert {case.id for case in QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES} == {
+        "quantified-alternation-numbered-bytes",
+        "quantified-alternation-named-bytes",
+    }
+    assert {
+        case.pattern for case in QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES
+    } == expected_compile_patterns
+    assert len(bundle_str_cases) == len(bundle_bytes_cases) == 6
+    assert {case.case_id for case in bundle_bytes_cases} == {
+        f"{case.case_id.removesuffix('-str')}-bytes" for case in bundle_str_cases
+    }
+    assert Counter((case.operation, case.helper) for case in bundle_bytes_cases) == Counter(
+        {
+            ("compile", None): 2,
+            ("module_call", "search"): 2,
+            ("pattern_call", "fullmatch"): 2,
+        }
+    )
+
+    for case in QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES:
+        assert case.unsupported_backends == ("rebar",)
+        assert (
+            case.unsupported_backend_reason
+            == "bounded quantified-alternation bytes parity is not implemented yet"
+        )
+        assert case.fullmatch_misses == ()
+        assert all(
+            isinstance(text, bytes)
+            for text in (*case.search_matches, *case.fullmatch_matches)
+        )
+
+    published_module_texts_by_pattern: dict[bytes, set[bytes]] = {}
+    published_fullmatch_texts_by_pattern: dict[bytes, set[bytes]] = {}
+    for case in bundle_bytes_cases:
+        pattern = case_pattern(case)
+        assert isinstance(pattern, bytes)
+        if case.operation == "module_call":
+            text = case.args[1]
+            assert isinstance(text, bytes)
+            published_module_texts_by_pattern.setdefault(pattern, set()).add(text)
+        elif case.operation == "pattern_call":
+            text = case.args[0]
+            assert isinstance(text, bytes)
+            published_fullmatch_texts_by_pattern.setdefault(pattern, set()).add(text)
+
+    numbered_case, named_case = QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES
+    assert published_module_texts_by_pattern == {
+        numbered_case.pattern: {b"zzacdz"},
+        named_case.pattern: {b"zzacbdzz"},
+    }
+    assert published_fullmatch_texts_by_pattern == {
+        numbered_case.pattern: {b"abcd"},
+        named_case.pattern: {b"abd"},
+    }
 
 
 def test_quantified_alternation_broader_range_bytes_cases_stay_explicit_with_one_direct_follow_on_anchor(
@@ -1182,6 +1308,156 @@ def test_supplemental_no_match_paths_match_cpython(
 
     assert observed is None
     assert expected is None
+
+
+@pytest.mark.parametrize(
+    "case",
+    QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_quantified_alternation_bounded_bytes_compile_metadata_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: QuantifiedAlternationBytesCase,
+) -> None:
+    backend_name, backend = regex_backend
+    compile_with_cpython_parity(backend_name, backend, case.pattern)
+
+
+@pytest.mark.parametrize(
+    "case",
+    QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_quantified_alternation_bounded_bytes_module_search_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: QuantifiedAlternationBytesCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    for text in case.search_matches:
+        observed = backend.search(case.pattern, text)
+        expected = re.search(case.pattern, text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_match_parity(backend_name, observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_quantified_alternation_bounded_bytes_module_search_match_convenience_api_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: QuantifiedAlternationBytesCase,
+) -> None:
+    _, backend = regex_backend
+
+    for text in case.search_matches:
+        observed = backend.search(case.pattern, text)
+        expected = re.search(case.pattern, text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_quantified_alternation_bounded_bytes_module_search_match_group_access_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: QuantifiedAlternationBytesCase,
+) -> None:
+    _, backend = regex_backend
+
+    for text in case.search_matches:
+        observed = backend.search(case.pattern, text)
+        expected = re.search(case.pattern, text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_valid_match_group_access_parity(observed, expected)
+        assert_invalid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_quantified_alternation_bounded_bytes_pattern_fullmatch_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: QuantifiedAlternationBytesCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    for text in case.fullmatch_matches:
+        observed = observed_pattern.fullmatch(text)
+        expected = expected_pattern.fullmatch(text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_match_parity(backend_name, observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_quantified_alternation_bounded_bytes_pattern_fullmatch_match_convenience_api_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: QuantifiedAlternationBytesCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    for text in case.fullmatch_matches:
+        observed = observed_pattern.fullmatch(text)
+        expected = expected_pattern.fullmatch(text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_quantified_alternation_bounded_bytes_pattern_fullmatch_match_group_access_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: QuantifiedAlternationBytesCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    for text in case.fullmatch_matches:
+        observed = observed_pattern.fullmatch(text)
+        expected = expected_pattern.fullmatch(text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_valid_match_group_access_parity(observed, expected)
+        assert_invalid_match_group_access_parity(observed, expected)
 
 
 @pytest.mark.parametrize(

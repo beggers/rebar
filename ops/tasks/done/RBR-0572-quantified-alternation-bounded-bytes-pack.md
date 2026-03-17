@@ -1,8 +1,9 @@
 # RBR-0572: Publish the bounded quantified-alternation bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
+Completed: 2026-03-17
 
 ## Goal
 - Extend the existing bounded `{1,2}` quantified-alternation correctness publication with the exact bytes pair on the existing quantified-alternation correctness/parity path, so the frontier reopens on the tracked correctness surface before Rust-backed bytes parity and later Python-path benchmark catch-up land.
@@ -42,3 +43,11 @@ Created: 2026-03-17
   - `benchmarks/workloads/quantified_alternation_boundary.py` already publishes the six adjacent bounded `str` benchmark rows for this exact pair, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`.
 - A later parity follow-on should convert the same bytes pair behind `rebar._rebar` on the existing quantified-alternation parity surface before the benchmark surface mirrors the six adjacent bounded `str` rows already published on `benchmarks/workloads/quantified_alternation_boundary.py`.
+
+## Completion
+- Added the six bounded bytes rows to `tests/conformance/fixtures/quantified_alternation_workflows.py` and routed them through one explicit bounded bytes follow-on anchor in `tests/python/test_quantified_alternation_parity_suite.py`; that direct bytes anchor stays `rebar`-unsupported until the later parity task lands.
+- Regenerated the tracked published correctness report in `reports/correctness/latest.py`; the combined scorecard now records `1190` total / `1184` passed / `6` unimplemented cases, and `match.quantified_alternation` now records `12` total / `6` passed / `6` unimplemented with mixed `bytes`/`str` coverage.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/quantified_alternation_workflows.py --report .rebar/tmp/rbr-0572-quantified-alternation-bounded-bytes.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`

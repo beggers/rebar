@@ -415,11 +415,18 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
     ),
     "quantified-alternation-workflows": CorrectnessScorecardManifestExpectation(
         representative_case_ids=(
+            "quantified-alternation-numbered-compile-metadata-str",
             "quantified-alternation-numbered-module-search-lower-bound-str",
             "quantified-alternation-numbered-pattern-fullmatch-second-repetition-str",
             "quantified-alternation-named-compile-metadata-str",
             "quantified-alternation-named-module-search-second-repetition-str",
             "quantified-alternation-named-pattern-fullmatch-lower-bound-str",
+            "quantified-alternation-numbered-compile-metadata-bytes",
+            "quantified-alternation-numbered-module-search-lower-bound-bytes",
+            "quantified-alternation-numbered-pattern-fullmatch-second-repetition-bytes",
+            "quantified-alternation-named-compile-metadata-bytes",
+            "quantified-alternation-named-module-search-second-repetition-bytes",
+            "quantified-alternation-named-pattern-fullmatch-lower-bound-bytes",
         ),
     ),
     "quantified-nested-group-alternation-workflows": CorrectnessScorecardManifestExpectation(
