@@ -38,6 +38,14 @@ class SourceTreeBenchmarkCommonCase:
     selected_workload_ids_by_manifest: dict[str, tuple[str, ...]]
     selection_mode: str
 
+    @property
+    def manifest_paths(self) -> list[pathlib.Path]:
+        return [manifest.path for manifest in self.manifests]
+
+    @property
+    def relative_manifest_paths(self) -> list[str]:
+        return [relative_manifest_path(manifest.path) for manifest in self.manifests]
+
     def manifest_for_id(self, manifest_id: str) -> BenchmarkManifest:
         for manifest in self.manifests:
             if manifest.manifest_id == manifest_id:

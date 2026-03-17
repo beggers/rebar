@@ -28,14 +28,6 @@ from tests.report_assertions import (
 )
 
 
-def _case_manifest_paths(case: SourceTreeScorecardCase) -> list[pathlib.Path]:
-    return [manifest.path for manifest in case.manifests]
-
-
-def _case_relative_manifest_paths(case: SourceTreeScorecardCase) -> list[str]:
-    return [relative_manifest_path(manifest.path) for manifest in case.manifests]
-
-
 class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
     maxDiff = None
 
@@ -343,7 +335,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             with self.subTest(case_id=case_id):
                 case = source_tree_scorecard_case(case_id)
                 summary, scorecard = run_source_tree_benchmark_scorecard(
-                    _case_manifest_paths(case),
+                    case.manifest_paths,
                     smoke=case.selection_mode == "smoke",
                 )
 
@@ -355,7 +347,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                     expected_runner_version=case.expected_runner_version,
                     expected_adapter=case.expected_adapter,
                     expected_manifests=case.manifests,
-                    expected_manifest_paths=_case_relative_manifest_paths(case),
+                    expected_manifest_paths=case.relative_manifest_paths,
                     expected_selection_mode=case.selection_mode,
                     tracked_report_path=TRACKED_REPORT_PATH,
                 )
