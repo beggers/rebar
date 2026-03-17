@@ -1,8 +1,9 @@
 # RBR-0534: Catch the open-ended grouped-alternation-plus-conditional bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
+Completed: 2026-03-17
 
 ## Goal
 - Extend the published source-tree benchmark surface so the exact open-ended `{1,}` grouped-alternation-plus-conditional bytes pair already supported by `RBR-0533` produces real `rebar` timings on the existing Python-facing open-ended manifest before broader-range open-ended grouped bytes publication reopens that family.
@@ -41,6 +42,14 @@ Created: 2026-03-17
 - Add only the directly adjacent bytes mirrors for this open-ended grouped-conditional pair. Do not broaden into broader-range open-ended grouped bytes publication, open-ended grouped backtracking-heavy bytes rows, or another benchmark family.
 
 ## Notes
+- 2026-03-17 completion:
+  - Added only the six adjacent bytes compile/search/fullmatch rows for the open-ended `{1,}` grouped-alternation-plus-conditional pair in `benchmarks/workloads/open_ended_quantified_group_boundary.py`, pinned to the existing numbered `a((bc|de){1,})?(?(1)d|e)` and named `a(?P<outer>(bc|de){1,})?(?(outer)d|e)` public-surface patterns and the existing `zzabcbcdzz`, `zzadedededzz`, and `abcbcded` haystacks.
+  - Updated `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the open-ended manifest treats those six bytes rows as measured source-tree workloads while keeping zero known gaps.
+  - Regenerated the tracked benchmark publication in `reports/benchmarks/latest.py`; the tracked artifact now publishes `open-ended-quantified-group-boundary` at `42` total / `42` measured / `0` known gaps and the combined source-tree report at `632` total / `632` measured / `0` known gaps.
+  - Verified with:
+    - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+    - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/open_ended_quantified_group_boundary.py --report .rebar/tmp/rbr-0534-open-ended-grouped-conditional-bytes-benchmarks.py`
+    - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
 - Build on `RBR-0533`.
 - 2026-03-17 feature-planning probes confirm this task is not stale:
   - `benchmarks/workloads/open_ended_quantified_group_boundary.py` currently contains only the six `str` workloads for this open-ended grouped-conditional slice and no bytes mirrors;
