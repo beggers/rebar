@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 1039 cases across 111 manifests, with 1039 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 607 workloads across 30 manifests with 607 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial.
 
 ## README Next Steps
-- The ready queue is empty; the next intended follow-on is `RBR-0523`, which adds the six bytes mirrors of the current nested broader `{1,4}` grouped-alternation benchmark rows before nested broader grouped-conditionals reopen correctness work.
+- Ready `RBR-0523` adds the six bytes mirrors of the current nested broader `{1,4}` grouped-alternation benchmark rows before nested broader grouped-conditionals reopen correctness work.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow even though the current scorecard is gap-fre
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The ready queue is empty; the surviving frontier is `RBR-0523`: add the six bytes mirrors of the current nested broader `{1,4}` grouped-alternation benchmark rows on `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py` so the same bytes pair reaches the published Python-path benchmark surface before nested broader grouped-conditionals reopen correctness work.
+- After ready `RBR-0523` drains, the surviving frontier is `RBR-0524`: publish the 14 bytes mirrors and one direct bytes parity anchor for the existing nested broader `{1,4}` grouped-conditional correctness manifest before bytes parity or benchmark catch-up revisit that family.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
