@@ -38,8 +38,6 @@ class SupplementalCase:
     search_misses: tuple[bytes, ...] = ()
     fullmatch_matches: tuple[bytes, ...] = ()
     fullmatch_misses: tuple[bytes, ...] = ()
-    unsupported_backends: tuple[str, ...] = ()
-    unsupported_backend_reason: str | None = None
 
 
 @dataclass(frozen=True)
@@ -191,12 +189,6 @@ OPEN_ENDED_TRACE_BUNDLES = (
     OPEN_ENDED_ALTERNATION_BUNDLE,
     NESTED_OPEN_ENDED_ALTERNATION_BUNDLE,
 )
-DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS = frozenset(
-    {"nested-open-ended-quantified-group-alternation-workflows"}
-)
-PENDING_REBAR_BYTES_REASON = (
-    "rebar bytes parity for nested open-ended grouped alternation remains queued behind RBR-0529"
-)
 NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES = (
     SupplementalCase(
         id="nested-open-ended-grouped-alternation-numbered-bytes",
@@ -204,8 +196,6 @@ NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES = (
         search_matches=(b"zzabcdzz", b"zzadedzz"),
         fullmatch_matches=(b"abcbcded", b"adededed"),
         fullmatch_misses=(b"ae", b"abcbcdede"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=PENDING_REBAR_BYTES_REASON,
     ),
     SupplementalCase(
         id="nested-open-ended-grouped-alternation-named-bytes",
@@ -213,42 +203,13 @@ NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES = (
         search_matches=(b"zzabcdzz", b"zzadedzz"),
         fullmatch_matches=(b"abcbcded", b"adededed"),
         fullmatch_misses=(b"ae", b"abcbcdede"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=PENDING_REBAR_BYTES_REASON,
     ),
 )
 
 
-@pytest.fixture
-def rebar_backend(regex_backend: tuple[str, object]) -> object:
-    backend_name, backend = regex_backend
-    if backend_name != "rebar":
-        pytest.skip("rebar-specific open-ended bytes follow-on observation")
-    return backend
-
-
-def _is_direct_bytes_follow_on_case(case: FixtureCase) -> bool:
-    return (
-        case.manifest_id in DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS
-        and case.text_model == "bytes"
-    )
-
-
-COMPILE_CASES = tuple(
-    case
-    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
-    if not _is_direct_bytes_follow_on_case(case)
-)
-MODULE_CASES = tuple(
-    case
-    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
-    if not _is_direct_bytes_follow_on_case(case)
-)
-PATTERN_CASES = tuple(
-    case
-    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
-    if not _is_direct_bytes_follow_on_case(case)
-)
+COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
+MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
+PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
 
 
 def _assert_match_group_access_apis_match_cpython(
@@ -354,8 +315,6 @@ def test_nested_open_ended_alternation_bytes_cases_stay_explicit_with_one_direct
     )
 
     for case in NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert case.unsupported_backend_reason == PENDING_REBAR_BYTES_REASON
         assert case.search_misses == ()
         assert len(case.search_matches) == 2
         assert len(case.fullmatch_matches) == 2
@@ -582,28 +541,6 @@ def test_nested_open_ended_alternation_bytes_pattern_fullmatch_match_group_acces
         assert observed is not None
         assert expected is not None
         _assert_match_group_access_apis_match_cpython(observed, expected)
-
-
-@pytest.mark.parametrize(
-    "case",
-    NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES,
-    ids=lambda case: case.id,
-)
-def test_nested_open_ended_alternation_bytes_remain_explicitly_unimplemented_for_rebar(
-    rebar_backend: object,
-    case: SupplementalCase,
-) -> None:
-    placeholder = r"rebar\.compile\(\) is a scaffold placeholder"
-
-    with pytest.raises(NotImplementedError, match=placeholder):
-        rebar_backend.compile(case.pattern)
-
-    with pytest.raises(NotImplementedError, match=placeholder):
-        rebar_backend.search(case.pattern, case.search_matches[0])
-
-    with pytest.raises(NotImplementedError, match=placeholder):
-        rebar_backend.fullmatch(case.pattern, case.fullmatch_misses[0])
-
 
 @pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
 def test_compile_metadata_matches_cpython(

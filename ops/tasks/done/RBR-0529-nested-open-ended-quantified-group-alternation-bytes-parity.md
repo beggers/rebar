@@ -1,6 +1,6 @@
 # RBR-0529: Convert the nested open-ended grouped-alternation bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -42,3 +42,9 @@ Created: 2026-03-17
   - `tests/python/test_open_ended_quantified_group_parity_suite.py` still marks `NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES` as unsupported for `rebar`; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`.
 - The surviving follow-on after this task is `RBR-0530`, which should add the six bytes mirrors of the current nested open-ended grouped-alternation source-tree benchmark rows on `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py` before deeper bytes slices reopen that family.
+
+## Completion Notes
+- Landed exact Rust-backed bytes compile/search/fullmatch support for `rb"a((bc|de){1,})d"` and `rb"a(?P<outer>(bc|de){1,})d"` in `crates/rebar-core/src/lib.rs`; the existing native compile/match boundary and Python shim surfaced that support without slice-specific bridge changes.
+- Re-enabled the published manifest-backed bytes cases in `tests/python/test_open_ended_quantified_group_parity_suite.py` by removing the queued follow-on placeholder handling and letting the bytes fixture cases run through the normal generic compile/module/pattern coverage.
+- Republished `reports/correctness/latest.py`; the tracked combined scorecard now reads `1067` total / `1067` passed / `0` failed / `0` unimplemented, and `match.nested_open_ended_quantified_group_alternation` now reads `28` total / `28` passed / `0` unimplemented across `['bytes', 'str']`.
+- Verified with `cargo test -p rebar-core nested_open_ended_quantified_group_alternation`, `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest tests/python/test_open_ended_quantified_group_parity_suite.py`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_open_ended_quantified_group_alternation_workflows.py --report .rebar/runtime/rbr-0529-nested-open-ended-correctness.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
