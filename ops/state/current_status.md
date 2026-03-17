@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 997 cases across 111 manifests, with 983 passing, 0 explicit failures, and 14 current `unimplemented` gaps; the main benchmark report covers 588 workloads with 588 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- With the ready queue drained, the surviving frontier is `RBR-0510`: convert the published bytes grouped-conditional pair `rb"a((bc|de){1,4})?(?(1)d|e)"` / `rb"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)"` behind `rebar._rebar`.
+- Ready head `RBR-0510` converts the published bytes grouped-conditional pair `rb"a((bc|de){1,4})?(?(1)d|e)"` / `rb"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)"` behind `rebar._rebar`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: 983 of 997 published correctness cases curr
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- With the ready queue drained, the surviving frontier is `RBR-0510`: convert the published bytes grouped-conditional pair `rb"a((bc|de){1,4})?(?(1)d|e)"` and `rb"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)"` behind `rebar._rebar` on the existing wider-ranged-repeat parity path before benchmark catch-up or broader bytes follow-ons reopen that family.
+- After ready `RBR-0510` drains, the surviving frontier is `RBR-0512`: add the six bytes mirrors of the current broader-range grouped-conditional source-tree benchmark rows for `a((bc|de){1,4})?(?(1)d|e)` and `a(?P<outer>(bc|de){1,4})?(?(outer)d|e)` on the existing `wider_ranged_repeat_quantified_group_boundary.py` path before broader bytes follow-ons reopen that family.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
