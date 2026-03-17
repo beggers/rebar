@@ -1,6 +1,6 @@
 # RBR-0511: Collapse the source-tree benchmark manifest registry onto `load_manifests(...)`
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -68,3 +68,9 @@ Created: 2026-03-17
 - 2026-03-17 architecture probes from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passes (`31 passed, 1145 subtests passed in 21.01s`).
   - The inline probe above currently prints `ok`.
+
+## Completion Notes
+- Collapsed `tests/benchmarks/benchmark_expectations.py::_source_tree_manifest_records()` onto one cached `load_manifests([...])` call covering `compile_smoke.py` plus the published full-suite selector, so the cached registry now stores `BenchmarkManifest` objects directly and derives ids and paths from `manifest.path`.
+- Preserved the existing source-tree benchmark ordering behavior: `manifest_id_for_path(...)` and `manifest_path_for_id(...)` now resolve through `BenchmarkManifest.path`, while `source_tree_scorecard_case("post-parser-workflows")`, `source_tree_combined_target_manifest_ids()`, and `selected_manifest_paths_for_target_manifest(...)` continue to run through the same selector order and regression-manifest append flow.
+- Updated `tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py` so the published full-suite inventory test bulk-loads manifests once, verifies that `load_manifests(...)` preserves selector order via `manifest.path`, and keeps the manifest-id uniqueness, workload-id uniqueness, workload-presence, compile-smoke exclusion, and built-native-subset assertions intact.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, the inline `source_tree_scorecard_case(...)` / `manifest_path_for_id(...)` / `source_tree_combined_target_manifest_ids()` probe (`ok`), and `rg -n 'dict\\[str, tuple\\[pathlib\\.Path, BenchmarkManifest\\]\\]|for path in \\(_compile_smoke_manifest_path\\(\\), \\*_published_full_suite_manifest_paths\\(\\)\\)|load_manifest\\(path\\)' tests/benchmarks/benchmark_expectations.py tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py`, which now returns no matches.

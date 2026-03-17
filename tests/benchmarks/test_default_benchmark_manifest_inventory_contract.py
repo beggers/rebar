@@ -12,7 +12,6 @@ from rebar_harness.benchmarks import (
     BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR,
     COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR,
     PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR,
-    load_manifest,
     load_manifests,
     select_benchmark_manifest_path,
     select_benchmark_manifest_paths,
@@ -92,18 +91,17 @@ class DefaultBenchmarkManifestInventoryContractTest(unittest.TestCase):
         published_manifest_paths = select_benchmark_manifest_paths(
             PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
         )
-        expected_manifest_ids = [
-            load_manifest(path).manifest_id for path in published_manifest_paths
-        ]
         manifests = load_manifests(list(published_manifest_paths))
+        expected_manifest_ids = [manifest.manifest_id for manifest in manifests]
         workloads = [workload for manifest in manifests for workload in manifest.workloads]
 
         self.assertEqual(
-            [manifest.manifest_id for manifest in manifests],
-            expected_manifest_ids,
+            [manifest.path for manifest in manifests],
+            list(published_manifest_paths),
+            "bulk manifest loading should preserve the published full-suite selector order",
         )
 
-        manifest_counts = Counter(manifest.manifest_id for manifest in manifests)
+        manifest_counts = Counter(expected_manifest_ids)
         self.assertEqual(
             _duplicates(manifest_counts),
             [],
@@ -118,7 +116,7 @@ class DefaultBenchmarkManifestInventoryContractTest(unittest.TestCase):
         )
 
         workloads_by_manifest = Counter(workload.manifest_id for workload in workloads)
-        manifest_ids = {manifest.manifest_id for manifest in manifests}
+        manifest_ids = set(expected_manifest_ids)
         for manifest_id in manifest_ids:
             with self.subTest(manifest_id=manifest_id):
                 self.assertGreater(

@@ -16,7 +16,6 @@ from rebar_harness.benchmarks import (
     Workload,
     determine_phase,
     determine_runner_version,
-    load_manifest,
     load_manifests,
     select_benchmark_manifest_path,
     select_benchmark_manifest_paths,
@@ -1470,28 +1469,24 @@ def _published_full_suite_manifest_paths() -> tuple[pathlib.Path, ...]:
 
 
 @cache
-def _source_tree_manifest_records() -> dict[str, tuple[pathlib.Path, BenchmarkManifest]]:
-    records: dict[str, tuple[pathlib.Path, BenchmarkManifest]] = {}
-    for path in (_compile_smoke_manifest_path(), *_published_full_suite_manifest_paths()):
-        manifest = load_manifest(path)
-        manifest_id = manifest.manifest_id
-        if manifest_id in records:
-            raise AssertionError(f"duplicate benchmark manifest id {manifest_id!r}")
-        records[manifest_id] = (path, manifest)
-    return records
+def _source_tree_manifest_records() -> dict[str, BenchmarkManifest]:
+    manifests = load_manifests(
+        [_compile_smoke_manifest_path(), *_published_full_suite_manifest_paths()]
+    )
+    return {manifest.manifest_id: manifest for manifest in manifests}
 
 
 def manifest_id_for_path(path: pathlib.Path) -> str:
     resolved_path = path.resolve()
-    for manifest_id, (manifest_path, _) in _source_tree_manifest_records().items():
-        if manifest_path.resolve() == resolved_path:
+    for manifest_id, manifest in _source_tree_manifest_records().items():
+        if manifest.path.resolve() == resolved_path:
             return manifest_id
     raise AssertionError(f"unknown benchmark manifest path {path}")
 
 
 def manifest_path_for_id(manifest_id: str) -> pathlib.Path:
     try:
-        return _source_tree_manifest_records()[manifest_id][0]
+        return _source_tree_manifest_records()[manifest_id].path
     except KeyError as exc:
         raise AssertionError(f"unknown benchmark manifest id {manifest_id!r}") from exc
 
