@@ -1,6 +1,6 @@
 ## RBR-0559: Collapse zero-gap single-manifest benchmark promotion tests onto one helper
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -135,3 +135,9 @@ Created: 2026-03-17
 - 2026-03-17 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passes (`28 passed, 641 subtests passed in 20.97s`).
   - The AST probe above currently fails exactly on the missing helper cleanup with `missing-helper-definition` plus direct runner/workload-contract usage still present in the seventeen targeted tests.
+
+## Completion Notes
+- Added `_assert_zero_gap_manifest_workloads_measured(...)` to `SourceTreeCombinedBoundaryBenchmarkSuiteTest` so one class-local helper now owns the repeated single-manifest runner and measured-workload contract checks.
+- Routed the seventeen named zero-gap promotion tests through that helper while preserving the existing manifest-specific raw expectation assertions, public `case.manifest_expectation` assertions, measured-workload counts, total-workload counts, and workload ordering.
+- Kept the cleanup structural only: no benchmark manifests, workload ids, expectation tables, harness runtime behavior, published reports, README text, or tracked state files outside this task changed.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`28 passed, 641 subtests passed in 21.35s`) and the task's AST probe (`ok`).
