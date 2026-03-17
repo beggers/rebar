@@ -132,6 +132,12 @@ class CompiledPatternModuleHelperErrorCase:
     args: tuple[object, ...]
 
 
+@dataclass(frozen=True)
+class CompiledPatternCompileCase:
+    case_id: str
+    pattern: str | bytes
+
+
 class _EscapeStrSubclass(str):
     pass
 
@@ -304,6 +310,20 @@ COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES = (
         args=(b"x", "zabczz", 1),
     ),
 )
+COMPILED_PATTERN_COMPILE_CASES = (
+    CompiledPatternCompileCase(
+        case_id="compiled-pattern-compile-str-literal",
+        pattern="abc",
+    ),
+    CompiledPatternCompileCase(
+        case_id="compiled-pattern-compile-bytes-literal",
+        pattern=b"abc",
+    ),
+    CompiledPatternCompileCase(
+        case_id="compiled-pattern-compile-str-named-group",
+        pattern=r"(?P<word>abc)",
+    ),
+)
 # Exercise CPython-supported input shapes that are easy to miss when escape()
 # only appears to support plain str and bytes inputs.
 ESCAPE_COMPATIBLE_INPUT_CASES = (
@@ -352,6 +372,20 @@ def _compile_compiled_pattern_case(
     compiled = regex_api.compile(pattern)
     assert regex_api.compile(compiled) is compiled
     return compiled
+
+
+def _compile_with_flag_mode(
+    regex_api: object,
+    pattern: object,
+    flag_mode: str,
+) -> object:
+    if flag_mode == "default":
+        return regex_api.compile(pattern)
+    if flag_mode == "noflag":
+        return regex_api.compile(pattern, regex_api.NOFLAG)
+    if flag_mode == "int-zero":
+        return regex_api.compile(pattern, int(regex_api.NOFLAG))
+    raise AssertionError(f"unsupported compile flag mode {flag_mode!r}")
 
 
 def _capture_error(callback) -> BaseException:
@@ -463,6 +497,66 @@ def test_explicit_noflag_compile_workflows_match_default_and_cpython(
     assert observed_default is observed_noflag
     assert expected_default is expected_noflag
     assert_pattern_parity(backend_name, observed_noflag, expected_noflag)
+
+
+@pytest.mark.parametrize(
+    "flag_mode",
+    (
+        pytest.param("default", id="default"),
+        pytest.param("noflag", id="explicit-noflag"),
+        pytest.param("int-zero", id="explicit-int-zero"),
+    ),
+)
+@pytest.mark.parametrize(
+    "case",
+    COMPILED_PATTERN_COMPILE_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_compile_accepts_compiled_patterns_with_zero_flags_like_cpython(
+    regex_backend: tuple[str, object],
+    case: CompiledPatternCompileCase,
+    flag_mode: str,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    observed = _compile_with_flag_mode(backend, observed_pattern, flag_mode)
+    expected = _compile_with_flag_mode(re, expected_pattern, flag_mode)
+
+    assert observed is observed_pattern
+    assert expected is expected_pattern
+    assert_pattern_parity(backend_name, observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    COMPILED_PATTERN_COMPILE_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_compile_rejects_nonzero_flags_for_compiled_patterns_like_cpython(
+    regex_backend: tuple[str, object],
+    case: CompiledPatternCompileCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    assert_pattern_parity(backend_name, observed_pattern, expected_pattern)
+
+    with pytest.raises(ValueError) as expected_error:
+        re.compile(expected_pattern, int(re.IGNORECASE))
+
+    with pytest.raises(type(expected_error.value)) as observed_error:
+        backend.compile(observed_pattern, int(backend.IGNORECASE))
+
+    assert str(observed_error.value) == str(expected_error.value)
 
 
 @pytest.mark.parametrize(
