@@ -1,6 +1,6 @@
 # RBR-0522: Convert the nested broader-range wider-ranged-repeat grouped-alternation bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -40,3 +40,12 @@ Created: 2026-03-17
   - `reports/correctness/latest.py` currently publishes `match.nested_broader_range_wider_ranged_repeat_quantified_group_alternation` at `28` total / `14` passed / `14` unimplemented, with the bytes subset still at `14` total / `0` passed / `14` unimplemented;
   - `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` still marks `NESTED_BROADER_RANGE_ALTERNATION_BYTES_CASES` as unsupported for `rebar`, with the reason text pinned to `RBR-0522`.
 - The surviving follow-on after this task is `RBR-0523`, which should add the six bytes mirrors of the current nested broader grouped-alternation source-tree benchmark rows on `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py` before nested broader grouped-conditionals reopen correctness work.
+- 2026-03-17 completion: added bounded Rust-backed bytes compile/match support for `rb"a((bc|de){1,4})d"` and `rb"a(?P<outer>(bc|de){1,4})d"` in `rebar-core`, removed the parity-suite `rebar` unsupported gating for `NESTED_BROADER_RANGE_ALTERNATION_BYTES_CASES`, and republished `reports/correctness/latest.py`.
+- Verification:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_workflows.py --report .rebar/tmp/rbr-0522-nested-broader-range-grouped-alternation-bytes-parity.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+- Published scorecard check from the tracked artifact:
+  - combined totals now read `1039` total / `1039` passed / `0` unimplemented;
+  - `match.nested_broader_range_wider_ranged_repeat_quantified_group_alternation` now reads `28` total / `28` passed / `0` unimplemented, with the bytes subset at `14` / `14` / `0`.

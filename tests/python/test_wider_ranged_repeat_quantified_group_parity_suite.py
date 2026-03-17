@@ -321,8 +321,6 @@ NESTED_BROADER_RANGE_ALTERNATION_BYTES_CASES = (
         search_matches=(b"zzabcdzz", b"zzadedzz"),
         fullmatch_matches=(b"abcbcded", b"adedededed"),
         fullmatch_misses=(b"ae", b"abcbcdede"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason="rebar backend unsupported pending RBR-0522",
     ),
     SupplementalCase(
         id="nested-broader-range-wider-ranged-repeat-grouped-alternation-named-bytes",
@@ -330,8 +328,6 @@ NESTED_BROADER_RANGE_ALTERNATION_BYTES_CASES = (
         search_matches=(b"zzabcdzz", b"zzadedzz"),
         fullmatch_matches=(b"abcbcded", b"adedededed"),
         fullmatch_misses=(b"ae", b"abcbcbcbcbcd"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason="rebar backend unsupported pending RBR-0522",
     ),
 )
 NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES = (
@@ -763,10 +759,8 @@ def test_nested_broader_range_alternation_bytes_cases_stay_explicit_with_one_dir
     )
 
     for case in NESTED_BROADER_RANGE_ALTERNATION_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert case.unsupported_backend_reason == (
-            "rebar backend unsupported pending RBR-0522"
-        )
+        assert case.unsupported_backends == ()
+        assert case.unsupported_backend_reason is None
         assert case.search_misses == ()
         assert len(case.search_matches) == 2
         assert len(case.fullmatch_matches) == 2
