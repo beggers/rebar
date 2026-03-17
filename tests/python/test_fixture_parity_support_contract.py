@@ -1022,6 +1022,24 @@ def test_load_fixture_bundles_rejects_duplicate_selected_case_ids() -> None:
         )
 
 
+def test_load_fixture_bundles_rejects_empty_selected_case_ids() -> None:
+    with pytest.raises(
+        ValueError,
+        match="literal_flag_workflows.py selected_case_ids must not be empty",
+    ):
+        load_fixture_bundles(
+            (
+                FixtureBundleSpec(
+                    fixture_name="literal_flag_workflows.py",
+                    expected_manifest_id="literal-flag-workflows",
+                    selected_case_ids=(),
+                    expected_patterns=frozenset(),
+                    expected_operation_helper_counts=Counter(),
+                ),
+            )
+        )
+
+
 def test_load_fixture_bundles_rejects_mismatched_expected_manifest_id() -> None:
     with pytest.raises(
         ValueError,
