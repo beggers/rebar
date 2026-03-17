@@ -1,6 +1,6 @@
 # RBR-0512: Catch broader-range wider-ranged-repeat grouped-conditional bytes benchmarks up with the new slice
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -46,3 +46,9 @@ Created: 2026-03-17
   - `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py` currently contains only the six `-str` workload ids for this broader-range grouped-conditional slice and no `-bytes` mirrors;
   - `reports/benchmarks/latest.py` currently publishes `wider-ranged-repeat-quantified-group-boundary` at `62` measured workloads / `0` known gaps and the combined source-tree report at `588` total / `588` measured / `0` known gaps.
 - The surviving follow-on after this task is `RBR-0513`, which should publish the broader `{1,4}` bytes grouped backtracking-heavy pair on the existing correctness/parity path before bytes parity or benchmark catch-up revisit that family.
+
+## Completion
+- Added only the six bytes mirrors for the broader `{1,4}` grouped-conditional rows on `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py`, keeping the existing Python-path patterns and haystacks unchanged.
+- Updated the wider-ranged benchmark expectations and direct benchmark tests so those six `-bytes` ids are treated as measured with zero known gaps, and the manifest-specific combined test now pins the manifest at `68` measured workloads.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py --report .rebar/tmp/rbr-0512-wider-ranged-repeat-conditional-bytes-benchmarks.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
+- The tracked `reports/benchmarks/latest.py` artifact now publishes `wider-ranged-repeat-quantified-group-boundary` at `68` measured / `0` gaps and the combined source-tree report at `594` total / `594` measured / `0` gaps, with all six new bytes rows recorded as `status: 'measured'`.
