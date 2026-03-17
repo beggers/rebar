@@ -834,7 +834,7 @@ def test_module_search_matches_cpython(
     if expected is None:
         return
 
-    assert_match_parity(backend_name, observed, expected)
+    assert_match_parity(backend_name, observed, expected, check_regs=True)
 
 
 @pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
@@ -894,7 +894,7 @@ def test_pattern_fullmatch_matches_cpython(
     if expected is None:
         return
 
-    assert_match_parity(backend_name, observed, expected)
+    assert_match_parity(backend_name, observed, expected, check_regs=True)
 
 
 @pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
@@ -978,7 +978,7 @@ def test_broader_range_conditional_bytes_module_search_matches_cpython(
 
         assert observed is not None
         assert expected is not None
-        assert_match_parity(backend_name, observed, expected)
+        assert_match_parity(backend_name, observed, expected, check_regs=True)
 
     for text in case.search_misses:
         assert backend.search(case.pattern, text) is None
@@ -1047,7 +1047,7 @@ def test_broader_range_conditional_bytes_pattern_fullmatch_matches_cpython(
 
         assert observed is not None
         assert expected is not None
-        assert_match_parity(backend_name, observed, expected)
+        assert_match_parity(backend_name, observed, expected, check_regs=True)
 
     for text in case.fullmatch_misses:
         assert observed_pattern.fullmatch(text) is None
@@ -1135,7 +1135,7 @@ def test_broader_range_backtracking_heavy_bytes_module_search_matches_cpython(
 
         assert observed is not None
         assert expected is not None
-        assert_match_parity(backend_name, observed, expected)
+        assert_match_parity(backend_name, observed, expected, check_regs=True)
 
     for text in case.search_misses:
         assert backend.search(case.pattern, text) is None
@@ -1204,7 +1204,7 @@ def test_broader_range_backtracking_heavy_bytes_pattern_fullmatch_matches_cpytho
 
         assert observed is not None
         assert expected is not None
-        assert_match_parity(backend_name, observed, expected)
+        assert_match_parity(backend_name, observed, expected, check_regs=True)
 
     for text in case.fullmatch_misses:
         assert observed_pattern.fullmatch(text) is None
@@ -1292,7 +1292,7 @@ def test_nested_broader_range_backtracking_heavy_bytes_module_search_matches_cpy
 
         assert observed is not None
         assert expected is not None
-        assert_match_parity(backend_name, observed, expected)
+        assert_match_parity(backend_name, observed, expected, check_regs=True)
 
     for text in case.search_misses:
         assert backend.search(case.pattern, text) is None
@@ -1361,7 +1361,7 @@ def test_nested_broader_range_backtracking_heavy_bytes_pattern_fullmatch_matches
 
         assert observed is not None
         assert expected is not None
-        assert_match_parity(backend_name, observed, expected)
+        assert_match_parity(backend_name, observed, expected, check_regs=True)
 
     for text in case.fullmatch_misses:
         assert observed_pattern.fullmatch(text) is None
@@ -1430,7 +1430,7 @@ def test_backtracking_module_search_branch_traces_match_cpython(
 
     assert observed is not None
     assert expected is not None
-    assert_match_parity(backend_name, observed, expected)
+    assert_match_parity(backend_name, observed, expected, check_regs=True)
 
 
 @pytest.mark.parametrize("case", BACKTRACKING_TRACE_CASES, ids=lambda case: case.id)
@@ -1450,4 +1450,4 @@ def test_backtracking_pattern_fullmatch_branch_traces_match_cpython(
 
     assert observed is not None
     assert expected is not None
-    assert_match_parity(backend_name, observed, expected)
+    assert_match_parity(backend_name, observed, expected, check_regs=True)
