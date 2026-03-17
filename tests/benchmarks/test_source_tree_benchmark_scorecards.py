@@ -150,7 +150,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
         case = source_tree_scorecard_case("post-parser-workflows")
 
         self.assertEqual(
-            [path.name for path in case.manifest_paths],
+            [manifest.path.name for manifest in case.manifests],
             [
                 "module_boundary.py",
                 "collection_replacement_boundary.py",
@@ -158,7 +158,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            case.relative_manifest_paths,
+            [relative_manifest_path(manifest.path) for manifest in case.manifests],
             [
                 "benchmarks/workloads/module_boundary.py",
                 "benchmarks/workloads/collection_replacement_boundary.py",
@@ -546,7 +546,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             with self.subTest(case_id=case_id):
                 case = source_tree_scorecard_case(case_id)
                 summary, scorecard = run_source_tree_benchmark_scorecard(
-                    case.manifest_paths,
+                    [manifest.path for manifest in case.manifests],
                     smoke=case.selection_mode == "smoke",
                 )
 
@@ -558,7 +558,10 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                     expected_runner_version=case.expected_runner_version,
                     expected_adapter=case.expected_adapter,
                     expected_manifests=case.manifests,
-                    expected_manifest_paths=case.relative_manifest_paths,
+                    expected_manifest_paths=[
+                        relative_manifest_path(manifest.path)
+                        for manifest in case.manifests
+                    ],
                     expected_selection_mode=case.selection_mode,
                     tracked_report_path=TRACKED_REPORT_PATH,
                 )

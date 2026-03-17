@@ -364,7 +364,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         case = source_tree_combined_case("literal-flag-boundary")
 
         self.assertEqual(
-            [path.name for path in case.manifest_paths],
+            [manifest.path.name for manifest in case.manifests],
             [
                 "compile_matrix.py",
                 "module_boundary.py",
@@ -375,7 +375,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            case.relative_manifest_paths,
+            [relative_manifest_path(manifest.path) for manifest in case.manifests],
             [
                 "benchmarks/workloads/compile_matrix.py",
                 "benchmarks/workloads/module_boundary.py",
@@ -1066,7 +1066,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 case = source_tree_combined_case(target_manifest_id)
                 manifest_expectation = case.manifest_expectation
                 summary, scorecard = run_source_tree_benchmark_scorecard(
-                    case.manifest_paths,
+                    [manifest.path for manifest in case.manifests],
                 )
 
                 assert_source_tree_benchmark_contract(
@@ -1077,7 +1077,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     expected_runner_version=case.expected_runner_version,
                     expected_adapter=case.expected_adapter,
                     expected_manifests=case.manifests,
-                    expected_manifest_paths=case.relative_manifest_paths,
+                    expected_manifest_paths=[
+                        relative_manifest_path(manifest.path)
+                        for manifest in case.manifests
+                    ],
                     expected_selection_mode=case.selection_mode,
                     tracked_report_path=TRACKED_REPORT_PATH,
                 )
@@ -1137,7 +1140,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(manifest_id=manifest_id):
                 case = source_tree_combined_case(manifest_id)
                 _, scorecard = run_source_tree_benchmark_scorecard(
-                    case.manifest_paths
+                    [manifest.path for manifest in case.manifests]
                 )
 
                 manifest_summary = scorecard["manifests"][manifest_id]
@@ -1232,7 +1235,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         shape_expectation = source_tree_combined_manifest_shape_expectation(
             WIDER_RANGED_REPEAT_MANIFEST_ID
         )
-        _, scorecard = run_source_tree_benchmark_scorecard(case.manifest_paths)
+        _, scorecard = run_source_tree_benchmark_scorecard(
+            [manifest.path for manifest in case.manifests]
+        )
 
         manifest_summary = scorecard["manifests"][WIDER_RANGED_REPEAT_MANIFEST_ID]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
