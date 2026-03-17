@@ -1,6 +1,6 @@
 # RBR-0560: Publish the quantified-alternation open-ended bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -41,3 +41,11 @@ Created: 2026-03-17
   - `reports/correctness/latest.py` currently publishes `match.quantified_alternation_open_ended` at `16` total / `16` passed / `0` `unimplemented` with `text_models == ['str']`, while the combined report stays at `1152` total / `1152` passed / `0` `unimplemented`; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`.
 - The surviving follow-on after this task is `RBR-0561`, which should convert the same bytes pair behind `rebar._rebar` on the existing quantified-alternation parity surface before a later benchmark catch-up mirrors the six adjacent open-ended `str` rows already published on `benchmarks/workloads/quantified_alternation_boundary.py`.
+
+## Completion
+- 2026-03-17: Added the 16 bounded bytes counterparts to `tests/conformance/fixtures/quantified_alternation_open_ended_workflows.py` and updated `tests/python/test_quantified_alternation_parity_suite.py` so the manifest is mixed `str`/`bytes` while the generic shared buckets stay on the supported `str` rows and the bytes rows route through `QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES`.
+- The direct bytes anchor stays explicitly unsupported for `rebar` pending `RBR-0561`, and the tracked combined report now publishes `1168` total / `1152` passed / `16` `unimplemented` across `111` manifests; `match.quantified_alternation_open_ended` now publishes `32` total / `16` passed / `16` `unimplemented` with `['bytes', 'str']` text models.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/quantified_alternation_open_ended_workflows.py --report .rebar/tmp/rbr-0560-quantified-alternation-open-ended-bytes.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
