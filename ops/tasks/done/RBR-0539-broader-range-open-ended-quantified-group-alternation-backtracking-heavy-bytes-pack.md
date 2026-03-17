@@ -1,6 +1,6 @@
 # RBR-0539: Publish the broader-range open-ended grouped backtracking-heavy bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -40,3 +40,12 @@ Created: 2026-03-17
   - `reports/correctness/latest.py` currently publishes `match.broader_range_open_ended_quantified_group_alternation_backtracking_heavy` at `14` total / `14` passed / `0` `unimplemented` with `['str']` coverage, while the combined report stays at `1094` total / `1094` passed / `0` `unimplemented` across `111` manifests; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`.
 - The surviving follow-on after this task is `RBR-0540`, which should convert the same bytes pair behind `rebar._rebar` on the existing open-ended parity surface before benchmark catch-up widens that broader-range family.
+
+## Completion Notes
+- Added the 14 bytes mirror rows to `tests/conformance/fixtures/broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py`, keeping this slice on the existing single manifest while publishing the exact bounded `search()` and `Pattern.fullmatch()` texts for `rb"a((bc|b)c){2,}d"` and `rb"a(?P<word>(bc|b)c){2,}d"`.
+- Updated `tests/python/test_open_ended_quantified_group_parity_suite.py` so the broader-range backtracking-heavy fixture bundle now expects mixed `str`/`bytes` coverage at `4` compile / `12` module / `12` pattern cases, routes this manifest's bytes rows away from the generic case buckets, and keeps `BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES` as the direct bytes follow-on anchor with explicit `rebar` skip gating pending `RBR-0540`.
+- Regenerated the tracked combined correctness publication in `reports/correctness/latest.py`; the tracked report now reads `1108` total / `1094` passed / `0` failed / `14` unimplemented overall, and `match.broader_range_open_ended_quantified_group_alternation_backtracking_heavy` now reads `28` total / `14` passed / `14` unimplemented across `['bytes', 'str']`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py --report .rebar/tmp/rbr-0539-broader-range-open-ended-grouped-backtracking-heavy-bytes.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
