@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness report now covers 1184 cases across 111 manifests, with 1168 passing, 0 explicit failures, and 16 honest gaps; the main benchmark report covers 668 workloads across 30 manifests with 668 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is still bounded and not yet a near-full parity or native-path performance signal. |
-| Current milestone | `RBR-0568` should convert the quantified-alternation broader-range bytes pair for `rb"a(b|c){1,3}d"` and `rb"a(?P<word>b|c){1,3}d"` to real Rust-backed parity on the existing quantified-alternation correctness/parity surface before Python-path benchmark catch-up reopens the same family. |
-| Work queue | `1` ready, `0` in progress, `567` done, `0` blocked |
+| Delivery estimate | The published correctness report now covers 1184 cases across 111 manifests, with all 1184 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 668 workloads across 30 manifests with 668 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is still bounded and not yet a near-full parity or native-path performance signal. |
+| Current milestone | `RBR-0570` should catch the quantified-alternation broader-range bytes pair for `rb"a(b|c){1,3}d"` and `rb"a(?P<word>b|c){1,3}d"` up on the existing Python-path benchmark surface, mirroring the six adjacent broader-range workload rows before another quantified-alternation bytes family broadens the frontier. |
+| Work queue | `1` ready, `0` in progress, `569` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -22,13 +22,13 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Metric | Value |
 | --- | --- |
 | Published cases | `1184` |
-| Passing in published slice | `1168` |
+| Passing in published slice | `1184` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `16` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `111` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness report now covers 1184 cases across 111 manifests, with 1168 passing, 0 explicit failures, and 16 honest gaps; the main benchmark report covers 668 workloads across 30 manifests with 668 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is still bounded and not yet a near-full parity or native-path performance signal._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness report now covers 1184 cases across 111 manifests, with all 1184 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 668 workloads across 30 manifests with 668 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is still bounded and not yet a near-full parity or native-path performance signal._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0568` should convert the quantified-alternation broader-range bytes pair for `rb"a(b|c){1,3}d"` and `rb"a(?P<word>b|c){1,3}d"` to real Rust-backed parity on the existing quantified-alternation correctness/parity surface before Python-path benchmark catch-up reopens the same family.
+- `RBR-0570` should catch the quantified-alternation broader-range bytes pair for `rb"a(b|c){1,3}d"` and `rb"a(?P<word>b|c){1,3}d"` up on the existing Python-path benchmark surface, mirroring the six adjacent broader-range workload rows before another quantified-alternation bytes family broadens the frontier.
 
 ### Current Risks
 
@@ -55,7 +55,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The published correctness slice is mostly green today: 1168 of 1184 published cases across 111 manifests pass, with 16 honest `unimplemented` outcomes in one newly published broader-range quantified-alternation bytes slice. The ready queue is now at `RBR-0568`, which closes that bounded bytes gap on the existing quantified-alternation parity surface.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The published correctness slice is fully green today: all 1184 published cases across 111 manifests pass. The ready queue is now at `RBR-0570`, a benchmark catch-up task for that same broader-range quantified-alternation bytes pair on the existing Python-path surface.
 
 The benchmark story is similarly early. The clearest trustworthy positive signal today is still the tiny parser compile-proxy slice, where 8 workloads are about 2.7x faster on median than CPython. The broader published run still goes through the source-tree shim and is slower overall, so that is signal rather than a general speed claim.
 
