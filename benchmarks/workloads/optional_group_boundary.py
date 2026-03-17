@@ -7,7 +7,7 @@ MANIFEST = {
   ],
   "notes": [
     "Optional-group boundary workloads keep captures, quantifiers, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded optional-group slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(b)?d` and `a(?P<word>b)?d` compile/search/fullmatch paths directly, while conditional combinations stay as explicit known-gap rows until the queued bounded conditional follow-on lands."
+    "Measured rows cover the bounded `a(b)?d` and `a(?P<word>b)?d` compile/search/fullmatch paths directly, and retain the bounded present-capture numbered conditional `module.search()` anchor for `a(b)?(?(1)c|d)e` on `zzabcezz` so the optional-group conditional slice stays published on the existing manifest."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -217,9 +217,10 @@ MANIFEST = {
         "quantifier",
         "optional-group",
         "conditional",
+        "group-exists",
         "search",
         "module",
-        "unsupported",
+        "present",
         "cold-cache"
       ],
       "syntax_features": [
@@ -230,7 +231,7 @@ MANIFEST = {
         "conditionals"
       ],
       "notes": [
-        "Explicit conditional gap row so optional-group group-exists workflows stay visible instead of disappearing before the queued bounded conditional follow-on lands."
+        "Cold module.search helper path for the bounded numbered optional-group conditional workflow when the capture is present on `zzabcezz` so the yes-arm literal branch is timed on the existing optional-group manifest."
       ]
     }
   ]

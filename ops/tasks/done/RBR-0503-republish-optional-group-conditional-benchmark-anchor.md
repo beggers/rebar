@@ -1,6 +1,6 @@
 # RBR-0503: Republish the measured optional-group conditional benchmark anchor on the source-tree surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -50,3 +50,9 @@ Created: 2026-03-17
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/optional_group_boundary.py --report .rebar/tmp/feature-planning-optional-group-boundary.py` reports `7` measured workloads / `0` known gaps.
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report .rebar/tmp/feature-planning-full-benchmarks.py` reports `588` total workloads / `586` measured workloads / `2` known gaps.
   - the tracked `reports/benchmarks/latest.py` artifact is still stale at `588` total workloads / `585` measured workloads / `3` known gaps because `tests/benchmarks/benchmark_expectations.py` still classifies `optional-group-boundary` as carrying `module-search-numbered-optional-group-conditional-cold-gap` as a known gap and the manifest text still describes that row as unsupported.
+
+## Completion Note
+- 2026-03-17 feature-implementation: updated `benchmarks/workloads/optional_group_boundary.py` so the existing `module-search-numbered-optional-group-conditional-cold-gap` row keeps its legacy id but no longer publishes as unsupported, promoted that row to a measured representative in `tests/benchmarks/benchmark_expectations.py`, added `tests/benchmarks/test_optional_group_benchmark_correctness_anchor_contract.py`, and added an explicit zero-gap regression in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Verified `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_optional_group_benchmark_correctness_anchor_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`27 passed, 495 subtests passed in 20.94s`).
+- Verified `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/optional_group_boundary.py --report .rebar/tmp/rbr-0503-optional-group-boundary.py` produced `7` measured workloads / `0` known gaps for `optional-group-boundary`.
+- Verified the tracked `reports/benchmarks/latest.py` publication now reports `optional-group-boundary` at `7` measured workloads / `0` known gaps and the full source-tree summary at `588` total workloads / `586` measured workloads / `2` known gaps.

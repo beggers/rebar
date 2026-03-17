@@ -416,12 +416,10 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS: dict[
     "nested-group-callable-replacement-boundary": _combined_manifest_definition(),
     "branch-local-backreference-boundary": _combined_manifest_definition(),
     "optional-group-boundary": _combined_manifest_definition(
-        known_gap_workload_ids=(
+        representative_measured_workload_ids=(
             "module-search-numbered-optional-group-conditional-cold-gap",
         ),
-        representative_known_gap_workload_ids=(
-            "module-search-numbered-optional-group-conditional-cold-gap",
-        ),
+        representative_known_gap_workload_ids=(),
     ),
     "exact-repeat-quantified-group-boundary": _combined_manifest_definition(
         known_gap_workload_ids=(
