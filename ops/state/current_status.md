@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 997 cases across 111 manifests, with 997 passing, 0 explicit failures, and 0 current `unimplemented` gaps; the main benchmark report covers 594 workloads with 594 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so this tracked slice is fully passing but the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- With the ready queue drained, the surviving frontier is `RBR-0513`: publish the broader `{1,4}` bytes grouped backtracking-heavy pair on the existing correctness/parity path.
+- The ready head is `RBR-0513`: publish the broader `{1,4}` bytes grouped backtracking-heavy pair on the existing correctness/parity path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: all 997 published correctness cases current
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- With the ready queue drained, the surviving frontier is `RBR-0513`: publish the broader `{1,4}` bytes grouped backtracking-heavy pair on the existing `broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py` correctness/parity path before bytes parity or benchmark catch-up reopen that family.
+- After ready `RBR-0513` drains, the surviving frontier is `RBR-0514`: convert the same broader `{1,4}` bytes grouped backtracking-heavy pair to real parity on the existing `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` path before bytes benchmark catch-up reopens that family.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
