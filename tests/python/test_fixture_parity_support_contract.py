@@ -26,7 +26,7 @@ from rebar_harness.correctness import (
     SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR,
     WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
     load_fixture_manifest,
-    load_fixture_manifests,
+    published_fixture_manifests,
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
@@ -750,13 +750,14 @@ def test_published_fixture_bundle_lookup_by_manifest_id_supports_success_and_cle
 
 
 def test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids() -> None:
-    published_fixture_paths = select_correctness_fixture_paths(
-        PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
-    )
-    manifests = load_fixture_manifests(published_fixture_paths)
+    manifests = published_fixture_manifests()
     cases = [case for manifest in manifests for case in manifest.cases]
 
-    assert [manifest.path for manifest in manifests] == list(published_fixture_paths)
+    assert published_fixture_manifests() is manifests
+    assert tuple(manifest.path for manifest in manifests) == DEFAULT_FIXTURE_PATHS
+    assert tuple(manifest.path.name for manifest in manifests) == (
+        EXPECTED_PUBLISHED_FULL_SUITE_FIXTURE_ORDER
+    )
     assert _duplicate_items(Counter(manifest.manifest_id for manifest in manifests)) == []
     assert _duplicate_items(Counter(manifest.suite_id for manifest in manifests)) == []
     assert _duplicate_items(Counter(case.case_id for case in cases)) == []

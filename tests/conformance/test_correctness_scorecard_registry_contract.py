@@ -6,6 +6,7 @@ import unittest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
+from rebar_harness.correctness import published_fixture_manifests
 from tests.conformance.correctness_expectations import (
     BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS,
     COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
@@ -16,7 +17,6 @@ from tests.conformance.correctness_expectations import (
     OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
     QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
     WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
-    _fixture_inventory as published_fixture_inventory,
     correctness_scorecard_case,
     correctness_scorecard_target_manifest_ids,
     tracked_correctness_scorecard_suites,
@@ -38,13 +38,6 @@ EXPECTED_SUITE_TABLES = {
 }
 
 
-def _fixture_inventory() -> tuple[tuple[pathlib.Path, str], ...]:
-    return tuple(
-        (path, manifest.manifest_id)
-        for path, manifest in published_fixture_inventory()
-    )
-
-
 class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
     maxDiff = None
 
@@ -63,16 +56,16 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
                 self.assertNotIsInstance(expectation_table[manifest_id], dict)
 
     def test_suite_registry_target_manifests_follow_default_fixture_order(self) -> None:
-        inventory = _fixture_inventory()
+        manifests = published_fixture_manifests()
         suite_ids: list[str] = []
 
         for suite in tracked_correctness_scorecard_suites():
             with self.subTest(suite_id=suite.suite_id):
                 suite_ids.append(suite.suite_id)
                 expected_target_manifest_ids = tuple(
-                    manifest_id
-                    for _, manifest_id in inventory
-                    if manifest_id in suite.expectation_table
+                    manifest.manifest_id
+                    for manifest in manifests
+                    if manifest.manifest_id in suite.expectation_table
                 )
                 self.assertEqual(
                     correctness_scorecard_target_manifest_ids(suite.suite_id),
@@ -105,9 +98,11 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
     def test_scorecard_cases_preserve_fixture_prefix_and_representative_case_order(
         self,
     ) -> None:
-        inventory = _fixture_inventory()
-        fixture_manifest_ids = tuple(manifest_id for _, manifest_id in inventory)
-        fixture_paths = tuple(str(path.relative_to(REPO_ROOT)) for path, _ in inventory)
+        manifests = published_fixture_manifests()
+        fixture_manifest_ids = tuple(manifest.manifest_id for manifest in manifests)
+        fixture_paths = tuple(
+            str(manifest.path.relative_to(REPO_ROOT)) for manifest in manifests
+        )
 
         for suite in tracked_correctness_scorecard_suites():
             for target_manifest_id in correctness_scorecard_target_manifest_ids(
@@ -157,8 +152,7 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
         self,
     ) -> None:
         manifests_by_id = {
-            manifest.manifest_id: manifest
-            for _, manifest in published_fixture_inventory()
+            manifest.manifest_id: manifest for manifest in published_fixture_manifests()
         }
 
         for manifest_id, manifest_expectation in (

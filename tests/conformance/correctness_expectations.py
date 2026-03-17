@@ -6,11 +6,10 @@ from dataclasses import dataclass
 from functools import lru_cache
 
 from rebar_harness.correctness import (
-    DEFAULT_FIXTURE_PATHS,
     FixtureCase,
     FixtureManifest,
     determine_phase,
-    load_fixture_manifests,
+    published_fixture_manifests,
 )
 
 
@@ -1748,14 +1747,6 @@ def _sorted_unique_strings(values: object) -> tuple[str, ...]:
     return tuple(sorted({str(value) for value in values if value is not None}))
 
 
-@lru_cache(maxsize=1)
-def _fixture_inventory() -> tuple[tuple[pathlib.Path, FixtureManifest], ...]:
-    return tuple(
-        (manifest.path, manifest)
-        for manifest in load_fixture_manifests(DEFAULT_FIXTURE_PATHS)
-    )
-
-
 def _expected_target_manifest_ids(
     expectations: dict[str, CorrectnessScorecardManifestExpectation],
     *,
@@ -1763,7 +1754,7 @@ def _expected_target_manifest_ids(
 ) -> tuple[str, ...]:
     target_manifest_ids = tuple(
         manifest.manifest_id
-        for _, manifest in _fixture_inventory()
+        for manifest in published_fixture_manifests()
         if manifest.manifest_id in expectations
     )
     missing_expectations = set(expectations) - set(target_manifest_ids)
@@ -1785,8 +1776,8 @@ def _build_scorecard_expectation(
     target_cases: tuple[FixtureCase, ...] | None = None
     target_manifest: FixtureManifest | None = None
 
-    for path, manifest in _fixture_inventory():
-        selected_paths.append(path)
+    for manifest in published_fixture_manifests():
+        selected_paths.append(manifest.path)
         selected_manifests.append(manifest)
         selected_cases.extend(manifest.cases)
         if manifest.manifest_id == target_manifest_id:

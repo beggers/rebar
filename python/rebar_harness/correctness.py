@@ -11,6 +11,7 @@ import sys
 import warnings
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
+from functools import lru_cache
 from typing import Any, Iterable, Sequence
 
 
@@ -515,6 +516,11 @@ def load_fixture_manifests(paths: Sequence[pathlib.Path]) -> list[FixtureManifes
 
         manifests.append(manifest)
     return manifests
+
+
+@lru_cache(maxsize=1)
+def published_fixture_manifests() -> tuple[FixtureManifest, ...]:
+    return tuple(load_fixture_manifests(DEFAULT_FIXTURE_PATHS))
 
 
 def normalize_warning_records(records: list[warnings.WarningMessage]) -> list[dict[str, str]]:

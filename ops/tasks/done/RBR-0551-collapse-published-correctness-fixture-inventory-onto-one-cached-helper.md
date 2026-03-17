@@ -1,6 +1,6 @@
 # RBR-0551: Collapse published correctness fixture inventory onto one cached helper
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -77,3 +77,10 @@ Created: 2026-03-17
   - both expectation helper modules are loading the same published fixture inventory through separate local caches even though `DEFAULT_FIXTURE_PATHS` is already the canonical harness-owned selector order.
 - 2026-03-17 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_correctness_scorecard_registry_contract.py tests/benchmarks/test_compile_proxy_correctness_anchor_contract.py tests/python/test_fixture_parity_support_contract.py` passes (`127 passed, 148 subtests passed in 0.66s`).
+- Completed 2026-03-17:
+  - Added `published_fixture_manifests()` to `python/rebar_harness/correctness.py` as the single cached published correctness inventory helper for `DEFAULT_FIXTURE_PATHS`.
+  - Removed the private published-fixture cache layers from `tests/conformance/correctness_expectations.py` and `tests/benchmarks/correctness_anchor_support.py`, leaving both modules to derive manifest order and case inventories through the shared harness helper.
+  - Updated `tests/conformance/test_correctness_scorecard_registry_contract.py` to use `published_fixture_manifests()` directly instead of importing a private inventory alias from another test module, and refreshed the direct fixture-helper coverage in `tests/python/test_fixture_parity_support_contract.py` to assert cached published-manifest order through the public helper.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_correctness_scorecard_registry_contract.py tests/benchmarks/test_compile_proxy_correctness_anchor_contract.py tests/python/test_fixture_parity_support_contract.py` (`127 passed, 148 subtests passed in 0.68s`).
+  - Verified `published_fixture_manifests()` directly with the task’s `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` helper-order snippet (`ok`).
+  - Verified the duplicate cache layers and private import alias are gone with the task’s two `rg -n ...` checks, both of which now return no matches.
