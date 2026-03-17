@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives. Once the active open-ended `{1,}` grouped backtracking-heavy bytes benchmark catch-up lands on `benchmarks/workloads/open_ended_quantified_group_boundary.py`, the tracked open-ended grouped frontier is exhausted and the next planning pass should re-triage from the newest done frontier task or another published bounded gap.
+`RBR-0550` should convert the open-ended `{1,}` grouped alternation bytes pair behind `rebar._rebar` on the existing open-ended parity surface for `rb"a(bc|de){1,}d"` and `rb"a(?P<word>bc|de){1,}d"`.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives. Once the active open-ended `{1,}` grouped backtracking-heavy bytes benchmark catch-up lands on `benchmarks/workloads/open_ended_quantified_group_boundary.py`, re-triage the next bounded feature slice from the newest done frontier task because the tracked open-ended grouped family is exhausted and the current published scorecards carry no explicit post-drain gap.
+1. `RBR-0550` should convert the open-ended `{1,}` grouped alternation bytes pair behind `rebar._rebar` on the existing open-ended parity surface for `rb"a(bc|de){1,}d"` and `rb"a(?P<word>bc|de){1,}d"`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

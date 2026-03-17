@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness report now covers 1120 cases across 111 manifests, with 1120 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 650 workloads across 30 manifests with 650 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the current published slice is internally green but still too narrow for near-full parity or native-path performance claims.
 
 ## README Next Steps
-- No feature task is seeded. The next concrete follow-on is a bounded feature-planning re-triage from the newest done frontier task or another published bounded gap.
+- `RBR-0549` should publish the open-ended `{1,}` grouped alternation bytes pair for `rb"a(bc|de){1,}d"` and `rb"a(?P<word>bc|de){1,}d"` on the existing correctness/parity path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published frontier is still narrow: all 1120 published correctness cases cur
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- No ready feature follow-on currently survives. With `RBR-0546` landed, feature planning needs a fresh bounded re-triage from the newest done frontier task or another published bounded gap because the tracked open-ended grouped frontier is exhausted and the current published scorecards expose no explicit post-drain gap.
+- The surviving feature frontier is `RBR-0550`, which should convert the open-ended `{1,}` grouped alternation bytes pair behind `rebar._rebar` on the existing open-ended parity surface for `rb"a(bc|de){1,}d"` and `rb"a(?P<word>bc|de){1,}d"`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
