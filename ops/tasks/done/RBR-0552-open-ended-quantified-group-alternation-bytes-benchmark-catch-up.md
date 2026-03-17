@@ -1,6 +1,6 @@
 # RBR-0552: Catch the open-ended quantified-group alternation bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -50,3 +50,10 @@ Created: 2026-03-17
   - `reports/benchmarks/latest.py` currently publishes `open-ended-quantified-group-boundary` at `60` total workloads / `60` measured workloads / `0` known gaps and the combined source-tree report at `650` total / `650` measured / `0` known gaps; and
   - `ops/tasks/done/RBR-0550-open-ended-quantified-group-alternation-bytes-parity.md` already records successful public-API parity for `rb"a(bc|de){1,}d"` and `rb"a(?P<word>bc|de){1,}d"`, so these benchmark rows should measure rather than reopen a runtime gap.
 - The surviving follow-on after this task is `RBR-0554`, which should publish the broader-range open-ended `{2,}` grouped-alternation bytes pair on the existing correctness/parity path before bytes parity or benchmark catch-up widen that broader-range family.
+
+## Completion Notes
+- Added the six adjacent bytes benchmark mirrors for `a(bc|de){1,}d` and `a(?P<word>bc|de){1,}d` to `benchmarks/workloads/open_ended_quantified_group_boundary.py`, reusing the existing Python-facing compile/search/fullmatch anchors and keeping the manifest on the source-tree shim path.
+- Updated `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the open-ended manifest now treats those six rows as measured representatives while keeping the manifest and combined report at zero known gaps.
+- Updated `tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py` so the two compile bytes rows anchor to the published bytes compile metadata cases and the four search/fullmatch bytes rows are explicitly covered through the direct-parity bytes cases instead of surfacing as accidental unanchored workloads.
+- Regenerated the tracked `reports/benchmarks/latest.py`; the tracked artifact now reads `open-ended-quantified-group-boundary` at `66` total / `66` measured / `0` known gaps and the combined source-tree summary at `656` total / `656` measured / `0` known gaps, with all six new rows publishing `implementation_timing.status == "measured"`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/open_ended_quantified_group_boundary.py --report .rebar/tmp/rbr-0552-open-ended-grouped-alternation-bytes-benchmarks.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.

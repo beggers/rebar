@@ -566,6 +566,12 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS: dict[
     ),
     "open-ended-quantified-group-boundary": _combined_manifest_definition(
         representative_measured_workload_ids=(
+            "module-compile-numbered-open-ended-group-alternation-cold-bytes",
+            "module-search-numbered-open-ended-group-alternation-lower-bound-bc-warm-bytes",
+            "pattern-fullmatch-numbered-open-ended-group-alternation-third-repetition-mixed-purged-bytes",
+            "module-compile-named-open-ended-group-alternation-warm-bytes",
+            "module-search-named-open-ended-group-alternation-lower-bound-de-warm-bytes",
+            "pattern-fullmatch-named-open-ended-group-alternation-fourth-repetition-de-purged-bytes",
             "module-compile-numbered-open-ended-group-conditional-cold-bytes",
             "module-search-numbered-open-ended-group-conditional-second-repetition-bc-warm-bytes",
             "pattern-fullmatch-numbered-open-ended-group-conditional-third-repetition-mixed-purged-bytes",
