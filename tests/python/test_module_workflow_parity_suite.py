@@ -152,6 +152,12 @@ class EscapeCompatibleInputCase:
     input_factory: Callable[[], object]
 
 
+@dataclass(frozen=True)
+class EscapeInvalidInputCase:
+    case_id: str
+    input_factory: Callable[[], object]
+
+
 VERBOSE_COMPILE_WORKFLOW_CASES = (
     VerboseCompileWorkflowCase(
         case_id="fullmatch-digits-without-literal-spaces",
@@ -342,6 +348,28 @@ ESCAPE_COMPATIBLE_INPUT_CASES = (
     EscapeCompatibleInputCase(
         case_id="memoryview",
         input_factory=lambda: memoryview(b"a-b.c"),
+    ),
+)
+ESCAPE_INVALID_INPUT_CASES = (
+    EscapeInvalidInputCase(
+        case_id="int",
+        input_factory=lambda: 123,
+    ),
+    EscapeInvalidInputCase(
+        case_id="none",
+        input_factory=lambda: None,
+    ),
+    EscapeInvalidInputCase(
+        case_id="object",
+        input_factory=object,
+    ),
+    EscapeInvalidInputCase(
+        case_id="list",
+        input_factory=lambda: ["a-b.c"],
+    ),
+    EscapeInvalidInputCase(
+        case_id="dict",
+        input_factory=lambda: {"pattern": "a-b.c"},
     ),
 )
 
@@ -838,3 +866,22 @@ def test_escape_accepts_cpython_compatible_input_shapes(
 
     assert type(observed) is type(expected)
     assert observed == expected
+
+
+@pytest.mark.parametrize(
+    "case",
+    ESCAPE_INVALID_INPUT_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_escape_rejects_invalid_input_shapes_like_cpython(
+    regex_backend: tuple[str, object],
+    case: EscapeInvalidInputCase,
+) -> None:
+    _, backend = regex_backend
+    raw = case.input_factory()
+
+    observed_error = _capture_error(lambda: backend.escape(raw))
+    expected_error = _capture_error(lambda: re.escape(raw))
+
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args
