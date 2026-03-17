@@ -11,6 +11,7 @@ from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
+    assert_direct_bytes_follow_on_bundle_routing,
     assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -1085,23 +1086,12 @@ def test_open_ended_backtracking_heavy_bytes_cases_stay_explicit_with_one_direct
 
 def test_open_ended_backtracking_heavy_bytes_fixture_rows_route_through_direct_follow_on_anchor(
 ) -> None:
-    bundle_manifest_id = OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE.manifest.manifest_id
-
-    assert {
-        case.case_id
-        for case in COMPILE_CASES
-        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
-    } == set()
-    assert {
-        case.case_id
-        for case in MODULE_CASES
-        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
-    } == set()
-    assert {
-        case.case_id
-        for case in PATTERN_CASES
-        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
-    } == set()
+    assert_direct_bytes_follow_on_bundle_routing(
+        OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
+        compile_cases=COMPILE_CASES,
+        module_cases=MODULE_CASES,
+        pattern_cases=PATTERN_CASES,
+    )
 
 
 def test_broader_range_open_ended_alternation_bytes_cases_stay_explicit_with_one_direct_follow_on_anchor(
@@ -1188,23 +1178,12 @@ def test_broader_range_open_ended_alternation_bytes_cases_stay_explicit_with_one
 
 def test_broader_range_open_ended_alternation_bytes_fixture_rows_route_through_direct_follow_on_anchor(
 ) -> None:
-    bundle_manifest_id = BROADER_RANGE_OPEN_ENDED_ALTERNATION_BUNDLE.manifest.manifest_id
-
-    assert {
-        case.case_id
-        for case in COMPILE_CASES
-        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
-    } == set()
-    assert {
-        case.case_id
-        for case in MODULE_CASES
-        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
-    } == set()
-    assert {
-        case.case_id
-        for case in PATTERN_CASES
-        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
-    } == set()
+    assert_direct_bytes_follow_on_bundle_routing(
+        BROADER_RANGE_OPEN_ENDED_ALTERNATION_BUNDLE,
+        compile_cases=COMPILE_CASES,
+        module_cases=MODULE_CASES,
+        pattern_cases=PATTERN_CASES,
+    )
 
 
 def test_broader_range_open_ended_conditional_bytes_cases_stay_explicit_with_one_direct_follow_on_anchor(
@@ -1291,23 +1270,12 @@ def test_broader_range_open_ended_conditional_bytes_cases_stay_explicit_with_one
 
 def test_broader_range_open_ended_conditional_bytes_fixture_rows_route_through_direct_follow_on_anchor(
 ) -> None:
-    bundle_manifest_id = BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BUNDLE.manifest.manifest_id
-
-    assert {
-        case.case_id
-        for case in COMPILE_CASES
-        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
-    } == set()
-    assert {
-        case.case_id
-        for case in MODULE_CASES
-        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
-    } == set()
-    assert {
-        case.case_id
-        for case in PATTERN_CASES
-        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
-    } == set()
+    assert_direct_bytes_follow_on_bundle_routing(
+        BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BUNDLE,
+        compile_cases=COMPILE_CASES,
+        module_cases=MODULE_CASES,
+        pattern_cases=PATTERN_CASES,
+    )
 
 
 def test_broader_range_open_ended_backtracking_heavy_bytes_cases_stay_explicit_with_one_direct_follow_on_anchor(
@@ -1400,23 +1368,12 @@ def test_broader_range_open_ended_backtracking_heavy_bytes_cases_stay_explicit_w
 
 def test_broader_range_open_ended_backtracking_heavy_bytes_fixture_rows_route_through_direct_follow_on_anchor(
 ) -> None:
-    bundle_manifest_id = BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE.manifest.manifest_id
-
-    assert {
-        case.case_id
-        for case in COMPILE_CASES
-        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
-    } == set()
-    assert {
-        case.case_id
-        for case in MODULE_CASES
-        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
-    } == set()
-    assert {
-        case.case_id
-        for case in PATTERN_CASES
-        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
-    } == set()
+    assert_direct_bytes_follow_on_bundle_routing(
+        BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
+        compile_cases=COMPILE_CASES,
+        module_cases=MODULE_CASES,
+        pattern_cases=PATTERN_CASES,
+    )
 
 
 def test_nested_open_ended_alternation_bytes_cases_stay_explicit_with_one_direct_follow_on_anchor(

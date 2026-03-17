@@ -363,6 +363,85 @@ def manifest_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
     return tuple(case.case_id for case in bundle.manifest.cases)
 
 
+def _manifest_bucket_case_ids(
+    cases: Iterable[FixtureCase],
+    *,
+    manifest_id: str,
+    text_model: str,
+    operation: str,
+) -> frozenset[str]:
+    return frozenset(
+        case.case_id
+        for case in cases
+        if case.manifest_id == manifest_id
+        and case.text_model == text_model
+        and case.operation == operation
+    )
+
+
+def assert_direct_bytes_follow_on_bundle_routing(
+    bundle: FixtureBundle,
+    *,
+    compile_cases: Iterable[FixtureCase],
+    module_cases: Iterable[FixtureCase],
+    pattern_cases: Iterable[FixtureCase],
+) -> tuple[tuple[FixtureCase, ...], tuple[FixtureCase, ...]]:
+    manifest_id = bundle.manifest.manifest_id
+    bundle_str_cases = tuple(case for case in bundle.cases if case.text_model == "str")
+    bundle_bytes_cases = tuple(case for case in bundle.cases if case.text_model == "bytes")
+
+    if not bundle_str_cases or not bundle_bytes_cases:
+        raise AssertionError(
+            f"{manifest_id} direct bytes follow-on routing requires both str and bytes rows"
+        )
+
+    bucket_inputs = (
+        ("compile", tuple(compile_cases)),
+        ("module_call", tuple(module_cases)),
+        ("pattern_call", tuple(pattern_cases)),
+    )
+    drift_messages: list[str] = []
+
+    for operation, bucket_cases in bucket_inputs:
+        bucket_bytes_case_ids = _manifest_bucket_case_ids(
+            bucket_cases,
+            manifest_id=manifest_id,
+            text_model="bytes",
+            operation=operation,
+        )
+        if bucket_bytes_case_ids:
+            drift_messages.append(
+                f"{operation} bucket unexpectedly includes bytes case ids "
+                f"{tuple(sorted(bucket_bytes_case_ids))}"
+            )
+
+        expected_str_case_ids = frozenset(
+            case.case_id for case in bundle_str_cases if case.operation == operation
+        )
+        bucket_str_case_ids = _manifest_bucket_case_ids(
+            bucket_cases,
+            manifest_id=manifest_id,
+            text_model="str",
+            operation=operation,
+        )
+        missing_str_case_ids = tuple(sorted(expected_str_case_ids - bucket_str_case_ids))
+        unexpected_str_case_ids = tuple(sorted(bucket_str_case_ids - expected_str_case_ids))
+        if missing_str_case_ids or unexpected_str_case_ids:
+            drift_messages.append(
+                f"{operation} bucket str case ids drifted; "
+                f"missing case ids: {missing_str_case_ids}; "
+                f"unexpected case ids: {unexpected_str_case_ids}"
+            )
+
+    if drift_messages:
+        raise AssertionError(
+            f"{manifest_id} direct bytes follow-on routing drifted; "
+            + "; ".join(drift_messages)
+        )
+
+    return bundle_str_cases, bundle_bytes_cases
+
+
 def assert_fixture_bundle_tracks_published_case_frontier(
     bundle: FixtureBundle,
     *,

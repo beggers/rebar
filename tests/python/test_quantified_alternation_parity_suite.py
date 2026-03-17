@@ -11,6 +11,7 @@ from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
+    assert_direct_bytes_follow_on_bundle_routing,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
@@ -648,22 +649,6 @@ BACKTRACKING_TRACE_CASES = _build_backtracking_trace_cases()
 SUPPLEMENTAL_NO_MATCH_CASES = _build_supplemental_no_match_cases()
 
 
-def _manifest_case_ids_for_bucket(
-    cases: tuple[FixtureCase, ...],
-    *,
-    manifest_id: str,
-    text_model: str,
-    operation: str,
-) -> set[str]:
-    return {
-        case.case_id
-        for case in cases
-        if case.manifest_id == manifest_id
-        and case.text_model == text_model
-        and case.operation == operation
-    }
-
-
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
@@ -780,56 +765,12 @@ def test_quantified_alternation_open_ended_bytes_cases_stay_explicit_with_one_di
 
 def test_quantified_alternation_open_ended_bytes_rows_are_excluded_from_generic_case_buckets(
 ) -> None:
-    manifest_id = QUANTIFIED_ALTERNATION_OPEN_ENDED_BUNDLE.manifest.manifest_id
-    bundle_str_cases = tuple(
-        case
-        for case in QUANTIFIED_ALTERNATION_OPEN_ENDED_BUNDLE.cases
-        if case.text_model == "str"
+    assert_direct_bytes_follow_on_bundle_routing(
+        QUANTIFIED_ALTERNATION_OPEN_ENDED_BUNDLE,
+        compile_cases=COMPILE_CASES,
+        module_cases=MODULE_CASES,
+        pattern_cases=PATTERN_CASES,
     )
-
-    assert _manifest_case_ids_for_bucket(
-        COMPILE_CASES,
-        manifest_id=manifest_id,
-        text_model="bytes",
-        operation="compile",
-    ) == set()
-    assert _manifest_case_ids_for_bucket(
-        MODULE_CASES,
-        manifest_id=manifest_id,
-        text_model="bytes",
-        operation="module_call",
-    ) == set()
-    assert _manifest_case_ids_for_bucket(
-        PATTERN_CASES,
-        manifest_id=manifest_id,
-        text_model="bytes",
-        operation="pattern_call",
-    ) == set()
-
-    assert _manifest_case_ids_for_bucket(
-        COMPILE_CASES,
-        manifest_id=manifest_id,
-        text_model="str",
-        operation="compile",
-    ) == {
-        case.case_id for case in bundle_str_cases if case.operation == "compile"
-    }
-    assert _manifest_case_ids_for_bucket(
-        MODULE_CASES,
-        manifest_id=manifest_id,
-        text_model="str",
-        operation="module_call",
-    ) == {
-        case.case_id for case in bundle_str_cases if case.operation == "module_call"
-    }
-    assert _manifest_case_ids_for_bucket(
-        PATTERN_CASES,
-        manifest_id=manifest_id,
-        text_model="str",
-        operation="pattern_call",
-    ) == {
-        case.case_id for case in bundle_str_cases if case.operation == "pattern_call"
-    }
 
 
 @pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)

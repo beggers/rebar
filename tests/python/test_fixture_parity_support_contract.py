@@ -35,6 +35,7 @@ from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
     RecordingNativeBoundary,
+    assert_direct_bytes_follow_on_bundle_routing,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
@@ -610,6 +611,103 @@ def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract() 
         pattern_extractor=case_pattern,
         expected_fixture_path=fixture_path,
     )
+
+
+def test_assert_direct_bytes_follow_on_bundle_routing_accepts_mixed_manifest_buckets(
+) -> None:
+    fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
+    (bundle,) = load_published_fixture_bundles((fixture_path,))
+    compile_cases = tuple(
+        case
+        for case in fixture_cases_for_operation((bundle,), "compile")
+        if case.text_model == "str"
+    )
+    module_cases = tuple(
+        case
+        for case in fixture_cases_for_operation((bundle,), "module_call")
+        if case.text_model == "str"
+    )
+    pattern_cases = tuple(
+        case
+        for case in fixture_cases_for_operation((bundle,), "pattern_call")
+        if case.text_model == "str"
+    )
+
+    bundle_str_cases, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
+        bundle,
+        compile_cases=compile_cases,
+        module_cases=module_cases,
+        pattern_cases=pattern_cases,
+    )
+
+    assert len(bundle_str_cases) == len(bundle_bytes_cases) == 16
+    assert {case.text_model for case in bundle_str_cases} == {"str"}
+    assert {case.text_model for case in bundle_bytes_cases} == {"bytes"}
+
+
+def test_assert_direct_bytes_follow_on_bundle_routing_rejects_bytes_left_in_generic_bucket(
+) -> None:
+    fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
+    (bundle,) = load_published_fixture_bundles((fixture_path,))
+    compile_cases = fixture_cases_for_operation((bundle,), "compile")
+    module_cases = tuple(
+        case
+        for case in fixture_cases_for_operation((bundle,), "module_call")
+        if case.text_model == "str"
+    )
+    pattern_cases = tuple(
+        case
+        for case in fixture_cases_for_operation((bundle,), "pattern_call")
+        if case.text_model == "str"
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "quantified-alternation-open-ended-workflows direct bytes follow-on routing "
+            "drifted; compile bucket unexpectedly includes bytes case ids "
+        ),
+    ):
+        assert_direct_bytes_follow_on_bundle_routing(
+            bundle,
+            compile_cases=compile_cases,
+            module_cases=module_cases,
+            pattern_cases=pattern_cases,
+        )
+
+
+def test_assert_direct_bytes_follow_on_bundle_routing_rejects_missing_str_rows() -> None:
+    fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
+    (bundle,) = load_published_fixture_bundles((fixture_path,))
+    compile_cases = tuple(
+        case
+        for case in fixture_cases_for_operation((bundle,), "compile")
+        if case.text_model == "str"
+    )[1:]
+    module_cases = tuple(
+        case
+        for case in fixture_cases_for_operation((bundle,), "module_call")
+        if case.text_model == "str"
+    )
+    pattern_cases = tuple(
+        case
+        for case in fixture_cases_for_operation((bundle,), "pattern_call")
+        if case.text_model == "str"
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "quantified-alternation-open-ended-workflows direct bytes follow-on routing "
+            "drifted; compile bucket str case ids drifted; missing case ids: "
+        ),
+    ):
+        assert_direct_bytes_follow_on_bundle_routing(
+            bundle,
+            compile_cases=compile_cases,
+            module_cases=module_cases,
+            pattern_cases=pattern_cases,
+        )
 
 
 def test_published_fixture_bundle_lookup_by_manifest_id_supports_success_and_clear_failures(

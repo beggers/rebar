@@ -11,6 +11,7 @@ from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
+    assert_direct_bytes_follow_on_bundle_routing,
     assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -589,22 +590,6 @@ def _invoke_bounded_pattern_case(compiled_pattern: object, case: BoundedPatternC
     return getattr(compiled_pattern, case.helper)(case.string, *case.bounds)
 
 
-def _manifest_case_ids_for_bucket(
-    cases: tuple[FixtureCase, ...],
-    *,
-    manifest_id: str,
-    text_model: str,
-    operation: str,
-) -> set[str]:
-    return {
-        case.case_id
-        for case in cases
-        if case.manifest_id == manifest_id
-        and case.text_model == text_model
-        and case.operation == operation
-    }
-
-
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
@@ -634,65 +619,19 @@ def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_c
     bundle: FixtureBundle,
     supplemental_cases: tuple[SupplementalCase, ...],
 ) -> None:
-    manifest_id = bundle.manifest.manifest_id
-    bundle_bytes_cases = tuple(
-        case for case in bundle.cases if case.text_model == "bytes"
-    )
-    bundle_str_cases = tuple(
-        case for case in bundle.cases if case.text_model == "str"
+    _, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
+        bundle,
+        compile_cases=COMPILE_CASES,
+        module_cases=MODULE_CASES,
+        pattern_cases=PATTERN_CASES,
     )
 
     assert bundle_bytes_cases
-    assert bundle_str_cases
     assert {case.pattern for case in supplemental_cases} == frozenset(
         case_pattern(case)
         for case in fixture_cases_for_operation((bundle,), "compile")
         if case.text_model == "bytes"
     )
-
-    assert _manifest_case_ids_for_bucket(
-        COMPILE_CASES,
-        manifest_id=manifest_id,
-        text_model="bytes",
-        operation="compile",
-    ) == set()
-    assert _manifest_case_ids_for_bucket(
-        MODULE_CASES,
-        manifest_id=manifest_id,
-        text_model="bytes",
-        operation="module_call",
-    ) == set()
-    assert _manifest_case_ids_for_bucket(
-        PATTERN_CASES,
-        manifest_id=manifest_id,
-        text_model="bytes",
-        operation="pattern_call",
-    ) == set()
-
-    assert _manifest_case_ids_for_bucket(
-        COMPILE_CASES,
-        manifest_id=manifest_id,
-        text_model="str",
-        operation="compile",
-    ) == {
-        case.case_id for case in bundle_str_cases if case.operation == "compile"
-    }
-    assert _manifest_case_ids_for_bucket(
-        MODULE_CASES,
-        manifest_id=manifest_id,
-        text_model="str",
-        operation="module_call",
-    ) == {
-        case.case_id for case in bundle_str_cases if case.operation == "module_call"
-    }
-    assert _manifest_case_ids_for_bucket(
-        PATTERN_CASES,
-        manifest_id=manifest_id,
-        text_model="str",
-        operation="pattern_call",
-    ) == {
-        case.case_id for case in bundle_str_cases if case.operation == "pattern_call"
-    }
 
 
 def test_broader_range_conditional_bytes_cases_stay_explicit_without_skip_gating() -> None:
