@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-The surviving frontier is `RBR-0501`: convert the exact optional-group conditional pair `a(b)?(?(1)c|d)e` and `a(?P<word>b)?(?(word)c|d)e` to Rust-backed parity on the existing conditional group-exists pytest path once the current correctness-publication head drains, before the anchored `optional-group-boundary` benchmark row is republished.
+The surviving frontier is `RBR-0503`: republish the exact optional-group conditional pair `a(b)?(?(1)c|d)e` and `a(?P<word>b)?(?(word)c|d)e` on the existing `benchmarks/workloads/optional_group_boundary.py` Python-path benchmark surface, anchored to `module-search-numbered-optional-group-conditional-cold-gap`, once that pair is Rust-backed.
 
 ## Ordered Work
-1. `RBR-0501` should land immediately after the current correctness-publication head and keep the same bounded numbered/named optional-group conditional pair on the existing conditional parity path. Keep the scope pinned to compile, module `search()`, and `Pattern.fullmatch()` for `a(b)?(?(1)c|d)e` and `a(?P<word>b)?(?(word)c|d)e`; do not broaden into counted-repeat `{1,4}` follow-ons or benchmark-manifest edits in that run.
+1. `RBR-0503` should keep the same bounded numbered/named optional-group conditional pair on `benchmarks/workloads/optional_group_boundary.py`, reuse `module-search-numbered-optional-group-conditional-cold-gap` as the existing benchmark anchor, and land only the direct `tests/benchmarks/benchmark_expectations.py` / `reports/benchmarks/latest.py` catch-up needed to publish that exact slice cleanly on the current source-tree benchmark path. Do not broaden into counted-repeat `{1,4}` follow-ons, a new benchmark family, or unrelated benchmark-harness cleanup in that run.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

@@ -1,6 +1,6 @@
 # Current Status
 
-Updated: 2026-03-16
+Updated: 2026-03-17
 
 ## Phase
 Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while keeping the correctness and benchmark publications caught up with each newly supported slice.
@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 977 cases across 110 manifests, with 971 passing and 6 honest `unimplemented` gaps; the main benchmark report covers 588 workloads with 585 real `rebar` timings and 3 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- With the queue empty after `RBR-0500`, the surviving intended follow-on is `RBR-0501`: convert the exact optional-group conditional pair `a(b)?(?(1)c|d)e` / `a(?P<word>b)?(?(word)c|d)e` to Rust-backed parity before the anchored `optional-group-boundary` benchmark gap is republished.
+- Ready head `RBR-0501`: convert the exact optional-group conditional pair `a(b)?(?(1)c|d)e` / `a(?P<word>b)?(?(word)c|d)e` to Rust-backed parity before the anchored `optional-group-boundary` benchmark gap is republished.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: 971 of 977 published correctness cases curr
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- With the queue empty after `RBR-0500`, `RBR-0501` is the surviving intended follow-on: convert the exact numbered/named optional-group conditional pair `a(b)?(?(1)c|d)e` / `a(?P<word>b)?(?(word)c|d)e` to Rust-backed parity on the existing conditional group-exists pytest path before the `optional-group-boundary` benchmark gap is republished.
+- The surviving post-drain frontier is `RBR-0503`: republish the exact numbered/named optional-group conditional pair `a(b)?(?(1)c|d)e` / `a(?P<word>b)?(?(word)c|d)e` on the existing `benchmarks/workloads/optional_group_boundary.py` Python-path benchmark surface, anchored to `module-search-numbered-optional-group-conditional-cold-gap`, once that pair is Rust-backed.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
