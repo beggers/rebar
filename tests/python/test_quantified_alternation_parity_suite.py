@@ -401,10 +401,6 @@ QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES = (
         search_matches=(b"zzabdzz", b"zzacdzz"),
         fullmatch_matches=(b"abbbd", b"abccd", b"abcbd"),
         fullmatch_misses=(b"ad", b"abbbcd"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            "rebar broader-range quantified-alternation bytes parity is not implemented yet"
-        ),
     ),
     QuantifiedAlternationBytesCase(
         id="quantified-alternation-broader-range-named-bytes",
@@ -412,10 +408,6 @@ QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES = (
         search_matches=(b"zzabdzz", b"zzacdzz"),
         fullmatch_matches=(b"abbbd", b"abccd", b"abcbd"),
         fullmatch_misses=(b"ad", b"abbbcd"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            "rebar broader-range quantified-alternation bytes parity is not implemented yet"
-        ),
     ),
 )
 QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES = (
@@ -818,8 +810,8 @@ def test_quantified_alternation_broader_range_bytes_cases_stay_explicit_with_one
     )
 
     for case in QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert case.unsupported_backend_reason is not None
+        assert case.unsupported_backends == ()
+        assert case.unsupported_backend_reason is None
         assert case.search_matches == (b"zzabdzz", b"zzacdzz")
         assert case.fullmatch_matches == (b"abbbd", b"abccd", b"abcbd")
         assert case.fullmatch_misses == (b"ad", b"abbbcd")

@@ -39,6 +39,8 @@ const PARSER_STRESS_COMPILE_PROXY_PATTERN: &str =
     r"(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\d{2}))?(?:(?<=foo)bar)?(?P=lemma)";
 const BYTES_NAMED_BACKREFERENCE_COMPILE_PROXY_PATTERN: &[u8] =
     br"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}";
+const BROADER_RANGE_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN: &[u8] = br"a(b|c){1,3}d";
+const BROADER_RANGE_QUANTIFIED_ALTERNATION_NAMED_BYTES_PATTERN: &[u8] = br"a(?P<word>b|c){1,3}d";
 const OPEN_ENDED_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN: &[u8] = br"a(b|c){1,}d";
 const OPEN_ENDED_QUANTIFIED_ALTERNATION_NAMED_BYTES_PATTERN: &[u8] = br"a(?P<word>b|c){1,}d";
 const OPEN_ENDED_QUANTIFIED_ALTERNATION_CAPTURE_NAME: &str = "word";
@@ -730,8 +732,9 @@ struct QuantifiedAlternationConditionalPattern<'a> {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct OpenEndedQuantifiedAlternationBytesPattern {
+struct QuantifiedAlternationBytesPattern {
     capture_name: Option<&'static str>,
+    max_repeat: Option<usize>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1651,7 +1654,7 @@ impl<'a> QuantifiedAlternationConditionalPattern<'a> {
     }
 }
 
-impl OpenEndedQuantifiedAlternationBytesPattern {
+impl QuantifiedAlternationBytesPattern {
     fn group_count(&self) -> usize {
         1
     }
@@ -2402,11 +2405,11 @@ fn compile_known_supported_case(
             })
         }
         PatternRef::Bytes(pattern)
-            if parse_open_ended_quantified_alternation_pattern_bytes(pattern).is_some()
+            if parse_quantified_alternation_pattern_bytes(pattern).is_some()
                 && normalized_flags == 0 =>
         {
-            let grouped_pattern = parse_open_ended_quantified_alternation_pattern_bytes(pattern)
-                .expect("guarded open-ended quantified alternation bytes literal");
+            let grouped_pattern = parse_quantified_alternation_pattern_bytes(pattern)
+                .expect("guarded quantified alternation bytes literal");
             Some(CompileOutcome {
                 status: CompileStatus::Compiled,
                 normalized_flags,
@@ -5215,16 +5218,32 @@ fn parse_quantified_alternation_conditional_pattern_str(
     })
 }
 
-fn parse_open_ended_quantified_alternation_pattern_bytes(
+fn parse_quantified_alternation_pattern_bytes(
     pattern: &[u8],
-) -> Option<OpenEndedQuantifiedAlternationBytesPattern> {
+) -> Option<QuantifiedAlternationBytesPattern> {
     match pattern {
+        BROADER_RANGE_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN => {
+            Some(QuantifiedAlternationBytesPattern {
+                capture_name: None,
+                max_repeat: Some(3),
+            })
+        }
+        BROADER_RANGE_QUANTIFIED_ALTERNATION_NAMED_BYTES_PATTERN => {
+            Some(QuantifiedAlternationBytesPattern {
+                capture_name: Some(OPEN_ENDED_QUANTIFIED_ALTERNATION_CAPTURE_NAME),
+                max_repeat: Some(3),
+            })
+        }
         OPEN_ENDED_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN => {
-            Some(OpenEndedQuantifiedAlternationBytesPattern { capture_name: None })
+            Some(QuantifiedAlternationBytesPattern {
+                capture_name: None,
+                max_repeat: None,
+            })
         }
         OPEN_ENDED_QUANTIFIED_ALTERNATION_NAMED_BYTES_PATTERN => {
-            Some(OpenEndedQuantifiedAlternationBytesPattern {
+            Some(QuantifiedAlternationBytesPattern {
                 capture_name: Some(OPEN_ENDED_QUANTIFIED_ALTERNATION_CAPTURE_NAME),
+                max_repeat: None,
             })
         }
         _ => None,
@@ -8041,7 +8060,7 @@ fn literal_match_bytes(
     endpos: Option<isize>,
 ) -> MatchOutcome {
     let (normalized_pos, normalized_endpos) = normalize_bounds(string.len(), pos, endpos);
-    if let Some(grouped_pattern) = parse_open_ended_quantified_alternation_pattern_bytes(pattern) {
+    if let Some(grouped_pattern) = parse_quantified_alternation_pattern_bytes(pattern) {
         if flags != 0 {
             return MatchOutcome {
                 status: MatchStatus::Unsupported,
@@ -8053,7 +8072,7 @@ fn literal_match_bytes(
             };
         }
 
-        let (span, group_spans) = find_open_ended_quantified_alternation_match_span_bytes(
+        let (span, group_spans) = find_quantified_alternation_match_span_bytes(
             &grouped_pattern,
             flags,
             mode,
@@ -11947,7 +11966,7 @@ fn quantified_alternation_conditional_matches_at_str<'a>(
     .then_some((None, None, branch_start + no_branch_chars.len()))
 }
 
-fn open_ended_quantified_alternation_open_ended_max_repeats_bytes(
+fn quantified_alternation_max_repeats_bytes(
     flags: i32,
     string: &[u8],
     start: usize,
@@ -11972,7 +11991,7 @@ fn open_ended_quantified_alternation_open_ended_max_repeats_bytes(
     repeat_count
 }
 
-fn open_ended_quantified_alternation_matches_exact_repeats_bytes(
+fn quantified_alternation_matches_exact_repeats_bytes(
     flags: i32,
     string: &[u8],
     start: usize,
@@ -12001,7 +12020,7 @@ fn open_ended_quantified_alternation_matches_exact_repeats_bytes(
             continue;
         }
 
-        if let Some(result) = open_ended_quantified_alternation_matches_exact_repeats_bytes(
+        if let Some(result) = quantified_alternation_matches_exact_repeats_bytes(
             flags,
             string,
             branch_end,
@@ -12015,7 +12034,8 @@ fn open_ended_quantified_alternation_matches_exact_repeats_bytes(
     None
 }
 
-fn open_ended_quantified_alternation_matches_at_bytes(
+fn quantified_alternation_matches_at_bytes(
+    pattern: &QuantifiedAlternationBytesPattern,
     flags: i32,
     string: &[u8],
     start: usize,
@@ -12032,19 +12052,18 @@ fn open_ended_quantified_alternation_matches_at_bytes(
     }
 
     let branch_start = start + OPEN_ENDED_QUANTIFIED_ALTERNATION_PREFIX_BYTES.len();
-    let max_repeat = open_ended_quantified_alternation_open_ended_max_repeats_bytes(
-        flags,
-        string,
-        branch_start,
-        endpos,
-    );
+    let available_repeats =
+        quantified_alternation_max_repeats_bytes(flags, string, branch_start, endpos);
+    let max_repeat = pattern.max_repeat.map_or(available_repeats, |max_repeat| {
+        max_repeat.min(available_repeats)
+    });
     if max_repeat == 0 {
         return None;
     }
 
     for candidate_count in (1..=max_repeat).rev() {
         if let Some((last_branch_span, match_end)) =
-            open_ended_quantified_alternation_matches_exact_repeats_bytes(
+            quantified_alternation_matches_exact_repeats_bytes(
                 flags,
                 string,
                 branch_start,
@@ -12059,8 +12078,8 @@ fn open_ended_quantified_alternation_matches_at_bytes(
     None
 }
 
-fn find_open_ended_quantified_alternation_match_span_bytes(
-    pattern: &OpenEndedQuantifiedAlternationBytesPattern,
+fn find_quantified_alternation_match_span_bytes(
+    pattern: &QuantifiedAlternationBytesPattern,
     flags: i32,
     mode: MatchMode,
     string: &[u8],
@@ -12069,20 +12088,20 @@ fn find_open_ended_quantified_alternation_match_span_bytes(
 ) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
     match mode {
         MatchMode::Search => (pos..=endpos).find_map(|start| {
-            open_ended_quantified_alternation_matches_at_bytes(flags, string, start, endpos).map(
+            quantified_alternation_matches_at_bytes(pattern, flags, string, start, endpos).map(
                 |(last_branch_span, match_end)| {
                     ((start, match_end), pattern.group_spans(last_branch_span))
                 },
             )
         }),
-        MatchMode::Match => open_ended_quantified_alternation_matches_at_bytes(
-            flags, string, pos, endpos,
+        MatchMode::Match => quantified_alternation_matches_at_bytes(
+            pattern, flags, string, pos, endpos,
         )
         .map(|(last_branch_span, match_end)| {
             ((pos, match_end), pattern.group_spans(last_branch_span))
         }),
-        MatchMode::Fullmatch => open_ended_quantified_alternation_matches_at_bytes(
-            flags, string, pos, endpos,
+        MatchMode::Fullmatch => quantified_alternation_matches_at_bytes(
+            pattern, flags, string, pos, endpos,
         )
         .and_then(|(last_branch_span, match_end)| {
             (match_end == endpos)

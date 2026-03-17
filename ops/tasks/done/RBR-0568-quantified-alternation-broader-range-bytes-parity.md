@@ -1,6 +1,6 @@
 # RBR-0568: Convert the quantified-alternation broader-range bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -43,3 +43,4 @@ Created: 2026-03-17
   - `benchmarks/workloads/quantified_alternation_boundary.py` already publishes the six adjacent broader-range `str` benchmark rows for this exact pair, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so the Rust-backed bytes parity work is not already satisfied in the current checkout.
 - A later benchmark follow-on should catch the same bytes pair up on the existing quantified-alternation benchmark surface before another quantified-alternation bytes family broadens the frontier.
+- 2026-03-17: Extended the Rust bytes quantified-alternation compile/match path to accept `rb"a(b|c){1,3}d"` and `rb"a(?P<word>b|c){1,3}d"` through the existing native boundary, removed the direct parity-suite `rebar` skip gating for `QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES`, and republished `reports/correctness/latest.py`. The tracked combined scorecard now reads `1184` total / `1184` passed / `0` unimplemented across `111` manifests, and `match.quantified_alternation_broader_range` now reads `32` total / `32` passed / `0` unimplemented with `['bytes', 'str']` text-model coverage. Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/quantified_alternation_broader_range_workflows.py --report .rebar/tmp/rbr-0568-quantified-alternation-broader-range-bytes-parity.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
