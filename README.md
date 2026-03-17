@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 977 cases across 110 manifests, with all 977 passing and no current `unimplemented` gaps; the main benchmark report covers 588 workloads with 586 real `rebar` timings and 2 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity. |
-| Current milestone | The surviving frontier is `RBR-0505`: publish the broader counted-repeat pair `a(bc){1,4}d` and `a(?P<word>bc){1,4}d` on the correctness surface before that slice’s Rust-backed parity and benchmark catch-up follow-ons reopen. |
-| Work queue | `0` ready, `0` in progress, `504` done, `0` blocked |
+| Delivery estimate | The published correctness slice now covers 983 cases across 111 manifests, with 977 passing, 0 explicit failures, and 6 current `unimplemented` gaps; the main benchmark report covers 588 workloads with 586 real `rebar` timings and 2 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity. |
+| Current milestone | After ready `RBR-0505` drains, the surviving frontier is `RBR-0507`: convert the broader counted-repeat pair `a(bc){1,4}d` and `a(?P<word>bc){1,4}d` behind `rebar._rebar` on the existing `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` path, keeping later benchmark catch-up anchored to `module-search-numbered-broader-ranged-repeat-group-cold-gap` and `module-search-numbered-ranged-repeat-group-wider-range-cold-gap`. |
+| Work queue | `0` ready, `0` in progress, `506` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `977` |
+| Published cases | `983` |
 | Passing in published slice | `977` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `110` |
+| Honest gaps (`unimplemented`) | `6` |
+| Covered manifests | `111` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 977 cases across 110 manifests, with all 977 passing and no current `unimplemented` gaps; the main benchmark report covers 588 workloads with 586 real `rebar` timings and 2 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 983 cases across 111 manifests, with 977 passing, 0 explicit failures, and 6 current `unimplemented` gaps; the main benchmark report covers 588 workloads with 586 real `rebar` timings and 2 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity._
 
 ### Benchmark Snapshot
 
@@ -47,7 +47,7 @@ _README speedup rollups stay omitted while only `586` of `588` published workloa
 
 ### Immediate Next Steps
 
-- The surviving post-drain frontier is `RBR-0505`: publish the broader counted-repeat pair `a(bc){1,4}d` / `a(?P<word>bc){1,4}d` on the correctness surface.
+- With the ready queue drained, the surviving frontier is `RBR-0507`: convert the broader counted-repeat pair `a(bc){1,4}d` / `a(?P<word>bc){1,4}d` behind `rebar._rebar`.
 
 ### Current Risks
 
@@ -57,7 +57,7 @@ _README speedup rollups stay omitted while only `586` of `588` published workloa
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published correctness slice now covers 977 cases across 110 manifests with all 977 passing and no current `unimplemented` gaps, and the benchmark publication covers 588 workloads with 586 real `rebar` timings and 2 explicit source-tree known gaps. The task queue is empty, and backlog now points to `RBR-0505` as the next broader counted-repeat correctness follow-on.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The published correctness slice now covers 983 cases across 111 manifests, with 977 passing, 0 explicit failures, and 6 current `unimplemented` gaps, and the benchmark publication covers 588 workloads with 586 real `rebar` timings and 2 explicit source-tree known gaps. The task queue is empty, and backlog now points to `RBR-0507` as the next Rust-boundary follow-on for that broader counted-repeat pair.
 
 The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice, where the published parser family is about 2.8x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
