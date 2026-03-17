@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from collections import Counter
 from dataclasses import dataclass
 import re
@@ -129,6 +130,20 @@ class CompiledPatternModuleHelperErrorCase:
     helper: str
     pattern: str | bytes
     args: tuple[object, ...]
+
+
+class _EscapeStrSubclass(str):
+    pass
+
+
+class _EscapeBytesSubclass(bytes):
+    pass
+
+
+@dataclass(frozen=True)
+class EscapeCompatibleInputCase:
+    case_id: str
+    input_factory: Callable[[], object]
 
 
 VERBOSE_COMPILE_WORKFLOW_CASES = (
@@ -287,6 +302,26 @@ COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES = (
         helper="subn",
         pattern=b"abc",
         args=(b"x", "zabczz", 1),
+    ),
+)
+# Exercise CPython-supported input shapes that are easy to miss when escape()
+# only appears to support plain str and bytes inputs.
+ESCAPE_COMPATIBLE_INPUT_CASES = (
+    EscapeCompatibleInputCase(
+        case_id="str-subclass",
+        input_factory=lambda: _EscapeStrSubclass("a-b.c"),
+    ),
+    EscapeCompatibleInputCase(
+        case_id="bytes-subclass",
+        input_factory=lambda: _EscapeBytesSubclass(b"a-b.c"),
+    ),
+    EscapeCompatibleInputCase(
+        case_id="bytearray",
+        input_factory=lambda: bytearray(b"a-b.c"),
+    ),
+    EscapeCompatibleInputCase(
+        case_id="memoryview",
+        input_factory=lambda: memoryview(b"a-b.c"),
     ),
 )
 
@@ -699,6 +734,25 @@ def test_escape_workflows_match_cpython(
 
     observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
     expected = re.escape(*case.args, **case.kwargs)
+
+    assert type(observed) is type(expected)
+    assert observed == expected
+
+
+@pytest.mark.parametrize(
+    "case",
+    ESCAPE_COMPATIBLE_INPUT_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_escape_accepts_cpython_compatible_input_shapes(
+    regex_backend: tuple[str, object],
+    case: EscapeCompatibleInputCase,
+) -> None:
+    _, backend = regex_backend
+    raw = case.input_factory()
+
+    observed = backend.escape(raw)
+    expected = re.escape(raw)
 
     assert type(observed) is type(expected)
     assert observed == expected
