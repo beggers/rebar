@@ -1,6 +1,6 @@
 # RBR-0518: Convert the nested broader-range wider-ranged-repeat grouped backtracking-heavy bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -41,3 +41,8 @@ Created: 2026-03-17
   - `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` still marks `NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES` as unsupported for `rebar`, with the reason text pinned to `RBR-0518`; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`.
 - The surviving follow-on after this task is `RBR-0519`, which should add the seven bytes mirrors of the current nested broader grouped backtracking-heavy source-tree benchmark rows on `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py` before another grouped family reopens the frontier.
+
+## Completion
+- 2026-03-17: Added Rust-backed compile and match support for `rb"a(((bc|b)c){1,4})d"` and `rb"a(?P<outer>((bc|b)c){1,4})d"` in `crates/rebar-core/src/lib.rs`, keeping the new behavior behind `rebar._rebar` and leaving Python-side public-surface plumbing unchanged.
+- Removed the remaining `rebar` unsupported gating from `NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES` in `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`, so the shared bytes supplemental anchor now runs parity checks directly against both backends.
+- Verified with `cargo build -p rebar-cpython`; `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`; `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py --report .rebar/tmp/rbr-0518-nested-broader-range-backtracking-heavy-bytes-parity.py` (`28` executed / `28` passed / `0` unimplemented); and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`, which now publishes `1025` total / `1025` passed / `0` unimplemented overall and `28` / `28` / `0` for `match.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy`.

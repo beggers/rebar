@@ -316,11 +316,6 @@ NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES = (
         search_misses=(b"zzabccbdzz", b"zzabcbcbcbcbcdzz"),
         fullmatch_matches=(b"abcbccd", b"abccbcd", b"abcbccbccbcd"),
         fullmatch_misses=(b"abccbd",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            "rebar bytes parity pending RBR-0518 for nested broader-range "
-            "backtracking-heavy patterns"
-        ),
     ),
     SupplementalCase(
         id="nested-broader-range-wider-ranged-repeat-backtracking-heavy-named-bytes",
@@ -329,11 +324,6 @@ NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES = (
         search_misses=(b"zzabccbdzz", b"zzabcbcbcbcbcdzz"),
         fullmatch_matches=(b"abccbcd",),
         fullmatch_misses=(b"abccbd", b"abcbcbcbcbcd"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            "rebar bytes parity pending RBR-0518 for nested broader-range "
-            "backtracking-heavy patterns"
-        ),
     ),
 )
 DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS = frozenset(
@@ -698,11 +688,8 @@ def test_nested_broader_range_backtracking_heavy_bytes_cases_stay_explicit_with_
     )
 
     for case in NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert case.unsupported_backend_reason == (
-            "rebar bytes parity pending RBR-0518 for nested broader-range "
-            "backtracking-heavy patterns"
-        )
+        assert case.unsupported_backends == ()
+        assert case.unsupported_backend_reason is None
         assert set(case.search_matches).isdisjoint(case.search_misses)
         assert set(case.fullmatch_matches).isdisjoint(case.fullmatch_misses)
         assert all(
