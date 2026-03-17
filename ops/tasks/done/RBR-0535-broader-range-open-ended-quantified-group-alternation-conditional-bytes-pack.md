@@ -1,6 +1,6 @@
 # RBR-0535: Publish the broader-range open-ended grouped-alternation-plus-conditional bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -33,6 +33,15 @@ Created: 2026-03-17
 - Keep the future parity follow-on anchored to the existing `tests/python/test_open_ended_quantified_group_parity_suite.py` surface.
 
 ## Notes
+- 2026-03-17 completion:
+  - Added the 14 bytes mirrors to the existing broader-range open-ended `{2,}` grouped-alternation-plus-conditional manifest, keeping this slice on one shared correctness fixture.
+  - Updated the open-ended parity suite bundle contract to mixed `str`/`bytes` coverage and added one direct broader-range grouped-conditional bytes follow-on anchor that stays explicitly unsupported for `rebar` pending `RBR-0537` while routing those bytes fixture rows away from the generic case buckets.
+  - Regenerated the tracked combined scorecard in `reports/correctness/latest.py`; the published report now shows `1094` total / `1080` passed / `14` unimplemented across `111` manifests, and `match.broader_range_open_ended_quantified_group_alternation_conditional` now shows `28` total / `14` passed / `14` unimplemented with `['bytes', 'str']` coverage.
+  - Verified with:
+    - `cargo build -p rebar-cpython`
+    - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+    - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/broader_range_open_ended_quantified_group_alternation_conditional_workflows.py --report .rebar/tmp/rbr-0535-broader-range-open-ended-grouped-conditional-bytes.py`
+    - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
 - Build on `RBR-0534`.
 - 2026-03-17 feature-planning probes confirm this task is not stale:
   - `tests/conformance/fixtures/broader_range_open_ended_quantified_group_alternation_conditional_workflows.py` currently contains only the 14 `str` cases for this broader-range open-ended `{2,}` grouped-conditional slice and no `bytes` mirrors;
