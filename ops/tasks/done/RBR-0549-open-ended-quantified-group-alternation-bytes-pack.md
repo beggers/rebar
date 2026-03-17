@@ -1,6 +1,6 @@
 # RBR-0549: Publish the open-ended quantified-group alternation bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -40,3 +40,10 @@ Created: 2026-03-17
   - `reports/correctness/latest.py` currently publishes `match.open_ended_quantified_group_alternation` at `16` total / `16` passed / `0` `unimplemented` with `['str']` coverage, while the combined report stays at `1120` total / `1120` passed / `0` `unimplemented` across `111` manifests; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`.
 - The surviving follow-on after this task is `RBR-0550`, which should convert the same bytes pair behind `rebar._rebar` on the existing open-ended parity surface before benchmark catch-up mirrors the adjacent source-tree `str` rows onto the bytes path.
+- Completed 2026-03-17:
+  - Added the 16 bounded bytes mirror rows for `rb"a(bc|de){1,}d"` and `rb"a(?P<word>bc|de){1,}d"` to `tests/conformance/fixtures/open_ended_quantified_group_alternation_workflows.py`, keeping that manifest as the single correctness publication path for this slice.
+  - Updated `tests/python/test_open_ended_quantified_group_parity_suite.py` so the manifest is treated as mixed `str`/`bytes`, added `OPEN_ENDED_ALTERNATION_BYTES_CASES` as the direct bytes follow-on anchor, and marked that anchor unsupported for `rebar` pending `RBR-0550` while routing the manifest’s bytes rows away from the generic parity buckets.
+  - Updated the adjacent shared contract coverage in `tests/python/test_fixture_parity_support_contract.py` and the scorecard representative-case coverage in `tests/conformance/correctness_expectations.py` so the mixed manifest stays validated on both the fixture-contract and tracked-scorecard paths.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py tests/python/test_fixture_parity_support_contract.py::test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_case_ids` (`1597 passed, 14 skipped, 1228 subtests passed`).
+  - Verified the focused manifest report at `.rebar/tmp/rbr-0549-open-ended-grouped-alternation-bytes.py`, which now reports `32` total / `16` passed / `16` unimplemented for `match.open_ended_quantified_group_alternation`.
+  - Regenerated the tracked `reports/correctness/latest.py`; the published combined scorecard now reports `1136` total / `1120` passed / `16` unimplemented across `111` manifests, and `match.open_ended_quantified_group_alternation` now reports `32` total / `16` passed / `16` unimplemented with `['bytes', 'str']` coverage.

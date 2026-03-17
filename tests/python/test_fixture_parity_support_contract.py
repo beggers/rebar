@@ -1374,15 +1374,18 @@ def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_ca
                     {
                         r"a(bc|de){1,}d",
                         r"a(?P<word>bc|de){1,}d",
+                        rb"a(bc|de){1,}d",
+                        rb"a(?P<word>bc|de){1,}d",
                     }
                 ),
                 expected_operation_helper_counts=Counter(
                     {
-                        ("compile", None): 2,
-                        ("module_call", "search"): 4,
-                        ("pattern_call", "fullmatch"): 10,
+                        ("compile", None): 4,
+                        ("module_call", "search"): 8,
+                        ("pattern_call", "fullmatch"): 20,
                     }
                 ),
+                expected_text_models=frozenset({"bytes", "str"}),
             ),
         )
     )
