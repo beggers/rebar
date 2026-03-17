@@ -160,26 +160,45 @@ def assert_anchored_workload_case_result_parity(
     anchored_pairs: Iterable[AnchoredWorkloadCasePair],
 ) -> None:
     for anchored_pair in anchored_pairs:
-        observed = run_benchmark_workload_with_cpython(anchored_pair.workload)
         expected = run_correctness_case_with_cpython(anchored_pair.case)
-
-        if anchored_pair.workload.operation == "module.compile":
-            assert_pattern_parity("stdlib", observed, expected)
-            continue
-
-        if anchored_pair.workload.operation in {"module.search", "pattern.fullmatch"}:
-            assert_match_result_parity(
-                "stdlib",
-                observed,
-                expected,
-                check_regs=True,
-            )
-            continue
-
-        raise AssertionError(
-            "unexpected anchored benchmark workload operation "
-            f"{anchored_pair.workload.operation!r}"
+        assert_benchmark_workload_matches_expected_result(
+            anchored_pair.workload,
+            expected,
         )
+
+
+def assert_benchmark_workload_matches_expected_result(
+    workload: Any,
+    expected: object,
+) -> None:
+    observed = run_benchmark_workload_with_cpython(workload)
+
+    if workload.operation == "module.compile":
+        assert_pattern_parity("stdlib", observed, expected)
+        return
+
+    if workload.operation in {"module.search", "pattern.fullmatch"}:
+        assert_match_result_parity(
+            "stdlib",
+            observed,
+            expected,
+            check_regs=True,
+        )
+        return
+
+    if workload.operation in {
+        "module.sub",
+        "module.subn",
+        "pattern.sub",
+        "pattern.subn",
+    }:
+        assert observed == expected
+        return
+
+    raise AssertionError(
+        "unexpected anchored benchmark workload operation "
+        f"{workload.operation!r}"
+    )
 
 
 def run_benchmark_workload_with_cpython(workload: Any) -> object:

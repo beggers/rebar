@@ -1,6 +1,6 @@
 # RBR-0567: Collapse the remaining benchmark anchor result-parity plumbing onto support helpers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -170,3 +170,6 @@ Created: 2026-03-17
   - the AST probe above currently fails exactly on that cleanup with the missing helper plus lingering direct-parity references in those three targeted test functions.
 - 2026-03-17 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_grouped_alternation_benchmark_correctness_anchor_contract.py tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py` passes (`40 passed in 0.11s`).
+
+## Completion Note
+- 2026-03-17: Added `assert_benchmark_workload_matches_expected_result(...)` in `tests/benchmarks/correctness_anchor_support.py`, routed anchored workload parity through it, and refactored the grouped-alternation and open-ended anchor-contract tests onto the shared helper flow without changing anchor ids, workload ids, or the existing anchored/unanchored split. Verified with the required targeted pytest run (`40 passed in 0.12s`) and the AST probe (`ok`).

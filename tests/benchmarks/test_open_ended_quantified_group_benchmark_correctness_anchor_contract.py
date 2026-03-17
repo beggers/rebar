@@ -16,16 +16,12 @@ OPEN_ENDED_MANIFEST_PATH = (
 from rebar_harness.benchmarks import load_manifest
 from tests.benchmarks.correctness_anchor_support import (
     anchored_workload_case_ids,
+    assert_anchored_workload_case_result_parity,
+    assert_benchmark_workload_matches_expected_result,
+    expected_anchored_workload_case_pairs,
     freeze_signature_value,
     published_case_ids_by_signature,
-    published_cases_by_id,
-    run_benchmark_workload_with_cpython,
-    run_correctness_case_with_cpython,
     unanchored_workload_ids,
-)
-from tests.python.fixture_parity_support import (
-    assert_match_result_parity,
-    assert_pattern_parity,
 )
 from tests.python.test_open_ended_quantified_group_parity_suite import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
@@ -462,34 +458,15 @@ def test_open_ended_anchored_workloads_stay_pinned_to_exact_case_ids() -> None:
 
 
 def test_open_ended_anchored_workloads_match_anchor_case_results() -> None:
-    workloads_by_id = {
-        workload_id: workload
-        for workload_id, workload in _manifest_workloads_by_id().items()
-        if workload_id not in EXPECTED_SPECIAL_UNANCHORED_WORKLOAD_IDS
-    }
-    published_cases = published_cases_by_id()
-
-    for (_, workload_id), case_ids in EXPECTED_OPEN_ENDED_ANCHOR_CASE_IDS.items():
-        assert len(case_ids) == 1
-        case_id = case_ids[0]
-
-        assert workload_id in workloads_by_id
-        assert case_id in published_cases
-
-        workload = workloads_by_id[workload_id]
-        case = published_cases[case_id]
-        observed = run_benchmark_workload_with_cpython(workload)
-        expected = run_correctness_case_with_cpython(case)
-
-        if workload.operation == "module.compile":
-            assert_pattern_parity("stdlib", observed, expected)
-        else:
-            assert_match_result_parity(
-                "stdlib",
-                observed,
-                expected,
-                check_regs=True,
-            )
+    assert_anchored_workload_case_result_parity(
+        expected_anchored_workload_case_pairs(
+            OPEN_ENDED_MANIFEST_PATH,
+            expected_anchor_case_ids=EXPECTED_OPEN_ENDED_ANCHOR_CASE_IDS,
+            include_workload=lambda workload: (
+                workload.workload_id not in EXPECTED_SPECIAL_UNANCHORED_WORKLOAD_IDS
+            ),
+        )
+    )
 
 
 @pytest.mark.parametrize(
@@ -500,16 +477,7 @@ def test_open_ended_special_unanchored_workloads_match_manual_cpython_dispatch(
     workload_id: str,
 ) -> None:
     workload = _manifest_workloads_by_id()[workload_id]
-
-    observed = run_benchmark_workload_with_cpython(workload)
-    expected = _manual_expected_result(workload)
-
-    if workload.operation == "module.compile":
-        assert_pattern_parity("stdlib", observed, expected)
-    else:
-        assert_match_result_parity(
-            "stdlib",
-            observed,
-            expected,
-            check_regs=True,
-        )
+    assert_benchmark_workload_matches_expected_result(
+        workload,
+        _manual_expected_result(workload),
+    )
