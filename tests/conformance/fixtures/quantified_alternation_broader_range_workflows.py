@@ -190,6 +190,310 @@ MANIFEST = {
       "notes": [
         "Documents the named no-match path on `abbbcd` so the scorecard stays explicit that the broadened counted range still rejects a fourth alternation branch."
       ]
+    },
+    {
+      "id": "quantified-alternation-broader-range-numbered-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "quantified_alternation_broader_range_numbered_compile_metadata",
+      "pattern": "a(b|c){1,3}d",
+      "text_model": "bytes",
+      "categories": ["grouped", "alternation", "quantifier", "bounded-repeat", "broader-range", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Publishes the numbered compile frontier for the same broader `{1,3}` quantified alternation with bytes payloads while keeping the bytes parity gap explicit until the follow-on bytes parity task lands."
+      ]
+    },
+    {
+      "id": "quantified-alternation-broader-range-numbered-module-search-lower-bound-b-bytes",
+      "operation": "module_call",
+      "family": "quantified_alternation_broader_range_numbered_module_lower_bound_b_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(b|c){1,3}d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabdzz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "bounded-repeat", "broader-range", "search", "module", "lower-bound", "b-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound module success path on `abd` with bytes payloads so the widened bytes slice still records the final capture after one `b` repetition."
+      ]
+    },
+    {
+      "id": "quantified-alternation-broader-range-numbered-module-search-lower-bound-c-bytes",
+      "operation": "module_call",
+      "family": "quantified_alternation_broader_range_numbered_module_lower_bound_c_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(b|c){1,3}d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzacdzz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "bounded-repeat", "broader-range", "search", "module", "lower-bound", "c-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound module success path on `acd` with bytes payloads so the alternate lower-bound branch stays explicit at the broader `{1,3}` bytes frontier."
+      ]
+    },
+    {
+      "id": "quantified-alternation-broader-range-numbered-pattern-fullmatch-third-repetition-bbb-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_broader_range_numbered_pattern_third_repetition_bbb_workflow",
+      "pattern": "a(b|c){1,3}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abbbd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "bounded-repeat", "broader-range", "fullmatch", "pattern", "third-repetition", "bbb", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered third-repetition success path on `abbbd` with bytes payloads so the widened bytes slice records the final capture after the widest all-`b` branch selection allowed by `{1,3}`."
+      ]
+    },
+    {
+      "id": "quantified-alternation-broader-range-numbered-pattern-fullmatch-third-repetition-bcc-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_broader_range_numbered_pattern_third_repetition_bcc_workflow",
+      "pattern": "a(b|c){1,3}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abccd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "bounded-repeat", "broader-range", "fullmatch", "pattern", "third-repetition", "bcc", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered third-repetition success path on `abccd` with bytes payloads so the broader bytes range includes one mixed branch order that ends on `c`."
+      ]
+    },
+    {
+      "id": "quantified-alternation-broader-range-numbered-pattern-fullmatch-third-repetition-bcb-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_broader_range_numbered_pattern_third_repetition_bcb_workflow",
+      "pattern": "a(b|c){1,3}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "bounded-repeat", "broader-range", "fullmatch", "pattern", "third-repetition", "bcb", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered third-repetition success path on `abcbd` with bytes payloads so the bytes scorecard keeps a mixed branch order that ends back on `b` explicit inside the exact `{1,3}` envelope."
+      ]
+    },
+    {
+      "id": "quantified-alternation-broader-range-numbered-pattern-fullmatch-no-match-below-lower-bound-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_broader_range_numbered_pattern_no_match_below_lower_bound_workflow",
+      "pattern": "a(b|c){1,3}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "ad"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "bounded-repeat", "broader-range", "fullmatch", "pattern", "no-match", "below-lower-bound", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered no-match path on `ad` with bytes payloads so the widened `{1,3}` bytes slice stays explicit that the one-repetition lower bound still applies."
+      ]
+    },
+    {
+      "id": "quantified-alternation-broader-range-numbered-pattern-fullmatch-no-match-overflow-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_broader_range_numbered_pattern_no_match_overflow_workflow",
+      "pattern": "a(b|c){1,3}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abbbcd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "bounded-repeat", "broader-range", "fullmatch", "pattern", "no-match", "overflow", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered no-match path on `abbbcd` with bytes payloads so the broader counted range still rejects a fourth alternation branch before the trailing literal `d`."
+      ]
+    },
+    {
+      "id": "quantified-alternation-broader-range-named-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "quantified_alternation_broader_range_named_compile_metadata",
+      "pattern": "a(?P<word>b|c){1,3}d",
+      "text_model": "bytes",
+      "categories": ["grouped", "alternation", "quantifier", "bounded-repeat", "broader-range", "named-group", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Publishes the named compile frontier for the same broader `{1,3}` quantified alternation with bytes payloads under one visible `word` capture while keeping the bytes parity gap explicit until the follow-on bytes parity task lands."
+      ]
+    },
+    {
+      "id": "quantified-alternation-broader-range-named-module-search-lower-bound-b-bytes",
+      "operation": "module_call",
+      "family": "quantified_alternation_broader_range_named_module_lower_bound_b_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(?P<word>b|c){1,3}d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabdzz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "bounded-repeat", "broader-range", "named-group", "search", "module", "lower-bound", "b-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the named lower-bound module success path on `abd` with bytes payloads so the visible named capture stays explicit at the broadened counted-range bytes frontier."
+      ]
+    },
+    {
+      "id": "quantified-alternation-broader-range-named-module-search-lower-bound-c-bytes",
+      "operation": "module_call",
+      "family": "quantified_alternation_broader_range_named_module_lower_bound_c_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(?P<word>b|c){1,3}d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzacdzz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "bounded-repeat", "broader-range", "named-group", "search", "module", "lower-bound", "c-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the named lower-bound module success path on `acd` with bytes payloads so the alternate lower-bound branch remains explicit under the visible `word` capture on the broader `{1,3}` bytes frontier."
+      ]
+    },
+    {
+      "id": "quantified-alternation-broader-range-named-pattern-fullmatch-third-repetition-bbb-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_broader_range_named_pattern_third_repetition_bbb_workflow",
+      "pattern": "a(?P<word>b|c){1,3}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abbbd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "bounded-repeat", "broader-range", "named-group", "fullmatch", "pattern", "third-repetition", "bbb", "bytes", "gap"],
+      "notes": [
+        "Documents the named third-repetition success path on `abbbd` with bytes payloads so the scorecard records the final named capture after the widest all-`b` selection allowed by `{1,3}`."
+      ]
+    },
+    {
+      "id": "quantified-alternation-broader-range-named-pattern-fullmatch-third-repetition-bcc-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_broader_range_named_pattern_third_repetition_bcc_workflow",
+      "pattern": "a(?P<word>b|c){1,3}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abccd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "bounded-repeat", "broader-range", "named-group", "fullmatch", "pattern", "third-repetition", "bcc", "bytes", "gap"],
+      "notes": [
+        "Documents the named third-repetition success path on `abccd` with bytes payloads so the broadened frontier includes one mixed branch order that ends on `c` on the bytes path."
+      ]
+    },
+    {
+      "id": "quantified-alternation-broader-range-named-pattern-fullmatch-third-repetition-bcb-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_broader_range_named_pattern_third_repetition_bcb_workflow",
+      "pattern": "a(?P<word>b|c){1,3}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "bounded-repeat", "broader-range", "named-group", "fullmatch", "pattern", "third-repetition", "bcb", "bytes", "gap"],
+      "notes": [
+        "Documents the named third-repetition success path on `abcbd` with bytes payloads so the final named capture from a mixed branch order ending on `b` stays explicit on the bytes frontier."
+      ]
+    },
+    {
+      "id": "quantified-alternation-broader-range-named-pattern-fullmatch-no-match-below-lower-bound-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_broader_range_named_pattern_no_match_below_lower_bound_workflow",
+      "pattern": "a(?P<word>b|c){1,3}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "ad"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "bounded-repeat", "broader-range", "named-group", "fullmatch", "pattern", "no-match", "below-lower-bound", "bytes", "gap"],
+      "notes": [
+        "Documents the named no-match path on `ad` with bytes payloads so the broader counted range still enforces the one-repetition lower bound even with a visible named capture on the bytes frontier."
+      ]
+    },
+    {
+      "id": "quantified-alternation-broader-range-named-pattern-fullmatch-no-match-overflow-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_broader_range_named_pattern_no_match_overflow_workflow",
+      "pattern": "a(?P<word>b|c){1,3}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abbbcd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "bounded-repeat", "broader-range", "named-group", "fullmatch", "pattern", "no-match", "overflow", "bytes", "gap"],
+      "notes": [
+        "Documents the named no-match path on `abbbcd` with bytes payloads so the bytes scorecard stays explicit that the broadened counted range still rejects a fourth alternation branch."
+      ]
     }
   ]
 }

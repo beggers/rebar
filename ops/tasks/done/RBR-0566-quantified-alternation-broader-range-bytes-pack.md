@@ -1,6 +1,6 @@
 # RBR-0566: Publish the quantified-alternation broader-range bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -42,3 +42,4 @@ Created: 2026-03-17
   - `benchmarks/workloads/quantified_alternation_boundary.py` already publishes the six adjacent broader-range `str` benchmark rows for this exact pair, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`.
 - A later parity follow-on should convert the same bytes pair behind `rebar._rebar` on the existing quantified-alternation parity surface before the benchmark surface mirrors the six adjacent broader-range `str` rows already published on `benchmarks/workloads/quantified_alternation_boundary.py`.
+- 2026-03-17: Added the 16 bounded bytes counterparts to `tests/conformance/fixtures/quantified_alternation_broader_range_workflows.py`, updated `tests/python/test_quantified_alternation_parity_suite.py` so the manifest is explicitly mixed `str`/`bytes` while the generic shared buckets stay on the shared `str` rows and the bytes rows route through `QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES` with explicit `rebar` skip gating, expanded `tests/conformance/correctness_expectations.py`, and republished `reports/correctness/latest.py`. The tracked combined scorecard now reads `1184` total / `1168` passed / `16` unimplemented across `111` manifests, and `match.quantified_alternation_broader_range` now reads `32` total / `16` passed / `16` unimplemented with `['bytes', 'str']` text-model coverage. Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/quantified_alternation_broader_range_workflows.py --report .rebar/tmp/rbr-0566-quantified-alternation-broader-range-bytes.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
