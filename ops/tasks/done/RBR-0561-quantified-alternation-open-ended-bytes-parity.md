@@ -1,6 +1,6 @@
 # RBR-0561: Convert the quantified-alternation open-ended bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -42,3 +42,9 @@ Created: 2026-03-17
   - `tests/python/test_quantified_alternation_parity_suite.py` already carries the `str` open-ended quantified-alternation bundle for `a(b|c){1,}d` and `a(?P<word>b|c){1,}d`, so the bytes parity slice can stay on the existing suite instead of inventing another test path;
   - `benchmarks/workloads/quantified_alternation_boundary.py` already publishes the six adjacent open-ended `str` benchmark rows for this exact pair, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so the Rust-backed bytes parity work is not already satisfied in the current checkout.
+
+## Completion
+- 2026-03-17: Added Rust-backed compile and bytes match support for `rb"a(b|c){1,}d"` and `rb"a(?P<word>b|c){1,}d"` in `crates/rebar-core/src/lib.rs`; the existing `rebar._rebar` bridge and Python wrapper picked the new support up without additional public-surface logic changes.
+- Kept `QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES` as the direct bytes anchor and removed the temporary `rebar` unsupported gating instead of forking another suite or manifest path.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/quantified_alternation_open_ended_workflows.py --report .rebar/tmp/rbr-0561-quantified-alternation-open-ended-bytes-parity.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
+- Published `reports/correctness/latest.py` now records `1168` total / `1168` passed / `0` failed / `0` unimplemented across `111` manifests, and `match.quantified_alternation_open_ended` now records `32` total / `32` passed / `0` failed / `0` unimplemented.

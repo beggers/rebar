@@ -370,9 +370,6 @@ QUANTIFIED_ALTERNATION_OPEN_ENDED_BUNDLE = published_fixture_bundle_by_manifest_
     FIXTURE_BUNDLES,
     "quantified-alternation-open-ended-workflows",
 )
-OPEN_ENDED_BYTES_UNSUPPORTED_REASON = (
-    "rebar bytes open-ended quantified alternation parity is pending RBR-0561"
-)
 QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES = (
     QuantifiedAlternationOpenEndedBytesCase(
         id="quantified-alternation-open-ended-numbered-bytes",
@@ -380,8 +377,6 @@ QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES = (
         search_matches=(b"zzabdzz", b"zzacdzz"),
         fullmatch_matches=(b"abcd", b"abccd", b"abcbcd"),
         fullmatch_misses=(b"ad", b"abed"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=OPEN_ENDED_BYTES_UNSUPPORTED_REASON,
     ),
     QuantifiedAlternationOpenEndedBytesCase(
         id="quantified-alternation-open-ended-named-bytes",
@@ -389,8 +384,6 @@ QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES = (
         search_matches=(b"zzabdzz", b"zzacdzz"),
         fullmatch_matches=(b"abcd", b"abccd", b"abcbcd"),
         fullmatch_misses=(b"ad", b"abed"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=OPEN_ENDED_BYTES_UNSUPPORTED_REASON,
     ),
 )
 DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS = frozenset(
@@ -744,8 +737,8 @@ def test_quantified_alternation_open_ended_bytes_cases_stay_explicit_with_one_di
     )
 
     for case in QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert case.unsupported_backend_reason == OPEN_ENDED_BYTES_UNSUPPORTED_REASON
+        assert case.unsupported_backends == ()
+        assert case.unsupported_backend_reason is None
         assert case.search_matches == (b"zzabdzz", b"zzacdzz")
         assert case.fullmatch_matches == (b"abcd", b"abccd", b"abcbcd")
         assert case.fullmatch_misses == (b"ad", b"abed")
