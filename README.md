@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 1053 cases across 111 manifests, with 1053 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 620 workloads across 30 manifests with 620 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial. |
-| Current milestone | After ready `RBR-0527` drains, the surviving frontier is `RBR-0528`: publish the exact nested open-ended `{1,}` grouped-alternation bytes pair on the existing correctness/parity path so the next adjacent grouped bytes slice is visible on the tracked correctness surface before Rust-backed parity and later benchmark catch-up widen that family again. |
-| Work queue | `0` ready, `0` in progress, `527` done, `0` blocked |
+| Delivery estimate | The published correctness slice now covers 1067 cases across 111 manifests, with 1053 passing, 0 explicit failures, and 14 honest gaps concentrated in the newly published nested open-ended grouped-alternation bytes pair; the main benchmark report covers 620 workloads across 30 manifests with 620 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial. |
+| Current milestone | After ready `RBR-0528` drains, the surviving frontier is `RBR-0529`: convert the exact nested open-ended `{1,}` grouped-alternation bytes pair to real Rust-backed parity on the existing open-ended correctness/parity path so the newly published bytes slice closes its gap before benchmark catch-up widens that family again. |
+| Work queue | `0` ready, `0` in progress, `528` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1053` |
+| Published cases | `1067` |
 | Passing in published slice | `1053` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
+| Honest gaps (`unimplemented`) | `14` |
 | Covered manifests | `111` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 1053 cases across 111 manifests, with 1053 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 620 workloads across 30 manifests with 620 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 1067 cases across 111 manifests, with 1053 passing, 0 explicit failures, and 14 honest gaps concentrated in the newly published nested open-ended grouped-alternation bytes pair; the main benchmark report covers 620 workloads across 30 manifests with 620 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- With the queue drained, the next intended follow-on is `RBR-0528`: publish the exact nested open-ended `{1,}` grouped-alternation bytes pair on the existing correctness path so the next adjacent grouped bytes slice is visible before parity and benchmark catch-up widen that family again.
+- With the queue drained, the surviving frontier is `RBR-0529`: convert the exact nested open-ended `{1,}` grouped-alternation bytes pair to real Rust-backed parity on the existing open-ended correctness/parity path before benchmark catch-up widens that family again.
 
 ### Current Risks
 
@@ -55,7 +55,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current published correctness slice is still tightly bounded but now gap-free at the frontier: all 1053 published cases pass today across 111 manifests, with `RBR-0528` as the next intended follow-on for the adjacent nested open-ended `{1,}` grouped-alternation bytes slice. The main benchmark report spans 620 workloads through the source-tree shim.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current published correctness slice is still tightly bounded: 1053 of 1067 published cases pass across 111 manifests, and the remaining 14 honest gaps are concentrated in the newly published nested open-ended grouped-alternation bytes pair. The surviving follow-on is `RBR-0529`, which converts that exact bytes pair to Rust-backed parity. The main benchmark report spans 620 workloads through the source-tree shim.
 
 The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice, where the published parser family is about 2.9x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
