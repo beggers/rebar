@@ -1,6 +1,6 @@
 # RBR-0544: Convert the open-ended grouped backtracking-heavy bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -43,3 +43,10 @@ Created: 2026-03-17
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`; and
   - `benchmarks/workloads/open_ended_quantified_group_boundary.py` already publishes the six adjacent measured `str` backtracking-heavy rows for this exact `{1,}` slice, so the surviving benchmark follow-on should reuse that existing Python-path manifest instead of inventing another benchmark family.
 - The surviving follow-on after this task is `RBR-0546`, which should add the six adjacent bytes benchmark mirrors for the same open-ended grouped backtracking-heavy pair on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
+- Completed 2026-03-17:
+  - Fixed the Rust bytes compile gate for `rb"a((bc|b)c){1,}d"` and `rb"a(?P<word>(bc|b)c){1,}d"` by teaching the open-ended grouped backtracking-heavy parser to recognize the exact `{1,}` pair, which let the existing native match path expose the slice through `rebar._rebar` without extra Python-side execution shims.
+  - Removed the stale `rebar` unsupported markers from `OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES` in `tests/python/test_open_ended_quantified_group_parity_suite.py`, keeping the same direct bytes anchor and bounded texts while converting the cases to real parity coverage.
+  - Verified with `cargo build -p rebar-cpython`.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`1580 passed, 1212 subtests passed`).
+  - Verified the focused manifest report at `.rebar/tmp/rbr-0544-open-ended-grouped-backtracking-heavy-bytes-parity.py`, which now reports `24` total / `24` passed / `0` unimplemented for `match.open_ended_quantified_group_alternation_backtracking_heavy`.
+  - Regenerated the tracked `reports/correctness/latest.py`; the published combined scorecard now reports `1120` total / `1120` passed / `0` unimplemented across `111` manifests, and `match.open_ended_quantified_group_alternation_backtracking_heavy` now reports `24` total / `24` passed / `0` unimplemented.

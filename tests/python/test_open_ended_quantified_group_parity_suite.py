@@ -272,8 +272,6 @@ OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
         fullmatch_matches=(b"abccd", b"abcbcd", b"abcbccd"),
         fullmatch_misses=(b"abcccd",),
         search_matches=(b"zzabcdzz",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason="rebar backend unsupported pending RBR-0544",
     ),
     SupplementalCase(
         id="open-ended-grouped-backtracking-heavy-named-bytes",
@@ -281,8 +279,6 @@ OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
         search_matches=(b"zzabccdzz", b"zzabccbcdzz", b"zzabcbccbcdzz"),
         search_misses=(b"zzabccbdzz",),
         fullmatch_matches=(b"abcbcbcbcd",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason="rebar backend unsupported pending RBR-0544",
     ),
 )
 BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
@@ -679,10 +675,8 @@ def test_open_ended_backtracking_heavy_bytes_cases_stay_explicit_with_one_direct
     )
 
     for case in OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert case.unsupported_backend_reason == (
-            "rebar backend unsupported pending RBR-0544"
-        )
+        assert case.unsupported_backends == ()
+        assert case.unsupported_backend_reason is None
         assert set(case.search_matches).isdisjoint(case.search_misses)
         assert set(case.fullmatch_matches).isdisjoint(case.fullmatch_misses)
         assert all(

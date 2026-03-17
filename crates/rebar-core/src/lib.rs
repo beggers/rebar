@@ -50,6 +50,10 @@ const BROADER_RANGE_OPEN_ENDED_GROUPED_BACKTRACKING_HEAVY_NUMBERED_BYTES_PATTERN
     br"a((bc|b)c){2,}d";
 const BROADER_RANGE_OPEN_ENDED_GROUPED_BACKTRACKING_HEAVY_NAMED_BYTES_PATTERN: &[u8] =
     br"a(?P<word>(bc|b)c){2,}d";
+const OPEN_ENDED_GROUPED_BACKTRACKING_HEAVY_NUMBERED_BYTES_PATTERN: &[u8] =
+    br"a((bc|b)c){1,}d";
+const OPEN_ENDED_GROUPED_BACKTRACKING_HEAVY_NAMED_BYTES_PATTERN: &[u8] =
+    br"a(?P<word>(bc|b)c){1,}d";
 const OPEN_ENDED_GROUPED_CONDITIONAL_OUTER_NAME: &str = "outer";
 const OPEN_ENDED_GROUPED_CONDITIONAL_PREFIX_BYTES: &[u8] = b"a";
 const OPEN_ENDED_GROUPED_CONDITIONAL_BRANCHES_BYTES: [&[u8]; 2] = [b"bc", b"de"];
@@ -5170,6 +5174,18 @@ fn parse_open_ended_grouped_alternation_backtracking_heavy_pattern_bytes(
     pattern: &[u8],
 ) -> Option<OpenEndedGroupedAlternationBacktrackingHeavyBytesPattern> {
     match pattern {
+        OPEN_ENDED_GROUPED_BACKTRACKING_HEAVY_NUMBERED_BYTES_PATTERN => {
+            Some(OpenEndedGroupedAlternationBacktrackingHeavyBytesPattern {
+                outer_name: None,
+                min_repeat: 1,
+            })
+        }
+        OPEN_ENDED_GROUPED_BACKTRACKING_HEAVY_NAMED_BYTES_PATTERN => {
+            Some(OpenEndedGroupedAlternationBacktrackingHeavyBytesPattern {
+                outer_name: Some(BROADER_RANGE_GROUPED_BACKTRACKING_HEAVY_OUTER_NAME),
+                min_repeat: 1,
+            })
+        }
         BROADER_RANGE_OPEN_ENDED_GROUPED_BACKTRACKING_HEAVY_NUMBERED_BYTES_PATTERN => {
             Some(OpenEndedGroupedAlternationBacktrackingHeavyBytesPattern {
                 outer_name: None,
