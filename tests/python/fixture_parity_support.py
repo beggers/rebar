@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
 import pathlib
 import re
@@ -361,6 +361,88 @@ def published_fixture_paths_from_bundles(
 
 def manifest_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
     return tuple(case.case_id for case in bundle.manifest.cases)
+
+
+def assert_fixture_bundle_tracks_published_case_frontier(
+    bundle: FixtureBundle,
+    *,
+    selected_case_ids: Iterable[str],
+    expected_uncovered_case_ids: Iterable[str] = (),
+) -> None:
+    ordered_selected_case_ids = tuple(selected_case_ids)
+    ordered_expected_uncovered_case_ids = tuple(expected_uncovered_case_ids)
+    selected_case_id_set = frozenset(ordered_selected_case_ids)
+
+    overlapping_case_ids = tuple(
+        case_id
+        for case_id in ordered_expected_uncovered_case_ids
+        if case_id in selected_case_id_set
+    )
+    if overlapping_case_ids:
+        raise AssertionError(
+            f"{bundle.expected_manifest_id} selected and uncovered case ids overlap: "
+            f"{overlapping_case_ids}"
+        )
+
+    published_case_ids = manifest_case_ids(bundle)
+    published_case_id_set = frozenset(published_case_ids)
+    expected_case_id_set = selected_case_id_set | frozenset(
+        ordered_expected_uncovered_case_ids
+    )
+    missing_case_ids = tuple(
+        case_id
+        for case_id in (*ordered_selected_case_ids, *ordered_expected_uncovered_case_ids)
+        if case_id not in published_case_id_set
+    )
+    unexpected_case_ids = tuple(
+        case_id for case_id in published_case_ids if case_id not in expected_case_id_set
+    )
+    if missing_case_ids or unexpected_case_ids:
+        raise AssertionError(
+            f"{bundle.expected_manifest_id} published frontier drifted; "
+            f"missing published case ids: {missing_case_ids}; "
+            f"unexpected published case ids: {unexpected_case_ids}"
+        )
+
+    ordered_uncovered_case_ids = tuple(
+        case_id for case_id in published_case_ids if case_id not in selected_case_id_set
+    )
+    if ordered_uncovered_case_ids != ordered_expected_uncovered_case_ids:
+        raise AssertionError(
+            f"{bundle.expected_manifest_id} uncovered published case ids changed; "
+            f"expected {ordered_expected_uncovered_case_ids}, "
+            f"got {ordered_uncovered_case_ids}"
+        )
+
+
+def assert_direct_test_case_id_buckets_cover_selected_frontier(
+    direct_test_case_id_buckets: Mapping[str, frozenset[str]] | Iterable[frozenset[str]],
+    *,
+    selected_case_ids: Iterable[str],
+    coverage_label: str = "direct-test case-id buckets",
+) -> None:
+    ordered_selected_case_ids = tuple(selected_case_ids)
+    selected_case_id_set = frozenset(ordered_selected_case_ids)
+
+    if isinstance(direct_test_case_id_buckets, Mapping):
+        bucket_case_id_sets = tuple(direct_test_case_id_buckets.values())
+    else:
+        bucket_case_id_sets = tuple(direct_test_case_id_buckets)
+
+    bucket_case_ids = frozenset().union(*bucket_case_id_sets)
+    missing_case_ids = tuple(
+        case_id
+        for case_id in ordered_selected_case_ids
+        if case_id not in bucket_case_ids
+    )
+    unexpected_case_ids = tuple(
+        case_id for case_id in sorted(bucket_case_ids) if case_id not in selected_case_id_set
+    )
+    if missing_case_ids or unexpected_case_ids:
+        raise AssertionError(
+            f"{coverage_label} drifted; missing case ids: {missing_case_ids}; "
+            f"unexpected case ids: {unexpected_case_ids}"
+        )
 
 
 def bundle_patterns(

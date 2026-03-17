@@ -14,14 +14,15 @@ from rebar_harness.correctness import (
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
+    assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
+    assert_fixture_bundle_tracks_published_case_frontier,
     assert_match_convenience_api_parity,
     assert_match_result_parity,
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     load_fixture_bundles,
-    manifest_case_ids,
 )
 
 
@@ -160,10 +161,15 @@ DIRECT_TEST_CASE_ID_BUCKETS = {
     "pattern-object-call": frozenset(case.case_id for case in PATTERN_CALL_CASES),
 }
 SELECTED_CASE_IDS_BY_MANIFEST = {
-    PUBLIC_API_BUNDLE.expected_manifest_id: frozenset(PUBLIC_API_CASE_IDS),
-    EXPORTED_SYMBOL_BUNDLE.expected_manifest_id: frozenset(EXPORTED_SYMBOL_CASE_IDS),
-    PATTERN_OBJECT_BUNDLE.expected_manifest_id: frozenset(PATTERN_OBJECT_CASE_IDS),
+    PUBLIC_API_BUNDLE.expected_manifest_id: PUBLIC_API_CASE_IDS,
+    EXPORTED_SYMBOL_BUNDLE.expected_manifest_id: EXPORTED_SYMBOL_CASE_IDS,
+    PATTERN_OBJECT_BUNDLE.expected_manifest_id: PATTERN_OBJECT_CASE_IDS,
 }
+PUBLIC_SURFACE_SELECTED_CASE_IDS = (
+    *PUBLIC_API_CASE_IDS,
+    *EXPORTED_SYMBOL_CASE_IDS,
+    *PATTERN_OBJECT_CASE_IDS,
+)
 
 
 def _case_contract_token(case: FixtureCase) -> str:
@@ -194,23 +200,18 @@ def test_public_surface_parity_suite_stays_aligned_with_published_fixtures(
 
 def test_public_surface_parity_suite_tracks_published_case_frontier() -> None:
     for bundle in FIXTURE_BUNDLES:
-        selected_case_ids = SELECTED_CASE_IDS_BY_MANIFEST[bundle.expected_manifest_id]
-        published_case_ids = frozenset(manifest_case_ids(bundle))
-        uncovered_case_ids = tuple(
-            case_id
-            for case_id in manifest_case_ids(bundle)
-            if case_id not in selected_case_ids
+        assert_fixture_bundle_tracks_published_case_frontier(
+            bundle,
+            selected_case_ids=SELECTED_CASE_IDS_BY_MANIFEST[bundle.expected_manifest_id],
         )
-
-        assert uncovered_case_ids == ()
-        assert published_case_ids == selected_case_ids
 
 
 def test_public_surface_direct_test_buckets_cover_selected_frontier() -> None:
-    bucket_case_ids = frozenset().union(*DIRECT_TEST_CASE_ID_BUCKETS.values())
-    selected_case_ids = frozenset().union(*SELECTED_CASE_IDS_BY_MANIFEST.values())
-
-    assert bucket_case_ids == selected_case_ids
+    assert_direct_test_case_id_buckets_cover_selected_frontier(
+        DIRECT_TEST_CASE_ID_BUCKETS,
+        selected_case_ids=PUBLIC_SURFACE_SELECTED_CASE_IDS,
+        coverage_label="public surface direct-test case-id buckets",
+    )
 
 
 @pytest.mark.parametrize("case", PUBLIC_HELPER_CASES, ids=lambda case: case.case_id)

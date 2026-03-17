@@ -12,12 +12,13 @@ from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
     FixtureBundleSpec,
+    assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
+    assert_fixture_bundle_tracks_published_case_frontier,
     assert_pattern_parity,
     case_pattern,
     compile_with_cpython_parity,
     load_fixture_bundles,
-    manifest_case_ids,
 )
 
 
@@ -127,8 +128,6 @@ CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES = tuple(
 def _case_ids(cases: tuple[FixtureCase, ...]) -> frozenset[str]:
     return frozenset(case.case_id for case in cases)
 
-
-PARSER_MATRIX_PUBLISHED_CASE_IDS = manifest_case_ids(PARSER_MATRIX_FIXTURE_BUNDLE)
 
 COMPILE_METADATA_CASES = tuple(
     PARSER_MATRIX_CASES_BY_ID[case_id]
@@ -278,37 +277,19 @@ def test_parser_matrix_parity_suite_stays_aligned_with_published_correctness_fix
 
 
 def test_parser_matrix_parity_suite_tracks_published_case_frontier() -> None:
-    selected_case_ids = frozenset(EXPECTED_CASE_IDS)
-    uncovered_case_ids = tuple(
-        case_id
-        for case_id in PARSER_MATRIX_PUBLISHED_CASE_IDS
-        if case_id not in selected_case_ids
-    )
-
-    assert not (
-        selected_case_ids & frozenset(KNOWN_UNCOVERED_PARSER_MATRIX_CASE_IDS)
-    )
-    assert uncovered_case_ids == KNOWN_UNCOVERED_PARSER_MATRIX_CASE_IDS
-    assert frozenset(PARSER_MATRIX_PUBLISHED_CASE_IDS) == (
-        selected_case_ids | frozenset(KNOWN_UNCOVERED_PARSER_MATRIX_CASE_IDS)
+    assert_fixture_bundle_tracks_published_case_frontier(
+        PARSER_MATRIX_FIXTURE_BUNDLE,
+        selected_case_ids=EXPECTED_CASE_IDS,
+        expected_uncovered_case_ids=KNOWN_UNCOVERED_PARSER_MATRIX_CASE_IDS,
     )
 
 
 def test_parser_matrix_direct_test_buckets_cover_selected_frontier() -> None:
-    bucket_case_ids = frozenset().union(
-        *PARSER_MATRIX_DIRECT_TEST_CASE_ID_BUCKETS.values()
+    assert_direct_test_case_id_buckets_cover_selected_frontier(
+        PARSER_MATRIX_DIRECT_TEST_CASE_ID_BUCKETS,
+        selected_case_ids=EXPECTED_CASE_IDS,
+        coverage_label="parser matrix direct-test case-id buckets",
     )
-    missing_case_ids = tuple(
-        case_id for case_id in EXPECTED_CASE_IDS if case_id not in bucket_case_ids
-    )
-    unexpected_case_ids = tuple(
-        case_id
-        for case_id in sorted(bucket_case_ids)
-        if case_id not in frozenset(EXPECTED_CASE_IDS)
-    )
-
-    assert missing_case_ids == ()
-    assert unexpected_case_ids == ()
 
 
 def test_conditional_assertion_diagnostic_fixture_stays_aligned_with_published_correctness_fixture() -> None:

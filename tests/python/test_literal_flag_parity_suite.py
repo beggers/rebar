@@ -12,14 +12,15 @@ from tests.python.fixture_parity_support import (
     FixtureBundleSpec,
     LITERAL_FLAG_DELEGATED_CASE_IDS,
     RecordingNativeBoundary,
+    assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
+    assert_fixture_bundle_tracks_published_case_frontier,
     assert_match_convenience_api_parity,
     assert_match_result_parity,
     assert_pattern_parity,
     case_pattern,
     compile_with_cpython_parity,
     load_fixture_bundles,
-    manifest_case_ids,
 )
 
 
@@ -191,7 +192,6 @@ LITERAL_FLAG_FIXTURE_BUNDLE, = load_fixture_bundles(
 LITERAL_FLAG_CASES_BY_ID = {
     case.case_id: case for case in LITERAL_FLAG_FIXTURE_BUNDLE.cases
 }
-LITERAL_FLAG_PUBLISHED_CASE_IDS = manifest_case_ids(LITERAL_FLAG_FIXTURE_BUNDLE)
 LITERAL_FLAG_DIRECT_TEST_CASE_ID_BUCKETS = {
     "module-ignorecase": frozenset(
         {
@@ -435,33 +435,19 @@ def test_literal_flag_suite_stays_aligned_with_published_correctness_fixture() -
 
 
 def test_literal_flag_parity_suite_tracks_published_case_frontier() -> None:
-    selected_case_ids = frozenset(TARGET_FIXTURE_CASE_IDS)
-    uncovered_case_ids = tuple(
-        case_id
-        for case_id in LITERAL_FLAG_PUBLISHED_CASE_IDS
-        if case_id not in selected_case_ids
-    )
-
-    assert not (selected_case_ids & frozenset(LITERAL_FLAG_DELEGATED_CASE_IDS))
-    assert uncovered_case_ids == LITERAL_FLAG_DELEGATED_CASE_IDS
-    assert frozenset(LITERAL_FLAG_PUBLISHED_CASE_IDS) == (
-        selected_case_ids | frozenset(LITERAL_FLAG_DELEGATED_CASE_IDS)
+    assert_fixture_bundle_tracks_published_case_frontier(
+        LITERAL_FLAG_FIXTURE_BUNDLE,
+        selected_case_ids=TARGET_FIXTURE_CASE_IDS,
+        expected_uncovered_case_ids=LITERAL_FLAG_DELEGATED_CASE_IDS,
     )
 
 
 def test_literal_flag_direct_test_buckets_cover_selected_frontier() -> None:
-    bucket_case_ids = frozenset().union(*LITERAL_FLAG_DIRECT_TEST_CASE_ID_BUCKETS.values())
-    missing_case_ids = tuple(
-        case_id for case_id in TARGET_FIXTURE_CASE_IDS if case_id not in bucket_case_ids
+    assert_direct_test_case_id_buckets_cover_selected_frontier(
+        LITERAL_FLAG_DIRECT_TEST_CASE_ID_BUCKETS,
+        selected_case_ids=TARGET_FIXTURE_CASE_IDS,
+        coverage_label="literal flag direct-test case-id buckets",
     )
-    unexpected_case_ids = tuple(
-        case_id
-        for case_id in sorted(bucket_case_ids)
-        if case_id not in frozenset(TARGET_FIXTURE_CASE_IDS)
-    )
-
-    assert missing_case_ids == ()
-    assert unexpected_case_ids == ()
 
 
 @pytest.mark.parametrize("case", MODULE_IGNORECASE_CASES, ids=lambda case: case.id)

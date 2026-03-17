@@ -1,6 +1,6 @@
 # RBR-0557: Collapse parity-suite frontier assertions onto fixture support helpers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -63,3 +63,9 @@ Created: 2026-03-17
   - those matches are all variations of the same published-frontier and direct-bucket case-id comparison logic that `tests/python/fixture_parity_support.py` does not yet own.
 - 2026-03-17 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_public_surface_parity_suite.py tests/python/test_parser_matrix_parity_suite.py tests/python/test_match_behavior_parity_suite.py tests/python/test_module_workflow_parity_suite.py tests/python/test_literal_flag_parity_suite.py` passes (`482 passed, 29 skipped in 0.44s`).
+- Completed 2026-03-17:
+  - Added `assert_fixture_bundle_tracks_published_case_frontier(...)` and `assert_direct_test_case_id_buckets_cover_selected_frontier(...)` to `tests/python/fixture_parity_support.py` so the shared support layer now owns the repeated published-frontier and direct-bucket assertions.
+  - Updated the five targeted parity suites to call the shared helpers without changing their selected case ids, uncovered/delegated case ids, or direct bucket contents.
+  - Added focused helper coverage in `tests/python/test_fixture_parity_support_contract.py` for ordered uncovered case ids, exact direct-bucket coverage, and clear missing/unexpected bucket failure reporting.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_public_surface_parity_suite.py tests/python/test_parser_matrix_parity_suite.py tests/python/test_match_behavior_parity_suite.py tests/python/test_module_workflow_parity_suite.py tests/python/test_literal_flag_parity_suite.py` (`485 passed, 29 skipped in 0.55s`).
+  - Verified `rg -n "uncovered_case_ids = tuple\\(|missing_case_ids = tuple\\(|unexpected_case_ids = tuple\\(|manifest_case_ids\\(" tests/python/test_public_surface_parity_suite.py tests/python/test_parser_matrix_parity_suite.py tests/python/test_match_behavior_parity_suite.py tests/python/test_module_workflow_parity_suite.py tests/python/test_literal_flag_parity_suite.py` now returns no matches.

@@ -10,12 +10,13 @@ from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
     FixtureBundleSpec,
+    assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
+    assert_fixture_bundle_tracks_published_case_frontier,
     assert_match_convenience_api_parity,
     assert_match_result_parity,
     case_pattern,
     load_fixture_bundles,
-    manifest_case_ids,
 )
 
 
@@ -49,7 +50,6 @@ MATCH_BEHAVIOR_BUNDLE, = load_fixture_bundles(
     )
 )
 MATCH_BEHAVIOR_CASES = tuple(MATCH_BEHAVIOR_BUNDLE.cases)
-MATCH_BEHAVIOR_PUBLISHED_CASE_IDS = manifest_case_ids(MATCH_BEHAVIOR_BUNDLE)
 DIRECT_TEST_CASE_IDS = frozenset(case.case_id for case in MATCH_BEHAVIOR_CASES)
 
 
@@ -117,19 +117,18 @@ def test_match_behavior_parity_suite_stays_aligned_with_published_fixture() -> N
 
 
 def test_match_behavior_parity_suite_tracks_published_case_frontier() -> None:
-    selected_case_ids = frozenset(EXPECTED_CASE_IDS)
-    uncovered_case_ids = tuple(
-        case_id
-        for case_id in MATCH_BEHAVIOR_PUBLISHED_CASE_IDS
-        if case_id not in selected_case_ids
+    assert_fixture_bundle_tracks_published_case_frontier(
+        MATCH_BEHAVIOR_BUNDLE,
+        selected_case_ids=EXPECTED_CASE_IDS,
     )
-
-    assert uncovered_case_ids == ()
-    assert frozenset(MATCH_BEHAVIOR_PUBLISHED_CASE_IDS) == selected_case_ids
 
 
 def test_match_behavior_direct_test_bucket_covers_selected_frontier() -> None:
-    assert DIRECT_TEST_CASE_IDS == frozenset(EXPECTED_CASE_IDS)
+    assert_direct_test_case_id_buckets_cover_selected_frontier(
+        {"module-call": DIRECT_TEST_CASE_IDS},
+        selected_case_ids=EXPECTED_CASE_IDS,
+        coverage_label="match behavior direct-test case-id bucket",
+    )
 
 
 def test_match_behavior_supplemental_bytes_cases_cover_missing_module_paths() -> None:
