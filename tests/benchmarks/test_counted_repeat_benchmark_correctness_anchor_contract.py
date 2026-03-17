@@ -18,16 +18,11 @@ RANGED_REPEAT_MANIFEST_PATH = (
 from rebar_harness.benchmarks import load_manifest
 from tests.benchmarks.correctness_anchor_support import (
     anchored_workload_case_ids,
+    assert_anchored_workload_case_result_parity,
+    expected_anchored_workload_case_pairs,
     freeze_signature_value,
     published_case_ids_by_signature,
-    published_cases_by_id,
-    run_benchmark_workload_with_cpython,
-    run_correctness_case_with_cpython,
     unanchored_workload_ids,
-)
-from tests.python.fixture_parity_support import (
-    assert_match_result_parity,
-    assert_pattern_parity,
 )
 
 
@@ -270,32 +265,10 @@ def test_counted_repeat_workloads_stay_pinned_to_exact_case_ids(
 def test_counted_repeat_workload_callbacks_match_anchor_case_results(
     definition: CountedRepeatBenchmarkAnchorContractDefinition,
 ) -> None:
-    manifest = load_manifest(definition.manifest_path)
-    workloads_by_id = {
-        workload.workload_id: workload
-        for workload in manifest.workloads
-        if _is_non_alternation_counted_repeat_workload(workload)
-    }
-    published_cases = published_cases_by_id()
-
-    for (_, workload_id), case_ids in definition.expected_anchor_case_ids.items():
-        assert len(case_ids) == 1
-        case_id = case_ids[0]
-
-        assert workload_id in workloads_by_id
-        assert case_id in published_cases
-
-        workload = workloads_by_id[workload_id]
-        case = published_cases[case_id]
-        observed = run_benchmark_workload_with_cpython(workload)
-        expected = run_correctness_case_with_cpython(case)
-
-        if workload.operation == "module.compile":
-            assert_pattern_parity("stdlib", observed, expected)
-        else:
-            assert_match_result_parity(
-                "stdlib",
-                observed,
-                expected,
-                check_regs=True,
-            )
+    assert_anchored_workload_case_result_parity(
+        expected_anchored_workload_case_pairs(
+            definition.manifest_path,
+            expected_anchor_case_ids=definition.expected_anchor_case_ids,
+            include_workload=_is_non_alternation_counted_repeat_workload,
+        )
+    )

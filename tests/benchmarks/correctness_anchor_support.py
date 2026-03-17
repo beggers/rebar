@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
+from dataclasses import dataclass
 from functools import cache
 import pathlib
 import re
@@ -8,6 +9,19 @@ from typing import Any
 
 from rebar_harness.benchmarks import build_callable, load_manifest
 from rebar_harness.correctness import published_fixture_manifests
+from tests.python.fixture_parity_support import (
+    assert_match_result_parity,
+    assert_pattern_parity,
+)
+
+
+@dataclass(frozen=True, slots=True)
+class AnchoredWorkloadCasePair:
+    manifest_name: str
+    workload_id: str
+    case_id: str
+    workload: Any
+    case: Any
 
 
 def freeze_signature_value(value: Any) -> Any:
@@ -89,6 +103,83 @@ def unanchored_workload_ids(
         if (include_workload is None or include_workload(workload))
         and workload_signature(workload) not in anchor_case_ids
     )
+
+
+def expected_anchored_workload_case_pairs(
+    manifest_path: pathlib.Path,
+    *,
+    expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]],
+    include_workload: Callable[[Any], bool] | None = None,
+) -> tuple[AnchoredWorkloadCasePair, ...]:
+    manifest_name = manifest_path.name
+    workloads_by_id = {
+        workload.workload_id: workload
+        for workload in load_manifest(manifest_path).workloads
+        if include_workload is None or include_workload(workload)
+    }
+    published_cases = published_cases_by_id()
+    anchored_pairs: list[AnchoredWorkloadCasePair] = []
+
+    for (expected_manifest_name, workload_id), case_ids in expected_anchor_case_ids.items():
+        if expected_manifest_name != manifest_name:
+            raise AssertionError(
+                f"expected anchored manifest {expected_manifest_name!r} "
+                f"does not match {manifest_name!r}"
+            )
+        if len(case_ids) != 1:
+            raise AssertionError(
+                "expected exactly one published correctness case for "
+                f"{(expected_manifest_name, workload_id)!r}, got {case_ids!r}"
+            )
+
+        case_id = case_ids[0]
+        if workload_id not in workloads_by_id:
+            raise AssertionError(
+                f"expected anchored workload {workload_id!r} to be in scope for "
+                f"{manifest_name!r}"
+            )
+        if case_id not in published_cases:
+            raise AssertionError(
+                f"expected anchored correctness case {case_id!r} to be published"
+            )
+
+        anchored_pairs.append(
+            AnchoredWorkloadCasePair(
+                manifest_name=manifest_name,
+                workload_id=workload_id,
+                case_id=case_id,
+                workload=workloads_by_id[workload_id],
+                case=published_cases[case_id],
+            )
+        )
+
+    return tuple(anchored_pairs)
+
+
+def assert_anchored_workload_case_result_parity(
+    anchored_pairs: Iterable[AnchoredWorkloadCasePair],
+) -> None:
+    for anchored_pair in anchored_pairs:
+        observed = run_benchmark_workload_with_cpython(anchored_pair.workload)
+        expected = run_correctness_case_with_cpython(anchored_pair.case)
+
+        if anchored_pair.workload.operation == "module.compile":
+            assert_pattern_parity("stdlib", observed, expected)
+            continue
+
+        if anchored_pair.workload.operation in {"module.search", "pattern.fullmatch"}:
+            assert_match_result_parity(
+                "stdlib",
+                observed,
+                expected,
+                check_regs=True,
+            )
+            continue
+
+        raise AssertionError(
+            "unexpected anchored benchmark workload operation "
+            f"{anchored_pair.workload.operation!r}"
+        )
 
 
 def run_benchmark_workload_with_cpython(workload: Any) -> object:

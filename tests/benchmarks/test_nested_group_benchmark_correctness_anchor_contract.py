@@ -11,16 +11,11 @@ NESTED_GROUP_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "nested_gr
 from rebar_harness.benchmarks import load_manifest
 from tests.benchmarks.correctness_anchor_support import (
     anchored_workload_case_ids,
+    assert_anchored_workload_case_result_parity,
+    expected_anchored_workload_case_pairs,
     freeze_signature_value,
     published_case_ids_by_signature,
-    published_cases_by_id,
-    run_benchmark_workload_with_cpython,
-    run_correctness_case_with_cpython,
     unanchored_workload_ids,
-)
-from tests.python.fixture_parity_support import (
-    assert_match_result_parity,
-    assert_pattern_parity,
 )
 
 
@@ -178,35 +173,18 @@ class NestedGroupBenchmarkCorrectnessAnchorContractTest(unittest.TestCase):
     def test_measured_nested_group_workload_callbacks_match_anchor_case_results(
         self,
     ) -> None:
-        manifest = load_manifest(NESTED_GROUP_MANIFEST_PATH)
-        workloads_by_id = {
-            workload.workload_id: workload
-            for workload in manifest.workloads
-            if workload.workload_id not in EXPECTED_NESTED_GROUP_KNOWN_GAP_WORKLOAD_IDS
-        }
-        published_cases = published_cases_by_id()
-
-        for (_, workload_id), case_ids in EXPECTED_NESTED_GROUP_ANCHOR_CASE_IDS.items():
-            self.assertEqual(len(case_ids), 1)
-            case_id = case_ids[0]
-
-            with self.subTest(workload_id=workload_id, case_id=case_id):
-                self.assertIn(workload_id, workloads_by_id)
-                self.assertIn(case_id, published_cases)
-                workload = workloads_by_id[workload_id]
-                case = published_cases[case_id]
-                observed = run_benchmark_workload_with_cpython(workload)
-                expected = run_correctness_case_with_cpython(case)
-
-                if workload.operation == "module.compile":
-                    assert_pattern_parity("stdlib", observed, expected)
-                else:
-                    assert_match_result_parity(
-                        "stdlib",
-                        observed,
-                        expected,
-                        check_regs=True,
-                    )
+        for anchored_pair in expected_anchored_workload_case_pairs(
+            NESTED_GROUP_MANIFEST_PATH,
+            expected_anchor_case_ids=EXPECTED_NESTED_GROUP_ANCHOR_CASE_IDS,
+            include_workload=lambda workload: (
+                workload.workload_id not in EXPECTED_NESTED_GROUP_KNOWN_GAP_WORKLOAD_IDS
+            ),
+        ):
+            with self.subTest(
+                workload_id=anchored_pair.workload_id,
+                case_id=anchored_pair.case_id,
+            ):
+                assert_anchored_workload_case_result_parity((anchored_pair,))
 
 
 if __name__ == "__main__":

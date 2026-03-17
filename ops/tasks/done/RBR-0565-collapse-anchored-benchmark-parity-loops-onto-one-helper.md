@@ -1,6 +1,6 @@
 # RBR-0565: Collapse anchored benchmark parity loops onto one helper
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -55,3 +55,9 @@ Created: 2026-03-17
   - those matches are the repeated workload/case lookup plus CPython result-parity loop that already sits adjacent to shared low-level anchor helpers in `tests/benchmarks/correctness_anchor_support.py`.
 - 2026-03-17 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_counted_repeat_benchmark_correctness_anchor_contract.py tests/benchmarks/test_nested_group_benchmark_correctness_anchor_contract.py tests/benchmarks/test_optional_group_benchmark_correctness_anchor_contract.py` passes (`15 passed, 6 subtests passed in 0.08s`).
+
+## Completion Notes
+- Added `AnchoredWorkloadCasePair`, `expected_anchored_workload_case_pairs(...)`, and `assert_anchored_workload_case_result_parity(...)` to `tests/benchmarks/correctness_anchor_support.py` so one support layer now owns expected anchored workload/case resolution plus the compile-vs-match CPython parity dispatch.
+- Routed the counted-repeat, nested-group, and optional-group anchor-contract tests through those helpers while preserving the existing exact-repeat/ranged-repeat parametrization, nested-group `subTest(workload_id=..., case_id=...)` labeling, manifest filters, and known-gap exclusions.
+- Removed direct references to `published_cases_by_id`, `run_benchmark_workload_with_cpython`, `run_correctness_case_with_cpython`, `assert_pattern_parity`, and `assert_match_result_parity` from the three targeted test files; those dependencies now live only in `tests/benchmarks/correctness_anchor_support.py` for this cleanup.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_counted_repeat_benchmark_correctness_anchor_contract.py tests/benchmarks/test_nested_group_benchmark_correctness_anchor_contract.py tests/benchmarks/test_optional_group_benchmark_correctness_anchor_contract.py` (`15 passed, 6 subtests passed in 0.09s`) and `rg -n "published_cases_by_id|run_benchmark_workload_with_cpython|run_correctness_case_with_cpython|assert_pattern_parity|assert_match_result_parity" tests/benchmarks/test_counted_repeat_benchmark_correctness_anchor_contract.py tests/benchmarks/test_nested_group_benchmark_correctness_anchor_contract.py tests/benchmarks/test_optional_group_benchmark_correctness_anchor_contract.py` (no matches).
