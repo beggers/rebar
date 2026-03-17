@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness report now covers 1136 cases across 111 manifests, with 1136 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 650 workloads across 30 manifests with 650 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the current published slice is broader and internally green but still incomplete and too narrow for near-full parity or native-path performance claims. |
-| Current milestone | `RBR-0552` should add the six adjacent bytes benchmark mirrors for `rb"a(bc|de){1,}d"` and `rb"a(?P<word>bc|de){1,}d"` on `benchmarks/workloads/open_ended_quantified_group_boundary.py`. |
-| Work queue | `0` ready, `0` in progress, `551` done, `0` blocked |
+| Delivery estimate | The published correctness report now covers 1136 cases across 111 manifests, with 1136 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 656 workloads across 30 manifests with 656 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the current published slice is broader and internally green but still incomplete and too narrow for near-full parity or native-path performance claims. |
+| Current milestone | `RBR-0554` should publish the broader-range open-ended `{2,}` grouped-alternation bytes pair on the existing correctness/parity path. |
+| Work queue | `0` ready, `0` in progress, `553` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,15 +28,15 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `111` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness report now covers 1136 cases across 111 manifests, with 1136 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 650 workloads across 30 manifests with 650 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the current published slice is broader and internally green but still incomplete and too narrow for near-full parity or native-path performance claims._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness report now covers 1136 cases across 111 manifests, with 1136 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 656 workloads across 30 manifests with 656 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the current published slice is broader and internally green but still incomplete and too narrow for near-full parity or native-path performance claims._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `650` |
-| Workloads with real `rebar` timings | `650` |
+| Published workloads | `656` |
+| Workloads with real `rebar` timings | `656` |
 | Known-gap workloads | `0` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
@@ -45,19 +45,19 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- No feature task is seeded; `RBR-0552` is the next intended follow-on: add the six adjacent bytes benchmark mirrors for `rb"a(bc|de){1,}d"` and `rb"a(?P<word>bc|de){1,}d"`.
+- No feature task is seeded; `RBR-0554` is the next intended follow-on: publish the broader-range open-ended `{2,}` grouped-alternation bytes pair on the existing correctness/parity path.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 650 workloads even though the report no longer carries explicit known-gap rows.
+- The published benchmark surface is still bounded at 656 workloads even though the report no longer carries explicit known-gap rows.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The published correctness slice is broader than the early scaffold and now runs fully passing within that bounded slice, but it remains too narrow to imply near-full stdlib `re` parity. With no feature task currently seeded, `RBR-0552` is the next intended benchmark follow-on on the existing open-ended grouped-alternation bytes surface.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The published correctness slice is broader than the early scaffold and now runs fully passing within that bounded slice, but it remains too narrow to imply near-full stdlib `re` parity. With no feature task currently seeded, `RBR-0554` is the next intended correctness/parity follow-on on the broader-range open-ended grouped-alternation bytes surface.
 
-The benchmark story is similarly early. The clearest trustworthy positive signal today is still the tiny parser slice, where 8 workloads are about 2.8x faster on median than CPython. The broader published run still goes through the source-tree shim and is slower overall, so that is signal rather than a general speed claim.
+The benchmark story is similarly early. The clearest trustworthy positive signal today is still the tiny parser slice, where 8 workloads are about 3.0x faster on median than CPython. The broader published run still goes through the source-tree shim and is slower overall, so that is signal rather than a general speed claim.
 
 ## Where To Look
 
