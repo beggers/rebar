@@ -1,6 +1,6 @@
 # RBR-0523: Catch the nested broader-range wider-ranged-repeat grouped-alternation bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -46,4 +46,5 @@ Created: 2026-03-17
   - `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py` currently contains only the six `-str` workload ids for this nested broader grouped-alternation slice and no `-bytes` mirrors;
   - `reports/benchmarks/latest.py` currently publishes `wider-ranged-repeat-quantified-group-boundary` at `81` total workloads / `81` measured workloads / `0` known gaps and the combined source-tree report at `607` total workloads / `607` measured workloads / `0` known gaps; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes now show both target bytes patterns compile and search successfully through `rebar`, so these benchmark rows should measure rather than reopen a runtime gap.
+- 2026-03-17 feature-implementation: added the six bytes mirrors for `a((bc|de){1,4})d` and `a(?P<outer>(bc|de){1,4})d`, updated the wider-ranged benchmark expectations/tests to treat them as measured source-tree workloads, verified `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and regenerated `reports/benchmarks/latest.py` with `wider-ranged-repeat-quantified-group-boundary` at `87` total / `87` measured / `0` known gaps plus the combined report at `613` total / `613` measured / `0` known gaps; all six new bytes rows publish with `status == "measured"`.
 - The surviving follow-on after this task is `RBR-0524`, which should publish the nested broader `{1,4}` bytes grouped-conditional pair on the existing correctness/parity path before bytes parity or benchmark catch-up revisit that family.
