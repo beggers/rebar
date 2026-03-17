@@ -222,9 +222,6 @@ NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES = (
         fullmatch_misses=(b"ae", b"abcbcdede"),
     ),
 )
-DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS = frozenset(
-    {"open-ended-quantified-group-alternation-conditional-workflows"}
-)
 OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
     SupplementalCase(
         id="open-ended-grouped-conditional-numbered-bytes",
@@ -242,28 +239,10 @@ OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
     ),
 )
 
-def _uses_direct_bytes_follow_on(case: FixtureCase) -> bool:
-    return (
-        case.manifest_id in DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS
-        and case.text_model == "bytes"
-    )
 
-
-COMPILE_CASES = tuple(
-    case
-    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
-    if not _uses_direct_bytes_follow_on(case)
-)
-MODULE_CASES = tuple(
-    case
-    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
-    if not _uses_direct_bytes_follow_on(case)
-)
-PATTERN_CASES = tuple(
-    case
-    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
-    if not _uses_direct_bytes_follow_on(case)
-)
+COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
+MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
+PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
 
 
 def _assert_match_group_access_apis_match_cpython(
@@ -450,6 +429,38 @@ def test_open_ended_conditional_bytes_cases_stay_explicit_with_one_direct_follow
     assert published_fullmatch_texts_by_pattern == {
         numbered_case.pattern: {b"abcded", b"abcbcded", b"abcde"},
         named_case.pattern: {b"abcbcded", b"ad"},
+    }
+
+
+def test_open_ended_conditional_bytes_fixture_rows_run_through_generic_case_buckets(
+) -> None:
+    bundle_manifest_id = OPEN_ENDED_CONDITIONAL_BUNDLE.manifest.manifest_id
+    bundle_bytes_cases = tuple(
+        case
+        for case in OPEN_ENDED_CONDITIONAL_BUNDLE.cases
+        if case.text_model == "bytes"
+    )
+
+    assert {
+        case.case_id
+        for case in COMPILE_CASES
+        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
+    } == {
+        case.case_id for case in bundle_bytes_cases if case.operation == "compile"
+    }
+    assert {
+        case.case_id
+        for case in MODULE_CASES
+        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
+    } == {
+        case.case_id for case in bundle_bytes_cases if case.operation == "module_call"
+    }
+    assert {
+        case.case_id
+        for case in PATTERN_CASES
+        if case.manifest_id == bundle_manifest_id and case.text_model == "bytes"
+    } == {
+        case.case_id for case in bundle_bytes_cases if case.operation == "pattern_call"
     }
 
 
