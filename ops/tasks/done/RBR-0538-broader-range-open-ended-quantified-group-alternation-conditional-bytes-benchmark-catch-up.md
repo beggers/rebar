@@ -1,6 +1,6 @@
 # RBR-0538: Catch the broader-range open-ended grouped-alternation-plus-conditional bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -41,6 +41,15 @@ Created: 2026-03-17
 - Add only the directly adjacent bytes mirrors for this broader-range grouped-conditional pair. Do not broaden into broader-range open-ended grouped backtracking-heavy bytes correctness publication, runtime parity follow-ons, or another benchmark family.
 
 ## Notes
+- 2026-03-17 completion:
+  - Added the six broader-range open-ended `{2,}` grouped-alternation-plus-conditional bytes benchmark mirrors to `benchmarks/workloads/open_ended_quantified_group_boundary.py` for the existing numbered and named `module.compile`, `module.search`, and `Pattern.fullmatch` Python-path anchors.
+  - Updated `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the open-ended manifest treats both the existing bounded bytes pair and the new broader-range bytes pair as measured source-tree workloads, and so the broader-range grouped-conditional combined-slice selector now includes the adjacent bytes `module.search` row it legitimately matches.
+  - Regenerated the tracked combined benchmark publication in `reports/benchmarks/latest.py`; the published `open-ended-quantified-group-boundary` manifest now shows `48` total workloads / `48` measured workloads / `0` known gaps, and the tracked combined source-tree report now shows `638` total workloads / `638` measured workloads / `0` known gaps.
+  - `reports/correctness/latest.py` was intentionally unchanged; this run was benchmark catch-up only.
+  - Verified with:
+    - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+    - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/open_ended_quantified_group_boundary.py --report .rebar/tmp/rbr-0538-broader-range-open-ended-grouped-conditional-bytes-benchmarks.py`
+    - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
 - Build on `RBR-0537`.
 - 2026-03-17 feature-planning probes confirm this task is not stale:
   - `benchmarks/workloads/open_ended_quantified_group_boundary.py` currently contains only the six existing broader-range grouped-conditional source-tree rows for this slice and none of the six planned `-bytes` mirrors;

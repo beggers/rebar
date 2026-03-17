@@ -215,6 +215,12 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             "module-compile-named-open-ended-group-conditional-warm-bytes",
             "module-search-named-open-ended-group-conditional-fourth-repetition-de-warm-bytes",
             "pattern-fullmatch-named-open-ended-group-conditional-third-repetition-mixed-purged-bytes",
+            "module-compile-numbered-open-ended-group-broader-range-conditional-cold-bytes",
+            "module-search-numbered-open-ended-group-broader-range-conditional-second-repetition-bc-warm-bytes",
+            "pattern-fullmatch-numbered-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
+            "module-compile-named-open-ended-group-broader-range-conditional-warm-bytes",
+            "module-search-named-open-ended-group-broader-range-conditional-fourth-repetition-de-warm-bytes",
+            "pattern-fullmatch-named-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
         )
         case = source_tree_combined_case(manifest_id)
         public_representatives = (

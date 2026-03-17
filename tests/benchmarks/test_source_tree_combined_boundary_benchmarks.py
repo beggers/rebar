@@ -797,6 +797,12 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             "module-compile-named-open-ended-group-conditional-warm-bytes",
             "module-search-named-open-ended-group-conditional-fourth-repetition-de-warm-bytes",
             "pattern-fullmatch-named-open-ended-group-conditional-third-repetition-mixed-purged-bytes",
+            "module-compile-numbered-open-ended-group-broader-range-conditional-cold-bytes",
+            "module-search-numbered-open-ended-group-broader-range-conditional-second-repetition-bc-warm-bytes",
+            "pattern-fullmatch-numbered-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
+            "module-compile-named-open-ended-group-broader-range-conditional-warm-bytes",
+            "module-search-named-open-ended-group-broader-range-conditional-fourth-repetition-de-warm-bytes",
+            "pattern-fullmatch-named-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
         )
         manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
         self.assertIsNone(manifest_definition.known_gap_workload_ids)
@@ -827,8 +833,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
         manifest_summary = scorecard["manifests"][manifest_id]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
-        self.assertEqual(manifest_summary["measured_workloads"], 42)
-        self.assertEqual(manifest_summary["workload_count"], 42)
+        self.assertEqual(manifest_summary["measured_workloads"], 48)
+        self.assertEqual(manifest_summary["workload_count"], 48)
 
         for workload_id in expected_workload_ids:
             with self.subTest(measured_workload_id=workload_id):

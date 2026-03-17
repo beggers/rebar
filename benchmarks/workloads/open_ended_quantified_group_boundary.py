@@ -699,6 +699,250 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-compile-numbered-open-ended-group-broader-range-conditional-cold-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a((bc|de){2,})?(?(1)d|e)",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "conditional",
+        "optional-group",
+        "bytes",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation",
+        "conditionals"
+      ],
+      "notes": [
+        "Cold bytes module.compile benchmark for the broader-range numbered open-ended grouped-alternation-plus-conditional slice so `{2,}` compile metadata joins the published benchmark report on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-numbered-open-ended-group-broader-range-conditional-second-repetition-bc-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a((bc|de){2,})?(?(1)d|e)",
+      "haystack": "zzabcbcdzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "conditional",
+        "optional-group",
+        "search",
+        "module",
+        "present",
+        "second-repetition",
+        "bc-branch",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the broader-range numbered open-ended grouped-alternation-plus-conditional workflow after two `bc` repetitions keep group 1 present before the yes arm accepts `d`."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a((bc|de){2,})?(?(1)d|e)",
+      "haystack": "abcbcded",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "conditional",
+        "optional-group",
+        "fullmatch",
+        "present",
+        "third-repetition",
+        "mixed-branches",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the broader-range numbered open-ended grouped-alternation-plus-conditional workflow on a mixed third-repetition branch order."
+      ]
+    },
+    {
+      "id": "module-compile-named-open-ended-group-broader-range-conditional-warm-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<outer>(bc|de){2,})?(?(outer)d|e)",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "conditional",
+        "optional-group",
+        "named-group",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm bytes module.compile benchmark for the broader-range named open-ended grouped-alternation-plus-conditional slice so named `{2,}` compile metadata joins the published report on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-named-open-ended-group-broader-range-conditional-fourth-repetition-de-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<outer>(bc|de){2,})?(?(outer)d|e)",
+      "haystack": "zzadedededzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "conditional",
+        "optional-group",
+        "named-group",
+        "search",
+        "module",
+        "present",
+        "fourth-repetition",
+        "de-branch",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the broader-range named open-ended grouped-alternation-plus-conditional workflow after four `de` repetitions keep the named outer group present before the yes arm accepts `d`."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<outer>(bc|de){2,})?(?(outer)d|e)",
+      "haystack": "abcbcded",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "conditional",
+        "optional-group",
+        "named-group",
+        "fullmatch",
+        "present",
+        "third-repetition",
+        "mixed-branches",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the broader-range named open-ended grouped-alternation-plus-conditional workflow on a mixed third-repetition branch order."
+      ]
+    },
+    {
       "id": "module-compile-numbered-open-ended-group-broader-range-backtracking-heavy-cold-str",
       "bucket": "module-compile",
       "family": "module",
