@@ -2821,18 +2821,6 @@ def load_correctness_harness_module() -> Any:
     return correctness_harness
 
 
-def expected_correctness_manifest_ids(correctness_harness: Any) -> list[str]:
-    fixture_paths = tuple(Path(path) for path in correctness_harness.DEFAULT_FIXTURE_PATHS)
-    manifests = correctness_harness.load_fixture_manifests(fixture_paths)
-    return [
-        manifest_id
-        for manifest_id in (
-            str(getattr(manifest, "manifest_id", "") or "").strip() for manifest in manifests
-        )
-        if manifest_id
-    ]
-
-
 def published_correctness_report_needs_refresh(correctness_harness: Any) -> bool:
     if correctness_harness.SCORECARD_REPORT.legacy_path.exists():
         return True
@@ -2850,7 +2838,14 @@ def published_correctness_report_needs_refresh(correctness_harness: Any) -> bool
     if not isinstance(fixtures, dict):
         return True
 
-    expected_manifest_ids = expected_correctness_manifest_ids(correctness_harness)
+    expected_manifest_ids = [
+        manifest_id
+        for manifest_id in (
+            str(getattr(manifest, "manifest_id", "") or "").strip()
+            for manifest in correctness_harness.published_fixture_manifests()
+        )
+        if manifest_id
+    ]
     manifest_count = fixtures.get("manifest_count")
     manifest_ids = fixtures.get("manifest_ids")
 

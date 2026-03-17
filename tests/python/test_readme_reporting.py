@@ -81,9 +81,11 @@ class ReadmeReportingTest(unittest.TestCase):
             self.assertFalse(LEGACY_CORRECTNESS_REPORT_PATH.exists())
 
             repaired_payload = _load_correctness_scorecard(CORRECTNESS_REPORT_PATH)
-            expected_manifest_ids = rebar_ops.expected_correctness_manifest_ids(
-                rebar_ops.load_correctness_harness_module()
-            )
+            correctness_harness = rebar_ops.load_correctness_harness_module()
+            expected_manifest_ids = [
+                manifest.manifest_id
+                for manifest in correctness_harness.published_fixture_manifests()
+            ]
             self.assertEqual(repaired_payload["fixtures"]["manifest_count"], len(expected_manifest_ids))
             self.assertEqual(repaired_payload["fixtures"]["manifest_ids"], expected_manifest_ids)
         finally:
@@ -110,9 +112,11 @@ class ReadmeReportingTest(unittest.TestCase):
             self.assertIsInstance(refreshed, dict)
 
             repaired_payload = _load_correctness_scorecard(CORRECTNESS_REPORT_PATH)
-            expected_manifest_ids = rebar_ops.expected_correctness_manifest_ids(
-                rebar_ops.load_correctness_harness_module()
-            )
+            correctness_harness = rebar_ops.load_correctness_harness_module()
+            expected_manifest_ids = [
+                manifest.manifest_id
+                for manifest in correctness_harness.published_fixture_manifests()
+            ]
             self.assertEqual(
                 repaired_payload["fixtures"]["manifest_count"], len(expected_manifest_ids)
             )

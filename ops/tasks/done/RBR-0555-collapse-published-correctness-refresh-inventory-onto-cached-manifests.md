@@ -1,6 +1,6 @@
 # RBR-0555: Collapse published correctness refresh inventory onto cached manifests
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -68,3 +68,9 @@ Created: 2026-03-17
 - 2026-03-17 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_readme_reporting.py` passes (`7 passed in 1.63s`).
   - The inline probe above prints `ok` in the current checkout.
+- Completed 2026-03-17:
+  - Removed `expected_correctness_manifest_ids(...)` from `scripts/rebar_ops.py` and made `published_correctness_report_needs_refresh(...)` read expected manifest ids directly from `correctness_harness.published_fixture_manifests()`.
+  - Updated `tests/python/test_readme_reporting.py` so the two correctness refresh tests compare repaired scorecards against the harness-owned published manifest inventory without a replacement wrapper helper.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_readme_reporting.py` (`7 passed in 1.57s`).
+  - Verified the published correctness scorecard still matches the cached harness manifest inventory and no refresh is needed with the task’s inline `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` probe (`ok`).
+  - Verified `rg -n "def expected_correctness_manifest_ids\\(|load_fixture_manifests\\(|expected_correctness_manifest_ids\\(" scripts/rebar_ops.py tests/python/test_readme_reporting.py` now returns no matches.
