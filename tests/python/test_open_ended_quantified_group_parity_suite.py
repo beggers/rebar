@@ -6,6 +6,7 @@ from itertools import product
 import re
 
 import pytest
+import rebar
 
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
@@ -42,6 +43,8 @@ class SupplementalCase:
     search_misses: tuple[bytes, ...] = ()
     fullmatch_matches: tuple[bytes, ...] = ()
     fullmatch_misses: tuple[bytes, ...] = ()
+    unsupported_backends: tuple[str, ...] = ()
+    unsupported_backend_reason: str | None = None
 
 
 @dataclass(frozen=True)
@@ -77,15 +80,18 @@ FIXTURE_BUNDLE_SPECS = (
             {
                 r"a((bc|de){1,})?(?(1)d|e)",
                 r"a(?P<outer>(bc|de){1,})?(?(outer)d|e)",
+                rb"a((bc|de){1,})?(?(1)d|e)",
+                rb"a(?P<outer>(bc|de){1,})?(?(outer)d|e)",
             }
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("compile", None): 2,
-                ("module_call", "search"): 6,
-                ("pattern_call", "fullmatch"): 5,
+                ("compile", None): 4,
+                ("module_call", "search"): 12,
+                ("pattern_call", "fullmatch"): 10,
             }
         ),
+        expected_text_models=frozenset({"bytes", "str"}),
     ),
     FixtureBundleSpec(
         "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
@@ -185,6 +191,10 @@ OPEN_ENDED_ALTERNATION_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "open-ended-quantified-group-alternation-workflows",
 )
+OPEN_ENDED_CONDITIONAL_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "open-ended-quantified-group-alternation-conditional-workflows",
+)
 OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "open-ended-quantified-group-alternation-backtracking-heavy-workflows",
@@ -213,16 +223,68 @@ NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES = (
         fullmatch_misses=(b"ae", b"abcbcdede"),
     ),
 )
+DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS = frozenset(
+    {"open-ended-quantified-group-alternation-conditional-workflows"}
+)
+PENDING_REBAR_CONDITIONAL_BYTES_REASON = (
+    "rebar bytes parity for the open-ended grouped conditional remains queued behind RBR-0533"
+)
+OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
+    SupplementalCase(
+        id="open-ended-grouped-conditional-numbered-bytes",
+        pattern=rb"a((bc|de){1,})?(?(1)d|e)",
+        search_matches=(b"zzaezz", b"zzabcdzz", b"zzadedzz"),
+        fullmatch_matches=(b"abcded", b"abcbcded"),
+        fullmatch_misses=(b"abcde",),
+        unsupported_backends=("rebar",),
+        unsupported_backend_reason=PENDING_REBAR_CONDITIONAL_BYTES_REASON,
+    ),
+    SupplementalCase(
+        id="open-ended-grouped-conditional-named-bytes",
+        pattern=rb"a(?P<outer>(bc|de){1,})?(?(outer)d|e)",
+        search_matches=(b"zzaezz", b"zzadedzz", b"zzadedededzz"),
+        fullmatch_matches=(b"abcbcded",),
+        fullmatch_misses=(b"ad",),
+        unsupported_backends=("rebar",),
+        unsupported_backend_reason=PENDING_REBAR_CONDITIONAL_BYTES_REASON,
+    ),
+)
 
 
-COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
-MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
-PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
+@pytest.fixture
+def rebar_backend() -> object:
+    if not rebar.native_module_loaded():
+        pytest.skip("backend parity requires rebar._rebar")
+    return rebar
+
+
+def _uses_direct_bytes_follow_on(case: FixtureCase) -> bool:
+    return (
+        case.manifest_id in DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS
+        and case.text_model == "bytes"
+    )
+
+
+COMPILE_CASES = tuple(
+    case
+    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
+    if not _uses_direct_bytes_follow_on(case)
+)
+MODULE_CASES = tuple(
+    case
+    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
+    if not _uses_direct_bytes_follow_on(case)
+)
+PATTERN_CASES = tuple(
+    case
+    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
+    if not _uses_direct_bytes_follow_on(case)
+)
 
 
 def _assert_match_group_access_apis_match_cpython(
     observed: object,
-    expected: re.Match[str],
+    expected: re.Match[str] | re.Match[bytes],
 ) -> None:
     assert_valid_match_group_access_parity(observed, expected)
     assert_invalid_match_group_access_parity(observed, expected)
@@ -323,6 +385,88 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
         bundle,
         pattern_extractor=case_pattern,
     )
+
+
+def test_open_ended_conditional_bytes_cases_stay_explicit_with_one_direct_follow_on_anchor(
+) -> None:
+    bundle_str_cases = tuple(
+        case
+        for case in OPEN_ENDED_CONDITIONAL_BUNDLE.cases
+        if case.text_model == "str"
+    )
+    bundle_bytes_cases = tuple(
+        case
+        for case in OPEN_ENDED_CONDITIONAL_BUNDLE.cases
+        if case.text_model == "bytes"
+    )
+    expected_compile_patterns = frozenset(
+        case_pattern(case)
+        for case in fixture_cases_for_operation(
+            (OPEN_ENDED_CONDITIONAL_BUNDLE,),
+            "compile",
+        )
+        if case.text_model == "bytes"
+    )
+
+    assert len(OPEN_ENDED_CONDITIONAL_BYTES_CASES) == 2
+    assert {case.id for case in OPEN_ENDED_CONDITIONAL_BYTES_CASES} == {
+        "open-ended-grouped-conditional-numbered-bytes",
+        "open-ended-grouped-conditional-named-bytes",
+    }
+    assert {case.pattern for case in OPEN_ENDED_CONDITIONAL_BYTES_CASES} == (
+        expected_compile_patterns
+    )
+    assert len(bundle_str_cases) == len(bundle_bytes_cases) == 13
+    assert {case.case_id for case in bundle_bytes_cases} == {
+        f"{case.case_id.removesuffix('-str')}-bytes" for case in bundle_str_cases
+    }
+    assert Counter((case.operation, case.helper) for case in bundle_bytes_cases) == Counter(
+        {
+            ("compile", None): 2,
+            ("module_call", "search"): 6,
+            ("pattern_call", "fullmatch"): 5,
+        }
+    )
+
+    for case in OPEN_ENDED_CONDITIONAL_BYTES_CASES:
+        assert case.unsupported_backends == ("rebar",)
+        assert case.unsupported_backend_reason == PENDING_REBAR_CONDITIONAL_BYTES_REASON
+        assert case.search_misses == ()
+        assert set(case.search_matches).isdisjoint(case.search_misses)
+        assert set(case.fullmatch_matches).isdisjoint(case.fullmatch_misses)
+        assert all(
+            isinstance(text, bytes)
+            for text in (
+                *case.search_matches,
+                *case.search_misses,
+                *case.fullmatch_matches,
+                *case.fullmatch_misses,
+            )
+        )
+
+    published_module_texts_by_pattern: dict[bytes, set[bytes]] = {}
+    published_fullmatch_texts_by_pattern: dict[bytes, set[bytes]] = {}
+    for case in bundle_bytes_cases:
+        pattern = case_pattern(case)
+        assert isinstance(pattern, bytes)
+        if case.operation == "module_call":
+            text = case.args[1]
+            assert isinstance(text, bytes)
+            published_module_texts_by_pattern.setdefault(pattern, set()).add(text)
+        elif case.operation == "pattern_call":
+            text = case.args[0]
+            assert isinstance(text, bytes)
+            published_fullmatch_texts_by_pattern.setdefault(pattern, set()).add(text)
+
+    numbered_case, named_case = OPEN_ENDED_CONDITIONAL_BYTES_CASES
+    assert published_module_texts_by_pattern == {
+        numbered_case.pattern: {b"zzaezz", b"zzabcdzz", b"zzadedzz"},
+        named_case.pattern: {b"zzaezz", b"zzadedzz", b"zzadedededzz"},
+    }
+    assert published_fullmatch_texts_by_pattern == {
+        numbered_case.pattern: {b"abcded", b"abcbcded", b"abcde"},
+        named_case.pattern: {b"abcbcded", b"ad"},
+    }
 
 
 def test_nested_open_ended_alternation_bytes_cases_stay_explicit_with_one_direct_follow_on_anchor(
@@ -474,6 +618,184 @@ def test_open_ended_backtracking_trace_cases_cover_all_declared_branch_orders() 
         assert {case.search_text for case in matching_cases} == {
             f"zz{text}zz" for text in EXPECTED_OPEN_ENDED_BACKTRACKING_FULLMATCH_TEXTS
         }
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_open_ended_conditional_bytes_compile_metadata_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    compile_with_cpython_parity(backend_name, backend, case.pattern)
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_open_ended_conditional_bytes_module_search_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    for text in case.search_matches:
+        observed = backend.search(case.pattern, text)
+        expected = re.search(case.pattern, text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_match_parity(backend_name, observed, expected, check_regs=True)
+
+    for text in case.search_misses:
+        assert backend.search(case.pattern, text) is None
+        assert re.search(case.pattern, text) is None
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_open_ended_conditional_bytes_module_search_convenience_api_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalCase,
+) -> None:
+    _, backend = regex_backend
+
+    for text in case.search_matches:
+        observed = backend.search(case.pattern, text)
+        expected = re.search(case.pattern, text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_open_ended_conditional_bytes_module_search_match_group_access_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalCase,
+) -> None:
+    _, backend = regex_backend
+
+    for text in case.search_matches:
+        observed = backend.search(case.pattern, text)
+        expected = re.search(case.pattern, text)
+
+        assert observed is not None
+        assert expected is not None
+        _assert_match_group_access_apis_match_cpython(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_open_ended_conditional_bytes_pattern_fullmatch_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    for text in case.fullmatch_matches:
+        observed = observed_pattern.fullmatch(text)
+        expected = expected_pattern.fullmatch(text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_match_parity(backend_name, observed, expected, check_regs=True)
+
+    for text in case.fullmatch_misses:
+        assert observed_pattern.fullmatch(text) is None
+        assert expected_pattern.fullmatch(text) is None
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_open_ended_conditional_bytes_pattern_fullmatch_convenience_api_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    for text in case.fullmatch_matches:
+        observed = observed_pattern.fullmatch(text)
+        expected = expected_pattern.fullmatch(text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_open_ended_conditional_bytes_pattern_fullmatch_match_group_access_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    for text in case.fullmatch_matches:
+        observed = observed_pattern.fullmatch(text)
+        expected = expected_pattern.fullmatch(text)
+
+        assert observed is not None
+        assert expected is not None
+        _assert_match_group_access_apis_match_cpython(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_open_ended_conditional_bytes_remain_explicitly_unimplemented_for_rebar(
+    rebar_backend: object,
+    case: SupplementalCase,
+) -> None:
+    placeholder = r"rebar\.compile\(\) is a scaffold placeholder"
+
+    with pytest.raises(NotImplementedError, match=placeholder):
+        rebar_backend.compile(case.pattern)
+
+    with pytest.raises(NotImplementedError, match=placeholder):
+        rebar_backend.search(case.pattern, case.search_matches[0])
+
+    with pytest.raises(NotImplementedError, match=placeholder):
+        rebar_backend.fullmatch(case.pattern, case.fullmatch_misses[0])
 
 
 @pytest.mark.parametrize(

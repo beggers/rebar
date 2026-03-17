@@ -152,6 +152,261 @@ MANIFEST = {
       "notes": [
         "Documents the named no-match path on `ad` so the scorecard stays explicit that the open-ended grouped alternation still needs at least one repetition before the yes arm can apply."
       ]
+    },
+    {
+      "id": "open-ended-quantified-group-alternation-conditional-numbered-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "open_ended_quantified_group_alternation_conditional_numbered_compile_metadata",
+      "pattern": "a((bc|de){1,})?(?(1)d|e)",
+      "text_model": "bytes",
+      "categories": ["grouped", "alternation", "quantified", "open-ended-repeat", "conditional", "group-exists", "optional-group", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Mirrors the numbered compile frontier for the same optional grouped open-ended `{1,}` alternation with bytes payloads while keeping the grouped-conditional bytes parity gap explicit until RBR-0533 lands."
+      ]
+    },
+    {
+      "id": "open-ended-quantified-group-alternation-conditional-numbered-module-search-absent-workflow-bytes",
+      "operation": "module_call",
+      "family": "open_ended_quantified_group_alternation_conditional_numbered_module_absent_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a((bc|de){1,})?(?(1)d|e)"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzaezz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantified", "open-ended-repeat", "conditional", "group-exists", "optional-group", "search", "module", "absent", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered absent-group success path on `ae` with bytes payloads so the scorecard records that the conditional else arm still accepts when the optional grouped alternation is skipped entirely."
+      ]
+    },
+    {
+      "id": "open-ended-quantified-group-alternation-conditional-numbered-module-search-lower-bound-bc-workflow-bytes",
+      "operation": "module_call",
+      "family": "open_ended_quantified_group_alternation_conditional_numbered_module_lower_bound_bc_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a((bc|de){1,})?(?(1)d|e)"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabcdzz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantified", "open-ended-repeat", "conditional", "group-exists", "optional-group", "search", "module", "present", "lower-bound", "bc-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound present success path on `abcd` with bytes payloads so the frontier still shows that one `bc` repetition is enough to force the later yes arm to consume `d`."
+      ]
+    },
+    {
+      "id": "open-ended-quantified-group-alternation-conditional-numbered-module-search-lower-bound-de-workflow-bytes",
+      "operation": "module_call",
+      "family": "open_ended_quantified_group_alternation_conditional_numbered_module_lower_bound_de_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a((bc|de){1,})?(?(1)d|e)"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzadedzz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantified", "open-ended-repeat", "conditional", "group-exists", "optional-group", "search", "module", "present", "lower-bound", "de-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound present success path on `aded` with bytes payloads so the same open-ended slice stays explicit for the single `de` branch variant."
+      ]
+    },
+    {
+      "id": "open-ended-quantified-group-alternation-conditional-numbered-pattern-fullmatch-second-repetition-mixed-workflow-bytes",
+      "operation": "pattern_call",
+      "family": "open_ended_quantified_group_alternation_conditional_numbered_pattern_second_repetition_mixed_workflow",
+      "pattern": "a((bc|de){1,})?(?(1)d|e)",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcded"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantified", "open-ended-repeat", "conditional", "group-exists", "optional-group", "fullmatch", "pattern", "present", "second-repetition", "mixed-branches", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered two-repetition mixed-branch success path on `abcded` with bytes payloads so the publication captures one present-group workflow where the grouped alternation spans `bc` then `de` before the conditional yes arm matches."
+      ]
+    },
+    {
+      "id": "open-ended-quantified-group-alternation-conditional-numbered-pattern-fullmatch-third-repetition-mixed-workflow-bytes",
+      "operation": "pattern_call",
+      "family": "open_ended_quantified_group_alternation_conditional_numbered_pattern_third_repetition_mixed_workflow",
+      "pattern": "a((bc|de){1,})?(?(1)d|e)",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbcded"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantified", "open-ended-repeat", "conditional", "group-exists", "optional-group", "fullmatch", "pattern", "present", "third-repetition", "mixed-branches", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered bounded longer success path on `abcbcded` with bytes payloads so the exact `{1,}` slice includes one explicit third-repetition mixed-branch workflow without pretending to exhaust arbitrary-length repetition."
+      ]
+    },
+    {
+      "id": "open-ended-quantified-group-alternation-conditional-numbered-pattern-fullmatch-no-match-missing-trailing-d-workflow-bytes",
+      "operation": "pattern_call",
+      "family": "open_ended_quantified_group_alternation_conditional_numbered_pattern_no_match_missing_trailing_d_workflow",
+      "pattern": "a((bc|de){1,})?(?(1)d|e)",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcde"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantified", "open-ended-repeat", "conditional", "group-exists", "optional-group", "fullmatch", "pattern", "present", "no-match", "missing-trailing-d", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered no-match path on `abcde` with bytes payloads so the scorecard stays explicit that the conditional yes arm still rejects a present-group branch when the required trailing `d` is missing."
+      ]
+    },
+    {
+      "id": "open-ended-quantified-group-alternation-conditional-named-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "open_ended_quantified_group_alternation_conditional_named_compile_metadata",
+      "pattern": "a(?P<outer>(bc|de){1,})?(?(outer)d|e)",
+      "text_model": "bytes",
+      "categories": ["grouped", "alternation", "quantified", "open-ended-repeat", "conditional", "group-exists", "optional-group", "named-group", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Mirrors the named compile frontier for the same optional grouped open-ended `{1,}` alternation with one later named group-exists conditional on bytes payloads."
+      ]
+    },
+    {
+      "id": "open-ended-quantified-group-alternation-conditional-named-module-search-absent-workflow-bytes",
+      "operation": "module_call",
+      "family": "open_ended_quantified_group_alternation_conditional_named_module_absent_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(?P<outer>(bc|de){1,})?(?(outer)d|e)"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzaezz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantified", "open-ended-repeat", "conditional", "group-exists", "optional-group", "named-group", "search", "module", "absent", "bytes", "gap"],
+      "notes": [
+        "Documents the named absent-group success path on `ae` with bytes payloads so the published frontier records the else-arm acceptance when the optional named outer capture is skipped."
+      ]
+    },
+    {
+      "id": "open-ended-quantified-group-alternation-conditional-named-module-search-lower-bound-de-workflow-bytes",
+      "operation": "module_call",
+      "family": "open_ended_quantified_group_alternation_conditional_named_module_lower_bound_de_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(?P<outer>(bc|de){1,})?(?(outer)d|e)"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzadedzz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantified", "open-ended-repeat", "conditional", "group-exists", "optional-group", "named-group", "search", "module", "present", "lower-bound", "de-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the named lower-bound present success path on `aded` with bytes payloads so the scorecard records the named outer capture on the single `de` branch variant too."
+      ]
+    },
+    {
+      "id": "open-ended-quantified-group-alternation-conditional-named-module-search-fourth-repetition-de-workflow-bytes",
+      "operation": "module_call",
+      "family": "open_ended_quantified_group_alternation_conditional_named_module_fourth_repetition_de_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(?P<outer>(bc|de){1,})?(?(outer)d|e)"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzadedededzz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantified", "open-ended-repeat", "conditional", "group-exists", "optional-group", "named-group", "search", "module", "present", "fourth-repetition", "de-branch", "bytes", "gap"],
+      "notes": [
+        "Documents one bounded longer named success path on `adededed` with bytes payloads so the exact `{1,}` slice includes an explicit all-`de` workflow beyond the third repetition."
+      ]
+    },
+    {
+      "id": "open-ended-quantified-group-alternation-conditional-named-pattern-fullmatch-third-repetition-mixed-workflow-bytes",
+      "operation": "pattern_call",
+      "family": "open_ended_quantified_group_alternation_conditional_named_pattern_third_repetition_mixed_workflow",
+      "pattern": "a(?P<outer>(bc|de){1,})?(?(outer)d|e)",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbcded"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantified", "open-ended-repeat", "conditional", "group-exists", "optional-group", "named-group", "fullmatch", "pattern", "present", "third-repetition", "mixed-branches", "bytes", "gap"],
+      "notes": [
+        "Documents the named bounded longer success path on `abcbcded` with bytes payloads so the visible `outer` capture remains explicit when the open-ended grouped alternation spans three repetitions before the yes arm matches."
+      ]
+    },
+    {
+      "id": "open-ended-quantified-group-alternation-conditional-named-pattern-fullmatch-no-match-short-workflow-bytes",
+      "operation": "pattern_call",
+      "family": "open_ended_quantified_group_alternation_conditional_named_pattern_no_match_short_workflow",
+      "pattern": "a(?P<outer>(bc|de){1,})?(?(outer)d|e)",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "ad"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantified", "open-ended-repeat", "conditional", "group-exists", "optional-group", "named-group", "fullmatch", "pattern", "no-match", "below-repeat-count", "bytes", "gap"],
+      "notes": [
+        "Documents the named no-match path on `ad` with bytes payloads so the scorecard stays explicit that the open-ended grouped alternation still needs at least one repetition before the yes arm can apply."
+      ]
     }
   ]
 }
