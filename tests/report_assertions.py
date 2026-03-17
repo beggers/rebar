@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 import pathlib
 import platform
 import sys
@@ -127,24 +127,41 @@ def _correctness_cases_for_suite(
     return suite_cases
 
 
+def _find_record_by_id(
+    records: Iterable[Any],
+    *,
+    record_id: str,
+    get_id: Callable[[Any], str],
+    missing_message: str,
+) -> Any:
+    for record in records:
+        if get_id(record) == record_id:
+            return record
+    raise AssertionError(missing_message)
+
+
 def find_correctness_suite_record(
     scorecard: dict[str, Any],
     suite_id: str,
 ) -> dict[str, Any]:
-    for suite in scorecard["suites"]:
-        if suite["id"] == suite_id:
-            return suite
-    raise AssertionError(f"missing correctness suite record for {suite_id!r}")
+    return _find_record_by_id(
+        scorecard["suites"],
+        record_id=suite_id,
+        get_id=lambda suite: str(suite["id"]),
+        missing_message=f"missing correctness suite record for {suite_id!r}",
+    )
 
 
 def find_correctness_case_record(
     scorecard: dict[str, Any],
     case_id: str,
 ) -> dict[str, Any]:
-    for case in scorecard["cases"]:
-        if case["id"] == case_id:
-            return case
-    raise AssertionError(f"missing correctness case record for {case_id!r}")
+    return _find_record_by_id(
+        scorecard["cases"],
+        record_id=case_id,
+        get_id=lambda case: str(case["id"]),
+        missing_message=f"missing correctness case record for {case_id!r}",
+    )
 
 
 def assert_correctness_case_record_matches(
@@ -648,26 +665,32 @@ def assert_benchmark_workload_contract(
 
 
 def find_manifest_record(scorecard: dict[str, Any], manifest_id: str) -> dict[str, Any]:
-    for manifest_record in scorecard["artifacts"]["manifests"]:
-        if manifest_record["manifest_id"] == manifest_id:
-            return manifest_record
-    raise AssertionError(f"missing manifest record for {manifest_id!r}")
+    return _find_record_by_id(
+        scorecard["artifacts"]["manifests"],
+        record_id=manifest_id,
+        get_id=lambda manifest_record: str(manifest_record["manifest_id"]),
+        missing_message=f"missing manifest record for {manifest_id!r}",
+    )
 
 
 def find_workload_record(scorecard: dict[str, Any], workload_id: str) -> dict[str, Any]:
-    for workload in scorecard["workloads"]:
-        if workload["id"] == workload_id:
-            return workload
-    raise AssertionError(f"missing workload record for {workload_id!r}")
+    return _find_record_by_id(
+        scorecard["workloads"],
+        record_id=workload_id,
+        get_id=lambda workload: str(workload["id"]),
+        missing_message=f"missing workload record for {workload_id!r}",
+    )
 
 
 def find_workload_document(
     manifest: BenchmarkManifest,
     workload_id: str,
 ) -> Workload:
-    for workload in manifest.workloads:
-        if workload.workload_id == workload_id:
-            return workload
-    raise AssertionError(
-        f"missing workload definition {workload_id!r} in {manifest.manifest_id!r}"
+    return _find_record_by_id(
+        manifest.workloads,
+        record_id=workload_id,
+        get_id=lambda workload: workload.workload_id,
+        missing_message=(
+            f"missing workload definition {workload_id!r} in {manifest.manifest_id!r}"
+        ),
     )
