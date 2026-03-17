@@ -1,6 +1,6 @@
 # RBR-0531: Collapse source-tree benchmark case builders onto cached manifests
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -83,3 +83,4 @@ Created: 2026-03-17
 - 2026-03-17 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passes (`41 passed, 1370 subtests passed in 22.52s`).
   - The inline manifest-order probe above currently prints `ok`.
+- 2026-03-17: Routed `source_tree_scorecard_case(...)` and `source_tree_combined_case(...)` through cache-backed `BenchmarkManifest` selection helpers built on `_source_tree_manifest_records()`, kept `selected_manifest_paths_for_target_manifest(...)` as a thin path wrapper over the same cached manifest selection, added an identity-based contract that proves the scorecard and combined builders share manifest objects while preserving the expected manifest order for the `post-parser-workflows` and `literal-flag-boundary` cases, and verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, the inline manifest-order probe from this task (`ok`), and `rg -n "manifests = load_manifests\\(manifest_paths\\)|manifests = load_manifests\\(list\\(manifest_paths\\)\\)" tests/benchmarks/benchmark_expectations.py` (no matches).

@@ -109,6 +109,43 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
         )
         self.assertEqual(case.representative_known_gap_workload_ids, ())
 
+    def test_case_builders_reuse_cached_source_tree_manifest_records(self) -> None:
+        scorecard_case = source_tree_scorecard_case("post-parser-workflows")
+        combined_case = source_tree_combined_case("literal-flag-boundary")
+
+        self.assertEqual(
+            [manifest.manifest_id for manifest in scorecard_case.manifests],
+            [
+                "module-boundary",
+                "collection-replacement-boundary",
+                "literal-flag-boundary",
+            ],
+        )
+        self.assertEqual(
+            [manifest.manifest_id for manifest in combined_case.manifests],
+            [
+                "compile-matrix",
+                "module-boundary",
+                "pattern-boundary",
+                "collection-replacement-boundary",
+                "literal-flag-boundary",
+                "regression-matrix",
+            ],
+        )
+        self.assertIs(
+            scorecard_case.manifest_for_id("module-boundary"),
+            combined_case.manifest_for_id("module-boundary"),
+        )
+        self.assertIs(
+            scorecard_case.manifest_for_id("collection-replacement-boundary"),
+            combined_case.manifest_for_id("collection-replacement-boundary"),
+        )
+        self.assertIs(
+            scorecard_case.manifest_for_id("literal-flag-boundary"),
+            combined_case.target_manifest,
+        )
+        self.assertEqual(combined_case.target_manifest.manifest_id, "literal-flag-boundary")
+
     def test_wider_ranged_manifest_exposes_broader_range_conditional_bytes_rows_as_measured(
         self,
     ) -> None:

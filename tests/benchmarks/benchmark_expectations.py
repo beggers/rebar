@@ -1536,6 +1536,28 @@ def _source_tree_manifest_records() -> dict[str, BenchmarkManifest]:
     return {manifest.manifest_id: manifest for manifest in manifests}
 
 
+def _source_tree_manifest_record(manifest_id: str) -> BenchmarkManifest:
+    try:
+        return _source_tree_manifest_records()[manifest_id]
+    except KeyError as exc:
+        raise AssertionError(f"unknown benchmark manifest id {manifest_id!r}") from exc
+
+
+def _source_tree_manifests_for_ids(
+    manifest_ids: Iterable[str],
+) -> list[BenchmarkManifest]:
+    return [_source_tree_manifest_record(manifest_id) for manifest_id in manifest_ids]
+
+
+@cache
+def _published_source_tree_manifests() -> tuple[BenchmarkManifest, ...]:
+    manifest_records = _source_tree_manifest_records()
+    return tuple(
+        manifest_records[manifest_id_for_path(path)]
+        for path in _published_full_suite_manifest_paths()
+    )
+
+
 def manifest_id_for_path(path: pathlib.Path) -> str:
     resolved_path = path.resolve()
     for manifest_id, manifest in _source_tree_manifest_records().items():
@@ -1545,10 +1567,7 @@ def manifest_id_for_path(path: pathlib.Path) -> str:
 
 
 def manifest_path_for_id(manifest_id: str) -> pathlib.Path:
-    try:
-        return _source_tree_manifest_records()[manifest_id].path
-    except KeyError as exc:
-        raise AssertionError(f"unknown benchmark manifest id {manifest_id!r}") from exc
+    return _source_tree_manifest_record(manifest_id).path
 
 
 def relative_manifest_path(path: pathlib.Path) -> str:
@@ -1833,8 +1852,7 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
 
     case_definition = SOURCE_TREE_SCORECARD_EXPECTATIONS[case_id]
     manifest_ids = case_definition.manifest_ids
-    manifest_paths = [manifest_path_for_id(manifest_id) for manifest_id in manifest_ids]
-    manifests = load_manifests(manifest_paths)
+    manifests = _source_tree_manifests_for_ids(manifest_ids)
     selected_workloads = select_workloads(
         _flatten_manifest_workloads(manifests),
         smoke_only=case_definition.selection_mode == "smoke",
@@ -1910,9 +1928,9 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
 
 def source_tree_combined_target_manifest_ids() -> tuple[str, ...]:
     target_manifest_ids = tuple(
-        manifest_id
-        for path in _published_full_suite_manifest_paths()
-        if (manifest_id := manifest_id_for_path(path)) not in BASE_SOURCE_TREE_MANIFEST_IDS
+        manifest.manifest_id
+        for manifest in _published_source_tree_manifests()
+        if manifest.manifest_id not in BASE_SOURCE_TREE_MANIFEST_IDS
     )
     target_ids = set(target_manifest_ids)
     missing_expectations = target_ids - set(SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS)
@@ -1924,22 +1942,24 @@ def source_tree_combined_target_manifest_ids() -> tuple[str, ...]:
     return target_manifest_ids
 
 
-def selected_manifest_paths_for_target_manifest(target_manifest_id: str) -> list[pathlib.Path]:
-    selected_paths: list[pathlib.Path] = []
-    published_manifest_paths = _published_full_suite_manifest_paths()
-    regression_path = next(
+def _selected_source_tree_manifests_for_target_manifest(
+    target_manifest_id: str,
+) -> list[BenchmarkManifest]:
+    selected_manifests: list[BenchmarkManifest] = []
+    published_manifests = _published_source_tree_manifests()
+    regression_manifest = next(
         (
-            path
-            for path in published_manifest_paths
-            if manifest_id_for_path(path) == "regression-matrix"
+            manifest
+            for manifest in published_manifests
+            if manifest.manifest_id == "regression-matrix"
         ),
         None,
     )
-    for path in published_manifest_paths:
-        manifest_id = manifest_id_for_path(path)
+    for manifest in published_manifests:
+        manifest_id = manifest.manifest_id
         if manifest_id == "regression-matrix":
             continue
-        selected_paths.append(path)
+        selected_manifests.append(manifest)
         if manifest_id == target_manifest_id:
             break
     else:
@@ -1947,12 +1967,21 @@ def selected_manifest_paths_for_target_manifest(target_manifest_id: str) -> list
             f"target manifest {target_manifest_id!r} is not in the published full-suite selector"
         )
     if target_manifest_id != "module-boundary":
-        if regression_path is None:
+        if regression_manifest is None:
             raise AssertionError(
                 "the published full-suite selector is missing the regression-matrix manifest"
             )
-        selected_paths.append(regression_path)
-    return selected_paths
+        selected_manifests.append(regression_manifest)
+    return selected_manifests
+
+
+def selected_manifest_paths_for_target_manifest(target_manifest_id: str) -> list[pathlib.Path]:
+    return [
+        manifest.path
+        for manifest in _selected_source_tree_manifests_for_target_manifest(
+            target_manifest_id
+        )
+    ]
 
 
 def expected_summary_for_manifests(
@@ -2043,8 +2072,7 @@ def representative_measured_workload_ids(
 
 
 def source_tree_combined_case(target_manifest_id: str) -> SourceTreeCombinedCase:
-    manifest_paths = selected_manifest_paths_for_target_manifest(target_manifest_id)
-    manifests = load_manifests(list(manifest_paths))
+    manifests = _selected_source_tree_manifests_for_target_manifest(target_manifest_id)
     workloads = _flatten_manifest_workloads(manifests)
     target_manifest = next(
         manifest for manifest in manifests if manifest.manifest_id == target_manifest_id
