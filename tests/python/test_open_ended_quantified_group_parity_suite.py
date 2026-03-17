@@ -278,9 +278,6 @@ BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
         fullmatch_misses=(b"ad",),
     ),
 )
-BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_REBAR_GAP_REASON = (
-    "pending RBR-0540: broader-range open-ended grouped backtracking-heavy bytes parity remains stdlib-only"
-)
 BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
     SupplementalCase(
         id="broader-range-open-ended-grouped-backtracking-heavy-numbered-bytes",
@@ -288,10 +285,6 @@ BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
         search_matches=(b"zzabcbcdzz", b"zzabcbccdzz"),
         fullmatch_matches=(b"abccbcd", b"abcbcbcbcd"),
         fullmatch_misses=(b"abcd", b"abccbd"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_REBAR_GAP_REASON
-        ),
     ),
     SupplementalCase(
         id="broader-range-open-ended-grouped-backtracking-heavy-named-bytes",
@@ -300,10 +293,6 @@ BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
         search_misses=(b"zzabccbdzz",),
         fullmatch_matches=(b"abcbccd",),
         fullmatch_misses=(b"abcd",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_REBAR_GAP_REASON
-        ),
     ),
 )
 DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS = frozenset(
@@ -771,11 +760,8 @@ def test_broader_range_open_ended_backtracking_heavy_bytes_cases_stay_explicit_w
     )
 
     for case in BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert (
-            case.unsupported_backend_reason
-            == BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_REBAR_GAP_REASON
-        )
+        assert case.unsupported_backends == ()
+        assert case.unsupported_backend_reason is None
         assert set(case.search_matches).isdisjoint(case.search_misses)
         assert set(case.fullmatch_matches).isdisjoint(case.fullmatch_misses)
         assert all(

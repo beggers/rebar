@@ -173,7 +173,7 @@ MANIFEST = {
       "text_model": "bytes",
       "categories": ["grouped", "alternation", "overlapping-branches", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "compile", "metadata", "bytes", "gap"],
       "notes": [
-        "Mirrors the numbered compile frontier for the same broader-range open-ended `{2,}` grouped backtracking-heavy slice with bytes payloads while keeping the pending `RBR-0540` parity gap explicit."
+        "Mirrors the numbered compile frontier for the same broader-range open-ended `{2,}` grouped backtracking-heavy slice with bytes payloads."
       ]
     },
     {
@@ -306,7 +306,7 @@ MANIFEST = {
       "text_model": "bytes",
       "categories": ["grouped", "alternation", "overlapping-branches", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "named-group", "compile", "metadata", "bytes", "gap"],
       "notes": [
-        "Mirrors the named compile frontier for the same broader-range `{2,}` grouped backtracking-heavy slice with bytes payloads while keeping the visible `word` capture on the pending bytes parity path explicit."
+        "Mirrors the named compile frontier for the same broader-range `{2,}` grouped backtracking-heavy slice with bytes payloads while keeping the visible `word` capture explicit."
       ]
     },
     {

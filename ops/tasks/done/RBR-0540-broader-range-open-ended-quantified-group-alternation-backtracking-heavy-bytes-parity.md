@@ -1,6 +1,6 @@
 # RBR-0540: Convert the broader-range open-ended grouped backtracking-heavy bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -42,3 +42,13 @@ Created: 2026-03-17
   - `tests/python/test_open_ended_quantified_group_parity_suite.py` still marks `BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES` as unsupported for `rebar`; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`.
 - The surviving follow-on after this task is `RBR-0542`, which should add the six adjacent bytes benchmark mirrors for the same broader-range open-ended grouped backtracking-heavy pair on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
+
+## Completion Notes
+- Added Rust-backed compile and match support for `rb"a((bc|b)c){2,}d"` and `rb"a(?P<word>(bc|b)c){2,}d"` in `crates/rebar-core/src/lib.rs`, keeping the new bytes semantics behind the existing native `rebar._rebar` compile/match boundary without widening into another bytes family.
+- Updated `tests/python/test_open_ended_quantified_group_parity_suite.py` so `BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES` now runs as real parity coverage instead of carrying a `rebar`-only unsupported gate, and trimmed the stale pending-`RBR-0540` wording from the shared correctness fixture notes in `tests/conformance/fixtures/broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py`.
+- Regenerated the tracked combined correctness publication in `reports/correctness/latest.py`; the tracked report now reads `1108` total / `1108` passed / `0` failed / `0` unimplemented overall, and `match.broader_range_open_ended_quantified_group_alternation_backtracking_heavy` now reads `28` total / `28` passed / `0` unimplemented with `['bytes', 'str']` coverage.
+- Verified with:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py --report .rebar/tmp/rbr-0540-broader-range-open-ended-grouped-backtracking-heavy-bytes-parity.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

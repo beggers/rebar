@@ -46,6 +46,10 @@ const BROADER_RANGE_OPEN_ENDED_GROUPED_CONDITIONAL_NUMBERED_BYTES_PATTERN: &[u8]
     br"a((bc|de){2,})?(?(1)d|e)";
 const BROADER_RANGE_OPEN_ENDED_GROUPED_CONDITIONAL_NAMED_BYTES_PATTERN: &[u8] =
     br"a(?P<outer>(bc|de){2,})?(?(outer)d|e)";
+const BROADER_RANGE_OPEN_ENDED_GROUPED_BACKTRACKING_HEAVY_NUMBERED_BYTES_PATTERN: &[u8] =
+    br"a((bc|b)c){2,}d";
+const BROADER_RANGE_OPEN_ENDED_GROUPED_BACKTRACKING_HEAVY_NAMED_BYTES_PATTERN: &[u8] =
+    br"a(?P<word>(bc|b)c){2,}d";
 const OPEN_ENDED_GROUPED_CONDITIONAL_OUTER_NAME: &str = "outer";
 const OPEN_ENDED_GROUPED_CONDITIONAL_PREFIX_BYTES: &[u8] = b"a";
 const OPEN_ENDED_GROUPED_CONDITIONAL_BRANCHES_BYTES: [&[u8]; 2] = [b"bc", b"de"];
@@ -714,6 +718,12 @@ struct OpenEndedGroupedConditionalBytesPattern {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct BroaderRangeGroupedConditionalBytesPattern {
     outer_name: Option<&'static str>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct OpenEndedGroupedAlternationBacktrackingHeavyBytesPattern {
+    outer_name: Option<&'static str>,
+    min_repeat: usize,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1668,6 +1678,35 @@ impl BroaderRangeGroupedConditionalBytesPattern {
     }
 }
 
+impl OpenEndedGroupedAlternationBacktrackingHeavyBytesPattern {
+    fn group_count(&self) -> usize {
+        2
+    }
+
+    fn named_groups(&self) -> Vec<NamedGroup> {
+        self.outer_name
+            .map(|name| {
+                vec![NamedGroup {
+                    name: name.to_string(),
+                    index: 1,
+                }]
+            })
+            .unwrap_or_default()
+    }
+
+    fn group_spans(
+        &self,
+        outer_span: (usize, usize),
+        inner_span: (usize, usize),
+    ) -> Vec<Option<(usize, usize)>> {
+        vec![Some(outer_span), Some(inner_span)]
+    }
+
+    fn matched_lastindex(&self, group_spans: &[Option<(usize, usize)>]) -> Option<usize> {
+        group_spans.first().copied().flatten().map(|_| 1)
+    }
+}
+
 impl BroaderRangeGroupedAlternationBacktrackingHeavyBytesPattern {
     fn group_count(&self) -> usize {
         2
@@ -2302,6 +2341,23 @@ fn compile_known_supported_case(
         {
             let grouped_pattern = parse_broader_range_grouped_conditional_pattern_bytes(pattern)
                 .expect("guarded broader-range grouped conditional bytes literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
+                warning: None,
+            })
+        }
+        PatternRef::Bytes(pattern)
+            if parse_open_ended_grouped_alternation_backtracking_heavy_pattern_bytes(pattern)
+                .is_some()
+                && normalized_flags == 0 =>
+        {
+            let grouped_pattern =
+                parse_open_ended_grouped_alternation_backtracking_heavy_pattern_bytes(pattern)
+                    .expect("guarded open-ended grouped backtracking-heavy bytes literal");
             Some(CompileOutcome {
                 status: CompileStatus::Compiled,
                 normalized_flags,
@@ -5106,6 +5162,26 @@ fn parse_broader_range_grouped_alternation_backtracking_heavy_pattern_bytes(
                 outer_name: Some(BROADER_RANGE_GROUPED_BACKTRACKING_HEAVY_OUTER_NAME),
             },
         ),
+        _ => None,
+    }
+}
+
+fn parse_open_ended_grouped_alternation_backtracking_heavy_pattern_bytes(
+    pattern: &[u8],
+) -> Option<OpenEndedGroupedAlternationBacktrackingHeavyBytesPattern> {
+    match pattern {
+        BROADER_RANGE_OPEN_ENDED_GROUPED_BACKTRACKING_HEAVY_NUMBERED_BYTES_PATTERN => {
+            Some(OpenEndedGroupedAlternationBacktrackingHeavyBytesPattern {
+                outer_name: None,
+                min_repeat: 2,
+            })
+        }
+        BROADER_RANGE_OPEN_ENDED_GROUPED_BACKTRACKING_HEAVY_NAMED_BYTES_PATTERN => {
+            Some(OpenEndedGroupedAlternationBacktrackingHeavyBytesPattern {
+                outer_name: Some(BROADER_RANGE_GROUPED_BACKTRACKING_HEAVY_OUTER_NAME),
+                min_repeat: 2,
+            })
+        }
         _ => None,
     }
 }
@@ -7947,6 +8023,51 @@ fn literal_match_bytes(
 
         let (span, group_spans) =
             find_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_match_span_bytes(
+                &grouped_pattern,
+                flags,
+                mode,
+                string,
+                normalized_pos,
+                normalized_endpos,
+            )
+            .map_or((None, Vec::new()), |(span, group_spans)| {
+                (Some(span), group_spans)
+            });
+        let lastindex = if span.is_some() {
+            grouped_pattern.matched_lastindex(&group_spans)
+        } else {
+            None
+        };
+        return MatchOutcome {
+            status: if span.is_some() {
+                MatchStatus::Matched
+            } else {
+                MatchStatus::NoMatch
+            },
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            span,
+            group_spans,
+            lastindex,
+        };
+    }
+
+    if let Some(grouped_pattern) =
+        parse_open_ended_grouped_alternation_backtracking_heavy_pattern_bytes(pattern)
+    {
+        if flags != 0 {
+            return MatchOutcome {
+                status: MatchStatus::Unsupported,
+                pos: normalized_pos,
+                endpos: normalized_endpos,
+                span: None,
+                group_spans: Vec::new(),
+                lastindex: None,
+            };
+        }
+
+        let (span, group_spans) =
+            find_open_ended_grouped_alternation_backtracking_heavy_match_span_bytes(
                 &grouped_pattern,
                 flags,
                 mode,
@@ -11854,6 +11975,72 @@ fn broader_range_grouped_alternation_backtracking_heavy_matches_at_bytes(
     None
 }
 
+fn open_ended_grouped_alternation_backtracking_heavy_max_repeats_bytes(
+    string_len: usize,
+    start: usize,
+) -> usize {
+    let min_branch_len = BROADER_RANGE_GROUPED_BACKTRACKING_HEAVY_BRANCHES_BYTES
+        .iter()
+        .map(|branch| branch.len())
+        .min()
+        .unwrap_or(0);
+    let repeated_suffix_len = BROADER_RANGE_GROUPED_BACKTRACKING_HEAVY_REPEATED_SUFFIX_BYTES.len();
+    let min_repeat_len = min_branch_len + repeated_suffix_len;
+
+    if min_repeat_len == 0
+        || start + min_repeat_len + BROADER_RANGE_GROUPED_BACKTRACKING_HEAVY_SUFFIX_BYTES.len()
+            > string_len
+    {
+        return 0;
+    }
+
+    (string_len - start - BROADER_RANGE_GROUPED_BACKTRACKING_HEAVY_SUFFIX_BYTES.len())
+        / min_repeat_len
+}
+
+fn open_ended_grouped_alternation_backtracking_heavy_matches_at_bytes(
+    pattern: &OpenEndedGroupedAlternationBacktrackingHeavyBytesPattern,
+    flags: i32,
+    string: &[u8],
+    start: usize,
+    endpos: usize,
+) -> Option<((usize, usize), (usize, usize), usize)> {
+    if !literal_matches_at_bytes(
+        BROADER_RANGE_GROUPED_BACKTRACKING_HEAVY_PREFIX_BYTES,
+        flags,
+        string,
+        start,
+        endpos,
+    ) {
+        return None;
+    }
+
+    let repetition_start = start + BROADER_RANGE_GROUPED_BACKTRACKING_HEAVY_PREFIX_BYTES.len();
+    let max_repeat = open_ended_grouped_alternation_backtracking_heavy_max_repeats_bytes(
+        endpos,
+        repetition_start,
+    );
+    if max_repeat < pattern.min_repeat {
+        return None;
+    }
+
+    for candidate_count in (pattern.min_repeat..=max_repeat).rev() {
+        if let Some(((outer_span, inner_span), match_end)) =
+            broader_range_grouped_alternation_backtracking_heavy_matches_exact_repeats_bytes(
+                flags,
+                string,
+                repetition_start,
+                endpos,
+                candidate_count,
+            )
+        {
+            return Some((outer_span, inner_span, match_end));
+        }
+    }
+
+    None
+}
+
 fn nested_broader_range_grouped_alternation_backtracking_heavy_matches_at_bytes(
     flags: i32,
     string: &[u8],
@@ -12504,6 +12691,47 @@ fn find_broader_range_grouped_alternation_backtracking_heavy_match_span_bytes(
                 ))
             })
         }
+    }
+}
+
+fn find_open_ended_grouped_alternation_backtracking_heavy_match_span_bytes(
+    pattern: &OpenEndedGroupedAlternationBacktrackingHeavyBytesPattern,
+    flags: i32,
+    mode: MatchMode,
+    string: &[u8],
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    match mode {
+        MatchMode::Search => (pos..=endpos).find_map(|start| {
+            open_ended_grouped_alternation_backtracking_heavy_matches_at_bytes(
+                pattern, flags, string, start, endpos,
+            )
+            .map(|(outer_span, inner_span, match_end)| {
+                (
+                    (start, match_end),
+                    pattern.group_spans(outer_span, inner_span),
+                )
+            })
+        }),
+        MatchMode::Match => open_ended_grouped_alternation_backtracking_heavy_matches_at_bytes(
+            pattern, flags, string, pos, endpos,
+        )
+        .map(|(outer_span, inner_span, match_end)| {
+            (
+                (pos, match_end),
+                pattern.group_spans(outer_span, inner_span),
+            )
+        }),
+        MatchMode::Fullmatch => open_ended_grouped_alternation_backtracking_heavy_matches_at_bytes(
+            pattern, flags, string, pos, endpos,
+        )
+        .and_then(|(outer_span, inner_span, match_end)| {
+            (match_end == endpos).then_some((
+                (pos, match_end),
+                pattern.group_spans(outer_span, inner_span),
+            ))
+        }),
     }
 }
 
