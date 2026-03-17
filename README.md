@@ -2,7 +2,7 @@
 
 `rebar` is a Rust-backed attempt at a bug-for-bug compatible replacement for Python's `re` module. The target is simple: match CPython's accepted syntax, public API behavior, parse trees, and diagnostics first, then compete on compile and match speed through a CPython-facing extension.
 
-The status block below is the published slice: what passes today, how much of it is benchmarked, and what still blocks broader parity or performance claims.
+The status block below is the published frontier: what passes today, how much of it is benchmarked, and what still blocks broader parity or performance claims.
 
 <!-- REBAR:STATUS_START -->
 ## Current State
@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 1108 cases across 111 manifests, with 1108 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 644 workloads across 30 manifests with 644 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is fully green but still narrow and not yet a near-full parity or native-path performance claim. |
-| Current milestone | After ready `RBR-0542` drains, no concrete ready `feature-implementation` follow-on currently survives. The queued head task closes the broader-range open-ended `{2,}` grouped backtracking-heavy bytes benchmark catch-up on the existing Python-facing benchmark path, and this run's bounded re-triage across the adjacent open-ended manifests, scorecards, and parity anchors did not yet surface another safely pinned next slice. |
-| Work queue | `0` ready, `0` in progress, `542` done, `0` blocked |
+| Delivery estimate | The published correctness report now covers 1120 cases across 111 manifests, with 1108 passing, 0 explicit failures, and 12 honest gaps; the main benchmark report covers 644 workloads across 30 manifests with 644 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published frontier has widened again but is still narrow and not yet a near-full parity or native-path performance claim. |
+| Current milestone | After ready `RBR-0543` drains, `RBR-0544` should survive as the next concrete `feature-implementation` follow-on. The queued head reopens the open-ended `{1,}` grouped backtracking-heavy bytes correctness publication on the existing open-ended parity surface for `rb"a((bc|b)c){1,}d"` and `rb"a(?P<word>(bc|b)c){1,}d"`, and the surviving follow-on converts that same bytes pair to Rust-backed parity before the existing Python-path open-ended benchmark anchors catch the slice up. |
+| Work queue | `0` ready, `0` in progress, `543` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1108` |
+| Published cases | `1120` |
 | Passing in published slice | `1108` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
+| Honest gaps (`unimplemented`) | `12` |
 | Covered manifests | `111` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 1108 cases across 111 manifests, with 1108 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 644 workloads across 30 manifests with 644 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is fully green but still narrow and not yet a near-full parity or native-path performance claim._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness report now covers 1120 cases across 111 manifests, with 1108 passing, 0 explicit failures, and 12 honest gaps; the main benchmark report covers 644 workloads across 30 manifests with 644 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published frontier has widened again but is still narrow and not yet a near-full parity or native-path performance claim._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- No concrete ready feature follow-on currently survives. `RBR-0542` closed the broader-range open-ended `{2,}` grouped backtracking-heavy bytes benchmark catch-up and moved `open-ended-quantified-group-boundary` plus the combined source-tree report to `54` / `54` / `0` and `644` / `644` / `0`.
+- No concrete ready feature follow-on currently survives. `RBR-0543` widened the combined correctness report to `1120` / `1108` / `12`; the next intended follow-on is Rust-backed bytes parity for that same open-ended `{1,}` grouped backtracking-heavy pair, but it is not yet re-seeded as a ready task.
 
 ### Current Risks
 
@@ -55,9 +55,9 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The published correctness slice is fully green at 1108 of 1108 cases across 111 manifests, but it is still too narrow to imply near-full stdlib `re` parity. The queue is currently between slices: `RBR-0542` closed the broader-range open-ended grouped backtracking-heavy bytes catch-up on the Python-path benchmark surface, and no concrete ready follow-on is pinned yet.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The latest publication widened bytes coverage for one open-ended grouped backtracking-heavy slice, but it also reintroduced honest gaps, so the published frontier is still too narrow to imply near-full stdlib `re` parity. The queue is currently between slices, with Rust-backed bytes parity for that same pair still the clearest next move but not yet re-seeded as a ready task.
 
-The benchmark story is similarly early. The clearest trustworthy positive signal today is still the tiny parser slice, where 8 workloads are about 2.5x faster on median than CPython. The broader 644-workload publication still runs through the source-tree shim and is slower overall, so that result is signal rather than a general speed claim.
+The benchmark story is similarly early. The clearest trustworthy positive signal today is still the tiny parser slice, where 8 workloads are about 2.5x faster on median than CPython. The broader published run still goes through the source-tree shim and is slower overall, so that is signal rather than a general speed claim.
 
 ## Where To Look
 
