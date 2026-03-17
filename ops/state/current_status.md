@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 1094 cases across 111 manifests, with 1080 passing, 0 explicit failures, and 14 honest gaps; the main benchmark report covers 632 workloads across 30 manifests with 632 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the project is broader again but still clearly partial.
 
 ## README Next Steps
-- With the queue drained, the surviving frontier is `RBR-0537`: convert the broader-range open-ended `{2,}` grouped-alternation-plus-conditional bytes pair to real parity so the combined report moves from `1094` / `1080` / `14` to `1094` / `1094` / `0`.
+- Ready head `RBR-0537` converts the broader-range open-ended `{2,}` grouped-alternation-plus-conditional bytes pair to real parity so the combined report moves from `1094` / `1080` / `14` to `1094` / `1094` / `0`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: 1080 of 1094 published correctness cases pa
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- With the queue drained, the surviving frontier is `RBR-0537`: convert the same broader-range open-ended `{2,}` grouped-alternation-plus-conditional bytes pair to real parity on the existing correctness/parity path so the combined report would move from `1094` / `1080` / `14` to `1094` / `1094` / `0` before bytes benchmark catch-up widens that family.
+- After ready `RBR-0537` drains, the surviving frontier is `RBR-0538`: catch the same broader-range open-ended `{2,}` grouped-alternation-plus-conditional bytes pair up on the existing open-ended benchmark surface so `open-ended-quantified-group-boundary` moves from `42` / `42` / `0` to `48` / `48` / `0` and the combined benchmark report moves from `632` / `632` / `0` to `638` / `638` / `0`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
