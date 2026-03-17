@@ -277,10 +277,6 @@ BROADER_RANGE_CONDITIONAL_BYTES_CASES = (
         fullmatch_misses=(b"ad", b"abcdede", b"abcbcbcbcbcd"),
     ),
 )
-BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_UNSUPPORTED_REASON = (
-    "rebar bytes parity for the broader {1,4} grouped backtracking-heavy pair "
-    "is tracked by RBR-0514"
-)
 BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES = (
     SupplementalCase(
         id="broader-range-wider-ranged-repeat-backtracking-heavy-numbered-bytes",
@@ -289,10 +285,6 @@ BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES = (
         search_misses=(b"zzabccbdzz", b"zzabcbcbcbcbcdzz"),
         fullmatch_matches=(b"abcbccd", b"abccbcd", b"abcbccbccbcd"),
         fullmatch_misses=(b"abccbd", b"abcbcbcbcbcd"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_UNSUPPORTED_REASON
-        ),
     ),
     SupplementalCase(
         id="broader-range-wider-ranged-repeat-backtracking-heavy-named-bytes",
@@ -301,10 +293,6 @@ BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES = (
         search_misses=(b"zzabccbdzz", b"zzabcbcbcbcbcdzz"),
         fullmatch_matches=(b"abccbcd",),
         fullmatch_misses=(b"abccbd", b"abcbcbcbcbcd"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_UNSUPPORTED_REASON
-        ),
     ),
 )
 DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS = frozenset(
@@ -534,11 +522,8 @@ def test_broader_range_backtracking_heavy_bytes_cases_stay_explicit_with_one_dir
     )
 
     for case in BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert (
-            case.unsupported_backend_reason
-            == BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_UNSUPPORTED_REASON
-        )
+        assert case.unsupported_backends == ()
+        assert case.unsupported_backend_reason is None
         assert set(case.search_matches).isdisjoint(case.search_misses)
         assert set(case.fullmatch_matches).isdisjoint(case.fullmatch_misses)
         assert all(
