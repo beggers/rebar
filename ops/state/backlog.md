@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-After ready `RBR-0544` drains, `RBR-0546` should survive as the next concrete `feature-implementation` follow-on. The ready head converts the open-ended `{1,}` grouped backtracking-heavy bytes pair for `rb"a((bc|b)c){1,}d"` and `rb"a(?P<word>(bc|b)c){1,}d"` behind `rebar._rebar` on the existing parity surface, and the surviving follow-on mirrors the six adjacent bytes benchmark rows for that same pair on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
+No ready feature follow-on currently survives. Once the active open-ended `{1,}` grouped backtracking-heavy bytes benchmark catch-up lands on `benchmarks/workloads/open_ended_quantified_group_boundary.py`, the tracked open-ended grouped frontier is exhausted and the next planning pass should re-triage from the newest done frontier task or another published bounded gap.
 
 ## Ordered Work
-1. After ready `RBR-0544` drains, `RBR-0546` should survive as the next concrete `feature-implementation` follow-on. `RBR-0544` should convert the `OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES` anchor on `tests/python/test_open_ended_quantified_group_parity_suite.py` to real Rust-backed parity and close the current `24` total / `12` passed / `12` `unimplemented` correctness gap for `rb"a((bc|b)c){1,}d"` and `rb"a(?P<word>(bc|b)c){1,}d"`. `RBR-0546` should then mirror only the six adjacent bytes benchmark rows on `benchmarks/workloads/open_ended_quantified_group_boundary.py`, refresh `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, and keep that benchmark catch-up on the existing source-tree manifest instead of inventing another bytes family.
+1. No ready feature follow-on currently survives. Once the active open-ended `{1,}` grouped backtracking-heavy bytes benchmark catch-up lands on `benchmarks/workloads/open_ended_quantified_group_boundary.py`, re-triage the next bounded feature slice from the newest done frontier task because the tracked open-ended grouped family is exhausted and the current published scorecards carry no explicit post-drain gap.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
