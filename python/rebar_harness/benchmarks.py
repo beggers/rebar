@@ -41,7 +41,6 @@ SCORECARD_REPORT = build_scorecard_report_descriptor(
     scorecard_kind="benchmark",
 )
 DEFAULT_REPORT_PATH = SCORECARD_REPORT.published_path
-LEGACY_REPORT_PATH = SCORECARD_REPORT.legacy_path
 BENCHMARK_WORKLOADS_ROOT = REPO_ROOT / "benchmarks" / "workloads"
 PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR = "published-full-suite"
 BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR = "built-native-smoke"
@@ -105,10 +104,6 @@ def select_benchmark_manifest_path(selector: str) -> pathlib.Path:
     return manifest_paths[0]
 
 
-DEFAULT_MANIFEST_PATHS = select_benchmark_manifest_paths(PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR)
-DEFAULT_NATIVE_SMOKE_MANIFEST_PATHS = select_benchmark_manifest_paths(
-    BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR
-)
 SOURCE_TREE_SHIM_MODE = "source-tree-shim"
 BUILT_NATIVE_MODE = "built-native"
 NATIVE_MODULE_NAME = "rebar._rebar"

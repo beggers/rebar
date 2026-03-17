@@ -34,7 +34,6 @@ SCORECARD_REPORT = build_scorecard_report_descriptor(
     scorecard_kind="correctness",
 )
 DEFAULT_REPORT_PATH = SCORECARD_REPORT.published_path
-LEGACY_REPORT_PATH = SCORECARD_REPORT.legacy_path
 CORRECTNESS_FIXTURES_ROOT = REPO_ROOT / "tests" / "conformance" / "fixtures"
 PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR = "published-full-suite"
 COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR = "counted-repeat-quantified-group"
