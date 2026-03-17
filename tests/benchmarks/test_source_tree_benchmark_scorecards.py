@@ -8,6 +8,7 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 
 from tests.benchmarks.benchmark_expectations import (
+    SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS,
     SOURCE_TREE_SCORECARD_EXPECTATIONS,
     SourceTreeScorecardCase,
     relative_manifest_path,
@@ -282,6 +283,71 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                 self.assertIn(
                     workload_id,
                     case.manifest_expectation.representative_measured_workload_ids,
+                )
+
+    def test_quantified_alternation_manifest_exposes_open_ended_bytes_rows_as_measured(
+        self,
+    ) -> None:
+        manifest_id = "quantified-alternation-boundary"
+        expected_workload_ids = (
+            "module-compile-numbered-quantified-alternation-open-ended-cold-bytes",
+            "module-search-numbered-quantified-alternation-open-ended-lower-bound-b-warm-bytes",
+            "pattern-fullmatch-numbered-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
+            "module-compile-named-quantified-alternation-open-ended-warm-bytes",
+            "module-search-named-quantified-alternation-open-ended-lower-bound-c-warm-bytes",
+            "pattern-fullmatch-named-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
+        )
+        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
+        self.assertIsNone(manifest_definition.known_gap_workload_ids)
+        self.assertEqual(
+            manifest_definition.representative_measured_workload_ids,
+            expected_workload_ids,
+        )
+        self.assertIsNone(
+            manifest_definition.representative_known_gap_workload_ids
+        )
+
+        case = source_tree_combined_case(manifest_id)
+        public_representatives = (
+            source_tree_combined_manifest_representative_measured_workload_ids(
+                manifest_id
+            )
+        )
+
+        self.assertEqual(case.manifest_expectation.known_gap_count, 0)
+        self.assertEqual(
+            case.manifest_expectation.representative_measured_workload_ids,
+            expected_workload_ids,
+        )
+        self.assertEqual(case.manifest_expectation.representative_known_gap_workload_ids, ())
+        self.assertEqual(public_representatives, expected_workload_ids)
+
+        _, scorecard = run_source_tree_benchmark_scorecard([case.target_manifest.path])
+        manifest_summary = scorecard["manifests"][manifest_id]
+        manifest_record = find_manifest_record(scorecard, manifest_id)
+        assert_benchmark_manifest_contract(
+            self,
+            manifest_summary,
+            manifest_record,
+            manifest=case.target_manifest,
+            manifest_path=relative_manifest_path(case.target_manifest.path),
+            known_gap_count=0,
+            selection_mode=case.selection_mode,
+            selected_workload_ids=case.selected_workload_ids_for_manifest(manifest_id),
+        )
+        self.assertEqual(manifest_summary["measured_workloads"], 48)
+        self.assertEqual(manifest_summary["workload_count"], 48)
+        for workload_id in expected_workload_ids:
+            with self.subTest(measured_workload_id=workload_id):
+                assert_benchmark_workload_contract(
+                    self,
+                    find_workload_record(scorecard, workload_id),
+                    manifest_id=manifest_id,
+                    workload_document=find_workload_document(
+                        case.target_manifest,
+                        workload_id,
+                    ),
+                    expected_status="measured",
                 )
 
     def test_open_ended_manifest_exposes_grouped_conditional_bytes_rows_as_measured(

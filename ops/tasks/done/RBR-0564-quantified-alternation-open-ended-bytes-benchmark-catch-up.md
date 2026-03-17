@@ -1,6 +1,6 @@
 # RBR-0564: Catch the quantified-alternation open-ended bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -40,10 +40,13 @@ Created: 2026-03-17
 - Keep the publication on the existing Python-facing source-tree benchmark path. Do not broaden into built-native publication, benchmark-harness refactors, or new adapter modes in this run.
 - Add only the directly adjacent bytes mirrors for this open-ended quantified-alternation pair. Do not broaden into broader-range quantified-alternation bytes work, nested-branch bytes work, conditional bytes work, or another benchmark family in this run.
 
+## Completion
+- 2026-03-17: Added the six open-ended quantified-alternation bytes workloads to `benchmarks/workloads/quantified_alternation_boundary.py`, promoted them as measured representatives in the source-tree benchmark expectation/test surface, verified `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, verified `.rebar/tmp/rbr-0564-quantified-alternation-open-ended-bytes-benchmarks.py` at `48` total workloads / `48` measured workloads / `0` known gaps, and republished `reports/benchmarks/latest.py` at `668` total workloads / `668` measured workloads / `0` known gaps with `quantified-alternation-boundary` at `48` / `48` / `0`.
+
 ## Notes
 - Build on `RBR-0561`.
-- 2026-03-17 feature-planning probes confirm this task is concrete from the tracked frontier:
+- 2026-03-17 feature-planning probes seeded this task from the then-current tracked frontier:
   - `benchmarks/workloads/quantified_alternation_boundary.py` currently contains the six open-ended quantified-alternation `str` workloads for this exact `{1,}` slice and none of the six planned `-bytes` mirrors;
   - `tests/benchmarks/benchmark_expectations.py` still leaves `quantified-alternation-boundary` on the generic zero-gap manifest definition, and the shared source-tree benchmark suites currently contain no quantified-alternation-specific bytes assertions;
   - `reports/benchmarks/latest.py` currently publishes `quantified-alternation-boundary` at `42` total workloads / `42` measured workloads / `0` known gaps and the combined source-tree report at `662` / `662` / `0`; and
-  - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so this benchmark follow-on must remain queued behind the live parity head instead of replacing it.
+  - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from that planning run still raised `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so the benchmark follow-on stayed queued behind parity until later landings closed the gap.

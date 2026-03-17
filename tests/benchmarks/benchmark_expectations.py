@@ -604,7 +604,16 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS: dict[
             "pattern-fullmatch-named-open-ended-group-backtracking-heavy-purged-bytes",
         ),
     ),
-    "quantified-alternation-boundary": _combined_manifest_definition(),
+    "quantified-alternation-boundary": _combined_manifest_definition(
+        representative_measured_workload_ids=(
+            "module-compile-numbered-quantified-alternation-open-ended-cold-bytes",
+            "module-search-numbered-quantified-alternation-open-ended-lower-bound-b-warm-bytes",
+            "pattern-fullmatch-numbered-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
+            "module-compile-named-quantified-alternation-open-ended-warm-bytes",
+            "module-search-named-quantified-alternation-open-ended-lower-bound-c-warm-bytes",
+            "pattern-fullmatch-named-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
+        ),
+    ),
     "optional-group-alternation-boundary": _combined_manifest_definition(),
     "conditional-group-exists-boundary": _combined_manifest_definition(),
     "conditional-group-exists-no-else-boundary": _combined_manifest_definition(),

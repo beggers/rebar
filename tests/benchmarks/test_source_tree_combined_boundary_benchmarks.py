@@ -875,6 +875,48 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=72,
         )
 
+    def test_quantified_alternation_manifest_promotes_open_ended_bytes_rows_to_measured(
+        self,
+    ) -> None:
+        manifest_id = "quantified-alternation-boundary"
+        expected_workload_ids = (
+            "module-compile-numbered-quantified-alternation-open-ended-cold-bytes",
+            "module-search-numbered-quantified-alternation-open-ended-lower-bound-b-warm-bytes",
+            "pattern-fullmatch-numbered-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
+            "module-compile-named-quantified-alternation-open-ended-warm-bytes",
+            "module-search-named-quantified-alternation-open-ended-lower-bound-c-warm-bytes",
+            "pattern-fullmatch-named-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
+        )
+        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
+        self.assertIsNone(manifest_definition.known_gap_workload_ids)
+        self.assertEqual(
+            manifest_definition.representative_measured_workload_ids,
+            expected_workload_ids,
+        )
+        self.assertIsNone(
+            manifest_definition.representative_known_gap_workload_ids
+        )
+
+        case = source_tree_combined_case(manifest_id)
+        manifest_expectation = case.manifest_expectation
+        self.assertEqual(manifest_expectation.known_gap_count, 0)
+        self.assertEqual(
+            manifest_expectation.representative_measured_workload_ids,
+            expected_workload_ids,
+        )
+        self.assertEqual(
+            manifest_expectation.representative_known_gap_workload_ids,
+            (),
+        )
+
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            manifest_id,
+            expected_workload_ids,
+            48,
+            expected_total_workload_count=48,
+        )
+
     def test_open_ended_manifest_promotes_grouped_backtracking_heavy_bytes_rows_to_measured(
         self,
     ) -> None:
