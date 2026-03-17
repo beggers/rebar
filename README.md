@@ -13,7 +13,7 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
 | Delivery estimate | The published correctness slice now covers 1067 cases across 111 manifests, with 1067 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 620 workloads across 30 manifests with 620 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial while benchmark catch-up remains the next frontier. |
-| Current milestone | With `RBR-0529` landed, the surviving frontier is `RBR-0530`: add the six bytes mirrors of the current nested open-ended grouped-alternation wider-ranged-repeat benchmark rows so the newly landed bytes parity slice reaches published timings before deeper bytes work reopens that family. |
+| Current milestone | After ready `RBR-0529` drains, the surviving frontier is `RBR-0530`: catch the exact nested open-ended `{1,}` grouped-alternation bytes pair up on the existing Python-path wider-ranged-repeat benchmark surface by adding the six bytes mirrors of the current `str` open-ended rows so the newly landed bytes parity slice reaches published timings before deeper bytes work reopens that family. |
 | Work queue | `0` ready, `0` in progress, `529` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
