@@ -379,6 +379,35 @@ DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS = frozenset(
         "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
     }
 )
+DIRECT_BYTES_FOLLOW_ON_SPECS = (
+    (
+        BROADER_RANGE_CONDITIONAL_BUNDLE,
+        BROADER_RANGE_CONDITIONAL_BYTES_CASES,
+    ),
+    (
+        BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE,
+        BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES,
+    ),
+    (
+        NESTED_BROADER_RANGE_ALTERNATION_BUNDLE,
+        NESTED_BROADER_RANGE_ALTERNATION_BYTES_CASES,
+    ),
+    (
+        NESTED_BROADER_RANGE_CONDITIONAL_BUNDLE,
+        NESTED_BROADER_RANGE_CONDITIONAL_BYTES_CASES,
+    ),
+    (
+        NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE,
+        NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES,
+    ),
+)
+DIRECT_BYTES_FOLLOW_ON_SPEC_IDS = (
+    "broader-range-conditional",
+    "broader-range-backtracking-heavy",
+    "nested-broader-range-alternation",
+    "nested-broader-range-conditional",
+    "nested-broader-range-backtracking-heavy",
+)
 
 
 def _uses_direct_bytes_follow_on(case: FixtureCase) -> bool:
@@ -560,6 +589,22 @@ def _invoke_bounded_pattern_case(compiled_pattern: object, case: BoundedPatternC
     return getattr(compiled_pattern, case.helper)(case.string, *case.bounds)
 
 
+def _manifest_case_ids_for_bucket(
+    cases: tuple[FixtureCase, ...],
+    *,
+    manifest_id: str,
+    text_model: str,
+    operation: str,
+) -> set[str]:
+    return {
+        case.case_id
+        for case in cases
+        if case.manifest_id == manifest_id
+        and case.text_model == text_model
+        and case.operation == operation
+    }
+
+
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
@@ -572,6 +617,82 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
         bundle,
         pattern_extractor=case_pattern,
     )
+
+
+def test_direct_bytes_follow_on_manifest_specs_cover_every_routed_manifest() -> None:
+    assert {
+        bundle.manifest.manifest_id for bundle, _ in DIRECT_BYTES_FOLLOW_ON_SPECS
+    } == DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS
+
+
+@pytest.mark.parametrize(
+    ("bundle", "supplemental_cases"),
+    DIRECT_BYTES_FOLLOW_ON_SPECS,
+    ids=DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
+)
+def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
+    bundle: FixtureBundle,
+    supplemental_cases: tuple[SupplementalCase, ...],
+) -> None:
+    manifest_id = bundle.manifest.manifest_id
+    bundle_bytes_cases = tuple(
+        case for case in bundle.cases if case.text_model == "bytes"
+    )
+    bundle_str_cases = tuple(
+        case for case in bundle.cases if case.text_model == "str"
+    )
+
+    assert bundle_bytes_cases
+    assert bundle_str_cases
+    assert {case.pattern for case in supplemental_cases} == frozenset(
+        case_pattern(case)
+        for case in fixture_cases_for_operation((bundle,), "compile")
+        if case.text_model == "bytes"
+    )
+
+    assert _manifest_case_ids_for_bucket(
+        COMPILE_CASES,
+        manifest_id=manifest_id,
+        text_model="bytes",
+        operation="compile",
+    ) == set()
+    assert _manifest_case_ids_for_bucket(
+        MODULE_CASES,
+        manifest_id=manifest_id,
+        text_model="bytes",
+        operation="module_call",
+    ) == set()
+    assert _manifest_case_ids_for_bucket(
+        PATTERN_CASES,
+        manifest_id=manifest_id,
+        text_model="bytes",
+        operation="pattern_call",
+    ) == set()
+
+    assert _manifest_case_ids_for_bucket(
+        COMPILE_CASES,
+        manifest_id=manifest_id,
+        text_model="str",
+        operation="compile",
+    ) == {
+        case.case_id for case in bundle_str_cases if case.operation == "compile"
+    }
+    assert _manifest_case_ids_for_bucket(
+        MODULE_CASES,
+        manifest_id=manifest_id,
+        text_model="str",
+        operation="module_call",
+    ) == {
+        case.case_id for case in bundle_str_cases if case.operation == "module_call"
+    }
+    assert _manifest_case_ids_for_bucket(
+        PATTERN_CASES,
+        manifest_id=manifest_id,
+        text_model="str",
+        operation="pattern_call",
+    ) == {
+        case.case_id for case in bundle_str_cases if case.operation == "pattern_call"
+    }
 
 
 def test_broader_range_conditional_bytes_cases_stay_explicit_without_skip_gating() -> None:
