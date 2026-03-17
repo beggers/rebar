@@ -11,6 +11,7 @@ from tests.benchmarks.benchmark_expectations import (
     SOURCE_TREE_SCORECARD_EXPECTATIONS,
     SourceTreeScorecardCase,
     run_source_tree_benchmark_scorecard,
+    source_tree_combined_case,
     source_tree_combined_manifest_representative_measured_workload_ids,
     source_tree_combined_slice_expectations,
     source_tree_scorecard_case,
@@ -106,6 +107,33 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             ),
         )
         self.assertEqual(case.representative_known_gap_workload_ids, ())
+
+    def test_combined_cases_treat_counted_repeat_manifest_pair_as_fully_measured(
+        self,
+    ) -> None:
+        expected_cases = (
+            (
+                "exact-repeat-quantified-group-boundary",
+                "module-search-numbered-broader-ranged-repeat-group-cold-gap",
+            ),
+            (
+                "ranged-repeat-quantified-group-boundary",
+                "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
+            ),
+        )
+
+        for manifest_id, workload_id in expected_cases:
+            with self.subTest(manifest_id=manifest_id):
+                case = source_tree_combined_case(manifest_id)
+                self.assertEqual(case.manifest_expectation.known_gap_count, 0)
+                self.assertEqual(
+                    case.manifest_expectation.representative_measured_workload_ids,
+                    (workload_id,),
+                )
+                self.assertEqual(
+                    case.manifest_expectation.representative_known_gap_workload_ids,
+                    (),
+                )
 
     def test_compile_smoke_case_restores_single_manifest_expectations(self) -> None:
         case = source_tree_scorecard_case("compile-smoke")

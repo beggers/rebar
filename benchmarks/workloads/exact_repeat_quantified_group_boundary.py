@@ -7,7 +7,7 @@ MANIFEST = {
   ],
   "notes": [
     "Exact-repeat quantified-group boundary workloads keep captures, counted repeats, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded exact-repeat slice rather than regex throughput.",
-    "Measured rows cover the bounded `a(bc){2}d`, `a(?P<word>bc){2}d`, `a(bc|de){2}d`, and `a(?P<word>bc|de){2}d` compile/search/fullmatch paths directly, while broader counted ranges stay as explicit known-gap rows until the queued follow-on slices land."
+    "Measured rows cover the bounded `a(bc){2}d`, `a(?P<word>bc){2}d`, `a(bc|de){2}d`, and `a(?P<word>bc|de){2}d` compile/search/fullmatch paths directly, and the legacy `module-search-numbered-broader-ranged-repeat-group-cold-gap` row now times the bounded `a(bc){1,4}d` `module.search()` upper-bound path on `zzabcbcbcbcdzz`."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -221,7 +221,7 @@ MANIFEST = {
         "counted-repeat",
         "search",
         "module",
-        "unsupported",
+        "upper-bound",
         "cold-cache"
       ],
       "syntax_features": [
@@ -232,7 +232,7 @@ MANIFEST = {
         "ranged-repeats"
       ],
       "notes": [
-        "Explicit broader-ranged-repeat known-gap row so counted ranges beyond the exact-repeat frontier stay visible on the benchmark surface without duplicating the now-supported bounded `{1,3}` slice."
+        "Former broader-ranged-repeat anchor now benchmarks the bounded numbered `{1,4}` grouped `module.search()` upper-bound path on `zzabcbcbcbcdzz`."
       ]
     },
     {

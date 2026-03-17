@@ -1,6 +1,6 @@
 # RBR-0508: Republish the broader counted-repeat benchmark pair as measured source-tree timings
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -60,3 +60,9 @@ Created: 2026-03-17
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/exact_repeat_quantified_group_boundary.py --report .rebar/tmp/feature-planning-exact-repeat-boundary.py` reports `13` measured workloads / `0` known gaps;
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/ranged_repeat_quantified_group_boundary.py --report .rebar/tmp/feature-planning-ranged-repeat-boundary.py` reports `8` measured workloads / `0` known gaps; and
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report .rebar/tmp/feature-planning-full-benchmarks.py` reports `588` total workloads / `588` measured workloads / `0` known gaps, while the tracked `reports/benchmarks/latest.py` artifact still sits at `588` total workloads / `586` measured workloads / `2` known gaps because `tests/benchmarks/benchmark_expectations.py` still classifies the legacy ids as known gaps and the tracked publication has not been regenerated since `RBR-0507` landed.
+
+## Completion Notes
+- 2026-03-17 feature-implementation: republished `module-search-numbered-broader-ranged-repeat-group-cold-gap` and `module-search-numbered-ranged-repeat-group-wider-range-cold-gap` as measured source-tree rows, removed their stale known-gap expectations, and regenerated the tracked benchmark publication.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_counted_repeat_benchmark_correctness_anchor_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`34` passed, `497` subtests passed).
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/exact_repeat_quantified_group_boundary.py --report .rebar/tmp/rbr-0508-exact-repeat-boundary.py` (`13` measured workloads, `0` known gaps) and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/ranged_repeat_quantified_group_boundary.py --report .rebar/tmp/rbr-0508-ranged-repeat-boundary.py` (`8` measured workloads, `0` known gaps).
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`; the tracked `reports/benchmarks/latest.py` artifact now publishes `exact-repeat-quantified-group-boundary` at `13` measured / `0` known gaps, `ranged-repeat-quantified-group-boundary` at `8` measured / `0` known gaps, and the combined source-tree summary at `588` total / `588` measured / `0` known gaps.

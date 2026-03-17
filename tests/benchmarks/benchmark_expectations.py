@@ -422,20 +422,16 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS: dict[
         representative_known_gap_workload_ids=(),
     ),
     "exact-repeat-quantified-group-boundary": _combined_manifest_definition(
-        known_gap_workload_ids=(
+        representative_measured_workload_ids=(
             "module-search-numbered-broader-ranged-repeat-group-cold-gap",
         ),
-        representative_known_gap_workload_ids=(
-            "module-search-numbered-broader-ranged-repeat-group-cold-gap",
-        ),
+        representative_known_gap_workload_ids=(),
     ),
     "ranged-repeat-quantified-group-boundary": _combined_manifest_definition(
-        known_gap_workload_ids=(
+        representative_measured_workload_ids=(
             "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
         ),
-        representative_known_gap_workload_ids=(
-            "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
-        ),
+        representative_known_gap_workload_ids=(),
     ),
     "wider-ranged-repeat-quantified-group-boundary": _combined_manifest_definition(
         representative_measured_workload_ids=(
