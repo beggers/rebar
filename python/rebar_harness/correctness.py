@@ -1533,16 +1533,14 @@ def run_correctness_harness(
     report_path: pathlib.Path = DEFAULT_REPORT_PATH,
 ) -> dict[str, Any]:
     resolved_fixture_paths = [path.resolve() for path in fixture_paths]
-    report_path = SCORECARD_REPORT.validate_path(report_path)
+    resolved_report_path = SCORECARD_REPORT.validate_path(report_path)
     manifests = load_fixture_manifests(resolved_fixture_paths)
     cases = [case for manifest in manifests for case in manifest.cases]
     cpython_adapter = CpythonReAdapter()
     rebar_adapter = RebarAdapter()
     case_results = [evaluate_case(case, cpython_adapter, rebar_adapter) for case in cases]
     scorecard = build_scorecard(manifests=manifests, case_results=case_results)
-    SCORECARD_REPORT.write(scorecard, report_path)
-    if report_path == SCORECARD_REPORT.published_path:
-        SCORECARD_REPORT.remove_legacy_sidecar()
+    SCORECARD_REPORT.write_resolved_report(scorecard, resolved_report_path)
     return scorecard
 
 
@@ -1567,11 +1565,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     try:
-        report_path = SCORECARD_REPORT.validate_path(args.report)
+        scorecard = run_correctness_harness(
+            fixture_paths=args.fixtures,
+            report_path=args.report,
+        )
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
-    scorecard = run_correctness_harness(fixture_paths=args.fixtures, report_path=report_path)
     print(json.dumps(scorecard["summary"], sort_keys=True))
     return 0
 

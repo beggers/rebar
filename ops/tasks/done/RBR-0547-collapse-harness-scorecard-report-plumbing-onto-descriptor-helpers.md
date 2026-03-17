@@ -1,8 +1,9 @@
 # RBR-0547: Collapse harness scorecard report plumbing onto descriptor helpers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
+Completed: 2026-03-17
 
 ## Goal
 - Make `ScorecardReportDescriptor` in `python/rebar_harness/scorecard_io.py` the single owner of harness-side scorecard output plumbing so `python/rebar_harness/correctness.py` and `python/rebar_harness/benchmarks.py` stop open-coding the same report-path validation, scorecard write, and retired-sidecar cleanup sequence.
@@ -57,3 +58,12 @@ Created: 2026-03-17
   - the current cleanup target is only harness report flow, not scorecard contents.
 - 2026-03-17 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_scorecard_io_contract.py tests/python/test_readme_reporting.py tests/benchmarks/test_built_native_benchmark_modes.py` passes (`19 passed, 2 skipped in 1.64s`).
+
+## Completion
+- Added `ScorecardReportDescriptor.resolve_optional_path(...)` and `ScorecardReportDescriptor.write_resolved_report(...)` so the descriptor now owns the remaining harness-side optional-report resolution plus write-and-published-sidecar-cleanup flow.
+- Rewired `python/rebar_harness/correctness.py` and `python/rebar_harness/benchmarks.py` to use the descriptor helpers, removing the direct `SCORECARD_REPORT.write(...)`, direct `remove_legacy_sidecar()`, and duplicate CLI-time `validate_path(args.report)` call from the harness modules.
+- Added focused descriptor contract coverage for `None`-preserving optional-path resolution, legacy published-path rejection text, and published-only legacy-sidecar cleanup when writing to a resolved report path.
+
+## Verification
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_scorecard_io_contract.py tests/python/test_readme_reporting.py tests/benchmarks/test_built_native_benchmark_modes.py` (`20 passed, 2 skipped in 1.91s`)
+- `rg -n "SCORECARD_REPORT\.write\(|remove_legacy_sidecar\(|validate_path\(args\.report\)" python/rebar_harness/correctness.py python/rebar_harness/benchmarks.py` (no matches)

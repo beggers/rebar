@@ -1556,11 +1556,7 @@ def run_benchmarks(
     resolved_manifest_paths = [
         path.resolve() for path in (manifest_paths or default_manifest_paths)
     ]
-    resolved_report_path = (
-        SCORECARD_REPORT.validate_path(report_path)
-        if report_path is not None
-        else None
-    )
+    resolved_report_path = SCORECARD_REPORT.resolve_optional_path(report_path)
     manifests = load_manifests(resolved_manifest_paths)
     selected_manifest_workloads = select_workloads(
         [workload for manifest in manifests for workload in manifest.workloads],
@@ -1588,9 +1584,7 @@ def run_benchmarks(
             execution_model=run_context.execution_model,
         )
         if resolved_report_path is not None:
-            SCORECARD_REPORT.write(scorecard, resolved_report_path)
-            if resolved_report_path == SCORECARD_REPORT.published_path:
-                SCORECARD_REPORT.remove_legacy_sidecar()
+            SCORECARD_REPORT.write_resolved_report(scorecard, resolved_report_path)
         return scorecard
     finally:
         run_context.cleanup()

@@ -153,7 +153,7 @@ def test_scorecard_report_loaders_and_writers_reject_malformed_inputs(
     )
 
 
-def test_scorecard_report_descriptor_wraps_validation_io_and_legacy_cleanup(
+def test_scorecard_report_descriptor_resolves_optional_paths_and_rejects_legacy_path(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -166,27 +166,52 @@ def test_scorecard_report_descriptor_wraps_validation_io_and_legacy_cleanup(
         legacy_path=legacy_path,
         scorecard_kind="correctness",
     )
-    scorecard = {"schema_version": "1.0", "totals": {"cases": 2, "passed": 2}}
 
     monkeypatch.chdir(tmp_path)
 
     assert descriptor.report_attribute == "REPORT"
     assert descriptor.module_name_prefix == "_rebar_correctness_scorecard"
-    assert descriptor.validate_path(pathlib.Path("reports/correctness/latest.py")) == (
+    assert descriptor.resolve_optional_path(None) is None
+    assert descriptor.resolve_optional_path(pathlib.Path("reports/correctness/latest.py")) == (
         published_path.resolve()
     )
 
     with pytest.raises(ValueError) as legacy_path_raised:
-        descriptor.validate_path(pathlib.Path("reports/correctness/latest.json"))
+        descriptor.resolve_optional_path(pathlib.Path("reports/correctness/latest.json"))
     assert str(legacy_path_raised.value) == (
         "reports/correctness/latest.json is a retired legacy published scorecard path; "
         "use reports/correctness/latest.py for the tracked published scorecard or a "
         "non-tracked temporary .json path for scratch output."
     )
 
-    descriptor.write(scorecard, published_path)
-    assert descriptor.load(published_path) == scorecard
+    assert descriptor.validate_path(pathlib.Path("reports/correctness/latest.py")) == (
+        published_path.resolve()
+    )
+
+
+def test_scorecard_report_descriptor_writes_resolved_reports_and_only_cleans_up_published_sidecar(
+    tmp_path: pathlib.Path,
+) -> None:
+    reports_root = tmp_path / "reports" / "correctness"
+    reports_root.mkdir(parents=True)
+    published_path = reports_root / "latest.py"
+    legacy_path = reports_root / "latest.json"
+    scratch_path = tmp_path / "scratch-scorecard.json"
+    descriptor = scorecard_io.build_scorecard_report_descriptor(
+        published_path=published_path,
+        legacy_path=legacy_path,
+        scorecard_kind="correctness",
+    )
+    scorecard = {"schema_version": "1.0", "totals": {"cases": 2, "passed": 2}}
 
     legacy_path.write_text("{}\n", encoding="utf-8")
-    assert descriptor.remove_legacy_sidecar() is True
-    assert descriptor.remove_legacy_sidecar() is False
+    descriptor.write_resolved_report(scorecard, scratch_path.resolve())
+
+    assert scratch_path.is_file()
+    assert descriptor.load(scratch_path) == scorecard
+    assert legacy_path.is_file()
+
+    descriptor.write_resolved_report(scorecard, published_path.resolve())
+
+    assert descriptor.load(published_path) == scorecard
+    assert not legacy_path.exists()

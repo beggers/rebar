@@ -192,6 +192,14 @@ class ScorecardReportDescriptor:
             legacy_path_error=self.legacy_path_error,
         )
 
+    def resolve_optional_path(
+        self,
+        report_path: pathlib.Path | str | None,
+    ) -> pathlib.Path | None:
+        if report_path is None:
+            return None
+        return self.validate_path(report_path)
+
     def load(self, report_path: pathlib.Path | str) -> dict[str, Any]:
         return load_scorecard_report(
             pathlib.Path(report_path),
@@ -207,6 +215,16 @@ class ScorecardReportDescriptor:
             report_attribute=self.report_attribute,
             scorecard_kind=self.scorecard_kind,
         )
+
+    def write_resolved_report(
+        self,
+        scorecard: dict[str, Any],
+        report_path: pathlib.Path | str,
+    ) -> None:
+        resolved_report_path = pathlib.Path(report_path)
+        self.write(scorecard, resolved_report_path)
+        if resolved_report_path == self.published_path:
+            self.remove_legacy_sidecar()
 
     def remove_legacy_sidecar(self) -> bool:
         return remove_scorecard_sidecar(self.legacy_path)
