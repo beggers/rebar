@@ -9,17 +9,17 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-The published correctness slice now covers 971 cases across 109 manifests, with all 971 passing and 0 honest `unimplemented` gaps; the main benchmark report covers 588 workloads with 585 real `rebar` timings and 3 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity.
+The published correctness slice now covers 977 cases across 110 manifests, with 971 passing and 6 honest `unimplemented` gaps; the main benchmark report covers 588 workloads with 585 real `rebar` timings and 3 explicit known gaps through the source-tree shim, so the project remains far from drop-in `re` parity.
 
 ## README Next Steps
-- Ready head `RBR-0500` publishes the exact optional-group conditional pair `a(b)?(?(1)c|d)e` / `a(?P<word>b)?(?(word)c|d)e` on the correctness surface so the remaining `optional-group-boundary` benchmark gap stops floating without a published anchor.
+- With the queue empty after `RBR-0500`, the surviving intended follow-on is `RBR-0501`: convert the exact optional-group conditional pair `a(b)?(?(1)c|d)e` / `a(?P<word>b)?(?(word)c|d)e` to Rust-backed parity before the anchored `optional-group-boundary` benchmark gap is republished.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
 - The published benchmark surface is still bounded at 588 workloads and carries 3 explicit known-gap workloads.
 
 ## Compatibility Heuristic
-The published slice is still narrow: all 971 published correctness cases currently pass across 109 manifests, while benchmark coverage still runs mainly through the source-tree shim with 3 explicit known gaps.
+The published slice is still narrow: 971 of 977 published correctness cases currently pass across 110 manifests, while benchmark coverage still runs mainly through the source-tree shim with 3 explicit known gaps.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -310,7 +310,7 @@ The published slice is still narrow: all 971 published correctness cases current
 - Tracked state, task queue directories, and seeded ready tasks under `ops/`.
 
 ## What Does Not Exist Yet
-- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 109 manifests and 971 cases, with 971 passes and 0 honest `unimplemented` gaps, but that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
+- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 110 manifests and 977 cases, with 971 passes and 6 honest `unimplemented` gaps, but that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree shim while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
 - A primary benchmark publication: `reports/benchmarks/latest.py` now covers 588 workloads across 30 manifests with 585 real `rebar` timings and 3 explicit known gaps, so the published benchmark surface is still bounded.
@@ -329,7 +329,7 @@ The published slice is still narrow: all 971 published correctness cases current
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0501` should be the surviving follow-on after the current correctness-publication head drains, converting the exact numbered/named optional-group conditional pair `a(b)?(?(1)c|d)e` / `a(?P<word>b)?(?(word)c|d)e` to Rust-backed parity on the existing conditional group-exists pytest path before the `optional-group-boundary` benchmark gap is republished.
+- With the queue empty after `RBR-0500`, `RBR-0501` is the surviving intended follow-on: convert the exact numbered/named optional-group conditional pair `a(b)?(?(1)c|d)e` / `a(?P<word>b)?(?(word)c|d)e` to Rust-backed parity on the existing conditional group-exists pytest path before the `optional-group-boundary` benchmark gap is republished.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
