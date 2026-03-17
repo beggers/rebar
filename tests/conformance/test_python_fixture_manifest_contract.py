@@ -125,6 +125,16 @@ class PythonFixtureManifestContractTest(unittest.TestCase):
         numbered_case = cases[0]
         self.assertEqual(numbered_case.helper, "sub")
         self.assertEqual(numbered_case.args[0], r"a((bc)+)d")
+        self.assertEqual(numbered_case.source_args, [
+            r"a((bc)+)d",
+            {
+                "type": "callable_match_group",
+                "group": 1,
+                "suffix": "x",
+            },
+            "zzabcbcdzz",
+        ])
+        self.assertEqual(numbered_case.source_kwargs, {})
         self.assertTrue(callable(numbered_case.args[1]))
         numbered_match = re.search(r"a((bc)+)d", "zzabcbcdzz")
         self.assertIsNotNone(numbered_match)
@@ -144,6 +154,17 @@ class PythonFixtureManifestContractTest(unittest.TestCase):
             named_case.pattern_payload(),
             r"a(?P<outer>(?P<inner>bc)+)d",
         )
+        self.assertEqual(named_case.source_args, [
+            {
+                "type": "callable_match_group",
+                "group": "inner",
+                "prefix": "<",
+                "suffix": ">",
+            },
+            "zzabcbcdabcbcdzz",
+            1,
+        ])
+        self.assertEqual(named_case.source_kwargs, {})
         self.assertTrue(callable(named_case.args[0]))
         named_match = re.search(named_case.pattern_payload(), "zzabcbcdzz")
         self.assertIsNotNone(named_match)
@@ -159,6 +180,15 @@ class PythonFixtureManifestContractTest(unittest.TestCase):
 
         constant_case = cases[2]
         self.assertEqual(constant_case.helper, "sub")
+        self.assertEqual(constant_case.source_args, [
+            r"a((bc)+)d",
+            {
+                "type": "callable_constant",
+                "value": "CONST",
+            },
+            "zzabcdzz",
+        ])
+        self.assertEqual(constant_case.source_kwargs, {})
         self.assertTrue(callable(constant_case.args[1]))
         constant_match = re.search(r"a((bc)+)d", "zzabcdzz")
         self.assertIsNotNone(constant_match)
@@ -273,9 +303,50 @@ class PythonFixtureManifestContractTest(unittest.TestCase):
 
         self.assertIsNot(first_default_case.args, second_default_case.args)
         self.assertIsNot(first_default_case.kwargs, second_default_case.kwargs)
+        self.assertIsNot(first_default_case.source_args, second_default_case.source_args)
+        self.assertIsNot(first_default_case.source_kwargs, second_default_case.source_kwargs)
+        self.assertEqual(first_default_case.source_args, [
+            {
+                "type": "callable_match_group",
+                "group": 1,
+                "prefix": {
+                    "type": "bytes",
+                    "value": "<",
+                },
+                "suffix": {
+                    "type": "bytes",
+                    "value": ">",
+                },
+            },
+            {
+                "type": "bytes",
+                "value": "zzabcbcdzz",
+            },
+        ])
+        self.assertEqual(first_default_case.source_kwargs, {"count": 1})
+        self.assertEqual(second_default_case.source_args, [
+            {
+                "type": "callable_match_group",
+                "group": 1,
+                "prefix": {
+                    "type": "bytes",
+                    "value": "<",
+                },
+                "suffix": {
+                    "type": "bytes",
+                    "value": ">",
+                },
+            },
+            {
+                "type": "bytes",
+                "value": "zzabcbcdzz",
+            },
+        ])
+        self.assertEqual(second_default_case.source_kwargs, {"count": 1})
         self.assertTrue(callable(first_default_case.args[0]))
         self.assertTrue(callable(second_default_case.args[0]))
         self.assertIsNot(first_default_case.args[0], second_default_case.args[0])
+        self.assertIsNot(first_default_case.source_args[0], second_default_case.source_args[0])
         self.assertEqual(first_default_case.args[1], b"zzabcbcdzz")
         self.assertEqual(first_default_case.serialized_args(), [
             {
@@ -296,11 +367,31 @@ class PythonFixtureManifestContractTest(unittest.TestCase):
 
         first_default_case.args[1] = b"mutated"
         first_default_case.kwargs["count"] = 0
+        first_default_case.source_args[0]["prefix"]["value"] = "["
+        first_default_case.source_args[1]["value"] = "mutated-source"
+        first_default_case.source_kwargs["count"] = 0
         self.assertEqual(second_default_case.args[1], b"zzabcbcdzz")
         self.assertEqual(second_default_case.kwargs["count"], 1)
+        self.assertEqual(second_default_case.source_args[0]["prefix"]["value"], "<")
+        self.assertEqual(second_default_case.source_args[1]["value"], "zzabcbcdzz")
+        self.assertEqual(second_default_case.source_kwargs["count"], 1)
         self.assertEqual(constant_case.kwargs["count"], 1)
+        self.assertEqual(constant_case.source_kwargs["count"], 1)
 
         self.assertTrue(callable(constant_case.args[0]))
+        self.assertEqual(constant_case.source_args, [
+            {
+                "type": "callable_constant",
+                "value": {
+                    "type": "bytes",
+                    "value": "CONST",
+                },
+            },
+            {
+                "type": "bytes",
+                "value": "zzabcbcdzz",
+            },
+        ])
         constant_match = re.search(constant_case.pattern_payload(), constant_case.args[1])
         self.assertIsNotNone(constant_match)
         self.assertEqual(constant_case.args[0](constant_match), b"CONST")

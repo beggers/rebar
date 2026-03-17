@@ -28,7 +28,6 @@ from tests.python.fixture_parity_support import (
     load_published_fixture_bundles,
     published_fixture_bundle_by_manifest_id,
     published_fixture_paths_from_bundles,
-    raw_fixture_cases_by_id,
     str_case_pattern,
 )
 
@@ -620,8 +619,11 @@ def _literal_callable_case() -> FixtureCase:
     return COLLECTION_REPLACEMENT_BUNDLE.cases[0]
 
 
-def _literal_callable_raw_case() -> dict[str, object]:
-    return raw_fixture_cases_by_id(COLLECTION_REPLACEMENT_BUNDLE)["module-sub-callable-str"]
+def _source_callable_replacement(case: FixtureCase) -> dict[str, object]:
+    replacement_index = 1 if case.operation == "module_call" else 0
+    replacement = case.source_args[replacement_index]
+    assert isinstance(replacement, dict)
+    return replacement
 
 
 def _literal_callable_pattern() -> str:
@@ -703,21 +705,8 @@ def _callable_no_match_text(pattern: str, flags: int = 0) -> str:
     raise AssertionError(f"could not find a shared no-match text for pattern {pattern!r}")
 
 
-def _raw_callable_replacement(bundle: FixtureBundle, case: FixtureCase) -> dict[str, object]:
-    raw_case = raw_fixture_cases_by_id(bundle)[case.case_id]
-    raw_args = raw_case.get("args", [])
-    assert isinstance(raw_args, list)
-    replacement_index = 1 if case.operation == "module_call" else 0
-    replacement = raw_args[replacement_index]
-    assert isinstance(replacement, dict)
-    return replacement
-
-
-def _assert_raw_callable_replacement_reference_is_valid(
-    bundle: FixtureBundle,
-    case: FixtureCase,
-) -> None:
-    replacement = _raw_callable_replacement(bundle, case)
+def _assert_source_callable_replacement_reference_is_valid(case: FixtureCase) -> None:
+    replacement = _source_callable_replacement(case)
     assert replacement.get("type") == "callable_match_group"
 
     prefix = replacement.get("prefix", "")
@@ -765,15 +754,12 @@ def test_pending_rebar_callable_manifest_ids_match_live_unimplemented_manifests(
 def test_callable_replacement_fixture_shape_contract(
     bundle: FixtureBundle,
 ) -> None:
-    raw_cases_by_id = raw_fixture_cases_by_id(bundle)
     compile_patterns = bundle_patterns(bundle, pattern_extractor=str_case_pattern)
 
     assert bundle.manifest.manifest_id.endswith("-callable-replacement-workflows")
     assert bundle.manifest.layer == "module_workflow"
     assert bundle.manifest.defaults.get("text_model") == "str"
     assert len(bundle.cases) == 8
-    assert len(raw_cases_by_id) == len(bundle.cases)
-    assert {case.case_id for case in bundle.cases} == set(raw_cases_by_id)
     assert {case.text_model for case in bundle.cases} == {"str"}
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
         EXPECTED_OPERATION_HELPER_COUNTS
@@ -795,13 +781,12 @@ def test_callable_replacement_fixture_shape_contract(
     for case in bundle.cases:
         assert "callable-replacement" in case.categories
         assert "str" in case.categories
-        _assert_raw_callable_replacement_reference_is_valid(bundle, case)
+        _assert_source_callable_replacement_reference_is_valid(case)
 
 
 def test_literal_callable_case_stays_aligned_with_published_collection_fixture() -> None:
     case = _literal_callable_case()
-    raw_case = _literal_callable_raw_case()
-    raw_args = raw_case.get("args", [])
+    source_replacement = _source_callable_replacement(case)
 
     assert COLLECTION_REPLACEMENT_BUNDLE.manifest.manifest_id == (
         "collection-replacement-workflows"
@@ -813,8 +798,8 @@ def test_literal_callable_case_stays_aligned_with_published_collection_fixture()
     assert callable(case_replacement_argument(case))
     assert "callable-replacement" in case.categories
     assert "str" in case.categories
-    assert isinstance(raw_args, list)
-    assert raw_args[1] == {"type": "callable_constant", "value": "x"}
+    assert source_replacement == {"type": "callable_constant", "value": "x"}
+    assert case.source_kwargs == {}
 
 
 def test_quantified_nested_group_alternation_callable_cases_stay_aligned_with_published_fixture() -> None:

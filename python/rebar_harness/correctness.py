@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import pathlib
 import re as cpython_re
@@ -338,7 +339,6 @@ class FixtureManifest:
     schema_version: int
     defaults: dict[str, Any]
     cases: list["FixtureCase"]
-    raw: dict[str, Any]
 
 
 @dataclass(frozen=True)
@@ -358,12 +358,21 @@ class FixtureCase:
     text_model: str | None
     pattern_encoding: str
     helper: str | None
+    source_args: list[Any]
+    source_kwargs: dict[str, Any]
     args: list[Any]
     kwargs: dict[str, Any]
 
     @classmethod
     def from_dict(cls, manifest: FixtureManifest, raw_case: dict[str, Any]) -> "FixtureCase":
         defaults = manifest.defaults
+        source_args = _copied_case_payload(raw_case, defaults, key="args", fallback=[])
+        source_kwargs = _copied_case_payload(
+            raw_case,
+            defaults,
+            key="kwargs",
+            fallback={},
+        )
         return cls(
             case_id=str(raw_case["id"]),
             manifest_id=manifest.manifest_id,
@@ -383,12 +392,14 @@ class FixtureCase:
                 )
             ),
             helper=_optional_string(raw_case.get("helper")),
+            source_args=source_args,
+            source_kwargs=source_kwargs,
             args=materialize_descriptor_value(
-                raw_case.get("args", defaults.get("args", [])),
+                source_args,
                 callback_module_name="rebar_harness.correctness",
             ),
             kwargs=materialize_descriptor_value(
-                raw_case.get("kwargs", defaults.get("kwargs", {})),
+                source_kwargs,
                 callback_module_name="rebar_harness.correctness",
             ),
         )
@@ -419,6 +430,22 @@ def _optional_int(value: Any) -> int | None:
     if value is None:
         return None
     return int(value)
+
+
+_MISSING = object()
+
+
+def _copied_case_payload(
+    raw_case: dict[str, Any],
+    defaults: dict[str, Any],
+    *,
+    key: str,
+    fallback: Any,
+) -> Any:
+    value = raw_case.get(key, _MISSING)
+    if value is _MISSING:
+        value = defaults.get(key, fallback)
+    return copy.deepcopy(value)
 
 
 def load_fixture_manifest(path: pathlib.Path) -> FixtureManifest:
@@ -463,7 +490,6 @@ def load_fixture_manifest(path: pathlib.Path) -> FixtureManifest:
         schema_version=schema_version,
         defaults=defaults,
         cases=[],
-        raw=raw_manifest,
     )
     cases = [FixtureCase.from_dict(manifest, raw_case) for raw_case in raw_manifest.get("cases", [])]
     return replace(manifest, cases=cases)

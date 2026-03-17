@@ -325,19 +325,6 @@ def published_fixture_paths_from_bundles(
     return tuple(sorted((bundle.manifest.path for bundle in bundles), key=lambda path: path.name))
 
 
-def _manifest_raw_cases(bundle: FixtureBundle) -> tuple[dict[str, object], ...]:
-    raw_cases = bundle.manifest.raw.get("cases", [])
-    if not isinstance(raw_cases, list):
-        raise ValueError(
-            f"fixture manifest {bundle.manifest.manifest_id!r} raw cases must be a list"
-        )
-    return tuple(
-        raw_case
-        for raw_case in raw_cases
-        if isinstance(raw_case, dict) and "id" in raw_case
-    )
-
-
 def manifest_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
     return tuple(case.case_id for case in bundle.manifest.cases)
 
@@ -348,16 +335,6 @@ def bundle_patterns(
     pattern_extractor: Callable[[FixtureCase], str | bytes],
 ) -> frozenset[str | bytes]:
     return frozenset(pattern_extractor(case) for case in bundle.cases)
-
-
-def raw_fixture_cases_by_id(bundle: FixtureBundle) -> dict[str, dict[str, object]]:
-    selected_case_ids = {case.case_id for case in bundle.cases}
-
-    return {
-        str(raw_case["id"]): raw_case
-        for raw_case in _manifest_raw_cases(bundle)
-        if str(raw_case["id"]) in selected_case_ids
-    }
 
 
 def ordered_manifest_cases_from_bundles(

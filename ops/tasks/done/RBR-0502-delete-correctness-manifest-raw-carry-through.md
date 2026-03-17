@@ -1,6 +1,6 @@
 # RBR-0502: Delete correctness manifest raw carry-through
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -82,3 +82,14 @@ Created: 2026-03-17
   - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-0502-correctness-raw-descriptor-cleanup.py` currently succeeds and reports `{"executed_cases": 15, "failed_cases": 0, "passed_cases": 15, "skipped_cases": 0, "total_cases": 15, "unimplemented_cases": 0}`.
   - The `rg -n ...` command above currently returns the live `FixtureManifest.raw`, `_manifest_raw_cases(...)`, and `raw_fixture_cases_by_id(...)` matches listed in the notes, which is the exact coupling this task should delete.
   - The typed-source probe above currently fails with `AssertionError: manifest.raw should be removed`, which is the exact cleanup this task is meant to complete.
+
+## Completion Notes
+- 2026-03-17: Removed the manifest-wide raw carry-through from `python/rebar_harness/correctness.py` by deleting `FixtureManifest.raw`, keeping manifest ordering and duplicate-id validation intact, and adding deep-copied `FixtureCase.source_args` / `FixtureCase.source_kwargs` so the pre-materialized fixture payload now lives on each case instead of the manifest.
+- Rewrote the parity-support and callable-replacement test seams to read descriptor-shape assertions from `FixtureCase.source_args` / `source_kwargs`, deleting `_manifest_raw_cases(...)`, `raw_fixture_cases_by_id(...)`, and the raw-row helper path from the two affected Python parity suites.
+- Extended the loader contract test to pin the new case-owned source payload surface and to prove default-derived source payloads do not alias across cases that inherit the same manifest defaults.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_python_fixture_manifest_contract.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_callable_replacement_parity_suite.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/collection_replacement_workflows.py --report .rebar/tmp/rbr-0502-correctness-raw-descriptor-cleanup.py`
+  - `rg -n 'raw: dict\\[str, Any\\]|manifest\\.raw|def _manifest_raw_cases\\(|raw_fixture_cases_by_id\\(' python/rebar_harness/correctness.py tests/python/fixture_parity_support.py tests/python/test_fixture_parity_support_contract.py tests/python/test_callable_replacement_parity_suite.py tests/conformance/test_python_fixture_manifest_contract.py` returned no matches.
+  - The task's typed-source probe prints `ok`.

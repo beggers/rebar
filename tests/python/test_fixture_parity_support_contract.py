@@ -52,7 +52,6 @@ from tests.python.fixture_parity_support import (
     ordered_manifest_cases_from_bundles,
     published_fixture_bundle_by_manifest_id,
     published_fixture_paths_from_bundles,
-    raw_fixture_cases_by_id,
     str_case_pattern,
 )
 OPTIONAL_NAMED_GROUP_PATTERN = r"a(?P<word>b)?d"
@@ -781,7 +780,7 @@ def test_selected_case_bundle_specs_load_in_declared_bundle_order() -> None:
         assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
 
 
-def test_bundle_pattern_projection_and_raw_case_lookup_helpers_cover_published_fixtures() -> None:
+def test_bundle_pattern_projection_and_case_source_payloads_cover_published_fixtures() -> None:
     selected_case_ids = (
         "module-sub-callable-str",
         "module-sub-grouping-template",
@@ -800,7 +799,7 @@ def test_bundle_pattern_projection_and_raw_case_lookup_helpers_cover_published_f
         )
     )
 
-    raw_cases = raw_fixture_cases_by_id(bundle)
+    cases_by_id = {case.case_id: case for case in bundle.cases}
 
     assert bundle_patterns(bundle, pattern_extractor=case_pattern) == frozenset(
         {"abc", "(abc)"}
@@ -808,12 +807,14 @@ def test_bundle_pattern_projection_and_raw_case_lookup_helpers_cover_published_f
     assert bundle_patterns(bundle, pattern_extractor=str_case_pattern) == frozenset(
         {"abc", "(abc)"}
     )
-    assert set(raw_cases) == set(selected_case_ids)
-    assert raw_cases["module-sub-callable-str"]["args"][1] == {
+    assert set(cases_by_id) == set(selected_case_ids)
+    assert cases_by_id["module-sub-callable-str"].source_args[1] == {
         "type": "callable_constant",
         "value": "x",
     }
-    assert raw_cases["module-sub-grouping-template"]["args"][1] == r"\1x"
+    assert cases_by_id["module-sub-callable-str"].source_kwargs == {}
+    assert cases_by_id["module-sub-grouping-template"].source_args[1] == r"\1x"
+    assert cases_by_id["module-sub-grouping-template"].source_kwargs == {}
 
 
 def test_manifest_case_helpers_cover_bundle_manifest_order_and_unselected_rows() -> None:
