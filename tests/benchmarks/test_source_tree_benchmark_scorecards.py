@@ -10,6 +10,7 @@ TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 from tests.benchmarks.benchmark_expectations import (
     SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS,
     SOURCE_TREE_SCORECARD_EXPECTATIONS,
+    ZERO_GAP_BYTES_CASES,
     SourceTreeScorecardCase,
     relative_manifest_path,
     run_source_tree_benchmark_scorecard,
@@ -26,138 +27,6 @@ from tests.report_assertions import (
     find_manifest_record,
     find_workload_document,
     find_workload_record,
-)
-
-ZERO_GAP_REPRESENTATIVE_BYTES_CASES = (
-    (
-        "wider-ranged-repeat-quantified-group-boundary",
-        (
-            "module-compile-numbered-wider-ranged-repeat-group-broader-range-conditional-cold-bytes",
-            "module-search-numbered-wider-ranged-repeat-group-broader-range-conditional-absent-warm-bytes",
-            "pattern-fullmatch-numbered-wider-ranged-repeat-group-broader-range-conditional-lower-bound-bc-purged-bytes",
-            "module-compile-named-wider-ranged-repeat-group-broader-range-conditional-warm-bytes",
-            "module-search-named-wider-ranged-repeat-group-broader-range-conditional-upper-bound-mixed-warm-bytes",
-            "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-conditional-upper-bound-mixed-purged-bytes",
-        ),
-    ),
-    (
-        "open-ended-quantified-group-boundary",
-        (
-            "module-compile-numbered-open-ended-group-alternation-cold-bytes",
-            "module-search-numbered-open-ended-group-alternation-lower-bound-bc-warm-bytes",
-            "pattern-fullmatch-numbered-open-ended-group-alternation-third-repetition-mixed-purged-bytes",
-            "module-compile-named-open-ended-group-alternation-warm-bytes",
-            "module-search-named-open-ended-group-alternation-lower-bound-de-warm-bytes",
-            "pattern-fullmatch-named-open-ended-group-alternation-fourth-repetition-de-purged-bytes",
-        ),
-    ),
-    (
-        "open-ended-quantified-group-boundary",
-        (
-            "module-compile-numbered-open-ended-group-broader-range-cold-bytes",
-            "module-search-numbered-open-ended-group-broader-range-lower-bound-bc-warm-bytes",
-            "pattern-fullmatch-numbered-open-ended-group-broader-range-third-repetition-mixed-purged-bytes",
-            "module-compile-named-open-ended-group-broader-range-warm-bytes",
-            "module-search-named-open-ended-group-broader-range-lower-bound-de-warm-bytes",
-            "pattern-fullmatch-named-open-ended-group-broader-range-third-repetition-de-purged-bytes",
-        ),
-    ),
-    (
-        "open-ended-quantified-group-boundary",
-        (
-            "module-compile-numbered-open-ended-group-conditional-cold-bytes",
-            "module-search-numbered-open-ended-group-conditional-second-repetition-bc-warm-bytes",
-            "pattern-fullmatch-numbered-open-ended-group-conditional-third-repetition-mixed-purged-bytes",
-            "module-compile-named-open-ended-group-conditional-warm-bytes",
-            "module-search-named-open-ended-group-conditional-fourth-repetition-de-warm-bytes",
-            "pattern-fullmatch-named-open-ended-group-conditional-third-repetition-mixed-purged-bytes",
-            "module-compile-numbered-open-ended-group-broader-range-conditional-cold-bytes",
-            "module-search-numbered-open-ended-group-broader-range-conditional-second-repetition-bc-warm-bytes",
-            "pattern-fullmatch-numbered-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
-            "module-compile-named-open-ended-group-broader-range-conditional-warm-bytes",
-            "module-search-named-open-ended-group-broader-range-conditional-fourth-repetition-de-warm-bytes",
-            "pattern-fullmatch-named-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
-        ),
-    ),
-    (
-        "open-ended-quantified-group-boundary",
-        (
-            "module-compile-numbered-open-ended-group-broader-range-backtracking-heavy-cold-bytes",
-            "module-search-numbered-open-ended-group-broader-range-backtracking-heavy-lower-bound-b-branch-warm-bytes",
-            "pattern-fullmatch-numbered-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-purged-bytes",
-            "module-compile-named-open-ended-group-broader-range-backtracking-heavy-warm-bytes",
-            "module-search-named-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-warm-bytes",
-            "pattern-fullmatch-named-open-ended-group-broader-range-backtracking-heavy-purged-bytes",
-        ),
-    ),
-    (
-        "open-ended-quantified-group-boundary",
-        (
-            "module-compile-numbered-open-ended-group-backtracking-heavy-cold-bytes",
-            "module-search-numbered-open-ended-group-backtracking-heavy-lower-bound-b-branch-warm-bytes",
-            "pattern-fullmatch-numbered-open-ended-group-backtracking-heavy-second-repetition-b-then-bc-purged-bytes",
-            "module-compile-named-open-ended-group-backtracking-heavy-warm-bytes",
-            "module-search-named-open-ended-group-backtracking-heavy-third-repetition-mixed-warm-bytes",
-            "pattern-fullmatch-named-open-ended-group-backtracking-heavy-purged-bytes",
-        ),
-    ),
-    (
-        "wider-ranged-repeat-quantified-group-boundary",
-        (
-            "module-compile-numbered-wider-ranged-repeat-group-broader-range-backtracking-heavy-cold-bytes",
-            "module-search-numbered-wider-ranged-repeat-group-broader-range-backtracking-heavy-lower-bound-b-branch-warm-bytes",
-            "pattern-fullmatch-numbered-wider-ranged-repeat-group-broader-range-backtracking-heavy-second-repetition-b-then-bc-purged-bytes",
-            "module-compile-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-warm-bytes",
-            "module-search-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-lower-bound-bc-branch-warm-bytes",
-            "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-fourth-repetition-mixed-purged-bytes",
-        ),
-    ),
-    (
-        "wider-ranged-repeat-quantified-group-boundary",
-        (
-            "module-compile-numbered-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-cold-bytes",
-            "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-lower-bound-b-branch-warm-bytes",
-            "pattern-fullmatch-numbered-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-second-repetition-b-then-bc-purged-bytes",
-            "pattern-fullmatch-numbered-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-fourth-repetition-mixed-purged-bytes",
-            "module-compile-named-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-warm-bytes",
-            "module-search-named-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-lower-bound-bc-branch-warm-bytes",
-            "pattern-fullmatch-named-wider-ranged-repeat-group-nested-broader-range-backtracking-heavy-second-repetition-bc-then-b-purged-bytes",
-        ),
-    ),
-    (
-        "wider-ranged-repeat-quantified-group-boundary",
-        (
-            "module-compile-numbered-wider-ranged-repeat-group-nested-broader-range-cold-bytes",
-            "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-lower-bound-bc-warm-bytes",
-            "pattern-fullmatch-numbered-wider-ranged-repeat-group-nested-broader-range-third-repetition-mixed-purged-bytes",
-            "module-compile-named-wider-ranged-repeat-group-nested-broader-range-warm-bytes",
-            "module-search-named-wider-ranged-repeat-group-nested-broader-range-lower-bound-de-warm-bytes",
-            "pattern-fullmatch-named-wider-ranged-repeat-group-nested-broader-range-upper-bound-all-de-purged-bytes",
-        ),
-    ),
-    (
-        "wider-ranged-repeat-quantified-group-boundary",
-        (
-            "module-compile-numbered-wider-ranged-repeat-group-nested-broader-range-conditional-cold-bytes",
-            "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-conditional-absent-warm-bytes",
-            "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-conditional-lower-bound-bc-warm-bytes",
-            "pattern-fullmatch-numbered-wider-ranged-repeat-group-nested-broader-range-conditional-mixed-purged-bytes",
-            "module-compile-named-wider-ranged-repeat-group-nested-broader-range-conditional-warm-bytes",
-            "module-search-named-wider-ranged-repeat-group-nested-broader-range-conditional-lower-bound-de-warm-bytes",
-            "pattern-fullmatch-named-wider-ranged-repeat-group-nested-broader-range-conditional-upper-bound-all-de-purged-bytes",
-        ),
-    ),
-    (
-        "wider-ranged-repeat-quantified-group-boundary",
-        (
-            "module-compile-numbered-wider-ranged-repeat-group-open-ended-cold-bytes",
-            "module-search-numbered-wider-ranged-repeat-group-open-ended-lower-bound-bc-warm-bytes",
-            "pattern-fullmatch-numbered-wider-ranged-repeat-group-open-ended-purged-bytes",
-            "module-compile-named-wider-ranged-repeat-group-open-ended-warm-bytes",
-            "module-search-named-wider-ranged-repeat-group-open-ended-lower-bound-de-warm-bytes",
-            "pattern-fullmatch-named-wider-ranged-repeat-group-open-ended-fourth-repetition-de-purged-bytes",
-        ),
-    ),
 )
 
 
@@ -353,7 +222,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
     def test_zero_gap_source_tree_manifests_keep_selected_bytes_representatives_publicly_measured(
         self,
     ) -> None:
-        for manifest_id, expected_workload_ids in ZERO_GAP_REPRESENTATIVE_BYTES_CASES:
+        for manifest_id, expected_workload_ids, _, _ in ZERO_GAP_BYTES_CASES:
             with self.subTest(manifest_id=manifest_id):
                 self._assert_zero_gap_representative_workload_subset(
                     manifest_id,

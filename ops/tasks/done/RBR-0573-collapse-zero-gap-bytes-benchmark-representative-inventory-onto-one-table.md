@@ -1,6 +1,6 @@
 # RBR-0573: Collapse the zero-gap bytes benchmark representative inventory onto one table
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -115,3 +115,9 @@ Created: 2026-03-17
     - `tests/benchmarks/test_source_tree_benchmark_scorecards.py:missing-import:ZERO_GAP_BYTES_CASES`
     - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py:still-defines:ZERO_GAP_BYTES_PROMOTION_CASES`
     - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py:missing-import:ZERO_GAP_BYTES_CASES`
+
+## Completion Notes
+- 2026-03-17: Added `ZERO_GAP_BYTES_CASES` to `tests/benchmarks/benchmark_expectations.py` as the single shared 11-case zero-gap bytes inventory, removed the duplicated local constants from both benchmark test modules, kept the quantified-alternation bytes promotion/special-case tests separate, and updated the scorecard loop to project only `manifest_id` plus `expected_workload_ids` from the shared four-field tuples.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`34 passed, 937 subtests passed in 22.68s`)
+  - Task acceptance AST probe (`ok`)
