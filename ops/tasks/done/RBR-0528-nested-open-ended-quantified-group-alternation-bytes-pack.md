@@ -1,6 +1,6 @@
 # RBR-0528: Publish the nested open-ended quantified-group alternation bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -33,6 +33,14 @@ Created: 2026-03-17
 - Keep the future parity follow-on anchored to the existing `tests/python/test_open_ended_quantified_group_parity_suite.py` surface.
 
 ## Notes
+- 2026-03-17 completion:
+  - Added the 14 bytes mirrors to the existing nested open-ended `{1,}` grouped-alternation manifest, keeping this slice on one shared correctness fixture.
+  - Updated the open-ended parity suite bundle contract to mixed `str`/`bytes` coverage and added one direct nested bytes follow-on anchor that stays explicitly unsupported for `rebar` pending `RBR-0529`.
+  - Regenerated the tracked combined scorecard in `reports/correctness/latest.py`; the published report now shows `1067` total / `1053` passed / `14` unimplemented across `111` manifests, and `match.nested_open_ended_quantified_group_alternation` now shows `28` total / `14` passed / `14` unimplemented with `['bytes', 'str']` coverage.
+  - Verified with:
+    - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+    - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_open_ended_quantified_group_alternation_workflows.py --report .rebar/tmp/rbr-0528-nested-open-ended-grouped-alternation-bytes.py`
+    - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
 - Build on `RBR-0527`.
 - 2026-03-17 feature-planning probes confirm this task is not stale:
   - `tests/conformance/fixtures/nested_open_ended_quantified_group_alternation_workflows.py` currently contains only the 14 `str` cases for this nested open-ended `{1,}` grouped-alternation slice and no `bytes` mirrors;

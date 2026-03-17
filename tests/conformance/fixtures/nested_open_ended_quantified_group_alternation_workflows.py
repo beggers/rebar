@@ -166,6 +166,272 @@ MANIFEST = {
       "notes": [
         "Documents the named no-match path when the grouped repetition is present but the surrounding literal suffix never satisfies the trailing `d`."
       ]
+    },
+    {
+      "id": "nested-open-ended-quantified-group-alternation-numbered-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "nested_open_ended_quantified_group_alternation_numbered_compile_metadata",
+      "pattern": "a((bc|de){1,})d",
+      "text_model": "bytes",
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "open-ended-repeat", "counted-repeat", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Publishes the numbered nested open-ended grouped-alternation compile frontier with bytes payloads while keeping the nested grouped bytes parity gap explicit until RBR-0529 lands."
+      ]
+    },
+    {
+      "id": "nested-open-ended-quantified-group-alternation-numbered-module-search-lower-bound-bc-bytes",
+      "operation": "module_call",
+      "family": "nested_open_ended_quantified_group_alternation_numbered_module_lower_bound_bc_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a((bc|de){1,})d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabcdzz"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "open-ended-repeat", "counted-repeat", "search", "module", "lower-bound", "bc", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound nested grouped success path on `abcd` with bytes payloads so the scorecard records one `bc` repetition captured through the outer group before bytes parity lands."
+      ]
+    },
+    {
+      "id": "nested-open-ended-quantified-group-alternation-numbered-module-search-lower-bound-de-bytes",
+      "operation": "module_call",
+      "family": "nested_open_ended_quantified_group_alternation_numbered_module_lower_bound_de_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a((bc|de){1,})d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzadedzz"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "open-ended-repeat", "counted-repeat", "search", "module", "lower-bound", "de", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound nested grouped success path on `aded` with bytes payloads so the alternate single `de` branch stays explicit in the published bytes slice."
+      ]
+    },
+    {
+      "id": "nested-open-ended-quantified-group-alternation-numbered-pattern-fullmatch-third-repetition-mixed-bytes",
+      "operation": "pattern_call",
+      "family": "nested_open_ended_quantified_group_alternation_numbered_pattern_third_repetition_mixed_workflow",
+      "pattern": "a((bc|de){1,})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbcded"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "open-ended-repeat", "counted-repeat", "fullmatch", "pattern", "third-repetition", "mixed", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered compiled-pattern mixed-branch success path on `abcbcded` with bytes payloads so the nested open-ended bytes slice includes one bounded repeated workflow beyond the lower bound."
+      ]
+    },
+    {
+      "id": "nested-open-ended-quantified-group-alternation-numbered-pattern-fullmatch-fourth-repetition-de-bytes",
+      "operation": "pattern_call",
+      "family": "nested_open_ended_quantified_group_alternation_numbered_pattern_fourth_repetition_de_workflow",
+      "pattern": "a((bc|de){1,})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "adededed"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "open-ended-repeat", "counted-repeat", "fullmatch", "pattern", "fourth-repetition", "de", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered compiled-pattern all-`de` success path on `adededed` with bytes payloads so the pack records one bounded longer repetition under the same outer capture."
+      ]
+    },
+    {
+      "id": "nested-open-ended-quantified-group-alternation-numbered-pattern-fullmatch-no-match-short-bytes",
+      "operation": "pattern_call",
+      "family": "nested_open_ended_quantified_group_alternation_numbered_pattern_no_match_short_workflow",
+      "pattern": "a((bc|de){1,})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "ae"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "open-ended-repeat", "counted-repeat", "fullmatch", "pattern", "no-match", "short", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered no-match path on `ae` with bytes payloads so the nested grouped bytes slice stays explicit about rejecting texts that never satisfy the repeated inner alternation."
+      ]
+    },
+    {
+      "id": "nested-open-ended-quantified-group-alternation-numbered-pattern-fullmatch-no-match-missing-trailing-d-bytes",
+      "operation": "pattern_call",
+      "family": "nested_open_ended_quantified_group_alternation_numbered_pattern_no_match_missing_trailing_d_workflow",
+      "pattern": "a((bc|de){1,})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbcdede"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "open-ended-repeat", "counted-repeat", "fullmatch", "pattern", "no-match", "missing-trailing-d", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered no-match path with bytes payloads when the grouped repetition is present but the surrounding literal suffix never satisfies the trailing `d`."
+      ]
+    },
+    {
+      "id": "nested-open-ended-quantified-group-alternation-named-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "nested_open_ended_quantified_group_alternation_named_compile_metadata",
+      "pattern": "a(?P<outer>(bc|de){1,})d",
+      "text_model": "bytes",
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "open-ended-repeat", "counted-repeat", "named-group", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Publishes the named nested open-ended grouped-alternation compile frontier with bytes payloads while keeping the nested grouped bytes parity gap explicit until RBR-0529 lands."
+      ]
+    },
+    {
+      "id": "nested-open-ended-quantified-group-alternation-named-module-search-lower-bound-bc-bytes",
+      "operation": "module_call",
+      "family": "nested_open_ended_quantified_group_alternation_named_module_lower_bound_bc_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(?P<outer>(bc|de){1,})d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabcdzz"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "open-ended-repeat", "counted-repeat", "named-group", "search", "module", "lower-bound", "bc", "bytes", "gap"],
+      "notes": [
+        "Documents the named lower-bound nested grouped success path on `abcd` with bytes payloads so the visible `outer` capture is present on the published bytes follow-on frontier."
+      ]
+    },
+    {
+      "id": "nested-open-ended-quantified-group-alternation-named-module-search-lower-bound-de-bytes",
+      "operation": "module_call",
+      "family": "nested_open_ended_quantified_group_alternation_named_module_lower_bound_de_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(?P<outer>(bc|de){1,})d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzadedzz"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "open-ended-repeat", "counted-repeat", "named-group", "search", "module", "lower-bound", "de", "bytes", "gap"],
+      "notes": [
+        "Documents the named lower-bound nested grouped success path on `aded` with bytes payloads so the single `de` branch remains explicit under the outer named capture."
+      ]
+    },
+    {
+      "id": "nested-open-ended-quantified-group-alternation-named-pattern-fullmatch-third-repetition-mixed-bytes",
+      "operation": "pattern_call",
+      "family": "nested_open_ended_quantified_group_alternation_named_pattern_third_repetition_mixed_workflow",
+      "pattern": "a(?P<outer>(bc|de){1,})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbcded"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "open-ended-repeat", "counted-repeat", "named-group", "fullmatch", "pattern", "third-repetition", "mixed", "bytes", "gap"],
+      "notes": [
+        "Documents the named compiled-pattern mixed-branch success path on `abcbcded` with bytes payloads so one bounded longer workflow stays explicit under the visible outer capture."
+      ]
+    },
+    {
+      "id": "nested-open-ended-quantified-group-alternation-named-pattern-fullmatch-fourth-repetition-de-bytes",
+      "operation": "pattern_call",
+      "family": "nested_open_ended_quantified_group_alternation_named_pattern_fourth_repetition_de_workflow",
+      "pattern": "a(?P<outer>(bc|de){1,})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "adededed"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "open-ended-repeat", "counted-repeat", "named-group", "fullmatch", "pattern", "fourth-repetition", "de", "bytes", "gap"],
+      "notes": [
+        "Documents the named compiled-pattern all-`de` success path on `adededed` with bytes payloads so the pack captures one bounded longer repetition with a visible outer capture."
+      ]
+    },
+    {
+      "id": "nested-open-ended-quantified-group-alternation-named-pattern-fullmatch-no-match-short-bytes",
+      "operation": "pattern_call",
+      "family": "nested_open_ended_quantified_group_alternation_named_pattern_no_match_short_workflow",
+      "pattern": "a(?P<outer>(bc|de){1,})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "ae"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "open-ended-repeat", "counted-repeat", "named-group", "fullmatch", "pattern", "no-match", "short", "bytes", "gap"],
+      "notes": [
+        "Documents the named no-match path on `ae` with bytes payloads so the scorecard records the same missing-repetition failure mode with one visible outer capture."
+      ]
+    },
+    {
+      "id": "nested-open-ended-quantified-group-alternation-named-pattern-fullmatch-no-match-missing-trailing-d-bytes",
+      "operation": "pattern_call",
+      "family": "nested_open_ended_quantified_group_alternation_named_pattern_no_match_missing_trailing_d_workflow",
+      "pattern": "a(?P<outer>(bc|de){1,})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbcdede"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "open-ended-repeat", "counted-repeat", "named-group", "fullmatch", "pattern", "no-match", "missing-trailing-d", "bytes", "gap"],
+      "notes": [
+        "Documents the named no-match path with bytes payloads when the grouped repetition is present but the surrounding literal suffix never satisfies the trailing `d`."
+      ]
     }
   ]
 }
