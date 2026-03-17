@@ -1,6 +1,6 @@
 # RBR-0513: Publish the broader-range wider-ranged-repeat grouped backtracking-heavy bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -38,3 +38,8 @@ Created: 2026-03-17
   - `reports/correctness/latest.py` currently publishes `match.broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy` at `14` total / `14` passed / `0` `unimplemented` with `text_models == ['str']`;
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`.
 - The intended post-publication follow-on is `RBR-0514`, which should convert the same bytes pair behind `rebar._rebar` on the existing wider-ranged-repeat parity suite before benchmark catch-up or broader bytes follow-ons reopen the family.
+- 2026-03-17 feature-implementation completed this publication-only slice by adding the 14 `bytes` counterparts to `tests/conformance/fixtures/broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py`, updating `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` so the bundle contract stays mixed `str`/`bytes` while the new `BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES` anchor skips `rebar` pending `RBR-0514`, extending `tests/conformance/correctness_expectations.py` to include the mirrored bytes cases, and regenerating `reports/correctness/latest.py` to `1011` total / `997` passed / `14` unimplemented overall with `match.broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy` at `28` total / `14` passed / `14` unimplemented.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py --report .rebar/tmp/rbr-0513-broader-range-backtracking-heavy-bytes.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
