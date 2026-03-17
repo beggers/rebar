@@ -11,7 +11,9 @@ from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
+    assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
+    assert_fixture_bundle_tracks_published_case_frontier,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
@@ -418,6 +420,23 @@ PATTERN_CASES = tuple(
     for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
     if not _uses_direct_bytes_follow_on(case)
 )
+SELECTED_CASE_IDS_BY_MANIFEST = {
+    bundle.expected_manifest_id: tuple(case.case_id for case in bundle.cases)
+    for bundle in FIXTURE_BUNDLES
+}
+QUANTIFIED_ALTERNATION_SELECTED_CASE_IDS = tuple(
+    case.case_id for bundle in FIXTURE_BUNDLES for case in bundle.cases
+)
+QUANTIFIED_ALTERNATION_DIRECT_TEST_CASE_ID_BUCKETS = {
+    "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
+    "shared-module-search": frozenset(case.case_id for case in MODULE_CASES),
+    "shared-pattern-fullmatch": frozenset(case.case_id for case in PATTERN_CASES),
+    "open-ended-bytes-follow-on": frozenset(
+        case.case_id
+        for case in QUANTIFIED_ALTERNATION_OPEN_ENDED_BUNDLE.cases
+        if case.text_model == "bytes"
+    ),
+}
 MATCH_GROUP_ACCESS_CASES = tuple(
     case for case in (*MODULE_CASES, *PATTERN_CASES) if "no-match" not in case.case_id
 )
@@ -661,6 +680,23 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     bundle: FixtureBundle,
 ) -> None:
     assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
+
+
+def test_quantified_alternation_parity_suite_tracks_published_case_frontier() -> None:
+    for bundle in FIXTURE_BUNDLES:
+        assert_fixture_bundle_tracks_published_case_frontier(
+            bundle,
+            selected_case_ids=SELECTED_CASE_IDS_BY_MANIFEST[bundle.expected_manifest_id],
+        )
+
+
+def test_quantified_alternation_direct_test_case_id_buckets_cover_selected_frontier(
+) -> None:
+    assert_direct_test_case_id_buckets_cover_selected_frontier(
+        QUANTIFIED_ALTERNATION_DIRECT_TEST_CASE_ID_BUCKETS,
+        selected_case_ids=QUANTIFIED_ALTERNATION_SELECTED_CASE_IDS,
+        coverage_label="quantified alternation direct-test case-id buckets",
+    )
 
 
 def test_quantified_alternation_open_ended_bytes_cases_stay_explicit_with_one_direct_follow_on_anchor(
