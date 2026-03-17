@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from dataclasses import dataclass
 import re
 
 import pytest
@@ -52,6 +53,54 @@ MATCH_BEHAVIOR_PUBLISHED_CASE_IDS = manifest_case_ids(MATCH_BEHAVIOR_BUNDLE)
 DIRECT_TEST_CASE_IDS = frozenset(case.case_id for case in MATCH_BEHAVIOR_CASES)
 
 
+@dataclass(frozen=True)
+class SupplementalMatchBehaviorCase:
+    case_id: str
+    helper: str
+    pattern: bytes
+    string: bytes
+    matches: bool
+
+
+SUPPLEMENTAL_BYTES_CASES = (
+    SupplementalMatchBehaviorCase(
+        case_id="search-bytes-success-literal",
+        helper="search",
+        pattern=b"abc",
+        string=b"zzabczz",
+        matches=True,
+    ),
+    SupplementalMatchBehaviorCase(
+        case_id="search-bytes-no-match",
+        helper="search",
+        pattern=b"abc",
+        string=b"zzz",
+        matches=False,
+    ),
+    SupplementalMatchBehaviorCase(
+        case_id="match-bytes-success-literal",
+        helper="match",
+        pattern=b"ab",
+        string=b"abbb",
+        matches=True,
+    ),
+    SupplementalMatchBehaviorCase(
+        case_id="match-bytes-no-match",
+        helper="match",
+        pattern=b"abc",
+        string=b"zabc",
+        matches=False,
+    ),
+    SupplementalMatchBehaviorCase(
+        case_id="fullmatch-bytes-no-match",
+        helper="fullmatch",
+        pattern=b"123",
+        string=b"1234",
+        matches=False,
+    ),
+)
+
+
 def _case_string(case: FixtureCase) -> str | bytes:
     string = case.args[1]
     assert isinstance(string, (str, bytes))
@@ -83,6 +132,21 @@ def test_match_behavior_direct_test_bucket_covers_selected_frontier() -> None:
     assert DIRECT_TEST_CASE_IDS == frozenset(EXPECTED_CASE_IDS)
 
 
+def test_match_behavior_supplemental_bytes_cases_cover_missing_module_paths() -> None:
+    assert {(case.helper, case.matches) for case in SUPPLEMENTAL_BYTES_CASES} == {
+        ("search", True),
+        ("search", False),
+        ("match", True),
+        ("match", False),
+        ("fullmatch", False),
+    }
+    assert all(
+        isinstance(payload, bytes)
+        for case in SUPPLEMENTAL_BYTES_CASES
+        for payload in (case.pattern, case.string)
+    )
+
+
 @pytest.mark.parametrize("case", MATCH_BEHAVIOR_CASES, ids=lambda case: case.case_id)
 def test_match_behavior_module_calls_match_cpython(
     regex_backend: tuple[str, object],
@@ -105,3 +169,26 @@ def test_match_behavior_module_calls_match_cpython(
     assert type(observed.group(0)) is type(expected.group(0))
     assert observed.re.pattern == expected.re.pattern == case_pattern(case)
     assert observed.string == expected.string == _case_string(case)
+
+
+@pytest.mark.parametrize("case", SUPPLEMENTAL_BYTES_CASES, ids=lambda case: case.case_id)
+def test_match_behavior_supplemental_bytes_module_calls_match_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalMatchBehaviorCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    observed = getattr(backend, case.helper)(case.pattern, case.string)
+    expected = getattr(re, case.helper)(case.pattern, case.string)
+
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+    assert (expected is not None) is case.matches
+    if expected is None:
+        assert observed is None
+        return
+
+    assert observed is not None
+    assert_match_convenience_api_parity(observed, expected)
+    assert type(observed.group(0)) is type(expected.group(0)) is bytes
+    assert observed.re.pattern == expected.re.pattern == case.pattern
+    assert observed.string == expected.string == case.string
