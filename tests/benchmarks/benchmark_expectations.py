@@ -437,6 +437,12 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS: dict[
             "module-search-numbered-wider-ranged-repeat-group-broader-range-cold-gap",
             "pattern-fullmatch-numbered-wider-ranged-repeat-group-broader-range-third-repetition-mixed-purged-str",
             "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-upper-bound-mixed-purged-str",
+            "module-compile-numbered-wider-ranged-repeat-group-broader-range-backtracking-heavy-cold-bytes",
+            "module-search-numbered-wider-ranged-repeat-group-broader-range-backtracking-heavy-lower-bound-b-branch-warm-bytes",
+            "pattern-fullmatch-numbered-wider-ranged-repeat-group-broader-range-backtracking-heavy-second-repetition-b-then-bc-purged-bytes",
+            "module-compile-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-warm-bytes",
+            "module-search-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-lower-bound-bc-branch-warm-bytes",
+            "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-fourth-repetition-mixed-purged-bytes",
             "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-conditional-absent-warm-str",
             "module-search-numbered-wider-ranged-repeat-group-nested-broader-range-conditional-lower-bound-bc-warm-str",
             "module-search-named-wider-ranged-repeat-group-nested-broader-range-conditional-lower-bound-de-warm-str",
@@ -465,6 +471,35 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS: dict[
                 "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-fourth-repetition-mixed-purged-str",
             ),
             pattern_groups=(
+                _combined_pattern_group(
+                    slice_id="broader-range-grouped-backtracking-heavy",
+                    patterns=(
+                        "a((bc|b)c){1,4}d",
+                        "a(?P<word>(bc|b)c){1,4}d",
+                    ),
+                    minimum_rows=12,
+                    required_operations=(
+                        "module.compile",
+                        "module.search",
+                        "pattern.fullmatch",
+                    ),
+                    required_categories=(
+                        "grouped",
+                        "alternation",
+                        "backtracking-heavy",
+                        "ranged-repeat",
+                        "broader-range",
+                        "counted-repeat",
+                    ),
+                    search_haystacks=(
+                        "zzabcdzz",
+                        "zzabccdzz",
+                    ),
+                    pattern_haystacks=(
+                        "abcbccd",
+                        "abcbccbccbcd",
+                    ),
+                ),
                 _combined_pattern_group(
                     slice_id="nested-broader-range-grouped-alternation",
                     patterns=(

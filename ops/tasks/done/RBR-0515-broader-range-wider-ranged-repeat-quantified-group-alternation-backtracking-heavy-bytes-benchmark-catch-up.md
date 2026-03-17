@@ -1,6 +1,6 @@
 # RBR-0515: Catch the broader-range wider-ranged-repeat grouped backtracking-heavy bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -47,3 +47,4 @@ Created: 2026-03-17
   - `reports/benchmarks/latest.py` currently publishes `wider-ranged-repeat-quantified-group-boundary` at `68` measured workloads / `0` known gaps and the combined source-tree report at `594` total / `594` measured / `0` known gaps; and
   - `RBR-0514` has already converted `rb"a((bc|b)c){1,4}d"` and `rb"a(?P<word>(bc|b)c){1,4}d"` to real Rust-backed behavior on the public `rebar` path, so these benchmark rows should now measure rather than reopen a runtime gap.
 - The surviving follow-on after this task is `RBR-0517`, which should publish the nested broader `{1,4}` bytes grouped backtracking-heavy pair on the existing correctness/parity path before bytes parity or benchmark catch-up revisit that family.
+- 2026-03-17 feature-implementation: Added the six broader-range grouped backtracking-heavy bytes rows on the existing wider-ranged manifest, updated the source-tree expectation/test hooks, and regenerated `reports/benchmarks/latest.py`. The tracked report now publishes `wider-ranged-repeat-quantified-group-boundary` at `74` measured workloads / `0` known gaps and the combined source-tree suite at `600` total workloads / `600` measured workloads / `0` known gaps. Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py --report .rebar/tmp/rbr-0515-wider-ranged-repeat-backtracking-heavy-bytes-benchmarks.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
