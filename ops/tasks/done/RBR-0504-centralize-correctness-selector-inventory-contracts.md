@@ -1,6 +1,6 @@
 # RBR-0504: Centralize correctness selector inventory contracts
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -123,3 +123,14 @@ Created: 2026-03-17
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_counted_repeat_quantified_group_parity_suite.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_bounded_wildcard_parity_suite.py tests/python/test_open_ended_quantified_group_replacement_template_parity_suite.py tests/python/test_grouped_capture_parity_suite.py tests/python/test_simple_backreference_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_literal_flag_parity_suite.py tests/python/test_callable_replacement_parity_suite.py` passes in the current checkout (`3728 passed, 10 skipped in 2.70s`).
   - The callable/conditional selector probe above currently prints the exact filename lists used in the acceptance snippet, so the task can centralize those values without guessing.
   - The two `rg -n ...` cleanup probes above currently return the duplicate test names, selector constants, and replacement-selector helper matches listed in the notes, which is the exact redundant surface this task should delete.
+
+## Completion Notes
+- 2026-03-17: Centralized the remaining shared selector inventories in `tests/python/test_fixture_parity_support_contract.py` by adding exact filename tables for `CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR` and `CALLABLE_REPLACEMENT_FIXTURE_SELECTOR`, then deleting the naming-predicate helper path and its dedicated test.
+- Removed the selector/path equality tests from the 11 touched parity suites and trimmed the now-unused `select_correctness_fixture_paths(...)`, `published_fixture_paths_from_bundles(...)`, and `PUBLISHED_*_FIXTURE_PATHS` boilerplate where those names only existed to restate the shared contract.
+- Kept the bundle-shape and frontier coverage intact, including `assert_fixture_bundle_contract(...)` checks, the literal-flag delegated-case assertions, the callable bundle-loading path through `CALLABLE_FIXTURE_PATHS`, and the existing conditional-replacement frontier assertions.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_counted_repeat_quantified_group_parity_suite.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_bounded_wildcard_parity_suite.py tests/python/test_open_ended_quantified_group_replacement_template_parity_suite.py tests/python/test_grouped_capture_parity_suite.py tests/python/test_simple_backreference_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_literal_flag_parity_suite.py tests/python/test_callable_replacement_parity_suite.py` (`3718 passed, 10 skipped in 2.84s`).
+  - The task's callable/conditional selector probe prints `ok`.
+  - `rg -n "uses_expected_published_fixture_paths|uses_expected_published_fixtures|discovers_all_published_callable_fixtures|expected_branch_local_backreference_fixtures_remain_published" ...` returned no matches across the touched parity suites.
+  - `rg -n '_is_conditional_replacement_fixture_name|_is_callable_replacement_fixture_name|REPLACEMENT_SELECTOR_PATTERN_EXPECTATIONS' tests/python/test_fixture_parity_support_contract.py` returned no matches.
+  - `rg -n 'PUBLISHED_[A-Z_]+FIXTURE_PATHS = select_correctness_fixture_paths\\(' ...` returned no matches across the touched suite files.

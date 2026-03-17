@@ -5,11 +5,7 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import (
-    FixtureCase,
-    OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR,
-    select_correctness_fixture_paths,
-)
+from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
@@ -23,11 +19,6 @@ from tests.python.fixture_parity_support import (
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
     load_fixture_bundles,
-    published_fixture_paths_from_bundles,
-)
-
-PUBLISHED_FIXTURE_PATHS = select_correctness_fixture_paths(
-    OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR
 )
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
@@ -369,11 +360,6 @@ def _search_match_for_case(
     assert expected is not None
     assert observed is not None
     return observed, expected
-
-
-def test_replacement_template_parity_suite_uses_expected_published_fixture_paths() -> None:
-    assert PUBLISHED_FIXTURE_PATHS == published_fixture_paths_from_bundles(FIXTURE_BUNDLES)
-    assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
 
 @pytest.mark.parametrize(

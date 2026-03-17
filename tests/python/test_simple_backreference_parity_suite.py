@@ -6,11 +6,7 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import (
-    FixtureCase,
-    SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR,
-    select_correctness_fixture_paths,
-)
+from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
@@ -25,12 +21,7 @@ from tests.python.fixture_parity_support import (
     fixture_cases_from_bundles,
     load_fixture_bundles,
     manifest_case_ids,
-    published_fixture_paths_from_bundles,
     str_case_pattern,
-)
-
-PUBLISHED_SIMPLE_BACKREFERENCE_FIXTURE_PATHS = select_correctness_fixture_paths(
-    SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR
 )
 TARGET_FIXTURE_CASE_IDS = (
     "named-backreference-compile-metadata-str",
@@ -259,13 +250,6 @@ def _match_for_case(
     assert observed is not None
     assert expected is not None
     return observed, expected
-
-
-def test_simple_backreference_suite_uses_expected_published_fixture_paths() -> None:
-    assert PUBLISHED_SIMPLE_BACKREFERENCE_FIXTURE_PATHS == published_fixture_paths_from_bundles(
-        FIXTURE_BUNDLES
-    )
-    assert len(set(PUBLISHED_CASE_IDS)) == len(PUBLISHED_CASE_IDS)
 
 
 @pytest.mark.parametrize(

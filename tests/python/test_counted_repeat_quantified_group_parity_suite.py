@@ -5,11 +5,7 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import (
-    COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
-    FixtureCase,
-    select_correctness_fixture_paths,
-)
+from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
@@ -18,13 +14,7 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
-    fixture_cases_from_bundles,
     load_fixture_bundles,
-    published_fixture_paths_from_bundles,
-)
-
-PUBLISHED_COUNTED_REPEAT_FIXTURE_PATHS = select_correctness_fixture_paths(
-    COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR
 )
 
 FIXTURE_BUNDLE_SPECS = (
@@ -84,17 +74,9 @@ FIXTURE_BUNDLE_SPECS = (
     ),
 )
 FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
-PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
 MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
 PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
-
-
-def test_counted_repeat_quantified_group_suite_uses_expected_published_fixtures() -> None:
-    assert PUBLISHED_COUNTED_REPEAT_FIXTURE_PATHS == published_fixture_paths_from_bundles(
-        FIXTURE_BUNDLES
-    )
-    assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
 
 @pytest.mark.parametrize(

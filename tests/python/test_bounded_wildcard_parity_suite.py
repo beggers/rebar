@@ -7,11 +7,7 @@ import re
 import pytest
 
 import rebar
-from rebar_harness.correctness import (
-    BOUNDED_WILDCARD_FIXTURE_SELECTOR,
-    FixtureCase,
-    select_correctness_fixture_paths,
-)
+from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundleSpec,
     LITERAL_FLAG_DELEGATED_CASE_IDS,
@@ -24,12 +20,6 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_from_bundles,
     load_fixture_bundles,
-    published_fixture_paths_from_bundles,
-)
-
-
-PUBLISHED_BOUNDED_WILDCARD_FIXTURE_PATHS = select_correctness_fixture_paths(
-    BOUNDED_WILDCARD_FIXTURE_SELECTOR
 )
 
 
@@ -168,13 +158,6 @@ def _call_pattern_helper(pattern: object, case: PatternCase) -> object:
         if case.endpos is not None:
             args.append(case.endpos)
     return getattr(pattern, case.helper)(*args)
-
-
-def test_bounded_wildcard_suite_uses_expected_published_fixture_paths() -> None:
-    assert PUBLISHED_BOUNDED_WILDCARD_FIXTURE_PATHS == published_fixture_paths_from_bundles(
-        FIXTURE_BUNDLES
-    )
-    assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
 
 def test_bounded_wildcard_suite_absorbs_delegated_literal_flag_case() -> None:

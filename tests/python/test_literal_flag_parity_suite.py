@@ -7,13 +7,8 @@ import re
 import pytest
 
 import rebar
-from rebar_harness.correctness import (
-    FixtureCase,
-    LITERAL_FLAG_FIXTURE_SELECTOR,
-    select_correctness_fixture_paths,
-)
+from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
     FixtureBundleSpec,
     LITERAL_FLAG_DELEGATED_CASE_IDS,
     RecordingNativeBoundary,
@@ -32,10 +27,6 @@ IGNORECASE_FLAGS = int(rebar.IGNORECASE)
 UNICODE_FLAGS = int(rebar.UNICODE)
 LOCALE_FLAGS = int(rebar.LOCALE)
 IGNORECASE_UNICODE_FLAGS = IGNORECASE_FLAGS | UNICODE_FLAGS
-
-PUBLISHED_LITERAL_FLAG_FIXTURE_PATHS = select_correctness_fixture_paths(
-    LITERAL_FLAG_FIXTURE_SELECTOR
-)
 
 
 @dataclass(frozen=True)
@@ -440,8 +431,6 @@ FAKE_BOUNDARY_CASES = (
 def test_literal_flag_suite_stays_aligned_with_published_correctness_fixture() -> None:
     bundle = LITERAL_FLAG_FIXTURE_BUNDLE
 
-    assert PUBLISHED_LITERAL_FLAG_FIXTURE_PATHS == (bundle.manifest.path,)
-    assert bundle.manifest.path == FIXTURES_DIR / "literal_flag_workflows.py"
     assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
 
 

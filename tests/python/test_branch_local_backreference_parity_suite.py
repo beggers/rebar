@@ -6,11 +6,7 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import (
-    BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR,
-    FixtureCase,
-    select_correctness_fixture_paths,
-)
+from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
@@ -24,11 +20,7 @@ from tests.python.fixture_parity_support import (
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
     load_fixture_bundles,
-    published_fixture_paths_from_bundles,
     str_case_pattern,
-)
-PUBLISHED_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATHS = select_correctness_fixture_paths(
-    BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR
 )
 
 
@@ -636,14 +628,6 @@ def _workflow_result_for_case(
         expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
 
     return observed, expected
-
-
-def test_expected_branch_local_backreference_fixtures_remain_published() -> None:
-    assert PUBLISHED_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATHS == (
-        published_fixture_paths_from_bundles(FIXTURE_BUNDLES)
-    )
-
-
 def test_match_group_access_rows_remain_on_branch_local_fixture_paths() -> None:
     assert tuple(case.case_id for case in MATCH_GROUP_ACCESS_CASES) == MATCH_GROUP_ACCESS_CASE_IDS
     assert {case.text_model for case in MATCH_GROUP_ACCESS_CASES} == {"str"}

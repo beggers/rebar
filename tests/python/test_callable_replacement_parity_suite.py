@@ -27,7 +27,6 @@ from tests.python.fixture_parity_support import (
     load_fixture_bundles,
     load_published_fixture_bundles,
     published_fixture_bundle_by_manifest_id,
-    published_fixture_paths_from_bundles,
     str_case_pattern,
 )
 
@@ -735,13 +734,6 @@ def _live_unimplemented_callable_manifest_ids() -> frozenset[str]:
                 manifest_ids.add(case.manifest_id)
 
     return frozenset(manifest_ids)
-
-
-def test_callable_replacement_suite_discovers_all_published_callable_fixtures() -> None:
-    assert CALLABLE_FIXTURE_PATHS
-    assert CALLABLE_FIXTURE_PATHS == published_fixture_paths_from_bundles(FIXTURE_BUNDLES)
-
-
 def test_pending_rebar_callable_manifest_ids_match_live_unimplemented_manifests() -> None:
     assert _live_unimplemented_callable_manifest_ids() == PENDING_REBAR_MANIFEST_IDS
 

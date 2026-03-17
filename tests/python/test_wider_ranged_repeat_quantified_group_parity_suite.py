@@ -7,11 +7,7 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import (
-    FixtureCase,
-    WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
-    select_correctness_fixture_paths,
-)
+from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
@@ -21,13 +17,7 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
-    fixture_cases_from_bundles,
     load_fixture_bundles,
-    published_fixture_paths_from_bundles,
-)
-
-PUBLISHED_WIDER_RANGED_REPEAT_FIXTURE_PATHS = select_correctness_fixture_paths(
-    WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR
 )
 BROADER_RANGE_BYTES_SKIP_REASON = (
     "rebar does not yet support broader-range wider-ranged-repeat "
@@ -230,7 +220,6 @@ FIXTURE_BUNDLE_SPECS = (
     ),
 )
 FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
-PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
 MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
 PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
@@ -297,13 +286,6 @@ BACKTRACKING_TRACE_CASES = (
         named_pattern=r"a(?P<outer>((bc|b)c){1,4})d",
     ),
 )
-
-
-def test_parity_suite_uses_expected_published_fixture_paths() -> None:
-    assert PUBLISHED_WIDER_RANGED_REPEAT_FIXTURE_PATHS == published_fixture_paths_from_bundles(
-        FIXTURE_BUNDLES
-    )
-    assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
 
 @pytest.mark.parametrize(

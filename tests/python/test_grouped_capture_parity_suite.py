@@ -6,11 +6,7 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import (
-    FixtureCase,
-    GROUPED_CAPTURE_FIXTURE_SELECTOR,
-    select_correctness_fixture_paths,
-)
+from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundleSpec,
     assert_fixture_bundle_contract,
@@ -23,11 +19,7 @@ from tests.python.fixture_parity_support import (
     fixture_cases_from_bundles,
     load_fixture_bundles,
     ordered_manifest_cases_from_bundles,
-    published_fixture_paths_from_bundles,
     str_case_pattern,
-)
-PUBLISHED_GROUPED_CAPTURE_FIXTURE_PATHS = select_correctness_fixture_paths(
-    GROUPED_CAPTURE_FIXTURE_SELECTOR
 )
 GROUPED_SEGMENT_LEADING_CAPTURE_PATTERN = r"(ab)c"
 GROUPED_SEGMENT_CASE_IDS = (
@@ -569,13 +561,6 @@ def _match_for_case(
     assert observed is not None
     assert expected is not None
     return observed, expected
-
-
-def test_grouped_capture_parity_suite_uses_expected_published_fixture_paths() -> None:
-    assert PUBLISHED_GROUPED_CAPTURE_FIXTURE_PATHS == published_fixture_paths_from_bundles(
-        FIXTURE_BUNDLES
-    )
-    assert len({case.case_id for case in PUBLISHED_CASES}) == len(PUBLISHED_CASES)
 
 
 def test_grouped_segment_leading_capture_rows_stay_on_direct_parity_frontier() -> None:
