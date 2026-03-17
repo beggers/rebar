@@ -4,7 +4,6 @@ from __future__ import annotations
 import argparse
 import atexit
 import hashlib
-import importlib.util
 import json
 import os
 import re
@@ -101,6 +100,13 @@ def ensure_python_source_on_syspath() -> None:
         sys.path.insert(0, python_source)
 
 
+def load_scorecard_io_module() -> Any:
+    ensure_python_source_on_syspath()
+    from rebar_harness import scorecard_io as shared_scorecard_io
+
+    return shared_scorecard_io
+
+
 def load_config() -> dict[str, Any]:
     try:
         return load_python_dict_attribute(CONFIG_PATH, attribute="CONFIG", label="ops config")
@@ -111,19 +117,20 @@ def load_config() -> dict[str, Any]:
 
 
 def load_python_dict_attribute(path: Path, *, attribute: str, label: str) -> dict[str, Any]:
-    module_name = f"_rebar_{label}_{path.stem}".replace("-", "_")
-    spec = importlib.util.spec_from_file_location(module_name, path)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"Unable to load {label} module from {path}")
-
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    if not hasattr(module, attribute):
-        raise RuntimeError(f"Python {label} module {path} is missing a {attribute} value")
-    raw = getattr(module, attribute)
-    if not isinstance(raw, dict):
-        raise RuntimeError(f"{label.capitalize()} in {path} must be a dict")
-    return raw
+    try:
+        return load_scorecard_io_module().load_python_dict_attribute(
+            path,
+            module_name_prefix=f"_rebar_{label}".replace("-", "_"),
+            attribute_name=attribute,
+            load_error_label=f"{label} module",
+            missing_error_label=f"Python {label} module",
+            type_error_label=label.capitalize(),
+        )
+    except ValueError as exc:
+        message = str(exc)
+        if message.startswith("unable to load "):
+            message = message[:1].upper() + message[1:]
+        raise RuntimeError(message) from exc
 
 
 def load_optional_python_dict_attribute(
@@ -148,14 +155,18 @@ def read_structured_dict(
 ) -> Any:
     if not path.exists():
         return default
-    if path.suffix == ".json":
-        return read_json(path, default=default)
-    if path.suffix == ".py":
-        try:
-            return load_python_dict_attribute(path, attribute=python_attribute, label=label)
-        except (FileNotFoundError, OSError, ImportError, SyntaxError, RuntimeError):
-            return default
-    return default
+    try:
+        return load_scorecard_io_module().load_structured_dict(
+            path,
+            module_name_prefix=f"_rebar_{label}".replace("-", "_"),
+            attribute_name=python_attribute,
+            load_error_label=f"{label} module",
+            missing_error_label=f"Python {label} module",
+            type_error_label=label.capitalize(),
+            extension_error_label=label,
+        )
+    except (FileNotFoundError, OSError, ImportError, SyntaxError, ValueError):
+        return default
 
 
 def resolve_repo_path(raw: str | Path) -> Path:

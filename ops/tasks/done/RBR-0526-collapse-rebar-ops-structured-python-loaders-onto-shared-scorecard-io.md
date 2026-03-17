@@ -1,6 +1,6 @@
 # RBR-0526: Collapse `rebar_ops` structured Python loaders onto shared scorecard IO
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -107,4 +107,5 @@ Created: 2026-03-17
 - 2026-03-17 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_readme_reporting.py tests/python/test_ops_harness.py` passes (`26 passed, 17 subtests passed in 1.59s`).
   - The no-`PYTHONPATH` inline probe above currently prints `ok`.
-  - `rg -n "import importlib\\.util|spec_from_file_location\\(|module_from_spec\\(|exec_module\\(|path\\.suffix == \\\"\\.json\\\"|path\\.suffix == \\\"\\.py\\\"" scripts/rebar_ops.py` currently returns the six duplicate-loader matches this task is meant to delete.
+- `rg -n "import importlib\\.util|spec_from_file_location\\(|module_from_spec\\(|exec_module\\(|path\\.suffix == \\\"\\.json\\\"|path\\.suffix == \\\"\\.py\\\"" scripts/rebar_ops.py` currently returns the six duplicate-loader matches this task is meant to delete.
+- 2026-03-17: Routed `load_config()`, `load_optional_python_dict_attribute()`, `load_agent_specs()`, `read_structured_dict()`, and `scorecard_from_config()` through shared helpers in `python/rebar_harness/scorecard_io.py`, removed the local `importlib.util` / scorecard suffix-switch loader code from `scripts/rebar_ops.py`, and verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_readme_reporting.py tests/python/test_ops_harness.py`, the no-`PYTHONPATH` inline probe from this task, and `rg -n "import importlib\\.util|spec_from_file_location\\(|module_from_spec\\(|exec_module\\(|path\\.suffix == \\\"\\.json\\\"|path\\.suffix == \\\"\\.py\\\"" scripts/rebar_ops.py` (no matches).

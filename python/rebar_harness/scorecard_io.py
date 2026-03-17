@@ -86,6 +86,35 @@ def load_python_dict_attribute(
     return payload
 
 
+def load_structured_dict(
+    path: pathlib.Path,
+    *,
+    module_name_prefix: str,
+    attribute_name: str,
+    load_error_label: str,
+    missing_error_label: str,
+    type_error_label: str,
+    extension_error_label: str,
+) -> dict[str, Any]:
+    if path.suffix == ".json":
+        raw_payload = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(raw_payload, dict):
+            raise ValueError(f"{type_error_label} in {path} must be a dict")
+        return raw_payload
+    if path.suffix == ".py":
+        return load_python_dict_attribute(
+            path,
+            module_name_prefix=module_name_prefix,
+            attribute_name=attribute_name,
+            load_error_label=load_error_label,
+            missing_error_label=missing_error_label,
+            type_error_label=type_error_label,
+        )
+    raise ValueError(
+        f"unsupported {extension_error_label} extension {path.suffix!r} for {path}"
+    )
+
+
 def load_scorecard_report(
     report_path: pathlib.Path,
     *,
@@ -93,22 +122,14 @@ def load_scorecard_report(
     report_attribute: str,
     scorecard_kind: str,
 ) -> dict[str, Any]:
-    if report_path.suffix == ".json":
-        raw_payload = json.loads(report_path.read_text(encoding="utf-8"))
-        if not isinstance(raw_payload, dict):
-            raise ValueError(f"{scorecard_kind} scorecard in {report_path} must be a dict")
-        return raw_payload
-    if report_path.suffix == ".py":
-        return load_python_dict_attribute(
-            report_path,
-            module_name_prefix=module_name_prefix,
-            attribute_name=report_attribute,
-            load_error_label=f"Python {scorecard_kind} scorecard",
-            missing_error_label=f"Python {scorecard_kind} scorecard module",
-            type_error_label=f"{scorecard_kind} scorecard",
-        )
-    raise ValueError(
-        f"unsupported {scorecard_kind} scorecard extension {report_path.suffix!r} for {report_path}"
+    return load_structured_dict(
+        report_path,
+        module_name_prefix=module_name_prefix,
+        attribute_name=report_attribute,
+        load_error_label=f"Python {scorecard_kind} scorecard",
+        missing_error_label=f"Python {scorecard_kind} scorecard module",
+        type_error_label=f"{scorecard_kind} scorecard",
+        extension_error_label=f"{scorecard_kind} scorecard",
     )
 
 
