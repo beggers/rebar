@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 1080 cases across 111 manifests, with all 1080 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 626 workloads across 30 manifests with 626 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the project is broader again but still clearly partial. |
-| Current milestone | After ready `RBR-0533` drains, the surviving frontier is `RBR-0534`: catch the same open-ended `{1,}` grouped-alternation-plus-conditional bytes pair up on the existing Python-path benchmark surface so `open-ended-quantified-group-boundary` moves from `36` total / `36` measured / `0` known gaps to `42` / `42` / `0` and the combined benchmark report moves from `626` / `626` / `0` to `632` / `632` / `0` before broader-range open-ended grouped work widens that family. |
-| Work queue | `0` ready, `0` in progress, `533` done, `0` blocked |
+| Delivery estimate | The published correctness slice now covers 1080 cases across 111 manifests, with all 1080 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 632 workloads across 30 manifests with 632 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the project is broader again but still clearly partial. |
+| Current milestone | After ready `RBR-0534` drains, the surviving frontier is `RBR-0535`: publish the broader-range open-ended `{2,}` grouped-alternation-plus-conditional bytes pair on the existing correctness/parity path so `broader-range-open-ended-quantified-group-alternation-conditional-workflows` moves from `14` total / `14` passed / `0` unimplemented to `28` / `14` / `14` and the combined correctness report moves from `1080` / `1080` / `0` to `1094` / `1080` / `14` before bytes parity or benchmark catch-up widen that broader-range family. |
+| Work queue | `0` ready, `0` in progress, `534` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -28,15 +28,15 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Covered manifests | `111` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 1080 cases across 111 manifests, with all 1080 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 626 workloads across 30 manifests with 626 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the project is broader again but still clearly partial._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 1080 cases across 111 manifests, with all 1080 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 632 workloads across 30 manifests with 632 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the project is broader again but still clearly partial._
 
 ### Benchmark Snapshot
 
 | Metric | Value |
 | --- | --- |
 | Baseline | CPython 3.12.3 (module `re`, exe `/home/ubuntu/rebar/.venv/bin/python`) |
-| Published workloads | `626` |
-| Workloads with real `rebar` timings | `626` |
+| Published workloads | `632` |
+| Workloads with real `rebar` timings | `632` |
 | Known-gap workloads | `0` |
 | Timing path | `source-tree-shim` |
 | Source | [`reports/benchmarks/latest.py`](reports/benchmarks/latest.py) |
@@ -45,19 +45,19 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- With the queue drained, the surviving frontier is `RBR-0534`: add the six bytes benchmark mirrors for the same open-ended grouped-alternation-plus-conditional pair so the combined source-tree report moves from `626` / `626` / `0` to `632` / `632` / `0` before broader-range open-ended grouped work widens that family.
+- With the queue drained, the surviving frontier is `RBR-0535`: publish the broader-range open-ended `{2,}` grouped-alternation-plus-conditional bytes pair on the existing correctness path so the combined report would move from `1080` / `1080` / `0` to `1094` / `1080` / `14` before bytes parity or benchmark catch-up widen that family.
 
 ### Current Risks
 
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 626 workloads even though the report no longer carries explicit known-gap rows.
+- The published benchmark surface is still bounded at 632 workloads even though the report no longer carries explicit known-gap rows.
 <!-- REBAR:STATUS_END -->
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current published correctness slice is now gap-free inside its boundary, with all 1080 published cases passing across 111 manifests, but that still represents a narrow tracked frontier rather than near-full stdlib `re` parity. With the queue drained, the surviving follow-on is `RBR-0534`, which catches the same bytes family up on the existing Python-path benchmark surface. The main benchmark report spans 626 workloads through the source-tree shim.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current published correctness slice is now gap-free inside its boundary, with all 1080 published cases passing across 111 manifests, but that still represents a narrow tracked frontier rather than near-full stdlib `re` parity. With the queue drained, the surviving follow-on is `RBR-0535`, which reopens correctness on the broader-range open-ended `{2,}` grouped-alternation-plus-conditional bytes pair. The main benchmark report spans 632 workloads through the source-tree shim.
 
-The benchmark story is similarly early. The clearest positive speed signal today is still the tiny parser compile slice, where the 8 published parser workloads are about 2.8x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
+The benchmark story is similarly early. The clearest positive speed signal today is still the tiny parser compile slice, where the 8 published parser workloads are about 2.6x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
 ## Where To Look
 
