@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 import pathlib
 import unittest
 
@@ -40,6 +41,41 @@ WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary
 class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     maxDiff = None
 
+    def _assert_manifest_workload_contracts(
+        self,
+        manifest: BenchmarkManifest,
+        scorecard: dict[str, object],
+        workload_expectations: Iterable[tuple[str, str]],
+        *,
+        subtest_label: str | None = None,
+    ) -> None:
+        manifest_id = manifest.manifest_id
+        for workload_id, expected_status in workload_expectations:
+            if subtest_label is None:
+                assert_benchmark_workload_contract(
+                    self,
+                    find_workload_record(scorecard, workload_id),
+                    manifest_id=manifest_id,
+                    workload_document=find_workload_document(
+                        manifest,
+                        workload_id,
+                    ),
+                    expected_status=expected_status,
+                )
+                continue
+
+            with self.subTest(**{subtest_label: workload_id}):
+                assert_benchmark_workload_contract(
+                    self,
+                    find_workload_record(scorecard, workload_id),
+                    manifest_id=manifest_id,
+                    workload_document=find_workload_document(
+                        manifest,
+                        workload_id,
+                    ),
+                    expected_status=expected_status,
+                )
+
     def _assert_zero_gap_manifest_workloads_measured(
         self,
         case,
@@ -69,31 +105,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         elif len(expected_measured_workload_ids) > 1:
             subtest_label = "workload_id"
 
-        for workload_id in expected_measured_workload_ids:
-            if subtest_label is None:
-                assert_benchmark_workload_contract(
-                    self,
-                    find_workload_record(scorecard, workload_id),
-                    manifest_id=manifest_id,
-                    workload_document=find_workload_document(
-                        case.target_manifest,
-                        workload_id,
-                    ),
-                    expected_status="measured",
-                )
-                continue
-
-            with self.subTest(**{subtest_label: workload_id}):
-                assert_benchmark_workload_contract(
-                    self,
-                    find_workload_record(scorecard, workload_id),
-                    manifest_id=manifest_id,
-                    workload_document=find_workload_document(
-                        case.target_manifest,
-                        workload_id,
-                    ),
-                    expected_status="measured",
-                )
+        self._assert_manifest_workload_contracts(
+            case.target_manifest,
+            scorecard,
+            (
+                (workload_id, "measured")
+                for workload_id in expected_measured_workload_ids
+            ),
+            subtest_label=subtest_label,
+        )
 
     def test_raw_manifest_expectations_omit_empty_measured_representative_defaults(
         self,
@@ -977,18 +997,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(manifest_summary["known_gap_count"], 0)
         self.assertEqual(manifest_summary["measured_workloads"], 5)
 
-        assert_benchmark_workload_contract(
-            self,
-            find_workload_record(
-                scorecard,
-                "regression-parser-bytes-backreference-purged",
-            ),
-            manifest_id="regression-matrix",
-            workload_document=find_workload_document(
-                scorecard_case.manifest_for_id("regression-matrix"),
-                "regression-parser-bytes-backreference-purged",
-            ),
-            expected_status="measured",
+        self._assert_manifest_workload_contracts(
+            scorecard_case.manifest_for_id("regression-matrix"),
+            scorecard,
+            (("regression-parser-bytes-backreference-purged", "measured"),),
         )
 
     def test_scoped_manifests_keep_slice_backed_representatives(self) -> None:
@@ -1067,25 +1079,27 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 )
 
                 seen_ids: set[str] = set()
+                workload_expectations: list[tuple[str, str]] = []
                 for workload_id in representative_ids:
                     if workload_id in seen_ids:
                         continue
                     seen_ids.add(workload_id)
-                    expected_status = (
-                        "unimplemented"
-                        if workload_id in representative_gap_ids
-                        else "measured"
-                    )
-                    assert_benchmark_workload_contract(
-                        self,
-                        find_workload_record(scorecard, workload_id),
-                        manifest_id=manifest_id,
-                        workload_document=find_workload_document(
-                            case.target_manifest,
+                    workload_expectations.append(
+                        (
                             workload_id,
-                        ),
-                        expected_status=expected_status,
+                            (
+                                "unimplemented"
+                                if workload_id in representative_gap_ids
+                                else "measured"
+                            ),
+                        )
                     )
+
+                self._assert_manifest_workload_contracts(
+                    case.target_manifest,
+                    scorecard,
+                    workload_expectations,
+                )
 
     def test_selected_combined_source_tree_manifest_slices_stay_covered(self) -> None:
         for manifest_id in source_tree_combined_slice_manifest_ids():
@@ -1164,21 +1178,16 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             set(expected_workload_ids),
         )
 
-        for workload_id in expected_workload_ids:
-            with self.subTest(
-                slice_id=expectation.slice_id,
-                workload_id=workload_id,
-            ):
-                assert_benchmark_workload_contract(
-                    self,
-                    find_workload_record(scorecard, workload_id),
-                    manifest_id=manifest_id,
-                    workload_document=find_workload_document(
-                        manifest,
-                        workload_id,
-                    ),
-                    expected_status=expected_status,
-                )
+        with self.subTest(slice_id=expectation.slice_id):
+            self._assert_manifest_workload_contracts(
+                manifest,
+                scorecard,
+                (
+                    (workload_id, expected_status)
+                    for workload_id in expected_workload_ids
+                ),
+                subtest_label="workload_id",
+            )
 
     def test_wider_ranged_repeat_manifest_shape_stays_covered_in_combined_suite(
         self,
@@ -1202,18 +1211,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             len(case.target_manifest.workloads),
         )
 
-        for workload_id in shape_expectation.representative_measured_workload_ids:
-            with self.subTest(workload_id=workload_id):
-                assert_benchmark_workload_contract(
-                    self,
-                    find_workload_record(scorecard, workload_id),
-                    manifest_id=WIDER_RANGED_REPEAT_MANIFEST_ID,
-                    workload_document=find_workload_document(
-                        case.target_manifest,
-                        workload_id,
-                    ),
-                    expected_status="measured",
-                )
+        self._assert_manifest_workload_contracts(
+            case.target_manifest,
+            scorecard,
+            (
+                (workload_id, "measured")
+                for workload_id in shape_expectation.representative_measured_workload_ids
+            ),
+            subtest_label="workload_id",
+        )
 
         for pattern_group in shape_expectation.pattern_groups:
             with self.subTest(slice_id=pattern_group.slice_id):

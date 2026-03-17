@@ -1,6 +1,6 @@
 # RBR-0562: Collapse combined benchmark workload contract checks onto one helper
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -100,3 +100,8 @@ Created: 2026-03-17
   - the AST probe above currently fails exactly on that cleanup with `missing-helper-definition` plus direct workload-contract usage in each targeted method.
 - 2026-03-17 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passes (`28 passed, 641 subtests passed in 20.86s`).
+
+## Completion Notes
+- Added `_assert_manifest_workload_contracts(...)` to `SourceTreeCombinedBoundaryBenchmarkSuiteTest` so one class-local helper now owns the repeated workload lookup and workload-contract assertions for a single `BenchmarkManifest`.
+- Routed `_assert_zero_gap_manifest_workloads_measured(...)`, `test_regression_manifest_is_fully_measured_on_the_shared_surface`, `test_runner_regenerates_combined_source_tree_boundary_scorecards`, `_assert_source_tree_combined_manifest_slice`, and `test_wider_ranged_repeat_manifest_shape_stays_covered_in_combined_suite` through that helper while preserving manifest-summary checks, representative-id ordering, and the existing `measured_workload_id` versus `workload_id` subtest labeling behavior.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`28 passed, 669 subtests passed in 21.28s`) and the task AST probe (`ok`).
