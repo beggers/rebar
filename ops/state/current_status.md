@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 1080 cases across 111 manifests, with all 1080 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 626 workloads across 30 manifests with 626 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the project is broader again but still clearly partial.
 
 ## README Next Steps
-- With the queue drained, the surviving frontier is `RBR-0534`: add the six bytes benchmark mirrors for the same open-ended grouped-alternation-plus-conditional pair so the combined source-tree report moves from `626` / `626` / `0` to `632` / `632` / `0` before broader-range open-ended grouped work widens that family.
+- Ready `RBR-0534` should add the six bytes benchmark mirrors for the same open-ended grouped-alternation-plus-conditional pair so the combined source-tree report moves from `626` / `626` / `0` to `632` / `632` / `0` before the broader-range `{2,}` bytes publication follow-on reopens correctness.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: all 1080 published correctness cases pass a
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- With the queue drained, the surviving frontier is `RBR-0534`: add the six adjacent bytes benchmark mirrors for the same open-ended grouped-alternation-plus-conditional pair on `benchmarks/workloads/open_ended_quantified_group_boundary.py` so that manifest moves from `36` total / `36` measured / `0` known gaps to `42` / `42` / `0` and the combined source-tree report moves from `626` / `626` / `0` to `632` / `632` / `0` before broader-range open-ended grouped work widens that family.
+- After ready `RBR-0534` drains, the surviving frontier is `RBR-0535`: publish the broader-range open-ended `{2,}` grouped-alternation-plus-conditional bytes pair on the existing correctness/parity path so `broader-range-open-ended-quantified-group-alternation-conditional-workflows` moves from `14` total / `14` passed / `0` unimplemented to `28` / `14` / `14` and the combined correctness report moves from `1080` / `1080` / `0` to `1094` / `1080` / `14` before bytes parity or benchmark catch-up widen that broader-range family.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
