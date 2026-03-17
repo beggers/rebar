@@ -1,6 +1,6 @@
 # RBR-0553: Collapse published benchmark manifest inventory onto one cached helper
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -80,3 +80,10 @@ Created: 2026-03-17
 - 2026-03-17 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_built_native_benchmark_modes.py` passes (`59 passed, 2 skipped, 1523 subtests passed in 21.96s`).
   - The post-change helper probe in this task currently fails with `ImportError: cannot import name 'published_benchmark_manifests' from 'rebar_harness.benchmarks'`, which is the exact missing helper this cleanup is meant to add.
+- Completed 2026-03-17:
+  - Added `published_benchmark_manifests()` to `python/rebar_harness/benchmarks.py` as the single cached typed-manifest helper for `PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR`.
+  - Removed the local published full-suite wrapper helpers from `tests/benchmarks/benchmark_expectations.py`, leaving its source-tree manifest cache to build from one direct compile-smoke manifest load plus `published_benchmark_manifests()`.
+  - Updated `tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py` and `tests/benchmarks/test_built_native_benchmark_modes.py` to consume `published_benchmark_manifests()` when they need typed manifest inventory totals or ordered manifest records.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_built_native_benchmark_modes.py` (`60 passed, 2 skipped, 1523 subtests passed in 22.06s`).
+  - Verified the new helper directly with the task’s `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` snippet (`ok`).
+  - Verified the duplicate published-inventory wrapper layer is gone with `rg -n "def _compile_smoke_manifest_path\\(|def _published_full_suite_manifest_paths\\(|def _published_source_tree_manifests\\(|load_manifests\\(list\\(published_manifest_paths\\)\\)" tests/benchmarks/benchmark_expectations.py tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_built_native_benchmark_modes.py`, which now returns no matches.

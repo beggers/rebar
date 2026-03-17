@@ -12,7 +12,7 @@ from rebar_harness.benchmarks import (
     BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR,
     COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR,
     PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR,
-    load_manifests,
+    published_benchmark_manifests,
     select_benchmark_manifest_path,
     select_benchmark_manifest_paths,
 )
@@ -85,21 +85,27 @@ class DefaultBenchmarkManifestInventoryContractTest(unittest.TestCase):
         self.assertTrue(compile_smoke_manifest_path.is_relative_to(BENCHMARK_WORKLOADS_ROOT))
         self.assertNotIn(compile_smoke_manifest_path, published_manifest_paths)
 
-    def test_published_full_suite_manifest_inventory_has_unique_manifest_and_workload_ids(
+    def test_published_full_suite_helper_is_cached_and_preserves_selector_order(
         self,
     ) -> None:
+        manifests = published_benchmark_manifests()
         published_manifest_paths = select_benchmark_manifest_paths(
             PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
         )
-        manifests = load_manifests(list(published_manifest_paths))
+
+        self.assertIs(published_benchmark_manifests(), manifests)
+        self.assertEqual(
+            tuple(manifest.path for manifest in manifests),
+            published_manifest_paths,
+            "published benchmark helper should preserve the shared selector order",
+        )
+
+    def test_published_full_suite_manifest_inventory_has_unique_manifest_and_workload_ids(
+        self,
+    ) -> None:
+        manifests = published_benchmark_manifests()
         expected_manifest_ids = [manifest.manifest_id for manifest in manifests]
         workloads = [workload for manifest in manifests for workload in manifest.workloads]
-
-        self.assertEqual(
-            [manifest.path for manifest in manifests],
-            list(published_manifest_paths),
-            "bulk manifest loading should preserve the published full-suite selector order",
-        )
 
         manifest_counts = Counter(expected_manifest_ids)
         self.assertEqual(

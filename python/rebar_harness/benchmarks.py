@@ -18,6 +18,7 @@ import tempfile
 import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from functools import cache
 from typing import Any, Callable
 
 
@@ -407,6 +408,15 @@ def load_manifests(paths: list[pathlib.Path]) -> list[BenchmarkManifest]:
         manifests.append(manifest)
 
     return manifests
+
+
+@cache
+def published_benchmark_manifests() -> tuple[BenchmarkManifest, ...]:
+    return tuple(
+        load_manifests(
+            list(select_benchmark_manifest_paths(PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR))
+        )
+    )
 
 
 def select_workloads(workloads: list[Workload], *, smoke_only: bool) -> list[Workload]:

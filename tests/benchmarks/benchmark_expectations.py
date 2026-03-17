@@ -12,13 +12,12 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 from rebar_harness.benchmarks import (
     BenchmarkManifest,
     COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR,
-    PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR,
     Workload,
     determine_phase,
     determine_runner_version,
-    load_manifests,
+    load_manifest,
+    published_benchmark_manifests,
     select_benchmark_manifest_path,
-    select_benchmark_manifest_paths,
     select_workloads,
     workload_to_payload,
 )
@@ -1502,19 +1501,12 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
 )
 
 
-def _compile_smoke_manifest_path() -> pathlib.Path:
-    return select_benchmark_manifest_path(COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR)
-
-
-def _published_full_suite_manifest_paths() -> tuple[pathlib.Path, ...]:
-    return select_benchmark_manifest_paths(PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR)
-
-
 @cache
 def _source_tree_manifest_records() -> dict[str, BenchmarkManifest]:
-    manifests = load_manifests(
-        [_compile_smoke_manifest_path(), *_published_full_suite_manifest_paths()]
+    compile_smoke_manifest = load_manifest(
+        select_benchmark_manifest_path(COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR)
     )
+    manifests = (compile_smoke_manifest, *published_benchmark_manifests())
     return {manifest.manifest_id: manifest for manifest in manifests}
 
 
@@ -1529,15 +1521,6 @@ def _source_tree_manifests_for_ids(
     manifest_ids: Iterable[str],
 ) -> list[BenchmarkManifest]:
     return [_source_tree_manifest_record(manifest_id) for manifest_id in manifest_ids]
-
-
-@cache
-def _published_source_tree_manifests() -> tuple[BenchmarkManifest, ...]:
-    return tuple(
-        manifest
-        for manifest in _source_tree_manifest_records().values()
-        if manifest.manifest_id != "compile-smoke"
-    )
 
 
 def relative_manifest_path(path: pathlib.Path) -> str:
@@ -1907,7 +1890,7 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
 def source_tree_combined_target_manifest_ids() -> tuple[str, ...]:
     target_manifest_ids = tuple(
         manifest.manifest_id
-        for manifest in _published_source_tree_manifests()
+        for manifest in published_benchmark_manifests()
         if manifest.manifest_id not in BASE_SOURCE_TREE_MANIFEST_IDS
     )
     target_ids = set(target_manifest_ids)
@@ -1924,7 +1907,7 @@ def _selected_source_tree_manifests_for_target_manifest(
     target_manifest_id: str,
 ) -> list[BenchmarkManifest]:
     selected_manifests: list[BenchmarkManifest] = []
-    published_manifests = _published_source_tree_manifests()
+    published_manifests = published_benchmark_manifests()
     regression_manifest = next(
         (
             manifest
