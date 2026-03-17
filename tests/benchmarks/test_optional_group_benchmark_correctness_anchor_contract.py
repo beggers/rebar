@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pathlib
-import re
 import unittest
 from typing import Any
 
@@ -21,6 +20,7 @@ from tests.benchmarks.correctness_anchor_support import (
     published_case_ids_by_signature,
     published_cases_by_id,
     run_benchmark_workload_with_cpython,
+    run_correctness_case_with_cpython,
     unanchored_workload_ids,
 )
 from tests.python.fixture_parity_support import assert_match_result_parity
@@ -93,15 +93,6 @@ def _anchored_optional_group_conditional_workload_case_ids(
     )
 
 
-def _run_correctness_case_with_cpython(case: Any) -> object:
-    if case.operation != "module_call" or case.helper != "search":
-        raise AssertionError(
-            f"unexpected optional-group correctness operation {case.operation!r}"
-        )
-
-    return getattr(re, case.helper)(*case.args, **case.kwargs)
-
-
 class OptionalGroupBenchmarkCorrectnessAnchorContractTest(unittest.TestCase):
     maxDiff = None
 
@@ -143,7 +134,7 @@ class OptionalGroupBenchmarkCorrectnessAnchorContractTest(unittest.TestCase):
         observed = run_benchmark_workload_with_cpython(
             workloads_by_id[OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID]
         )
-        expected = _run_correctness_case_with_cpython(published_cases[case_id])
+        expected = run_correctness_case_with_cpython(published_cases[case_id])
         assert_match_result_parity(
             "stdlib",
             observed,

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pathlib
-import re
 import unittest
 from typing import Any
 
@@ -16,6 +15,7 @@ from tests.benchmarks.correctness_anchor_support import (
     published_case_ids_by_signature,
     published_cases_by_id,
     run_benchmark_workload_with_cpython,
+    run_correctness_case_with_cpython,
     unanchored_workload_ids,
 )
 from tests.python.fixture_parity_support import (
@@ -140,26 +140,6 @@ def _anchored_nested_group_workload_case_ids(
     )
 
 
-def _run_correctness_case_with_cpython(case: Any) -> object:
-    if case.operation == "compile":
-        return re.compile(case.pattern_payload(), case.flags or 0)
-
-    if case.operation == "module_call":
-        if case.helper is None:
-            raise AssertionError(f"expected nested-group helper for {case.case_id!r}")
-        return getattr(re, case.helper)(*case.args, **case.kwargs)
-
-    if case.operation == "pattern_call":
-        if case.helper is None:
-            raise AssertionError(f"expected nested-group helper for {case.case_id!r}")
-        compiled = re.compile(case.pattern_payload(), case.flags or 0)
-        return getattr(compiled, case.helper)(*case.args, **case.kwargs)
-
-    raise AssertionError(
-        f"unexpected nested-group correctness operation {case.operation!r}"
-    )
-
-
 class NestedGroupBenchmarkCorrectnessAnchorContractTest(unittest.TestCase):
     maxDiff = None
 
@@ -216,7 +196,7 @@ class NestedGroupBenchmarkCorrectnessAnchorContractTest(unittest.TestCase):
                 workload = workloads_by_id[workload_id]
                 case = published_cases[case_id]
                 observed = run_benchmark_workload_with_cpython(workload)
-                expected = _run_correctness_case_with_cpython(case)
+                expected = run_correctness_case_with_cpython(case)
 
                 if workload.operation == "module.compile":
                     assert_pattern_parity("stdlib", observed, expected)

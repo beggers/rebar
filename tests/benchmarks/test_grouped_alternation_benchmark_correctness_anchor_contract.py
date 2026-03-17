@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 import pathlib
-import re
 from typing import Any
 
 import pytest
@@ -24,6 +23,7 @@ from tests.benchmarks.correctness_anchor_support import (
     published_case_ids_by_signature,
     published_cases_by_id,
     run_benchmark_workload_with_cpython,
+    run_correctness_case_with_cpython,
     unanchored_workload_ids,
 )
 
@@ -312,21 +312,6 @@ def _grouped_alternation_replacement_workload_signature(
     )
 
 
-def _run_grouped_alternation_anchor_case_with_cpython(case: Any) -> object:
-    if case.operation == "module_call":
-        if case.helper is None:
-            raise AssertionError(f"expected helper for {case.case_id!r}")
-        return getattr(re, case.helper)(*case.args, **case.kwargs)
-
-    if case.operation == "pattern_call":
-        if case.helper is None:
-            raise AssertionError(f"expected helper for {case.case_id!r}")
-        compiled = re.compile(case.pattern_payload(), case.flags or 0)
-        return getattr(compiled, case.helper)(*case.args, **case.kwargs)
-
-    raise AssertionError(f"unexpected correctness operation {case.operation!r}")
-
-
 def _anchored_case_ids(
     definition: GroupedAlternationBenchmarkAnchorContractDefinition,
 ) -> dict[tuple[str, str], tuple[str, ...]]:
@@ -466,5 +451,5 @@ def test_grouped_alternation_workload_callbacks_match_anchor_case_results(
         assert workload_id in workloads_by_id
         assert case_id in published_cases
         assert run_benchmark_workload_with_cpython(workloads_by_id[workload_id]) == (
-            _run_grouped_alternation_anchor_case_with_cpython(published_cases[case_id])
+            run_correctness_case_with_cpython(published_cases[case_id])
         )

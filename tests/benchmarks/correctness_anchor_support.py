@@ -97,3 +97,21 @@ def run_benchmark_workload_with_cpython(workload: Any) -> object:
     result = callback()
     re.purge()
     return result
+
+
+def run_correctness_case_with_cpython(case: Any) -> object:
+    if case.operation == "compile":
+        return re.compile(case.pattern_payload(), case.flags or 0)
+
+    if case.operation == "module_call":
+        if case.helper is None:
+            raise AssertionError(f"expected helper for {case.case_id!r}")
+        return getattr(re, case.helper)(*case.args, **case.kwargs)
+
+    if case.operation == "pattern_call":
+        if case.helper is None:
+            raise AssertionError(f"expected helper for {case.case_id!r}")
+        compiled = re.compile(case.pattern_payload(), case.flags or 0)
+        return getattr(compiled, case.helper)(*case.args, **case.kwargs)
+
+    raise AssertionError(f"unexpected correctness operation {case.operation!r}")
