@@ -2122,6 +2122,69 @@ def compose_agent_commit_message(
     return "\n".join(lines).rstrip() + "\n"
 
 
+def serialized_agent_registry(agents: list[AgentSpec]) -> list[dict[str, Any]]:
+    return [
+        {
+            "name": agent.name,
+            "kind": agent.kind,
+            "cycle_order": agent.cycle_order,
+            "dispatch_mode": agent.dispatch.get("mode", "every_cycle"),
+            "spec_path": relpath(agent.spec_path),
+        }
+        for agent in agents
+    ]
+
+
+def merged_agent_state(
+    state: dict[str, Any],
+    current_agents: list[AgentSpec],
+    results: list[RunResult],
+) -> dict[str, Any]:
+    current_agent_names = {agent.name for agent in current_agents}
+    result_agent_names = {result.agent_name for result in results}
+
+    agent_state = state.get("agents")
+    if not isinstance(agent_state, dict):
+        agent_state = {}
+    agent_state = {
+        name: payload
+        for name, payload in agent_state.items()
+        if name in current_agent_names | result_agent_names and isinstance(payload, dict)
+    }
+
+    finished_at = utcnow()
+    for result in results:
+        agent_state[result.agent_name] = {
+            "agent_kind": result.agent_kind,
+            "run_id": result.run_id,
+            "exit_code": result.exit_code,
+            "timed_out": result.timed_out,
+            "finished_at": finished_at,
+            "task_final_status": result.task_final_status,
+            "environment_issue": result.environment_issue,
+        }
+    return agent_state
+
+
+def update_loop_state_progress(config: dict[str, Any], results: list[RunResult]) -> dict[str, Any]:
+    paths = runtime_paths(config)
+    state = read_json(paths["loop_state"], default={})
+    if not isinstance(state, dict):
+        state = {}
+
+    current_agents = load_agent_specs(config)
+    state.update(
+        {
+            "updated_at": utcnow(),
+            "agents": merged_agent_state(state, current_agents, results),
+            "agent_registry": serialized_agent_registry(current_agents),
+            "queue_counts": queue_counts(),
+        }
+    )
+    write_json(paths["loop_state"], state)
+    return state
+
+
 def last_cycle_stalled_on_inherited_dirty_worktree(loop_state: dict[str, Any]) -> bool:
     anomalies = loop_state.get("last_cycle_anomalies")
     if not isinstance(anomalies, list):
@@ -2437,45 +2500,14 @@ def update_loop_state(
     if not isinstance(previous_json_blob_count, int):
         previous_json_blob_count = current_json_blob_count
 
-    # Reload the live registry so loop_state reflects supervisor retunes made earlier in
-    # the same cycle instead of the cycle-start agent snapshot.
     current_agents = load_agent_specs(config)
-    current_agent_names = {agent.name for agent in current_agents}
-    result_agent_names = {result.agent_name for result in results}
-
-    agent_state = state.get("agents")
-    if not isinstance(agent_state, dict):
-        agent_state = {}
-    agent_state = {
-        name: payload
-        for name, payload in agent_state.items()
-        if name in current_agent_names | result_agent_names and isinstance(payload, dict)
-    }
-    for result in results:
-        agent_state[result.agent_name] = {
-            "agent_kind": result.agent_kind,
-            "run_id": result.run_id,
-            "exit_code": result.exit_code,
-            "timed_out": result.timed_out,
-            "finished_at": utcnow(),
-            "task_final_status": result.task_final_status,
-            "environment_issue": result.environment_issue,
-        }
+    agent_state = merged_agent_state(state, current_agents, results)
 
     state.update(
         {
             "updated_at": utcnow(),
             "agents": agent_state,
-            "agent_registry": [
-                {
-                    "name": agent.name,
-                    "kind": agent.kind,
-                    "cycle_order": agent.cycle_order,
-                    "dispatch_mode": agent.dispatch.get("mode", "every_cycle"),
-                    "spec_path": relpath(agent.spec_path),
-                }
-                for agent in current_agents
-            ],
+            "agent_registry": serialized_agent_registry(current_agents),
             "queue_counts": queue_counts(),
             "tracked_json_blob_count": current_json_blob_count,
             "previous_tracked_json_blob_count": previous_json_blob_count,
@@ -2864,48 +2896,49 @@ def run_cycle(
             agent_recovery_actions.extend(finalize_task_result(config, result, task_state))
         recovery_actions.extend(agent_recovery_actions)
         write_json(paths["task_state"], task_state)
+        commit_action: dict[str, Any] | None = None
         if worktree_dirty_before_agent:
             # Only auto-commit when the inherited dirty baseline stayed untouched.
-            if not git_worktree_dirty():
-                continue
-            changed_preexisting_paths = changed_snapshot_paths(preexisting_dirty_snapshot)
-            if changed_preexisting_paths:
-                skipped_dirty_autocommit_agents.append(
-                    f"{agent.name} (touched pre-existing dirty paths: "
-                    + ", ".join(changed_preexisting_paths[:3])
-                    + (", ..." if len(changed_preexisting_paths) > 3 else "")
-                    + ")"
+            if git_worktree_dirty():
+                changed_preexisting_paths = changed_snapshot_paths(preexisting_dirty_snapshot)
+                if changed_preexisting_paths:
+                    skipped_dirty_autocommit_agents.append(
+                        f"{agent.name} (touched pre-existing dirty paths: "
+                        + ", ".join(changed_preexisting_paths[:3])
+                        + (", ..." if len(changed_preexisting_paths) > 3 else "")
+                        + ")"
+                    )
+                else:
+                    dirty_paths_after_agent = git_dirty_paths(untracked_all=True)
+                    safe_dirty_paths = sorted(dirty_paths_after_agent - dirty_paths_before_agent)
+                    if safe_dirty_paths:
+                        commit_action = maybe_commit_agent_changes(
+                            config,
+                            agent,
+                            agent_results,
+                            agent_recovery_actions,
+                            pathspecs=safe_dirty_paths,
+                        )
+        else:
+            if agent.kind == "reporting_worker":
+                # Keep generated report/README churn attached to the reporting pass so
+                # earlier agent commits only contain files their final summaries could
+                # reasonably describe.
+                refresh_published_correctness_scorecard()
+                sync_readme_status(config)
+            if git_worktree_dirty():
+                commit_action = maybe_commit_agent_changes(
+                    config,
+                    agent,
+                    agent_results,
+                    agent_recovery_actions,
                 )
-                continue
-            dirty_paths_after_agent = git_dirty_paths(untracked_all=True)
-            safe_dirty_paths = sorted(dirty_paths_after_agent - dirty_paths_before_agent)
-            if not safe_dirty_paths:
-                continue
-            commit_action = maybe_commit_agent_changes(
-                config,
-                agent,
-                agent_results,
-                agent_recovery_actions,
-                pathspecs=safe_dirty_paths,
-            )
-            if commit_action is not None:
-                commit_actions.append(commit_action)
-            continue
-        if agent.kind == "reporting_worker":
-            # Keep generated report/README churn attached to the reporting pass so
-            # earlier agent commits only contain files their final summaries could
-            # reasonably describe.
-            refresh_published_correctness_scorecard()
-            sync_readme_status(config)
-        if git_worktree_dirty():
-            commit_action = maybe_commit_agent_changes(
-                config,
-                agent,
-                agent_results,
-                agent_recovery_actions,
-            )
-            if commit_action is not None:
-                commit_actions.append(commit_action)
+        if commit_action is not None:
+            commit_actions.append(commit_action)
+        # Persist interval/backoff timestamps during the cycle so the next pass
+        # can skip already-run agents even if an external timeout interrupts the
+        # cycle before the final loop-state refresh.
+        loop_state = update_loop_state_progress(config, results)
 
     write_json(paths["task_state"], task_state)
     prune_action = prune_run_dirs(config, paths)

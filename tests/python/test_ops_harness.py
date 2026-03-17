@@ -14,12 +14,22 @@ def completed_process(*args: str, returncode: int = 0, stdout: str = "", stderr:
 
 
 class OpsHarnessTest(unittest.TestCase):
-    def test_architecture_cleanup_and_qa_agents_run_every_cycle(self) -> None:
+    def test_dispatch_policies_match_the_current_specialist_mix(self) -> None:
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
         agents = {agent.name: agent for agent in rebar_ops.load_agent_specs(config)}
 
-        for name in ("architecture", "cleanup", "qa-testing"):
+        for name, interval_seconds in (
+            ("architecture", 3600),
+            ("cleanup", 7200),
+            ("reporting", 3600),
+            ("implementation-faithfulness", 10800),
+        ):
+            self.assertIn(name, agents)
+            self.assertEqual(agents[name].dispatch["mode"], "interval")
+            self.assertEqual(agents[name].dispatch["interval_seconds"], interval_seconds)
+
+        for name in ("supervisor", "feature-planning", "qa-testing"):
             self.assertIn(name, agents)
             self.assertEqual(agents[name].dispatch["mode"], "every_cycle")
             self.assertNotIn("interval_seconds", agents[name].dispatch)
@@ -509,6 +519,58 @@ Verified with `python -m unittest`.
 
         registry = {item["name"]: item for item in state["agent_registry"]}
         self.assertEqual(registry["reporting"]["dispatch_mode"], "interval")
+
+    def test_update_loop_state_progress_persists_interval_finished_at_for_partial_cycles(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        reporting = rebar_ops.AgentSpec(
+            name="reporting",
+            kind="reporting_worker",
+            description="",
+            enabled=True,
+            cycle_order=70,
+            spec_path=REPO_ROOT / "ops" / "agents" / "reporting.py",
+            prompt_path=REPO_ROOT / "ops" / "agents" / "reporting.md",
+            dispatch={"mode": "interval", "interval_seconds": 3600},
+            codex={},
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            run_dir = pathlib.Path(temp_dir) / "runs" / "run-1"
+            run_dir.mkdir(parents=True, exist_ok=True)
+            result = rebar_ops.RunResult(
+                agent_name="reporting",
+                agent_kind="reporting_worker",
+                run_id="run-1",
+                exit_code=0,
+                timed_out=False,
+                run_dir=run_dir,
+                task_initial_path=None,
+                task_final_path=None,
+                task_final_status=None,
+            )
+
+            with mock.patch.object(
+                rebar_ops,
+                "load_agent_specs",
+                return_value=[reporting],
+            ), mock.patch.object(
+                rebar_ops,
+                "queue_counts",
+                return_value={"ready": 0, "in_progress": 0, "done": 504, "blocked": 0},
+            ), mock.patch.object(
+                rebar_ops,
+                "utcnow",
+                return_value="2999-01-01T00:00:00+00:00",
+            ):
+                state = rebar_ops.update_loop_state_progress(
+                    {"runtime": {"artifact_dir": temp_dir}},
+                    [result],
+                )
+
+        self.assertEqual(state["agents"]["reporting"]["run_id"], "run-1")
+        self.assertEqual(state["agent_registry"][0]["dispatch_mode"], "interval")
+        self.assertEqual(state["queue_counts"]["done"], 504)
+        self.assertFalse(rebar_ops.agent_is_due(reporting, state))
 
 
 if __name__ == "__main__":
