@@ -15,6 +15,7 @@ from tests.python.fixture_parity_support import (
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
+    assert_match_result_parity,
     assert_valid_match_group_access_parity,
     case_pattern,
     compile_with_cpython_parity,
@@ -52,6 +53,15 @@ class OpenEndedTraceCase:
     pattern: str
     search_text: str
     fullmatch_text: str
+
+
+@dataclass(frozen=True)
+class BoundedPatternCase:
+    id: str
+    pattern: str | bytes
+    helper: str
+    string: str | bytes
+    bounds: tuple[int, int]
 
 
 FIXTURE_BUNDLE_SPECS = (
@@ -378,6 +388,76 @@ EXPECTED_OPEN_ENDED_BACKTRACKING_FULLMATCH_TEXTS = frozenset(
         repeat=repetition_count,
     )
 )
+PATTERN_BOUNDS_MATCH_CASES = (
+    BoundedPatternCase(
+        id=(
+            "broader-range-open-ended-conditional-search-normalizes-negative-and-"
+            "oversized-bounds-str"
+        ),
+        pattern=r"a(?P<outer>(bc|de){2,})?(?(outer)d|e)",
+        helper="search",
+        string="xxaezz",
+        bounds=(-50, 999),
+    ),
+    BoundedPatternCase(
+        id="open-ended-backtracking-heavy-match-honors-narrowed-window-str",
+        pattern=r"a((bc|b)c){1,}d",
+        helper="match",
+        string="yyabccbcdzz",
+        bounds=(2, 9),
+    ),
+    BoundedPatternCase(
+        id="nested-open-ended-fullmatch-preserves-visible-outer-capture-window-str",
+        pattern=r"a(?P<outer>(bc|de){1,})d",
+        helper="fullmatch",
+        string="yyabcbcdzz",
+        bounds=(2, 8),
+    ),
+    BoundedPatternCase(
+        id="open-ended-conditional-bytes-search-normalizes-negative-and-oversized-bounds",
+        pattern=rb"a(?P<outer>(bc|de){1,})?(?(outer)d|e)",
+        helper="search",
+        string=b"xxaezz",
+        bounds=(-50, 999),
+    ),
+)
+PATTERN_BOUNDS_NO_MATCH_CASES = (
+    BoundedPatternCase(
+        id=(
+            "broader-range-open-ended-conditional-match-fails-below-lower-bound-"
+            "within-window-str"
+        ),
+        pattern=r"a((bc|de){2,})?(?(1)d|e)",
+        helper="match",
+        string="xxabcdzz",
+        bounds=(2, 6),
+    ),
+    BoundedPatternCase(
+        id="open-ended-backtracking-heavy-search-skips-match-before-pos-str",
+        pattern=r"a(?P<word>(bc|b)c){1,}d",
+        helper="search",
+        string="yyabcbccdzz",
+        bounds=(3, 11),
+    ),
+    BoundedPatternCase(
+        id="nested-open-ended-fullmatch-does-not-expand-to-whole-string-str",
+        pattern=r"a((bc|de){1,})d",
+        helper="fullmatch",
+        string="yyabcbcdzz",
+        bounds=(-50, 999),
+    ),
+    BoundedPatternCase(
+        id="open-ended-conditional-bytes-match-fails-when-endpos-truncates-the-yes-arm",
+        pattern=rb"a((bc|de){1,})?(?(1)d|e)",
+        helper="match",
+        string=b"xxabcdzz",
+        bounds=(2, 5),
+    ),
+)
+
+
+def _invoke_bounded_pattern_case(compiled_pattern: object, case: BoundedPatternCase) -> object:
+    return getattr(compiled_pattern, case.helper)(case.string, *case.bounds)
 
 
 @pytest.mark.parametrize(
@@ -760,6 +840,59 @@ def test_open_ended_backtracking_trace_cases_cover_all_declared_branch_orders() 
         assert {case.search_text for case in matching_cases} == {
             f"zz{text}zz" for text in EXPECTED_OPEN_ENDED_BACKTRACKING_FULLMATCH_TEXTS
         }
+
+
+@pytest.mark.parametrize(
+    "case",
+    PATTERN_BOUNDS_MATCH_CASES,
+    ids=lambda case: case.id,
+)
+def test_pattern_bounds_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: BoundedPatternCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    observed = _invoke_bounded_pattern_case(observed_pattern, case)
+    expected = _invoke_bounded_pattern_case(expected_pattern, case)
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_result_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=True,
+    )
+    assert_match_convenience_api_parity(observed, expected)
+    _assert_match_group_access_apis_match_cpython(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    PATTERN_BOUNDS_NO_MATCH_CASES,
+    ids=lambda case: case.id,
+)
+def test_pattern_bounds_misses_match_cpython(
+    regex_backend: tuple[str, object],
+    case: BoundedPatternCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    observed = _invoke_bounded_pattern_case(observed_pattern, case)
+    expected = _invoke_bounded_pattern_case(expected_pattern, case)
+
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
 
 
 @pytest.mark.parametrize(
