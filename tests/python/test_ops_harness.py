@@ -167,6 +167,23 @@ Verified with `python -m unittest`.
             "Seeded RBR-0350 as the next feature-implementation task",
         )
 
+    def test_commit_summary_text_skips_what_changed_heading_variant(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+
+        summary = rebar_ops.commit_summary_text(
+            """**What Changed**
+- Added the wider ranged-repeat correctness manifest.
+
+**Verified**
+- `pytest -q`
+"""
+        )
+
+        self.assertEqual(
+            summary,
+            "Added the wider ranged-repeat correctness manifest",
+        )
+
     def test_commit_summary_text_skips_changed_heading_variant(self) -> None:
         rebar_ops = load_rebar_ops_module()
 

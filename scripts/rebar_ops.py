@@ -2041,8 +2041,10 @@ def commit_summary_text(text: str) -> str | None:
                 break
             line = emphasized.group(2).strip()
         line = line.replace("`", "").strip().rstrip(".")
-        normalized = line.lower().rstrip(":")
+        normalized = line.lower().rstrip(":?")
         if normalized in section_labels:
+            continue
+        if normalized.startswith("what ") and normalized[5:] in section_labels:
             continue
         if line:
             candidates.append(line)
