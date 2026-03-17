@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 1011 cases across 111 manifests, with 997 passing, 0 explicit failures, and 14 current `unimplemented` gaps; the main benchmark report covers 594 workloads with 594 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so this tracked slice remains far from drop-in `re` parity even though the combined benchmark publication is currently gap-free.
 
 ## README Next Steps
-- The surviving frontier is `RBR-0514`: convert the same broader `{1,4}` bytes grouped backtracking-heavy pair to real parity on the existing correctness/parity path.
+- The ready head is `RBR-0514`: convert the same broader `{1,4}` bytes grouped backtracking-heavy pair to real parity on the existing correctness/parity path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: 997 of 1011 published correctness cases cur
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The surviving frontier is `RBR-0514`: convert the same broader `{1,4}` bytes grouped backtracking-heavy pair to real parity on the existing `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` path before bytes benchmark catch-up reopens that family.
+- After ready `RBR-0514` drains, the surviving frontier is `RBR-0515`: catch the same broader `{1,4}` bytes grouped backtracking-heavy pair up on the existing `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py` path before nested broader bytes follow-ons reopen that family.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
