@@ -28,7 +28,7 @@ from tests.python.fixture_parity_support import (
 
 
 # These rows intentionally do not anchor to the published correctness fixtures yet:
-# eight bytes follow-on workloads are covered through direct parity cases in the
+# twelve bytes follow-on workloads are covered through direct parity cases in the
 # Python suite, and two str rows are benchmark-specific follow-ons that still need
 # explicit benchmark-side pinning.
 EXPECTED_SPECIAL_UNANCHORED_WORKLOAD_IDS = (
@@ -37,6 +37,10 @@ EXPECTED_SPECIAL_UNANCHORED_WORKLOAD_IDS = (
     "module-search-named-open-ended-group-broader-range-conditional-fourth-repetition-de-warm-bytes",
     "pattern-fullmatch-named-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
     "pattern-fullmatch-named-open-ended-group-broader-range-backtracking-heavy-purged-str",
+    "module-search-numbered-open-ended-group-broader-range-backtracking-heavy-lower-bound-b-branch-warm-bytes",
+    "pattern-fullmatch-numbered-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-purged-bytes",
+    "module-search-named-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-warm-bytes",
+    "pattern-fullmatch-named-open-ended-group-broader-range-backtracking-heavy-purged-bytes",
     "module-search-numbered-open-ended-group-conditional-warm-gap",
     "module-search-numbered-open-ended-group-conditional-second-repetition-bc-warm-bytes",
     "pattern-fullmatch-numbered-open-ended-group-conditional-third-repetition-mixed-purged-bytes",
@@ -163,6 +167,14 @@ EXPECTED_OPEN_ENDED_ANCHOR_CASE_IDS = {
     ): (
         "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-module-search-second-repetition-long-then-short-str",
     ),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-numbered-open-ended-group-broader-range-backtracking-heavy-cold-bytes",
+    ): ("broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-bytes",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-named-open-ended-group-broader-range-backtracking-heavy-warm-bytes",
+    ): ("broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-compile-metadata-bytes",),
     (
         "open_ended_quantified_group_boundary.py",
         "pattern-fullmatch-numbered-open-ended-group-conditional-third-repetition-mixed-purged-str",

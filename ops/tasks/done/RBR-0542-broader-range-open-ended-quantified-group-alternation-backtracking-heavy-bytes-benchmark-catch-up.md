@@ -1,6 +1,6 @@
 # RBR-0542: Catch the broader-range open-ended grouped backtracking-heavy bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -49,3 +49,8 @@ Created: 2026-03-17
   - `tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py` currently covers only the matching `str` broader-range grouped backtracking-heavy workloads plus older explicit special-unanchored rows, so the bytes benchmark mirrors still need direct benchmark-anchor handling;
   - `reports/benchmarks/latest.py` currently publishes `open-ended-quantified-group-boundary` at `48` total workloads / `48` measured workloads / `0` known gaps and the combined source-tree report at `638` total / `638` measured / `0` known gaps; and
   - `ops/tasks/done/RBR-0540-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-bytes-parity.md` already records successful public-API parity for both target bytes patterns, so these benchmark rows should measure rather than reopen a runtime gap.
+- Completed 2026-03-17:
+  - Added the six broader-range open-ended grouped backtracking-heavy bytes benchmark mirrors to `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
+  - Updated the open-ended benchmark expectation and anchor-contract tests so the two new compile rows anchor to the published bytes compile metadata cases and the four new search/fullmatch rows stay explicitly unanchored through direct parity handling.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`62 passed, 789 subtests passed`).
+  - Verified the focused manifest publication at `54` total / `54` measured / `0` gaps and regenerated `reports/benchmarks/latest.py`, which now publishes `open-ended-quantified-group-boundary` at `54` / `54` / `0` and the combined source-tree report at `644` / `644` / `0`.

@@ -1159,6 +1159,234 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-compile-numbered-open-ended-group-broader-range-backtracking-heavy-cold-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a((bc|b)c){2,}d",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "backtracking-heavy",
+        "bytes",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation"
+      ],
+      "notes": [
+        "Cold bytes module.compile benchmark for the broader-range numbered open-ended grouped backtracking-heavy slice so `{2,}` compile metadata joins the published benchmark report on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-numbered-open-ended-group-broader-range-backtracking-heavy-lower-bound-b-branch-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a((bc|b)c){2,}d",
+      "haystack": "zzabcbcdzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "backtracking-heavy",
+        "search",
+        "module",
+        "lower-bound",
+        "b-branch",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the broader-range numbered open-ended grouped backtracking-heavy workflow at the two-repetition shorter-branch lower bound."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a((bc|b)c){2,}d",
+      "haystack": "abccbcd",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "backtracking-heavy",
+        "fullmatch",
+        "second-repetition",
+        "bc-then-b",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the broader-range numbered open-ended grouped backtracking-heavy workflow on a two-repetition long-then-short branch order."
+      ]
+    },
+    {
+      "id": "module-compile-named-open-ended-group-broader-range-backtracking-heavy-warm-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<word>(bc|b)c){2,}d",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "named-group",
+        "backtracking-heavy",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm bytes module.compile benchmark for the broader-range named open-ended grouped backtracking-heavy slice so the visible `word` capture reaches the published `{2,}` compile surface on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-named-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>(bc|b)c){2,}d",
+      "haystack": "zzabccbcdzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "named-group",
+        "backtracking-heavy",
+        "search",
+        "module",
+        "second-repetition",
+        "bc-then-b",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the broader-range named open-ended grouped backtracking-heavy workflow on the two-repetition long-then-short branch order."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-open-ended-group-broader-range-backtracking-heavy-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>(bc|b)c){2,}d",
+      "haystack": "abcbcbcbcd",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "named-group",
+        "backtracking-heavy",
+        "fullmatch",
+        "fourth-repetition",
+        "b-branch",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "quantifiers",
+        "counted-repeats",
+        "alternation",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the broader-range named open-ended grouped backtracking-heavy workflow after four `b`-branch repetitions."
+      ]
+    },
+    {
       "id": "module-search-numbered-open-ended-group-conditional-warm-gap",
       "bucket": "module-search",
       "family": "module",
