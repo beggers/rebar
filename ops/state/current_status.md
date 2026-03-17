@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 1053 cases across 111 manifests, with 1053 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 613 workloads across 30 manifests with 613 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial.
 
 ## README Next Steps
-- With the ready queue empty, the next intended follow-on is `RBR-0527`: add the six bytes mirrors of the existing nested broader `{1,4}` grouped-conditional source-tree benchmark rows on the wider-ranged-repeat manifest so the same bounded slice reaches the published Python-path benchmark report.
+- Ready `RBR-0527` should add the seven bytes mirrors of the existing nested broader `{1,4}` grouped-conditional source-tree benchmark rows on the wider-ranged-repeat manifest so the same bounded slice reaches the published Python-path benchmark report.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: all 1053 published correctness cases pass a
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- With the ready queue empty, the next intended follow-on is `RBR-0527`: add the six bytes mirrors of the existing nested broader `{1,4}` grouped-conditional source-tree benchmark rows on the wider-ranged-repeat manifest so the same bounded slice reaches the published Python-path benchmark report.
+- Ready `RBR-0527` should add the seven bytes mirrors of the existing nested broader `{1,4}` grouped-conditional source-tree benchmark rows on the wider-ranged-repeat manifest so the same bounded slice reaches the published Python-path benchmark report.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
