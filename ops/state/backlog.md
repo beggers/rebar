@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-After ready `RBR-0542` drains, no concrete ready `feature-implementation` follow-on currently survives. The queued head task closes the broader-range open-ended `{2,}` grouped backtracking-heavy bytes benchmark catch-up on the existing Python-facing benchmark path, and this run's bounded re-triage across the adjacent open-ended manifests, scorecards, and parity anchors did not yet surface another safely pinned next slice.
+After ready `RBR-0543` drains, `RBR-0544` should survive as the next concrete `feature-implementation` follow-on. The queued head reopens the open-ended `{1,}` grouped backtracking-heavy bytes correctness publication on the existing open-ended parity surface for `rb"a((bc|b)c){1,}d"` and `rb"a(?P<word>(bc|b)c){1,}d"`, and the surviving follow-on converts that same bytes pair to Rust-backed parity before the existing Python-path open-ended benchmark anchors catch the slice up.
 
 ## Ordered Work
-1. No concrete ready `feature-implementation` follow-on currently survives after ready `RBR-0542` drains. The just-queued head task closes the broader-range open-ended `{2,}` grouped backtracking-heavy bytes benchmark catch-up on the existing Python-path surface; beyond that, the current open-ended grouped family, `reports/correctness/latest.py`, `reports/benchmarks/latest.py`, and the adjacent `tests/python/test_open_ended_quantified_group_parity_suite.py` / `tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py` sweep do not yet pin another exact pattern pair, target-file set, and acceptance bundle safely enough to queue.
+1. After ready `RBR-0543` drains, `RBR-0544` should survive as the next concrete `feature-implementation` follow-on. `RBR-0543` publishes only the 12 bytes mirrors for the open-ended `{1,}` grouped backtracking-heavy correctness manifest plus one direct bytes parity anchor on `tests/python/test_open_ended_quantified_group_parity_suite.py`; `RBR-0544` should then convert the same `rb"a((bc|b)c){1,}d"` / `rb"a(?P<word>(bc|b)c){1,}d"` pair behind `rebar._rebar` before the existing `benchmarks/workloads/open_ended_quantified_group_boundary.py` backtracking-heavy rows are mirrored on the bytes benchmark surface.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

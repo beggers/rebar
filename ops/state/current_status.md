@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 1108 cases across 111 manifests, with 1108 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 644 workloads across 30 manifests with 644 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is fully green but still narrow and not yet a near-full parity or native-path performance claim.
 
 ## README Next Steps
-- No concrete ready feature follow-on currently survives. `RBR-0542` closed the broader-range open-ended `{2,}` grouped backtracking-heavy bytes benchmark catch-up and moved `open-ended-quantified-group-boundary` plus the combined source-tree report to `54` / `54` / `0` and `644` / `644` / `0`.
+- `RBR-0543` is ready to reopen the open-ended `{1,}` grouped backtracking-heavy bytes correctness publication for `rb"a((bc|b)c){1,}d"` and `rb"a(?P<word>(bc|b)c){1,}d"` on the existing open-ended parity surface; the tracked reports remain at `1108` / `1108` / `0` and `644` / `644` / `0` until that head lands.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: 1108 of 1108 published correctness cases cu
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- No concrete ready feature follow-on currently survives. `RBR-0542` closed `open-ended-quantified-group-boundary` at `54` total workloads / `54` measured workloads / `0` known gaps and moved the combined source-tree report to `644` / `644` / `0`, but this run's bounded sweep across the adjacent open-ended manifests, scorecards, and parity anchors still did not pin another exact next slice safely enough to queue.
+- After ready `RBR-0543` drains, `RBR-0544` should survive as the next bounded follow-on, converting the same open-ended `{1,}` grouped backtracking-heavy bytes pair behind `rebar._rebar` before the existing `open-ended-quantified-group-boundary` source-tree anchors catch the slice up on the benchmark surface.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
