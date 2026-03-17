@@ -1,6 +1,6 @@
 # RBR-0506: Collapse published correctness inventory onto `load_fixture_manifests(...)`
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -69,3 +69,13 @@ Created: 2026-03-17
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_correctness_scorecard_registry_contract.py tests/conformance/test_combined_correctness_scorecards.py` passes (`7 passed, 1215 subtests passed in 21.47s`).
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_compile_proxy_correctness_anchor_contract.py tests/benchmarks/test_grouped_alternation_benchmark_correctness_anchor_contract.py tests/benchmarks/test_nested_group_benchmark_correctness_anchor_contract.py tests/benchmarks/test_optional_group_benchmark_correctness_anchor_contract.py` passes (`20 passed, 6 subtests passed in 0.15s`).
   - The inline typed-inventory probe above prints `ok`.
+
+## Completion Notes
+- 2026-03-17: Collapsed the cached published-correctness inventory in `tests/conformance/correctness_expectations.py` onto `load_fixture_manifests(DEFAULT_FIXTURE_PATHS)`, keeping the existing `(path, manifest)` shape by taking each path from `manifest.path` on the already-loaded typed records.
+- Reworked `tests/conformance/test_correctness_scorecard_registry_contract.py` to derive its path and manifest-id view from the typed cached inventory in `tests/conformance/correctness_expectations.py` instead of rebuilding the same ordered inventory with per-path manifest loads.
+- Added one cached typed published-fixture inventory in `tests/benchmarks/correctness_anchor_support.py` and reused it for both `published_case_ids_by_signature(...)` and `published_cases_by_id()`, preserving duplicate case-id detection and existing anchor mapping behavior.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_correctness_scorecard_registry_contract.py tests/conformance/test_combined_correctness_scorecards.py` (`7 passed, 1215 subtests passed in 25.47s`).
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_compile_proxy_correctness_anchor_contract.py tests/benchmarks/test_grouped_alternation_benchmark_correctness_anchor_contract.py tests/benchmarks/test_nested_group_benchmark_correctness_anchor_contract.py tests/benchmarks/test_optional_group_benchmark_correctness_anchor_contract.py` (`20 passed, 6 subtests passed in 0.08s`).
+  - `rg -n 'for (path|fixture_path) in DEFAULT_FIXTURE_PATHS|load_fixture_manifest\\((path|fixture_path)\\)' tests/conformance/correctness_expectations.py tests/conformance/test_correctness_scorecard_registry_contract.py tests/benchmarks/correctness_anchor_support.py` returned no matches.
+  - The task's inline typed-inventory probe prints `ok`.

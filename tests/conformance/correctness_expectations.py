@@ -10,7 +10,7 @@ from rebar_harness.correctness import (
     FixtureCase,
     FixtureManifest,
     determine_phase,
-    load_fixture_manifest,
+    load_fixture_manifests,
 )
 
 
@@ -1591,11 +1591,10 @@ def _sorted_unique_strings(values: object) -> tuple[str, ...]:
 
 @lru_cache(maxsize=1)
 def _fixture_inventory() -> tuple[tuple[pathlib.Path, FixtureManifest], ...]:
-    inventory = []
-    for path in DEFAULT_FIXTURE_PATHS:
-        manifest = load_fixture_manifest(path)
-        inventory.append((path, manifest))
-    return tuple(inventory)
+    return tuple(
+        (manifest.path, manifest)
+        for manifest in load_fixture_manifests(DEFAULT_FIXTURE_PATHS)
+    )
 
 
 def _expected_target_manifest_ids(

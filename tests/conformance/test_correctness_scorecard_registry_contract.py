@@ -6,7 +6,6 @@ import unittest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
-from rebar_harness.correctness import DEFAULT_FIXTURE_PATHS, load_fixture_manifest
 from tests.conformance.correctness_expectations import (
     BRANCH_LOCAL_BACKREFERENCE_CORRECTNESS_SCORECARD_EXPECTATIONS,
     COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
@@ -17,6 +16,7 @@ from tests.conformance.correctness_expectations import (
     OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
     QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
     WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
+    _fixture_inventory as published_fixture_inventory,
     correctness_scorecard_case,
     correctness_scorecard_target_manifest_ids,
     tracked_correctness_scorecard_suites,
@@ -39,11 +39,10 @@ EXPECTED_SUITE_TABLES = {
 
 
 def _fixture_inventory() -> tuple[tuple[pathlib.Path, str], ...]:
-    inventory = []
-    for path in DEFAULT_FIXTURE_PATHS:
-        manifest = load_fixture_manifest(path)
-        inventory.append((path, manifest.manifest_id))
-    return tuple(inventory)
+    return tuple(
+        (path, manifest.manifest_id)
+        for path, manifest in published_fixture_inventory()
+    )
 
 
 class CorrectnessScorecardRegistryContractTest(unittest.TestCase):

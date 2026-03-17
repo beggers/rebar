@@ -7,7 +7,11 @@ import re
 from typing import Any
 
 from rebar_harness.benchmarks import build_callable, load_manifest
-from rebar_harness.correctness import DEFAULT_FIXTURE_PATHS, load_fixture_manifest
+from rebar_harness.correctness import (
+    DEFAULT_FIXTURE_PATHS,
+    FixtureManifest,
+    load_fixture_manifests,
+)
 
 
 def freeze_signature_value(value: Any) -> Any:
@@ -22,13 +26,18 @@ def freeze_signature_value(value: Any) -> Any:
 
 
 @cache
+def _published_fixture_inventory() -> tuple[FixtureManifest, ...]:
+    return tuple(load_fixture_manifests(DEFAULT_FIXTURE_PATHS))
+
+
+@cache
 def published_case_ids_by_signature(
     case_signature: Callable[[Any], tuple[Any, ...] | None],
 ) -> dict[tuple[Any, ...], tuple[str, ...]]:
     case_ids_by_signature: dict[tuple[Any, ...], list[str]] = {}
 
-    for fixture_path in DEFAULT_FIXTURE_PATHS:
-        for case in load_fixture_manifest(fixture_path).cases:
+    for manifest in _published_fixture_inventory():
+        for case in manifest.cases:
             signature = case_signature(case)
             if signature is None:
                 continue
@@ -44,8 +53,8 @@ def published_case_ids_by_signature(
 def published_cases_by_id() -> dict[str, Any]:
     cases_by_id: dict[str, Any] = {}
 
-    for fixture_path in DEFAULT_FIXTURE_PATHS:
-        for case in load_fixture_manifest(fixture_path).cases:
+    for manifest in _published_fixture_inventory():
+        for case in manifest.cases:
             if case.case_id in cases_by_id:
                 raise AssertionError(
                     f"duplicate published correctness case id {case.case_id!r}"
