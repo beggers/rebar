@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-After the queued `RBR-0503` benchmark-publication catch-up drains, the surviving frontier is `RBR-0505`: publish the broader counted-repeat pair `a(bc){1,4}d` and `a(?P<word>bc){1,4}d` on the correctness surface via `tests/conformance/fixtures/broader_range_wider_ranged_repeat_quantified_group_workflows.py`, keeping later parity and benchmark catch-up anchored to `module-search-numbered-broader-ranged-repeat-group-cold-gap` and `module-search-numbered-ranged-repeat-group-wider-range-cold-gap`.
+After ready `RBR-0505` drains, the surviving frontier is `RBR-0507`: convert the broader counted-repeat pair `a(bc){1,4}d` and `a(?P<word>bc){1,4}d` behind `rebar._rebar` on the existing `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` path, keeping later benchmark catch-up anchored to `module-search-numbered-broader-ranged-repeat-group-cold-gap` and `module-search-numbered-ranged-repeat-group-wider-range-cold-gap`.
 
 ## Ordered Work
-1. `RBR-0505` should add only the minimal numbered and named compile / `module.search()` / `Pattern.fullmatch()` correctness cases for `a(bc){1,4}d` and `a(?P<word>bc){1,4}d` on a new `tests/conformance/fixtures/broader_range_wider_ranged_repeat_quantified_group_workflows.py` manifest, register that manifest through `python/rebar_harness/correctness.py`, `tests/conformance/correctness_expectations.py`, and `tests/conformance/test_combined_correctness_scorecards.py`, and regenerate `reports/correctness/latest.py`. Do not broaden into grouped alternation, grouped conditionals, benchmark updates, or unrelated harness cleanup in that run.
+1. `RBR-0507` should convert only the six `str` compile / `module.search()` / `Pattern.fullmatch()` cases from `tests/conformance/fixtures/broader_range_wider_ranged_repeat_quantified_group_workflows.py` into real Rust-backed behavior through `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, and `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`, then regenerate `reports/correctness/latest.py`. Keep later benchmark catch-up anchored to `module-search-numbered-broader-ranged-repeat-group-cold-gap` and `module-search-numbered-ranged-repeat-group-wider-range-cold-gap`. Do not broaden into grouped alternation, grouped conditionals, open-ended repeats, or benchmark updates in that run.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
