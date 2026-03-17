@@ -190,6 +190,310 @@ MANIFEST = {
       "notes": [
         "Documents the named no-match path on `ad` so the scorecard stays explicit that the shifted `{2,}` lower bound still requires two grouped-alternation repetitions."
       ]
+    },
+    {
+      "id": "broader-range-open-ended-quantified-group-alternation-numbered-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "broader_range_open_ended_quantified_group_alternation_numbered_compile_metadata",
+      "pattern": "a(bc|de){2,}d",
+      "text_model": "bytes",
+      "categories": ["grouped", "alternation", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Mirrors the numbered compile frontier for the same broader-range open-ended `{2,}` grouped alternation with bytes payloads while keeping the bytes parity gap explicit until RBR-0556 lands."
+      ]
+    },
+    {
+      "id": "broader-range-open-ended-quantified-group-alternation-numbered-module-search-lower-bound-bc-bytes",
+      "operation": "module_call",
+      "family": "broader_range_open_ended_quantified_group_alternation_numbered_module_lower_bound_bc_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(bc|de){2,}d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabcbcdzz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "search", "module", "lower-bound", "bc", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound module success path on `abcbcd` with bytes payloads so the scorecard still records that two `bc` branches satisfy the shifted broader-range `{2,}` envelope on the bytes publication path."
+      ]
+    },
+    {
+      "id": "broader-range-open-ended-quantified-group-alternation-numbered-module-search-lower-bound-de-bytes",
+      "operation": "module_call",
+      "family": "broader_range_open_ended_quantified_group_alternation_numbered_module_lower_bound_de_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(bc|de){2,}d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzadededzz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "search", "module", "lower-bound", "de", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound module success path on `adeded` with bytes payloads so the same broader-range frontier stays explicit for the two-`de` branch variant too."
+      ]
+    },
+    {
+      "id": "broader-range-open-ended-quantified-group-alternation-numbered-pattern-fullmatch-second-repetition-bc-de-bytes",
+      "operation": "pattern_call",
+      "family": "broader_range_open_ended_quantified_group_alternation_numbered_pattern_second_repetition_bc_de_workflow",
+      "pattern": "a(bc|de){2,}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcded"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "fullmatch", "pattern", "second-repetition", "mixed", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered compiled-pattern mixed-branch success path on `abcded` with bytes payloads so the pack keeps one two-repetition `bc` then `de` observation explicit at the shifted lower bound."
+      ]
+    },
+    {
+      "id": "broader-range-open-ended-quantified-group-alternation-numbered-pattern-fullmatch-third-repetition-mixed-bytes",
+      "operation": "pattern_call",
+      "family": "broader_range_open_ended_quantified_group_alternation_numbered_pattern_third_repetition_mixed_workflow",
+      "pattern": "a(bc|de){2,}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbcded"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "fullmatch", "pattern", "third-repetition", "mixed", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered compiled-pattern success path on `abcbcded` with bytes payloads so the exact `{2,}` slice includes one bounded third-repetition mixed-branch workflow without pretending to exhaust arbitrary-length repetition."
+      ]
+    },
+    {
+      "id": "broader-range-open-ended-quantified-group-alternation-numbered-pattern-fullmatch-fourth-repetition-de-bytes",
+      "operation": "pattern_call",
+      "family": "broader_range_open_ended_quantified_group_alternation_numbered_pattern_fourth_repetition_de_workflow",
+      "pattern": "a(bc|de){2,}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "adededed"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "fullmatch", "pattern", "fourth-repetition", "de", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered compiled-pattern success path on `adededed` with bytes payloads so the broader-range open-ended slice includes one bounded fourth-repetition all-`de` workflow."
+      ]
+    },
+    {
+      "id": "broader-range-open-ended-quantified-group-alternation-numbered-pattern-fullmatch-no-match-one-repetition-bytes",
+      "operation": "pattern_call",
+      "family": "broader_range_open_ended_quantified_group_alternation_numbered_pattern_no_match_one_repetition_workflow",
+      "pattern": "a(bc|de){2,}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "fullmatch", "pattern", "no-match", "one-repetition", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered no-match path on `abcd` with bytes payloads so the scorecard stays explicit that the broader-range open-ended form still rejects a single grouped-alternation repetition."
+      ]
+    },
+    {
+      "id": "broader-range-open-ended-quantified-group-alternation-numbered-pattern-fullmatch-no-match-zero-repetition-bytes",
+      "operation": "pattern_call",
+      "family": "broader_range_open_ended_quantified_group_alternation_numbered_pattern_no_match_zero_repetition_workflow",
+      "pattern": "a(bc|de){2,}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "ad"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "fullmatch", "pattern", "no-match", "zero-repetition", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered no-match path on `ad` with bytes payloads so the shifted `{2,}` lower bound remains explicit even when the grouped alternation is skipped entirely."
+      ]
+    },
+    {
+      "id": "broader-range-open-ended-quantified-group-alternation-named-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "broader_range_open_ended_quantified_group_alternation_named_compile_metadata",
+      "pattern": "a(?P<word>bc|de){2,}d",
+      "text_model": "bytes",
+      "categories": ["grouped", "alternation", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "named-group", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Mirrors the named compile frontier for the same broader-range open-ended `{2,}` grouped alternation under one visible `word` capture with bytes payloads while keeping the bytes parity gap explicit until RBR-0556 lands."
+      ]
+    },
+    {
+      "id": "broader-range-open-ended-quantified-group-alternation-named-module-search-lower-bound-bc-bytes",
+      "operation": "module_call",
+      "family": "broader_range_open_ended_quantified_group_alternation_named_module_lower_bound_bc_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(?P<word>bc|de){2,}d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabcbcdzz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "named-group", "search", "module", "lower-bound", "bc", "bytes", "gap"],
+      "notes": [
+        "Documents the named lower-bound module success path on `abcbcd` with bytes payloads so the visible `word` capture stays explicit at the shifted broader-range frontier."
+      ]
+    },
+    {
+      "id": "broader-range-open-ended-quantified-group-alternation-named-module-search-lower-bound-de-bytes",
+      "operation": "module_call",
+      "family": "broader_range_open_ended_quantified_group_alternation_named_module_lower_bound_de_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(?P<word>bc|de){2,}d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzadededzz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "named-group", "search", "module", "lower-bound", "de", "bytes", "gap"],
+      "notes": [
+        "Documents the named lower-bound module success path on `adeded` with bytes payloads so the alternate lower-bound branch remains explicit under the visible `word` capture."
+      ]
+    },
+    {
+      "id": "broader-range-open-ended-quantified-group-alternation-named-pattern-fullmatch-second-repetition-bc-de-bytes",
+      "operation": "pattern_call",
+      "family": "broader_range_open_ended_quantified_group_alternation_named_pattern_second_repetition_bc_de_workflow",
+      "pattern": "a(?P<word>bc|de){2,}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcded"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "named-group", "fullmatch", "pattern", "second-repetition", "mixed", "bytes", "gap"],
+      "notes": [
+        "Documents the named compiled-pattern mixed-branch success path on `abcded` with bytes payloads so one bounded longer success beyond the shifted lower bound stays explicit under the named capture."
+      ]
+    },
+    {
+      "id": "broader-range-open-ended-quantified-group-alternation-named-pattern-fullmatch-third-repetition-mixed-bytes",
+      "operation": "pattern_call",
+      "family": "broader_range_open_ended_quantified_group_alternation_named_pattern_third_repetition_mixed_workflow",
+      "pattern": "a(?P<word>bc|de){2,}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbcded"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "named-group", "fullmatch", "pattern", "third-repetition", "mixed", "bytes", "gap"],
+      "notes": [
+        "Documents the named compiled-pattern success path on `abcbcded` with bytes payloads so the scorecard records one bounded third-repetition mixed case with a visible final capture."
+      ]
+    },
+    {
+      "id": "broader-range-open-ended-quantified-group-alternation-named-pattern-fullmatch-fourth-repetition-de-bytes",
+      "operation": "pattern_call",
+      "family": "broader_range_open_ended_quantified_group_alternation_named_pattern_fourth_repetition_de_workflow",
+      "pattern": "a(?P<word>bc|de){2,}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "adededed"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "named-group", "fullmatch", "pattern", "fourth-repetition", "de", "bytes", "gap"],
+      "notes": [
+        "Documents the named compiled-pattern success path on `adededed` with bytes payloads so the exact `{2,}` slice includes one bounded fourth-repetition all-`de` workflow with a visible final capture."
+      ]
+    },
+    {
+      "id": "broader-range-open-ended-quantified-group-alternation-named-pattern-fullmatch-no-match-one-repetition-bytes",
+      "operation": "pattern_call",
+      "family": "broader_range_open_ended_quantified_group_alternation_named_pattern_no_match_one_repetition_workflow",
+      "pattern": "a(?P<word>bc|de){2,}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "named-group", "fullmatch", "pattern", "no-match", "one-repetition", "bytes", "gap"],
+      "notes": [
+        "Documents the named no-match path on `abcd` with bytes payloads so the broader-range open-ended form still rejects a single grouped-alternation repetition under the visible named capture."
+      ]
+    },
+    {
+      "id": "broader-range-open-ended-quantified-group-alternation-named-pattern-fullmatch-no-match-zero-repetition-bytes",
+      "operation": "pattern_call",
+      "family": "broader_range_open_ended_quantified_group_alternation_named_pattern_no_match_zero_repetition_workflow",
+      "pattern": "a(?P<word>bc|de){2,}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "ad"
+        }
+      ],
+      "categories": ["grouped", "alternation", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "named-group", "fullmatch", "pattern", "no-match", "zero-repetition", "bytes", "gap"],
+      "notes": [
+        "Documents the named no-match path on `ad` with bytes payloads so the scorecard stays explicit that the shifted `{2,}` lower bound still requires two grouped-alternation repetitions."
+      ]
     }
   ]
 }

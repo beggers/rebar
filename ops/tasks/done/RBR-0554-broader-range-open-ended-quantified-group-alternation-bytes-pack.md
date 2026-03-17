@@ -1,6 +1,6 @@
 # RBR-0554: Publish the broader-range open-ended quantified-group alternation bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -41,3 +41,10 @@ Created: 2026-03-17
   - `reports/correctness/latest.py` currently publishes the broader-range open-ended grouped-alternation slice as a 16-case `str`-only surface with no honest gaps, while the combined report stays at `1136` total / `1136` passed / `0` `unimplemented` across `111` manifests; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`.
 - The surviving follow-on after this task is `RBR-0556`, which should convert the same bytes pair behind `rebar._rebar` on the existing open-ended parity surface before a later benchmark catch-up mirrors the six adjacent broader-range grouped-alternation `str` rows already published on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
+
+## Completion Notes
+- Added the 16 bytes mirrors for `a(bc|de){2,}d` and `a(?P<word>bc|de){2,}d` to `tests/conformance/fixtures/broader_range_open_ended_quantified_group_alternation_workflows.py`, keeping the manifest as the single correctness publication surface for this slice.
+- Updated `tests/python/test_open_ended_quantified_group_parity_suite.py` so the broader-range grouped-alternation bundle now publishes mixed `str`/`bytes` expectations at `4` compile / `8` module / `20` pattern cases, routes the manifest's bytes rows through `BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES`, and marks that direct bytes follow-on anchor as `rebar`-unsupported pending `RBR-0556`.
+- Expanded `tests/conformance/correctness_expectations.py` so the tracked correctness scorecard suite checks representative bytes rows for `broader-range-open-ended-quantified-group-alternation-workflows` instead of remaining `str`-only.
+- Regenerated the tracked `reports/correctness/latest.py`; the tracked artifact now reads `1152` total / `1136` passed / `16` unimplemented across `111` manifests, and `match.broader_range_open_ended_quantified_group_alternation` now publishes `32` total / `16` passed / `16` unimplemented with mixed `str`/`bytes` coverage.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/broader_range_open_ended_quantified_group_alternation_workflows.py --report .rebar/tmp/rbr-0554-broader-range-open-ended-grouped-alternation-bytes.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
