@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 1025 cases across 111 manifests, with 1011 passing, 0 explicit failures, and 14 `unimplemented` gaps; the main benchmark report covers 600 workloads across 30 manifests with 600 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the project has a measurable published slice but remains far from drop-in `re` parity.
 
 ## README Next Steps
-- The ready queue is empty; the surviving frontier is `RBR-0518`: convert the nested broader `{1,4}` bytes grouped backtracking-heavy pair to real Rust-backed parity on the existing wider-ranged-repeat correctness/parity surface.
+- The ready head is `RBR-0518`: convert the nested broader `{1,4}` bytes grouped backtracking-heavy pair to real Rust-backed parity on the existing wider-ranged-repeat correctness/parity surface.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow: 1011 of 1025 published correctness cases pa
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The ready queue is empty; the surviving frontier is `RBR-0518`: convert the nested broader `{1,4}` bytes grouped backtracking-heavy pair to real Rust-backed parity on the existing wider-ranged-repeat correctness/parity surface before benchmark catch-up revisits that family.
+- After ready `RBR-0518` drains, the surviving frontier is `RBR-0519`: catch the nested broader `{1,4}` bytes grouped backtracking-heavy pair up on the existing Python-facing wider-ranged-repeat benchmark surface before another grouped family reopens.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
