@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness slice now covers 1025 cases across 111 manifests, with all 1025 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 607 workloads across 30 manifests with 607 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is internally clean but remains far from drop-in `re` parity. |
-| Current milestone | After ready `RBR-0519` drains, the surviving frontier is `RBR-0520`: publish the nested broader `{1,4}` grouped-alternation bytes pair on the existing wider-ranged-repeat correctness/parity path so the next nested broader bytes slice reopens at the smallest adjacent grouped pattern before nested broader grouped-conditionals or benchmark catch-up broaden the frontier. |
-| Work queue | `0` ready, `0` in progress, `519` done, `0` blocked |
+| Delivery estimate | The published correctness slice now covers 1039 cases across 111 manifests, with 1025 passing, 0 explicit failures, and 14 honest gaps; the main benchmark report covers 607 workloads across 30 manifests with 607 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial. |
+| Current milestone | After ready `RBR-0520` drains, the surviving frontier is `RBR-0522`: convert the same nested broader `{1,4}` grouped-alternation bytes pair behind `rebar._rebar` on the existing wider-ranged-repeat parity surface so benchmark catch-up stays queued behind real Rust-backed bytes behavior before nested broader grouped-conditionals broaden the frontier. |
+| Work queue | `0` ready, `0` in progress, `521` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1025` |
+| Published cases | `1039` |
 | Passing in published slice | `1025` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
+| Honest gaps (`unimplemented`) | `14` |
 | Covered manifests | `111` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 1025 cases across 111 manifests, with all 1025 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 607 workloads across 30 manifests with 607 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is internally clean but remains far from drop-in `re` parity._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness slice now covers 1039 cases across 111 manifests, with 1025 passing, 0 explicit failures, and 14 honest gaps; the main benchmark report covers 607 workloads across 30 manifests with 607 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- The ready queue is empty; the surviving frontier is `RBR-0520`: publish the nested broader `{1,4}` grouped-alternation bytes pair on the existing wider-ranged-repeat correctness/parity path before nested broader grouped-conditionals or benchmark catch-up broaden that family.
+- The ready queue is empty; the next intended follow-on is `RBR-0522`, which converts the same nested broader `{1,4}` grouped-alternation bytes pair behind `rebar._rebar` before benchmark catch-up or nested broader grouped-conditionals broaden that family.
 
 ### Current Risks
 
@@ -55,7 +55,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current published correctness slice is still tightly bounded but now gap-free: all 1025 published cases pass today across 111 manifests. The main benchmark report spans 607 workloads but still runs through the source-tree shim, and the surviving follow-on is `RBR-0520`, which publishes the nested broader `{1,4}` grouped-alternation bytes pair on the existing wider-ranged-repeat correctness/parity path.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. What it does not have yet is breadth. The current published correctness slice is still tightly bounded and not yet gap-free: 1025 of 1039 published cases pass today across 111 manifests, with 14 honest gaps still pending Rust-backed parity. The main benchmark report spans 607 workloads through the source-tree shim, and the next intended follow-on is `RBR-0522`, which converts that same nested broader `{1,4}` grouped-alternation bytes pair behind `rebar._rebar`.
 
 The benchmark story is similarly early. The only clear positive speed signal today is the tiny parser compile slice, where the published parser family is about 2.8x faster on median than CPython. The much larger module-path publication still runs through the source-tree shim and is slower overall, so that result is useful signal rather than a general speed claim.
 
