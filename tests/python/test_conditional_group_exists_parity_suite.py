@@ -33,6 +33,15 @@ class BoundedPatternCase:
     bounds: tuple[int, int]
 
 
+@dataclass(frozen=True)
+class OptionalGroupConditionalBranchCase:
+    id: str
+    pattern_case_id: str
+    helper: str
+    string: str
+    bounds: tuple[int, int]
+
+
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
         ("compile", None): 2,
@@ -280,6 +289,53 @@ PATTERN_BOUNDS_NO_MATCH_CASES = (
     ),
 )
 
+OPTIONAL_GROUP_CONDITIONAL_BRANCH_CASE_SPECS = (
+    ("search-present-wrapper-hit", "search", "zzabcezz", (0, 999)),
+    ("search-absent-wrapper-hit", "search", "zzadezz", (0, 999)),
+    ("search-present-wrapper-miss-on-else-arm", "search", "zzabdezz", (0, 999)),
+    ("search-absent-wrapper-miss-on-yes-arm", "search", "zzacezz", (0, 999)),
+    ("match-present-window-hit", "match", "zzabcezz", (2, 6)),
+    ("match-absent-window-hit", "match", "zzadezz", (2, 5)),
+    ("match-present-window-miss-on-else-arm", "match", "zzabdezz", (2, 6)),
+    ("match-absent-window-miss-on-yes-arm", "match", "zzacezz", (2, 5)),
+    ("fullmatch-present-window-hit", "fullmatch", "zzabcezz", (2, 6)),
+    ("fullmatch-absent-window-hit", "fullmatch", "zzadezz", (2, 5)),
+    ("fullmatch-present-window-miss-on-else-arm", "fullmatch", "zzabdezz", (2, 6)),
+    ("fullmatch-absent-window-miss-on-yes-arm", "fullmatch", "zzacezz", (2, 5)),
+)
+
+
+def _build_optional_group_conditional_branch_cases() -> (
+    tuple[OptionalGroupConditionalBranchCase, ...]
+):
+    cases: list[OptionalGroupConditionalBranchCase] = []
+    for case_prefix, pattern_case_id in (
+        (
+            "optional-group-conditional",
+            "optional-group-conditional-compile-metadata-str",
+        ),
+        (
+            "named-optional-group-conditional",
+            "named-optional-group-conditional-compile-metadata-str",
+        ),
+    ):
+        for scenario_suffix, helper, string, bounds in (
+            OPTIONAL_GROUP_CONDITIONAL_BRANCH_CASE_SPECS
+        ):
+            cases.append(
+                OptionalGroupConditionalBranchCase(
+                    id=f"{case_prefix}-{scenario_suffix}",
+                    pattern_case_id=pattern_case_id,
+                    helper=helper,
+                    string=string,
+                    bounds=bounds,
+                )
+            )
+    return tuple(cases)
+
+
+OPTIONAL_GROUP_CONDITIONAL_BRANCH_CASES = _build_optional_group_conditional_branch_cases()
+
 
 def _bounded_pattern(case: BoundedPatternCase) -> str:
     return str_case_pattern(CASES_BY_ID[case.pattern_case_id])
@@ -427,3 +483,36 @@ def test_pattern_fullmatch_matches_cpython(
     assert observed is not None
     assert expected is not None
     assert_match_parity(backend_name, observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    OPTIONAL_GROUP_CONDITIONAL_BRANCH_CASES,
+    ids=lambda case: case.id,
+)
+def test_optional_group_conditional_branch_selection_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: OptionalGroupConditionalBranchCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        str_case_pattern(CASES_BY_ID[case.pattern_case_id]),
+    )
+
+    observed = getattr(observed_pattern, case.helper)(case.string, *case.bounds)
+    expected = getattr(expected_pattern, case.helper)(case.string, *case.bounds)
+
+    assert_match_result_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=expected is not None,
+    )
+    if expected is None:
+        return
+
+    assert_match_convenience_api_parity(observed, expected)
+    assert_valid_match_group_access_parity(observed, expected)
+    assert_invalid_match_group_access_parity(observed, expected)
