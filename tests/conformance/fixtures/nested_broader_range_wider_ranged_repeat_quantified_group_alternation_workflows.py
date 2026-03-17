@@ -166,6 +166,272 @@ MANIFEST = {
       "notes": [
         "Documents the named no-match path on `abcbcbcbcbcd` so the published pack records that the broader `{1,4}` envelope still rejects a fifth inner grouped repetition."
       ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_numbered_compile_metadata",
+      "pattern": "a((bc|de){1,4})d",
+      "text_model": "bytes",
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Publishes the numbered nested broader `{1,4}` grouped-alternation compile frontier with bytes payloads while keeping the nested broader grouped bytes gap explicit until Rust-backed bytes parity lands."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-module-search-lower-bound-bc-bytes",
+      "operation": "module_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_numbered_module_lower_bound_bc_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a((bc|de){1,4})d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabcdzz"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "search", "module", "lower-bound", "bc", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound nested grouped success path on `abcd` with bytes payloads so the scorecard still records one `bc` repetition captured through the outer group."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-module-search-lower-bound-de-bytes",
+      "operation": "module_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_numbered_module_lower_bound_de_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a((bc|de){1,4})d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzadedzz"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "search", "module", "lower-bound", "de", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound nested grouped success path on `aded` with bytes payloads so the alternate single `de` branch stays explicit in the published bytes pack."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-pattern-fullmatch-third-repetition-mixed-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_numbered_pattern_third_repetition_mixed_workflow",
+      "pattern": "a((bc|de){1,4})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbcded"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "fullmatch", "pattern", "third-repetition", "mixed", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered compiled-pattern mixed-branch success path on `abcbcded` with bytes payloads so the publication includes one three-repetition observation under the outer capture."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-pattern-fullmatch-upper-bound-all-de-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_numbered_pattern_upper_bound_all_de_workflow",
+      "pattern": "a((bc|de){1,4})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "adedededed"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "fullmatch", "pattern", "upper-bound", "de", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered compiled-pattern upper-bound success path on `adedededed` with bytes payloads so the scorecard records one four-repetition all-`de` observation within the broader `{1,4}` envelope."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-pattern-fullmatch-no-match-short-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_numbered_pattern_no_match_short_workflow",
+      "pattern": "a((bc|de){1,4})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "ae"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "fullmatch", "pattern", "no-match", "short", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered no-match path on `ae` with bytes payloads so the nested broader counted repeat stays explicit about rejecting texts that never satisfy the inner grouped alternation."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-numbered-pattern-fullmatch-no-match-missing-trailing-d-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_numbered_pattern_no_match_missing_trailing_d_workflow",
+      "pattern": "a((bc|de){1,4})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbcdede"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "fullmatch", "pattern", "no-match", "missing-trailing-d", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered no-match path when the grouped body is present but the surrounding literal suffix never closes with the required trailing `d`, now with bytes payloads."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-named-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_named_compile_metadata",
+      "pattern": "a(?P<outer>(bc|de){1,4})d",
+      "text_model": "bytes",
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "named-group", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Publishes the named nested broader `{1,4}` grouped-alternation compile frontier with one visible outer capture around the repeated inner alternation for bytes payloads too."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-named-module-search-lower-bound-bc-bytes",
+      "operation": "module_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_named_module_lower_bound_bc_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(?P<outer>(bc|de){1,4})d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabcdzz"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "named-group", "search", "module", "lower-bound", "bc", "bytes", "gap"],
+      "notes": [
+        "Documents the named lower-bound nested grouped success path on `abcd` with bytes payloads so the visible `outer` capture is explicit at the broadened counted-repeat frontier."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-named-module-search-lower-bound-de-bytes",
+      "operation": "module_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_named_module_lower_bound_de_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(?P<outer>(bc|de){1,4})d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzadedzz"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "named-group", "search", "module", "lower-bound", "de", "bytes", "gap"],
+      "notes": [
+        "Documents the named lower-bound nested grouped success path on `aded` with bytes payloads so the single `de` branch remains explicit under the outer named capture."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-third-repetition-mixed-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_named_pattern_third_repetition_mixed_workflow",
+      "pattern": "a(?P<outer>(bc|de){1,4})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbcded"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "named-group", "fullmatch", "pattern", "third-repetition", "mixed", "bytes", "gap"],
+      "notes": [
+        "Documents the named compiled-pattern mixed-branch success path on `abcbcded` with bytes payloads so one three-repetition nested grouped observation stays explicit under the visible outer capture."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-upper-bound-all-de-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_named_pattern_upper_bound_all_de_workflow",
+      "pattern": "a(?P<outer>(bc|de){1,4})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "adedededed"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "named-group", "fullmatch", "pattern", "upper-bound", "de", "bytes", "gap"],
+      "notes": [
+        "Documents the named compiled-pattern upper-bound success path on `adedededed` with bytes payloads so the pack records the four-repetition all-`de` boundary with a visible outer capture."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-short-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_named_pattern_no_match_short_workflow",
+      "pattern": "a(?P<outer>(bc|de){1,4})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "ae"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "named-group", "fullmatch", "pattern", "no-match", "short", "bytes", "gap"],
+      "notes": [
+        "Documents the named no-match path on `ae` with bytes payloads so the same missing-repetition failure mode stays explicit under the visible outer capture."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-named-pattern-fullmatch-no-match-overflow-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_named_pattern_no_match_overflow_workflow",
+      "pattern": "a(?P<outer>(bc|de){1,4})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbcbcbcbcd"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "named-group", "fullmatch", "pattern", "no-match", "overflow", "bytes", "gap"],
+      "notes": [
+        "Documents the named no-match path on `abcbcbcbcbcd` with bytes payloads so the published pack records that the broader `{1,4}` envelope still rejects a fifth inner grouped repetition."
+      ]
     }
   ]
 }
