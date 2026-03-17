@@ -16,10 +16,44 @@ BENCHMARK_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 LEGACY_BENCHMARK_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.json"
 PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py"
 
-from rebar_harness.benchmarks import SCORECARD_REPORT as BENCHMARK_SCORECARD_REPORT
-from rebar_harness.correctness import (
-    SCORECARD_REPORT as CORRECTNESS_SCORECARD_REPORT,
+from rebar_harness.benchmarks import (
+    SCORECARD_KIND as BENCHMARK_SCORECARD_KIND,
+    SCORECARD_MODULE_NAME_PREFIX as BENCHMARK_SCORECARD_MODULE_NAME_PREFIX,
+    SCORECARD_REPORT_ATTRIBUTE as BENCHMARK_SCORECARD_REPORT_ATTRIBUTE,
 )
+from rebar_harness.correctness import (
+    SCORECARD_KIND as CORRECTNESS_SCORECARD_KIND,
+    SCORECARD_MODULE_NAME_PREFIX as CORRECTNESS_SCORECARD_MODULE_NAME_PREFIX,
+    SCORECARD_REPORT_ATTRIBUTE as CORRECTNESS_SCORECARD_REPORT_ATTRIBUTE,
+)
+from rebar_harness.scorecard_io import load_scorecard_report, write_scorecard_report
+
+
+def _load_correctness_scorecard(report_path):
+    return load_scorecard_report(
+        report_path,
+        module_name_prefix=CORRECTNESS_SCORECARD_MODULE_NAME_PREFIX,
+        report_attribute=CORRECTNESS_SCORECARD_REPORT_ATTRIBUTE,
+        scorecard_kind=CORRECTNESS_SCORECARD_KIND,
+    )
+
+
+def _write_correctness_scorecard(scorecard, report_path) -> None:
+    write_scorecard_report(
+        scorecard,
+        report_path,
+        report_attribute=CORRECTNESS_SCORECARD_REPORT_ATTRIBUTE,
+        scorecard_kind=CORRECTNESS_SCORECARD_KIND,
+    )
+
+
+def _load_benchmark_scorecard(report_path):
+    return load_scorecard_report(
+        report_path,
+        module_name_prefix=BENCHMARK_SCORECARD_MODULE_NAME_PREFIX,
+        report_attribute=BENCHMARK_SCORECARD_REPORT_ATTRIBUTE,
+        scorecard_kind=BENCHMARK_SCORECARD_KIND,
+    )
 
 
 class ReadmeReportingTest(unittest.TestCase):
@@ -72,7 +106,7 @@ class ReadmeReportingTest(unittest.TestCase):
             self.assertIsInstance(refreshed, dict)
             self.assertFalse(LEGACY_CORRECTNESS_REPORT_PATH.exists())
 
-            repaired_payload = CORRECTNESS_SCORECARD_REPORT.load(CORRECTNESS_REPORT_PATH)
+            repaired_payload = _load_correctness_scorecard(CORRECTNESS_REPORT_PATH)
             expected_manifest_ids = rebar_ops.expected_correctness_manifest_ids(
                 rebar_ops.load_correctness_harness_module()
             )
@@ -96,15 +130,12 @@ class ReadmeReportingTest(unittest.TestCase):
                 report_name="parser-only.json",
             )
 
-            CORRECTNESS_SCORECARD_REPORT.write(
-                narrowed_scorecard,
-                CORRECTNESS_REPORT_PATH,
-            )
+            _write_correctness_scorecard(narrowed_scorecard, CORRECTNESS_REPORT_PATH)
 
             refreshed = rebar_ops.refresh_published_correctness_scorecard()
             self.assertIsInstance(refreshed, dict)
 
-            repaired_payload = CORRECTNESS_SCORECARD_REPORT.load(CORRECTNESS_REPORT_PATH)
+            repaired_payload = _load_correctness_scorecard(CORRECTNESS_REPORT_PATH)
             expected_manifest_ids = rebar_ops.expected_correctness_manifest_ids(
                 rebar_ops.load_correctness_harness_module()
             )
@@ -119,7 +150,7 @@ class ReadmeReportingTest(unittest.TestCase):
     def test_correctness_scorecard_uses_tracked_summary_shape(self) -> None:
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
-        payload = CORRECTNESS_SCORECARD_REPORT.load(CORRECTNESS_REPORT_PATH)
+        payload = _load_correctness_scorecard(CORRECTNESS_REPORT_PATH)
         summary = payload["summary"]
 
         expected_total = summary.get("cases_total", summary.get("total_cases"))
@@ -191,7 +222,7 @@ class ReadmeReportingTest(unittest.TestCase):
         self.assertNotIn("reports/benchmarks/latest.json", rendered)
 
     def test_benchmark_harness_loads_tracked_python_scorecard(self) -> None:
-        payload = BENCHMARK_SCORECARD_REPORT.load(BENCHMARK_REPORT_PATH)
+        payload = _load_benchmark_scorecard(BENCHMARK_REPORT_PATH)
 
         self.assertIsInstance(payload, dict)
         self.assertEqual(payload["suite"], "benchmarks")
