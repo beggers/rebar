@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 The published correctness slice now covers 1039 cases across 111 manifests, with 1039 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 613 workloads across 30 manifests with 613 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader again but still clearly partial.
 
 ## README Next Steps
-- The ready queue is empty; the next intended follow-on is `RBR-0524`, which publishes the nested broader `{1,4}` grouped-conditional bytes slice on the existing correctness path before bytes parity or benchmark catch-up revisit that family.
+- Ready `RBR-0524` should publish the nested broader `{1,4}` grouped-conditional bytes slice on the existing correctness path before bytes parity or benchmark catch-up revisit that family.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published slice is still narrow even though the current scorecard is gap-fre
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The ready queue is empty; the surviving frontier is `RBR-0524`: publish the nested broader `{1,4}` grouped-conditional bytes slice on the existing correctness path before bytes parity or benchmark catch-up revisit that family.
+- Ready `RBR-0524` should drain next; the surviving frontier is `RBR-0525`: convert the same nested broader `{1,4}` grouped-conditional bytes pair to Rust-backed parity on the existing wider-ranged-repeat parity path before benchmark catch-up revisits that family.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
