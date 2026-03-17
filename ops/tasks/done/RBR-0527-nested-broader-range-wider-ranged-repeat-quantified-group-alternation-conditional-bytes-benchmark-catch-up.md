@@ -1,6 +1,6 @@
 # RBR-0527: Catch the nested broader-range wider-ranged-repeat grouped-conditional bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -48,3 +48,4 @@ Created: 2026-03-17
   - `reports/benchmarks/latest.py` currently publishes `wider-ranged-repeat-quantified-group-boundary` at `87` total workloads / `87` measured workloads / `0` known gaps and the combined source-tree report at `613` total workloads / `613` measured workloads / `0` known gaps; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes now show both target bytes patterns compile plus representative `search()` / `fullmatch()` calls succeed through `rebar`, so these benchmark rows should measure rather than reopen a runtime gap.
 - The surviving follow-on after this task is `RBR-0528`, which should publish the nested open-ended `{1,}` grouped-alternation bytes pair on the existing open-ended correctness/parity path before bytes parity or benchmark catch-up widen that family.
+- 2026-03-17: Added the seven bytes mirrors for the nested broader `{1,4}` grouped-conditional slice to `benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py`, updated the wider-ranged benchmark expectation surface and scorecard tests so that manifest now expects `94` total / `94` measured / `0` gaps, regenerated `reports/benchmarks/latest.py`, and verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`36 passed, 690 subtests passed in 22.38s`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/wider_ranged_repeat_quantified_group_boundary.py --report .rebar/tmp/rbr-0527-nested-broader-range-grouped-conditional-bytes-benchmarks.py` (`94` total / `94` measured / `0` gaps), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`; the tracked publication now shows `wider-ranged-repeat-quantified-group-boundary` at `94` total / `94` measured / `0` known gaps and the combined source-tree report at `620` total / `620` measured / `0` known gaps, with the new bytes rows published as `implementation_timing.status == "measured"`.
