@@ -18,6 +18,16 @@ NUMBERED_BACKREFERENCE_FIXTURE_PATH = (
     / "numbered_backreference_workflows.py"
 )
 NUMBERED_BACKREFERENCE_SUITE_ID = "match.numbered_backreference"
+QUANTIFIED_ALTERNATION_BROADER_RANGE_FIXTURE_PATH = (
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
+    / "quantified_alternation_broader_range_workflows.py"
+)
+QUANTIFIED_ALTERNATION_BROADER_RANGE_SUITE_ID = (
+    "match.quantified_alternation_broader_range"
+)
 
 from rebar_harness.correctness import (
     CpythonReAdapter,
@@ -54,6 +64,7 @@ def _build_rebar_extension() -> None:
         capture_output=True,
         text=True,
     )
+
 
 def assert_correctness_scorecard_suite(
     testcase: unittest.TestCase,
@@ -152,6 +163,44 @@ def assert_correctness_scorecard_suite(
 class CorrectnessScorecardSuitesTest(unittest.TestCase):
     maxDiff = None
 
+    def _assert_tracked_report_keeps_manifest_fresh(
+        self,
+        fixture_path: pathlib.Path,
+        suite_id: str,
+    ) -> None:
+        _build_rebar_extension()
+        manifest_cases = load_fixture_manifest(fixture_path).cases
+        _, expected_scorecard = run_harness_scorecard(
+            "rebar_harness.correctness",
+            [
+                "--fixtures",
+                str(fixture_path),
+            ],
+            report_name="correctness.json",
+        )
+        tracked_scorecard = correctness.SCORECARD_REPORT.load(TRACKED_REPORT_PATH)
+
+        expected_suite = find_correctness_suite_record(expected_scorecard, suite_id)
+        tracked_suite = find_correctness_suite_record(tracked_scorecard, suite_id)
+
+        self.assertEqual(tracked_suite["manifest_ids"], expected_suite["manifest_ids"])
+        self.assertEqual(tracked_suite["families"], expected_suite["families"])
+        self.assertEqual(tracked_suite["operations"], expected_suite["operations"])
+        self.assertEqual(tracked_suite["text_models"], expected_suite["text_models"])
+        self.assertEqual(tracked_suite["case_count"], expected_suite["case_count"])
+        self.assertEqual(tracked_suite["summary"], expected_suite["summary"])
+        self.assertEqual(tracked_suite["diagnostics"], expected_suite["diagnostics"])
+
+        for fixture_case in manifest_cases:
+            with self.subTest(suite_id=suite_id, case_id=fixture_case.case_id):
+                assert_correctness_case_record_matches(
+                    self,
+                    find_correctness_case_record(
+                        tracked_scorecard, fixture_case.case_id
+                    ),
+                    find_correctness_case_record(expected_scorecard, fixture_case.case_id),
+                )
+
     def test_runner_regenerates_correctness_scorecards(self) -> None:
         for suite in tracked_correctness_scorecard_suites():
             with self.subTest(suite_id=suite.suite_id):
@@ -164,42 +213,18 @@ class CorrectnessScorecardSuitesTest(unittest.TestCase):
                 )
 
     def test_tracked_report_keeps_numbered_backreference_manifest_fresh(self) -> None:
-        _build_rebar_extension()
-        manifest_cases = load_fixture_manifest(NUMBERED_BACKREFERENCE_FIXTURE_PATH).cases
-        _, expected_scorecard = run_harness_scorecard(
-            "rebar_harness.correctness",
-            [
-                "--fixtures",
-                str(NUMBERED_BACKREFERENCE_FIXTURE_PATH),
-            ],
-            report_name="correctness.json",
-        )
-        tracked_scorecard = correctness.SCORECARD_REPORT.load(TRACKED_REPORT_PATH)
-
-        expected_suite = find_correctness_suite_record(
-            expected_scorecard,
-            NUMBERED_BACKREFERENCE_SUITE_ID,
-        )
-        tracked_suite = find_correctness_suite_record(
-            tracked_scorecard,
+        self._assert_tracked_report_keeps_manifest_fresh(
+            NUMBERED_BACKREFERENCE_FIXTURE_PATH,
             NUMBERED_BACKREFERENCE_SUITE_ID,
         )
 
-        self.assertEqual(tracked_suite["manifest_ids"], expected_suite["manifest_ids"])
-        self.assertEqual(tracked_suite["families"], expected_suite["families"])
-        self.assertEqual(tracked_suite["operations"], expected_suite["operations"])
-        self.assertEqual(tracked_suite["text_models"], expected_suite["text_models"])
-        self.assertEqual(tracked_suite["case_count"], expected_suite["case_count"])
-        self.assertEqual(tracked_suite["summary"], expected_suite["summary"])
-        self.assertEqual(tracked_suite["diagnostics"], expected_suite["diagnostics"])
-
-        for fixture_case in manifest_cases:
-            with self.subTest(case_id=fixture_case.case_id):
-                assert_correctness_case_record_matches(
-                    self,
-                    find_correctness_case_record(tracked_scorecard, fixture_case.case_id),
-                    find_correctness_case_record(expected_scorecard, fixture_case.case_id),
-                )
+    def test_tracked_report_keeps_quantified_alternation_broader_range_manifest_fresh(
+        self,
+    ) -> None:
+        self._assert_tracked_report_keeps_manifest_fresh(
+            QUANTIFIED_ALTERNATION_BROADER_RANGE_FIXTURE_PATH,
+            QUANTIFIED_ALTERNATION_BROADER_RANGE_SUITE_ID,
+        )
 
 
 if __name__ == "__main__":
