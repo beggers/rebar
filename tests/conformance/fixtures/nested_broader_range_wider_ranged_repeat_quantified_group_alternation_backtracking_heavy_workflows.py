@@ -165,6 +165,276 @@ MANIFEST = {
       "notes": [
         "Documents the named no-match overflow path on `abcbcbcbcbcd` so the scorecard records that a fifth grouped repetition still exceeds the bounded `{1,4}` envelope even when each overlapping branch choice is otherwise valid under the visible outer capture."
       ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_compile_metadata",
+      "pattern": "a(((bc|b)c){1,4})d",
+      "text_model": "bytes",
+      "categories": ["grouped", "nested-group", "alternation", "overlapping-branches", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Publishes the numbered nested broader `{1,4}` grouped backtracking-heavy compile frontier with bytes payloads while keeping the nested broader grouped bytes gap explicit until Rust-backed bytes parity lands."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-short-branch-bytes",
+      "operation": "module_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_module_lower_bound_short_branch_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(((bc|b)c){1,4})d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabcdzz"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "overlapping-branches", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "search", "module", "lower-bound", "short-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound nested grouped success path on `abcd` with bytes payloads so the shorter `bc` branch stays explicit inside the visible outer capture."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-long-branch-bytes",
+      "operation": "module_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_module_lower_bound_long_branch_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(((bc|b)c){1,4})d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabccdzz"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "overlapping-branches", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "search", "module", "lower-bound", "long-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound nested grouped success path on `abccd` with bytes payloads so the longer overlapping `bcc` branch is published alongside the shorter branch at the same broadened lower bound."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-short-then-long-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_second_repetition_short_then_long_workflow",
+      "pattern": "a(((bc|b)c){1,4})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbccd"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "overlapping-branches", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "fullmatch", "pattern", "second-repetition", "short-then-long", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered mixed-order second-repetition success path on `abcbccd` with bytes payloads so the publication records one shorter branch followed by the longer overlapping branch inside the outer capture."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-long-then-short-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_second_repetition_long_then_short_workflow",
+      "pattern": "a(((bc|b)c){1,4})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abccbcd"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "overlapping-branches", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "fullmatch", "pattern", "second-repetition", "long-then-short", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered mixed-order second-repetition success path on `abccbcd` with bytes payloads so the nested broader slice records the alternate longer-then-shorter branch choice too."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-fourth-repetition-mixed-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_fourth_repetition_mixed_workflow",
+      "pattern": "a(((bc|b)c){1,4})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbccbccbcd"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "overlapping-branches", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "fullmatch", "pattern", "fourth-repetition", "upper-bound", "mixed", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered upper-bound success path on `abcbccbccbcd` with bytes payloads so the nested broader `{1,4}` frontier includes one four-repetition mixed branch order under the outer capture."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-no-match-invalid-tail-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_numbered_pattern_no_match_invalid_tail_workflow",
+      "pattern": "a(((bc|b)c){1,4})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abccbd"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "overlapping-branches", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "fullmatch", "pattern", "no-match", "invalid-tail", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered no-match path on `abccbd` with bytes payloads so the scorecard records a nested branch sequence that fails before the trailing `d` even though the broader counted-repeat envelope is otherwise in range."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_compile_metadata",
+      "pattern": "a(?P<outer>((bc|b)c){1,4})d",
+      "text_model": "bytes",
+      "categories": ["grouped", "nested-group", "alternation", "overlapping-branches", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "named-group", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Publishes the matching named compile frontier for the same nested broader `{1,4}` grouped backtracking-heavy slice under one visible `outer` capture with bytes payloads."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-module-search-lower-bound-long-branch-bytes",
+      "operation": "module_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_lower_bound_long_branch_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(?P<outer>((bc|b)c){1,4})d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabccdzz"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "overlapping-branches", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "named-group", "search", "module", "lower-bound", "long-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the named lower-bound success path on `abccd` with bytes payloads so the visible `outer` capture stays explicit when the longer overlapping branch wins."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-module-search-second-repetition-short-then-long-bytes",
+      "operation": "module_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_second_repetition_short_then_long_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(?P<outer>((bc|b)c){1,4})d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabcbccdzz"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "overlapping-branches", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "named-group", "search", "module", "second-repetition", "short-then-long", "bytes", "gap"],
+      "notes": [
+        "Documents the named mixed-order second-repetition success path on `abcbccd` with bytes payloads so the visible outer capture remains explicit when the longer overlapping branch lands second."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-module-search-fourth-repetition-mixed-bytes",
+      "operation": "module_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_module_fourth_repetition_mixed_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(?P<outer>((bc|b)c){1,4})d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabcbccbccbcdzz"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "overlapping-branches", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "named-group", "search", "module", "fourth-repetition", "upper-bound", "mixed", "bytes", "gap"],
+      "notes": [
+        "Documents the named upper-bound success path on `abcbccbccbcd` with bytes payloads so the nested broader `{1,4}` slice records one four-repetition mixed branch order under the visible `outer` capture."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-second-repetition-long-then-short-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_pattern_second_repetition_long_then_short_workflow",
+      "pattern": "a(?P<outer>((bc|b)c){1,4})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abccbcd"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "overlapping-branches", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "named-group", "fullmatch", "pattern", "second-repetition", "long-then-short", "bytes", "gap"],
+      "notes": [
+        "Documents the named mixed-order second-repetition success path on `abccbcd` with bytes payloads so the visible outer capture comes from the final shorter branch after an earlier longer branch."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-invalid-tail-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_pattern_no_match_invalid_tail_workflow",
+      "pattern": "a(?P<outer>((bc|b)c){1,4})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abccbd"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "overlapping-branches", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "named-group", "fullmatch", "pattern", "no-match", "invalid-tail", "bytes", "gap"],
+      "notes": [
+        "Documents the named no-match path on `abccbd` with bytes payloads so the scorecard records a visible-capture workflow whose branch choices still fail before the trailing `d`."
+      ]
+    },
+    {
+      "id": "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-overflow-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_named_pattern_no_match_overflow_workflow",
+      "pattern": "a(?P<outer>((bc|b)c){1,4})d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbcbcbcbcd"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "overlapping-branches", "quantifier", "ranged-repeat", "wider-range", "broader-range", "counted-repeat", "named-group", "fullmatch", "pattern", "no-match", "overflow", "bytes", "gap"],
+      "notes": [
+        "Documents the named no-match overflow path on `abcbcbcbcbcd` with bytes payloads so the scorecard records that a fifth grouped repetition still exceeds the bounded `{1,4}` envelope even when each overlapping branch choice is otherwise valid under the visible outer capture."
+      ]
     }
   ]
 }

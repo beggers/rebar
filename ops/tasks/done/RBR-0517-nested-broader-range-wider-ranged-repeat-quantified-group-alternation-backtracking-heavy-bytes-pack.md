@@ -1,6 +1,6 @@
 # RBR-0517: Publish the nested broader-range wider-ranged-repeat grouped backtracking-heavy bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -33,6 +33,14 @@ Created: 2026-03-17
 - Keep the future parity follow-on anchored to the existing `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` surface.
 
 ## Notes
+- 2026-03-17 completion:
+  - Added the 14 bytes mirrors to the existing nested broader `{1,4}` grouped backtracking-heavy manifest, keeping this slice on one shared correctness fixture.
+  - Updated the wider-ranged-repeat parity suite bundle contract to mixed `str`/`bytes` coverage and added one direct nested bytes follow-on anchor that stays explicitly unsupported for `rebar` pending `RBR-0518`.
+  - Regenerated the tracked combined scorecard in `reports/correctness/latest.py`; the published report now shows `1025` total / `1011` passed / `14` unimplemented across `111` manifests, and `match.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy` now shows `28` total / `14` passed / `14` unimplemented with `['bytes', 'str']` coverage.
+  - Verified with:
+    - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+    - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py --report .rebar/tmp/rbr-0517-nested-broader-range-backtracking-heavy-bytes.py`
+    - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
 - Build on `RBR-0515`.
 - 2026-03-17 feature-planning probes confirm this task is not stale:
   - `tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py` currently contains only the 14 `str` cases for this nested broader `{1,4}` grouped backtracking-heavy slice and no `bytes` mirrors;
