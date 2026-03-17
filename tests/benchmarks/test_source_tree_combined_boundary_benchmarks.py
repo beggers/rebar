@@ -360,6 +360,32 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_status="measured",
         )
 
+    def test_literal_flag_combined_case_preserves_expected_manifest_paths(self) -> None:
+        case = source_tree_combined_case("literal-flag-boundary")
+
+        self.assertEqual(
+            [path.name for path in case.manifest_paths],
+            [
+                "compile_matrix.py",
+                "module_boundary.py",
+                "pattern_boundary.py",
+                "collection_replacement_boundary.py",
+                "literal_flag_boundary.py",
+                "regression_matrix.py",
+            ],
+        )
+        self.assertEqual(
+            case.relative_manifest_paths,
+            [
+                "benchmarks/workloads/compile_matrix.py",
+                "benchmarks/workloads/module_boundary.py",
+                "benchmarks/workloads/pattern_boundary.py",
+                "benchmarks/workloads/collection_replacement_boundary.py",
+                "benchmarks/workloads/literal_flag_boundary.py",
+                "benchmarks/workloads/regression_matrix.py",
+            ],
+        )
+
     def test_counted_repeat_manifests_promote_legacy_upper_bound_rows_to_measured(
         self,
     ) -> None:

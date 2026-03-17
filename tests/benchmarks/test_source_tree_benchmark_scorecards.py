@@ -146,6 +146,26 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
         )
         self.assertEqual(combined_case.target_manifest.manifest_id, "literal-flag-boundary")
 
+    def test_post_parser_workflows_preserve_expected_manifest_paths(self) -> None:
+        case = source_tree_scorecard_case("post-parser-workflows")
+
+        self.assertEqual(
+            [path.name for path in case.manifest_paths],
+            [
+                "module_boundary.py",
+                "collection_replacement_boundary.py",
+                "literal_flag_boundary.py",
+            ],
+        )
+        self.assertEqual(
+            case.relative_manifest_paths,
+            [
+                "benchmarks/workloads/module_boundary.py",
+                "benchmarks/workloads/collection_replacement_boundary.py",
+                "benchmarks/workloads/literal_flag_boundary.py",
+            ],
+        )
+
     def test_case_selection_helpers_derive_workload_ids_from_manifests(self) -> None:
         compile_smoke = source_tree_scorecard_case("compile-smoke")
         self.assertEqual(

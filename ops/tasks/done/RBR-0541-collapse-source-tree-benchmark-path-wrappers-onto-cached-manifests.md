@@ -1,6 +1,6 @@
 # RBR-0541: Collapse source-tree benchmark path wrappers onto cached manifests
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-17
 
@@ -82,3 +82,8 @@ Created: 2026-03-17
 - 2026-03-17 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passes (`47 passed, 1449 subtests passed in 21.58s`).
   - The inline manifest-path probe in this task prints `ok`.
+
+## Completion Notes
+- Removed the last source-tree path-wrapper leftovers from `tests/benchmarks/benchmark_expectations.py`: `_published_source_tree_manifests()` now filters the cached `BenchmarkManifest` records directly in selector order, and `manifest_id_for_path(...)`, `manifest_path_for_id(...)`, and `selected_manifest_paths_for_target_manifest(...)` are gone.
+- Added explicit order contracts in `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` that pin the expected `manifest_paths` and repo-relative `relative_manifest_paths` for `post-parser-workflows` and `literal-flag-boundary`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`49 passed, 1449 subtests passed in 21.71s`), the inline manifest-path probe from this task (`ok`), and `rg -n "def (manifest_id_for_path|manifest_path_for_id|selected_manifest_paths_for_target_manifest)\\(" tests/benchmarks/benchmark_expectations.py`, which returns no matches.

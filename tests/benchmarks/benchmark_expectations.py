@@ -1576,23 +1576,11 @@ def _source_tree_manifests_for_ids(
 
 @cache
 def _published_source_tree_manifests() -> tuple[BenchmarkManifest, ...]:
-    manifest_records = _source_tree_manifest_records()
     return tuple(
-        manifest_records[manifest_id_for_path(path)]
-        for path in _published_full_suite_manifest_paths()
+        manifest
+        for manifest in _source_tree_manifest_records().values()
+        if manifest.manifest_id != "compile-smoke"
     )
-
-
-def manifest_id_for_path(path: pathlib.Path) -> str:
-    resolved_path = path.resolve()
-    for manifest_id, manifest in _source_tree_manifest_records().items():
-        if manifest.path.resolve() == resolved_path:
-            return manifest_id
-    raise AssertionError(f"unknown benchmark manifest path {path}")
-
-
-def manifest_path_for_id(manifest_id: str) -> pathlib.Path:
-    return _source_tree_manifest_record(manifest_id).path
 
 
 def relative_manifest_path(path: pathlib.Path) -> str:
@@ -2006,15 +1994,6 @@ def _selected_source_tree_manifests_for_target_manifest(
             )
         selected_manifests.append(regression_manifest)
     return selected_manifests
-
-
-def selected_manifest_paths_for_target_manifest(target_manifest_id: str) -> list[pathlib.Path]:
-    return [
-        manifest.path
-        for manifest in _selected_source_tree_manifests_for_target_manifest(
-            target_manifest_id
-        )
-    ]
 
 
 def expected_summary_for_manifests(
