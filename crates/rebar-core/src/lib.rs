@@ -42,6 +42,10 @@ const BYTES_NAMED_BACKREFERENCE_COMPILE_PROXY_PATTERN: &[u8] =
 const OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_NUMBERED_BYTES_PATTERN: &[u8] = br"a(bc|de){1,}d";
 const OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_NAMED_BYTES_PATTERN: &[u8] =
     br"a(?P<word>bc|de){1,}d";
+const BROADER_RANGE_OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_NUMBERED_BYTES_PATTERN: &[u8] =
+    br"a(bc|de){2,}d";
+const BROADER_RANGE_OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_NAMED_BYTES_PATTERN: &[u8] =
+    br"a(?P<word>bc|de){2,}d";
 const OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_CAPTURE_NAME: &str = "word";
 const OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_PREFIX_BYTES: &[u8] = b"a";
 const OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_BRANCHES_BYTES: [&[u8]; 2] = [b"bc", b"de"];
@@ -722,6 +726,7 @@ struct QuantifiedAlternationConditionalPattern<'a> {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct OpenEndedQuantifiedGroupAlternationBytesPattern {
     capture_name: Option<&'static str>,
+    min_repeat: usize,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -5164,11 +5169,27 @@ fn parse_open_ended_quantified_group_alternation_pattern_bytes(
 ) -> Option<OpenEndedQuantifiedGroupAlternationBytesPattern> {
     match pattern {
         OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_NUMBERED_BYTES_PATTERN => {
-            Some(OpenEndedQuantifiedGroupAlternationBytesPattern { capture_name: None })
+            Some(OpenEndedQuantifiedGroupAlternationBytesPattern {
+                capture_name: None,
+                min_repeat: 1,
+            })
         }
         OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_NAMED_BYTES_PATTERN => {
             Some(OpenEndedQuantifiedGroupAlternationBytesPattern {
                 capture_name: Some(OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_CAPTURE_NAME),
+                min_repeat: 1,
+            })
+        }
+        BROADER_RANGE_OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_NUMBERED_BYTES_PATTERN => {
+            Some(OpenEndedQuantifiedGroupAlternationBytesPattern {
+                capture_name: None,
+                min_repeat: 2,
+            })
+        }
+        BROADER_RANGE_OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_NAMED_BYTES_PATTERN => {
+            Some(OpenEndedQuantifiedGroupAlternationBytesPattern {
+                capture_name: Some(OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_CAPTURE_NAME),
+                min_repeat: 2,
             })
         }
         _ => None,
@@ -11911,7 +11932,7 @@ fn open_ended_quantified_group_alternation_matches_exact_repeats_bytes(
 }
 
 fn open_ended_quantified_group_alternation_matches_at_bytes(
-    _pattern: &OpenEndedQuantifiedGroupAlternationBytesPattern,
+    pattern: &OpenEndedQuantifiedGroupAlternationBytesPattern,
     flags: i32,
     string: &[u8],
     start: usize,
@@ -11934,11 +11955,11 @@ fn open_ended_quantified_group_alternation_matches_at_bytes(
         branch_start,
         endpos,
     );
-    if max_repeat < 1 {
+    if max_repeat < pattern.min_repeat {
         return None;
     }
 
-    for candidate_count in (1..=max_repeat).rev() {
+    for candidate_count in (pattern.min_repeat..=max_repeat).rev() {
         if let Some((last_branch_span, match_end)) =
             open_ended_quantified_group_alternation_matches_exact_repeats_bytes(
                 flags,

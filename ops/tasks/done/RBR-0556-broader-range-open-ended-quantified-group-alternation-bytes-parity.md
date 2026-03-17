@@ -1,6 +1,6 @@
 # RBR-0556: Convert the broader-range open-ended grouped-alternation bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
 
@@ -42,3 +42,9 @@ Created: 2026-03-17
   - `tests/python/test_open_ended_quantified_group_parity_suite.py` still marks `BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES` as unsupported for `rebar`, with the reason text pinned to `RBR-0556`; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`.
 - The surviving follow-on after this task is `RBR-0558`, which should add the six adjacent bytes benchmark mirrors for the same broader-range open-ended grouped-alternation pair on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
+
+## Completion Notes
+- Generalized the existing open-ended grouped-alternation bytes parser/matcher path in `crates/rebar-core/src/lib.rs` so the same Rust-backed implementation now accepts both `{1,}` and the broader-range `{2,}` lower bound for `a(bc|de){m,}d` and `a(?P<word>bc|de){m,}d` bytes patterns, preserving compile metadata plus numbered and named last-capture spans through the native boundary without widening into other bytes follow-ons.
+- Updated `tests/python/test_open_ended_quantified_group_parity_suite.py` so `BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES` stays the direct bytes anchor but no longer marks `rebar` as unsupported for the two target patterns.
+- Regenerated the tracked combined correctness publication in `reports/correctness/latest.py`; the tracked artifact now reads `1152` total / `1152` passed / `0` unimplemented across `111` manifests, and `match.broader_range_open_ended_quantified_group_alternation` now reads `32` total / `32` passed / `0` unimplemented.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/broader_range_open_ended_quantified_group_alternation_workflows.py --report .rebar/tmp/rbr-0556-broader-range-open-ended-grouped-alternation-bytes-parity.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
