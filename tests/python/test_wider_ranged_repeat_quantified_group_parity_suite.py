@@ -151,15 +151,18 @@ FIXTURE_BUNDLE_SPECS = (
             {
                 r"a((bc|de){1,4})?(?(1)d|e)",
                 r"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
+                rb"a((bc|de){1,4})?(?(1)d|e)",
+                rb"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
             }
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("compile", None): 2,
-                ("module_call", "search"): 6,
-                ("pattern_call", "fullmatch"): 6,
+                ("compile", None): 4,
+                ("module_call", "search"): 12,
+                ("pattern_call", "fullmatch"): 12,
             }
         ),
+        expected_text_models=frozenset({"bytes", "str"}),
     ),
     FixtureBundleSpec(
         "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
@@ -239,9 +242,6 @@ FIXTURE_BUNDLE_SPECS = (
     ),
 )
 FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
-COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
-MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
-PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
 FIXTURE_BUNDLES_BY_MANIFEST_ID = {
     bundle.manifest.manifest_id: bundle for bundle in FIXTURE_BUNDLES
 }
@@ -277,6 +277,34 @@ BROADER_RANGE_CONDITIONAL_BYTES_CASES = (
         unsupported_backends=("rebar",),
         unsupported_backend_reason=BROADER_RANGE_BYTES_SKIP_REASON,
     ),
+)
+
+
+def _uses_direct_bytes_follow_on(case: FixtureCase) -> bool:
+    return (
+        case.manifest_id
+        == "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
+        and case.text_model == "bytes"
+    )
+
+
+# Keep the shared manifest contract honest, but route the published bytes slice
+# through the explicit supplemental parity anchor until Rust-backed bytes support
+# lands for these patterns.
+COMPILE_CASES = tuple(
+    case
+    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
+    if not _uses_direct_bytes_follow_on(case)
+)
+MODULE_CASES = tuple(
+    case
+    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
+    if not _uses_direct_bytes_follow_on(case)
+)
+PATTERN_CASES = tuple(
+    case
+    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
+    if not _uses_direct_bytes_follow_on(case)
 )
 
 
@@ -341,9 +369,16 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 
 
 def test_broader_range_conditional_bytes_cases_stay_explicit_and_rebar_gated() -> None:
+    bundle_str_cases = tuple(
+        case for case in BROADER_RANGE_CONDITIONAL_BUNDLE.cases if case.text_model == "str"
+    )
+    bundle_bytes_cases = tuple(
+        case for case in BROADER_RANGE_CONDITIONAL_BUNDLE.cases if case.text_model == "bytes"
+    )
     expected_compile_patterns = frozenset(
-        case_pattern(case).encode()
+        case_pattern(case)
         for case in fixture_cases_for_operation((BROADER_RANGE_CONDITIONAL_BUNDLE,), "compile")
+        if case.text_model == "bytes"
     )
 
     assert len(BROADER_RANGE_CONDITIONAL_BYTES_CASES) == 2
@@ -353,6 +388,17 @@ def test_broader_range_conditional_bytes_cases_stay_explicit_and_rebar_gated() -
     }
     assert {case.pattern for case in BROADER_RANGE_CONDITIONAL_BYTES_CASES} == (
         expected_compile_patterns
+    )
+    assert len(bundle_str_cases) == len(bundle_bytes_cases) == 14
+    assert {case.case_id for case in bundle_bytes_cases} == {
+        f"{case.case_id.removesuffix('-str')}-bytes" for case in bundle_str_cases
+    }
+    assert Counter((case.operation, case.helper) for case in bundle_bytes_cases) == Counter(
+        {
+            ("compile", None): 2,
+            ("module_call", "search"): 6,
+            ("pattern_call", "fullmatch"): 6,
+        }
     )
 
     for case in BROADER_RANGE_CONDITIONAL_BYTES_CASES:
@@ -381,6 +427,30 @@ def test_broader_range_conditional_bytes_cases_stay_explicit_and_rebar_gated() -
                 *case.fullmatch_misses,
             )
         )
+
+    published_module_texts_by_pattern: dict[bytes, set[bytes]] = {}
+    published_fullmatch_texts_by_pattern: dict[bytes, set[bytes]] = {}
+    for case in bundle_bytes_cases:
+        pattern = case_pattern(case)
+        assert isinstance(pattern, bytes)
+        if case.operation == "module_call":
+            text = case.args[1]
+            assert isinstance(text, bytes)
+            published_module_texts_by_pattern.setdefault(pattern, set()).add(text)
+        elif case.operation == "pattern_call":
+            text = case.args[0]
+            assert isinstance(text, bytes)
+            published_fullmatch_texts_by_pattern.setdefault(pattern, set()).add(text)
+
+    numbered_case, named_case = BROADER_RANGE_CONDITIONAL_BYTES_CASES
+    assert published_module_texts_by_pattern == {
+        numbered_case.pattern: {b"zzaezz", b"zzabcdzz", b"zzadedzz"},
+        named_case.pattern: {b"zzaezz", b"zzadedzz", b"zzabcdedededzz"},
+    }
+    assert published_fullmatch_texts_by_pattern == {
+        numbered_case.pattern: {b"abcbcded", b"abcdede", b"ad"},
+        named_case.pattern: {b"abcbcded", b"abcbcbcbcbcd", b"ad"},
+    }
 
 
 def test_backtracking_trace_cases_cover_all_declared_branch_orders() -> None:
