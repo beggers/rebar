@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0552` should add the six adjacent bytes benchmark mirrors for `rb"a(bc|de){1,}d"` and `rb"a(?P<word>bc|de){1,}d"` on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
+`RBR-0554` should publish the broader-range open-ended `{2,}` grouped-alternation bytes pair on the existing correctness/parity path.
 
 ## Ordered Work
-1. `RBR-0552` should add the six adjacent bytes benchmark mirrors for `rb"a(bc|de){1,}d"` and `rb"a(?P<word>bc|de){1,}d"` on `benchmarks/workloads/open_ended_quantified_group_boundary.py`.
+1. `RBR-0554` should publish the broader-range open-ended `{2,}` grouped-alternation bytes pair on the existing correctness/parity path.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
