@@ -37,9 +37,63 @@ EXPECTED_SUITE_TABLES = {
     ),
 }
 
+MIXED_TEXT_MIRROR_EXPECTATION_TABLES = {
+    "open-ended-quantified-group": OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS,
+    "quantified-alternation": QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS,
+    "wider-ranged-repeat-quantified-group": (
+        WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS
+    ),
+}
+
 
 class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
     maxDiff = None
+
+    def _assert_mixed_text_manifests_mirror_representative_bytes_rows(
+        self,
+        *,
+        suite_id: str,
+        expectation_table: object,
+    ) -> None:
+        manifests_by_id = {
+            manifest.manifest_id: manifest for manifest in published_fixture_manifests()
+        }
+        mixed_text_manifest_ids: list[str] = []
+
+        for manifest_id, manifest_expectation in expectation_table.items():
+            manifest = manifests_by_id[manifest_id]
+            text_models = {case.text_model for case in manifest.cases}
+            if text_models != {"bytes", "str"}:
+                continue
+
+            mixed_text_manifest_ids.append(manifest_id)
+            with self.subTest(suite_id=suite_id, manifest_id=manifest_id):
+                representative_case_ids = manifest_expectation.representative_case_ids
+                representative_str_case_ids = tuple(
+                    case_id
+                    for case_id in representative_case_ids
+                    if case_id.endswith("-str")
+                )
+                representative_bytes_case_ids = tuple(
+                    case_id
+                    for case_id in representative_case_ids
+                    if case_id.endswith("-bytes")
+                )
+
+                self.assertNotEqual(representative_str_case_ids, ())
+                self.assertEqual(
+                    representative_bytes_case_ids,
+                    tuple(
+                        f"{case_id.removesuffix('-str')}-bytes"
+                        for case_id in representative_str_case_ids
+                    ),
+                )
+
+        self.assertNotEqual(
+            mixed_text_manifest_ids,
+            [],
+            msg=f"{suite_id} should retain at least one mixed-text manifest",
+        )
 
     def test_suite_registry_reuses_canonical_expectation_tables(self) -> None:
         suites_by_id = {
@@ -148,42 +202,14 @@ class CorrectnessScorecardRegistryContractTest(unittest.TestCase):
                         {target_manifest_id},
                     )
 
-    def test_open_ended_scorecard_mixed_text_manifests_mirror_representative_bytes_rows(
+    def test_mixed_text_feature_scorecards_mirror_representative_bytes_rows(
         self,
     ) -> None:
-        manifests_by_id = {
-            manifest.manifest_id: manifest for manifest in published_fixture_manifests()
-        }
-
-        for manifest_id, manifest_expectation in (
-            OPEN_ENDED_QUANTIFIED_GROUP_SCORECARD_EXPECTATIONS.items()
-        ):
-            manifest = manifests_by_id[manifest_id]
-            text_models = {case.text_model for case in manifest.cases}
-            if text_models != {"bytes", "str"}:
-                continue
-
-            with self.subTest(manifest_id=manifest_id):
-                representative_case_ids = manifest_expectation.representative_case_ids
-                representative_str_case_ids = tuple(
-                    case_id
-                    for case_id in representative_case_ids
-                    if case_id.endswith("-str")
-                )
-                representative_bytes_case_ids = tuple(
-                    case_id
-                    for case_id in representative_case_ids
-                    if case_id.endswith("-bytes")
-                )
-
-                self.assertNotEqual(representative_str_case_ids, ())
-                self.assertEqual(
-                    representative_bytes_case_ids,
-                    tuple(
-                        f"{case_id.removesuffix('-str')}-bytes"
-                        for case_id in representative_str_case_ids
-                    ),
-                )
+        for suite_id, expectation_table in MIXED_TEXT_MIRROR_EXPECTATION_TABLES.items():
+            self._assert_mixed_text_manifests_mirror_representative_bytes_rows(
+                suite_id=suite_id,
+                expectation_table=expectation_table,
+            )
 
 
 if __name__ == "__main__":
