@@ -127,6 +127,44 @@ GENERATED_PARITY_SPECS = (
         failure_prefix="backtracking-heavy quantified alternation generated parity drifted",
     ),
     GeneratedParitySpec(
+        fixture_name=(
+            "quantified_nested_group_alternation_branch_local_backreference_"
+            "workflows.py"
+        ),
+        expected_manifest_id=(
+            "quantified-nested-group-alternation-branch-local-backreference-"
+            "workflows"
+        ),
+        expected_compile_case_ids=(
+            "quantified-nested-group-alternation-branch-local-numbered-"
+            "backreference-compile-metadata-str",
+            "quantified-nested-group-alternation-branch-local-named-"
+            "backreference-compile-metadata-str",
+            "quantified-nested-group-alternation-branch-local-numbered-"
+            "backreference-compile-metadata-bytes",
+            "quantified-nested-group-alternation-branch-local-named-"
+            "backreference-compile-metadata-bytes",
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a((b|c)+)\2d",
+                r"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
+                rb"a((b|c)+)\2d",
+                rb"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
+            }
+        ),
+        expected_operation_helper_counts=FOUR_COMPILE_CASES,
+        expected_text_models=STR_AND_BYTES_TEXT_MODELS,
+        candidate_kind="quantified_alternation",
+        candidate_lengths=range(5),
+        branch_choices=None,
+        expected_candidate_count=484,
+        failure_prefix=(
+            "quantified nested-group alternation branch-local-backreference "
+            "generated parity drifted"
+        ),
+    ),
+    GeneratedParitySpec(
         fixture_name="conditional_group_exists_quantified_workflows.py",
         expected_manifest_id="conditional-group-exists-quantified-workflows",
         expected_compile_case_ids=(
