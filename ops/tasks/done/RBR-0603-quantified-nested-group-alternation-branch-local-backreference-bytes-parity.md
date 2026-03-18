@@ -1,6 +1,6 @@
 # RBR-0603: Convert the quantified nested-group alternation branch-local-backreference bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -43,3 +43,9 @@ Created: 2026-03-18
   - `benchmarks/workloads/nested_group_alternation_boundary.py` already publishes the three adjacent `str` benchmark rows for this exact pair as `module-search-numbered-quantified-nested-group-branch-local-backreference-lower-bound-b-branch-warm-str`, `module-compile-named-quantified-nested-group-branch-local-backreference-warm-str`, and `pattern-fullmatch-named-quantified-nested-group-branch-local-backreference-repeated-mixed-purged-str`, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so the Rust-backed bytes parity work is not already satisfied in the current checkout.
 - A later benchmark follow-on should catch the same bytes pair up on the existing nested-group alternation benchmark surface before another nested-group branch-local-backreference bytes family broadens the frontier.
+
+## Completion Note
+- 2026-03-18: Added Rust-backed bytes compile classification and `search()`/`fullmatch()` execution support for `rb"a((b|c)+)\\2d"` and `rb"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d"` in `crates/rebar-core/src/lib.rs`, preserving CPython-visible `groups`, `groupindex`, capture spans, and `lastindex`/`lastgroup` behavior on the shared public API path.
+- Removed the temporary `rebar`-only unsupported gating for the direct quantified nested-group alternation branch-local-backreference bytes anchor in `tests/python/test_branch_local_backreference_parity_suite.py`; the shared branch-local parity suite now treats those two bytes follow-on cases as real parity coverage.
+- Republished the tracked combined correctness scorecard in `reports/correctness/latest.py`; the tracked artifact now reads `1244` total / `1244` passed / `0` failed / `0` unimplemented overall, and `match.quantified_nested_group_alternation_branch_local_backreference` now reads `20` total / `20` passed / `0` failed / `0` unimplemented.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/quantified_nested_group_alternation_branch_local_backreference_workflows.py --report .rebar/tmp/rbr-0603-quantified-nested-group-alternation-branch-local-backreference-bytes-parity.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.

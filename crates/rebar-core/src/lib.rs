@@ -47,6 +47,12 @@ const QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_NAMED_BYTES_PATTERN: &[u
     br"a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d";
 const QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_OUTER_NAME: &str = "outer";
 const QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_INNER_NAME: &str = "inner";
+const QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_NUMBERED_BYTES_PATTERN:
+    &[u8] = br"a((b|c)+)\2d";
+const QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_NAMED_BYTES_PATTERN: &[u8] =
+    br"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d";
+const QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_OUTER_NAME: &str = "outer";
+const QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_INNER_NAME: &str = "inner";
 const BOUNDED_QUANTIFIED_ALTERNATION_CONDITIONAL_NUMBERED_BYTES_PATTERN: &[u8] =
     br"a((b|c){1,2})?(?(1)d|e)";
 const BOUNDED_QUANTIFIED_ALTERNATION_CONDITIONAL_NAMED_BYTES_PATTERN: &[u8] =
@@ -2591,6 +2597,29 @@ fn compile_known_supported_case(
                     .expect(
                         "guarded quantified alternation branch-local backreference bytes literal",
                     );
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
+                warning: None,
+            })
+        }
+        PatternRef::Bytes(pattern)
+            if parse_quantified_nested_group_alternation_branch_local_backreference_pattern_bytes(
+                pattern,
+            )
+            .is_some()
+                && normalized_flags == 0 =>
+        {
+            let grouped_pattern =
+                parse_quantified_nested_group_alternation_branch_local_backreference_pattern_bytes(
+                    pattern,
+                )
+                .expect(
+                    "guarded quantified nested-group alternation branch-local backreference bytes literal",
+                );
             Some(CompileOutcome {
                 status: CompileStatus::Compiled,
                 normalized_flags,
@@ -5530,6 +5559,42 @@ fn parse_quantified_alternation_nested_branch_pattern_bytes(
     }
 }
 
+fn parse_quantified_nested_group_alternation_branch_local_backreference_pattern_bytes(
+    pattern: &[u8],
+) -> Option<QuantifiedNestedGroupAlternationBranchLocalBackreferencePattern<'static>> {
+    match pattern {
+        QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_NUMBERED_BYTES_PATTERN => {
+            Some(
+                QuantifiedNestedGroupAlternationBranchLocalBackreferencePattern {
+                    prefix: "a",
+                    outer_name: None,
+                    inner_name: None,
+                    branches: vec!["b", "c"],
+                    suffix: "d",
+                    min_repeat: 1,
+                    max_repeat: None,
+                },
+            )
+        }
+        QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_NAMED_BYTES_PATTERN => Some(
+            QuantifiedNestedGroupAlternationBranchLocalBackreferencePattern {
+                prefix: "a",
+                outer_name: Some(
+                    QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_OUTER_NAME,
+                ),
+                inner_name: Some(
+                    QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_INNER_NAME,
+                ),
+                branches: vec!["b", "c"],
+                suffix: "d",
+                min_repeat: 1,
+                max_repeat: None,
+            },
+        ),
+        _ => None,
+    }
+}
+
 fn parse_open_ended_quantified_group_alternation_pattern_bytes(
     pattern: &[u8],
 ) -> Option<OpenEndedQuantifiedGroupAlternationBytesPattern> {
@@ -8453,6 +8518,51 @@ fn literal_match_bytes(
             });
         let lastindex = if span.is_some() {
             Some(grouped_pattern.lastindex())
+        } else {
+            None
+        };
+        return MatchOutcome {
+            status: if span.is_some() {
+                MatchStatus::Matched
+            } else {
+                MatchStatus::NoMatch
+            },
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            span,
+            group_spans,
+            lastindex,
+        };
+    }
+
+    if let Some(grouped_pattern) =
+        parse_quantified_nested_group_alternation_branch_local_backreference_pattern_bytes(pattern)
+    {
+        if flags != 0 {
+            return MatchOutcome {
+                status: MatchStatus::Unsupported,
+                pos: normalized_pos,
+                endpos: normalized_endpos,
+                span: None,
+                group_spans: Vec::new(),
+                lastindex: None,
+            };
+        }
+
+        let (span, group_spans) =
+            find_quantified_nested_group_alternation_branch_local_backreference_match_span_bytes(
+                &grouped_pattern,
+                flags,
+                mode,
+                string,
+                normalized_pos,
+                normalized_endpos,
+            )
+            .map_or((None, Vec::new()), |(span, group_spans)| {
+                (Some(span), group_spans)
+            });
+        let lastindex = if span.is_some() {
+            grouped_pattern.matched_lastindex(&group_spans)
         } else {
             None
         };
@@ -14230,6 +14340,181 @@ fn find_nested_open_ended_quantified_group_alternation_match_span_bytes(
                 pattern.group_spans(outer_span, inner_span),
             ))
         }),
+    }
+}
+
+fn quantified_nested_group_alternation_branch_local_backreference_open_ended_max_repeats_bytes(
+    branches: &[&str],
+    flags: i32,
+    string: &[u8],
+    start: usize,
+    endpos: usize,
+    suffix_bytes: &[u8],
+) -> usize {
+    let branch_len = branches.first().map(|branch| branch.len()).unwrap_or(0);
+    if branch_len == 0 {
+        return 0;
+    }
+
+    let mut cursor = start;
+    let mut max_repeat = 0;
+    while cursor + branch_len + suffix_bytes.len() <= endpos {
+        let Some(branch) = branches.iter().find(|branch| {
+            literal_matches_at_bytes(branch.as_bytes(), flags, string, cursor, endpos)
+        }) else {
+            break;
+        };
+        max_repeat += 1;
+        cursor += branch.len();
+    }
+
+    max_repeat
+}
+
+fn quantified_nested_group_alternation_branch_local_backreference_matches_exact_repeats_bytes(
+    branches: &[&str],
+    flags: i32,
+    string: &[u8],
+    start: usize,
+    endpos: usize,
+    repeat_count: usize,
+    suffix_bytes: &[u8],
+) -> Option<((usize, usize), usize)> {
+    if repeat_count == 0 {
+        return None;
+    }
+
+    for branch in branches {
+        let branch_bytes = branch.as_bytes();
+        let branch_end = start + branch_bytes.len();
+        if !literal_matches_at_bytes(branch_bytes, flags, string, start, endpos) {
+            continue;
+        }
+
+        if repeat_count == 1 {
+            let backreference_end = branch_end + branch_bytes.len();
+            if literal_matches_at_bytes(branch_bytes, flags, string, branch_end, endpos)
+                && literal_matches_at_bytes(suffix_bytes, flags, string, backreference_end, endpos)
+            {
+                return Some(((start, branch_end), backreference_end + suffix_bytes.len()));
+            }
+            continue;
+        }
+
+        if let Some(result) =
+            quantified_nested_group_alternation_branch_local_backreference_matches_exact_repeats_bytes(
+                branches,
+                flags,
+                string,
+                branch_end,
+                endpos,
+                repeat_count - 1,
+                suffix_bytes,
+            )
+        {
+            return Some(result);
+        }
+    }
+
+    None
+}
+
+fn quantified_nested_group_alternation_branch_local_backreference_matches_at_bytes(
+    pattern: &QuantifiedNestedGroupAlternationBranchLocalBackreferencePattern<'_>,
+    flags: i32,
+    string: &[u8],
+    start: usize,
+    endpos: usize,
+) -> Option<((usize, usize), (usize, usize), usize)> {
+    let prefix_bytes = pattern.prefix.as_bytes();
+    let suffix_bytes = pattern.suffix.as_bytes();
+
+    if !literal_matches_at_bytes(prefix_bytes, flags, string, start, endpos) {
+        return None;
+    }
+
+    let repetition_start = start + prefix_bytes.len();
+    let mut backreference_suffix_bytes = Vec::new();
+    backreference_suffix_bytes.extend_from_slice(pattern.branches.first()?.as_bytes());
+    backreference_suffix_bytes.extend_from_slice(suffix_bytes);
+
+    let max_repeat =
+        quantified_nested_group_alternation_branch_local_backreference_open_ended_max_repeats_bytes(
+            pattern.branches.as_slice(),
+            flags,
+            string,
+            repetition_start,
+            endpos,
+            backreference_suffix_bytes.as_slice(),
+        );
+    let max_repeat = pattern.max_repeat.map_or(max_repeat, |bounded_max_repeat| {
+        usize::min(bounded_max_repeat, max_repeat)
+    });
+    if max_repeat < pattern.min_repeat {
+        return None;
+    }
+
+    for candidate_count in (pattern.min_repeat..=max_repeat).rev() {
+        if let Some((inner_span, match_end)) =
+            quantified_nested_group_alternation_branch_local_backreference_matches_exact_repeats_bytes(
+                pattern.branches.as_slice(),
+                flags,
+                string,
+                repetition_start,
+                endpos,
+                candidate_count,
+                suffix_bytes,
+            )
+        {
+            return Some(((repetition_start, inner_span.1), inner_span, match_end));
+        }
+    }
+
+    None
+}
+
+fn find_quantified_nested_group_alternation_branch_local_backreference_match_span_bytes(
+    pattern: &QuantifiedNestedGroupAlternationBranchLocalBackreferencePattern<'_>,
+    flags: i32,
+    mode: MatchMode,
+    string: &[u8],
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    match mode {
+        MatchMode::Search => (pos..=endpos).find_map(|start| {
+            quantified_nested_group_alternation_branch_local_backreference_matches_at_bytes(
+                pattern, flags, string, start, endpos,
+            )
+            .map(|(outer_span, inner_span, match_end)| {
+                (
+                    (start, match_end),
+                    pattern.group_spans(outer_span, inner_span),
+                )
+            })
+        }),
+        MatchMode::Match => {
+            quantified_nested_group_alternation_branch_local_backreference_matches_at_bytes(
+                pattern, flags, string, pos, endpos,
+            )
+            .map(|(outer_span, inner_span, match_end)| {
+                (
+                    (pos, match_end),
+                    pattern.group_spans(outer_span, inner_span),
+                )
+            })
+        }
+        MatchMode::Fullmatch => {
+            quantified_nested_group_alternation_branch_local_backreference_matches_at_bytes(
+                pattern, flags, string, pos, endpos,
+            )
+            .and_then(|(outer_span, inner_span, match_end)| {
+                (match_end == endpos).then_some((
+                    (pos, match_end),
+                    pattern.group_spans(outer_span, inner_span),
+                ))
+            })
+        }
     }
 }
 

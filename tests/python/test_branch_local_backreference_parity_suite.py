@@ -69,12 +69,6 @@ class BranchLocalBytesFollowOnSpec:
     expected_pattern_fullmatch_texts_by_pattern: dict[bytes, frozenset[bytes]]
 
 
-RBR_0603_BYTES_REASON = (
-    "rebar bytes parity for quantified nested-group alternation "
-    "branch-local backreferences is tracked by RBR-0603"
-)
-
-
 FIXTURE_BUNDLE_SPECS = (
     FixtureBundleSpec(
         "branch_local_backreference_workflows.py",
@@ -441,8 +435,6 @@ QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES = (
         search_matches=(b"zzabbdzz",),
         fullmatch_matches=(b"accd", b"abbbd"),
         fullmatch_misses=(b"abcd",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=RBR_0603_BYTES_REASON,
     ),
     BranchLocalBackreferenceBytesFollowOnCase(
         id="quantified-nested-group-alternation-branch-local-named-bytes",
@@ -450,8 +442,6 @@ QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES = (
         search_matches=(b"zzaccdzz",),
         fullmatch_matches=(b"abbd", b"abccd"),
         fullmatch_misses=(b"acbd",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=RBR_0603_BYTES_REASON,
     ),
 )
 DIRECT_BYTES_FOLLOW_ON_BUNDLES = (
@@ -816,11 +806,6 @@ def _workflow_result_for_case(
 def _assert_direct_bytes_follow_on_case_backend_gating(
     case: BranchLocalBackreferenceBytesFollowOnCase,
 ) -> None:
-    if case.unsupported_backends:
-        assert case.unsupported_backends == ("rebar",)
-        assert case.unsupported_backend_reason == RBR_0603_BYTES_REASON
-        return
-
     assert case.unsupported_backends == ()
     assert case.unsupported_backend_reason is None
 
