@@ -90,6 +90,8 @@ class GeneratedQuantifiedBranchLocalParitySpec:
     expected_compile_case_ids: tuple[str, ...]
     expected_patterns: frozenset[str | bytes]
     expected_text_models: frozenset[str]
+    candidate_body_atoms: tuple[str, ...]
+    candidate_suffixes: tuple[str, ...]
     candidate_lengths: range
     expected_candidate_count: int
     failure_prefix: str
@@ -493,6 +495,24 @@ QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
         "quantified-nested-group-alternation-branch-local-backreference-workflows",
     )
 )
+NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
+    published_fixture_bundle_by_manifest_id(
+        FIXTURE_BUNDLES,
+        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows",
+    )
+)
+NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
+    published_fixture_bundle_by_manifest_id(
+        FIXTURE_BUNDLES,
+        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-workflows",
+    )
+)
+NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BUNDLE = (
+    published_fixture_bundle_by_manifest_id(
+        FIXTURE_BUNDLES,
+        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows",
+    )
+)
 GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS = (
     GeneratedQuantifiedBranchLocalParitySpec(
         bundle=QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
@@ -519,6 +539,8 @@ GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS = (
             }
         ),
         expected_text_models=STR_AND_BYTES_TEXT_MODELS,
+        candidate_body_atoms=BODY_ATOMS,
+        candidate_suffixes=("d",),
         candidate_lengths=range(5),
         expected_candidate_count=484,
         failure_prefix=(
@@ -526,16 +548,55 @@ GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS = (
             "generated parity drifted"
         ),
     ),
+    GeneratedQuantifiedBranchLocalParitySpec(
+        bundle=(
+            NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BUNDLE
+        ),
+        fixture_name=(
+            "nested_broader_range_open_ended_quantified_group_alternation_"
+            "branch_local_backreference_conditional_workflows.py"
+        ),
+        expected_compile_case_ids=(
+            "nested-broader-range-open-ended-quantified-group-alternation-"
+            "branch-local-backreference-conditional-numbered-compile-metadata-str",
+            "nested-broader-range-open-ended-quantified-group-alternation-"
+            "branch-local-backreference-conditional-named-compile-metadata-str",
+            "nested-broader-range-open-ended-quantified-group-alternation-"
+            "branch-local-backreference-conditional-numbered-compile-metadata-bytes",
+            "nested-broader-range-open-ended-quantified-group-alternation-"
+            "branch-local-backreference-conditional-named-compile-metadata-bytes",
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a((b|c){2,})\2(?(2)d|e)",
+                r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+                rb"a((b|c){2,})\2(?(2)d|e)",
+                rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+            }
+        ),
+        expected_text_models=STR_AND_BYTES_TEXT_MODELS,
+        candidate_body_atoms=("b", "c"),
+        candidate_suffixes=("", "d", "e"),
+        candidate_lengths=range(5),
+        expected_candidate_count=372,
+        failure_prefix=(
+            "broader-range open-ended conditional branch-local-backreference "
+            "generated parity drifted"
+        ),
+    ),
 )
 
 
 def _build_generated_quantified_branch_local_candidate_texts(
+    candidate_body_atoms: tuple[str, ...],
+    candidate_suffixes: tuple[str, ...],
     candidate_lengths: range,
 ) -> tuple[str, ...]:
     return tuple(
-        f"{prefix}a{''.join(body)}d{suffix}"
+        f"{prefix}a{''.join(body)}{terminal}{suffix}"
         for length in candidate_lengths
-        for body in product(BODY_ATOMS, repeat=length)
+        for body in product(candidate_body_atoms, repeat=length)
+        for terminal in candidate_suffixes
         for prefix, suffix in WRAPPER_PAIRS
     )
 
@@ -546,7 +607,9 @@ GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPEC_BY_MANIFEST_ID = {
 }
 GENERATED_STR_BRANCH_LOCAL_CANDIDATE_TEXTS_BY_MANIFEST_ID = {
     spec.bundle.expected_manifest_id: _build_generated_quantified_branch_local_candidate_texts(
-        spec.candidate_lengths
+        spec.candidate_body_atoms,
+        spec.candidate_suffixes,
+        spec.candidate_lengths,
     )
     for spec in GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS
 }
@@ -598,25 +661,6 @@ def _record_generated_match_failure(
     except AssertionError as exc:
         failures.append(f"{label}: {exc}")
 
-
-NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
-    published_fixture_bundle_by_manifest_id(
-        FIXTURE_BUNDLES,
-        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows",
-    )
-)
-NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
-    published_fixture_bundle_by_manifest_id(
-        FIXTURE_BUNDLES,
-        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-workflows",
-    )
-)
-NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BUNDLE = (
-    published_fixture_bundle_by_manifest_id(
-        FIXTURE_BUNDLES,
-        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows",
-    )
-)
 QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES = (
     BranchLocalBackreferenceBytesFollowOnCase(
         id="quantified-alternation-branch-local-numbered-bytes",
