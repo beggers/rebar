@@ -445,9 +445,6 @@ NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
         "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows",
     )
 )
-NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_REASON = (
-    "broader {1,4} nested branch-local-backreference bytes parity is still unpublished for rebar"
-)
 QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES = (
     BranchLocalBackreferenceBytesFollowOnCase(
         id="quantified-alternation-branch-local-numbered-bytes",
@@ -487,10 +484,6 @@ NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES 
         search_matches=(b"zzabbdzz", b"zzaccdzz"),
         fullmatch_matches=(b"abbbd", b"abcbccd"),
         fullmatch_misses=(b"abcd", b"abbbbbbd"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_REASON
-        ),
     ),
     BranchLocalBackreferenceBytesFollowOnCase(
         id="nested-broader-range-wider-ranged-repeat-branch-local-named-bytes",
@@ -498,10 +491,6 @@ NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES 
         search_matches=(b"zzaccdzz", b"zzabbdzz"),
         fullmatch_matches=(b"abccd", b"acccccd"),
         fullmatch_misses=(b"abcbcd", b"accccccd"),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_REASON
-        ),
     ),
 )
 DIRECT_BYTES_FOLLOW_ON_BUNDLES = (
@@ -756,6 +745,20 @@ DIRECT_BYTES_PATTERN_BOUNDS_MATCH_CASES = (
         string=b"yyabccdzz",
         bounds=(2, 7),
     ),
+    DirectBytesBoundedPatternCase(
+        id="nested-broader-range-wider-ranged-repeat-branch-local-numbered-bytes-search-window",
+        pattern=rb"a((b|c){1,4})\2d",
+        helper="search",
+        string=b"yyabbbdzz",
+        bounds=(2, 7),
+    ),
+    DirectBytesBoundedPatternCase(
+        id="nested-broader-range-wider-ranged-repeat-branch-local-named-bytes-fullmatch-window",
+        pattern=rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
+        helper="fullmatch",
+        string=b"yyabccdzz",
+        bounds=(2, 7),
+    ),
 )
 DIRECT_BYTES_PATTERN_BOUNDS_NO_MATCH_CASES = (
     DirectBytesBoundedPatternCase(
@@ -957,14 +960,6 @@ def _workflow_result_for_case(
 def _assert_direct_bytes_follow_on_case_backend_gating(
     case: BranchLocalBackreferenceBytesFollowOnCase,
 ) -> None:
-    if case in NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert (
-            case.unsupported_backend_reason
-            == NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_REASON
-        )
-        return
-
     assert case.unsupported_backends == ()
     assert case.unsupported_backend_reason is None
 

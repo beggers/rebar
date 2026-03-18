@@ -51,6 +51,10 @@ const QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_NUMBERED_BY
     &[u8] = br"a((b|c)+)\2d";
 const QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_NAMED_BYTES_PATTERN: &[u8] =
     br"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d";
+const NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_NUMBERED_BYTES_PATTERN:
+    &[u8] = br"a((b|c){1,4})\2d";
+const NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_NAMED_BYTES_PATTERN:
+    &[u8] = br"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d";
 const QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_OUTER_NAME: &str = "outer";
 const QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_INNER_NAME: &str = "inner";
 const BOUNDED_QUANTIFIED_ALTERNATION_CONDITIONAL_NUMBERED_BYTES_PATTERN: &[u8] =
@@ -5589,6 +5593,34 @@ fn parse_quantified_nested_group_alternation_branch_local_backreference_pattern_
                 suffix: "d",
                 min_repeat: 1,
                 max_repeat: None,
+            },
+        ),
+        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_NUMBERED_BYTES_PATTERN => {
+            Some(
+                QuantifiedNestedGroupAlternationBranchLocalBackreferencePattern {
+                    prefix: "a",
+                    outer_name: None,
+                    inner_name: None,
+                    branches: vec!["b", "c"],
+                    suffix: "d",
+                    min_repeat: 1,
+                    max_repeat: Some(4),
+                },
+            )
+        }
+        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_NAMED_BYTES_PATTERN => Some(
+            QuantifiedNestedGroupAlternationBranchLocalBackreferencePattern {
+                prefix: "a",
+                outer_name: Some(
+                    QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_OUTER_NAME,
+                ),
+                inner_name: Some(
+                    QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_INNER_NAME,
+                ),
+                branches: vec!["b", "c"],
+                suffix: "d",
+                min_repeat: 1,
+                max_repeat: Some(4),
             },
         ),
         _ => None,
