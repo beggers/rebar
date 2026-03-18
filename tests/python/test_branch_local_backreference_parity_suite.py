@@ -10,16 +10,21 @@ from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
+    assert_direct_bytes_follow_on_bundle_routing,
+    assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
+    case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
     load_fixture_bundles,
+    partition_direct_bytes_follow_on_case_buckets,
+    published_fixture_bundle_by_manifest_id,
     str_case_pattern,
 )
 
@@ -40,6 +45,17 @@ class BoundedPatternCase:
     helper: str
     string: str
     bounds: tuple[int, ...]
+
+
+@dataclass(frozen=True)
+class QuantifiedAlternationBranchLocalBackreferenceBytesCase:
+    id: str
+    pattern: bytes
+    search_matches: tuple[bytes, ...]
+    fullmatch_matches: tuple[bytes, ...]
+    fullmatch_misses: tuple[bytes, ...]
+    unsupported_backends: tuple[str, ...] = ()
+    unsupported_backend_reason: str | None = None
 
 
 FIXTURE_BUNDLE_SPECS = (
@@ -201,21 +217,34 @@ FIXTURE_BUNDLE_SPECS = (
                 "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-second-repetition-c-branch-str",
                 "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-second-repetition-mixed-branches-str",
                 "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-str",
+                "quantified-alternation-branch-local-numbered-backreference-compile-metadata-bytes",
+                "quantified-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-bytes",
+                "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-lower-bound-c-branch-bytes",
+                "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-second-repetition-b-branch-bytes",
+                "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-bytes",
+                "quantified-alternation-branch-local-named-backreference-compile-metadata-bytes",
+                "quantified-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-bytes",
+                "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-second-repetition-c-branch-bytes",
+                "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-second-repetition-mixed-branches-bytes",
+                "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-bytes",
             }
         ),
         expected_patterns=frozenset(
             {
                 r"a((b|c)\2){1,2}d",
                 r"a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d",
+                rb"a((b|c)\2){1,2}d",
+                rb"a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d",
             }
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 6,
+                ("compile", None): 4,
+                ("module_call", "search"): 4,
+                ("pattern_call", "fullmatch"): 12,
             }
         ),
+        expected_text_models=frozenset({"bytes", "str"}),
     ),
     FixtureBundleSpec(
         "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
@@ -347,10 +376,67 @@ FIXTURE_BUNDLE_SPECS = (
     ),
 )
 FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
+QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
+    published_fixture_bundle_by_manifest_id(
+        FIXTURE_BUNDLES,
+        "quantified-alternation-branch-local-backreference-workflows",
+    )
+)
+QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_UNSUPPORTED_REASON = (
+    "rebar bytes parity for quantified alternation branch-local backreferences is pending the later follow-on"
+)
+QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES = (
+    QuantifiedAlternationBranchLocalBackreferenceBytesCase(
+        id="quantified-alternation-branch-local-numbered-bytes",
+        pattern=rb"a((b|c)\2){1,2}d",
+        search_matches=(b"zzabbdzz",),
+        fullmatch_matches=(b"accd", b"abbbbd"),
+        fullmatch_misses=(b"abcd",),
+        unsupported_backends=("rebar",),
+        unsupported_backend_reason=(
+            QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_UNSUPPORTED_REASON
+        ),
+    ),
+    QuantifiedAlternationBranchLocalBackreferenceBytesCase(
+        id="quantified-alternation-branch-local-named-bytes",
+        pattern=rb"a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d",
+        search_matches=(b"zzaccdzz",),
+        fullmatch_matches=(b"accccd", b"abbccd"),
+        fullmatch_misses=(b"abcd",),
+        unsupported_backends=("rebar",),
+        unsupported_backend_reason=(
+            QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_UNSUPPORTED_REASON
+        ),
+    ),
+)
+DIRECT_BYTES_FOLLOW_ON_BUNDLES = (
+    QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
+)
 PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
-COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
-WORKFLOW_CASES = tuple(case for case in PUBLISHED_CASES if case.operation != "compile")
+COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_case_buckets(
+    FIXTURE_BUNDLES,
+    DIRECT_BYTES_FOLLOW_ON_BUNDLES,
+)
+_SHARED_WORKFLOW_CASE_IDS = frozenset(
+    case.case_id for case in (*MODULE_CASES, *PATTERN_CASES)
+)
+WORKFLOW_CASES = tuple(
+    case for case in PUBLISHED_CASES if case.case_id in _SHARED_WORKFLOW_CASE_IDS
+)
+BRANCH_LOCAL_BACKREFERENCE_SELECTED_CASE_IDS = tuple(
+    case.case_id for case in PUBLISHED_CASES
+)
+BRANCH_LOCAL_BACKREFERENCE_DIRECT_TEST_CASE_ID_BUCKETS = {
+    "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
+    "shared-module": frozenset(case.case_id for case in MODULE_CASES),
+    "shared-pattern": frozenset(case.case_id for case in PATTERN_CASES),
+    "quantified-alternation-branch-local-backreference-bytes-follow-on": frozenset(
+        case.case_id
+        for case in QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE.cases
+        if case.text_model == "bytes"
+    ),
+}
 MATCH_CONVENIENCE_MANIFEST_IDS = frozenset(
     {
         "quantified-branch-local-backreference-workflows",
@@ -364,7 +450,7 @@ MATCH_CONVENIENCE_MANIFEST_IDS = frozenset(
 )
 MATCH_CONVENIENCE_CASE_IDS = frozenset(
     case.case_id
-    for case in PUBLISHED_CASES
+    for case in WORKFLOW_CASES
     if case.manifest_id in MATCH_CONVENIENCE_MANIFEST_IDS and case.operation != "compile"
 )
 MATCH_GROUP_ACCESS_CASE_IDS = (
@@ -628,6 +714,8 @@ def _workflow_result_for_case(
         expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
 
     return observed, expected
+
+
 def test_match_group_access_rows_remain_on_branch_local_fixture_paths() -> None:
     assert tuple(case.case_id for case in MATCH_GROUP_ACCESS_CASES) == MATCH_GROUP_ACCESS_CASE_IDS
     assert {case.text_model for case in MATCH_GROUP_ACCESS_CASES} == {"str"}
@@ -650,7 +738,101 @@ def test_pattern_bounds_cases_stay_anchored_to_supported_branch_local_patterns()
 def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     bundle: FixtureBundle,
 ) -> None:
-    assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
+    assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
+
+
+def test_branch_local_backreference_direct_test_case_id_buckets_cover_selected_frontier(
+) -> None:
+    assert_direct_test_case_id_buckets_cover_selected_frontier(
+        BRANCH_LOCAL_BACKREFERENCE_DIRECT_TEST_CASE_ID_BUCKETS,
+        selected_case_ids=BRANCH_LOCAL_BACKREFERENCE_SELECTED_CASE_IDS,
+        coverage_label="branch-local-backreference direct-test case-id buckets",
+    )
+
+
+def test_quantified_alternation_branch_local_backreference_bytes_cases_stay_explicit_with_one_direct_follow_on_anchor(
+) -> None:
+    bundle_str_cases, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
+        QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
+        compile_cases=COMPILE_CASES,
+        module_cases=MODULE_CASES,
+        pattern_cases=PATTERN_CASES,
+    )
+    expected_compile_patterns = frozenset(
+        case_pattern(case)
+        for case in fixture_cases_for_operation(
+            (QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,),
+            "compile",
+        )
+        if case.text_model == "bytes"
+    )
+
+    assert len(QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES) == 2
+    assert {
+        case.id for case in QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES
+    } == {
+        "quantified-alternation-branch-local-numbered-bytes",
+        "quantified-alternation-branch-local-named-bytes",
+    }
+    assert {
+        case.pattern
+        for case in QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES
+    } == expected_compile_patterns
+    assert len(bundle_str_cases) == len(bundle_bytes_cases) == 10
+    assert {case.case_id for case in bundle_bytes_cases} == {
+        f"{case.case_id.removesuffix('-str')}-bytes" for case in bundle_str_cases
+    }
+    assert Counter((case.operation, case.helper) for case in bundle_bytes_cases) == Counter(
+        {
+            ("compile", None): 2,
+            ("module_call", "search"): 2,
+            ("pattern_call", "fullmatch"): 6,
+        }
+    )
+
+    for case in QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES:
+        assert case.unsupported_backends == ("rebar",)
+        assert (
+            case.unsupported_backend_reason
+            == QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_UNSUPPORTED_REASON
+        )
+        assert len(case.search_matches) == 1
+        assert len(case.fullmatch_matches) == 2
+        assert len(case.fullmatch_misses) == 1
+        assert set(case.search_matches).isdisjoint(case.fullmatch_misses)
+        assert set(case.fullmatch_matches).isdisjoint(case.fullmatch_misses)
+        assert all(
+            isinstance(text, bytes)
+            for text in (
+                *case.search_matches,
+                *case.fullmatch_matches,
+                *case.fullmatch_misses,
+            )
+        )
+
+    published_module_texts_by_pattern: dict[bytes, set[bytes]] = {}
+    published_fullmatch_texts_by_pattern: dict[bytes, set[bytes]] = {}
+    for case in bundle_bytes_cases:
+        pattern = case_pattern(case)
+        assert isinstance(pattern, bytes)
+        if case.operation == "module_call":
+            text = case.args[1]
+            assert isinstance(text, bytes)
+            published_module_texts_by_pattern.setdefault(pattern, set()).add(text)
+        elif case.operation == "pattern_call":
+            text = case.args[0]
+            assert isinstance(text, bytes)
+            published_fullmatch_texts_by_pattern.setdefault(pattern, set()).add(text)
+
+    numbered_case, named_case = QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES
+    assert published_module_texts_by_pattern == {
+        numbered_case.pattern: {b"zzabbdzz"},
+        named_case.pattern: {b"zzaccdzz"},
+    }
+    assert published_fullmatch_texts_by_pattern == {
+        numbered_case.pattern: {b"accd", b"abbbbd", b"abcd"},
+        named_case.pattern: {b"accccd", b"abbccd", b"abcd"},
+    }
 
 
 @pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
@@ -681,6 +863,164 @@ def test_published_workflows_match_cpython(
 
     if case.case_id in MATCH_CONVENIENCE_CASE_IDS:
         assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_quantified_alternation_branch_local_backreference_bytes_compile_metadata_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: QuantifiedAlternationBranchLocalBackreferenceBytesCase,
+) -> None:
+    backend_name, backend = regex_backend
+    compile_with_cpython_parity(backend_name, backend, case.pattern)
+
+
+@pytest.mark.parametrize(
+    "case",
+    QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_quantified_alternation_branch_local_backreference_bytes_module_search_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: QuantifiedAlternationBranchLocalBackreferenceBytesCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    for text in case.search_matches:
+        observed = backend.search(case.pattern, text)
+        expected = re.search(case.pattern, text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+
+
+@pytest.mark.parametrize(
+    "case",
+    QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_quantified_alternation_branch_local_backreference_bytes_module_search_match_convenience_api_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: QuantifiedAlternationBranchLocalBackreferenceBytesCase,
+) -> None:
+    _, backend = regex_backend
+
+    for text in case.search_matches:
+        observed = backend.search(case.pattern, text)
+        expected = re.search(case.pattern, text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_quantified_alternation_branch_local_backreference_bytes_module_search_match_group_access_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: QuantifiedAlternationBranchLocalBackreferenceBytesCase,
+) -> None:
+    _, backend = regex_backend
+
+    for text in case.search_matches:
+        observed = backend.search(case.pattern, text)
+        expected = re.search(case.pattern, text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_valid_match_group_access_parity(observed, expected)
+        assert_invalid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_quantified_alternation_branch_local_backreference_bytes_pattern_fullmatch_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: QuantifiedAlternationBranchLocalBackreferenceBytesCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    for text in case.fullmatch_matches:
+        observed = observed_pattern.fullmatch(text)
+        expected = expected_pattern.fullmatch(text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+
+    for text in case.fullmatch_misses:
+        assert_match_result_parity(
+            backend_name,
+            observed_pattern.fullmatch(text),
+            expected_pattern.fullmatch(text),
+            check_regs=True,
+        )
+
+
+@pytest.mark.parametrize(
+    "case",
+    QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_quantified_alternation_branch_local_backreference_bytes_pattern_fullmatch_match_convenience_api_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: QuantifiedAlternationBranchLocalBackreferenceBytesCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    for text in case.fullmatch_matches:
+        observed = observed_pattern.fullmatch(text)
+        expected = expected_pattern.fullmatch(text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES,
+    ids=lambda case: case.id,
+)
+def test_quantified_alternation_branch_local_backreference_bytes_pattern_fullmatch_match_group_access_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: QuantifiedAlternationBranchLocalBackreferenceBytesCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    for text in case.fullmatch_matches:
+        observed = observed_pattern.fullmatch(text)
+        expected = expected_pattern.fullmatch(text)
+
+        assert observed is not None
+        assert expected is not None
+        assert_valid_match_group_access_parity(observed, expected)
+        assert_invalid_match_group_access_parity(observed, expected)
 
 
 @pytest.mark.parametrize("case", PATTERN_BOUNDS_MATCH_CASES, ids=lambda case: case.id)
