@@ -1,6 +1,6 @@
 # RBR-0610: Collapse the callable replacement fixture and near-miss ladders onto shared specs
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
 
@@ -64,3 +64,6 @@ Created: 2026-03-18
 - 2026-03-18 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py` passes (`963 passed in 0.79s`)
   - the `bash -lc "! rg -n ..."` command above currently fails exactly on this cleanup because the seven duplicate manifest-specific test definitions are still present.
+- 2026-03-18 completion:
+  - Replaced the manifest-specific callable fixture-shape and near-miss ladders in `tests/python/test_callable_replacement_parity_suite.py` with local `CallableManifestSpec` and `CallableNearMissCase` tables plus shared parametrized assertions, while preserving the existing callable helper counts, pending-manifest behavior, fixture ids, compile-pattern sets, and near-miss payloads.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py` (`963 passed in 0.82s`) and the required `bash -lc "! rg -n ..."` absence check (no matches).

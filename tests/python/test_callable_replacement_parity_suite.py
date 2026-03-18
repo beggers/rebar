@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from dataclasses import dataclass
 import re
 
 import pytest
@@ -32,277 +33,347 @@ from tests.python.fixture_parity_support import (
 
 
 COLLECTION_REPLACEMENT_FIXTURE_NAME = "collection_replacement_workflows.py"
-CONDITIONAL_GROUP_EXISTS_CALLABLE_MANIFEST_ID = (
-    "conditional-group-exists-callable-replacement-workflows"
-)
-CONDITIONAL_GROUP_EXISTS_CALLABLE_EXPECTED_CASE_IDS = frozenset(
-    {
-        "module-sub-callable-conditional-group-exists-present-str",
-        "module-subn-callable-conditional-group-exists-absent-str",
-        "pattern-sub-callable-conditional-group-exists-present-str",
-        "pattern-subn-callable-conditional-group-exists-absent-str",
-        "module-sub-callable-named-conditional-group-exists-present-str",
-        "module-subn-callable-named-conditional-group-exists-absent-str",
-        "pattern-sub-callable-named-conditional-group-exists-present-str",
-        "pattern-subn-callable-named-conditional-group-exists-absent-str",
-    }
-)
-CONDITIONAL_GROUP_EXISTS_CALLABLE_EXPECTED_COMPILE_PATTERNS = frozenset(
-    {
-        r"a(b)?c(?(1)d|e)",
-        r"a(?P<word>b)?c(?(word)d|e)",
-    }
-)
-QUANTIFIED_NESTED_GROUP_ALTERNATION_CALLABLE_MANIFEST_ID = (
-    "quantified-nested-group-alternation-callable-replacement-workflows"
-)
-QUANTIFIED_NESTED_GROUP_ALTERNATION_EXPECTED_CASE_IDS = frozenset(
-    {
-        "module-sub-callable-quantified-nested-group-alternation-numbered-lower-bound-b-branch-str",
-        "module-subn-callable-quantified-nested-group-alternation-numbered-first-match-only-c-branch-str",
-        "pattern-sub-callable-quantified-nested-group-alternation-numbered-mixed-branches-str",
-        "pattern-subn-callable-quantified-nested-group-alternation-numbered-first-match-only-b-branch-str",
-        "module-sub-callable-quantified-nested-group-alternation-named-lower-bound-c-branch-str",
-        "module-subn-callable-quantified-nested-group-alternation-named-first-match-only-b-branch-str",
-        "pattern-sub-callable-quantified-nested-group-alternation-named-mixed-branches-str",
-        "pattern-subn-callable-quantified-nested-group-alternation-named-first-match-only-c-branch-str",
-    }
-)
-QUANTIFIED_NESTED_GROUP_ALTERNATION_EXPECTED_COMPILE_PATTERNS = frozenset(
-    {
-        r"a((b|c)+)d",
-        r"a(?P<outer>(?P<inner>b|c)+)d",
-    }
-)
-NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_MANIFEST_ID = (
-    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
-)
-NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_EXPECTED_CASE_IDS = frozenset(
-    {
-        "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
-        "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
-        "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
-        "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-str",
-        "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
-        "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-str",
-        "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
-        "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
-    }
-)
-NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_EXPECTED_COMPILE_PATTERNS = frozenset(
-    {
-        r"a((b|c){2,})\2d",
-        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
-    }
-)
-NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_CALLABLE_MANIFEST_ID = (
-    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows"
-)
-NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_CALLABLE_EXPECTED_CASE_IDS = frozenset(
-    {
-        "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-lower-bound-b-branch-str",
-        "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-first-match-only-b-branch-str",
-        "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-mixed-branches-str",
-        "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-c-branch-first-match-only-str",
-        "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-mixed-branches-str",
-        "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-first-match-only-b-branch-str",
-        "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-lower-bound-c-branch-str",
-        "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-str",
-    }
-)
-NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_CALLABLE_EXPECTED_COMPILE_PATTERNS = (
-    frozenset(
-        {
-            r"a((b|c){2,})\2(?(2)d|e)",
-            r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
-        }
-    )
-)
-QUANTIFIED_NESTED_GROUP_ALTERNATION_NO_MATCH_CASES = (
-    pytest.param(
-        False,
-        r"a((b|c)+)d",
-        "sub",
-        "zzadzz",
-        0,
-        "zzadzz",
-        id="module-numbered-sub-no-match-too-short",
+
+@dataclass(frozen=True)
+class CallableManifestSpec:
+    manifest_id: str
+    expected_case_ids: frozenset[str]
+    expected_compile_patterns: frozenset[str]
+    has_near_miss_matrix: bool
+
+
+@dataclass(frozen=True)
+class CallableNearMissCase:
+    id: str
+    manifest_id: str
+    use_compiled_pattern: bool
+    pattern: str
+    helper: str
+    text: str
+    count: int
+    expected_result: str | tuple[str, int]
+
+
+CALLABLE_MANIFEST_SPECS = (
+    CallableManifestSpec(
+        manifest_id="quantified-nested-group-alternation-callable-replacement-workflows",
+        expected_case_ids=frozenset(
+            {
+                "module-sub-callable-quantified-nested-group-alternation-numbered-lower-bound-b-branch-str",
+                "module-subn-callable-quantified-nested-group-alternation-numbered-first-match-only-c-branch-str",
+                "pattern-sub-callable-quantified-nested-group-alternation-numbered-mixed-branches-str",
+                "pattern-subn-callable-quantified-nested-group-alternation-numbered-first-match-only-b-branch-str",
+                "module-sub-callable-quantified-nested-group-alternation-named-lower-bound-c-branch-str",
+                "module-subn-callable-quantified-nested-group-alternation-named-first-match-only-b-branch-str",
+                "pattern-sub-callable-quantified-nested-group-alternation-named-mixed-branches-str",
+                "pattern-subn-callable-quantified-nested-group-alternation-named-first-match-only-c-branch-str",
+            }
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a((b|c)+)d",
+                r"a(?P<outer>(?P<inner>b|c)+)d",
+            }
+        ),
+        has_near_miss_matrix=True,
     ),
-    pytest.param(
-        False,
-        r"a((b|c)+)d",
-        "subn",
-        "zzabedzz",
-        0,
-        ("zzabedzz", 0),
-        id="module-numbered-subn-no-match-invalid-branch",
+    CallableManifestSpec(
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        expected_case_ids=frozenset(
+            {
+                "module-sub-callable-conditional-group-exists-present-str",
+                "module-subn-callable-conditional-group-exists-absent-str",
+                "pattern-sub-callable-conditional-group-exists-present-str",
+                "pattern-subn-callable-conditional-group-exists-absent-str",
+                "module-sub-callable-named-conditional-group-exists-present-str",
+                "module-subn-callable-named-conditional-group-exists-absent-str",
+                "pattern-sub-callable-named-conditional-group-exists-present-str",
+                "pattern-subn-callable-named-conditional-group-exists-absent-str",
+            }
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)d|e)",
+                r"a(?P<word>b)?c(?(word)d|e)",
+            }
+        ),
+        has_near_miss_matrix=True,
     ),
-    pytest.param(
-        True,
-        r"a(?P<outer>(?P<inner>b|c)+)d",
-        "sub",
-        "zzadzz",
-        0,
-        "zzadzz",
-        id="pattern-named-sub-no-match-too-short",
+    CallableManifestSpec(
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+        ),
+        expected_case_ids=frozenset(
+            {
+                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
+                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
+                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
+                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-str",
+                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
+                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-str",
+                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
+                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+            }
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a((b|c){2,})\2d",
+                r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+            }
+        ),
+        has_near_miss_matrix=True,
     ),
-    pytest.param(
-        True,
-        r"a(?P<outer>(?P<inner>b|c)+)d",
-        "subn",
-        "zzabedzz",
-        0,
-        ("zzabedzz", 0),
-        id="pattern-named-subn-no-match-invalid-branch",
+    CallableManifestSpec(
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows"
+        ),
+        expected_case_ids=frozenset(
+            {
+                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-lower-bound-b-branch-str",
+                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-first-match-only-b-branch-str",
+                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-mixed-branches-str",
+                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-c-branch-first-match-only-str",
+                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-mixed-branches-str",
+                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-first-match-only-b-branch-str",
+                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-lower-bound-c-branch-str",
+                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-str",
+            }
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a((b|c){2,})\2(?(2)d|e)",
+                r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+            }
+        ),
+        has_near_miss_matrix=False,
     ),
 )
-CONDITIONAL_GROUP_EXISTS_CALLABLE_NEAR_MISS_CASES = (
-    pytest.param(
-        False,
-        r"a(b)?c(?(1)d|e)",
-        "sub",
-        "zzabcezz",
-        0,
-        "zzabcezz",
+CALLABLE_MANIFEST_PARAMS = tuple(
+    pytest.param(spec, id=spec.manifest_id) for spec in CALLABLE_MANIFEST_SPECS
+)
+CALLABLE_NEAR_MISS_CASE_SPECS = (
+    CallableNearMissCase(
         id="module-numbered-sub-no-match-present-branch-rejects-no-arm",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=False,
+        pattern=r"a(b)?c(?(1)d|e)",
+        helper="sub",
+        text="zzabcezz",
+        count=0,
+        expected_result="zzabcezz",
     ),
-    pytest.param(
-        False,
-        r"a(b)?c(?(1)d|e)",
-        "subn",
-        "zzacdzz",
-        1,
-        ("zzacdzz", 0),
+    CallableNearMissCase(
         id="module-numbered-subn-no-match-absent-branch-rejects-yes-arm",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=False,
+        pattern=r"a(b)?c(?(1)d|e)",
+        helper="subn",
+        text="zzacdzz",
+        count=1,
+        expected_result=("zzacdzz", 0),
     ),
-    pytest.param(
-        True,
-        r"a(b)?c(?(1)d|e)",
-        "sub",
-        "zzabcezz",
-        0,
-        "zzabcezz",
+    CallableNearMissCase(
         id="pattern-numbered-sub-no-match-present-branch-rejects-no-arm",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=True,
+        pattern=r"a(b)?c(?(1)d|e)",
+        helper="sub",
+        text="zzabcezz",
+        count=0,
+        expected_result="zzabcezz",
     ),
-    pytest.param(
-        True,
-        r"a(b)?c(?(1)d|e)",
-        "subn",
-        "zzacdzz",
-        1,
-        ("zzacdzz", 0),
+    CallableNearMissCase(
         id="pattern-numbered-subn-no-match-absent-branch-rejects-yes-arm",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=True,
+        pattern=r"a(b)?c(?(1)d|e)",
+        helper="subn",
+        text="zzacdzz",
+        count=1,
+        expected_result=("zzacdzz", 0),
     ),
-    pytest.param(
-        False,
-        r"a(?P<word>b)?c(?(word)d|e)",
-        "sub",
-        "zzabcezz",
-        0,
-        "zzabcezz",
+    CallableNearMissCase(
         id="module-named-sub-no-match-present-branch-rejects-no-arm",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=False,
+        pattern=r"a(?P<word>b)?c(?(word)d|e)",
+        helper="sub",
+        text="zzabcezz",
+        count=0,
+        expected_result="zzabcezz",
     ),
-    pytest.param(
-        False,
-        r"a(?P<word>b)?c(?(word)d|e)",
-        "subn",
-        "zzacdzz",
-        1,
-        ("zzacdzz", 0),
+    CallableNearMissCase(
         id="module-named-subn-no-match-absent-branch-rejects-yes-arm",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=False,
+        pattern=r"a(?P<word>b)?c(?(word)d|e)",
+        helper="subn",
+        text="zzacdzz",
+        count=1,
+        expected_result=("zzacdzz", 0),
     ),
-    pytest.param(
-        True,
-        r"a(?P<word>b)?c(?(word)d|e)",
-        "sub",
-        "zzabcezz",
-        0,
-        "zzabcezz",
+    CallableNearMissCase(
         id="pattern-named-sub-no-match-present-branch-rejects-no-arm",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=True,
+        pattern=r"a(?P<word>b)?c(?(word)d|e)",
+        helper="sub",
+        text="zzabcezz",
+        count=0,
+        expected_result="zzabcezz",
     ),
-    pytest.param(
-        True,
-        r"a(?P<word>b)?c(?(word)d|e)",
-        "subn",
-        "zzacdzz",
-        1,
-        ("zzacdzz", 0),
+    CallableNearMissCase(
         id="pattern-named-subn-no-match-absent-branch-rejects-yes-arm",
+        manifest_id="conditional-group-exists-callable-replacement-workflows",
+        use_compiled_pattern=True,
+        pattern=r"a(?P<word>b)?c(?(word)d|e)",
+        helper="subn",
+        text="zzacdzz",
+        count=1,
+        expected_result=("zzacdzz", 0),
+    ),
+    CallableNearMissCase(
+        id="module-numbered-sub-no-match-too-short",
+        manifest_id="quantified-nested-group-alternation-callable-replacement-workflows",
+        use_compiled_pattern=False,
+        pattern=r"a((b|c)+)d",
+        helper="sub",
+        text="zzadzz",
+        count=0,
+        expected_result="zzadzz",
+    ),
+    CallableNearMissCase(
+        id="module-numbered-subn-no-match-invalid-branch",
+        manifest_id="quantified-nested-group-alternation-callable-replacement-workflows",
+        use_compiled_pattern=False,
+        pattern=r"a((b|c)+)d",
+        helper="subn",
+        text="zzabedzz",
+        count=0,
+        expected_result=("zzabedzz", 0),
+    ),
+    CallableNearMissCase(
+        id="pattern-named-sub-no-match-too-short",
+        manifest_id="quantified-nested-group-alternation-callable-replacement-workflows",
+        use_compiled_pattern=True,
+        pattern=r"a(?P<outer>(?P<inner>b|c)+)d",
+        helper="sub",
+        text="zzadzz",
+        count=0,
+        expected_result="zzadzz",
+    ),
+    CallableNearMissCase(
+        id="pattern-named-subn-no-match-invalid-branch",
+        manifest_id="quantified-nested-group-alternation-callable-replacement-workflows",
+        use_compiled_pattern=True,
+        pattern=r"a(?P<outer>(?P<inner>b|c)+)d",
+        helper="subn",
+        text="zzabedzz",
+        count=0,
+        expected_result=("zzabedzz", 0),
+    ),
+    CallableNearMissCase(
+        id="module-numbered-sub-no-match-missing-replay-broader-range",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=False,
+        pattern=r"a((b|c){2,})\2d",
+        helper="sub",
+        text="zzabbdzz",
+        count=0,
+        expected_result="zzabbdzz",
+    ),
+    CallableNearMissCase(
+        id="module-numbered-subn-no-match-missing-replay-broader-range",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=False,
+        pattern=r"a((b|c){2,})\2d",
+        helper="subn",
+        text="zzabbdzz",
+        count=1,
+        expected_result=("zzabbdzz", 0),
+    ),
+    CallableNearMissCase(
+        id="pattern-numbered-sub-no-match-missing-replay-broader-range",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=True,
+        pattern=r"a((b|c){2,})\2d",
+        helper="sub",
+        text="zzabbdzz",
+        count=0,
+        expected_result="zzabbdzz",
+    ),
+    CallableNearMissCase(
+        id="pattern-numbered-subn-no-match-missing-replay-broader-range",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=True,
+        pattern=r"a((b|c){2,})\2d",
+        helper="subn",
+        text="zzabbdzz",
+        count=1,
+        expected_result=("zzabbdzz", 0),
+    ),
+    CallableNearMissCase(
+        id="module-named-sub-no-match-missing-replay-broader-range",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=False,
+        pattern=r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        helper="sub",
+        text="zzabbdzz",
+        count=0,
+        expected_result="zzabbdzz",
+    ),
+    CallableNearMissCase(
+        id="module-named-subn-no-match-missing-replay-broader-range",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=False,
+        pattern=r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        helper="subn",
+        text="zzabbdzz",
+        count=1,
+        expected_result=("zzabbdzz", 0),
+    ),
+    CallableNearMissCase(
+        id="pattern-named-sub-no-match-missing-replay-broader-range",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=True,
+        pattern=r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        helper="sub",
+        text="zzabbdzz",
+        count=0,
+        expected_result="zzabbdzz",
+    ),
+    CallableNearMissCase(
+        id="pattern-named-subn-no-match-missing-replay-broader-range",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=True,
+        pattern=r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        helper="subn",
+        text="zzabbdzz",
+        count=1,
+        expected_result=("zzabbdzz", 0),
     ),
 )
-NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_NEAR_MISS_CASES = (
-    pytest.param(
-        False,
-        r"a((b|c){2,})\2d",
-        "sub",
-        "zzabbdzz",
-        0,
-        "zzabbdzz",
-        id="module-numbered-sub-no-match-missing-replay-broader-range",
-    ),
-    pytest.param(
-        False,
-        r"a((b|c){2,})\2d",
-        "subn",
-        "zzabbdzz",
-        1,
-        ("zzabbdzz", 0),
-        id="module-numbered-subn-no-match-missing-replay-broader-range",
-    ),
-    pytest.param(
-        True,
-        r"a((b|c){2,})\2d",
-        "sub",
-        "zzabbdzz",
-        0,
-        "zzabbdzz",
-        id="pattern-numbered-sub-no-match-missing-replay-broader-range",
-    ),
-    pytest.param(
-        True,
-        r"a((b|c){2,})\2d",
-        "subn",
-        "zzabbdzz",
-        1,
-        ("zzabbdzz", 0),
-        id="pattern-numbered-subn-no-match-missing-replay-broader-range",
-    ),
-    pytest.param(
-        False,
-        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
-        "sub",
-        "zzabbdzz",
-        0,
-        "zzabbdzz",
-        id="module-named-sub-no-match-missing-replay-broader-range",
-    ),
-    pytest.param(
-        False,
-        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
-        "subn",
-        "zzabbdzz",
-        1,
-        ("zzabbdzz", 0),
-        id="module-named-subn-no-match-missing-replay-broader-range",
-    ),
-    pytest.param(
-        True,
-        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
-        "sub",
-        "zzabbdzz",
-        0,
-        "zzabbdzz",
-        id="pattern-named-sub-no-match-missing-replay-broader-range",
-    ),
-    pytest.param(
-        True,
-        r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
-        "subn",
-        "zzabbdzz",
-        1,
-        ("zzabbdzz", 0),
-        id="pattern-named-subn-no-match-missing-replay-broader-range",
-    ),
+CALLABLE_NEAR_MISS_CASES = tuple(
+    pytest.param(case, id=case.id) for case in CALLABLE_NEAR_MISS_CASE_SPECS
+)
+CALLABLE_NEAR_MISS_MANIFEST_IDS = frozenset(
+    case.manifest_id for case in CALLABLE_NEAR_MISS_CASE_SPECS
 )
 
 
@@ -794,92 +865,26 @@ def test_literal_callable_case_stays_aligned_with_published_collection_fixture()
     assert case.source_kwargs == {}
 
 
-def test_quantified_nested_group_alternation_callable_cases_stay_aligned_with_published_fixture() -> None:
-    bundle = published_fixture_bundle_by_manifest_id(
-        FIXTURE_BUNDLES,
-        QUANTIFIED_NESTED_GROUP_ALTERNATION_CALLABLE_MANIFEST_ID
-    )
-
-    assert bundle.manifest.manifest_id == (
-        QUANTIFIED_NESTED_GROUP_ALTERNATION_CALLABLE_MANIFEST_ID
-    )
-    assert len(bundle.cases) == len(QUANTIFIED_NESTED_GROUP_ALTERNATION_EXPECTED_CASE_IDS)
-    assert {case.case_id for case in bundle.cases} == (
-        QUANTIFIED_NESTED_GROUP_ALTERNATION_EXPECTED_CASE_IDS
-    )
-    assert bundle_patterns(bundle, pattern_extractor=str_case_pattern) == (
-        QUANTIFIED_NESTED_GROUP_ALTERNATION_EXPECTED_COMPILE_PATTERNS
-    )
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        EXPECTED_OPERATION_HELPER_COUNTS
-    )
-
-
-def test_conditional_group_exists_callable_cases_stay_aligned_with_published_fixture(
+@pytest.mark.parametrize("manifest_spec", CALLABLE_MANIFEST_PARAMS)
+def test_callable_replacement_cases_stay_aligned_with_published_fixture(
+    manifest_spec: CallableManifestSpec,
 ) -> None:
     bundle = published_fixture_bundle_by_manifest_id(
         FIXTURE_BUNDLES,
-        CONDITIONAL_GROUP_EXISTS_CALLABLE_MANIFEST_ID,
+        manifest_spec.manifest_id,
     )
 
-    assert bundle.manifest.manifest_id == CONDITIONAL_GROUP_EXISTS_CALLABLE_MANIFEST_ID
-    assert len(bundle.cases) == len(CONDITIONAL_GROUP_EXISTS_CALLABLE_EXPECTED_CASE_IDS)
-    assert {case.case_id for case in bundle.cases} == (
-        CONDITIONAL_GROUP_EXISTS_CALLABLE_EXPECTED_CASE_IDS
-    )
+    assert bundle.manifest.manifest_id == manifest_spec.manifest_id
+    assert len(bundle.cases) == len(manifest_spec.expected_case_ids)
+    assert {case.case_id for case in bundle.cases} == manifest_spec.expected_case_ids
     assert bundle_patterns(bundle, pattern_extractor=str_case_pattern) == (
-        CONDITIONAL_GROUP_EXISTS_CALLABLE_EXPECTED_COMPILE_PATTERNS
+        manifest_spec.expected_compile_patterns
     )
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
         EXPECTED_OPERATION_HELPER_COUNTS
     )
-
-
-def test_nested_broader_range_open_ended_callable_cases_stay_aligned_with_published_fixture(
-) -> None:
-    bundle = published_fixture_bundle_by_manifest_id(
-        FIXTURE_BUNDLES,
-        NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_MANIFEST_ID
-    )
-
-    assert bundle.manifest.manifest_id == (
-        NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_MANIFEST_ID
-    )
-    assert len(bundle.cases) == len(
-        NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_EXPECTED_CASE_IDS
-    )
-    assert {case.case_id for case in bundle.cases} == (
-        NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_EXPECTED_CASE_IDS
-    )
-    assert bundle_patterns(bundle, pattern_extractor=str_case_pattern) == (
-        NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_EXPECTED_COMPILE_PATTERNS
-    )
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        EXPECTED_OPERATION_HELPER_COUNTS
-    )
-
-
-def test_nested_broader_range_open_ended_conditional_callable_cases_stay_aligned_with_published_fixture(
-) -> None:
-    bundle = published_fixture_bundle_by_manifest_id(
-        FIXTURE_BUNDLES,
-        NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_CALLABLE_MANIFEST_ID
-    )
-
-    assert bundle.manifest.manifest_id == (
-        NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_CALLABLE_MANIFEST_ID
-    )
-    assert len(bundle.cases) == len(
-        NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_CALLABLE_EXPECTED_CASE_IDS
-    )
-    assert {case.case_id for case in bundle.cases} == (
-        NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_CALLABLE_EXPECTED_CASE_IDS
-    )
-    assert bundle_patterns(bundle, pattern_extractor=str_case_pattern) == (
-        NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_CALLABLE_EXPECTED_COMPILE_PATTERNS
-    )
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        EXPECTED_OPERATION_HELPER_COUNTS
+    assert manifest_spec.has_near_miss_matrix is (
+        manifest_spec.manifest_id in CALLABLE_NEAR_MISS_MANIFEST_IDS
     )
 
 
@@ -1011,23 +1016,18 @@ def test_callable_replacement_no_match_paths_leave_input_unchanged(
     assert callback_calls == []
 
 
-@pytest.mark.parametrize(
-    ("use_compiled_pattern", "pattern", "helper", "text", "count", "expected_result"),
-    CONDITIONAL_GROUP_EXISTS_CALLABLE_NEAR_MISS_CASES,
-)
-def test_conditional_group_exists_callable_replacement_near_miss_paths_leave_input_unchanged(
+@pytest.mark.parametrize("near_miss_case", CALLABLE_NEAR_MISS_CASES)
+def test_callable_replacement_near_miss_paths_leave_input_unchanged(
     regex_backend: tuple[str, object],
-    use_compiled_pattern: bool,
-    pattern: str,
-    helper: str,
-    text: str,
-    count: int,
-    expected_result: str | tuple[str, int],
+    near_miss_case: CallableNearMissCase,
 ) -> None:
     backend_name, backend = regex_backend
-    if backend_name == "rebar" and pattern in PENDING_REBAR_NO_MATCH_PATTERNS:
+    if (
+        backend_name == "rebar"
+        and near_miss_case.pattern in PENDING_REBAR_NO_MATCH_PATTERNS
+    ):
         pytest.skip(
-            f"callable replacement parity for pattern {pattern!r} remains queued behind a later Rust-backed parity task"
+            f"callable replacement parity for pattern {near_miss_case.pattern!r} remains queued behind a later Rust-backed parity task"
         )
 
     callback_calls: list[object] = []
@@ -1038,120 +1038,24 @@ def test_conditional_group_exists_callable_replacement_near_miss_paths_leave_inp
 
     observed = _invoke_callable_replacement(
         backend,
-        pattern=pattern,
-        helper=helper,
-        string=text,
-        count=count,
+        pattern=near_miss_case.pattern,
+        helper=near_miss_case.helper,
+        string=near_miss_case.text,
+        count=near_miss_case.count,
         replacement=replacement,
-        use_compiled_pattern=use_compiled_pattern,
+        use_compiled_pattern=near_miss_case.use_compiled_pattern,
     )
     expected = _invoke_callable_replacement(
         re,
-        pattern=pattern,
-        helper=helper,
-        string=text,
-        count=count,
+        pattern=near_miss_case.pattern,
+        helper=near_miss_case.helper,
+        string=near_miss_case.text,
+        count=near_miss_case.count,
         replacement=replacement,
-        use_compiled_pattern=use_compiled_pattern,
+        use_compiled_pattern=near_miss_case.use_compiled_pattern,
     )
 
-    assert observed == expected == expected_result
-    assert callback_calls == []
-
-
-@pytest.mark.parametrize(
-    ("use_compiled_pattern", "pattern", "helper", "text", "count", "expected_result"),
-    QUANTIFIED_NESTED_GROUP_ALTERNATION_NO_MATCH_CASES,
-)
-def test_quantified_nested_group_alternation_callable_replacement_near_miss_paths_leave_input_unchanged(
-    regex_backend: tuple[str, object],
-    use_compiled_pattern: bool,
-    pattern: str,
-    helper: str,
-    text: str,
-    count: int,
-    expected_result: str | tuple[str, int],
-) -> None:
-    backend_name, backend = regex_backend
-    if backend_name == "rebar" and pattern in PENDING_REBAR_NO_MATCH_PATTERNS:
-        pytest.skip(
-            f"callable replacement parity for pattern {pattern!r} remains queued behind a later Rust-backed parity task"
-        )
-
-    callback_calls: list[object] = []
-
-    def replacement(match: object) -> str:
-        callback_calls.append(match)
-        return "X"
-
-    observed = _invoke_callable_replacement(
-        backend,
-        pattern=pattern,
-        helper=helper,
-        string=text,
-        count=count,
-        replacement=replacement,
-        use_compiled_pattern=use_compiled_pattern,
-    )
-    expected = _invoke_callable_replacement(
-        re,
-        pattern=pattern,
-        helper=helper,
-        string=text,
-        count=count,
-        replacement=replacement,
-        use_compiled_pattern=use_compiled_pattern,
-    )
-
-    assert observed == expected == expected_result
-    assert callback_calls == []
-
-
-@pytest.mark.parametrize(
-    ("use_compiled_pattern", "pattern", "helper", "text", "count", "expected_result"),
-    NESTED_BROADER_RANGE_OPEN_ENDED_CALLABLE_NEAR_MISS_CASES,
-)
-def test_nested_broader_range_open_ended_callable_replacement_near_miss_paths_leave_input_unchanged(
-    regex_backend: tuple[str, object],
-    use_compiled_pattern: bool,
-    pattern: str,
-    helper: str,
-    text: str,
-    count: int,
-    expected_result: str | tuple[str, int],
-) -> None:
-    backend_name, backend = regex_backend
-    if backend_name == "rebar" and pattern in PENDING_REBAR_NO_MATCH_PATTERNS:
-        pytest.skip(
-            f"callable replacement parity for pattern {pattern!r} remains queued behind a later Rust-backed parity task"
-        )
-
-    callback_calls: list[object] = []
-
-    def replacement(match: object) -> str:
-        callback_calls.append(match)
-        return "X"
-
-    observed = _invoke_callable_replacement(
-        backend,
-        pattern=pattern,
-        helper=helper,
-        string=text,
-        count=count,
-        replacement=replacement,
-        use_compiled_pattern=use_compiled_pattern,
-    )
-    expected = _invoke_callable_replacement(
-        re,
-        pattern=pattern,
-        helper=helper,
-        string=text,
-        count=count,
-        replacement=replacement,
-        use_compiled_pattern=use_compiled_pattern,
-    )
-
-    assert observed == expected == expected_result
+    assert observed == expected == near_miss_case.expected_result
     assert callback_calls == []
 
 
