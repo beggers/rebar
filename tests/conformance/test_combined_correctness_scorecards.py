@@ -28,6 +28,33 @@ QUANTIFIED_ALTERNATION_BROADER_RANGE_FIXTURE_PATH = (
 QUANTIFIED_ALTERNATION_BROADER_RANGE_SUITE_ID = (
     "match.quantified_alternation_broader_range"
 )
+QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATH = (
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
+    / "quantified_nested_group_alternation_branch_local_backreference_workflows.py"
+)
+QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_SUITE_ID = (
+    "match.quantified_nested_group_alternation_branch_local_backreference"
+)
+TRACKED_REPORT_FRESHNESS_CASES = (
+    (
+        "numbered-backreference",
+        NUMBERED_BACKREFERENCE_FIXTURE_PATH,
+        NUMBERED_BACKREFERENCE_SUITE_ID,
+    ),
+    (
+        "quantified-alternation-broader-range",
+        QUANTIFIED_ALTERNATION_BROADER_RANGE_FIXTURE_PATH,
+        QUANTIFIED_ALTERNATION_BROADER_RANGE_SUITE_ID,
+    ),
+    (
+        "quantified-nested-group-alternation-branch-local-backreference",
+        QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATH,
+        QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_SUITE_ID,
+    ),
+)
 
 from rebar_harness.correctness import (
     CpythonReAdapter,
@@ -212,19 +239,15 @@ class CorrectnessScorecardSuitesTest(unittest.TestCase):
                     case_factory=partial(correctness_scorecard_case, suite.suite_id),
                 )
 
-    def test_tracked_report_keeps_numbered_backreference_manifest_fresh(self) -> None:
-        self._assert_tracked_report_keeps_manifest_fresh(
-            NUMBERED_BACKREFERENCE_FIXTURE_PATH,
-            NUMBERED_BACKREFERENCE_SUITE_ID,
-        )
-
-    def test_tracked_report_keeps_quantified_alternation_broader_range_manifest_fresh(
+    def test_tracked_report_keeps_sample_manifests_fresh(
         self,
     ) -> None:
-        self._assert_tracked_report_keeps_manifest_fresh(
-            QUANTIFIED_ALTERNATION_BROADER_RANGE_FIXTURE_PATH,
-            QUANTIFIED_ALTERNATION_BROADER_RANGE_SUITE_ID,
-        )
+        for label, fixture_path, suite_id in TRACKED_REPORT_FRESHNESS_CASES:
+            with self.subTest(manifest=label):
+                self._assert_tracked_report_keeps_manifest_fresh(
+                    fixture_path,
+                    suite_id,
+                )
 
 
 if __name__ == "__main__":
