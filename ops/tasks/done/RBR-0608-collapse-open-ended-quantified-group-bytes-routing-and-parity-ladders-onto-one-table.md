@@ -1,6 +1,6 @@
 # RBR-0608: Collapse the open-ended quantified-group bytes routing and parity ladders onto one table
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
 
@@ -94,3 +94,6 @@ PY`
   - the inline `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` probe above passes (`ok`)
   - the first `bash -lc "! rg -n ..."` command above currently fails exactly on this cleanup because the `9` family-specific bytes routing/anchor test definitions are still present
   - the second `bash -lc "! rg -n ..."` command above currently fails exactly on this cleanup because the `49` family-specific bytes compile/module/pattern parity test definitions are still present
+- 2026-03-18 completion:
+  - Replaced the duplicated open-ended quantified-group bytes routing/parity ladders in `tests/python/test_open_ended_quantified_group_parity_suite.py` with one local `BytesCaseSurfaceSpec` table, shared bytes-surface assertions, and shared supplemental-bytes compile/module/pattern parity tests while preserving the existing manifest routing split and published bytes text maps.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py` (`3891 passed in 2.63s`), the inline manifest probe (`ok`), and both `rg -n` absence checks (no matches).
