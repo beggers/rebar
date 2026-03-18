@@ -329,7 +329,7 @@ The published frontier is still narrow: the current correctness slice covers 125
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0613` should publish the broader-range open-ended `{2,}` nested grouped-alternation branch-local-backreference bytes pair on the existing branch-local correctness surface, widening `match.nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference` from `10 / 10 / 0` with `['str']` coverage to `20 / 10 / 10` with mixed `['bytes', 'str']` coverage and moving the combined correctness report from `1258 / 1258 / 0` to `1268 / 1258 / 10` across `111` manifests.
+- `RBR-0615` should convert the broader-range open-ended `{2,}` nested grouped-alternation branch-local-backreference bytes pair published by `RBR-0613` into real parity on the existing branch-local surface, moving `match.nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference` from `20 / 10 / 10` to `20 / 20 / 0` and the combined correctness report from `1268 / 1258 / 10` to `1268 / 1268 / 0` across `111` manifests before Python-path benchmark catch-up mirrors the same bytes pair.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
