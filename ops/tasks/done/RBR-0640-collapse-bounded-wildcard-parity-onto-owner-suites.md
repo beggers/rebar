@@ -1,6 +1,6 @@
 # RBR-0640: Collapse the bounded-wildcard parity suite onto the literal-flag and module-workflow owners
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
 
@@ -70,3 +70,8 @@ PY`
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py` passes (`162 passed in 0.20s`);
   - the inline `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` probe above currently fails exactly on this cleanup because the literal-flag suite still excludes `flag-unsupported-nonliteral-ignorecase-search`, the module-workflow suite still excludes `module-findall-nonliteral-str`, and `tests/python/fixture_parity_support.py` still exports `LITERAL_FLAG_DELEGATED_CASE_IDS`; and
   - `bash -lc "! rg --files tests/python | rg 'test_bounded_wildcard_parity_suite\\.py$'"` currently fails exactly on this cleanup because the detached suite file still exists.
+
+## Completion Notes
+- 2026-03-18: Folded `flag-unsupported-nonliteral-ignorecase-search` directly into `tests/python/test_literal_flag_parity_suite.py`, removed `LITERAL_FLAG_DELEGATED_CASE_IDS` from `tests/python/fixture_parity_support.py`, and made the literal-flag owner track the full published `literal-flag-workflows` frontier without a delegation escape hatch.
+- 2026-03-18: Folded `module-findall-nonliteral-str` plus the detached bounded-wildcard compile/search/cache/pattern/fake-native assertions into `tests/python/test_module_workflow_parity_suite.py`, added the collection-manifest frontier assertion there, and deleted `tests/python/test_bounded_wildcard_parity_suite.py`.
+- 2026-03-18: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_literal_flag_parity_suite.py tests/python/test_module_workflow_parity_suite.py` (`507 passed in 0.53s`), `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py` (`162 passed in 0.20s`), the task's inline `PY` probe (`ok`), `bash -lc "! rg --files tests/python | rg 'test_bounded_wildcard_parity_suite\\.py$'"` (passes), `rg -n "LITERAL_FLAG_DELEGATED_CASE_IDS" tests/python` (no matches), and `git diff --name-status -- tests/python/test_literal_flag_parity_suite.py tests/python/test_module_workflow_parity_suite.py tests/python/fixture_parity_support.py tests/python/test_bounded_wildcard_parity_suite.py` (`M` on the three owner/support files and `D` on the deleted detached suite).

@@ -17,12 +17,13 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
-    assert_direct_test_case_id_buckets_cover_selected_frontier,
-    assert_finditer_parity,
     FixtureBundle,
     FixtureBundleSpec,
+    RecordingNativeBoundary,
+    assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
+    assert_finditer_parity,
     assert_match_convenience_api_parity,
     assert_match_result_parity,
     assert_pattern_parity,
@@ -462,6 +463,24 @@ class CollectionTypeErrorCase:
     compiled: bool = False
 
 
+@dataclass(frozen=True)
+class BoundedWildcardCompileCase:
+    case_id: str
+    pattern: str
+    flags: int = 0
+
+
+@dataclass(frozen=True)
+class BoundedWildcardPatternCase:
+    case_id: str
+    helper: str
+    pattern: str
+    string: str
+    flags: int = 0
+    pos: int = 0
+    endpos: int | None = None
+
+
 def _module_collection_case_from_fixture(case: FixtureCase) -> CollectionModuleCase:
     assert case.operation == "module_call"
     assert case.helper is not None
@@ -584,6 +603,44 @@ def _call_pattern_collection_helper_with_window(
     return method(string, pos, endpos)
 
 
+def _call_bounded_wildcard_pattern_helper(
+    pattern: object,
+    case: BoundedWildcardPatternCase,
+) -> object:
+    args: list[object] = [case.string]
+    if case.pos or case.endpos is not None:
+        args.append(case.pos)
+        if case.endpos is not None:
+            args.append(case.endpos)
+    return getattr(pattern, case.helper)(*args)
+
+
+class _BoundedWildcardFakeNativeBoundary(RecordingNativeBoundary):
+    def compile_result(self, pattern: str | bytes, flags: int) -> tuple[str, int, bool]:
+        return ("compiled", 34, False)
+
+    def literal_match_result(
+        self,
+        pattern: str | bytes,
+        flags: int,
+        mode: str,
+        string: str | bytes,
+        pos: int,
+        endpos: int | None,
+    ) -> tuple[str, int, int, tuple[int, int] | None]:
+        return ("matched", 0, len(string), (0, 3))
+
+    def literal_findall_result(
+        self,
+        pattern: str | bytes,
+        flags: int,
+        string: str | bytes,
+        pos: int,
+        endpos: int | None,
+    ) -> tuple[str, list[str] | list[bytes] | None]:
+        return ("supported", ["abc"])
+
+
 # Keep the detached collection-helper surface on the module workflow owner file.
 COLLECTION_TARGET_FIXTURE_CASE_IDS = (
     "module-split-str-leading-trailing",
@@ -593,6 +650,7 @@ COLLECTION_TARGET_FIXTURE_CASE_IDS = (
     "pattern-findall-str-no-match",
     "module-finditer-str-repeated",
     "pattern-finditer-bytes-bounded",
+    "module-findall-nonliteral-str",
 )
 (COLLECTION_FIXTURE_BUNDLE,) = load_fixture_bundles(
     (
@@ -600,12 +658,12 @@ COLLECTION_TARGET_FIXTURE_CASE_IDS = (
             "collection_replacement_workflows.py",
             expected_manifest_id="collection-replacement-workflows",
             selected_case_ids=COLLECTION_TARGET_FIXTURE_CASE_IDS,
-            expected_patterns=frozenset({"abc", b"abc"}),
+            expected_patterns=frozenset({"abc", "a.c", b"abc"}),
             expected_operation_helper_counts=Counter(
                 {
                     ("module_call", "split"): 2,
                     ("pattern_call", "split"): 1,
-                    ("module_call", "findall"): 1,
+                    ("module_call", "findall"): 2,
                     ("pattern_call", "findall"): 1,
                     ("module_call", "finditer"): 1,
                     ("pattern_call", "finditer"): 1,
@@ -614,6 +672,15 @@ COLLECTION_TARGET_FIXTURE_CASE_IDS = (
             expected_text_models=frozenset({"bytes", "str"}),
         ),
     )
+)
+COLLECTION_REPLACEMENT_UNCOVERED_CASE_IDS = (
+    "module-sub-str-repeated",
+    "module-subn-bytes-count",
+    "pattern-sub-str-no-match",
+    "pattern-subn-str-count",
+    "module-sub-template-str",
+    "module-sub-callable-str",
+    "module-sub-grouping-template",
 )
 PUBLISHED_COLLECTION_MODULE_CASES = tuple(
     _module_collection_case_from_fixture(case)
@@ -760,6 +827,71 @@ PATTERN_FINDITER_COLLECTION_CASES = tuple(
         "abc",
         "zabz",
         (1, 4),
+    ),
+)
+# Keep the detached bounded-wildcard workflow surface on the module workflow owner file.
+BOUNDED_WILDCARD_COMPILE_CASES = (
+    BoundedWildcardCompileCase(
+        case_id="bounded-wildcard-compile-default",
+        pattern="a.c",
+    ),
+    BoundedWildcardCompileCase(
+        case_id="bounded-wildcard-compile-ignorecase",
+        pattern="a.c",
+        flags=int(re.IGNORECASE),
+    ),
+)
+BOUNDED_WILDCARD_PATTERN_MATCH_CASES = (
+    BoundedWildcardPatternCase(
+        case_id="pattern-search-ignorecase-bounded-hit",
+        helper="search",
+        pattern="a.c",
+        flags=int(re.IGNORECASE),
+        string="zaBczz",
+        pos=1,
+        endpos=5,
+    ),
+    BoundedWildcardPatternCase(
+        case_id="pattern-match-bounded-hit",
+        helper="match",
+        pattern="a.c",
+        string="zabcaxc",
+        pos=1,
+        endpos=4,
+    ),
+    BoundedWildcardPatternCase(
+        case_id="pattern-fullmatch-bounded-hit",
+        helper="fullmatch",
+        pattern="a.c",
+        string="zaxcz",
+        pos=1,
+        endpos=4,
+    ),
+    BoundedWildcardPatternCase(
+        case_id="pattern-search-bounded-endpos-miss",
+        helper="search",
+        pattern="a.c",
+        string="zabc",
+        pos=1,
+        endpos=3,
+    ),
+)
+BOUNDED_WILDCARD_PATTERN_COLLECTION_CASES = (
+    BoundedWildcardPatternCase(
+        case_id="pattern-findall-bounded-default",
+        helper="findall",
+        pattern="a.c",
+        string="zabcaxcz",
+        pos=1,
+        endpos=7,
+    ),
+    BoundedWildcardPatternCase(
+        case_id="pattern-finditer-bounded-default",
+        helper="finditer",
+        pattern="a.c",
+        string="zabcaxcx",
+        pos=1,
+        endpos=7,
     ),
 )
 COLLECTION_TYPE_ERROR_CASES = (
@@ -2322,12 +2454,142 @@ def test_literal_collection_suite_stays_aligned_with_published_fixture_rows() ->
     assert_fixture_bundle_contract(COLLECTION_FIXTURE_BUNDLE, pattern_extractor=case_pattern)
 
 
+def test_literal_collection_suite_tracks_published_case_frontier() -> None:
+    assert_fixture_bundle_tracks_published_case_frontier(
+        COLLECTION_FIXTURE_BUNDLE,
+        selected_case_ids=COLLECTION_TARGET_FIXTURE_CASE_IDS,
+        expected_uncovered_case_ids=COLLECTION_REPLACEMENT_UNCOVERED_CASE_IDS,
+    )
+
+
 def test_literal_collection_direct_test_buckets_cover_selected_frontier() -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
         LITERAL_COLLECTION_DIRECT_TEST_CASE_ID_BUCKETS,
         selected_case_ids=COLLECTION_TARGET_FIXTURE_CASE_IDS,
         coverage_label="literal collection direct-test case-id buckets",
     )
+
+
+@pytest.mark.parametrize(
+    "case",
+    BOUNDED_WILDCARD_COMPILE_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_bounded_wildcard_compile_metadata_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: BoundedWildcardCompileCase,
+) -> None:
+    backend_name, backend = regex_backend
+    compile_with_cpython_parity(backend_name, backend, case.pattern, case.flags)
+
+
+def test_rebar_bounded_wildcard_direct_workflow_matches_cpython() -> None:
+    assert rebar.findall("a.c", "abc") == re.findall("a.c", "abc")
+
+    observed = rebar.search("a.c", "ABC", rebar.IGNORECASE)
+    expected = re.search("a.c", "ABC", re.IGNORECASE)
+
+    assert expected is not None
+    assert observed is not None
+    assert type(observed) is rebar.Match
+    assert observed.group(0) == expected.group(0)
+    assert observed.span() == expected.span()
+
+    compiled = rebar.compile("a.c")
+    assert compiled is rebar.compile("a.c")
+    assert compiled.findall("zabcaxc") == ["abc", "axc"]
+
+
+def test_rebar_bounded_wildcard_unsupported_paths_keep_placeholder_messages() -> None:
+    with pytest.raises(
+        NotImplementedError,
+        match=r"rebar\.compile\(\) is a scaffold placeholder",
+    ):
+        rebar.search("[ab]c", "abc")
+
+    unsupported = rebar.compile("abc", rebar.IGNORECASE)
+    with pytest.raises(
+        NotImplementedError,
+        match=r"rebar\.Pattern\.findall\(\) is a scaffold placeholder",
+    ):
+        unsupported.findall("ABC")
+
+
+@pytest.mark.parametrize(
+    "case",
+    BOUNDED_WILDCARD_PATTERN_MATCH_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_bounded_wildcard_pattern_match_helpers_match_cpython(
+    regex_backend: tuple[str, object],
+    case: BoundedWildcardPatternCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+        case.flags,
+    )
+
+    observed = _call_bounded_wildcard_pattern_helper(observed_pattern, case)
+    expected = _call_bounded_wildcard_pattern_helper(expected_pattern, case)
+
+    assert_match_result_parity(backend_name, observed, expected)
+    if expected is not None:
+        assert_match_convenience_api_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    BOUNDED_WILDCARD_PATTERN_COLLECTION_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_bounded_wildcard_pattern_collection_helpers_match_cpython(
+    regex_backend: tuple[str, object],
+    case: BoundedWildcardPatternCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+        case.flags,
+    )
+
+    observed = _call_bounded_wildcard_pattern_helper(observed_pattern, case)
+    expected = _call_bounded_wildcard_pattern_helper(expected_pattern, case)
+
+    if case.helper == "finditer":
+        assert_finditer_parity(backend_name, observed, expected)
+        return
+
+    assert observed == expected
+
+
+def test_fake_native_boundary_handles_bounded_wildcard_wrappers(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake_native = _BoundedWildcardFakeNativeBoundary()
+    monkeypatch.setattr(rebar, "_native", fake_native)
+
+    rebar.purge()
+
+    search_match = rebar.search("a.c", "ABC", rebar.IGNORECASE)
+
+    assert search_match is not None
+    assert type(search_match) is rebar.Match
+    assert search_match.group(0) == "ABC"
+    assert search_match.span() == (0, 3)
+    assert rebar.findall("a.c", "abc") == ["abc"]
+
+    assert fake_native.calls == [
+        ("purge",),
+        ("compile", "a.c", int(rebar.IGNORECASE)),
+        ("match", "a.c", 34, "search", "ABC", 0, None),
+        ("compile", "a.c", 0),
+        ("findall", "a.c", 34, "abc", 0, None),
+    ]
 
 
 @pytest.mark.parametrize(

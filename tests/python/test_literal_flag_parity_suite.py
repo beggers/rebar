@@ -10,7 +10,6 @@ import rebar
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
     FixtureBundleSpec,
-    LITERAL_FLAG_DELEGATED_CASE_IDS,
     RecordingNativeBoundary,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
@@ -166,16 +165,19 @@ TARGET_FIXTURE_CASE_IDS = (
     "flag-cache-distinct-str-normalized",
     "flag-unsupported-inline-flag-search",
     "flag-unsupported-locale-bytes-search",
+    "flag-unsupported-nonliteral-ignorecase-search",
 )
 SELECTED_CASE_BUNDLE_SPECS = (
     FixtureBundleSpec(
         "literal_flag_workflows.py",
         expected_manifest_id="literal-flag-workflows",
         selected_case_ids=TARGET_FIXTURE_CASE_IDS,
-        expected_patterns=frozenset({"abc", "AbC", "(?i)abc", b"abc", b"AbC"}),
+        expected_patterns=frozenset(
+            {"abc", "AbC", "(?i)abc", "a.c", b"abc", b"AbC"}
+        ),
         expected_operation_helper_counts=Counter(
             {
-                ("module_call", "search"): 5,
+                ("module_call", "search"): 6,
                 ("module_call", "fullmatch"): 1,
                 ("pattern_call", "search"): 2,
                 ("pattern_call", "match"): 1,
@@ -199,6 +201,7 @@ LITERAL_FLAG_DIRECT_TEST_CASE_ID_BUCKETS = {
             "flag-module-search-ignorecase-str-miss",
             "flag-module-search-ignorecase-ascii-str-hit",
             "flag-module-fullmatch-ignorecase-bytes-hit",
+            "flag-unsupported-nonliteral-ignorecase-search",
         }
     ),
     "pattern-ignorecase": frozenset(
@@ -232,6 +235,9 @@ MODULE_IGNORECASE_CASES = (
     ),
     _module_case_from_fixture(
         LITERAL_FLAG_CASES_BY_ID["flag-module-search-ignorecase-ascii-str-hit"]
+    ),
+    _module_case_from_fixture(
+        LITERAL_FLAG_CASES_BY_ID["flag-unsupported-nonliteral-ignorecase-search"]
     ),
     _module_case_from_fixture(
         LITERAL_FLAG_CASES_BY_ID["flag-module-fullmatch-ignorecase-bytes-hit"]
@@ -438,7 +444,6 @@ def test_literal_flag_parity_suite_tracks_published_case_frontier() -> None:
     assert_fixture_bundle_tracks_published_case_frontier(
         LITERAL_FLAG_FIXTURE_BUNDLE,
         selected_case_ids=TARGET_FIXTURE_CASE_IDS,
-        expected_uncovered_case_ids=LITERAL_FLAG_DELEGATED_CASE_IDS,
     )
 
 
