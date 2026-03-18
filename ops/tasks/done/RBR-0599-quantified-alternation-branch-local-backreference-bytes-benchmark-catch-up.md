@@ -1,6 +1,6 @@
 # RBR-0599: Catch the quantified-alternation branch-local-backreference bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -49,3 +49,8 @@ Created: 2026-03-18
   - `reports/benchmarks/latest.py` currently publishes `quantified-alternation-boundary` at `78` total workloads / `78` measured workloads / `0` known gaps and the combined source-tree report at `698` / `698` / `0`; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so this benchmark follow-on stays sequenced behind `RBR-0597` until parity lands.
 - No further quantified-alternation bytes family should be queued ahead of this benchmark catch-up while the branch-local-backreference mixed `str`/`bytes` slice is still missing its source-tree benchmark mirrors.
+
+## Completion Note
+- 2026-03-18: Added the six bounded quantified-alternation branch-local-backreference `bytes` mirror workloads to `benchmarks/workloads/quantified_alternation_boundary.py`, widened the shared zero-gap quantified-alternation expectation tuple to `84` measured / `84` total workloads, and regenerated `reports/benchmarks/latest.py`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/quantified_alternation_boundary.py --report .rebar/tmp/rbr-0599-quantified-alternation-branch-local-backreference-bytes-benchmarks.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
+- Published benchmark report now records `quantified-alternation-boundary` at `84` total / `84` measured / `0` known gaps and the combined source-tree report at `704` total / `704` measured / `0` known gaps. `reports/correctness/latest.py` was not changed.

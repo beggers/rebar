@@ -1898,6 +1898,234 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-search-numbered-quantified-alternation-branch-backref-cold-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a((b|c)\\2){1,2}d",
+      "haystack": "zzabbdzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "branch-local-backreference",
+        "search",
+        "module",
+        "bytes",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "backreferences"
+      ],
+      "notes": [
+        "Cold bytes module.search helper path for the bounded numbered quantified-alternation branch-local-backreference slice on the lower-bound success case so the bytes workflow reaches the published benchmark report."
+      ]
+    },
+    {
+      "id": "module-compile-numbered-quantified-alternation-branch-backref-cold-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a((b|c)\\2){1,2}d",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "numbered-backreference",
+        "branch-local",
+        "bytes",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "numbered-backreferences",
+        "branch-local-backreferences"
+      ],
+      "notes": [
+        "Cold bytes module.compile benchmark for the bounded numbered quantified-alternation branch-local-backreference slice so compile metadata timing lands alongside the new bytes runtime rows."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-quantified-alternation-branch-backref-second-repetition-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a((b|c)\\2){1,2}d",
+      "haystack": "abbbbd",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "numbered-backreference",
+        "branch-local-backreference",
+        "fullmatch",
+        "second-repetition",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "numbered-backreferences",
+        "branch-local-backreferences",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the bounded numbered quantified-alternation branch-local-backreference workflow when the counted repeat takes the supported second `b`-branch iteration."
+      ]
+    },
+    {
+      "id": "module-compile-named-quantified-alternation-branch-backref-warm-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups",
+        "named-backreferences",
+        "branch-local-backreferences"
+      ],
+      "notes": [
+        "Warm bytes module.compile path for the bounded named quantified-alternation branch-local-backreference slice so named compile metadata joins the benchmark report on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-named-quantified-alternation-branch-backref-lower-bound-c-branch-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d",
+      "haystack": "zzaccdzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "search",
+        "module",
+        "lower-bound",
+        "c-branch",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups",
+        "named-backreferences",
+        "branch-local-backreferences"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the bounded named quantified-alternation branch-local-backreference workflow on the lower-bound `c`-branch success case."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-quantified-alternation-branch-backref-second-repetition-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d",
+      "haystack": "accccd",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "fullmatch",
+        "second-repetition",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups",
+        "named-backreferences",
+        "branch-local-backreferences",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the bounded named quantified-alternation branch-local-backreference workflow when the counted repeat takes the supported second `c`-branch iteration."
+      ]
+    },
+    {
       "id": "module-compile-numbered-quantified-alternation-conditional-cold-str",
       "bucket": "module-compile",
       "family": "module",

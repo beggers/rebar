@@ -70,6 +70,12 @@ ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES = (
             "module-compile-named-quantified-alternation-nested-branch-warm-bytes",
             "module-search-named-quantified-alternation-nested-branch-lower-bound-literal-branch-warm-bytes",
             "pattern-fullmatch-named-quantified-alternation-nested-branch-second-repetition-mixed-purged-bytes",
+            "module-search-numbered-quantified-alternation-branch-backref-cold-bytes",
+            "module-compile-numbered-quantified-alternation-branch-backref-cold-bytes",
+            "pattern-fullmatch-numbered-quantified-alternation-branch-backref-second-repetition-purged-bytes",
+            "module-compile-named-quantified-alternation-branch-backref-warm-bytes",
+            "module-search-named-quantified-alternation-branch-backref-lower-bound-c-branch-warm-bytes",
+            "pattern-fullmatch-named-quantified-alternation-branch-backref-second-repetition-purged-bytes",
             "module-compile-numbered-quantified-alternation-broader-range-cold-bytes",
             "module-search-numbered-quantified-alternation-broader-range-third-repetition-cold-bytes",
             "pattern-fullmatch-numbered-quantified-alternation-broader-range-third-repetition-bcb-purged-bytes",
@@ -95,8 +101,8 @@ ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES = (
             "module-search-named-quantified-alternation-backtracking-heavy-lower-bound-bc-branch-warm-bytes",
             "pattern-fullmatch-named-quantified-alternation-backtracking-heavy-second-repetition-bc-then-b-purged-bytes",
         ),
-        78,
-        78,
+        84,
+        84,
     ),
 )
 

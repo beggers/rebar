@@ -228,7 +228,7 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                     expected_workload_ids,
                 )
 
-    def test_quantified_alternation_manifest_exposes_bounded_conditional_nested_branch_broader_range_open_ended_and_backtracking_heavy_bytes_rows_as_measured(
+    def test_quantified_alternation_manifest_exposes_bounded_branch_backref_conditional_nested_branch_broader_range_open_ended_and_backtracking_heavy_bytes_rows_as_measured(
         self,
     ) -> None:
         (
