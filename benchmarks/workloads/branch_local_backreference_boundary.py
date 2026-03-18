@@ -7,7 +7,7 @@ MANIFEST = {
   ],
   "notes": [
     "Branch-local backreference boundary workloads keep captures, alternation sites, and haystacks intentionally tiny so the scorecard measures helper-call overhead for the newly supported bounded branch-local reference slice rather than regex throughput.",
-    "Measured rows cover the bounded `a((b)|c)\\\\2d`, `a(?P<outer>(?P<inner>b)|c)(?P=inner)d`, `a((b)+|c)\\\\2d`, `a(?P<outer>(?P<inner>b)+|c)(?P=inner)d`, `a((b)|c)\\\\2(?(2)d|e)`, and `a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)` compile/search/fullmatch paths directly, plus one broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional follow-on for `a((b|c){2,})\\\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)`, while replacement semantics, nested alternation-plus-backreference shapes, and broader backtracking-heavy grouped combinations stay explicit known-gap rows in adjacent manifests."
+    "Measured rows cover the bounded `a((b)|c)\\\\2d`, `a(?P<outer>(?P<inner>b)|c)(?P=inner)d`, `a((b)+|c)\\\\2d`, `a(?P<outer>(?P<inner>b)+|c)(?P=inner)d`, `a((b)|c)\\\\2(?(2)d|e)`, and `a(?P<outer>(?P<inner>b)|c)(?P=inner)(?(inner)d|e)` compile/search/fullmatch paths directly, plus the broader-range open-ended `{2,}` nested-group alternation plus branch-local-backreference conditional follow-on for `a((b|c){2,})\\\\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)` on both the `str` and `bytes` helper paths, while replacement semantics, nested alternation-plus-backreference shapes, and broader backtracking-heavy grouped combinations stay explicit known-gap rows in adjacent manifests."
   ],
   "defaults": {
     "warmup_iterations": 2,
@@ -873,6 +873,280 @@ MANIFEST = {
       ],
       "notes": [
         "Purged-cache Pattern.fullmatch probe for the broader-range open-ended named `{2,}` nested-group alternation branch-local backreference plus conditional lower-bound `b`-branch success path on `abbbd`, so the visible `outer` capture and final selected `inner` branch stay explicit at the shifted two-repetition floor."
+      ]
+    },
+    {
+      "id": "module-compile-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-cold-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a((b|c){2,})\\2(?(2)d|e)",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "nested-group",
+        "alternation",
+        "numbered-backreference",
+        "branch-local",
+        "conditional",
+        "quantified",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "bytes",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "nested-groups",
+        "alternation",
+        "numbered-backreferences",
+        "branch-local-backreferences",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals"
+      ],
+      "notes": [
+        "Cold bytes module.compile benchmark for the broader-range open-ended `{2,}` numbered nested-group alternation branch-local backreference plus conditional slice so shifted-floor compile metadata reaches the shared branch-local benchmark report on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a((b|c){2,})\\2(?(2)d|e)",
+      "haystack": "zzabbbdzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "nested-group",
+        "alternation",
+        "numbered-backreference",
+        "branch-local",
+        "conditional",
+        "quantified",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "search",
+        "module",
+        "lower-bound",
+        "b-branch",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "nested-groups",
+        "alternation",
+        "numbered-backreferences",
+        "branch-local-backreferences",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the broader-range open-ended `{2,}` numbered nested-group alternation branch-local backreference plus conditional lower-bound success case on `abbbd`, so the shifted two-repetition floor, final same-branch replay, and trailing conditional yes arm stay on the shared bytes benchmark surface."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-mixed-branches-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a((b|c){2,})\\2(?(2)d|e)",
+      "haystack": "abcbccd",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "nested-group",
+        "alternation",
+        "numbered-backreference",
+        "branch-local",
+        "conditional",
+        "quantified",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "fullmatch",
+        "mixed-branches",
+        "final-inner-capture",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "nested-groups",
+        "alternation",
+        "numbered-backreferences",
+        "branch-local-backreferences",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the broader-range open-ended `{2,}` numbered nested-group alternation branch-local backreference plus conditional mixed-branch success path on `abcbccd`, so the final selected `c` branch replay stays observable before the trailing yes arm accepts `d`."
+      ]
+    },
+    {
+      "id": "module-compile-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-warm-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "nested-group",
+        "alternation",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "conditional",
+        "quantified",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "nested-groups",
+        "alternation",
+        "named-groups",
+        "named-backreferences",
+        "branch-local-backreferences",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm bytes module.compile path for the broader-range open-ended named `{2,}` nested-group alternation branch-local backreference plus conditional slice so named shifted-floor compile metadata lands beside the runtime bytes rows."
+      ]
+    },
+    {
+      "id": "module-search-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+      "haystack": "zzacccdzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "nested-group",
+        "alternation",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "conditional",
+        "quantified",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "search",
+        "module",
+        "lower-bound",
+        "c-branch",
+        "outer-capture",
+        "final-inner-capture",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "nested-groups",
+        "alternation",
+        "named-groups",
+        "named-backreferences",
+        "branch-local-backreferences",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the broader-range open-ended named `{2,}` nested-group alternation branch-local backreference plus conditional lower-bound `c`-branch success on `acccd`, so the visible `outer` capture and final `inner` branch stay observable through the public module helper on the bytes path."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+      "haystack": "abbbd",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "nested-group",
+        "alternation",
+        "named-group",
+        "named-backreference",
+        "branch-local",
+        "conditional",
+        "quantified",
+        "counted-repeat",
+        "open-ended-repeat",
+        "broader-range",
+        "fullmatch",
+        "lower-bound",
+        "b-branch",
+        "outer-capture",
+        "final-inner-capture",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "nested-groups",
+        "alternation",
+        "named-groups",
+        "named-backreferences",
+        "branch-local-backreferences",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the broader-range open-ended named `{2,}` nested-group alternation branch-local backreference plus conditional lower-bound `b`-branch success path on `abbbd`, so the visible `outer` capture and final selected `inner` branch stay explicit at the shifted two-repetition floor on the bytes path."
       ]
     }
   ]

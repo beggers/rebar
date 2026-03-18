@@ -1,6 +1,6 @@
 # RBR-0623: Catch the nested broader-range open-ended branch-local-backreference conditional bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -49,3 +49,7 @@ Created: 2026-03-18
   - `tests/benchmarks/benchmark_expectations.py` currently treats `branch-local-backreference-boundary` slice `broader-range-open-ended-conditional-branch-local-backreference` as the six `str` rows only, so the bytes follow-on can stay on the existing shared zero-gap expectation surface;
   - `reports/benchmarks/latest.py` currently publishes `branch-local-backreference-boundary` at `24` total workloads / `24` measured workloads / `0` known gaps and the combined source-tree report at `713` / `713` / `0`; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so this benchmark follow-on stays sequenced behind `RBR-0621` until parity lands.
+
+## Completion
+- 2026-03-18: Added the six bytes mirrors for the broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference conditional slice to `benchmarks/workloads/branch_local_backreference_boundary.py`, promoted them on the shared zero-gap benchmark expectation surface in `tests/benchmarks/benchmark_expectations.py`, and regenerated `reports/benchmarks/latest.py`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`33 passed`, `1074` subtests), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/branch_local_backreference_boundary.py --report .rebar/tmp/rbr-0623-nested-broader-range-open-ended-branch-local-backreference-conditional-bytes-benchmarks.py` (`30` total / `30` measured / `0` known gaps), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`, which now publishes `branch-local-backreference-boundary` at `30 / 30 / 0` and the combined source-tree report at `719 / 719 / 0` through the `source-tree-shim` path.
