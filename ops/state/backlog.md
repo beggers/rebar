@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0584` should publish the bounded quantified-alternation backtracking-heavy bytes pair on the existing correctness/parity surface, adding the twelve bytes counterparts for `rb"a(b|bc){1,2}d"` and `rb"a(?P<word>b|bc){1,2}d"` to `tests/conformance/fixtures/quantified_alternation_backtracking_heavy_workflows.py` and one explicit bytes follow-on anchor in `tests/python/test_quantified_alternation_parity_suite.py` so the combined correctness report grows from `1200` to `1212` total cases with `12` honest `unimplemented` outcomes before Rust-backed bytes parity and later benchmark catch-up land.
+`RBR-0586` should convert the bounded quantified-alternation backtracking-heavy bytes pair behind `rebar._rebar` on the existing parity surface, reusing `tests/python/test_quantified_alternation_parity_suite.py` and `tests/conformance/fixtures/quantified_alternation_backtracking_heavy_workflows.py` so the combined correctness report moves from the post-publication `1212` total / `1200` passed / `12` honest `unimplemented` state across `111` manifests back to `1212` / `1212` / `0` before Python-path benchmark catch-up mirrors the six adjacent backtracking-heavy `str` rows on `benchmarks/workloads/quantified_alternation_boundary.py`.
 
 ## Ordered Work
-1. `RBR-0584` should publish the bounded quantified-alternation backtracking-heavy bytes pair through `tests/conformance/fixtures/quantified_alternation_backtracking_heavy_workflows.py`, `tests/python/test_quantified_alternation_parity_suite.py`, `tests/conformance/correctness_expectations.py`, and `reports/correctness/latest.py`, keeping that bytes pair explicit and `rebar`-unsupported on the existing quantified-alternation parity surface instead of forking another manifest or bytes-only suite.
+1. `RBR-0586` should convert the bounded quantified-alternation backtracking-heavy bytes pair through `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_quantified_alternation_parity_suite.py`, and `reports/correctness/latest.py`, keeping that bytes pair on the existing quantified-alternation parity surface and leaving the later six-row Python-path benchmark catch-up on `benchmarks/workloads/quantified_alternation_boundary.py` as the next bounded follow-on.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

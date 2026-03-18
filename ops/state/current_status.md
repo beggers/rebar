@@ -329,7 +329,7 @@ The published frontier is still narrow: the current correctness slice is fully p
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0584` should publish the quantified-alternation backtracking-heavy bytes pair on the existing correctness/parity surface, widening the published correctness report from `1200` to `1212` total cases with `12` honest `unimplemented` outcomes.
+- `RBR-0586` should convert the quantified-alternation backtracking-heavy bytes pair to real parity on the existing quantified-alternation surface, taking the post-publication correctness report from `1212` total / `1200` passed / `12` honest `unimplemented` outcomes back to `1212` / `1212` / `0` before the Python-path benchmark catch-up lands.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
