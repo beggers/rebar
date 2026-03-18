@@ -2045,6 +2045,24 @@ def result_last_message_text(result: RunResult) -> str:
     return read_text_if_exists(result.run_dir / "last_message.md").strip()
 
 
+def commit_link_label_summary(label: str) -> str:
+    cleaned = label.strip()
+    if not cleaned or re.fullmatch(r"RBR-\d+", cleaned):
+        return cleaned
+    if "/" not in cleaned and not cleaned.startswith("test_"):
+        return cleaned
+
+    label_path = Path(cleaned)
+    stem = label_path.stem or label_path.name
+    if stem == "__init__":
+        stem = label_path.parent.name or stem
+    stem = re.sub(r"^test[_-]", "", stem)
+    stem = re.sub(r"[_-]+", " ", stem).strip()
+    if not stem:
+        return cleaned
+    return stem[:1].upper() + stem[1:]
+
+
 def commit_summary_text(text: str) -> str | None:
     section_labels = {
         "change",
@@ -2072,7 +2090,11 @@ def commit_summary_text(text: str) -> str | None:
             line = line[2:].strip()
         if line.startswith("#"):
             line = line.lstrip("#").strip()
-        line = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", line)
+        line = re.sub(
+            r"\[([^\]]+)\]\([^)]+\)",
+            lambda match: commit_link_label_summary(match.group(1)),
+            line,
+        )
         while True:
             emphasized = re.fullmatch(r"(\*\*|__|\*|_)(.+?)\1", line)
             if emphasized is None:
