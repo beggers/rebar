@@ -5,6 +5,7 @@ import re
 
 import pytest
 
+import rebar
 from rebar_harness.correctness import (
     FixtureCase,
     normalize_exported_symbol_metadata,
@@ -55,6 +56,17 @@ PATTERN_OBJECT_CASE_IDS = (
     "pattern-search-literal-success",
     "pattern-match-literal-success",
     "pattern-fullmatch-literal-success",
+)
+ADDITIONAL_PUBLIC_HELPER_NAMES = (
+    pytest.param("match", id="match"),
+    pytest.param("fullmatch", id="fullmatch"),
+    pytest.param("split", id="split"),
+    pytest.param("findall", id="findall"),
+    pytest.param("finditer", id="finditer"),
+    pytest.param("sub", id="sub"),
+    pytest.param("subn", id="subn"),
+    pytest.param("template", id="template"),
+    pytest.param("escape", id="escape"),
 )
 
 # These manifests include helper-presence and exported-attribute rows that do not
@@ -222,6 +234,18 @@ def test_public_helper_presence_matches_cpython(
     assert callable(observed) == callable(expected)
     assert case.helper in backend.__all__
     assert case.helper in re.__all__
+
+
+@pytest.mark.parametrize("helper_name", ADDITIONAL_PUBLIC_HELPER_NAMES)
+def test_additional_public_helpers_match_cpython_surface(helper_name: str) -> None:
+    observed = getattr(rebar, helper_name, None)
+    expected = getattr(re, helper_name, None)
+
+    assert observed is not None
+    assert expected is not None
+    assert callable(observed) == callable(expected)
+    assert helper_name in rebar.__all__
+    assert helper_name in re.__all__
 
 
 @pytest.mark.parametrize("case", PUBLIC_MODULE_CALL_CASES, ids=lambda case: case.case_id)

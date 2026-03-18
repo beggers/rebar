@@ -7,21 +7,6 @@ import pytest
 import rebar
 
 
-EXPECTED_HELPERS = {
-    "compile",
-    "search",
-    "match",
-    "fullmatch",
-    "split",
-    "findall",
-    "finditer",
-    "sub",
-    "subn",
-    "template",
-    "escape",
-    "purge",
-}
-
 PRIMARY_FLAG_EXPORTS = [
     "NOFLAG",
     "ASCII",
@@ -160,11 +145,10 @@ def _assert_pattern_replacement_parity(
     )
 
 
-def test_source_package_exports_helper_surface() -> None:
+def test_source_package_exports_public_surface_metadata() -> None:
     exported = set(rebar.__all__)
 
     assert set(re.__all__).issubset(exported)
-    assert EXPECTED_HELPERS.issubset(exported)
     assert rebar.RegexFlag is rebar.ASCII.__class__
     assert rebar.error is re.error
     assert isinstance(rebar.Pattern, type)
@@ -172,8 +156,6 @@ def test_source_package_exports_helper_surface() -> None:
     assert rebar.RegexFlag.__module__ == "re"
     assert rebar.Pattern.__module__ == "re"
     assert rebar.Match.__module__ == "re"
-    for helper_name in sorted(EXPECTED_HELPERS):
-        assert callable(getattr(rebar, helper_name))
 
 
 def test_source_package_scaffold_metadata_exports_are_coherent() -> None:
