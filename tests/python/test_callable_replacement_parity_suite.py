@@ -143,17 +143,39 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-str",
                 "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
                 "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-bytes",
+                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-bytes",
+                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-bytes",
+                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-bytes",
+                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-bytes",
+                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-bytes",
+                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-bytes",
+                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-bytes",
             }
         ),
         expected_compile_patterns=frozenset(
             {
                 r"a((b|c){2,})\2d",
                 r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+                rb"a((b|c){2,})\2d",
+                rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
             }
         ),
-        expected_operation_helper_counts=CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS,
-        expected_text_models=STR_ONLY_TEXT_MODELS,
+        expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
+        expected_text_models=MIXED_TEXT_MODELS,
         has_near_miss_matrix=True,
+        pending_rebar_case_ids=frozenset(
+            {
+                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-bytes",
+                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-bytes",
+                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-bytes",
+                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-bytes",
+                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-bytes",
+                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-bytes",
+                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-bytes",
+                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-bytes",
+            }
+        ),
     ),
     CallableManifestSpec(
         manifest_id=(
@@ -1292,7 +1314,12 @@ def test_mixed_text_callable_manifest_partitions_track_pending_or_landed_bytes_c
             for case in PATTERN_RETURN_TYPE_ERROR_CASES
             if case.case_id in manifest_spec.pending_rebar_case_ids
         }
-        assert manifest_spec.manifest_id not in CALLABLE_NEAR_MISS_MANIFEST_IDS
+        assert not {
+            near_miss_case.id
+            for near_miss_case in CALLABLE_NEAR_MISS_CASE_SPECS
+            if near_miss_case.manifest_id == manifest_spec.manifest_id
+            and isinstance(near_miss_case.pattern, bytes)
+        }
 
 
 def test_pattern_callable_replacement_return_type_error_cases_cover_quantified_callable_fixture_frontier(
