@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0623` should catch the same broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference conditional bytes pair up on the existing `benchmarks/workloads/branch_local_backreference_boundary.py` surface by updating that manifest, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, so `branch-local-backreference-boundary` can move from `24` total workloads / `24` measured workloads / `0` known gaps to `30` / `30` / `0` while the combined benchmark report moves from `713` / `713` / `0` to `719` / `719` / `0` through the source-tree shim.
+`RBR-0625` should publish the same broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference conditional bytes pair on the existing replacement-template correctness surface by updating `tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py`, `tests/python/test_fixture_backed_replacement_parity_suite.py`, `tests/conformance/correctness_expectations.py`, and `reports/correctness/latest.py`, so `nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-replacement-workflows` moves from `8` total cases / `8` passing / `0` `unimplemented` to `16` / `8` / `8` while the combined correctness report moves from `1278` / `1278` / `0` to `1286` / `1278` / `8` across `111` manifests.
 
 ## Ordered Work
-1. `RBR-0623` should add the six existing `branch_local_backreference_boundary.py` bytes benchmark mirrors for `rb"a((b|c){2,})\\2(?(2)d|e)"` and `rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)"`, keeping the slice on the shared branch-local benchmark expectation surface so the same bytes pair reaches the Python-path benchmark report before deeper grouped execution broadens that family.
+1. `RBR-0625` should add the eight existing replacement-template bytes mirrors for `rb"a((b|c){2,})\\2(?(2)d|e)"` and `rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)"` on the shared replacement parity surface, keeping the slice on the existing correctness and scorecard path so the same bytes pair becomes explicit before Rust-backed replacement parity or later `nested_group_replacement_boundary.py` benchmark catch-up broadens that family.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
