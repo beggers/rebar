@@ -1103,8 +1103,11 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         required_categories=("open-ended-repeat", "broader-range"),
         expected_workload_ids=(
             "module-search-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-lower-bound-b-branch-warm-str",
+            "module-search-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-lower-bound-b-branch-warm-bytes",
             "module-compile-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-warm-str",
+            "module-compile-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-warm-bytes",
             "pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-lower-bound-c-branch-purged-str",
+            "pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-lower-bound-c-branch-purged-bytes",
         ),
         expected_patterns={
             r"a((b|c){2,})\2d",

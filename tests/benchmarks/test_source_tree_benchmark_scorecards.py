@@ -110,14 +110,14 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             "nested-group-boundary"
         )
 
-    def test_nested_group_alternation_manifest_exposes_broader_range_branch_local_backreference_bytes_rows_as_measured(
+    def test_nested_group_alternation_manifest_exposes_broader_range_open_ended_branch_local_backreference_bytes_rows_as_measured(
         self,
     ) -> None:
         manifest_id = "nested-group-alternation-boundary"
         expected_workload_ids = (
-            "module-search-numbered-wider-ranged-repeat-quantified-nested-group-branch-local-backreference-lower-bound-b-branch-warm-bytes",
-            "module-compile-named-wider-ranged-repeat-quantified-nested-group-branch-local-backreference-warm-bytes",
-            "pattern-fullmatch-named-wider-ranged-repeat-quantified-nested-group-branch-local-backreference-upper-bound-all-c-purged-bytes",
+            "module-search-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-lower-bound-b-branch-warm-bytes",
+            "module-compile-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-warm-bytes",
+            "pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-lower-bound-c-branch-purged-bytes",
         )
 
         case = source_tree_combined_case(manifest_id)

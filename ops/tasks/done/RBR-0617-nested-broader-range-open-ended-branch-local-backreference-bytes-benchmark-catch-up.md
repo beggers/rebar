@@ -1,6 +1,6 @@
 # RBR-0617: Catch the nested broader-range open-ended branch-local-backreference bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -46,3 +46,14 @@ Created: 2026-03-18
   - `tests/benchmarks/benchmark_expectations.py` currently keeps `nested-group-alternation-boundary` on the shared `broader-range-open-ended-branch-local-backreference` slice, with the three adjacent `str` rows already registered for this exact pair, so the follow-on can stay on the existing zero-gap assertion surface instead of inventing another bytes-specific benchmark contract;
   - `reports/benchmarks/latest.py` currently publishes `nested-group-alternation-boundary` at `28` total workloads / `28` measured workloads / `0` known gaps and the combined source-tree report at `710` / `710` / `0`; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so this benchmark follow-on stays sequenced behind `RBR-0615` until parity lands.
+
+## Completion
+- Completed 2026-03-18.
+- Added only the three required bytes mirrors on `benchmarks/workloads/nested_group_alternation_boundary.py`: the numbered `module.search()` lower-bound `b`-branch row on `zzabbbdzz`, the named `module.compile()` companion row, and the named `Pattern.fullmatch()` lower-bound `c`-branch row on `acccd`.
+- Widened the shared `broader-range-open-ended-branch-local-backreference` benchmark expectation surface and retargeted the focused source-tree benchmark tests so the new bytes trio is treated as measured on the existing zero-gap nested-group alternation manifest instead of through a bytes-only special case.
+- Regenerated the tracked published benchmark report. Verified from `reports/benchmarks/latest.py` that `nested-group-alternation-boundary` now reports `31` workloads / `31` measured / `0` gaps, the combined report now reports `713` total workloads / `713` measured / `0` gaps, and all three new bytes rows publish `implementation_timing.status == "measured"`.
+- Verified with:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_alternation_boundary.py --report .rebar/tmp/rbr-0617-nested-broader-range-open-ended-branch-local-backreference-bytes-benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
