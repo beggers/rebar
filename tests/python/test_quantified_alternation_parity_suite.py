@@ -71,11 +71,6 @@ class BoundedPatternCase:
     bounds: tuple[int, int]
 
 
-NESTED_BRANCH_BYTES_REBAR_UNSUPPORTED_REASON = (
-    "RBR-0580 keeps quantified alternation nested-branch bytes parity out of scope for rebar"
-)
-
-
 FIXTURE_BUNDLE_SPECS = (
     FixtureBundleSpec(
         "literal_alternation_workflows.py",
@@ -485,8 +480,6 @@ QUANTIFIED_ALTERNATION_NESTED_BRANCH_BYTES_CASES = (
         search_matches=(b"zzabdzz",),
         fullmatch_matches=(b"aded", b"abded"),
         fullmatch_misses=(b"abde",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=NESTED_BRANCH_BYTES_REBAR_UNSUPPORTED_REASON,
     ),
     QuantifiedAlternationBytesCase(
         id="quantified-alternation-nested-branch-named-bytes",
@@ -494,8 +487,6 @@ QUANTIFIED_ALTERNATION_NESTED_BRANCH_BYTES_CASES = (
         search_matches=(b"zzadedzz",),
         fullmatch_matches=(b"acd", b"adebd"),
         fullmatch_misses=(b"adeb",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=NESTED_BRANCH_BYTES_REBAR_UNSUPPORTED_REASON,
     ),
 )
 DIRECT_BYTES_FOLLOW_ON_SPECS = (
@@ -1119,11 +1110,8 @@ def test_quantified_alternation_nested_branch_bytes_cases_stay_explicit_with_one
     )
 
     for case in QUANTIFIED_ALTERNATION_NESTED_BRANCH_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert (
-            case.unsupported_backend_reason
-            == NESTED_BRANCH_BYTES_REBAR_UNSUPPORTED_REASON
-        )
+        assert case.unsupported_backends == ()
+        assert case.unsupported_backend_reason is None
         assert len(case.search_matches) == 1
         assert len(case.fullmatch_matches) == 2
         assert len(case.fullmatch_misses) == 1

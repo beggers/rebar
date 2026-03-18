@@ -1,6 +1,6 @@
 # RBR-0580: Convert the quantified-alternation nested-branch bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -43,3 +43,13 @@ Created: 2026-03-18
   - `benchmarks/workloads/quantified_alternation_boundary.py` already publishes the six adjacent nested-branch `str` benchmark rows for this exact pair, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so the Rust-backed bytes parity work is not already satisfied in the current checkout.
 - A later benchmark follow-on should catch the same bytes pair up on the existing quantified-alternation benchmark surface before another quantified-alternation bytes family broadens the frontier.
+
+## Completion
+- Added a bounded bytes nested-branch path in `crates/rebar-core/src/lib.rs`, so `rebar._rebar` now compiles and executes `rb"a((b|c)|de){1,2}d"` and `rb"a(?P<word>(b|c)|de){1,2}d"` with CPython-matching group metadata, group spans, and `lastindex`/`lastgroup` behavior.
+- Updated `tests/python/test_quantified_alternation_parity_suite.py` so the existing nested-branch bytes follow-on anchor now runs against `rebar` instead of marking that pair unsupported.
+- Regenerated `reports/correctness/latest.py`; the tracked combined scorecard now publishes `1200` total / `1200` passed / `0` unimplemented cases, and `match.quantified_alternation_nested_branch` now publishes `20` total / `20` passed / `0` unimplemented cases.
+- Verified with:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/quantified_alternation_nested_branch_workflows.py --report .rebar/tmp/rbr-0580-quantified-alternation-nested-branch-bytes-parity.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

@@ -41,6 +41,14 @@ const BYTES_NAMED_BACKREFERENCE_COMPILE_PROXY_PATTERN: &[u8] =
     br"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}";
 const BOUNDED_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN: &[u8] = br"a(b|c){1,2}d";
 const BOUNDED_QUANTIFIED_ALTERNATION_NAMED_BYTES_PATTERN: &[u8] = br"a(?P<word>b|c){1,2}d";
+const QUANTIFIED_ALTERNATION_NESTED_BRANCH_NUMBERED_BYTES_PATTERN: &[u8] = br"a((b|c)|de){1,2}d";
+const QUANTIFIED_ALTERNATION_NESTED_BRANCH_NAMED_BYTES_PATTERN: &[u8] =
+    br"a(?P<word>(b|c)|de){1,2}d";
+const QUANTIFIED_ALTERNATION_NESTED_BRANCH_CAPTURE_NAME: &str = "word";
+const QUANTIFIED_ALTERNATION_NESTED_BRANCH_PREFIX_BYTES: &[u8] = b"a";
+const QUANTIFIED_ALTERNATION_NESTED_BRANCH_INNER_BRANCHES_BYTES: [&[u8]; 2] = [b"b", b"c"];
+const QUANTIFIED_ALTERNATION_NESTED_BRANCH_LITERAL_BRANCH_BYTES: &[u8] = b"de";
+const QUANTIFIED_ALTERNATION_NESTED_BRANCH_SUFFIX_BYTES: &[u8] = b"d";
 const BROADER_RANGE_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN: &[u8] = br"a(b|c){1,3}d";
 const BROADER_RANGE_QUANTIFIED_ALTERNATION_NAMED_BYTES_PATTERN: &[u8] = br"a(?P<word>b|c){1,3}d";
 const OPEN_ENDED_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN: &[u8] = br"a(b|c){1,}d";
@@ -731,6 +739,11 @@ struct QuantifiedAlternationConditionalPattern<'a> {
     no_branch: &'a str,
     min_repeat: usize,
     max_repeat: Option<usize>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct QuantifiedAlternationNestedBranchBytesPattern {
+    outer_name: Option<&'static str>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1681,6 +1694,35 @@ impl QuantifiedAlternationBytesPattern {
     }
 }
 
+impl QuantifiedAlternationNestedBranchBytesPattern {
+    fn group_count(&self) -> usize {
+        2
+    }
+
+    fn named_groups(&self) -> Vec<NamedGroup> {
+        self.outer_name
+            .map(|name| {
+                vec![NamedGroup {
+                    name: name.to_string(),
+                    index: 1,
+                }]
+            })
+            .unwrap_or_default()
+    }
+
+    fn group_spans(
+        &self,
+        outer_span: Option<(usize, usize)>,
+        inner_span: Option<(usize, usize)>,
+    ) -> Vec<Option<(usize, usize)>> {
+        vec![outer_span, inner_span]
+    }
+
+    fn matched_lastindex(&self, group_spans: &[Option<(usize, usize)>]) -> Option<usize> {
+        group_spans.first().copied().flatten().map(|_| 1)
+    }
+}
+
 impl OpenEndedQuantifiedGroupAlternationBytesPattern {
     fn group_count(&self) -> usize {
         1
@@ -2403,6 +2445,21 @@ fn compile_known_supported_case(
                     name: "tag".to_string(),
                     index: 1,
                 }],
+                warning: None,
+            })
+        }
+        PatternRef::Bytes(pattern)
+            if parse_quantified_alternation_nested_branch_pattern_bytes(pattern).is_some()
+                && normalized_flags == 0 =>
+        {
+            let grouped_pattern = parse_quantified_alternation_nested_branch_pattern_bytes(pattern)
+                .expect("guarded quantified alternation nested-branch bytes literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
                 warning: None,
             })
         }
@@ -5264,6 +5321,22 @@ fn parse_quantified_alternation_pattern_bytes(
     }
 }
 
+fn parse_quantified_alternation_nested_branch_pattern_bytes(
+    pattern: &[u8],
+) -> Option<QuantifiedAlternationNestedBranchBytesPattern> {
+    match pattern {
+        QUANTIFIED_ALTERNATION_NESTED_BRANCH_NUMBERED_BYTES_PATTERN => {
+            Some(QuantifiedAlternationNestedBranchBytesPattern { outer_name: None })
+        }
+        QUANTIFIED_ALTERNATION_NESTED_BRANCH_NAMED_BYTES_PATTERN => {
+            Some(QuantifiedAlternationNestedBranchBytesPattern {
+                outer_name: Some(QUANTIFIED_ALTERNATION_NESTED_BRANCH_CAPTURE_NAME),
+            })
+        }
+        _ => None,
+    }
+}
+
 fn parse_open_ended_quantified_group_alternation_pattern_bytes(
     pattern: &[u8],
 ) -> Option<OpenEndedQuantifiedGroupAlternationBytesPattern> {
@@ -8074,6 +8147,49 @@ fn literal_match_bytes(
     endpos: Option<isize>,
 ) -> MatchOutcome {
     let (normalized_pos, normalized_endpos) = normalize_bounds(string.len(), pos, endpos);
+    if let Some(grouped_pattern) = parse_quantified_alternation_nested_branch_pattern_bytes(pattern)
+    {
+        if flags != 0 {
+            return MatchOutcome {
+                status: MatchStatus::Unsupported,
+                pos: normalized_pos,
+                endpos: normalized_endpos,
+                span: None,
+                group_spans: Vec::new(),
+                lastindex: None,
+            };
+        }
+
+        let (span, group_spans) = find_quantified_alternation_nested_branch_match_span_bytes(
+            &grouped_pattern,
+            flags,
+            mode,
+            string,
+            normalized_pos,
+            normalized_endpos,
+        )
+        .map_or((None, Vec::new()), |(span, group_spans)| {
+            (Some(span), group_spans)
+        });
+        let lastindex = if span.is_some() {
+            grouped_pattern.matched_lastindex(&group_spans)
+        } else {
+            None
+        };
+        return MatchOutcome {
+            status: if span.is_some() {
+                MatchStatus::Matched
+            } else {
+                MatchStatus::NoMatch
+            },
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            span,
+            group_spans,
+            lastindex,
+        };
+    }
+
     if let Some(grouped_pattern) = parse_quantified_alternation_pattern_bytes(pattern) {
         if flags != 0 {
             return MatchOutcome {
@@ -12048,6 +12164,172 @@ fn quantified_alternation_matches_exact_repeats_bytes(
     None
 }
 
+fn quantified_alternation_nested_branch_matches_at_bytes(
+    _pattern: &QuantifiedAlternationNestedBranchBytesPattern,
+    flags: i32,
+    string: &[u8],
+    start: usize,
+    endpos: usize,
+) -> Option<(Option<(usize, usize)>, Option<(usize, usize)>, usize)> {
+    if !literal_matches_at_bytes(
+        QUANTIFIED_ALTERNATION_NESTED_BRANCH_PREFIX_BYTES,
+        flags,
+        string,
+        start,
+        endpos,
+    ) {
+        return None;
+    }
+
+    let repetition_start = start + QUANTIFIED_ALTERNATION_NESTED_BRANCH_PREFIX_BYTES.len();
+    for candidate_count in (1..=2).rev() {
+        for first_branch in QUANTIFIED_ALTERNATION_NESTED_BRANCH_INNER_BRANCHES_BYTES {
+            let first_branch_end = repetition_start + first_branch.len();
+            if !literal_matches_at_bytes(first_branch, flags, string, repetition_start, endpos) {
+                continue;
+            }
+
+            if candidate_count == 1 {
+                if literal_matches_at_bytes(
+                    QUANTIFIED_ALTERNATION_NESTED_BRANCH_SUFFIX_BYTES,
+                    flags,
+                    string,
+                    first_branch_end,
+                    endpos,
+                ) {
+                    return Some((
+                        Some((repetition_start, first_branch_end)),
+                        Some((repetition_start, first_branch_end)),
+                        first_branch_end + QUANTIFIED_ALTERNATION_NESTED_BRANCH_SUFFIX_BYTES.len(),
+                    ));
+                }
+                continue;
+            }
+
+            let second_repetition_start = first_branch_end;
+            for second_branch in QUANTIFIED_ALTERNATION_NESTED_BRANCH_INNER_BRANCHES_BYTES {
+                let second_branch_end = second_repetition_start + second_branch.len();
+                if literal_matches_at_bytes(
+                    second_branch,
+                    flags,
+                    string,
+                    second_repetition_start,
+                    endpos,
+                ) && literal_matches_at_bytes(
+                    QUANTIFIED_ALTERNATION_NESTED_BRANCH_SUFFIX_BYTES,
+                    flags,
+                    string,
+                    second_branch_end,
+                    endpos,
+                ) {
+                    return Some((
+                        Some((second_repetition_start, second_branch_end)),
+                        Some((second_repetition_start, second_branch_end)),
+                        second_branch_end + QUANTIFIED_ALTERNATION_NESTED_BRANCH_SUFFIX_BYTES.len(),
+                    ));
+                }
+            }
+
+            let second_literal_end = second_repetition_start
+                + QUANTIFIED_ALTERNATION_NESTED_BRANCH_LITERAL_BRANCH_BYTES.len();
+            if literal_matches_at_bytes(
+                QUANTIFIED_ALTERNATION_NESTED_BRANCH_LITERAL_BRANCH_BYTES,
+                flags,
+                string,
+                second_repetition_start,
+                endpos,
+            ) && literal_matches_at_bytes(
+                QUANTIFIED_ALTERNATION_NESTED_BRANCH_SUFFIX_BYTES,
+                flags,
+                string,
+                second_literal_end,
+                endpos,
+            ) {
+                return Some((
+                    Some((second_repetition_start, second_literal_end)),
+                    Some((repetition_start, first_branch_end)),
+                    second_literal_end + QUANTIFIED_ALTERNATION_NESTED_BRANCH_SUFFIX_BYTES.len(),
+                ));
+            }
+        }
+
+        let first_literal_end =
+            repetition_start + QUANTIFIED_ALTERNATION_NESTED_BRANCH_LITERAL_BRANCH_BYTES.len();
+        if literal_matches_at_bytes(
+            QUANTIFIED_ALTERNATION_NESTED_BRANCH_LITERAL_BRANCH_BYTES,
+            flags,
+            string,
+            repetition_start,
+            endpos,
+        ) {
+            if candidate_count == 1 {
+                if literal_matches_at_bytes(
+                    QUANTIFIED_ALTERNATION_NESTED_BRANCH_SUFFIX_BYTES,
+                    flags,
+                    string,
+                    first_literal_end,
+                    endpos,
+                ) {
+                    return Some((
+                        Some((repetition_start, first_literal_end)),
+                        None,
+                        first_literal_end + QUANTIFIED_ALTERNATION_NESTED_BRANCH_SUFFIX_BYTES.len(),
+                    ));
+                }
+                continue;
+            }
+
+            let second_repetition_start = first_literal_end;
+            for second_branch in QUANTIFIED_ALTERNATION_NESTED_BRANCH_INNER_BRANCHES_BYTES {
+                let second_branch_end = second_repetition_start + second_branch.len();
+                if literal_matches_at_bytes(
+                    second_branch,
+                    flags,
+                    string,
+                    second_repetition_start,
+                    endpos,
+                ) && literal_matches_at_bytes(
+                    QUANTIFIED_ALTERNATION_NESTED_BRANCH_SUFFIX_BYTES,
+                    flags,
+                    string,
+                    second_branch_end,
+                    endpos,
+                ) {
+                    return Some((
+                        Some((second_repetition_start, second_branch_end)),
+                        Some((second_repetition_start, second_branch_end)),
+                        second_branch_end + QUANTIFIED_ALTERNATION_NESTED_BRANCH_SUFFIX_BYTES.len(),
+                    ));
+                }
+            }
+
+            let second_literal_end = second_repetition_start
+                + QUANTIFIED_ALTERNATION_NESTED_BRANCH_LITERAL_BRANCH_BYTES.len();
+            if literal_matches_at_bytes(
+                QUANTIFIED_ALTERNATION_NESTED_BRANCH_LITERAL_BRANCH_BYTES,
+                flags,
+                string,
+                second_repetition_start,
+                endpos,
+            ) && literal_matches_at_bytes(
+                QUANTIFIED_ALTERNATION_NESTED_BRANCH_SUFFIX_BYTES,
+                flags,
+                string,
+                second_literal_end,
+                endpos,
+            ) {
+                return Some((
+                    Some((second_repetition_start, second_literal_end)),
+                    None,
+                    second_literal_end + QUANTIFIED_ALTERNATION_NESTED_BRANCH_SUFFIX_BYTES.len(),
+                ));
+            }
+        }
+    }
+
+    None
+}
+
 fn quantified_alternation_matches_at_bytes(
     pattern: &QuantifiedAlternationBytesPattern,
     flags: i32,
@@ -12120,6 +12402,47 @@ fn find_quantified_alternation_match_span_bytes(
         .and_then(|(last_branch_span, match_end)| {
             (match_end == endpos)
                 .then_some(((pos, match_end), pattern.group_spans(last_branch_span)))
+        }),
+    }
+}
+
+fn find_quantified_alternation_nested_branch_match_span_bytes(
+    pattern: &QuantifiedAlternationNestedBranchBytesPattern,
+    flags: i32,
+    mode: MatchMode,
+    string: &[u8],
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    match mode {
+        MatchMode::Search => (pos..=endpos).find_map(|start| {
+            quantified_alternation_nested_branch_matches_at_bytes(
+                pattern, flags, string, start, endpos,
+            )
+            .map(|(outer_span, inner_span, match_end)| {
+                (
+                    (start, match_end),
+                    pattern.group_spans(outer_span, inner_span),
+                )
+            })
+        }),
+        MatchMode::Match => quantified_alternation_nested_branch_matches_at_bytes(
+            pattern, flags, string, pos, endpos,
+        )
+        .map(|(outer_span, inner_span, match_end)| {
+            (
+                (pos, match_end),
+                pattern.group_spans(outer_span, inner_span),
+            )
+        }),
+        MatchMode::Fullmatch => quantified_alternation_nested_branch_matches_at_bytes(
+            pattern, flags, string, pos, endpos,
+        )
+        .and_then(|(outer_span, inner_span, match_end)| {
+            (match_end == endpos).then_some((
+                (pos, match_end),
+                pattern.group_spans(outer_span, inner_span),
+            ))
         }),
     }
 }
