@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0595` should publish the quantified-alternation branch-local-backreference bytes pair on the existing correctness/parity path by extending `tests/conformance/fixtures/quantified_alternation_branch_local_backreference_workflows.py`, `tests/python/test_branch_local_backreference_parity_suite.py`, `tests/conformance/correctness_expectations.py`, and `reports/correctness/latest.py`, so `match.quantified_alternation_branch_local_backreference` can move from `10` total / `10` passed / `0` `unimplemented` to `20` / `10` / `10` and the combined correctness report can move from `1224` / `1224` / `0` across `111` manifests to `1234` / `1224` / `10` without widening beyond the ten adjacent numbered and named bytes mirrors already anchored by the current `str` rows.
+`RBR-0597` should convert the quantified-alternation branch-local-backreference bytes pair behind `rebar._rebar` on the existing branch-local parity surface by updating `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_branch_local_backreference_parity_suite.py`, and `reports/correctness/latest.py`, so `match.quantified_alternation_branch_local_backreference` can move from `20` total / `10` passed / `10` `unimplemented` to `20` / `20` / `0` and the combined correctness report can move from `1234` / `1224` / `10` across `111` manifests to `1234` / `1234` / `0` without widening beyond the same ten numbered and named bytes rows already anchored beside the landed `str` cases.
 
 ## Ordered Work
-1. `RBR-0595` should add only the ten bytes correctness mirrors for `a((b|c)\\2){1,2}d` and `a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d` on the existing branch-local-backreference correctness/parity path, keeping the case ids, shared bundle expectations, direct bytes follow-on routing, correctness expectations, and published combined report aligned while leaving broader branch-local-backreference bytes families untouched.
+1. `RBR-0597` should convert only the ten published bytes rows for `a((b|c)\\2){1,2}d` and `a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d` to real Rust-backed compile/search/fullmatch parity on the existing branch-local-backreference suite, keeping the direct bytes follow-on anchor, public-module behavior, and republished combined correctness report aligned while leaving benchmark catch-up and broader branch-local-backreference bytes families untouched.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

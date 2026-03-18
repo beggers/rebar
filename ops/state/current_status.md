@@ -329,7 +329,7 @@ The published frontier is still narrow: the current correctness slice covers 122
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0595` should publish the quantified-alternation branch-local-backreference bytes pair on the correctness surface, growing `match.quantified_alternation_branch_local_backreference` from `10 / 10 / 0` to `20 / 10 / 10` and the combined correctness report from `1224 / 1224 / 0` to `1234 / 1224 / 10`.
+- `RBR-0597` should convert the quantified-alternation branch-local-backreference bytes pair behind `rebar._rebar` on the existing parity surface, growing `match.quantified_alternation_branch_local_backreference` from `20 / 10 / 10` to `20 / 20 / 0` and the combined correctness report from `1234 / 1224 / 10` to `1234 / 1234 / 0`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
