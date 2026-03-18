@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0580` should convert the bounded quantified-alternation nested-branch bytes pair for `rb"a((b|c)|de){1,2}d"` and `rb"a(?P<word>(b|c)|de){1,2}d"` behind `rebar._rebar` on the existing quantified-alternation parity surface, turning the mixed `str`/`bytes` nested-branch slice from honest `unimplemented` outcomes into real Rust-backed behavior before Python-path benchmark catch-up lands.
+`RBR-0582` should catch the bounded quantified-alternation nested-branch bytes pair up on the existing Python-facing quantified-alternation benchmark surface, mirroring the six published nested-branch `str` workloads for `rb"a((b|c)|de){1,2}d"` and `rb"a(?P<word>(b|c)|de){1,2}d"` so `quantified-alternation-boundary` grows from `60` to `66` measured workloads and the combined source-tree benchmark report grows from `680` to `686` without reopening another bytes family.
 
 ## Ordered Work
-1. `RBR-0580` should convert the bounded quantified-alternation nested-branch bytes pair for `rb"a((b|c)|de){1,2}d"` and `rb"a(?P<word>(b|c)|de){1,2}d"` through `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_quantified_alternation_parity_suite.py`, and `reports/correctness/latest.py`, reusing the published bytes follow-on anchor and exact ten nested-branch bytes cases instead of opening another correctness or parity surface.
+1. `RBR-0582` should catch the bounded quantified-alternation nested-branch bytes pair up through `benchmarks/workloads/quantified_alternation_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, reusing the existing fully measured quantified-alternation manifest instead of opening another benchmark family.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

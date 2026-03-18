@@ -329,7 +329,7 @@ The published frontier is still narrow: 1190 of 1200 published correctness cases
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0580` should convert the bounded quantified-alternation nested-branch bytes pair for `rb"a((b|c)|de){1,2}d"` and `rb"a(?P<word>(b|c)|de){1,2}d"` behind `rebar._rebar` on the existing quantified-alternation parity surface, turning the mixed `str`/`bytes` nested-branch slice from honest `unimplemented` outcomes into real Rust-backed behavior before Python-path benchmark catch-up lands.
+- `RBR-0582` should catch the bounded quantified-alternation nested-branch bytes pair up on the existing Python-facing quantified-alternation benchmark surface, mirroring the six published nested-branch `str` workloads for `rb"a((b|c)|de){1,2}d"` and `rb"a(?P<word>(b|c)|de){1,2}d"` so `quantified-alternation-boundary` grows from `60` to `66` measured workloads and the combined source-tree benchmark report grows from `680` to `686` without reopening another bytes family.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
