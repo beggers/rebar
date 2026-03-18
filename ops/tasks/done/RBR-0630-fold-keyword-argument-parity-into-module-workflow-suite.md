@@ -1,8 +1,9 @@
 # RBR-0630: Fold the detached keyword-argument parity suite into the module workflow suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Delete `tests/python/test_literal_keyword_argument_parity_suite.py` by moving its keyword-argument module and compiled-pattern helper coverage onto `tests/python/test_module_workflow_parity_suite.py`, so the Python-facing helper surface has one owner suite instead of a detached keyword-case file that repeats the same match/value/iterator parity ladders.
@@ -157,3 +158,6 @@ PY`
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_literal_keyword_argument_parity_suite.py tests/python/test_module_workflow_parity_suite.py` passes (`275 passed in 0.22s`);
   - the inline `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` probe above currently fails exactly on this cleanup with `AttributeError: module 'tests.python.test_module_workflow_parity_suite' has no attribute 'MODULE_KEYWORD_CALL_CASES'`; and
   - `bash -lc "! rg --files tests/python | rg 'test_literal_keyword_argument_parity_suite\\.py$'"` currently fails exactly on this cleanup because the detached suite still exists.
+
+## Completion Note
+- 2026-03-18: Folded the explicit module-call keyword rows, compiled-pattern keyword rows, and keyword-error rows into `tests/python/test_module_workflow_parity_suite.py`, preserving the original case ids, payloads, and parity ladders, then deleted `tests/python/test_literal_keyword_argument_parity_suite.py`. Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`275 passed in 0.25s`), the inline case-id probe (`ok`), and `bash -lc "! rg --files tests/python | rg 'test_literal_keyword_argument_parity_suite\\.py$'"` (no matches).
