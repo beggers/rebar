@@ -74,7 +74,6 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR = {
         "nested_group_workflows.py",
         "nested_group_alternation_workflows.py",
         "nested_group_alternation_replacement_workflows.py",
-        "nested_group_alternation_wrapper_replacement_workflows.py",
         "nested_group_replacement_workflows.py",
         "quantified_nested_group_replacement_workflows.py",
         "quantified_nested_group_callable_replacement_workflows.py",

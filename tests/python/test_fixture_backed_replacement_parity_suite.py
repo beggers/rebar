@@ -83,7 +83,6 @@ GROUPED_REPLACEMENT_BUNDLE_MANIFEST_IDS = (
     "grouped-alternation-replacement-workflows",
     "nested-group-replacement-workflows",
     "nested-group-alternation-replacement-workflows",
-    "nested-group-alternation-wrapper-replacement-workflows",
     "quantified-nested-group-replacement-workflows",
 )
 GROUPED_REPLACEMENT_NAMED_CASE_IDS = (
@@ -92,11 +91,17 @@ GROUPED_REPLACEMENT_NAMED_CASE_IDS = (
     "pattern-sub-template-named-group-str",
     "pattern-subn-template-named-group-str",
 )
+NESTED_GROUP_ALTERNATION_REPLACEMENT_CASE_IDS = (
+    "module-sub-template-nested-group-alternation-numbered-outer-str",
+    "pattern-subn-template-nested-group-alternation-named-outer-first-match-only-str",
+    "module-sub-template-nested-group-alternation-numbered-wrapper-str",
+    "pattern-subn-template-nested-group-alternation-named-wrapper-first-match-only-str",
+)
 GROUPED_TEMPLATE_OPERATION_HELPER_COUNTS = Counter({("module_call", "sub"): 1})
 NESTED_GROUP_ALTERNATION_OPERATION_HELPER_COUNTS = Counter(
     {
-        ("module_call", "sub"): 1,
-        ("pattern_call", "subn"): 1,
+        ("module_call", "sub"): 2,
+        ("pattern_call", "subn"): 2,
     }
 )
 GROUPED_REPLACEMENT_SHARED_GROUP_KIND_COUNTS = Counter(
@@ -113,8 +118,8 @@ GROUPED_REPLACEMENT_SHARED_GROUP_KIND_COUNTS = Counter(
 )
 GROUPED_REPLACEMENT_NESTED_ALTERNATION_GROUP_KIND_COUNTS = Counter(
     {
-        ("module_call", "sub", "numbered"): 1,
-        ("pattern_call", "subn", "named"): 1,
+        ("module_call", "sub", "numbered"): 2,
+        ("pattern_call", "subn", "named"): 2,
     }
 )
 GROUPED_REPLACEMENT_BUNDLE_CONTRACT_MANIFEST_IDS = frozenset(
@@ -122,7 +127,6 @@ GROUPED_REPLACEMENT_BUNDLE_CONTRACT_MANIFEST_IDS = frozenset(
         "grouped-alternation-replacement-workflows",
         "nested-group-replacement-workflows",
         "nested-group-alternation-replacement-workflows",
-        "nested-group-alternation-wrapper-replacement-workflows",
         "quantified-nested-group-replacement-workflows",
     }
 )
@@ -135,7 +139,6 @@ GROUPED_REPLACEMENT_TEMPLATE_EXPAND_MANIFEST_IDS = (
     "grouped-alternation-replacement-workflows",
     "nested-group-replacement-workflows",
     "nested-group-alternation-replacement-workflows",
-    "nested-group-alternation-wrapper-replacement-workflows",
 )
 GROUPED_REPLACEMENT_COMPILE_PATTERNS = (
     "(?P<word>abc)",
@@ -722,11 +725,7 @@ def _expected_grouped_replacement_template(case: FixtureCase) -> str:
 def _assert_grouped_replacement_fixture_bundle_contract(bundle: FixtureBundle) -> None:
     expected_group_kind_counts = (
         GROUPED_REPLACEMENT_NESTED_ALTERNATION_GROUP_KIND_COUNTS
-        if bundle.expected_manifest_id
-        in {
-            "nested-group-alternation-replacement-workflows",
-            "nested-group-alternation-wrapper-replacement-workflows",
-        }
+        if bundle.expected_manifest_id == "nested-group-alternation-replacement-workflows"
         else GROUPED_REPLACEMENT_SHARED_GROUP_KIND_COUNTS
     )
     assert Counter(
@@ -1032,19 +1031,6 @@ REPLACEMENT_SURFACE_SPECS = (
             FixtureBundleSpec(
                 "nested_group_alternation_replacement_workflows.py",
                 expected_manifest_id="nested-group-alternation-replacement-workflows",
-                expected_patterns=frozenset(
-                    {
-                        r"a((b|c))d",
-                        r"a(?P<outer>(b|c))d",
-                    }
-                ),
-                expected_operation_helper_counts=(
-                    NESTED_GROUP_ALTERNATION_OPERATION_HELPER_COUNTS
-                ),
-            ),
-            FixtureBundleSpec(
-                "nested_group_alternation_wrapper_replacement_workflows.py",
-                expected_manifest_id="nested-group-alternation-wrapper-replacement-workflows",
                 expected_patterns=frozenset(
                     {
                         r"a((b|c))d",
@@ -1638,6 +1624,23 @@ def test_grouped_replacement_surface_keeps_selected_bundle_ownership_explicit() 
         assert "named-group" in case.categories
         assert "replacement-template" in case.categories
         assert case.text_model == "str"
+
+    nested_group_alternation_bundle = next(
+        bundle
+        for bundle in surface.bundles
+        if bundle.expected_manifest_id == "nested-group-alternation-replacement-workflows"
+    )
+    assert tuple(case.case_id for case in nested_group_alternation_bundle.cases) == (
+        NESTED_GROUP_ALTERNATION_REPLACEMENT_CASE_IDS
+    )
+    assert {
+        case.case_id
+        for case in nested_group_alternation_bundle.cases
+        if "wrapper-template" in case.categories
+    } == {
+        "module-sub-template-nested-group-alternation-numbered-wrapper-str",
+        "pattern-subn-template-nested-group-alternation-named-wrapper-first-match-only-str",
+    }
 
 
 @pytest.mark.parametrize(("surface", "bundle"), BUNDLE_PARAMS)
