@@ -17,7 +17,170 @@ from tests.python.fixture_parity_support import (
 )
 
 
+EXPECTED_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("compile", None): 2,
+        ("module_call", "search"): 2,
+        ("module_call", "fullmatch"): 2,
+        ("pattern_call", "fullmatch"): 2,
+    }
+)
+SYSTEMATIC_EMPTY_ELSE_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("compile", None): 4,
+        ("module_call", "search"): 4,
+        ("module_call", "fullmatch"): 4,
+        ("pattern_call", "fullmatch"): 4,
+    }
+)
+ALTERNATION_PRESENT_ABSENT_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("compile", None): 2,
+        ("module_call", "search"): 4,
+        ("pattern_call", "fullmatch"): 4,
+    }
+)
+ALTERNATION_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("compile", None): 2,
+        ("module_call", "search"): 4,
+        ("pattern_call", "fullmatch"): 2,
+    }
+)
+FULLY_EMPTY_ALTERNATION_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("compile", None): 2,
+        ("module_call", "search"): 2,
+        ("module_call", "fullmatch"): 2,
+        ("pattern_call", "fullmatch"): 2,
+    }
+)
+
+
 FIXTURE_BUNDLE_SPECS = (
+    FixtureBundleSpec(
+        "conditional_group_exists_nested_workflows.py",
+        expected_manifest_id="conditional-group-exists-nested-workflows",
+        expected_case_ids=frozenset(
+            {
+                "conditional-group-exists-nested-compile-metadata-str",
+                "conditional-group-exists-nested-module-search-present-str",
+                "conditional-group-exists-nested-module-fullmatch-absent-str",
+                "conditional-group-exists-nested-pattern-fullmatch-unreachable-inner-else-str",
+                "named-conditional-group-exists-nested-compile-metadata-str",
+                "named-conditional-group-exists-nested-module-search-present-str",
+                "named-conditional-group-exists-nested-module-fullmatch-absent-str",
+                "named-conditional-group-exists-nested-pattern-fullmatch-unreachable-inner-else-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)(?(1)d|e)|f)",
+                r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+            }
+        ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
+    ),
+    FixtureBundleSpec(
+        "conditional_group_exists_no_else_nested_workflows.py",
+        expected_manifest_id="conditional-group-exists-no-else-nested-workflows",
+        expected_case_ids=frozenset(
+            {
+                "conditional-group-exists-no-else-nested-compile-metadata-str",
+                "conditional-group-exists-no-else-nested-module-search-present-str",
+                "conditional-group-exists-no-else-nested-module-fullmatch-missing-suffix-str",
+                "conditional-group-exists-no-else-nested-pattern-fullmatch-absent-str",
+                "named-conditional-group-exists-no-else-nested-compile-metadata-str",
+                "named-conditional-group-exists-no-else-nested-module-search-present-str",
+                "named-conditional-group-exists-no-else-nested-module-fullmatch-missing-suffix-str",
+                "named-conditional-group-exists-no-else-nested-pattern-fullmatch-absent-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)(?(1)d))",
+                r"a(?P<word>b)?c(?(word)(?(word)d))",
+            }
+        ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
+    ),
+    FixtureBundleSpec(
+        "conditional_group_exists_empty_else_nested_workflows.py",
+        expected_manifest_id="conditional-group-exists-empty-else-nested-workflows",
+        expected_case_ids=frozenset(
+            {
+                "conditional-group-exists-empty-else-nested-compile-metadata-str",
+                "conditional-group-exists-empty-else-nested-module-search-present-str",
+                "conditional-group-exists-empty-else-nested-module-fullmatch-missing-suffix-str",
+                "conditional-group-exists-empty-else-nested-pattern-fullmatch-absent-str",
+                "named-conditional-group-exists-empty-else-nested-compile-metadata-str",
+                "named-conditional-group-exists-empty-else-nested-module-search-present-str",
+                "named-conditional-group-exists-empty-else-nested-module-fullmatch-missing-suffix-str",
+                "named-conditional-group-exists-empty-else-nested-pattern-fullmatch-absent-str",
+                "systematic-conditional-group-exists-empty-else-nested-numbered-compile-metadata-str",
+                "systematic-conditional-group-exists-empty-else-nested-numbered-module-search-present-str",
+                "systematic-conditional-group-exists-empty-else-nested-numbered-module-fullmatch-missing-suffix-str",
+                "systematic-conditional-group-exists-empty-else-nested-numbered-pattern-fullmatch-absent-str",
+                "systematic-conditional-group-exists-empty-else-nested-named-compile-metadata-str",
+                "systematic-conditional-group-exists-empty-else-nested-named-module-search-present-str",
+                "systematic-conditional-group-exists-empty-else-nested-named-module-fullmatch-missing-suffix-str",
+                "systematic-conditional-group-exists-empty-else-nested-named-pattern-fullmatch-absent-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)(?(1)d)|)",
+                r"a(?P<word>b)?c(?(word)(?(word)d)|)",
+            }
+        ),
+        expected_operation_helper_counts=SYSTEMATIC_EMPTY_ELSE_OPERATION_HELPER_COUNTS,
+    ),
+    FixtureBundleSpec(
+        "conditional_group_exists_empty_yes_else_nested_workflows.py",
+        expected_manifest_id="conditional-group-exists-empty-yes-else-nested-workflows",
+        expected_case_ids=frozenset(
+            {
+                "conditional-group-exists-empty-yes-else-nested-compile-metadata-str",
+                "conditional-group-exists-empty-yes-else-nested-module-search-present-str",
+                "conditional-group-exists-empty-yes-else-nested-module-fullmatch-absent-str",
+                "conditional-group-exists-empty-yes-else-nested-pattern-fullmatch-absent-failure-str",
+                "named-conditional-group-exists-empty-yes-else-nested-compile-metadata-str",
+                "named-conditional-group-exists-empty-yes-else-nested-module-search-present-str",
+                "named-conditional-group-exists-empty-yes-else-nested-module-fullmatch-absent-str",
+                "named-conditional-group-exists-empty-yes-else-nested-pattern-fullmatch-absent-failure-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)|(?(1)e|f))",
+                r"a(?P<word>b)?c(?(word)|(?(word)e|f))",
+            }
+        ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
+    ),
+    FixtureBundleSpec(
+        "conditional_group_exists_fully_empty_nested_workflows.py",
+        expected_manifest_id="conditional-group-exists-fully-empty-nested-workflows",
+        expected_case_ids=frozenset(
+            {
+                "conditional-group-exists-fully-empty-nested-compile-metadata-str",
+                "conditional-group-exists-fully-empty-nested-module-search-present-str",
+                "conditional-group-exists-fully-empty-nested-module-fullmatch-absent-str",
+                "conditional-group-exists-fully-empty-nested-pattern-fullmatch-extra-suffix-failure-str",
+                "named-conditional-group-exists-fully-empty-nested-compile-metadata-str",
+                "named-conditional-group-exists-fully-empty-nested-module-search-present-str",
+                "named-conditional-group-exists-fully-empty-nested-module-fullmatch-absent-str",
+                "named-conditional-group-exists-fully-empty-nested-pattern-fullmatch-extra-suffix-failure-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)|(?(1)|))",
+                r"a(?P<word>b)?c(?(word)|(?(word)|))",
+            }
+        ),
+        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
+    ),
     FixtureBundleSpec(
         "conditional_group_exists_alternation_workflows.py",
         expected_manifest_id="conditional-group-exists-alternation-workflows",
@@ -41,13 +204,7 @@ FIXTURE_BUNDLE_SPECS = (
                 r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
             }
         ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 4,
-            }
-        ),
+        expected_operation_helper_counts=ALTERNATION_PRESENT_ABSENT_OPERATION_HELPER_COUNTS,
     ),
     FixtureBundleSpec(
         "conditional_group_exists_no_else_alternation_workflows.py",
@@ -70,13 +227,7 @@ FIXTURE_BUNDLE_SPECS = (
                 r"a(?P<word>b)?c(?(word)(de|df))",
             }
         ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 2,
-            }
-        ),
+        expected_operation_helper_counts=ALTERNATION_OPERATION_HELPER_COUNTS,
     ),
     FixtureBundleSpec(
         "conditional_group_exists_empty_else_alternation_workflows.py",
@@ -99,13 +250,7 @@ FIXTURE_BUNDLE_SPECS = (
                 r"a(?P<word>b)?c(?(word)(de|df)|)",
             }
         ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 2,
-            }
-        ),
+        expected_operation_helper_counts=ALTERNATION_OPERATION_HELPER_COUNTS,
     ),
     FixtureBundleSpec(
         "conditional_group_exists_empty_yes_else_alternation_workflows.py",
@@ -128,13 +273,7 @@ FIXTURE_BUNDLE_SPECS = (
                 r"a(?P<word>b)?c(?(word)|(e|f))",
             }
         ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 2,
-            }
-        ),
+        expected_operation_helper_counts=ALTERNATION_OPERATION_HELPER_COUNTS,
     ),
     FixtureBundleSpec(
         "conditional_group_exists_fully_empty_alternation_workflows.py",
@@ -157,14 +296,7 @@ FIXTURE_BUNDLE_SPECS = (
                 r"a(?P<word>b)?c(?(word)|(?:|))",
             }
         ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("module_call", "fullmatch"): 2,
-                ("pattern_call", "fullmatch"): 2,
-            }
-        ),
+        expected_operation_helper_counts=FULLY_EMPTY_ALTERNATION_OPERATION_HELPER_COUNTS,
     ),
 )
 FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)

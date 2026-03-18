@@ -1,8 +1,9 @@
 # RBR-0614: Collapse the conditional nested and alternation parity suites onto one suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Replace `tests/python/test_conditional_group_exists_nested_parity_suite.py` and `tests/python/test_conditional_group_exists_alternation_parity_suite.py` with one fixture-backed pytest suite so this conditional parity surface stops carrying the same bundle-contract, compile-parity, module-workflow, and pattern-fullmatch ladders in two near-identical files.
@@ -71,3 +72,7 @@ Created: 2026-03-18
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_nested_parity_suite.py tests/python/test_conditional_group_exists_alternation_parity_suite.py` passes (`190 passed in 0.18s`);
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_nested_alternation_parity_suite.py` currently fails exactly on this cleanup with `ERROR: file or directory not found: tests/python/test_conditional_group_exists_nested_alternation_parity_suite.py`; and
   - `bash -lc "! rg --files tests/python | rg 'test_conditional_group_exists_(nested|alternation)_parity_suite\\.py$'"` currently fails exactly on this cleanup because both superseded files still exist.
+- 2026-03-18 completion:
+  - Replaced the two superseded modules with `tests/python/test_conditional_group_exists_nested_alternation_parity_suite.py`, keeping one local ordered `FIXTURE_BUNDLE_SPECS` table for the same ten nested and alternation manifests, the nested empty-else systematic helper-count override, the alternation fully-empty `module_call`/`fullmatch` split, and the existing four parity ladders.
+  - Deleted `tests/python/test_conditional_group_exists_nested_parity_suite.py` and `tests/python/test_conditional_group_exists_alternation_parity_suite.py`, with `git diff --name-status -- ...` reporting both legacy paths as `D`.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_nested_alternation_parity_suite.py` (`190 passed in 0.16s`) and `bash -lc "! rg --files tests/python | rg 'test_conditional_group_exists_(nested|alternation)_parity_suite\\.py$'"` (no matches).
