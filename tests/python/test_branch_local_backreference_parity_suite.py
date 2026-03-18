@@ -50,6 +50,15 @@ class BoundedPatternCase:
 
 
 @dataclass(frozen=True)
+class DirectBytesBoundedPatternCase:
+    id: str
+    pattern: bytes
+    helper: str
+    string: bytes
+    bounds: tuple[int, ...]
+
+
+@dataclass(frozen=True)
 class BranchLocalBackreferenceBytesFollowOnCase:
     id: str
     pattern: bytes
@@ -595,6 +604,9 @@ DIRECT_BYTES_FOLLOW_ON_SPECS = (
 DIRECT_BYTES_FOLLOW_ON_CASES = tuple(
     case for spec in DIRECT_BYTES_FOLLOW_ON_SPECS for case in spec.cases
 )
+SUPPORTED_DIRECT_BYTES_PATTERNS = frozenset(
+    case.pattern for case in DIRECT_BYTES_FOLLOW_ON_CASES if not case.unsupported_backends
+)
 PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
 COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_case_buckets(
@@ -720,6 +732,45 @@ PATTERN_BOUNDS_NO_MATCH_CASES = (
         helper="fullmatch",
         string="yyaccccdzz",
         bounds=(3, 8),
+    ),
+)
+DIRECT_BYTES_PATTERN_BOUNDS_MATCH_CASES = (
+    DirectBytesBoundedPatternCase(
+        id="quantified-alternation-branch-local-named-bytes-search-window",
+        pattern=rb"a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d",
+        helper="search",
+        string=b"yyaccdzz",
+        bounds=(2, 6),
+    ),
+    DirectBytesBoundedPatternCase(
+        id="quantified-nested-group-branch-local-numbered-bytes-match-window",
+        pattern=rb"a((b|c)+)\2d",
+        helper="match",
+        string=b"zzabbdxx",
+        bounds=(2, 6),
+    ),
+    DirectBytesBoundedPatternCase(
+        id="quantified-nested-group-branch-local-named-bytes-fullmatch-window",
+        pattern=rb"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
+        helper="fullmatch",
+        string=b"yyabccdzz",
+        bounds=(2, 7),
+    ),
+)
+DIRECT_BYTES_PATTERN_BOUNDS_NO_MATCH_CASES = (
+    DirectBytesBoundedPatternCase(
+        id="quantified-alternation-branch-local-numbered-bytes-search-skips-match-before-pos",
+        pattern=rb"a((b|c)\2){1,2}d",
+        helper="search",
+        string=b"xxabbdyy",
+        bounds=(3, 8),
+    ),
+    DirectBytesBoundedPatternCase(
+        id="quantified-nested-group-branch-local-numbered-bytes-fullmatch-truncated-endpos",
+        pattern=rb"a((b|c)+)\2d",
+        helper="fullmatch",
+        string=b"yyabccdzz",
+        bounds=(2, 6),
     ),
 )
 SUPPLEMENTAL_MISS_CASES = (
@@ -873,7 +924,10 @@ def _bounded_pattern(case: BoundedPatternCase) -> str:
     return str_case_pattern(CASES_BY_ID[case.pattern_case_id])
 
 
-def _invoke_bound_helper(pattern: object, case: BoundedPatternCase) -> object:
+def _invoke_bound_helper(
+    pattern: object,
+    case: BoundedPatternCase | DirectBytesBoundedPatternCase,
+) -> object:
     return getattr(pattern, case.helper)(case.string, *case.bounds)
 
 
@@ -961,6 +1015,17 @@ def test_pattern_bounds_cases_stay_anchored_to_supported_branch_local_patterns()
     assert str_case_pattern(CASES_BY_ID[OPEN_ENDED_NAMED_COMPILE_CASE_ID]) == (
         r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d"
     )
+
+
+def test_direct_bytes_pattern_bounds_cases_stay_anchored_to_supported_bytes_patterns(
+) -> None:
+    assert {
+        case.pattern
+        for case in (
+            *DIRECT_BYTES_PATTERN_BOUNDS_MATCH_CASES,
+            *DIRECT_BYTES_PATTERN_BOUNDS_NO_MATCH_CASES,
+        )
+    } == SUPPORTED_DIRECT_BYTES_PATTERNS
 
 
 @pytest.mark.parametrize("bundle", FIXTURE_BUNDLES, ids=lambda bundle: bundle.expected_manifest_id)
@@ -1261,6 +1326,58 @@ def test_pattern_helper_bounds_no_match_paths_match_cpython(
         backend_name,
         backend,
         _bounded_pattern(case),
+    )
+
+    observed = _invoke_bound_helper(observed_pattern, case)
+    expected = _invoke_bound_helper(expected_pattern, case)
+
+    assert observed is None
+    assert expected is None
+    assert_match_result_parity(backend_name, observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    DIRECT_BYTES_PATTERN_BOUNDS_MATCH_CASES,
+    ids=lambda case: case.id,
+)
+def test_direct_bytes_pattern_helper_bounds_match_cpython(
+    regex_backend: tuple[str, object],
+    case: DirectBytesBoundedPatternCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    observed = _invoke_bound_helper(observed_pattern, case)
+    expected = _invoke_bound_helper(expected_pattern, case)
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_parity(backend_name, observed, expected, check_regs=True)
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+    assert_match_convenience_api_parity(observed, expected)
+    assert_valid_match_group_access_parity(observed, expected)
+    assert_invalid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    DIRECT_BYTES_PATTERN_BOUNDS_NO_MATCH_CASES,
+    ids=lambda case: case.id,
+)
+def test_direct_bytes_pattern_helper_bounds_no_match_paths_match_cpython(
+    regex_backend: tuple[str, object],
+    case: DirectBytesBoundedPatternCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
     )
 
     observed = _invoke_bound_helper(observed_pattern, case)
