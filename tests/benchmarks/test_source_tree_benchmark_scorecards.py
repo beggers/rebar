@@ -121,6 +121,9 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
         )
 
         case = source_tree_combined_case(manifest_id)
+        expected_workload_count = len(
+            case.selected_workload_ids_for_manifest(manifest_id)
+        )
         public_representatives = (
             source_tree_combined_manifest_representative_measured_workload_ids(
                 manifest_id
@@ -137,8 +140,14 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
         _, scorecard = run_source_tree_benchmark_scorecard([manifest.path])
         manifest_summary = scorecard["manifests"][manifest_id]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
-        self.assertEqual(manifest_summary["measured_workloads"], 28)
-        self.assertEqual(manifest_summary["workload_count"], 28)
+        self.assertEqual(
+            manifest_summary["measured_workloads"],
+            expected_workload_count,
+        )
+        self.assertEqual(
+            manifest_summary["workload_count"],
+            expected_workload_count,
+        )
         for workload_id in expected_workload_ids:
             with self.subTest(scorecard_workload_id=workload_id):
                 assert_benchmark_workload_contract(

@@ -404,6 +404,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
 
         case = source_tree_combined_case(manifest_id)
+        expected_workload_count = len(
+            case.selected_workload_ids_for_manifest(manifest_id)
+        )
         public_representatives = (
             source_tree_combined_manifest_representative_measured_workload_ids(
                 manifest_id
@@ -427,8 +430,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case,
             manifest_id,
             expected_workload_ids,
-            28,
-            expected_total_workload_count=28,
+            expected_workload_count,
+            expected_total_workload_count=expected_workload_count,
         )
 
     def test_quantified_alternation_manifest_promotes_bounded_branch_backref_conditional_nested_branch_broader_range_open_ended_and_backtracking_heavy_bytes_rows_to_measured(
