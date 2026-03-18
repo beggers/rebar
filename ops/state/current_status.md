@@ -1,6 +1,6 @@
 # Current Status
 
-Updated: 2026-03-17
+Updated: 2026-03-18
 
 ## Phase
 Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while keeping the correctness and benchmark publications caught up with each newly supported slice.
@@ -329,7 +329,7 @@ The published frontier is still narrow: 1190 of 1190 published correctness cases
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0576` should catch the bounded quantified-alternation bytes pair for `rb"a(b|c){1,2}d"` and `rb"a(?P<word>b|c){1,2}d"` up on the existing Python-facing benchmark surface, mirroring the six adjacent bounded `str` rows so the same mixed `str`/`bytes` slice reaches zero-gap measurement before another quantified-alternation bytes family broadens the frontier.
+- `RBR-0578` should publish the bounded quantified-alternation nested-branch bytes pair for `rb"a((b|c)|de){1,2}d"` and `rb"a(?P<word>(b|c)|de){1,2}d"` on the existing correctness/parity path, mirroring the ten adjacent `str` cases so the quantified-alternation frontier reopens on tracked correctness before Rust-backed bytes parity and later Python-path benchmark catch-up land.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

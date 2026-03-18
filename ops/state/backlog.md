@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0576` should catch the bounded quantified-alternation bytes pair for `rb"a(b|c){1,2}d"` and `rb"a(?P<word>b|c){1,2}d"` up on the existing Python-facing benchmark surface, mirroring the six adjacent bounded `str` rows so the same mixed `str`/`bytes` slice reaches zero-gap measurement before another quantified-alternation bytes family broadens the frontier.
+`RBR-0578` should publish the bounded quantified-alternation nested-branch bytes pair for `rb"a((b|c)|de){1,2}d"` and `rb"a(?P<word>(b|c)|de){1,2}d"` on the existing correctness/parity path, mirroring the ten adjacent `str` cases so the quantified-alternation frontier reopens on tracked correctness before Rust-backed bytes parity and later Python-path benchmark catch-up land.
 
 ## Ordered Work
-1. `RBR-0576` should catch the bounded quantified-alternation bytes pair for `rb"a(b|c){1,2}d"` and `rb"a(?P<word>b|c){1,2}d"` up on `benchmarks/workloads/quantified_alternation_boundary.py`, mirroring the six adjacent bounded `str` rows through the existing quantified-alternation manifest and benchmark scorecard tests.
+1. `RBR-0578` should publish the bounded quantified-alternation nested-branch bytes pair for `rb"a((b|c)|de){1,2}d"` and `rb"a(?P<word>(b|c)|de){1,2}d"` through `tests/conformance/fixtures/quantified_alternation_nested_branch_workflows.py` and `tests/python/test_quantified_alternation_parity_suite.py`, mirroring the existing ten `str` rows through the quantified-alternation nested-branch manifest, correctness expectations, and published scorecard.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
