@@ -769,11 +769,25 @@ def _skip_pending_rebar_callable_parity(
         )
 
 
+def _bytes_case_pattern(case: FixtureCase) -> bytes:
+    pattern = case_pattern(case)
+    assert isinstance(pattern, bytes)
+    return pattern
+
+
 def _pending_rebar_compile_patterns() -> frozenset[str]:
     return frozenset(
         str_case_pattern(case)
         for case in PUBLISHED_CALLABLE_CASES
         if _is_pending_rebar_callable_case(case) and case.text_model == "str"
+    )
+
+
+def _pending_rebar_bytes_no_match_patterns() -> frozenset[bytes]:
+    return frozenset(
+        _bytes_case_pattern(case)
+        for case in PUBLISHED_CALLABLE_CASES
+        if _is_pending_rebar_callable_case(case) and case.text_model == "bytes"
     )
 
 COLLECTION_REPLACEMENT_BUNDLE, = load_fixture_bundles(
@@ -802,6 +816,15 @@ COMPILE_PATTERNS = tuple(
             str_case_pattern(case)
             for case in SHARED_CALLABLE_CASES
             if case.text_model == "str"
+        }
+    )
+)
+BYTES_NO_MATCH_PATTERNS = tuple(
+    sorted(
+        {
+            _bytes_case_pattern(case)
+            for case in PUBLISHED_CALLABLE_CASES
+            if case.text_model == "bytes"
         }
     )
 )
@@ -929,13 +952,53 @@ def _observe_published_callable_case(backend: object, case: FixtureCase) -> tupl
         return ("exception", normalize_exception(exc))
 
 
-def _callable_no_match_text(pattern: str, flags: int = 0) -> str:
+def _callable_no_match_text(pattern: TextValue, flags: int = 0) -> TextValue:
     compiled = re.compile(pattern, flags)
     for text in NO_MATCH_TEXT_CANDIDATES:
-        if compiled.search(text) is None:
-            return text
+        candidate = text if isinstance(pattern, str) else text.encode()
+        if compiled.search(candidate) is None:
+            return candidate
 
     raise AssertionError(f"could not find a shared no-match text for pattern {pattern!r}")
+
+
+def assert_callable_replacement_no_match_path_leaves_input_unchanged(
+    *,
+    backend: object,
+    pattern: TextValue,
+    helper: str,
+    use_compiled_pattern: bool,
+) -> None:
+    callback_calls: list[object] = []
+    string = _callable_no_match_text(pattern)
+    replacement_value = _callable_replacement_marker(string)
+
+    def replacement(match: object) -> TextValue:
+        callback_calls.append(match)
+        return replacement_value
+
+    observed = _invoke_callable_replacement(
+        backend,
+        pattern=pattern,
+        helper=helper,
+        string=string,
+        count=1,
+        replacement=replacement,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+    expected = _invoke_callable_replacement(
+        re,
+        pattern=pattern,
+        helper=helper,
+        string=string,
+        count=1,
+        replacement=replacement,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+    expected_result: object = string if helper == "sub" else (string, 0)
+
+    assert observed == expected == expected_result
+    assert callback_calls == []
 
 
 def assert_callable_replacement_negative_count_short_circuits(
@@ -1243,6 +1306,7 @@ def test_pattern_callable_replacement_return_type_error_cases_cover_quantified_c
 NO_MATCH_PATTERNS = tuple(sorted({*COMPILE_PATTERNS, _literal_callable_pattern()}))
 PENDING_REBAR_COMPILE_PATTERNS = _pending_rebar_compile_patterns()
 PENDING_REBAR_NO_MATCH_PATTERNS = PENDING_REBAR_COMPILE_PATTERNS
+PENDING_REBAR_BYTES_NO_MATCH_PATTERNS = _pending_rebar_bytes_no_match_patterns()
 
 
 @pytest.mark.parametrize("pattern", COMPILE_PATTERNS)
@@ -1329,35 +1393,37 @@ def test_callable_replacement_no_match_paths_leave_input_unchanged(
             f"callable replacement parity for pattern {pattern!r} remains queued behind a later Rust-backed parity task"
         )
 
-    callback_calls: list[object] = []
-    string = _callable_no_match_text(pattern)
-
-    def replacement(match: object) -> str:
-        callback_calls.append(match)
-        return "X"
-
-    observed = _invoke_callable_replacement(
-        backend,
+    assert_callable_replacement_no_match_path_leaves_input_unchanged(
+        backend=backend,
         pattern=pattern,
         helper=helper,
-        string=string,
-        count=1,
-        replacement=replacement,
         use_compiled_pattern=use_compiled_pattern,
     )
-    expected = _invoke_callable_replacement(
-        re,
+
+
+@pytest.mark.parametrize("pattern", BYTES_NO_MATCH_PATTERNS)
+@pytest.mark.parametrize(
+    ("helper", "use_compiled_pattern"),
+    CALLABLE_NO_MATCH_VARIANTS,
+)
+def test_bytes_callable_replacement_no_match_paths_leave_input_unchanged(
+    regex_backend: tuple[str, object],
+    pattern: bytes,
+    helper: str,
+    use_compiled_pattern: bool,
+) -> None:
+    backend_name, backend = regex_backend
+    if backend_name == "rebar" and pattern in PENDING_REBAR_BYTES_NO_MATCH_PATTERNS:
+        pytest.skip(
+            f"callable replacement parity for pattern {pattern!r} remains queued behind a later Rust-backed parity task"
+        )
+
+    assert_callable_replacement_no_match_path_leaves_input_unchanged(
+        backend=backend,
         pattern=pattern,
         helper=helper,
-        string=string,
-        count=1,
-        replacement=replacement,
         use_compiled_pattern=use_compiled_pattern,
     )
-    expected_result: object = string if helper == "sub" else (string, 0)
-
-    assert observed == expected == expected_result
-    assert callback_calls == []
 
 
 @pytest.mark.parametrize("near_miss_case", CALLABLE_NEAR_MISS_CASES)
@@ -1458,6 +1524,43 @@ def test_pattern_callable_replacement_negative_count_short_circuits_without_call
     )
 
 
+@pytest.mark.parametrize("case", BYTES_MODULE_CASES, ids=lambda case: case.case_id)
+def test_module_bytes_callable_replacement_negative_count_short_circuits_without_callback(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+    assert case.text_model == "bytes"
+
+    _skip_pending_rebar_callable_parity(backend_name, case)
+    assert_callable_replacement_negative_count_short_circuits(
+        backend=backend,
+        helper=case.helper,
+        pattern=case_pattern(case),
+        string=case_text_argument(case),
+    )
+
+
+@pytest.mark.parametrize("case", BYTES_PATTERN_CASES, ids=lambda case: case.case_id)
+def test_pattern_bytes_callable_replacement_negative_count_short_circuits_without_callback(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+    assert case.text_model == "bytes"
+
+    _skip_pending_rebar_callable_parity(backend_name, case)
+    assert_callable_replacement_negative_count_short_circuits(
+        backend=backend,
+        helper=case.helper,
+        pattern=case_pattern(case),
+        string=case_text_argument(case),
+        use_compiled_pattern=True,
+    )
+
+
 @pytest.mark.parametrize(
     ("helper", "use_compiled_pattern"),
     CALLABLE_NO_MATCH_VARIANTS,
@@ -1511,6 +1614,45 @@ def test_pattern_callable_replacement_none_count_matches_cpython_typeerror(
         helper=case.helper,
         pattern=case_pattern(case),
         string=_case_string(case),
+        count=None,
+        use_compiled_pattern=True,
+    )
+
+
+@pytest.mark.parametrize("case", BYTES_MODULE_CASES, ids=lambda case: case.case_id)
+def test_module_bytes_callable_replacement_none_count_matches_cpython_typeerror(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+    assert case.text_model == "bytes"
+
+    _skip_pending_rebar_callable_parity(backend_name, case)
+    assert_callable_replacement_invalid_count_typeerror_parity(
+        backend=backend,
+        helper=case.helper,
+        pattern=case_pattern(case),
+        string=case_text_argument(case),
+        count=None,
+    )
+
+
+@pytest.mark.parametrize("case", BYTES_PATTERN_CASES, ids=lambda case: case.case_id)
+def test_pattern_bytes_callable_replacement_none_count_matches_cpython_typeerror(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+    assert case.text_model == "bytes"
+
+    _skip_pending_rebar_callable_parity(backend_name, case)
+    assert_callable_replacement_invalid_count_typeerror_parity(
+        backend=backend,
+        helper=case.helper,
+        pattern=case_pattern(case),
+        string=case_text_argument(case),
         count=None,
         use_compiled_pattern=True,
     )
