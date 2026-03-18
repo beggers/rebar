@@ -112,6 +112,12 @@ _NATIVE_TEMPLATE_BYTES_PATTERNS: Final[frozenset[bytes]] = frozenset(
         _NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NAMED_BYTES_TEMPLATE_PATTERN,
     }
 )
+_NATIVE_CALLABLE_BYTES_PATTERNS: Final[frozenset[bytes]] = frozenset(
+    {
+        _NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NUMBERED_BYTES_TEMPLATE_PATTERN,
+        _NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NAMED_BYTES_TEMPLATE_PATTERN,
+    }
+)
 _MATCH_FALLBACK_UNSUPPORTED = object()
 
 
@@ -646,6 +652,14 @@ def _grouped_literal_body(pattern: str) -> str | None:
 def _allow_native_template_passthrough(pattern: str | bytes) -> bool:
     return _native is not None and (
         isinstance(pattern, str) or pattern in _NATIVE_TEMPLATE_BYTES_PATTERNS
+    )
+
+
+def _allow_native_callable_bytes_passthrough(pattern: str | bytes) -> bool:
+    return (
+        _native is not None
+        and isinstance(pattern, bytes)
+        and pattern in _NATIVE_CALLABLE_BYTES_PATTERNS
     )
 
 
@@ -1284,6 +1298,25 @@ def _native_callable_match_spans(
             [tuple() for _ in spans],
         )
 
+    if isinstance(compiled_pattern.pattern, bytes):
+        status, normalized_pos, normalized_endpos, spans, group_spans = (
+            _native.boundary_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_finditer_bytes(
+                compiled_pattern.pattern,
+                compiled_pattern.flags,
+                compatible_string,
+                0,
+                None,
+            )
+        )
+        if status != "unsupported":
+            return (
+                status,
+                normalized_pos,
+                normalized_endpos,
+                spans,
+                [tuple(match_group_spans) for match_group_spans in group_spans],
+            )
+
     if isinstance(compiled_pattern.pattern, str):
         status, normalized_pos, normalized_endpos, spans, group_spans = (
             _native.boundary_nested_capture_finditer(
@@ -1796,7 +1829,7 @@ def _ensure_literal_replacement_payload(
     defer_cross_type_mismatch: bool = False,
 ) -> object:
     if callable(repl):
-        if isinstance(pattern, bytes):
+        if isinstance(pattern, bytes) and not _allow_native_callable_bytes_passthrough(pattern):
             unsupported(helper_name)
             raise AssertionError("unsupported() should raise")  # pragma: no cover
         return repl

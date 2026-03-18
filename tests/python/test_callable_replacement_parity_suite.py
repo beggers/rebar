@@ -190,18 +190,6 @@ CALLABLE_MANIFEST_SPECS = (
         expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
         expected_text_models=MIXED_TEXT_MODELS,
         has_near_miss_matrix=False,
-        pending_rebar_case_ids=frozenset(
-            {
-                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-lower-bound-b-branch-bytes",
-                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-first-match-only-b-branch-bytes",
-                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-mixed-branches-bytes",
-                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-c-branch-first-match-only-bytes",
-                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-mixed-branches-bytes",
-                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-first-match-only-b-branch-bytes",
-                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-lower-bound-c-branch-bytes",
-                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-bytes",
-            }
-        ),
     ),
 )
 CALLABLE_MANIFEST_SPECS_BY_ID = {
@@ -715,7 +703,9 @@ SHARED_CALLABLE_CASES = tuple(
 COMPILE_PATTERNS = tuple(
     sorted(
         {
-            str_case_pattern(case) for case in SHARED_CALLABLE_CASES
+            str_case_pattern(case)
+            for case in SHARED_CALLABLE_CASES
+            if case.text_model == "str"
         }
     )
 )
@@ -754,6 +744,7 @@ PATTERN_RETURN_TYPE_ERROR_EXPECTED_MANIFEST_IDS = frozenset(
 PATTERN_RETURN_TYPE_ERROR_CASES = tuple(
     case
     for case in PATTERN_CASES
+    if case.text_model == "str"
     if any(
         keyword in case.manifest_id
         for keyword in CALLABLE_RETURN_TYPE_ERROR_MANIFEST_KEYWORDS
@@ -784,9 +775,9 @@ def _literal_callable_string() -> str:
     return string
 
 
-def _case_string(case: FixtureCase) -> str:
+def _case_string(case: FixtureCase) -> TextValue:
     string = case_text_argument(case)
-    assert isinstance(string, str)
+    assert isinstance(string, (str, bytes))
     return string
 
 
@@ -801,15 +792,15 @@ def _case_count(case: FixtureCase) -> int:
 
 
 def _case_group_names(case: FixtureCase) -> tuple[str, ...]:
-    return tuple(re.compile(str_case_pattern(case), case.flags or 0).groupindex)
+    return tuple(re.compile(case_pattern(case), case.flags or 0).groupindex)
 
 
 def _invoke_callable_replacement(
     backend: object,
     *,
-    pattern: str,
+    pattern: TextValue,
     helper: str,
-    string: str,
+    string: TextValue,
     count: int,
     replacement: object,
     use_compiled_pattern: bool,
@@ -855,15 +846,16 @@ def assert_callable_replacement_negative_count_short_circuits(
     *,
     backend: object,
     helper: str,
-    pattern: str,
-    string: str,
+    pattern: TextValue,
+    string: TextValue,
     use_compiled_pattern: bool = False,
 ) -> None:
     callback_calls: list[object] = []
+    replacement_value = _callable_replacement_marker(string)
 
-    def replacement(match: object) -> str:
+    def replacement(match: object) -> TextValue:
         callback_calls.append(match)
-        return "X"
+        return replacement_value
 
     observed = _invoke_callable_replacement(
         backend,
@@ -893,16 +885,17 @@ def assert_callable_replacement_invalid_count_typeerror_parity(
     *,
     backend: object,
     helper: str,
-    pattern: str,
-    string: str,
+    pattern: TextValue,
+    string: TextValue,
     count: object,
     use_compiled_pattern: bool = False,
 ) -> None:
     callback_calls: list[object] = []
+    replacement_value = _callable_replacement_marker(string)
 
-    def replacement(match: object) -> str:
+    def replacement(match: object) -> TextValue:
         callback_calls.append(match)
-        return "X"
+        return replacement_value
 
     with pytest.raises(TypeError) as observed_error:
         _invoke_callable_replacement(
@@ -1302,7 +1295,7 @@ def test_module_callable_replacement_negative_count_short_circuits_without_callb
     assert_callable_replacement_negative_count_short_circuits(
         backend=backend,
         helper=case.helper,
-        pattern=str_case_pattern(case),
+        pattern=case_pattern(case),
         string=_case_string(case),
     )
 
@@ -1319,7 +1312,7 @@ def test_pattern_callable_replacement_negative_count_short_circuits_without_call
     assert_callable_replacement_negative_count_short_circuits(
         backend=backend,
         helper=case.helper,
-        pattern=str_case_pattern(case),
+        pattern=case_pattern(case),
         string=_case_string(case),
         use_compiled_pattern=True,
     )
@@ -1358,7 +1351,7 @@ def test_module_callable_replacement_none_count_matches_cpython_typeerror(
     assert_callable_replacement_invalid_count_typeerror_parity(
         backend=backend,
         helper=case.helper,
-        pattern=str_case_pattern(case),
+        pattern=case_pattern(case),
         string=_case_string(case),
         count=None,
     )
@@ -1376,7 +1369,7 @@ def test_pattern_callable_replacement_none_count_matches_cpython_typeerror(
     assert_callable_replacement_invalid_count_typeerror_parity(
         backend=backend,
         helper=case.helper,
-        pattern=str_case_pattern(case),
+        pattern=case_pattern(case),
         string=_case_string(case),
         count=None,
         use_compiled_pattern=True,
@@ -1472,7 +1465,7 @@ def test_module_callable_replacement_callback_match_objects_match_cpython(
         backend_name=backend_name,
         backend=backend,
         helper=case.helper,
-        pattern=str_case_pattern(case),
+        pattern=case_pattern(case),
         string=_case_string(case),
         count=_case_count(case),
         group_names=_case_group_names(case),
@@ -1492,7 +1485,7 @@ def test_module_callable_replacement_callback_exception_matches_cpython(
         backend_name=backend_name,
         backend=backend,
         helper=case.helper,
-        pattern=str_case_pattern(case),
+        pattern=case_pattern(case),
         string=_case_string(case),
         count=_case_count(case),
         group_names=_case_group_names(case),
@@ -1552,7 +1545,7 @@ def test_pattern_callable_replacement_callback_match_objects_match_cpython(
         backend_name=backend_name,
         backend=backend,
         helper=case.helper,
-        pattern=str_case_pattern(case),
+        pattern=case_pattern(case),
         string=_case_string(case),
         count=_case_count(case),
         group_names=_case_group_names(case),
@@ -1594,7 +1587,7 @@ def test_pattern_callable_replacement_callback_exception_matches_cpython(
         backend_name=backend_name,
         backend=backend,
         helper=case.helper,
-        pattern=str_case_pattern(case),
+        pattern=case_pattern(case),
         string=_case_string(case),
         count=_case_count(case),
         group_names=_case_group_names(case),
@@ -1640,7 +1633,7 @@ def test_pattern_callable_replacement_wrong_return_type_matches_cpython(
         backend_name=backend_name,
         backend=backend,
         helper=case.helper,
-        pattern=str_case_pattern(case),
+        pattern=case_pattern(case),
         string=_case_string(case),
         count=_case_count(case),
     )

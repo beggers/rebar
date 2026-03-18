@@ -1,6 +1,6 @@
 # RBR-0633: Convert the nested broader-range open-ended branch-local-backreference conditional callable-replacement bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -44,3 +44,8 @@ Created: 2026-03-18
   - `benchmarks/workloads/nested_group_callable_replacement_boundary.py` already publishes the four adjacent `str` benchmark rows for this exact slice as `module-sub-callable-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-str`, `module-subn-callable-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-first-match-only-b-branch-warm-str`, `pattern-sub-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-purged-str`, and `pattern-subn-callable-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-c-branch-first-match-only-purged-str`, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes callable workflows at `rebar.sub(...)`, so this bytes parity slice is not already satisfied in the current checkout.
 - A later benchmark follow-on should catch the same bytes pair up on the existing `benchmarks/workloads/nested_group_callable_replacement_boundary.py` surface before deeper grouped execution broadens that family.
+
+## Completion
+- 2026-03-18: Added a Rust-backed bytes captured-span path for the exact broader-range open-ended conditional/backreference slice, wired the CPython bridge and Python callable-dispatch through it, and removed the shared-suite pending bookkeeping for this manifest.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py --report .rebar/tmp/rbr-0633-nested-broader-range-open-ended-branch-local-backreference-conditional-callable-replacement-bytes-parity.py`, and a post-publication `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py`.
+- Published correctness now reads `1294` total / `1294` passed / `0` failed / `0` unimplemented in `reports/correctness/latest.py`, and `collection.replacement.nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional.callable` now reads `16` total / `16` passed / `0` unimplemented with `['bytes', 'str']` text models.
