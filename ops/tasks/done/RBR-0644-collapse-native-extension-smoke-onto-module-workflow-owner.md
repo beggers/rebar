@@ -1,8 +1,9 @@
 # RBR-0644: Collapse the detached native-extension smoke suite onto the module-workflow owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Delete `tests/python/test_native_extension_smoke.py` by moving its remaining rebar-only smoke coverage onto `tests/python/test_module_workflow_parity_suite.py`, so the source-tree and built-wheel module-surface checks live on the existing module-workflow owner instead of a two-test detached suite.
@@ -70,3 +71,8 @@ PY`
   - `bash -lc "! rg --files tests/python | rg 'test_native_extension_smoke\\.py$'"` currently fails exactly on this cleanup because the detached suite file still exists.
 - No active code path depends on keeping the detached suite path:
   - `rg -n "test_native_extension_smoke\\.py|test_source_tree_shim_metadata_contract|test_built_wheel_keeps_native_surface_contract|PROBE =" tests python ops/tasks/ready ops/tasks/in_progress ops/tasks/blocked ops/state` currently matches only `tests/python/test_native_extension_smoke.py` itself plus the historical `RBR-0010` note in `ops/state/current_status.md`; keep that tracked historical note untouched in this structural cleanup.
+
+## Completion Note
+- 2026-03-18: Moved the detached rebar-only source-tree metadata assertions and the built-wheel subprocess smoke contract into `tests/python/test_module_workflow_parity_suite.py`, keeping the built probe file-local and preserving the existing observed payloads and explicit `maturin` skip behavior.
+- 2026-03-18: Deleted `tests/python/test_native_extension_smoke.py` outright after the module-workflow owner absorbed its remaining coverage.
+- 2026-03-18: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`477 passed, 1 skipped in 0.50s`), the inline source probe (`ok`), `bash -lc "! rg --files tests/python | rg 'test_native_extension_smoke\\.py$'"` (passes), and `git diff --name-status -- tests/python/test_native_extension_smoke.py` (`D`).
