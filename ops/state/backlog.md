@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0586` should convert the bounded quantified-alternation backtracking-heavy bytes pair behind `rebar._rebar` on the existing parity surface, reusing `tests/python/test_quantified_alternation_parity_suite.py` and `tests/conformance/fixtures/quantified_alternation_backtracking_heavy_workflows.py` so the combined correctness report moves from the post-publication `1212` total / `1200` passed / `12` honest `unimplemented` state across `111` manifests back to `1212` / `1212` / `0` before Python-path benchmark catch-up mirrors the six adjacent backtracking-heavy `str` rows on `benchmarks/workloads/quantified_alternation_boundary.py`.
+`RBR-0588` should catch the bounded quantified-alternation backtracking-heavy bytes pair up on the existing Python-path benchmark surface, reusing `benchmarks/workloads/quantified_alternation_boundary.py` and the shared source-tree benchmark assertion path so the `quantified-alternation-boundary` manifest moves from `66` total / `66` measured / `0` known gaps to `72` / `72` / `0` and the combined published benchmark report moves from `686` / `686` / `0` to `692` / `692` / `0` without widening into another bytes family.
 
 ## Ordered Work
-1. `RBR-0586` should convert the bounded quantified-alternation backtracking-heavy bytes pair through `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_quantified_alternation_parity_suite.py`, and `reports/correctness/latest.py`, keeping that bytes pair on the existing quantified-alternation parity surface and leaving the later six-row Python-path benchmark catch-up on `benchmarks/workloads/quantified_alternation_boundary.py` as the next bounded follow-on.
+1. `RBR-0588` should add only the six backtracking-heavy bytes mirrors for `a(b|bc){1,2}d` and `a(?P<word>b|bc){1,2}d` through `benchmarks/workloads/quantified_alternation_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, keeping the quantified-alternation manifest on the existing fully measured assertion surface and leaving no further ready quantified-alternation bytes follow-on once that benchmark catch-up lands.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
