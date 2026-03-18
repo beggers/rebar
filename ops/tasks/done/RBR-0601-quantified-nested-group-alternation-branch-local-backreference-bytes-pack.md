@@ -1,6 +1,6 @@
 # RBR-0601: Publish the quantified nested-group alternation branch-local-backreference bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -42,3 +42,8 @@ Created: 2026-03-18
   - `benchmarks/workloads/nested_group_alternation_boundary.py` already publishes the three adjacent `str` benchmark rows for this exact numbered and named pair as `module-search-numbered-quantified-nested-group-branch-local-backreference-lower-bound-b-branch-warm-str`, `module-compile-named-quantified-nested-group-branch-local-backreference-warm-str`, and `pattern-fullmatch-named-quantified-nested-group-branch-local-backreference-repeated-mixed-purged-str`, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`.
 - A later parity follow-on should convert the same bytes pair behind `rebar._rebar` on the existing branch-local-backreference parity surface before the benchmark surface mirrors the three adjacent `str` rows already published on `benchmarks/workloads/nested_group_alternation_boundary.py`.
+
+## Completion Note
+- 2026-03-18: Added the exact ten `bytes` mirrors for `rb"a((b|c)+)\\2d"` and `rb"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d"` to `tests/conformance/fixtures/quantified_nested_group_alternation_branch_local_backreference_workflows.py`, updated the shared branch-local parity suite bundle contract to `4` compile / `4` module / `12` pattern cases with mixed `str`/`bytes` coverage, and routed the new bytes rows through one explicit direct follow-on anchor that skips `rebar` pending `RBR-0603`.
+- Updated `tests/conformance/correctness_expectations.py` and republished `reports/correctness/latest.py`; the tracked combined report now reads `1244` total / `1234` passed / `0` failed / `10` unimplemented, and `match.quantified_nested_group_alternation_branch_local_backreference` now reads `20` total / `10` passed / `0` failed / `10` unimplemented with `['bytes', 'str']` text-model coverage.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/quantified_nested_group_alternation_branch_local_backreference_workflows.py --report .rebar/tmp/rbr-0601-quantified-nested-group-alternation-branch-local-backreference-bytes.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
