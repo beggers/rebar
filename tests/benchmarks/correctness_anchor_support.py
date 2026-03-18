@@ -41,12 +41,11 @@ def published_case_ids_by_signature(
 ) -> dict[tuple[Any, ...], tuple[str, ...]]:
     case_ids_by_signature: dict[tuple[Any, ...], list[str]] = {}
 
-    for manifest in published_fixture_manifests():
-        for case in manifest.cases:
-            signature = case_signature(case)
-            if signature is None:
-                continue
-            case_ids_by_signature.setdefault(signature, []).append(case.case_id)
+    for case in published_cases_by_id().values():
+        signature = case_signature(case)
+        if signature is None:
+            continue
+        case_ids_by_signature.setdefault(signature, []).append(case.case_id)
 
     return {
         signature: tuple(sorted(case_ids))
@@ -74,6 +73,18 @@ def _manifest_workloads(manifest_path: pathlib.Path) -> tuple[Any, ...]:
     return tuple(load_manifest(manifest_path).workloads)
 
 
+def _selected_manifest_workloads(
+    manifest_path: pathlib.Path,
+    *,
+    include_workload: Callable[[Any], bool] | None = None,
+) -> tuple[Any, ...]:
+    workloads = _manifest_workloads(manifest_path)
+    if include_workload is None:
+        return workloads
+
+    return tuple(workload for workload in workloads if include_workload(workload))
+
+
 def anchored_workload_case_ids(
     manifest_path: pathlib.Path,
     *,
@@ -81,7 +92,10 @@ def anchored_workload_case_ids(
     workload_signature: Callable[[Any], tuple[Any, ...]],
     include_workload: Callable[[Any], bool] | None = None,
 ) -> dict[tuple[str, str], tuple[str, ...]]:
-    workloads = _manifest_workloads(manifest_path)
+    workloads = _selected_manifest_workloads(
+        manifest_path,
+        include_workload=include_workload,
+    )
 
     return {
         (manifest_path.name, workload.workload_id): anchor_case_ids.get(
@@ -89,7 +103,6 @@ def anchored_workload_case_ids(
             (),
         )
         for workload in workloads
-        if include_workload is None or include_workload(workload)
     }
 
 
@@ -100,13 +113,15 @@ def unanchored_workload_ids(
     workload_signature: Callable[[Any], tuple[Any, ...]],
     include_workload: Callable[[Any], bool] | None = None,
 ) -> tuple[str, ...]:
-    workloads = _manifest_workloads(manifest_path)
+    workloads = _selected_manifest_workloads(
+        manifest_path,
+        include_workload=include_workload,
+    )
 
     return tuple(
         workload.workload_id
         for workload in workloads
-        if (include_workload is None or include_workload(workload))
-        and workload_signature(workload) not in anchor_case_ids
+        if workload_signature(workload) not in anchor_case_ids
     )
 
 
@@ -119,8 +134,10 @@ def expected_anchored_workload_case_pairs(
     manifest_name = manifest_path.name
     workloads_by_id = {
         workload.workload_id: workload
-        for workload in _manifest_workloads(manifest_path)
-        if include_workload is None or include_workload(workload)
+        for workload in _selected_manifest_workloads(
+            manifest_path,
+            include_workload=include_workload,
+        )
     }
     published_cases = published_cases_by_id()
     anchored_pairs: list[AnchoredWorkloadCasePair] = []
