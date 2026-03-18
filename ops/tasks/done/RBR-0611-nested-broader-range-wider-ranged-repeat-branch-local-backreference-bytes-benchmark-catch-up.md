@@ -1,8 +1,9 @@
 # RBR-0611: Catch the nested broader-range wider-ranged-repeat branch-local-backreference bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Extend the published source-tree benchmark surface so the exact broader `{1,4}` nested grouped-alternation branch-local-backreference bytes pair produces real `rebar` timings on the existing nested-group alternation manifest.
@@ -47,3 +48,10 @@ Created: 2026-03-18
   - `reports/benchmarks/latest.py` currently publishes `nested-group-alternation-boundary` at `25` total workloads / `25` measured workloads / `0` known gaps and the combined source-tree report at `707` / `707` / `0`; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so this benchmark follow-on stays sequenced behind `RBR-0609` until parity lands.
 - No further broader-range nested branch-local-backreference bytes family should be queued ahead of this benchmark catch-up while the mixed `str`/`bytes` slice is still missing these source-tree benchmark mirrors.
+
+## Completion Note
+- 2026-03-18: Added the three bytes mirrors for the broader `{1,4}` nested grouped-alternation branch-local-backreference slice to `benchmarks/workloads/nested_group_alternation_boundary.py`: the numbered `module.search(...)` lower-bound `b`-branch hit, the named `module.compile(...)` warm compile row, and the named `Pattern.fullmatch(...)` upper-bound all-`c` row.
+- Widened the shared `broader-range-branch-local-backreference` slice in `tests/benchmarks/benchmark_expectations.py` so the existing slice-derived zero-gap surface now includes the new bytes rows without creating a bytes-only manifest contract or another benchmark family.
+- Added direct benchmark regressions in `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to pin the new bytes rows plus the `nested-group-alternation-boundary` `28` total / `28` measured / `0` known-gap state on top of the generic slice checks.
+- Republished `reports/benchmarks/latest.py`; the tracked report now shows `nested-group-alternation-boundary` at `28` total workloads / `28` measured workloads / `0` known gaps, and the combined source-tree benchmark summary at `710` total workloads / `710` measured workloads / `0` known gaps.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_alternation_boundary.py --report .rebar/tmp/rbr-0611-nested-broader-range-wider-ranged-repeat-branch-local-backreference-bytes-benchmarks.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
