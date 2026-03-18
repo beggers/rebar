@@ -67,7 +67,7 @@ class BoundedPatternCase:
     id: str
     pattern_case_id: str
     helper: str
-    string: str
+    string: str | bytes
     bounds: tuple[int, int]
 
 
@@ -560,7 +560,10 @@ QUANTIFIED_ALTERNATION_DIRECT_TEST_CASE_ID_BUCKETS = {
 MATCH_GROUP_ACCESS_CASES = tuple(
     case for case in (*MODULE_CASES, *PATTERN_CASES) if "no-match" not in case.case_id
 )
-COMPILE_CASES_BY_ID = {case.case_id: case for case in COMPILE_CASES}
+COMPILE_CASES_BY_ID = {
+    case.case_id: case
+    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
+}
 REGS_PARITY_CASE_IDS = frozenset(
     {
         "quantified-nested-group-alternation-numbered-module-search-lower-bound-b-str",
@@ -606,6 +609,34 @@ PATTERN_BOUNDS_MATCH_CASES = (
         string="xxabcdzz",
         bounds=(-50, 999),
     ),
+    BoundedPatternCase(
+        id="quantified-alternation-bytes-search-normalizes-negative-and-oversized-bounds",
+        pattern_case_id="quantified-alternation-numbered-compile-metadata-bytes",
+        helper="search",
+        string=b"xxabcdzz",
+        bounds=(-50, 999),
+    ),
+    BoundedPatternCase(
+        id="quantified-alternation-broader-range-named-bytes-fullmatch-honors-narrowed-window",
+        pattern_case_id="quantified-alternation-broader-range-named-compile-metadata-bytes",
+        helper="fullmatch",
+        string=b"yyabccdzz",
+        bounds=(2, 7),
+    ),
+    BoundedPatternCase(
+        id="quantified-alternation-open-ended-named-bytes-search-normalizes-negative-and-oversized-bounds",
+        pattern_case_id="quantified-alternation-open-ended-named-compile-metadata-bytes",
+        helper="search",
+        string=b"xxabcbcdzz",
+        bounds=(-50, 999),
+    ),
+    BoundedPatternCase(
+        id="quantified-alternation-nested-branch-named-bytes-search-normalizes-negative-and-oversized-bounds",
+        pattern_case_id="quantified-alternation-nested-branch-named-compile-metadata-bytes",
+        helper="search",
+        string=b"xxadebdzz",
+        bounds=(-50, 999),
+    ),
 )
 PATTERN_BOUNDS_NO_MATCH_CASES = (
     BoundedPatternCase(
@@ -635,6 +666,34 @@ PATTERN_BOUNDS_NO_MATCH_CASES = (
         helper="search",
         string="xxabcdzz",
         bounds=(2, 5),
+    ),
+    BoundedPatternCase(
+        id="quantified-alternation-bytes-search-skips-match-before-pos",
+        pattern_case_id="quantified-alternation-numbered-compile-metadata-bytes",
+        helper="search",
+        string=b"xxabcdzz",
+        bounds=(3, 8),
+    ),
+    BoundedPatternCase(
+        id="quantified-alternation-broader-range-named-bytes-fullmatch-does-not-expand-to-whole-string",
+        pattern_case_id="quantified-alternation-broader-range-named-compile-metadata-bytes",
+        helper="fullmatch",
+        string=b"yyabccdzz",
+        bounds=(-50, 999),
+    ),
+    BoundedPatternCase(
+        id="quantified-alternation-open-ended-named-bytes-search-skips-match-before-pos",
+        pattern_case_id="quantified-alternation-open-ended-named-compile-metadata-bytes",
+        helper="search",
+        string=b"xxabcbcdzz",
+        bounds=(3, 10),
+    ),
+    BoundedPatternCase(
+        id="quantified-alternation-nested-branch-named-bytes-search-fails-when-endpos-truncates-tail",
+        pattern_case_id="quantified-alternation-nested-branch-named-compile-metadata-bytes",
+        helper="search",
+        string=b"xxadebdzz",
+        bounds=(2, 6),
     ),
 )
 
@@ -667,13 +726,13 @@ def _build_backtracking_trace_cases() -> tuple[BacktrackingTraceCase, ...]:
     return tuple(cases)
 
 
-def _compile_pattern(case_id: str) -> str:
+def _compile_pattern(case_id: str) -> str | bytes:
     pattern = case_pattern(COMPILE_CASES_BY_ID[case_id])
-    assert isinstance(pattern, str)
+    assert isinstance(pattern, (str, bytes))
     return pattern
 
 
-def _bounded_pattern(case: BoundedPatternCase) -> str:
+def _bounded_pattern(case: BoundedPatternCase) -> str | bytes:
     return _compile_pattern(case.pattern_case_id)
 
 
@@ -1292,11 +1351,60 @@ def test_match_group_access_apis_match_cpython(
 
 
 def test_pattern_bounds_cases_stay_anchored_to_quantified_alternation_patterns() -> None:
-    assert _bounded_pattern(PATTERN_BOUNDS_MATCH_CASES[0]) == r"a(b|c){1,2}d"
-    assert _bounded_pattern(PATTERN_BOUNDS_MATCH_CASES[1]) == r"a(?P<word>b|c){1,3}d"
-    assert _bounded_pattern(PATTERN_BOUNDS_MATCH_CASES[2]) == r"a((b|c){1,2})?(?(1)d|e)"
-    assert _bounded_pattern(PATTERN_BOUNDS_MATCH_CASES[3]) == r"a(?P<word>(b|c)|de){1,2}d"
-    assert _bounded_pattern(PATTERN_BOUNDS_NO_MATCH_CASES[3]) == r"a((b|c)|de){1,2}d"
+    assert {
+        case.id: _bounded_pattern(case) for case in PATTERN_BOUNDS_MATCH_CASES
+    } == {
+        "quantified-alternation-search-normalizes-negative-and-oversized-bounds": (
+            r"a(b|c){1,2}d"
+        ),
+        "quantified-alternation-broader-range-named-fullmatch-honors-narrowed-window": (
+            r"a(?P<word>b|c){1,3}d"
+        ),
+        "quantified-alternation-conditional-match-honors-else-window": (
+            r"a((b|c){1,2})?(?(1)d|e)"
+        ),
+        "quantified-alternation-nested-branch-search-normalizes-negative-and-oversized-bounds": (
+            r"a(?P<word>(b|c)|de){1,2}d"
+        ),
+        "quantified-alternation-bytes-search-normalizes-negative-and-oversized-bounds": (
+            rb"a(b|c){1,2}d"
+        ),
+        "quantified-alternation-broader-range-named-bytes-fullmatch-honors-narrowed-window": (
+            rb"a(?P<word>b|c){1,3}d"
+        ),
+        "quantified-alternation-open-ended-named-bytes-search-normalizes-negative-and-oversized-bounds": (
+            rb"a(?P<word>b|c){1,}d"
+        ),
+        "quantified-alternation-nested-branch-named-bytes-search-normalizes-negative-and-oversized-bounds": (
+            rb"a(?P<word>(b|c)|de){1,2}d"
+        ),
+    }
+    assert {
+        case.id: _bounded_pattern(case) for case in PATTERN_BOUNDS_NO_MATCH_CASES
+    } == {
+        "quantified-alternation-search-skips-match-before-pos": r"a(b|c){1,2}d",
+        "quantified-alternation-broader-range-named-fullmatch-does-not-expand-to-whole-string": (
+            r"a(?P<word>b|c){1,3}d"
+        ),
+        "quantified-alternation-conditional-match-fails-when-endpos-truncates-yes-arm": (
+            r"a((b|c){1,2})?(?(1)d|e)"
+        ),
+        "quantified-alternation-nested-branch-search-fails-when-endpos-truncates-tail": (
+            r"a((b|c)|de){1,2}d"
+        ),
+        "quantified-alternation-bytes-search-skips-match-before-pos": (
+            rb"a(b|c){1,2}d"
+        ),
+        "quantified-alternation-broader-range-named-bytes-fullmatch-does-not-expand-to-whole-string": (
+            rb"a(?P<word>b|c){1,3}d"
+        ),
+        "quantified-alternation-open-ended-named-bytes-search-skips-match-before-pos": (
+            rb"a(?P<word>b|c){1,}d"
+        ),
+        "quantified-alternation-nested-branch-named-bytes-search-fails-when-endpos-truncates-tail": (
+            rb"a(?P<word>(b|c)|de){1,2}d"
+        ),
+    }
 
 
 @pytest.mark.parametrize("case", PATTERN_BOUNDS_MATCH_CASES, ids=lambda case: case.id)
