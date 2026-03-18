@@ -52,6 +52,20 @@ NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_SUITE_ID 
     "match.nested_broader_range_open_ended_quantified_group_alternation_"
     "branch_local_backreference_conditional"
 )
+NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CALLABLE_REPLACEMENT_FIXTURE_PATH = (
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
+    / (
+        "nested_broader_range_open_ended_quantified_group_alternation_"
+        "branch_local_backreference_callable_replacement_workflows.py"
+    )
+)
+NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CALLABLE_REPLACEMENT_SUITE_ID = (
+    "collection.replacement.nested_broader_range_open_ended_quantified_group_"
+    "alternation_branch_local_backreference.callable"
+)
 TRACKED_REPORT_FRESHNESS_CASES = (
     (
         "numbered-backreference",
@@ -72,6 +86,11 @@ TRACKED_REPORT_FRESHNESS_CASES = (
         "nested-broader-range-open-ended-branch-local-backreference-conditional",
         NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_FIXTURE_PATH,
         NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_SUITE_ID,
+    ),
+    (
+        "nested-broader-range-open-ended-branch-local-backreference-callable-replacement",
+        NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CALLABLE_REPLACEMENT_FIXTURE_PATH,
+        NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CALLABLE_REPLACEMENT_SUITE_ID,
     ),
 )
 
