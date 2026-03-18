@@ -26,6 +26,64 @@ from tests.harness_cli_test_support import run_harness_scorecard
 
 BASE_SOURCE_TREE_MANIFEST_IDS = frozenset({"compile-matrix", "regression-matrix"})
 
+ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES = (
+    (
+        "exact-repeat-quantified-group-boundary",
+        (
+            "module-search-numbered-broader-ranged-repeat-group-cold-gap",
+        ),
+        13,
+        None,
+    ),
+    (
+        "ranged-repeat-quantified-group-boundary",
+        (
+            "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
+        ),
+        8,
+        None,
+    ),
+    (
+        "quantified-alternation-boundary",
+        (
+            "module-compile-numbered-quantified-alternation-cold-bytes",
+            "module-search-numbered-quantified-alternation-lower-bound-warm-bytes",
+            "pattern-fullmatch-numbered-quantified-alternation-second-repetition-purged-bytes",
+            "module-compile-named-quantified-alternation-warm-bytes",
+            "module-search-named-quantified-alternation-second-repetition-warm-bytes",
+            "pattern-fullmatch-named-quantified-alternation-lower-bound-purged-bytes",
+            "module-compile-numbered-quantified-alternation-broader-range-cold-bytes",
+            "module-search-numbered-quantified-alternation-broader-range-third-repetition-cold-bytes",
+            "pattern-fullmatch-numbered-quantified-alternation-broader-range-third-repetition-bcb-purged-bytes",
+            "module-compile-named-quantified-alternation-broader-range-warm-bytes",
+            "module-search-named-quantified-alternation-broader-range-third-repetition-bcc-warm-bytes",
+            "pattern-fullmatch-named-quantified-alternation-broader-range-third-repetition-bbb-purged-bytes",
+            "module-compile-numbered-quantified-alternation-open-ended-cold-bytes",
+            "module-search-numbered-quantified-alternation-open-ended-lower-bound-b-warm-bytes",
+            "pattern-fullmatch-numbered-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
+            "module-compile-named-quantified-alternation-open-ended-warm-bytes",
+            "module-search-named-quantified-alternation-open-ended-lower-bound-c-warm-bytes",
+            "pattern-fullmatch-named-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
+        ),
+        60,
+        60,
+    ),
+)
+
+_ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES_BY_ID = {
+    manifest_id: (
+        expected_workload_ids,
+        expected_measured_workload_count,
+        expected_total_workload_count,
+    )
+    for (
+        manifest_id,
+        expected_workload_ids,
+        expected_measured_workload_count,
+        expected_total_workload_count,
+    ) in ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES
+}
+
 ZERO_GAP_BYTES_CASES = (
     (
         "wider-ranged-repeat-quantified-group-boundary",
@@ -520,15 +578,15 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS: dict[
         representative_known_gap_workload_ids=(),
     ),
     "exact-repeat-quantified-group-boundary": _combined_manifest_definition(
-        representative_measured_workload_ids=(
-            "module-search-numbered-broader-ranged-repeat-group-cold-gap",
-        ),
+        representative_measured_workload_ids=_ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES_BY_ID[
+            "exact-repeat-quantified-group-boundary"
+        ][0],
         representative_known_gap_workload_ids=(),
     ),
     "ranged-repeat-quantified-group-boundary": _combined_manifest_definition(
-        representative_measured_workload_ids=(
-            "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
-        ),
+        representative_measured_workload_ids=_ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES_BY_ID[
+            "ranged-repeat-quantified-group-boundary"
+        ][0],
         representative_known_gap_workload_ids=(),
     ),
     "wider-ranged-repeat-quantified-group-boundary": _combined_manifest_definition(
@@ -759,26 +817,9 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS: dict[
         ),
     ),
     "quantified-alternation-boundary": _combined_manifest_definition(
-        representative_measured_workload_ids=(
-            "module-compile-numbered-quantified-alternation-cold-bytes",
-            "module-search-numbered-quantified-alternation-lower-bound-warm-bytes",
-            "pattern-fullmatch-numbered-quantified-alternation-second-repetition-purged-bytes",
-            "module-compile-named-quantified-alternation-warm-bytes",
-            "module-search-named-quantified-alternation-second-repetition-warm-bytes",
-            "pattern-fullmatch-named-quantified-alternation-lower-bound-purged-bytes",
-            "module-compile-numbered-quantified-alternation-broader-range-cold-bytes",
-            "module-search-numbered-quantified-alternation-broader-range-third-repetition-cold-bytes",
-            "pattern-fullmatch-numbered-quantified-alternation-broader-range-third-repetition-bcb-purged-bytes",
-            "module-compile-named-quantified-alternation-broader-range-warm-bytes",
-            "module-search-named-quantified-alternation-broader-range-third-repetition-bcc-warm-bytes",
-            "pattern-fullmatch-named-quantified-alternation-broader-range-third-repetition-bbb-purged-bytes",
-            "module-compile-numbered-quantified-alternation-open-ended-cold-bytes",
-            "module-search-numbered-quantified-alternation-open-ended-lower-bound-b-warm-bytes",
-            "pattern-fullmatch-numbered-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
-            "module-compile-named-quantified-alternation-open-ended-warm-bytes",
-            "module-search-named-quantified-alternation-open-ended-lower-bound-c-warm-bytes",
-            "pattern-fullmatch-named-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
-        ),
+        representative_measured_workload_ids=_ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES_BY_ID[
+            "quantified-alternation-boundary"
+        ][0],
     ),
     "optional-group-alternation-boundary": _combined_manifest_definition(),
     "conditional-group-exists-boundary": _combined_manifest_definition(),

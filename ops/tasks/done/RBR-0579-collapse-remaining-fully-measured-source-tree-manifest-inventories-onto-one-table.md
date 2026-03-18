@@ -1,8 +1,9 @@
 # RBR-0579: Collapse the remaining fully measured source-tree manifest inventories onto one table
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Remove the last duplicated fully measured manifest inventories from the two source-tree benchmark test modules so one shared case table in `tests/benchmarks/benchmark_expectations.py` owns the manifest ids, representative workload ids, and measured-count metadata for the counted-repeat pair and the fully measured quantified-alternation boundary.
@@ -106,3 +107,10 @@ Created: 2026-03-18
     - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py:still-literal:module-search-numbered-broader-ranged-repeat-group-cold-gap`
     - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py:still-literal:module-search-numbered-ranged-repeat-group-wider-range-cold-gap`
     - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py:still-literal:module-compile-numbered-quantified-alternation-cold-bytes`
+
+## Completion Notes
+- 2026-03-18: Added `ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES` to `tests/benchmarks/benchmark_expectations.py` with the counted-repeat pair and the fully measured quantified-alternation boundary in the required order, then routed the three matching combined-manifest representative workload inventories through that shared table.
+- 2026-03-18: Updated `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to import the shared table and delete the remaining local counted-repeat and quantified-alternation inventory literals while keeping the existing raw-definition, public-case, measured-count, and quantified-alternation `workload_count == 60` assertions.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`31 passed, 953 subtests passed in 23.45s`)
+  - `./.venv/bin/python - <<'PY' ... PY` task probe (`ok`)

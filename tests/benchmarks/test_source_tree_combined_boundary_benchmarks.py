@@ -12,6 +12,7 @@ TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 from tests.benchmarks.benchmark_expectations import (
     SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS,
     ZERO_GAP_BYTES_CASES,
+    ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES,
     SourceTreeCombinedPatternGroupExpectation,
     SourceTreeCombinedSliceExpectation,
     relative_manifest_path,
@@ -360,20 +361,12 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_counted_repeat_manifests_promote_legacy_upper_bound_rows_to_measured(
         self,
     ) -> None:
-        expected_cases = (
-            (
-                "exact-repeat-quantified-group-boundary",
-                "module-search-numbered-broader-ranged-repeat-group-cold-gap",
-                13,
-            ),
-            (
-                "ranged-repeat-quantified-group-boundary",
-                "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
-                8,
-            ),
-        )
-
-        for manifest_id, workload_id, measured_workloads in expected_cases:
+        for (
+            manifest_id,
+            expected_workload_ids,
+            expected_measured_workload_count,
+            _,
+        ) in ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES[:2]:
             with self.subTest(manifest_id=manifest_id):
                 manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
                     manifest_id
@@ -381,7 +374,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertIsNone(manifest_definition.known_gap_workload_ids)
                 self.assertEqual(
                     manifest_definition.representative_measured_workload_ids,
-                    (workload_id,),
+                    expected_workload_ids,
                 )
                 self.assertEqual(
                     manifest_definition.representative_known_gap_workload_ids,
@@ -393,7 +386,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertEqual(manifest_expectation.known_gap_count, 0)
                 self.assertEqual(
                     manifest_expectation.representative_measured_workload_ids,
-                    (workload_id,),
+                    expected_workload_ids,
                 )
                 self.assertEqual(
                     manifest_expectation.representative_known_gap_workload_ids,
@@ -403,8 +396,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self._assert_zero_gap_manifest_workloads_measured(
                     case,
                     manifest_id,
-                    (workload_id,),
-                    measured_workloads,
+                    expected_workload_ids,
+                    expected_measured_workload_count,
                 )
 
     def test_zero_gap_bytes_manifest_promotions_keep_selected_rows_publicly_measured(
@@ -427,26 +420,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_quantified_alternation_manifest_promotes_bounded_broader_range_and_open_ended_bytes_rows_to_measured(
         self,
     ) -> None:
-        manifest_id = "quantified-alternation-boundary"
-        expected_workload_ids = (
-            "module-compile-numbered-quantified-alternation-cold-bytes",
-            "module-search-numbered-quantified-alternation-lower-bound-warm-bytes",
-            "pattern-fullmatch-numbered-quantified-alternation-second-repetition-purged-bytes",
-            "module-compile-named-quantified-alternation-warm-bytes",
-            "module-search-named-quantified-alternation-second-repetition-warm-bytes",
-            "pattern-fullmatch-named-quantified-alternation-lower-bound-purged-bytes",
-            "module-compile-numbered-quantified-alternation-broader-range-cold-bytes",
-            "module-search-numbered-quantified-alternation-broader-range-third-repetition-cold-bytes",
-            "pattern-fullmatch-numbered-quantified-alternation-broader-range-third-repetition-bcb-purged-bytes",
-            "module-compile-named-quantified-alternation-broader-range-warm-bytes",
-            "module-search-named-quantified-alternation-broader-range-third-repetition-bcc-warm-bytes",
-            "pattern-fullmatch-named-quantified-alternation-broader-range-third-repetition-bbb-purged-bytes",
-            "module-compile-numbered-quantified-alternation-open-ended-cold-bytes",
-            "module-search-numbered-quantified-alternation-open-ended-lower-bound-b-warm-bytes",
-            "pattern-fullmatch-numbered-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
-            "module-compile-named-quantified-alternation-open-ended-warm-bytes",
-            "module-search-named-quantified-alternation-open-ended-lower-bound-c-warm-bytes",
-            "pattern-fullmatch-named-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
+        (
+            manifest_id,
+            expected_workload_ids,
+            expected_measured_workload_count,
+            expected_total_workload_count,
+        ) = next(
+            case
+            for case in ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES
+            if case[0] == "quantified-alternation-boundary"
         )
         manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
         self.assertIsNone(manifest_definition.known_gap_workload_ids)
@@ -474,8 +456,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case,
             manifest_id,
             expected_workload_ids,
-            60,
-            expected_total_workload_count=60,
+            expected_measured_workload_count,
+            expected_total_workload_count=expected_total_workload_count,
         )
 
     def test_shape_backed_manifests_keep_derived_representatives(self) -> None:

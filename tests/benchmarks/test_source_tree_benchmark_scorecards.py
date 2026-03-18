@@ -11,6 +11,7 @@ from tests.benchmarks.benchmark_expectations import (
     SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS,
     SOURCE_TREE_SCORECARD_EXPECTATIONS,
     ZERO_GAP_BYTES_CASES,
+    ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES,
     SourceTreeScorecardCase,
     relative_manifest_path,
     run_source_tree_benchmark_scorecard,
@@ -232,26 +233,15 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
     def test_quantified_alternation_manifest_exposes_bounded_broader_range_and_open_ended_bytes_rows_as_measured(
         self,
     ) -> None:
-        manifest_id = "quantified-alternation-boundary"
-        expected_workload_ids = (
-            "module-compile-numbered-quantified-alternation-cold-bytes",
-            "module-search-numbered-quantified-alternation-lower-bound-warm-bytes",
-            "pattern-fullmatch-numbered-quantified-alternation-second-repetition-purged-bytes",
-            "module-compile-named-quantified-alternation-warm-bytes",
-            "module-search-named-quantified-alternation-second-repetition-warm-bytes",
-            "pattern-fullmatch-named-quantified-alternation-lower-bound-purged-bytes",
-            "module-compile-numbered-quantified-alternation-broader-range-cold-bytes",
-            "module-search-numbered-quantified-alternation-broader-range-third-repetition-cold-bytes",
-            "pattern-fullmatch-numbered-quantified-alternation-broader-range-third-repetition-bcb-purged-bytes",
-            "module-compile-named-quantified-alternation-broader-range-warm-bytes",
-            "module-search-named-quantified-alternation-broader-range-third-repetition-bcc-warm-bytes",
-            "pattern-fullmatch-named-quantified-alternation-broader-range-third-repetition-bbb-purged-bytes",
-            "module-compile-numbered-quantified-alternation-open-ended-cold-bytes",
-            "module-search-numbered-quantified-alternation-open-ended-lower-bound-b-warm-bytes",
-            "pattern-fullmatch-numbered-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
-            "module-compile-named-quantified-alternation-open-ended-warm-bytes",
-            "module-search-named-quantified-alternation-open-ended-lower-bound-c-warm-bytes",
-            "pattern-fullmatch-named-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
+        (
+            manifest_id,
+            expected_workload_ids,
+            expected_measured_workload_count,
+            expected_total_workload_count,
+        ) = next(
+            case
+            for case in ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES
+            if case[0] == "quantified-alternation-boundary"
         )
         manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
         self.assertIsNone(manifest_definition.known_gap_workload_ids)
@@ -291,8 +281,14 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             selection_mode=case.selection_mode,
             selected_workload_ids=case.selected_workload_ids_for_manifest(manifest_id),
         )
-        self.assertEqual(manifest_summary["measured_workloads"], 60)
-        self.assertEqual(manifest_summary["workload_count"], 60)
+        self.assertEqual(
+            manifest_summary["measured_workloads"],
+            expected_measured_workload_count,
+        )
+        self.assertEqual(
+            manifest_summary["workload_count"],
+            expected_total_workload_count,
+        )
         for workload_id in expected_workload_ids:
             with self.subTest(measured_workload_id=workload_id):
                 assert_benchmark_workload_contract(
@@ -309,24 +305,15 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
     def test_combined_cases_treat_counted_repeat_manifest_pair_as_fully_measured(
         self,
     ) -> None:
-        expected_cases = (
-            (
-                "exact-repeat-quantified-group-boundary",
-                "module-search-numbered-broader-ranged-repeat-group-cold-gap",
-            ),
-            (
-                "ranged-repeat-quantified-group-boundary",
-                "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
-            ),
-        )
-
-        for manifest_id, workload_id in expected_cases:
+        for manifest_id, expected_workload_ids, _, _ in (
+            ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES[:2]
+        ):
             with self.subTest(manifest_id=manifest_id):
                 case = source_tree_combined_case(manifest_id)
                 self.assertEqual(case.manifest_expectation.known_gap_count, 0)
                 self.assertEqual(
                     case.manifest_expectation.representative_measured_workload_ids,
-                    (workload_id,),
+                    expected_workload_ids,
                 )
                 self.assertEqual(
                     case.manifest_expectation.representative_known_gap_workload_ids,
