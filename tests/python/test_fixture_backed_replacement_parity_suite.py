@@ -1731,6 +1731,77 @@ def test_mixed_replacement_manifest_routes_bytes_rows_through_shared_parity_surf
     assert shared_template_expand_case_ids == str_case_ids | bytes_case_ids
 
 
+def test_pending_bytes_follow_on_replacement_manifest_filters_bytes_from_selected_frontier(
+) -> None:
+    manifest_id = NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_MANIFEST_ID
+    surface = _load_surface(
+        ReplacementSurfaceSpec(
+            id="pending-replacement-bytes-follow-on-contract",
+            bundle_specs=(
+                FixtureBundleSpec(
+                    fixture_name=MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE.manifest.path.name,
+                    expected_manifest_id=manifest_id,
+                    expected_patterns=MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE.expected_patterns,
+                    expected_operation_helper_counts=(
+                        MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE.expected_operation_helper_counts
+                    ),
+                    expected_case_ids=MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE.expected_case_ids,
+                    expected_text_models=(
+                        MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE.expected_text_models
+                    ),
+                ),
+            ),
+            pattern_extractor=case_pattern,
+            match_group_access_manifest_ids=(manifest_id,),
+            template_expand_manifest_ids=(manifest_id,),
+            pending_bytes_follow_on_manifest_ids=frozenset({manifest_id}),
+        )
+    )
+    (bundle,) = surface.bundles
+    expected_str_case_ids = tuple(
+        case.case_id for case in bundle.cases if case.text_model == "str"
+    )
+    expected_bytes_case_ids = tuple(
+        case.case_id for case in bundle.cases if case.text_model == "bytes"
+    )
+    expected_str_module_case_ids = tuple(
+        case.case_id
+        for case in bundle.cases
+        if case.operation == "module_call" and case.text_model == "str"
+    )
+    expected_str_pattern_case_ids = tuple(
+        case.case_id
+        for case in bundle.cases
+        if case.operation == "pattern_call" and case.text_model == "str"
+    )
+
+    assert {case.text_model for case in bundle.cases} == MIXED_TEXT_MODELS
+    assert tuple(case.case_id for case in surface.replacement_cases) == expected_str_case_ids
+    assert Counter((case.operation, case.helper) for case in surface.replacement_cases) == (
+        EXPECTED_OPERATION_HELPER_COUNTS
+    )
+    assert tuple(case.case_id for case in surface.module_cases) == (
+        expected_str_module_case_ids
+    )
+    assert tuple(case.case_id for case in surface.pattern_cases) == (
+        expected_str_pattern_case_ids
+    )
+    assert tuple(case.case_id for case in surface.match_group_access_cases) == (
+        expected_str_case_ids
+    )
+    assert tuple(case.case_id for case in surface.template_expand_cases) == (
+        expected_str_case_ids
+    )
+    assert _expected_selected_replacement_case_ids(
+        surface,
+        manifest_id=manifest_id,
+    ) == expected_str_case_ids
+    assert _expected_uncovered_replacement_case_ids(
+        surface,
+        manifest_id,
+    ) == expected_bytes_case_ids
+
+
 @pytest.mark.parametrize(("surface", "pattern"), COMPILE_PATTERN_PARAMS)
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
