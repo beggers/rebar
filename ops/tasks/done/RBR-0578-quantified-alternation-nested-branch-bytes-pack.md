@@ -1,6 +1,6 @@
 # RBR-0578: Publish the quantified-alternation nested-branch bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -42,3 +42,12 @@ Created: 2026-03-18
   - `benchmarks/workloads/quantified_alternation_boundary.py` already publishes the six adjacent nested-branch `str` benchmark rows for this exact pair, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`.
 - A later parity follow-on should convert the same bytes pair behind `rebar._rebar` on the existing quantified-alternation parity surface before the benchmark surface mirrors the six adjacent nested-branch `str` rows already published on `benchmarks/workloads/quantified_alternation_boundary.py`.
+
+## Completion
+- Added the ten bounded bytes rows to `tests/conformance/fixtures/quantified_alternation_nested_branch_workflows.py`, keeping the manifest on the existing quantified-alternation nested-branch path.
+- Updated `tests/python/test_quantified_alternation_parity_suite.py` so the bundle is mixed `str`/`bytes`, the bytes rows route through one explicit nested-branch follow-on anchor, and that anchor stays `rebar`-unsupported with the reason pinned to `RBR-0580`.
+- Regenerated `reports/correctness/latest.py`; the tracked combined scorecard now publishes `1200` total / `1190` passed / `10` unimplemented cases, and `match.quantified_alternation_nested_branch` now publishes `20` total / `10` passed / `10` unimplemented with `['bytes', 'str']` text models.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/quantified_alternation_nested_branch_workflows.py --report .rebar/tmp/rbr-0578-quantified-alternation-nested-branch-bytes.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`

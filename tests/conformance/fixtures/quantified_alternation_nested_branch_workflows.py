@@ -120,6 +120,188 @@ MANIFEST = {
       "notes": [
         "Documents the named no-match path on `adeb` so the scorecard stays explicit that consuming `de` then `b` still leaves the required trailing literal `d` outside the quantified group."
       ]
+    },
+    {
+      "id": "quantified-alternation-nested-branch-numbered-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "quantified_alternation_nested_branch_numbered_compile_metadata",
+      "pattern": "a((b|c)|de){1,2}d",
+      "text_model": "bytes",
+      "categories": ["grouped", "alternation", "nested-alternation", "quantified", "bounded-repeat", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Publishes the same bounded numbered compile frontier for bytes payloads while keeping the nested-branch bytes parity gap explicit until the follow-on parity task lands."
+      ]
+    },
+    {
+      "id": "quantified-alternation-nested-branch-numbered-module-search-lower-bound-inner-branch-bytes",
+      "operation": "module_call",
+      "family": "quantified_alternation_nested_branch_numbered_module_lower_bound_inner_branch_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a((b|c)|de){1,2}d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabdzz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "nested-alternation", "quantified", "bounded-repeat", "search", "module", "lower-bound", "inner-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound module success path on bytes payloads so the visible `b` inner-branch hit remains explicit on the bounded nested-branch frontier."
+      ]
+    },
+    {
+      "id": "quantified-alternation-nested-branch-numbered-pattern-fullmatch-lower-bound-literal-branch-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_nested_branch_numbered_pattern_lower_bound_literal_branch_workflow",
+      "pattern": "a((b|c)|de){1,2}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "aded"
+        }
+      ],
+      "categories": ["grouped", "alternation", "nested-alternation", "quantified", "bounded-repeat", "fullmatch", "pattern", "lower-bound", "literal-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound Pattern.fullmatch success path on bytes payloads when the sibling `de` branch is the only quantified repetition."
+      ]
+    },
+    {
+      "id": "quantified-alternation-nested-branch-numbered-pattern-fullmatch-second-repetition-mixed-branches-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_nested_branch_numbered_pattern_second_repetition_mixed_branches_workflow",
+      "pattern": "a((b|c)|de){1,2}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abded"
+        }
+      ],
+      "categories": ["grouped", "alternation", "nested-alternation", "quantified", "bounded-repeat", "fullmatch", "pattern", "second-repetition", "mixed-branches", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered mixed-branch second-repetition success path on bytes payloads so one inner-branch repetition followed by one `de` branch remains visible on the bytes frontier."
+      ]
+    },
+    {
+      "id": "quantified-alternation-nested-branch-numbered-pattern-fullmatch-no-match-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_nested_branch_numbered_pattern_no_match_workflow",
+      "pattern": "a((b|c)|de){1,2}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abde"
+        }
+      ],
+      "categories": ["grouped", "alternation", "nested-alternation", "quantified", "bounded-repeat", "fullmatch", "pattern", "no-match", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered no-match path on bytes payloads so the required trailing literal `d` outside the quantified group stays explicit after mixed branch selections."
+      ]
+    },
+    {
+      "id": "quantified-alternation-nested-branch-named-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "quantified_alternation_nested_branch_named_compile_metadata",
+      "pattern": "a(?P<word>(b|c)|de){1,2}d",
+      "text_model": "bytes",
+      "categories": ["grouped", "alternation", "nested-alternation", "quantified", "bounded-repeat", "named-group", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Publishes the matching named compile frontier for bytes payloads while keeping the bytes parity gap explicit for this bounded nested-branch slice."
+      ]
+    },
+    {
+      "id": "quantified-alternation-nested-branch-named-module-search-lower-bound-literal-branch-bytes",
+      "operation": "module_call",
+      "family": "quantified_alternation_nested_branch_named_module_lower_bound_literal_branch_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(?P<word>(b|c)|de){1,2}d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzadedzz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "nested-alternation", "quantified", "bounded-repeat", "named-group", "search", "module", "lower-bound", "literal-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the named lower-bound module success path on bytes payloads when the literal `de` branch is the only quantified repetition."
+      ]
+    },
+    {
+      "id": "quantified-alternation-nested-branch-named-pattern-fullmatch-lower-bound-inner-branch-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_nested_branch_named_pattern_lower_bound_inner_branch_workflow",
+      "pattern": "a(?P<word>(b|c)|de){1,2}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "acd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "nested-alternation", "quantified", "bounded-repeat", "named-group", "fullmatch", "pattern", "lower-bound", "inner-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the named lower-bound Pattern.fullmatch success path on bytes payloads so one inner `c` branch hit stays explicit on the compiled-pattern bytes frontier."
+      ]
+    },
+    {
+      "id": "quantified-alternation-nested-branch-named-pattern-fullmatch-second-repetition-mixed-branches-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_nested_branch_named_pattern_second_repetition_mixed_branches_workflow",
+      "pattern": "a(?P<word>(b|c)|de){1,2}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "adebd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "nested-alternation", "quantified", "bounded-repeat", "named-group", "fullmatch", "pattern", "second-repetition", "mixed-branches", "bytes", "gap"],
+      "notes": [
+        "Documents the named mixed-branch second-repetition success path on bytes payloads so the final visible named capture still comes from the last inner-branch repetition."
+      ]
+    },
+    {
+      "id": "quantified-alternation-nested-branch-named-pattern-fullmatch-no-match-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_nested_branch_named_pattern_no_match_workflow",
+      "pattern": "a(?P<word>(b|c)|de){1,2}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "adeb"
+        }
+      ],
+      "categories": ["grouped", "alternation", "nested-alternation", "quantified", "bounded-repeat", "named-group", "fullmatch", "pattern", "no-match", "bytes", "gap"],
+      "notes": [
+        "Documents the named no-match path on bytes payloads so the missing trailing literal `d` outside the quantified group remains explicit after `de` then `b`."
+      ]
     }
   ]
 }
