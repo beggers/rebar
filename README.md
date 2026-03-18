@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness report now covers 1258 cases across 111 manifests, with all 1258 passing and 0 honest gaps; the main benchmark report covers 710 workloads across 30 manifests with 710 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the tracked slice is internally green but still bounded and not yet a near-full parity or native-path performance signal. |
-| Current milestone | `RBR-0613` should publish the broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference bytes pair on the existing `tests/python/test_branch_local_backreference_parity_suite.py` correctness surface by updating `tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py`, `tests/python/test_branch_local_backreference_parity_suite.py`, `tests/conformance/correctness_expectations.py`, and `reports/correctness/latest.py`, so `match.nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference` can widen from `10` total / `10` passed / `0` `unimplemented` with `['str']` coverage to `20` / `10` / `10` with `['bytes', 'str']` coverage while the combined correctness report moves from `1258` / `1258` / `0` to `1268` / `1258` / `10` across `111` manifests without widening into bytes parity or benchmark catch-up before that open-ended pair is pinned behind `rebar._rebar`. |
-| Work queue | `1` ready, `0` in progress, `612` done, `0` blocked |
+| Delivery estimate | The published correctness report now covers 1268 cases across 111 manifests, with 1258 passing, 0 explicit failures, and 10 honest gaps; the main benchmark report covers 710 workloads across 30 manifests with 710 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the tracked slice is still bounded and not yet a near-full parity or native-path performance signal. |
+| Current milestone | `RBR-0615` should convert the broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference bytes pair published by `RBR-0613` into real parity on the existing `tests/python/test_branch_local_backreference_parity_suite.py` surface by updating `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_branch_local_backreference_parity_suite.py`, and `reports/correctness/latest.py`, so `match.nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference` can move from `20` total / `10` passed / `10` `unimplemented` with mixed `['bytes', 'str']` coverage to `20` / `20` / `0` while the combined correctness report moves from `1268` / `1258` / `10` to `1268` / `1268` / `0` across `111` manifests without widening into benchmark catch-up or the adjacent open-ended conditional bytes slice. |
+| Work queue | `1` ready, `0` in progress, `614` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1258` |
+| Published cases | `1268` |
 | Passing in published slice | `1258` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
+| Honest gaps (`unimplemented`) | `10` |
 | Covered manifests | `111` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness report now covers 1258 cases across 111 manifests, with all 1258 passing and 0 honest gaps; the main benchmark report covers 710 workloads across 30 manifests with 710 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the tracked slice is internally green but still bounded and not yet a near-full parity or native-path performance signal._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness report now covers 1268 cases across 111 manifests, with 1258 passing, 0 explicit failures, and 10 honest gaps; the main benchmark report covers 710 workloads across 30 manifests with 710 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the tracked slice is still bounded and not yet a near-full parity or native-path performance signal._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0613` should add the bytes mirror pair for the broader-range open-ended `{2,}` nested grouped-alternation branch-local-backreference slice on the existing correctness surface, moving the combined correctness report from `1258 / 1258 / 0` to `1268 / 1258 / 10`.
+- `RBR-0615` should convert the published bytes pair for the broader-range open-ended `{2,}` nested grouped-alternation branch-local-backreference slice into real parity on the existing branch-local surface, moving that slice from `20 / 10 / 10` to `20 / 20 / 0` and the combined correctness report from `1268 / 1258 / 10` to `1268 / 1268 / 0`.
 
 ### Current Risks
 
@@ -55,7 +55,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The current publication is still a bounded slice rather than near-full `re` parity, and the immediate queue is the bytes publication follow-on for the broader-range open-ended `{2,}` nested grouped-alternation branch-local-backreference pair on the existing correctness surface.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The current publication is still a bounded slice rather than near-full `re` parity, and the immediate queue is the bytes parity follow-on for the broader-range open-ended `{2,}` nested grouped-alternation branch-local-backreference slice on the existing correctness surface.
 
 The benchmark story is similarly early. The clearest trustworthy positive signal today is still the tiny parser compile-proxy slice, where 8 workloads are about 3.0x faster on median than CPython. Outside that slice, the main 710-workload published benchmark report still runs through the source-tree shim and is slower overall, so it is methodology signal rather than a general speed claim.
 
