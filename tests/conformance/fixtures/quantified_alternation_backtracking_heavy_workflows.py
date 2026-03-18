@@ -144,6 +144,226 @@ MANIFEST = {
       "notes": [
         "Documents the named no-match path on `abccd` so the scorecard stays explicit that the overlapping quantified alternation still rejects the extra `c` even when a named capture is involved."
       ]
+    },
+    {
+      "id": "quantified-alternation-backtracking-heavy-numbered-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "quantified_alternation_backtracking_heavy_numbered_compile_metadata",
+      "pattern": "a(b|bc){1,2}d",
+      "text_model": "bytes",
+      "categories": ["grouped", "alternation", "overlapping-branches", "quantified", "bounded-repeat", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Publishes the same bounded numbered compile frontier for bytes payloads while keeping the backtracking-heavy bytes parity gap explicit until the follow-on parity task lands."
+      ]
+    },
+    {
+      "id": "quantified-alternation-backtracking-heavy-numbered-module-search-lower-bound-b-branch-bytes",
+      "operation": "module_call",
+      "family": "quantified_alternation_backtracking_heavy_numbered_module_lower_bound_b_branch_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(b|bc){1,2}d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabdzz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "overlapping-branches", "quantified", "bounded-repeat", "search", "module", "lower-bound", "b-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound module success path on bytes payloads so the one-repetition `b` branch stays explicit on the bounded backtracking-heavy bytes frontier."
+      ]
+    },
+    {
+      "id": "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-lower-bound-bc-branch-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_backtracking_heavy_numbered_pattern_lower_bound_bc_branch_workflow",
+      "pattern": "a(b|bc){1,2}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "overlapping-branches", "quantified", "bounded-repeat", "fullmatch", "pattern", "lower-bound", "bc-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound compiled-pattern success path on bytes payloads so the overlapping `bc` branch stays explicit beside the shorter `b` branch before bytes parity lands."
+      ]
+    },
+    {
+      "id": "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-b-then-bc-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_backtracking_heavy_numbered_pattern_second_repetition_b_then_bc_workflow",
+      "pattern": "a(b|bc){1,2}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abbcd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "overlapping-branches", "quantified", "bounded-repeat", "fullmatch", "pattern", "second-repetition", "b-then-bc", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered second-repetition success path on bytes payloads for `abbcd` so one short-branch repetition followed by one longer overlapping branch stays visible on the bytes frontier."
+      ]
+    },
+    {
+      "id": "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-bc-then-b-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_backtracking_heavy_numbered_pattern_second_repetition_bc_then_b_workflow",
+      "pattern": "a(b|bc){1,2}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "overlapping-branches", "quantified", "bounded-repeat", "fullmatch", "pattern", "second-repetition", "bc-then-b", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered mixed-order second-repetition success path on bytes payloads so backtracking can still settle on the longer branch before the shorter branch."
+      ]
+    },
+    {
+      "id": "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-bc-then-bc-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_backtracking_heavy_numbered_pattern_second_repetition_bc_then_bc_workflow",
+      "pattern": "a(b|bc){1,2}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbcd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "overlapping-branches", "quantified", "bounded-repeat", "fullmatch", "pattern", "second-repetition", "bc-then-bc", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered second-repetition success path on bytes payloads for `abcbcd` so the two-long-branch case stays explicit within the exact `{1,2}` bytes envelope."
+      ]
+    },
+    {
+      "id": "quantified-alternation-backtracking-heavy-numbered-pattern-fullmatch-no-match-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_backtracking_heavy_numbered_pattern_no_match_workflow",
+      "pattern": "a(b|bc){1,2}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abccd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "overlapping-branches", "quantified", "bounded-repeat", "fullmatch", "pattern", "no-match", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered no-match path on bytes payloads for `abccd` so the bounded overlapping alternation still rejects the extra `c` on the bytes publication path."
+      ]
+    },
+    {
+      "id": "quantified-alternation-backtracking-heavy-named-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "quantified_alternation_backtracking_heavy_named_compile_metadata",
+      "pattern": "a(?P<word>b|bc){1,2}d",
+      "text_model": "bytes",
+      "categories": ["grouped", "alternation", "overlapping-branches", "quantified", "bounded-repeat", "named-group", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Publishes the same bounded named compile frontier for bytes payloads under one visible `word` capture while keeping the bytes parity gap explicit."
+      ]
+    },
+    {
+      "id": "quantified-alternation-backtracking-heavy-named-module-search-lower-bound-bc-branch-bytes",
+      "operation": "module_call",
+      "family": "quantified_alternation_backtracking_heavy_named_module_lower_bound_bc_branch_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(?P<word>b|bc){1,2}d"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabcdzz"
+        }
+      ],
+      "categories": ["grouped", "alternation", "overlapping-branches", "quantified", "bounded-repeat", "named-group", "search", "module", "lower-bound", "bc-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the named lower-bound module success path on bytes payloads so the longer overlapping branch remains visible with the named capture on the bytes publication surface."
+      ]
+    },
+    {
+      "id": "quantified-alternation-backtracking-heavy-named-pattern-fullmatch-second-repetition-b-then-b-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_backtracking_heavy_named_pattern_second_repetition_b_then_b_workflow",
+      "pattern": "a(?P<word>b|bc){1,2}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abbd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "overlapping-branches", "quantified", "bounded-repeat", "named-group", "fullmatch", "pattern", "second-repetition", "b-then-b", "bytes", "gap"],
+      "notes": [
+        "Documents the named second-repetition success path on bytes payloads for `abbd` so the two-short-branch case stays explicit on the compiled-pattern path."
+      ]
+    },
+    {
+      "id": "quantified-alternation-backtracking-heavy-named-pattern-fullmatch-second-repetition-bc-then-b-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_backtracking_heavy_named_pattern_second_repetition_bc_then_b_workflow",
+      "pattern": "a(?P<word>b|bc){1,2}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "overlapping-branches", "quantified", "bounded-repeat", "named-group", "fullmatch", "pattern", "second-repetition", "bc-then-b", "bytes", "gap"],
+      "notes": [
+        "Documents the named mixed-order second-repetition success path on bytes payloads so the visible named capture still comes from the final shorter branch after an earlier longer branch."
+      ]
+    },
+    {
+      "id": "quantified-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-bytes",
+      "operation": "pattern_call",
+      "family": "quantified_alternation_backtracking_heavy_named_pattern_no_match_workflow",
+      "pattern": "a(?P<word>b|bc){1,2}d",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abccd"
+        }
+      ],
+      "categories": ["grouped", "alternation", "overlapping-branches", "quantified", "bounded-repeat", "named-group", "fullmatch", "pattern", "no-match", "bytes", "gap"],
+      "notes": [
+        "Documents the named no-match path on bytes payloads for `abccd` so the extra `c` remains an explicit rejection on the named bytes publication path."
+      ]
     }
   ]
 }

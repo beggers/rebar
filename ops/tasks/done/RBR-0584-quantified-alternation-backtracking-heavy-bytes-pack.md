@@ -1,6 +1,6 @@
 # RBR-0584: Publish the quantified-alternation backtracking-heavy bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -42,3 +42,4 @@ Created: 2026-03-18
   - `benchmarks/workloads/quantified_alternation_boundary.py` already publishes the six adjacent backtracking-heavy `str` benchmark rows for this exact pair, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`.
 - A later parity follow-on should convert the same bytes pair behind `rebar._rebar` on the existing quantified-alternation parity surface before the benchmark surface mirrors the six adjacent backtracking-heavy `str` rows already published on `benchmarks/workloads/quantified_alternation_boundary.py`.
+- 2026-03-18 completed: added the twelve bytes publication rows to `tests/conformance/fixtures/quantified_alternation_backtracking_heavy_workflows.py`, routed them through one explicit unsupported bytes follow-on anchor in `tests/python/test_quantified_alternation_parity_suite.py`, and refreshed `tests/conformance/correctness_expectations.py` plus the tracked published report. Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/quantified_alternation_backtracking_heavy_workflows.py --report .rebar/tmp/rbr-0584-quantified-alternation-backtracking-heavy-bytes.py` (`24` total / `12` passed / `12` unimplemented), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`, which now publishes `1212` total / `1200` passed / `12` unimplemented overall and `match.quantified_alternation_backtracking_heavy` at `24` / `12` / `12` with mixed `str`/`bytes` coverage.
