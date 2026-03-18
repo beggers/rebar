@@ -1,6 +1,6 @@
 # RBR-0576: Catch the bounded quantified-alternation bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -48,3 +48,11 @@ Created: 2026-03-18
   - `reports/benchmarks/latest.py` currently publishes `quantified-alternation-boundary` at `54` total workloads / `54` measured workloads / `0` known gaps and the combined source-tree report at `674` / `674` / `0`; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so this benchmark follow-on stays sequenced behind `RBR-0574` until parity lands.
 - No further quantified-alternation bytes family should be queued ahead of this benchmark catch-up while the bounded mixed `str`/`bytes` slice is still missing its source-tree benchmark mirrors.
+
+## Completion
+- Added the six bounded quantified-alternation `bytes` rows on `benchmarks/workloads/quantified_alternation_boundary.py` and widened the existing quantified-alternation `bytes` representative assertions instead of introducing a new benchmark family or a second special case.
+- Regenerated `reports/benchmarks/latest.py`; the tracked publication now shows `quantified-alternation-boundary` at `60` total / `60` measured / `0` known gaps and the combined source-tree report at `680` total / `680` measured / `0` known gaps.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/quantified_alternation_boundary.py --report .rebar/tmp/rbr-0576-quantified-alternation-bounded-bytes-benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`

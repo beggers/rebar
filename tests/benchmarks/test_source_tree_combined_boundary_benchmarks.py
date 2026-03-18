@@ -424,11 +424,17 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     expected_total_workload_count,
                 )
 
-    def test_quantified_alternation_manifest_promotes_broader_range_and_open_ended_bytes_rows_to_measured(
+    def test_quantified_alternation_manifest_promotes_bounded_broader_range_and_open_ended_bytes_rows_to_measured(
         self,
     ) -> None:
         manifest_id = "quantified-alternation-boundary"
         expected_workload_ids = (
+            "module-compile-numbered-quantified-alternation-cold-bytes",
+            "module-search-numbered-quantified-alternation-lower-bound-warm-bytes",
+            "pattern-fullmatch-numbered-quantified-alternation-second-repetition-purged-bytes",
+            "module-compile-named-quantified-alternation-warm-bytes",
+            "module-search-named-quantified-alternation-second-repetition-warm-bytes",
+            "pattern-fullmatch-named-quantified-alternation-lower-bound-purged-bytes",
             "module-compile-numbered-quantified-alternation-broader-range-cold-bytes",
             "module-search-numbered-quantified-alternation-broader-range-third-repetition-cold-bytes",
             "pattern-fullmatch-numbered-quantified-alternation-broader-range-third-repetition-bcb-purged-bytes",
@@ -468,8 +474,8 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case,
             manifest_id,
             expected_workload_ids,
-            54,
-            expected_total_workload_count=54,
+            60,
+            expected_total_workload_count=60,
         )
 
     def test_shape_backed_manifests_keep_derived_representatives(self) -> None:
