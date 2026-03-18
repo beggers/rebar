@@ -30,8 +30,8 @@ from tests.python.fixture_parity_support import (
     str_case_pattern,
 )
 
-
-ReplacementOutcome = str | tuple[str, int]
+TextValue = str | bytes
+ReplacementOutcome = TextValue | tuple[TextValue, int]
 
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
@@ -63,9 +63,9 @@ class SupplementalReplacementCase:
     id: str
     use_compiled_pattern: bool
     helper: str
-    pattern: str
-    replacement: str
-    string: str
+    pattern: TextValue
+    replacement: TextValue
+    string: TextValue
     count: int | None = None
     expected_result: ReplacementOutcome | None = None
 
@@ -74,14 +74,14 @@ class SupplementalReplacementCase:
 class ReplacementSurfaceSpec:
     id: str
     bundle_specs: tuple[FixtureBundleSpec, ...]
-    pattern_extractor: Callable[[FixtureCase], str | bytes]
-    compile_patterns: tuple[str, ...] = ()
+    pattern_extractor: Callable[[FixtureCase], TextValue]
+    compile_patterns: tuple[TextValue, ...] = ()
     match_snapshot_manifest_ids: tuple[str, ...] = ()
     template_expand_manifest_ids: tuple[str, ...] = ()
     selector_fixture_paths: tuple[pathlib.Path, ...] = ()
     known_uncovered_published_fixture_filenames: tuple[str, ...] = ()
     discover_no_match_on_all_replacement_cases: bool = False
-    no_match_text_candidates: tuple[str, ...] = ()
+    no_match_text_candidates: tuple[TextValue, ...] = ()
     supplemental_no_match_cases: tuple[SupplementalReplacementCase, ...] = ()
     supplemental_repeated_cases: tuple[SupplementalReplacementCase, ...] = ()
 
@@ -364,12 +364,37 @@ CONDITIONAL_SUPPLEMENTAL_REPEATED_CASES = (
 )
 
 
-def _str_pattern_from_extractor(
-    pattern_extractor: Callable[[FixtureCase], str | bytes],
+def _pattern_from_extractor(
+    pattern_extractor: Callable[[FixtureCase], TextValue],
     case: FixtureCase,
-) -> str:
+) -> TextValue:
     pattern = pattern_extractor(case)
-    assert isinstance(pattern, str)
+    assert isinstance(pattern, (str, bytes))
+    return pattern
+
+
+def _pattern_sort_key(pattern: TextValue) -> tuple[int, TextValue]:
+    if isinstance(pattern, str):
+        return (0, pattern)
+    return (1, pattern)
+
+
+def _sorted_compile_patterns(
+    cases: tuple[FixtureCase, ...],
+    *,
+    pattern_extractor: Callable[[FixtureCase], TextValue],
+) -> tuple[TextValue, ...]:
+    return tuple(
+        sorted(
+            {_pattern_from_extractor(pattern_extractor, case) for case in cases},
+            key=_pattern_sort_key,
+        )
+    )
+
+
+def _pattern_param_id(pattern: TextValue) -> str:
+    if isinstance(pattern, bytes):
+        return repr(pattern)
     return pattern
 
 
@@ -411,13 +436,9 @@ def _cases_for_manifest_ids(
 def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
     bundles = load_fixture_bundles(spec.bundle_specs)
     replacement_cases = fixture_cases_from_bundles(bundles)
-    compile_patterns = tuple(
-        sorted(
-            {
-                _str_pattern_from_extractor(spec.pattern_extractor, case)
-                for case in replacement_cases
-            }
-        )
+    compile_patterns = _sorted_compile_patterns(
+        replacement_cases,
+        pattern_extractor=spec.pattern_extractor,
     )
     if spec.compile_patterns and compile_patterns != spec.compile_patterns:
         raise ValueError(
@@ -447,7 +468,7 @@ def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
 def _replacement_args(
     case: FixtureCase,
     *,
-    text: str | None = None,
+    text: TextValue | None = None,
 ) -> tuple[object, ...]:
     args = list(case.args)
     if text is None:
@@ -473,7 +494,7 @@ def _run_replacement_case(
     backend: object,
     case: FixtureCase,
     *,
-    text: str | None = None,
+    text: TextValue | None = None,
 ) -> object:
     if case.helper is None:
         raise ValueError(f"case {case.case_id!r} requires a helper name")
@@ -499,10 +520,9 @@ def _search_match_for_case(
     backend_name: str,
     backend: object,
     case: FixtureCase,
-) -> tuple[object, re.Match[str]]:
-    pattern = _str_pattern_from_extractor(surface.spec.pattern_extractor, case)
+) -> tuple[object, re.Match[str] | re.Match[bytes]]:
+    pattern = _pattern_from_extractor(surface.spec.pattern_extractor, case)
     string = case_text_argument(case)
-    assert isinstance(string, str)
 
     if case.operation == "module_call":
         observed = backend.search(pattern, string, case.flags or 0)
@@ -527,12 +547,15 @@ def _search_match_for_case(
 def _no_match_text(
     surface: LoadedReplacementSurface,
     case: FixtureCase,
-) -> str:
+) -> TextValue:
     compiled = re.compile(
-        _str_pattern_from_extractor(surface.spec.pattern_extractor, case),
+        _pattern_from_extractor(surface.spec.pattern_extractor, case),
         case.flags or 0,
     )
+    case_text = case_text_argument(case)
     for text in surface.spec.no_match_text_candidates:
+        if isinstance(case_text, str) != isinstance(text, str):
+            continue
         if compiled.search(text) is None:
             return text
 
@@ -956,7 +979,7 @@ BUNDLE_PARAMS = tuple(
     for bundle in surface.bundles
 )
 COMPILE_PATTERN_PARAMS = tuple(
-    pytest.param(surface, pattern, id=pattern)
+    pytest.param(surface, pattern, id=_pattern_param_id(pattern))
     for surface in REPLACEMENT_SURFACES
     for pattern in surface.spec.compile_patterns
 )
@@ -1033,7 +1056,7 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
     surface: LoadedReplacementSurface,
-    pattern: str,
+    pattern: TextValue,
 ) -> None:
     del surface
     backend_name, backend = regex_backend
@@ -1105,7 +1128,7 @@ def test_replacement_template_match_expand_matches_cpython(
 ) -> None:
     backend_name, backend = regex_backend
     template = case_replacement_argument(case)
-    assert isinstance(template, str)
+    assert isinstance(template, (str, bytes))
     observed_match, expected_match = _search_match_for_case(
         surface,
         backend_name,
@@ -1184,3 +1207,99 @@ def test_repeated_replacement_paths_match_cpython(
 
     assert case.expected_result is not None
     assert observed == expected == case.expected_result
+
+
+def test_sorted_compile_patterns_supports_mixed_text_models() -> None:
+    (bundle,) = load_fixture_bundles(
+        (
+            FixtureBundleSpec(
+                fixture_name="open_ended_quantified_group_alternation_workflows.py",
+                expected_manifest_id="open-ended-quantified-group-alternation-workflows",
+                expected_patterns=frozenset(
+                    {
+                        r"a(bc|de){1,}d",
+                        r"a(?P<word>bc|de){1,}d",
+                        rb"a(bc|de){1,}d",
+                        rb"a(?P<word>bc|de){1,}d",
+                    }
+                ),
+                expected_operation_helper_counts=Counter(
+                    {
+                        ("compile", None): 4,
+                        ("module_call", "search"): 8,
+                        ("pattern_call", "fullmatch"): 20,
+                    }
+                ),
+                expected_text_models=frozenset({"bytes", "str"}),
+            ),
+        )
+    )
+
+    assert _sorted_compile_patterns(
+        bundle.cases,
+        pattern_extractor=case_pattern,
+    ) == (
+        r"a(?P<word>bc|de){1,}d",
+        r"a(bc|de){1,}d",
+        rb"a(?P<word>bc|de){1,}d",
+        rb"a(bc|de){1,}d",
+    )
+
+
+def test_no_match_text_filters_candidates_by_case_text_model() -> None:
+    str_case = FixtureCase(
+        case_id="synthetic-str-replacement",
+        manifest_id="synthetic-replacement",
+        suite_id="synthetic.replacement",
+        layer="module_workflow",
+        family="synthetic_replacement_case",
+        operation="module_call",
+        notes=[],
+        categories=[],
+        pattern=None,
+        flags=0,
+        text_model="str",
+        pattern_encoding="latin-1",
+        helper="sub",
+        source_args=[r"a(bc|de){1,}d", "x", "abcd"],
+        source_kwargs={},
+        args=[r"a(bc|de){1,}d", "x", "abcd"],
+        kwargs={},
+    )
+    bytes_case = FixtureCase(
+        case_id="synthetic-bytes-replacement",
+        manifest_id="synthetic-replacement",
+        suite_id="synthetic.replacement",
+        layer="module_workflow",
+        family="synthetic_replacement_case",
+        operation="module_call",
+        notes=[],
+        categories=[],
+        pattern=None,
+        flags=0,
+        text_model="bytes",
+        pattern_encoding="latin-1",
+        helper="sub",
+        source_args=[rb"a(bc|de){1,}d", b"x", b"abcd"],
+        source_kwargs={},
+        args=[rb"a(bc|de){1,}d", b"x", b"abcd"],
+        kwargs={},
+    )
+    surface = LoadedReplacementSurface(
+        spec=ReplacementSurfaceSpec(
+            id="mixed-no-match-candidate-contract",
+            bundle_specs=(),
+            pattern_extractor=case_pattern,
+            no_match_text_candidates=("zzzz", b"zzzz"),
+        ),
+        bundles=(),
+        replacement_cases=(),
+        module_cases=(),
+        pattern_cases=(),
+        match_snapshot_cases=(),
+        template_expand_cases=(),
+        discovered_no_match_cases=(),
+    )
+
+    assert _no_match_text(surface, str_case) == "zzzz"
+    assert _no_match_text(surface, bytes_case) == b"zzzz"
