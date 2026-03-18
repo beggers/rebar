@@ -41,6 +41,10 @@ const BYTES_NAMED_BACKREFERENCE_COMPILE_PROXY_PATTERN: &[u8] =
     br"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}";
 const BOUNDED_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN: &[u8] = br"a(b|c){1,2}d";
 const BOUNDED_QUANTIFIED_ALTERNATION_NAMED_BYTES_PATTERN: &[u8] = br"a(?P<word>b|c){1,2}d";
+const QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_NUMBERED_BYTES_PATTERN: &[u8] =
+    br"a(b|bc){1,2}d";
+const QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_NAMED_BYTES_PATTERN: &[u8] =
+    br"a(?P<word>b|bc){1,2}d";
 const QUANTIFIED_ALTERNATION_NESTED_BRANCH_NUMBERED_BYTES_PATTERN: &[u8] = br"a((b|c)|de){1,2}d";
 const QUANTIFIED_ALTERNATION_NESTED_BRANCH_NAMED_BYTES_PATTERN: &[u8] =
     br"a(?P<word>(b|c)|de){1,2}d";
@@ -56,6 +60,7 @@ const OPEN_ENDED_QUANTIFIED_ALTERNATION_NAMED_BYTES_PATTERN: &[u8] = br"a(?P<wor
 const OPEN_ENDED_QUANTIFIED_ALTERNATION_CAPTURE_NAME: &str = "word";
 const OPEN_ENDED_QUANTIFIED_ALTERNATION_PREFIX_BYTES: &[u8] = b"a";
 const OPEN_ENDED_QUANTIFIED_ALTERNATION_BRANCHES_BYTES: [&[u8]; 2] = [b"b", b"c"];
+const QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BRANCHES_BYTES: [&[u8]; 2] = [b"b", b"bc"];
 const OPEN_ENDED_QUANTIFIED_ALTERNATION_SUFFIX_BYTES: &[u8] = b"d";
 const OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_NUMBERED_BYTES_PATTERN: &[u8] = br"a(bc|de){1,}d";
 const OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_NAMED_BYTES_PATTERN: &[u8] =
@@ -749,6 +754,7 @@ struct QuantifiedAlternationNestedBranchBytesPattern {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct QuantifiedAlternationBytesPattern {
     capture_name: Option<&'static str>,
+    branches: [&'static [u8]; 2],
     max_repeat: Option<usize>,
 }
 
@@ -5284,37 +5290,57 @@ fn parse_quantified_alternation_pattern_bytes(
         BOUNDED_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN => {
             Some(QuantifiedAlternationBytesPattern {
                 capture_name: None,
+                branches: OPEN_ENDED_QUANTIFIED_ALTERNATION_BRANCHES_BYTES,
                 max_repeat: Some(2),
             })
         }
         BOUNDED_QUANTIFIED_ALTERNATION_NAMED_BYTES_PATTERN => {
             Some(QuantifiedAlternationBytesPattern {
                 capture_name: Some(OPEN_ENDED_QUANTIFIED_ALTERNATION_CAPTURE_NAME),
+                branches: OPEN_ENDED_QUANTIFIED_ALTERNATION_BRANCHES_BYTES,
                 max_repeat: Some(2),
             })
         }
         BROADER_RANGE_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN => {
             Some(QuantifiedAlternationBytesPattern {
                 capture_name: None,
+                branches: OPEN_ENDED_QUANTIFIED_ALTERNATION_BRANCHES_BYTES,
                 max_repeat: Some(3),
             })
         }
         BROADER_RANGE_QUANTIFIED_ALTERNATION_NAMED_BYTES_PATTERN => {
             Some(QuantifiedAlternationBytesPattern {
                 capture_name: Some(OPEN_ENDED_QUANTIFIED_ALTERNATION_CAPTURE_NAME),
+                branches: OPEN_ENDED_QUANTIFIED_ALTERNATION_BRANCHES_BYTES,
                 max_repeat: Some(3),
             })
         }
         OPEN_ENDED_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN => {
             Some(QuantifiedAlternationBytesPattern {
                 capture_name: None,
+                branches: OPEN_ENDED_QUANTIFIED_ALTERNATION_BRANCHES_BYTES,
                 max_repeat: None,
             })
         }
         OPEN_ENDED_QUANTIFIED_ALTERNATION_NAMED_BYTES_PATTERN => {
             Some(QuantifiedAlternationBytesPattern {
                 capture_name: Some(OPEN_ENDED_QUANTIFIED_ALTERNATION_CAPTURE_NAME),
+                branches: OPEN_ENDED_QUANTIFIED_ALTERNATION_BRANCHES_BYTES,
                 max_repeat: None,
+            })
+        }
+        QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_NUMBERED_BYTES_PATTERN => {
+            Some(QuantifiedAlternationBytesPattern {
+                capture_name: None,
+                branches: QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BRANCHES_BYTES,
+                max_repeat: Some(2),
+            })
+        }
+        QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_NAMED_BYTES_PATTERN => {
+            Some(QuantifiedAlternationBytesPattern {
+                capture_name: Some(OPEN_ENDED_QUANTIFIED_ALTERNATION_CAPTURE_NAME),
+                branches: QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BRANCHES_BYTES,
+                max_repeat: Some(2),
             })
         }
         _ => None,
@@ -12097,38 +12123,45 @@ fn quantified_alternation_conditional_matches_at_str<'a>(
 }
 
 fn quantified_alternation_max_repeats_bytes(
+    pattern: &QuantifiedAlternationBytesPattern,
     flags: i32,
     string: &[u8],
     start: usize,
     endpos: usize,
 ) -> usize {
+    let branch_len = pattern.branches.first().map(|branch| branch.len()).unwrap_or(0);
+    if branch_len == 0 {
+        return 0;
+    }
+
     let mut cursor = start;
     let mut repeat_count = 0;
 
-    loop {
-        let Some(branch) = OPEN_ENDED_QUANTIFIED_ALTERNATION_BRANCHES_BYTES
+    while cursor + branch_len + OPEN_ENDED_QUANTIFIED_ALTERNATION_SUFFIX_BYTES.len() <= endpos {
+        let matched = pattern
+            .branches
             .iter()
             .copied()
-            .find(|branch| literal_matches_at_bytes(branch, flags, string, cursor, endpos))
-        else {
+            .any(|branch| literal_matches_at_bytes(branch, flags, string, cursor, endpos));
+        if !matched {
             break;
-        };
-
+        }
         repeat_count += 1;
-        cursor += branch.len();
+        cursor += branch_len;
     }
 
     repeat_count
 }
 
 fn quantified_alternation_matches_exact_repeats_bytes(
+    branches: &[&[u8]],
     flags: i32,
     string: &[u8],
     start: usize,
     endpos: usize,
     repeat_count: usize,
 ) -> Option<((usize, usize), usize)> {
-    for branch in OPEN_ENDED_QUANTIFIED_ALTERNATION_BRANCHES_BYTES {
+    for branch in branches {
         let branch_end = start + branch.len();
         if !literal_matches_at_bytes(branch, flags, string, start, endpos) {
             continue;
@@ -12151,6 +12184,7 @@ fn quantified_alternation_matches_exact_repeats_bytes(
         }
 
         if let Some(result) = quantified_alternation_matches_exact_repeats_bytes(
+            branches,
             flags,
             string,
             branch_end,
@@ -12348,10 +12382,8 @@ fn quantified_alternation_matches_at_bytes(
     }
 
     let branch_start = start + OPEN_ENDED_QUANTIFIED_ALTERNATION_PREFIX_BYTES.len();
-    let available_repeats =
-        quantified_alternation_max_repeats_bytes(flags, string, branch_start, endpos);
-    let max_repeat = pattern.max_repeat.map_or(available_repeats, |max_repeat| {
-        max_repeat.min(available_repeats)
+    let max_repeat = pattern.max_repeat.unwrap_or_else(|| {
+        quantified_alternation_max_repeats_bytes(pattern, flags, string, branch_start, endpos)
     });
     if max_repeat == 0 {
         return None;
@@ -12360,6 +12392,7 @@ fn quantified_alternation_matches_at_bytes(
     for candidate_count in (1..=max_repeat).rev() {
         if let Some((last_branch_span, match_end)) =
             quantified_alternation_matches_exact_repeats_bytes(
+                pattern.branches.as_slice(),
                 flags,
                 string,
                 branch_start,

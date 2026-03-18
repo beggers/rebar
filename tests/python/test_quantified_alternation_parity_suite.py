@@ -444,9 +444,6 @@ BACKTRACKING_HEAVY_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "quantified-alternation-backtracking-heavy-workflows",
 )
-BACKTRACKING_HEAVY_BYTES_UNSUPPORTED_REASON = (
-    "rebar bytes quantified-alternation backtracking-heavy parity is not implemented yet"
-)
 QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES = (
     QuantifiedAlternationBytesCase(
         id="quantified-alternation-numbered-bytes",
@@ -518,8 +515,6 @@ QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES = (
         search_matches=(b"zzabdzz",),
         fullmatch_matches=(b"abcd", b"abbcd", b"abcbd", b"abcbcd"),
         fullmatch_misses=(b"abccd",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=BACKTRACKING_HEAVY_BYTES_UNSUPPORTED_REASON,
     ),
     QuantifiedAlternationBytesCase(
         id="quantified-alternation-backtracking-heavy-named-bytes",
@@ -527,8 +522,6 @@ QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES = (
         search_matches=(b"zzabcdzz",),
         fullmatch_matches=(b"abbd", b"abcbd"),
         fullmatch_misses=(b"abccd",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=BACKTRACKING_HEAVY_BYTES_UNSUPPORTED_REASON,
     ),
 )
 DIRECT_BYTES_FOLLOW_ON_SPECS = (
@@ -1294,8 +1287,8 @@ def test_quantified_alternation_backtracking_heavy_bytes_cases_stay_explicit_wit
     )
 
     for case in QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert case.unsupported_backend_reason == BACKTRACKING_HEAVY_BYTES_UNSUPPORTED_REASON
+        assert case.unsupported_backends == ()
+        assert case.unsupported_backend_reason is None
         assert len(case.search_matches) == 1
         assert case.fullmatch_misses == (b"abccd",)
         assert set(case.search_matches).isdisjoint(case.fullmatch_misses)

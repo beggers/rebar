@@ -1,6 +1,6 @@
 # RBR-0586: Convert the quantified-alternation backtracking-heavy bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -43,3 +43,6 @@ Created: 2026-03-18
   - `benchmarks/workloads/quantified_alternation_boundary.py` already publishes the six adjacent backtracking-heavy `str` benchmark rows for this exact pair, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so the Rust-backed bytes parity work is not already satisfied in the current checkout.
 - A later benchmark follow-on should catch the same bytes pair up on the existing quantified-alternation benchmark surface before another quantified-alternation bytes family broadens the frontier.
+
+## Completion
+- 2026-03-18: Landed Rust-backed bytes compile and match parity for `rb"a(b|bc){1,2}d"` and `rb"a(?P<word>b|bc){1,2}d"` on the existing quantified-alternation surface, removed the direct-suite `rebar` unsupported gating for that bytes follow-on, and republished [`reports/correctness/latest.py`](../../../reports/correctness/latest.py) at `1212` total / `1212` passed / `0` failed / `0` unimplemented. The tracked backtracking-heavy suite summary is now `24` total / `24` passed / `0` unimplemented, with the bytes subsuite at `12` / `12` / `0`. Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/quantified_alternation_backtracking_heavy_workflows.py --report .rebar/tmp/rbr-0586-quantified-alternation-backtracking-heavy-bytes-parity.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
