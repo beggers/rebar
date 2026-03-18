@@ -1464,6 +1464,222 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-compile-numbered-quantified-alternation-nested-branch-cold-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a((b|c)|de){1,2}d",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "nested-alternation",
+        "bytes",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats"
+      ],
+      "notes": [
+        "Cold bytes module.compile benchmark for the bounded numbered quantified-alternation nested-branch slice so compile metadata timing reaches the published benchmark report on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-numbered-quantified-alternation-nested-branch-lower-bound-inner-branch-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a((b|c)|de){1,2}d",
+      "haystack": "zzabdzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "nested-alternation",
+        "search",
+        "module",
+        "lower-bound",
+        "inner-branch",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the bounded numbered quantified-alternation nested-branch workflow on the lower-bound inner-branch success case."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-quantified-alternation-nested-branch-lower-bound-literal-branch-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a((b|c)|de){1,2}d",
+      "haystack": "aded",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "nested-alternation",
+        "fullmatch",
+        "lower-bound",
+        "literal-branch",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the bounded numbered quantified-alternation nested-branch workflow on the lower-bound literal-branch success case."
+      ]
+    },
+    {
+      "id": "module-compile-named-quantified-alternation-nested-branch-warm-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<word>(b|c)|de){1,2}d",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "nested-alternation",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm bytes module.compile benchmark for the bounded named quantified-alternation nested-branch slice so named compile metadata joins the published report on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-named-quantified-alternation-nested-branch-lower-bound-literal-branch-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>(b|c)|de){1,2}d",
+      "haystack": "zzadedzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "nested-alternation",
+        "search",
+        "module",
+        "lower-bound",
+        "literal-branch",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the bounded named quantified-alternation nested-branch workflow on the lower-bound literal-branch success case."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-quantified-alternation-nested-branch-second-repetition-mixed-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>(b|c)|de){1,2}d",
+      "haystack": "abded",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "nested-alternation",
+        "fullmatch",
+        "second-repetition",
+        "mixed-branches",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the bounded named quantified-alternation nested-branch workflow when the counted repeat mixes one inner-branch success with one sibling literal branch."
+      ]
+    },
+    {
       "id": "module-search-numbered-quantified-alternation-branch-backref-cold-str",
       "bucket": "module-search",
       "family": "module",

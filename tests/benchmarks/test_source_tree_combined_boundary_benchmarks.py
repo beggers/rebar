@@ -390,7 +390,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     expected_total_workload_count,
                 )
 
-    def test_quantified_alternation_manifest_promotes_bounded_broader_range_and_open_ended_bytes_rows_to_measured(
+    def test_quantified_alternation_manifest_promotes_bounded_nested_branch_broader_range_and_open_ended_bytes_rows_to_measured(
         self,
     ) -> None:
         (
