@@ -23,6 +23,7 @@ from tests.python.fixture_parity_support import (
     assert_match_parity,
     assert_valid_match_group_access_parity,
     bundle_patterns,
+    case_pattern,
     case_replacement_argument,
     case_text_argument,
     load_fixture_bundles,
@@ -38,8 +39,11 @@ COLLECTION_REPLACEMENT_FIXTURE_NAME = "collection_replacement_workflows.py"
 class CallableManifestSpec:
     manifest_id: str
     expected_case_ids: frozenset[str]
-    expected_compile_patterns: frozenset[str]
+    expected_compile_patterns: frozenset[str | bytes]
+    expected_operation_helper_counts: Counter[tuple[str, str | None]]
+    expected_text_models: frozenset[str]
     has_near_miss_matrix: bool
+    pending_rebar_case_ids: frozenset[str] = frozenset()
 
 
 @dataclass(frozen=True)
@@ -52,6 +56,26 @@ class CallableNearMissCase:
     text: str
     count: int
     expected_result: str | tuple[str, int]
+
+
+CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("module_call", "sub"): 2,
+        ("module_call", "subn"): 2,
+        ("pattern_call", "sub"): 2,
+        ("pattern_call", "subn"): 2,
+    }
+)
+CALLABLE_MIXED_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("module_call", "sub"): 4,
+        ("module_call", "subn"): 4,
+        ("pattern_call", "sub"): 4,
+        ("pattern_call", "subn"): 4,
+    }
+)
+STR_ONLY_TEXT_MODELS = frozenset({"str"})
+MIXED_TEXT_MODELS = frozenset({"str", "bytes"})
 
 
 CALLABLE_MANIFEST_SPECS = (
@@ -75,6 +99,8 @@ CALLABLE_MANIFEST_SPECS = (
                 r"a(?P<outer>(?P<inner>b|c)+)d",
             }
         ),
+        expected_operation_helper_counts=CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS,
+        expected_text_models=STR_ONLY_TEXT_MODELS,
         has_near_miss_matrix=True,
     ),
     CallableManifestSpec(
@@ -97,6 +123,8 @@ CALLABLE_MANIFEST_SPECS = (
                 r"a(?P<word>b)?c(?(word)d|e)",
             }
         ),
+        expected_operation_helper_counts=CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS,
+        expected_text_models=STR_ONLY_TEXT_MODELS,
         has_near_miss_matrix=True,
     ),
     CallableManifestSpec(
@@ -121,6 +149,8 @@ CALLABLE_MANIFEST_SPECS = (
                 r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
             }
         ),
+        expected_operation_helper_counts=CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS,
+        expected_text_models=STR_ONLY_TEXT_MODELS,
         has_near_miss_matrix=True,
     ),
     CallableManifestSpec(
@@ -137,17 +167,46 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-first-match-only-b-branch-str",
                 "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-lower-bound-c-branch-str",
                 "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-str",
+                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-lower-bound-b-branch-bytes",
+                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-first-match-only-b-branch-bytes",
+                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-mixed-branches-bytes",
+                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-c-branch-first-match-only-bytes",
+                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-mixed-branches-bytes",
+                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-first-match-only-b-branch-bytes",
+                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-lower-bound-c-branch-bytes",
+                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-bytes",
             }
         ),
         expected_compile_patterns=frozenset(
             {
                 r"a((b|c){2,})\2(?(2)d|e)",
                 r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+                rb"a((b|c){2,})\2(?(2)d|e)",
+                rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
             }
         ),
+        expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
+        expected_text_models=MIXED_TEXT_MODELS,
         has_near_miss_matrix=False,
+        pending_rebar_case_ids=frozenset(
+            {
+                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-lower-bound-b-branch-bytes",
+                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-first-match-only-b-branch-bytes",
+                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-mixed-branches-bytes",
+                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-c-branch-first-match-only-bytes",
+                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-mixed-branches-bytes",
+                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-first-match-only-b-branch-bytes",
+                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-lower-bound-c-branch-bytes",
+                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-bytes",
+            }
+        ),
     ),
 )
+CALLABLE_MANIFEST_SPECS_BY_ID = {
+    spec.manifest_id: spec for spec in CALLABLE_MANIFEST_SPECS
+}
+if len(CALLABLE_MANIFEST_SPECS_BY_ID) != len(CALLABLE_MANIFEST_SPECS):
+    raise AssertionError("duplicate callable manifest ids in CALLABLE_MANIFEST_SPECS")
 CALLABLE_MANIFEST_PARAMS = tuple(
     pytest.param(spec, id=spec.manifest_id) for spec in CALLABLE_MANIFEST_SPECS
 )
@@ -585,16 +644,21 @@ CALLABLE_NO_MATCH_VARIANTS = (
     pytest.param("sub", True, id="pattern-sub"),
     pytest.param("subn", True, id="pattern-subn"),
 )
-EXPECTED_OPERATION_HELPER_COUNTS = Counter(
-    {
-        ("module_call", "sub"): 2,
-        ("module_call", "subn"): 2,
-        ("pattern_call", "sub"): 2,
-        ("pattern_call", "subn"): 2,
-    }
+PENDING_REBAR_MANIFEST_IDS = frozenset(
+    spec.manifest_id
+    for spec in CALLABLE_MANIFEST_SPECS
+    if spec.pending_rebar_case_ids
 )
-PENDING_REBAR_MANIFEST_IDS = frozenset()
+PENDING_REBAR_CASE_IDS = frozenset(
+    case_id
+    for spec in CALLABLE_MANIFEST_SPECS
+    for case_id in spec.pending_rebar_case_ids
+)
 NO_MATCH_TEXT_CANDIDATES = ("zzz", "", "no-match", "----", "999")
+
+
+def _is_pending_rebar_callable_case(case: FixtureCase) -> bool:
+    return case.case_id in PENDING_REBAR_CASE_IDS
 
 
 def _skip_pending_rebar_callable_parity(
@@ -603,22 +667,18 @@ def _skip_pending_rebar_callable_parity(
 ) -> None:
     if (
         backend_name == "rebar"
-        and case.manifest_id in PENDING_REBAR_MANIFEST_IDS
+        and _is_pending_rebar_callable_case(case)
     ):
         pytest.skip(
-            f"callable replacement parity for {case.manifest_id} remains queued behind a later Rust-backed parity task"
+            f"callable replacement parity for {case.case_id} remains queued behind a later Rust-backed parity task"
         )
 
 
 def _pending_rebar_compile_patterns() -> frozenset[str]:
     return frozenset(
-        compile_pattern
-        for bundle in FIXTURE_BUNDLES
-        if bundle.manifest.manifest_id in PENDING_REBAR_MANIFEST_IDS
-        for compile_pattern in bundle_patterns(
-            bundle,
-            pattern_extractor=str_case_pattern,
-        )
+        str_case_pattern(case)
+        for case in PUBLISHED_CALLABLE_CASES
+        if _is_pending_rebar_callable_case(case) and case.text_model == "str"
     )
 
 COLLECTION_REPLACEMENT_BUNDLE, = load_fixture_bundles(
@@ -634,30 +694,25 @@ COLLECTION_REPLACEMENT_BUNDLE, = load_fixture_bundles(
     )
 )
 FIXTURE_BUNDLES = load_published_fixture_bundles(CALLABLE_FIXTURE_PATHS)
+PUBLISHED_CALLABLE_CASES = tuple(
+    case for bundle in FIXTURE_BUNDLES for case in bundle.cases
+)
+SHARED_CALLABLE_CASES = tuple(
+    case for case in PUBLISHED_CALLABLE_CASES if not _is_pending_rebar_callable_case(case)
+)
 
 COMPILE_PATTERNS = tuple(
     sorted(
         {
-            compile_pattern
-            for bundle in FIXTURE_BUNDLES
-            for compile_pattern in bundle_patterns(
-                bundle,
-                pattern_extractor=str_case_pattern,
-            )
+            str_case_pattern(case) for case in SHARED_CALLABLE_CASES
         }
     )
 )
 MODULE_CASES = tuple(
-    case
-    for bundle in FIXTURE_BUNDLES
-    for case in bundle.cases
-    if case.operation == "module_call"
+    case for case in SHARED_CALLABLE_CASES if case.operation == "module_call"
 )
 PATTERN_CASES = tuple(
-    case
-    for bundle in FIXTURE_BUNDLES
-    for case in bundle.cases
-    if case.operation == "pattern_call"
+    case for case in SHARED_CALLABLE_CASES if case.operation == "pattern_call"
 )
 CALLABLE_RETURN_TYPE_ERROR_MANIFEST_KEYWORDS = (
     "quantified",
@@ -864,7 +919,7 @@ def _assert_source_callable_replacement_reference_is_valid(case: FixtureCase) ->
     assert isinstance(prefix, str)
     assert isinstance(suffix, str)
 
-    compiled = re.compile(str_case_pattern(case), case.flags or 0)
+    compiled = re.compile(case_pattern(case), case.flags or 0)
     group_reference = replacement.get("group", 0)
     if isinstance(group_reference, int):
         assert 0 <= group_reference <= compiled.groups
@@ -885,6 +940,8 @@ def _live_unimplemented_callable_manifest_ids() -> frozenset[str]:
                 manifest_ids.add(case.manifest_id)
 
     return frozenset(manifest_ids)
+
+
 def test_pending_rebar_callable_manifest_ids_match_live_unimplemented_manifests() -> None:
     assert _live_unimplemented_callable_manifest_ids() == PENDING_REBAR_MANIFEST_IDS
 
@@ -897,17 +954,31 @@ def test_pending_rebar_callable_manifest_ids_match_live_unimplemented_manifests(
 def test_callable_replacement_fixture_shape_contract(
     bundle: FixtureBundle,
 ) -> None:
-    compile_patterns = bundle_patterns(bundle, pattern_extractor=str_case_pattern)
+    manifest_spec = CALLABLE_MANIFEST_SPECS_BY_ID.get(bundle.manifest.manifest_id)
+    compile_patterns = bundle_patterns(bundle, pattern_extractor=case_pattern)
+    expected_text_models = (
+        manifest_spec.expected_text_models
+        if manifest_spec is not None
+        else STR_ONLY_TEXT_MODELS
+    )
+    expected_operation_helper_counts = (
+        manifest_spec.expected_operation_helper_counts
+        if manifest_spec is not None
+        else CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS
+    )
 
     assert bundle.manifest.manifest_id.endswith("-callable-replacement-workflows")
     assert bundle.manifest.layer == "module_workflow"
     assert bundle.manifest.defaults.get("text_model") == "str"
-    assert len(bundle.cases) == 8
-    assert {case.text_model for case in bundle.cases} == {"str"}
+    assert len(bundle.cases) == sum(expected_operation_helper_counts.values())
+    assert {case.text_model for case in bundle.cases} == expected_text_models
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        EXPECTED_OPERATION_HELPER_COUNTS
+        expected_operation_helper_counts
     )
-    assert len(compile_patterns) == 2
+    if manifest_spec is not None:
+        assert compile_patterns == manifest_spec.expected_compile_patterns
+    else:
+        assert len(compile_patterns) == 2
 
     has_named_pattern = False
     has_numbered_pattern = False
@@ -923,7 +994,7 @@ def test_callable_replacement_fixture_shape_contract(
 
     for case in bundle.cases:
         assert "callable-replacement" in case.categories
-        assert "str" in case.categories
+        assert case.text_model in case.categories
         _assert_source_callable_replacement_reference_is_valid(case)
 
 
@@ -957,15 +1028,54 @@ def test_callable_replacement_cases_stay_aligned_with_published_fixture(
     assert bundle.manifest.manifest_id == manifest_spec.manifest_id
     assert len(bundle.cases) == len(manifest_spec.expected_case_ids)
     assert {case.case_id for case in bundle.cases} == manifest_spec.expected_case_ids
-    assert bundle_patterns(bundle, pattern_extractor=str_case_pattern) == (
+    assert bundle_patterns(bundle, pattern_extractor=case_pattern) == (
         manifest_spec.expected_compile_patterns
     )
+    assert {case.text_model for case in bundle.cases} == manifest_spec.expected_text_models
     assert Counter((case.operation, case.helper) for case in bundle.cases) == (
-        EXPECTED_OPERATION_HELPER_COUNTS
+        manifest_spec.expected_operation_helper_counts
     )
+    assert {
+        case.case_id for case in bundle.cases if _is_pending_rebar_callable_case(case)
+    } == manifest_spec.pending_rebar_case_ids
     assert manifest_spec.has_near_miss_matrix is (
         manifest_spec.manifest_id in CALLABLE_NEAR_MISS_MANIFEST_IDS
     )
+
+
+@pytest.mark.parametrize(
+    "manifest_spec",
+    tuple(
+        pytest.param(spec, id=spec.manifest_id)
+        for spec in CALLABLE_MANIFEST_SPECS
+        if spec.pending_rebar_case_ids
+    ),
+)
+def test_pending_bytes_follow_on_cases_stay_out_of_shared_callable_partitions(
+    manifest_spec: CallableManifestSpec,
+) -> None:
+    bundle = published_fixture_bundle_by_manifest_id(
+        FIXTURE_BUNDLES,
+        manifest_spec.manifest_id,
+    )
+    shared_case_ids = frozenset(
+        case.case_id
+        for case in (*MODULE_CASES, *PATTERN_CASES)
+        if case.manifest_id == manifest_spec.manifest_id
+    )
+
+    assert {case.case_id for case in bundle.cases if case.text_model == "bytes"} == (
+        manifest_spec.pending_rebar_case_ids
+    )
+    assert shared_case_ids == (
+        manifest_spec.expected_case_ids - manifest_spec.pending_rebar_case_ids
+    )
+    assert not {
+        case.case_id
+        for case in PATTERN_RETURN_TYPE_ERROR_CASES
+        if case.case_id in manifest_spec.pending_rebar_case_ids
+    }
+    assert manifest_spec.manifest_id not in CALLABLE_NEAR_MISS_MANIFEST_IDS
 
 
 def test_pattern_callable_replacement_return_type_error_cases_cover_quantified_callable_fixture_frontier(
