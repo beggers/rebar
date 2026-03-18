@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0574` should convert the bounded quantified-alternation bytes pair for `rb"a(b|c){1,2}d"` and `rb"a(?P<word>b|c){1,2}d"` to real parity on the existing quantified-alternation surface, so the mixed `str`/`bytes` manifest returns to zero-gap publication before Python-path benchmark catch-up mirrors the six adjacent bounded `str` rows.
+`RBR-0576` should catch the bounded quantified-alternation bytes pair for `rb"a(b|c){1,2}d"` and `rb"a(?P<word>b|c){1,2}d"` up on the existing Python-facing benchmark surface, mirroring the six adjacent bounded `str` rows so the same mixed `str`/`bytes` slice reaches zero-gap measurement before another quantified-alternation bytes family broadens the frontier.
 
 ## Ordered Work
-1. `RBR-0574` should convert the bounded quantified-alternation bytes pair for `rb"a(b|c){1,2}d"` and `rb"a(?P<word>b|c){1,2}d"` on `tests/python/test_quantified_alternation_parity_suite.py`, turning that manifest's direct bytes follow-on anchor into real Rust-backed parity before a later benchmark task mirrors the six adjacent bounded `str` rows on `benchmarks/workloads/quantified_alternation_boundary.py`.
+1. `RBR-0576` should catch the bounded quantified-alternation bytes pair for `rb"a(b|c){1,2}d"` and `rb"a(?P<word>b|c){1,2}d"` up on `benchmarks/workloads/quantified_alternation_boundary.py`, mirroring the six adjacent bounded `str` rows through the existing quantified-alternation manifest and benchmark scorecard tests.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
