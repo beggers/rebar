@@ -940,13 +940,12 @@ def test_partition_direct_bytes_follow_on_case_buckets_drops_only_follow_on_byte
         ("pattern_call", pattern_cases),
     ):
         original_cases = fixture_cases_for_operation((bundle,), operation)
+        expected_case_ids = tuple(
+            case.case_id for case in original_cases if case.text_model == "str"
+        )
         assert {case.text_model for case in original_cases} == {"bytes", "str"}
         assert {case.text_model for case in bucket_cases} == {"str"}
-        assert {case.case_id for case in bucket_cases} == {
-            case.case_id
-            for case in original_cases
-            if case.text_model == "str"
-        }
+        assert tuple(case.case_id for case in bucket_cases) == expected_case_ids
 
 
 def test_partition_direct_bytes_follow_on_case_buckets_preserves_unrelated_bytes_rows(
@@ -972,7 +971,17 @@ def test_partition_direct_bytes_follow_on_case_buckets_preserves_unrelated_bytes
         ("module_call", module_cases),
         ("pattern_call", pattern_cases),
     ):
+        expected_case_ids = tuple(
+            case.case_id
+            for case in fixture_cases_for_operation(
+                (follow_on_bundle, preserved_bundle),
+                operation,
+            )
+            if case.text_model != "bytes"
+            or case.manifest_id != follow_on_bundle.manifest.manifest_id
+        )
         bucket_case_ids = {case.case_id for case in bucket_cases}
+        assert tuple(case.case_id for case in bucket_cases) == expected_case_ids
         assert {
             case.case_id
             for case in preserved_bundle.cases
