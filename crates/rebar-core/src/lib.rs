@@ -41,8 +41,13 @@ const BYTES_NAMED_BACKREFERENCE_COMPILE_PROXY_PATTERN: &[u8] =
     br"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}";
 const BOUNDED_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN: &[u8] = br"a(b|c){1,2}d";
 const BOUNDED_QUANTIFIED_ALTERNATION_NAMED_BYTES_PATTERN: &[u8] = br"a(?P<word>b|c){1,2}d";
-const QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_NUMBERED_BYTES_PATTERN: &[u8] =
-    br"a(b|bc){1,2}d";
+const BOUNDED_QUANTIFIED_ALTERNATION_CONDITIONAL_NUMBERED_BYTES_PATTERN: &[u8] =
+    br"a((b|c){1,2})?(?(1)d|e)";
+const BOUNDED_QUANTIFIED_ALTERNATION_CONDITIONAL_NAMED_BYTES_PATTERN: &[u8] =
+    br"a(?P<outer>(b|c){1,2})?(?(outer)d|e)";
+const BOUNDED_QUANTIFIED_ALTERNATION_CONDITIONAL_OUTER_NAME: &str = "outer";
+const BOUNDED_QUANTIFIED_ALTERNATION_CONDITIONAL_NO_BRANCH_BYTES: &[u8] = b"e";
+const QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_NUMBERED_BYTES_PATTERN: &[u8] = br"a(b|bc){1,2}d";
 const QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_NAMED_BYTES_PATTERN: &[u8] =
     br"a(?P<word>b|bc){1,2}d";
 const QUANTIFIED_ALTERNATION_NESTED_BRANCH_NUMBERED_BYTES_PATTERN: &[u8] = br"a((b|c)|de){1,2}d";
@@ -756,6 +761,11 @@ struct QuantifiedAlternationBytesPattern {
     capture_name: Option<&'static str>,
     branches: [&'static [u8]; 2],
     max_repeat: Option<usize>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct QuantifiedAlternationConditionalBytesPattern {
+    outer_name: Option<&'static str>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1700,6 +1710,35 @@ impl QuantifiedAlternationBytesPattern {
     }
 }
 
+impl QuantifiedAlternationConditionalBytesPattern {
+    fn group_count(&self) -> usize {
+        2
+    }
+
+    fn named_groups(&self) -> Vec<NamedGroup> {
+        self.outer_name
+            .map(|name| {
+                vec![NamedGroup {
+                    name: name.to_string(),
+                    index: 1,
+                }]
+            })
+            .unwrap_or_default()
+    }
+
+    fn group_spans(
+        &self,
+        outer_span: Option<(usize, usize)>,
+        inner_span: Option<(usize, usize)>,
+    ) -> Vec<Option<(usize, usize)>> {
+        vec![outer_span, inner_span]
+    }
+
+    fn matched_lastindex(&self, group_spans: &[Option<(usize, usize)>]) -> Option<usize> {
+        group_spans.first().copied().flatten().map(|_| 1)
+    }
+}
+
 impl QuantifiedAlternationNestedBranchBytesPattern {
     fn group_count(&self) -> usize {
         2
@@ -2475,6 +2514,21 @@ fn compile_known_supported_case(
         {
             let grouped_pattern = parse_quantified_alternation_pattern_bytes(pattern)
                 .expect("guarded quantified alternation bytes literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
+                warning: None,
+            })
+        }
+        PatternRef::Bytes(pattern)
+            if parse_quantified_alternation_conditional_pattern_bytes(pattern).is_some()
+                && normalized_flags == 0 =>
+        {
+            let grouped_pattern = parse_quantified_alternation_conditional_pattern_bytes(pattern)
+                .expect("guarded quantified alternation conditional bytes literal");
             Some(CompileOutcome {
                 status: CompileStatus::Compiled,
                 normalized_flags,
@@ -5341,6 +5395,22 @@ fn parse_quantified_alternation_pattern_bytes(
                 capture_name: Some(OPEN_ENDED_QUANTIFIED_ALTERNATION_CAPTURE_NAME),
                 branches: QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BRANCHES_BYTES,
                 max_repeat: Some(2),
+            })
+        }
+        _ => None,
+    }
+}
+
+fn parse_quantified_alternation_conditional_pattern_bytes(
+    pattern: &[u8],
+) -> Option<QuantifiedAlternationConditionalBytesPattern> {
+    match pattern {
+        BOUNDED_QUANTIFIED_ALTERNATION_CONDITIONAL_NUMBERED_BYTES_PATTERN => {
+            Some(QuantifiedAlternationConditionalBytesPattern { outer_name: None })
+        }
+        BOUNDED_QUANTIFIED_ALTERNATION_CONDITIONAL_NAMED_BYTES_PATTERN => {
+            Some(QuantifiedAlternationConditionalBytesPattern {
+                outer_name: Some(BOUNDED_QUANTIFIED_ALTERNATION_CONDITIONAL_OUTER_NAME),
             })
         }
         _ => None,
@@ -8229,6 +8299,48 @@ fn literal_match_bytes(
         }
 
         let (span, group_spans) = find_quantified_alternation_match_span_bytes(
+            &grouped_pattern,
+            flags,
+            mode,
+            string,
+            normalized_pos,
+            normalized_endpos,
+        )
+        .map_or((None, Vec::new()), |(span, group_spans)| {
+            (Some(span), group_spans)
+        });
+        let lastindex = if span.is_some() {
+            grouped_pattern.matched_lastindex(&group_spans)
+        } else {
+            None
+        };
+        return MatchOutcome {
+            status: if span.is_some() {
+                MatchStatus::Matched
+            } else {
+                MatchStatus::NoMatch
+            },
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            span,
+            group_spans,
+            lastindex,
+        };
+    }
+
+    if let Some(grouped_pattern) = parse_quantified_alternation_conditional_pattern_bytes(pattern) {
+        if flags != 0 {
+            return MatchOutcome {
+                status: MatchStatus::Unsupported,
+                pos: normalized_pos,
+                endpos: normalized_endpos,
+                span: None,
+                group_spans: Vec::new(),
+                lastindex: None,
+            };
+        }
+
+        let (span, group_spans) = find_quantified_alternation_conditional_match_span_bytes(
             &grouped_pattern,
             flags,
             mode,
@@ -12129,7 +12241,11 @@ fn quantified_alternation_max_repeats_bytes(
     start: usize,
     endpos: usize,
 ) -> usize {
-    let branch_len = pattern.branches.first().map(|branch| branch.len()).unwrap_or(0);
+    let branch_len = pattern
+        .branches
+        .first()
+        .map(|branch| branch.len())
+        .unwrap_or(0);
     if branch_len == 0 {
         return 0;
     }
@@ -12436,6 +12552,90 @@ fn find_quantified_alternation_match_span_bytes(
             (match_end == endpos)
                 .then_some(((pos, match_end), pattern.group_spans(last_branch_span)))
         }),
+    }
+}
+
+fn quantified_alternation_conditional_matches_at_bytes(
+    flags: i32,
+    string: &[u8],
+    start: usize,
+    endpos: usize,
+) -> Option<(Option<(usize, usize)>, Option<(usize, usize)>, usize)> {
+    let quantified_pattern = QuantifiedAlternationBytesPattern {
+        capture_name: None,
+        branches: OPEN_ENDED_QUANTIFIED_ALTERNATION_BRANCHES_BYTES,
+        max_repeat: Some(2),
+    };
+    if let Some((inner_span, match_end)) =
+        quantified_alternation_matches_at_bytes(&quantified_pattern, flags, string, start, endpos)
+    {
+        let outer_start = start + OPEN_ENDED_QUANTIFIED_ALTERNATION_PREFIX_BYTES.len();
+        let outer_end = match_end - OPEN_ENDED_QUANTIFIED_ALTERNATION_SUFFIX_BYTES.len();
+        return Some((Some((outer_start, outer_end)), Some(inner_span), match_end));
+    }
+
+    if !literal_matches_at_bytes(
+        OPEN_ENDED_QUANTIFIED_ALTERNATION_PREFIX_BYTES,
+        flags,
+        string,
+        start,
+        endpos,
+    ) {
+        return None;
+    }
+
+    let no_branch_start = start + OPEN_ENDED_QUANTIFIED_ALTERNATION_PREFIX_BYTES.len();
+    literal_matches_at_bytes(
+        BOUNDED_QUANTIFIED_ALTERNATION_CONDITIONAL_NO_BRANCH_BYTES,
+        flags,
+        string,
+        no_branch_start,
+        endpos,
+    )
+    .then_some((
+        None,
+        None,
+        no_branch_start + BOUNDED_QUANTIFIED_ALTERNATION_CONDITIONAL_NO_BRANCH_BYTES.len(),
+    ))
+}
+
+fn find_quantified_alternation_conditional_match_span_bytes(
+    pattern: &QuantifiedAlternationConditionalBytesPattern,
+    flags: i32,
+    mode: MatchMode,
+    string: &[u8],
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    match mode {
+        MatchMode::Search => (pos..=endpos).find_map(|start| {
+            quantified_alternation_conditional_matches_at_bytes(flags, string, start, endpos).map(
+                |(outer_span, inner_span, match_end)| {
+                    (
+                        (start, match_end),
+                        pattern.group_spans(outer_span, inner_span),
+                    )
+                },
+            )
+        }),
+        MatchMode::Match => quantified_alternation_conditional_matches_at_bytes(
+            flags, string, pos, endpos,
+        )
+        .map(|(outer_span, inner_span, match_end)| {
+            (
+                (pos, match_end),
+                pattern.group_spans(outer_span, inner_span),
+            )
+        }),
+        MatchMode::Fullmatch => {
+            quantified_alternation_conditional_matches_at_bytes(flags, string, pos, endpos)
+                .and_then(|(outer_span, inner_span, match_end)| {
+                    (match_end == endpos).then_some((
+                        (pos, match_end),
+                        pattern.group_spans(outer_span, inner_span),
+                    ))
+                })
+        }
     }
 }
 

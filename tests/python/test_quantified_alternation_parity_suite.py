@@ -497,9 +497,6 @@ QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES = (
         fullmatch_misses=(b"ad", b"abbbcd"),
     ),
 )
-CONDITIONAL_BYTES_UNSUPPORTED_REASON = (
-    "rebar bytes quantified-alternation conditional parity is not implemented yet"
-)
 QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES = (
     QuantifiedAlternationBytesCase(
         id="quantified-alternation-conditional-numbered-bytes",
@@ -507,8 +504,6 @@ QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES = (
         search_matches=(b"zzaezz", b"zzabdzz"),
         fullmatch_matches=(b"abbd", b"abcd"),
         fullmatch_misses=(b"abe",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=CONDITIONAL_BYTES_UNSUPPORTED_REASON,
     ),
     QuantifiedAlternationBytesCase(
         id="quantified-alternation-conditional-named-bytes",
@@ -516,8 +511,6 @@ QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES = (
         search_matches=(b"zzaezz", b"zzacdzz"),
         fullmatch_matches=(b"accd", b"abcd"),
         fullmatch_misses=(b"acce",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=CONDITIONAL_BYTES_UNSUPPORTED_REASON,
     ),
 )
 QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES = (
@@ -726,8 +719,6 @@ PATTERN_BOUNDS_MATCH_CASES = (
         helper="match",
         string=b"xxaezz",
         bounds=(2, 4),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=CONDITIONAL_BYTES_UNSUPPORTED_REASON,
     ),
     BoundedPatternCase(
         id="quantified-alternation-nested-branch-named-bytes-search-normalizes-negative-and-oversized-bounds",
@@ -793,8 +784,6 @@ PATTERN_BOUNDS_NO_MATCH_CASES = (
         helper="match",
         string=b"xxabcdzz",
         bounds=(2, 5),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=CONDITIONAL_BYTES_UNSUPPORTED_REASON,
     ),
     BoundedPatternCase(
         id="quantified-alternation-nested-branch-named-bytes-search-fails-when-endpos-truncates-tail",
@@ -1194,8 +1183,8 @@ def test_quantified_alternation_conditional_bytes_cases_stay_explicit_with_one_d
     )
 
     for case in QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert case.unsupported_backend_reason == CONDITIONAL_BYTES_UNSUPPORTED_REASON
+        assert case.unsupported_backends == ()
+        assert case.unsupported_backend_reason is None
         assert len(case.search_matches) == 2
         assert len(case.fullmatch_matches) == 2
         assert case.fullmatch_misses in ((b"abe",), (b"acce",))

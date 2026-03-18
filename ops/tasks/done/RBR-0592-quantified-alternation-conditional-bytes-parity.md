@@ -1,6 +1,6 @@
 # RBR-0592: Convert the quantified-alternation conditional bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -41,5 +41,16 @@ Created: 2026-03-18
   - `ops/tasks/ready/RBR-0590-quantified-alternation-conditional-bytes-pack.md` already pins the exact twelve bytes fixture rows, the direct bytes follow-on surface on `tests/python/test_quantified_alternation_parity_suite.py`, and the post-pack scorecard target for this same numbered and named bytes pair;
   - `tests/python/test_quantified_alternation_parity_suite.py` already carries the matching `str` conditional bundle for `a((b|c){1,2})?(?(1)d|e)` and `a(?P<outer>(b|c){1,2})?(?(outer)d|e)`, while `DIRECT_BYTES_FOLLOW_ON_SPECS` still reserve bytes follow-on anchors for the bounded, broader-range, open-ended, nested-branch, and backtracking-heavy quantified-alternation manifests only, so `RBR-0590` can add the conditional bytes anchor and this follow-on can close it on the existing suite instead of inventing another test path;
   - `benchmarks/workloads/quantified_alternation_boundary.py` already publishes the six adjacent conditional `str` benchmark rows for this exact pair, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass; and
-  - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so the Rust-backed bytes parity work is not already satisfied in the current checkout.
+- direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so the Rust-backed bytes parity work is not already satisfied in the current checkout.
 - A later benchmark follow-on should catch the same bytes pair up on the existing quantified-alternation benchmark surface before another quantified-alternation bytes family broadens the frontier.
+
+## Completion
+- Added bounded bytes compile and match support for `rb"a((b|c){1,2})?(?(1)d|e)"` and `rb"a(?P<outer>(b|c){1,2})?(?(outer)d|e)"` in `crates/rebar-core/src/lib.rs`, reusing the existing bounded quantified-alternation bytes matcher for the yes-arm and preserving CPython outer/inner capture spans plus `lastindex`.
+- Updated `tests/python/test_quantified_alternation_parity_suite.py` so the existing conditional bytes follow-on anchor now runs as real parity coverage instead of reserving `rebar` as unsupported.
+- Republished `reports/correctness/latest.py`; the tracked combined report now reads `1224` total / `1224` passed / `0` unimplemented, and `match.quantified_alternation_conditional` now reads `24` total / `24` passed / `0` unimplemented with `['bytes', 'str']` text-model coverage.
+- Verified with:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py::SourceTreeBenchmarkScorecardTest::test_quantified_alternation_manifest_exposes_bounded_nested_branch_broader_range_open_ended_and_backtracking_heavy_bytes_rows_as_measured tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::SourceTreeCombinedBoundaryBenchmarkSuiteTest::test_quantified_alternation_manifest_promotes_bounded_nested_branch_broader_range_open_ended_and_backtracking_heavy_bytes_rows_to_measured`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/quantified_alternation_conditional_workflows.py --report .rebar/tmp/rbr-0592-quantified-alternation-conditional-bytes-parity.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
