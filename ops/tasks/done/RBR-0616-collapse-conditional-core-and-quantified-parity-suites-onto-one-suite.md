@@ -1,8 +1,9 @@
 # RBR-0616: Collapse the conditional core and quantified parity suites onto one suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Expand `tests/python/test_conditional_group_exists_parity_suite.py` to absorb `tests/python/test_conditional_group_exists_quantified_parity_suite.py` so the conditional parity surface stops splitting the same fixture-bundle contract plus compile/module/pattern parity ladders across two near-parallel suites.
@@ -118,3 +119,7 @@ PY`
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_parity_suite.py tests/python/test_conditional_group_exists_quantified_parity_suite.py` passes (`330 passed in 0.27s`);
   - the inline `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` manifest probe above currently fails exactly on this cleanup with `AssertionError` because `tests/python/test_conditional_group_exists_parity_suite.py` still exposes only the six base manifests; and
   - `bash -lc "! rg --files tests/python | rg 'test_conditional_group_exists_quantified_parity_suite\\.py$'"` currently fails exactly on this cleanup because the redundant quantified-only suite still exists.
+- 2026-03-18 completion:
+  - Expanded `tests/python/test_conditional_group_exists_parity_suite.py` to cover all twelve base and quantified conditional manifests in one ordered `FIXTURE_BUNDLE_SPECS` table, keeping the base bounded-window and optional-group branch-selection sections local while folding in the quantified match-api and supplemental fullmatch/miss tables unchanged.
+  - Deleted `tests/python/test_conditional_group_exists_quantified_parity_suite.py`, with `git diff --name-status -- tests/python/test_conditional_group_exists_quantified_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py` reporting `D` for the legacy quantified-only path.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_parity_suite.py` (`330 passed in 0.28s`), the inline manifest-order probe (`ok`), and `bash -lc "! rg --files tests/python | rg 'test_conditional_group_exists_quantified_parity_suite\\.py$'"` (no matches).

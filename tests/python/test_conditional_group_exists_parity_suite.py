@@ -42,12 +42,85 @@ class OptionalGroupConditionalBranchCase:
     bounds: tuple[int, int]
 
 
+@dataclass(frozen=True)
+class SupplementalModuleFullmatchCase:
+    id: str
+    pattern: str
+    text: str
+
+
+@dataclass(frozen=True)
+class SupplementalPatternFullmatchCase:
+    id: str
+    pattern: str
+    text: str
+
+
+@dataclass(frozen=True)
+class SupplementalMissCase:
+    id: str
+    target: str
+    pattern: str
+    helper: str
+    text: str
+
+
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
         ("compile", None): 2,
         ("module_call", "search"): 2,
         ("pattern_call", "fullmatch"): 2,
     }
+)
+QUANTIFIED_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("compile", None): 2,
+        ("module_call", "search"): 2,
+        ("module_call", "fullmatch"): 2,
+        ("pattern_call", "fullmatch"): 2,
+    }
+)
+QUANTIFIED_ALTERNATION_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("compile", None): 2,
+        ("module_call", "search"): 4,
+        ("pattern_call", "fullmatch"): 4,
+    }
+)
+QUANTIFIED_EMPTY_YES_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("compile", None): 2,
+        ("module_call", "fullmatch"): 4,
+        ("pattern_call", "fullmatch"): 2,
+    }
+)
+QUANTIFIED_FULLY_EMPTY_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("compile", None): 2,
+        ("module_call", "fullmatch"): 4,
+        ("pattern_call", "fullmatch"): 4,
+    }
+)
+
+BASE_MANIFEST_IDS = (
+    "optional-group-conditional-workflows",
+    "conditional-group-exists-workflows",
+    "conditional-group-exists-no-else-workflows",
+    "conditional-group-exists-empty-else-workflows",
+    "conditional-group-exists-empty-yes-else-workflows",
+    "conditional-group-exists-fully-empty-workflows",
+)
+QUANTIFIED_MANIFEST_IDS = (
+    "conditional-group-exists-quantified-workflows",
+    "conditional-group-exists-quantified-alternation-workflows",
+    "conditional-group-exists-no-else-quantified-workflows",
+    "conditional-group-exists-empty-else-quantified-workflows",
+    "conditional-group-exists-empty-yes-else-quantified-workflows",
+    "conditional-group-exists-fully-empty-quantified-workflows",
+)
+QUANTIFIED_ALTERNATION_NUMBERED_PATTERN = r"a(b)?c(?(1)(de|df)|(eg|eh)){2}"
+QUANTIFIED_ALTERNATION_NAMED_PATTERN = (
+    r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}"
 )
 
 FIXTURE_BUNDLE_SPECS = (
@@ -177,6 +250,148 @@ FIXTURE_BUNDLE_SPECS = (
         ),
         expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
     ),
+    FixtureBundleSpec(
+        "conditional_group_exists_quantified_workflows.py",
+        expected_manifest_id="conditional-group-exists-quantified-workflows",
+        expected_case_ids=frozenset(
+            {
+                "conditional-group-exists-quantified-compile-metadata-str",
+                "conditional-group-exists-quantified-module-search-present-str",
+                "conditional-group-exists-quantified-module-fullmatch-absent-str",
+                "conditional-group-exists-quantified-pattern-fullmatch-missing-repeat-str",
+                "named-conditional-group-exists-quantified-compile-metadata-str",
+                "named-conditional-group-exists-quantified-module-search-present-str",
+                "named-conditional-group-exists-quantified-module-fullmatch-absent-str",
+                "named-conditional-group-exists-quantified-pattern-fullmatch-missing-repeat-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)d|e){2}",
+                r"a(?P<word>b)?c(?(word)d|e){2}",
+            }
+        ),
+        expected_operation_helper_counts=QUANTIFIED_OPERATION_HELPER_COUNTS,
+    ),
+    FixtureBundleSpec(
+        "conditional_group_exists_quantified_alternation_workflows.py",
+        expected_manifest_id="conditional-group-exists-quantified-alternation-workflows",
+        expected_case_ids=frozenset(
+            {
+                "conditional-group-exists-quantified-alternation-compile-metadata-str",
+                "conditional-group-exists-quantified-alternation-module-search-present-first-arm-str",
+                "conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
+                "conditional-group-exists-quantified-alternation-module-search-absent-first-arm-str",
+                "conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
+                "named-conditional-group-exists-quantified-alternation-compile-metadata-str",
+                "named-conditional-group-exists-quantified-alternation-module-search-present-first-arm-str",
+                "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
+                "named-conditional-group-exists-quantified-alternation-module-search-absent-first-arm-str",
+                "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+                QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+            }
+        ),
+        expected_operation_helper_counts=QUANTIFIED_ALTERNATION_OPERATION_HELPER_COUNTS,
+    ),
+    FixtureBundleSpec(
+        "conditional_group_exists_no_else_quantified_workflows.py",
+        expected_manifest_id="conditional-group-exists-no-else-quantified-workflows",
+        expected_case_ids=frozenset(
+            {
+                "conditional-group-exists-no-else-quantified-compile-metadata-str",
+                "conditional-group-exists-no-else-quantified-module-search-present-str",
+                "conditional-group-exists-no-else-quantified-module-fullmatch-absent-str",
+                "conditional-group-exists-no-else-quantified-pattern-fullmatch-missing-repeat-str",
+                "named-conditional-group-exists-no-else-quantified-compile-metadata-str",
+                "named-conditional-group-exists-no-else-quantified-module-search-present-str",
+                "named-conditional-group-exists-no-else-quantified-module-fullmatch-absent-str",
+                "named-conditional-group-exists-no-else-quantified-pattern-fullmatch-missing-repeat-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)d){2}",
+                r"a(?P<word>b)?c(?(word)d){2}",
+            }
+        ),
+        expected_operation_helper_counts=QUANTIFIED_OPERATION_HELPER_COUNTS,
+    ),
+    FixtureBundleSpec(
+        "conditional_group_exists_empty_else_quantified_workflows.py",
+        expected_manifest_id="conditional-group-exists-empty-else-quantified-workflows",
+        expected_case_ids=frozenset(
+            {
+                "conditional-group-exists-empty-else-quantified-compile-metadata-str",
+                "conditional-group-exists-empty-else-quantified-module-search-present-str",
+                "conditional-group-exists-empty-else-quantified-module-fullmatch-absent-str",
+                "conditional-group-exists-empty-else-quantified-pattern-fullmatch-missing-repeat-str",
+                "named-conditional-group-exists-empty-else-quantified-compile-metadata-str",
+                "named-conditional-group-exists-empty-else-quantified-module-search-present-str",
+                "named-conditional-group-exists-empty-else-quantified-module-fullmatch-absent-str",
+                "named-conditional-group-exists-empty-else-quantified-pattern-fullmatch-missing-repeat-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)d|){2}",
+                r"a(?P<word>b)?c(?(word)d|){2}",
+            }
+        ),
+        expected_operation_helper_counts=QUANTIFIED_OPERATION_HELPER_COUNTS,
+    ),
+    FixtureBundleSpec(
+        "conditional_group_exists_empty_yes_else_quantified_workflows.py",
+        expected_manifest_id="conditional-group-exists-empty-yes-else-quantified-workflows",
+        expected_case_ids=frozenset(
+            {
+                "conditional-group-exists-empty-yes-else-quantified-compile-metadata-str",
+                "conditional-group-exists-empty-yes-else-quantified-module-fullmatch-present-str",
+                "conditional-group-exists-empty-yes-else-quantified-module-fullmatch-absent-str",
+                "conditional-group-exists-empty-yes-else-quantified-pattern-fullmatch-mixed-str",
+                "named-conditional-group-exists-empty-yes-else-quantified-compile-metadata-str",
+                "named-conditional-group-exists-empty-yes-else-quantified-module-fullmatch-present-str",
+                "named-conditional-group-exists-empty-yes-else-quantified-module-fullmatch-absent-str",
+                "named-conditional-group-exists-empty-yes-else-quantified-pattern-fullmatch-mixed-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"(?:a(b)?c(?(1)|e)){2}",
+                r"(?:a(?P<word>b)?c(?(word)|e)){2}",
+            }
+        ),
+        expected_operation_helper_counts=QUANTIFIED_EMPTY_YES_OPERATION_HELPER_COUNTS,
+    ),
+    FixtureBundleSpec(
+        "conditional_group_exists_fully_empty_quantified_workflows.py",
+        expected_manifest_id="conditional-group-exists-fully-empty-quantified-workflows",
+        expected_case_ids=frozenset(
+            {
+                "conditional-group-exists-fully-empty-quantified-compile-metadata-str",
+                "conditional-group-exists-fully-empty-quantified-module-fullmatch-present-str",
+                "conditional-group-exists-fully-empty-quantified-module-fullmatch-absent-str",
+                "conditional-group-exists-fully-empty-quantified-pattern-fullmatch-mixed-str",
+                "conditional-group-exists-fully-empty-quantified-pattern-fullmatch-extra-suffix-failure-str",
+                "named-conditional-group-exists-fully-empty-quantified-compile-metadata-str",
+                "named-conditional-group-exists-fully-empty-quantified-module-fullmatch-present-str",
+                "named-conditional-group-exists-fully-empty-quantified-module-fullmatch-absent-str",
+                "named-conditional-group-exists-fully-empty-quantified-pattern-fullmatch-mixed-str",
+                "named-conditional-group-exists-fully-empty-quantified-pattern-fullmatch-extra-suffix-failure-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"(?:a(b)?c(?(1)|)){2}",
+                r"(?:a(?P<word>b)?c(?(word)|)){2}",
+            }
+        ),
+        expected_operation_helper_counts=QUANTIFIED_FULLY_EMPTY_OPERATION_HELPER_COUNTS,
+    ),
 )
 FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
 PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
@@ -184,6 +399,20 @@ COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
 MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
 PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
+BASE_MANIFEST_ID_SET = frozenset(BASE_MANIFEST_IDS)
+QUANTIFIED_MANIFEST_ID_SET = frozenset(QUANTIFIED_MANIFEST_IDS)
+BASE_MODULE_CASES = tuple(
+    case for case in MODULE_CASES if case.manifest_id in BASE_MANIFEST_ID_SET
+)
+QUANTIFIED_MODULE_CASES = tuple(
+    case for case in MODULE_CASES if case.manifest_id in QUANTIFIED_MANIFEST_ID_SET
+)
+BASE_PATTERN_CASES = tuple(
+    case for case in PATTERN_CASES if case.manifest_id in BASE_MANIFEST_ID_SET
+)
+QUANTIFIED_PATTERN_CASES = tuple(
+    case for case in PATTERN_CASES if case.manifest_id in QUANTIFIED_MANIFEST_ID_SET
+)
 
 PATTERN_BOUNDS_MATCH_CASES = (
     BoundedPatternCase(
@@ -336,6 +565,179 @@ def _build_optional_group_conditional_branch_cases() -> (
 
 OPTIONAL_GROUP_CONDITIONAL_BRANCH_CASES = _build_optional_group_conditional_branch_cases()
 
+MATCH_API_CASE_IDS = (
+    "conditional-group-exists-quantified-module-search-present-str",
+    "conditional-group-exists-quantified-module-fullmatch-absent-str",
+    "named-conditional-group-exists-quantified-module-search-present-str",
+    "named-conditional-group-exists-quantified-module-fullmatch-absent-str",
+    "conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
+    "conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
+    "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-present-second-arm-str",
+    "named-conditional-group-exists-quantified-alternation-pattern-fullmatch-absent-second-arm-str",
+)
+MATCH_API_CASES = tuple(CASES_BY_ID[case_id] for case_id in MATCH_API_CASE_IDS)
+
+# Preserve the extra module.fullmatch mixed-iteration checks that only lived in
+# the superseded singleton files and were never promoted into scorecard fixtures.
+SUPPLEMENTAL_MODULE_FULLMATCH_CASES = (
+    SupplementalModuleFullmatchCase(
+        id="conditional-group-exists-empty-yes-else-quantified-numbered-module-fullmatch-mixed-present-then-absent-failure",
+        pattern=r"(?:a(b)?c(?(1)|e)){2}",
+        text="abcace",
+    ),
+    SupplementalModuleFullmatchCase(
+        id="conditional-group-exists-empty-yes-else-quantified-named-module-fullmatch-mixed-present-then-absent-failure",
+        pattern=r"(?:a(?P<word>b)?c(?(word)|e)){2}",
+        text="abcace",
+    ),
+    SupplementalModuleFullmatchCase(
+        id="conditional-group-exists-fully-empty-quantified-numbered-module-fullmatch-mixed-present-then-absent",
+        pattern=r"(?:a(b)?c(?(1)|)){2}",
+        text="abcac",
+    ),
+    SupplementalModuleFullmatchCase(
+        id="conditional-group-exists-fully-empty-quantified-named-module-fullmatch-mixed-present-then-absent",
+        pattern=r"(?:a(?P<word>b)?c(?(word)|)){2}",
+        text="abcac",
+    ),
+)
+SUPPLEMENTAL_PATTERN_FULLMATCH_CASES = (
+    SupplementalPatternFullmatchCase(
+        id="conditional-group-exists-quantified-alternation-numbered-pattern-fullmatch-mixed-arms",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        text="abcdedf",
+    ),
+    SupplementalPatternFullmatchCase(
+        id="conditional-group-exists-quantified-alternation-numbered-pattern-fullmatch-mixed-else-arms",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        text="acegeh",
+    ),
+    SupplementalPatternFullmatchCase(
+        id="conditional-group-exists-quantified-alternation-named-pattern-fullmatch-mixed-arms",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        text="abcdedf",
+    ),
+    SupplementalPatternFullmatchCase(
+        id="conditional-group-exists-quantified-alternation-named-pattern-fullmatch-mixed-else-arms",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        text="acegeh",
+    ),
+)
+SUPPLEMENTAL_MISS_CASES = (
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-module-numbered-search-miss-partial-present-second-arm",
+        target="module",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        helper="search",
+        text="zzabcdehzz",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-module-numbered-search-miss-partial-absent-second-arm",
+        target="module",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        helper="search",
+        text="zzacegedzz",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-module-numbered-search-miss-too-short",
+        target="module",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        helper="search",
+        text="zzadzz",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-module-numbered-search-miss-wrong-arm",
+        target="module",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        helper="search",
+        text="zzabcegzz",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-pattern-numbered-fullmatch-miss-partial-present-second-arm",
+        target="pattern",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        helper="fullmatch",
+        text="abcdeh",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-pattern-numbered-fullmatch-miss-partial-absent-second-arm",
+        target="pattern",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        helper="fullmatch",
+        text="aceged",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-pattern-numbered-fullmatch-miss-too-short",
+        target="pattern",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        helper="fullmatch",
+        text="ad",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-pattern-numbered-fullmatch-miss-wrong-arm",
+        target="pattern",
+        pattern=QUANTIFIED_ALTERNATION_NUMBERED_PATTERN,
+        helper="fullmatch",
+        text="abceg",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-module-named-search-miss-partial-present-second-arm",
+        target="module",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        helper="search",
+        text="zzabcdehzz",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-module-named-search-miss-partial-absent-second-arm",
+        target="module",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        helper="search",
+        text="zzacegedzz",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-module-named-search-miss-too-short",
+        target="module",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        helper="search",
+        text="zzadzz",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-module-named-search-miss-wrong-arm",
+        target="module",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        helper="search",
+        text="zzabcegzz",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-pattern-named-fullmatch-miss-partial-present-second-arm",
+        target="pattern",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        helper="fullmatch",
+        text="abcdeh",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-pattern-named-fullmatch-miss-partial-absent-second-arm",
+        target="pattern",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        helper="fullmatch",
+        text="aceged",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-pattern-named-fullmatch-miss-too-short",
+        target="pattern",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        helper="fullmatch",
+        text="ad",
+    ),
+    SupplementalMissCase(
+        id="conditional-group-exists-quantified-alternation-pattern-named-fullmatch-miss-wrong-arm",
+        target="pattern",
+        pattern=QUANTIFIED_ALTERNATION_NAMED_PATTERN,
+        helper="fullmatch",
+        text="abceg",
+    ),
+)
+
 
 def _bounded_pattern(case: BoundedPatternCase) -> str:
     return str_case_pattern(CASES_BY_ID[case.pattern_case_id])
@@ -343,6 +745,29 @@ def _bounded_pattern(case: BoundedPatternCase) -> str:
 
 def _invoke_bound_helper(pattern: object, case: BoundedPatternCase) -> object:
     return getattr(pattern, case.helper)(case.string, *case.bounds)
+
+
+def _workflow_result_for_case(
+    backend_name: str,
+    backend: object,
+    case: FixtureCase,
+) -> tuple[object, re.Match[str] | None]:
+    assert case.helper is not None
+
+    if case.operation == "module_call":
+        observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
+        expected = getattr(re, case.helper)(*case.args, **case.kwargs)
+    else:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            str_case_pattern(case),
+            case.flags or 0,
+        )
+        observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
+        expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
+
+    return observed, expected
 
 
 @pytest.mark.parametrize(
@@ -389,6 +814,11 @@ def test_pattern_bounds_cases_stay_anchored_to_published_conditional_patterns() 
     ) == r"a(?P<word>b)?c(?(word)|)"
 
 
+def test_match_api_cases_remain_published_quantified_conditional_matches() -> None:
+    assert tuple(case.case_id for case in MATCH_API_CASES) == MATCH_API_CASE_IDS
+    assert {case.text_model for case in MATCH_API_CASES} == {"str"}
+
+
 @pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
 def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
@@ -403,7 +833,7 @@ def test_compile_metadata_matches_cpython(
     )
 
 
-@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", BASE_MODULE_CASES, ids=lambda case: case.case_id)
 def test_module_search_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -417,6 +847,25 @@ def test_module_search_matches_cpython(
     assert observed is not None
     assert expected is not None
     assert_match_parity(backend_name, observed, expected)
+
+
+@pytest.mark.parametrize("case", QUANTIFIED_MODULE_CASES, ids=lambda case: case.case_id)
+def test_quantified_module_workflows_match_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+
+    observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
+    expected = getattr(re, case.helper)(*case.args, **case.kwargs)
+
+    assert_match_result_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=True,
+    )
 
 
 @pytest.mark.parametrize("case", PATTERN_BOUNDS_MATCH_CASES, ids=lambda case: case.id)
@@ -463,7 +912,7 @@ def test_pattern_helper_bounds_no_match_paths_match_cpython(
     assert_match_result_parity(backend_name, observed, expected)
 
 
-@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
+@pytest.mark.parametrize("case", BASE_PATTERN_CASES, ids=lambda case: case.case_id)
 def test_pattern_fullmatch_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
@@ -483,6 +932,31 @@ def test_pattern_fullmatch_matches_cpython(
     assert observed is not None
     assert expected is not None
     assert_match_parity(backend_name, observed, expected)
+
+
+@pytest.mark.parametrize("case", QUANTIFIED_PATTERN_CASES, ids=lambda case: case.case_id)
+def test_quantified_pattern_fullmatch_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper == "fullmatch"
+
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        str_case_pattern(case),
+        case.flags or 0,
+    )
+    observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
+    expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
+
+    assert_match_result_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=True,
+    )
 
 
 @pytest.mark.parametrize(
@@ -516,3 +990,102 @@ def test_optional_group_conditional_branch_selection_matches_cpython(
     assert_match_convenience_api_parity(observed, expected)
     assert_valid_match_group_access_parity(observed, expected)
     assert_invalid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize("case", MATCH_API_CASES, ids=lambda case: case.case_id)
+def test_match_convenience_and_group_access_apis_match_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = _workflow_result_for_case(backend_name, backend, case)
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=True,
+    )
+    assert_match_convenience_api_parity(observed, expected)
+    assert_valid_match_group_access_parity(observed, expected)
+    assert_invalid_match_group_access_parity(observed, expected)
+
+
+@pytest.mark.parametrize(
+    "case",
+    SUPPLEMENTAL_MODULE_FULLMATCH_CASES,
+    ids=lambda case: case.id,
+)
+def test_supplemental_module_fullmatch_workflows_match_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalModuleFullmatchCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    observed = backend.fullmatch(case.pattern, case.text)
+    expected = re.fullmatch(case.pattern, case.text)
+
+    assert_match_result_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=True,
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
+    SUPPLEMENTAL_PATTERN_FULLMATCH_CASES,
+    ids=lambda case: case.id,
+)
+def test_supplemental_pattern_fullmatch_workflows_match_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalPatternFullmatchCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case.pattern,
+    )
+
+    observed = observed_pattern.fullmatch(case.text)
+    expected = expected_pattern.fullmatch(case.text)
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=True,
+    )
+
+
+@pytest.mark.parametrize("case", SUPPLEMENTAL_MISS_CASES, ids=lambda case: case.id)
+def test_supplemental_negative_paths_match_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalMissCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    if case.target == "module":
+        observed = getattr(backend, case.helper)(case.pattern, case.text)
+        expected = getattr(re, case.helper)(case.pattern, case.text)
+    else:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            case.pattern,
+        )
+        observed = getattr(observed_pattern, case.helper)(case.text)
+        expected = getattr(expected_pattern, case.helper)(case.text)
+
+    assert_match_result_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=True,
+    )
