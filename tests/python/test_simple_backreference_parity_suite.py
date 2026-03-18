@@ -67,13 +67,6 @@ FIXTURE_BUNDLE_SPECS = (
         "named_backreference_workflows.py",
         expected_manifest_id="named-backreference-workflows",
         selected_case_ids=TARGET_FIXTURE_CASE_IDS[:3],
-        expected_case_ids=frozenset(
-            {
-                "named-backreference-compile-metadata-str",
-                "named-backreference-module-search-str",
-                "named-backreference-pattern-search-str",
-            }
-        ),
         expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
         expected_operation_helper_counts=Counter(
             {
@@ -87,15 +80,6 @@ FIXTURE_BUNDLE_SPECS = (
         "numbered_backreference_workflows.py",
         expected_manifest_id="numbered-backreference-workflows",
         selected_case_ids=TARGET_FIXTURE_CASE_IDS[3:],
-        expected_case_ids=frozenset(
-            {
-                "numbered-backreference-compile-metadata-str",
-                "numbered-backreference-module-search-str",
-                "numbered-backreference-pattern-search-str",
-                "numbered-backreference-segment-module-search-str",
-                "numbered-backreference-prefix-pattern-search-str",
-            }
-        ),
         expected_patterns=frozenset({r"(ab)\1", r"(ab)x\1", r"x(ab)\1"}),
         expected_operation_helper_counts=Counter(
             {

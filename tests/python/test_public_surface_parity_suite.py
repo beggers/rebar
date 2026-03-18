@@ -63,7 +63,6 @@ FIXTURE_BUNDLE_SPECS = (
         fixture_name="public_api_surface.py",
         expected_manifest_id="public-api-surface",
         selected_case_ids=PUBLIC_API_CASE_IDS,
-        expected_case_ids=frozenset(PUBLIC_API_CASE_IDS),
         expected_patterns=frozenset(PUBLIC_API_CASE_IDS),
         expected_operation_helper_counts=Counter(
             {
@@ -81,7 +80,6 @@ FIXTURE_BUNDLE_SPECS = (
         fixture_name="exported_symbol_surface.py",
         expected_manifest_id="exported-symbol-surface",
         selected_case_ids=EXPORTED_SYMBOL_CASE_IDS,
-        expected_case_ids=frozenset(EXPORTED_SYMBOL_CASE_IDS),
         expected_patterns=frozenset(EXPORTED_SYMBOL_CASE_IDS),
         expected_operation_helper_counts=Counter(
             {
@@ -102,7 +100,6 @@ FIXTURE_BUNDLE_SPECS = (
         fixture_name="pattern_object_surface.py",
         expected_manifest_id="pattern-object-surface",
         selected_case_ids=PATTERN_OBJECT_CASE_IDS,
-        expected_case_ids=frozenset(PATTERN_OBJECT_CASE_IDS),
         expected_patterns=frozenset(PATTERN_OBJECT_CASE_IDS),
         expected_operation_helper_counts=Counter(
             {

@@ -118,7 +118,6 @@ SELECTED_CASE_BUNDLE_SPECS = (
         "named_group_replacement_workflows.py",
         expected_manifest_id="named-group-replacement-workflows",
         selected_case_ids=NAMED_GROUP_REPLACEMENT_CASE_IDS,
-        expected_case_ids=frozenset(NAMED_GROUP_REPLACEMENT_CASE_IDS),
         expected_patterns=frozenset({r"(?P<word>abc)"}),
         expected_operation_helper_counts=Counter(
             {
