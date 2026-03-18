@@ -20,7 +20,6 @@ class OpsHarnessTest(unittest.TestCase):
         agents = {agent.name: agent for agent in rebar_ops.load_agent_specs(config)}
 
         for name, interval_seconds in (
-            ("architecture", 3600),
             ("cleanup", 7200),
             ("reporting", 3600),
             ("implementation-faithfulness", 10800),
@@ -29,7 +28,7 @@ class OpsHarnessTest(unittest.TestCase):
             self.assertEqual(agents[name].dispatch["mode"], "interval")
             self.assertEqual(agents[name].dispatch["interval_seconds"], interval_seconds)
 
-        for name in ("supervisor", "feature-planning", "qa-testing"):
+        for name in ("supervisor", "architecture", "feature-planning", "qa-testing"):
             self.assertIn(name, agents)
             self.assertEqual(agents[name].dispatch["mode"], "every_cycle")
             self.assertNotIn("interval_seconds", agents[name].dispatch)
@@ -48,12 +47,12 @@ class OpsHarnessTest(unittest.TestCase):
             ["architecture-implementation"],
         )
 
-    def test_only_maintenance_agents_opt_into_dirty_worktree_dispatch(self) -> None:
+    def test_dirty_worktree_dispatch_is_limited_to_qa_and_cleanup(self) -> None:
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
         agents = {agent.name: agent for agent in rebar_ops.load_agent_specs(config)}
 
-        for name in ("qa-testing", "cleanup", "reporting"):
+        for name in ("qa-testing", "cleanup"):
             with self.subTest(agent=name):
                 self.assertTrue(agents[name].dispatch.get("allow_dirty_worktree"))
                 self.assertTrue(rebar_ops.agent_may_dispatch_on_dirty_worktree(agents[name]))
@@ -64,6 +63,7 @@ class OpsHarnessTest(unittest.TestCase):
             "feature-planning",
             "feature-implementation",
             "implementation-faithfulness",
+            "reporting",
         ):
             with self.subTest(agent=name):
                 self.assertFalse(agents[name].dispatch.get("allow_dirty_worktree", False))
