@@ -1,8 +1,9 @@
 # RBR-0624: Collapse the correctness builder contract modules onto one suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Replace `tests/conformance/test_correctness_observation_contract.py` and `tests/conformance/test_correctness_summary_builder_contract.py` with one pure-Python pytest suite so the correctness-harness builder layer stops spreading closely related normalization, observation-summary, fixture-summary, and scorecard-aggregation coverage across two small modules.
@@ -57,3 +58,8 @@ Created: 2026-03-18
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_correctness_observation_contract.py tests/conformance/test_correctness_summary_builder_contract.py` passes (`9 passed in 0.04s`);
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_correctness_builder_contracts.py` currently fails exactly on this cleanup with `ERROR: file or directory not found: tests/conformance/test_correctness_builder_contracts.py`; and
   - `bash -lc "! rg --files tests/conformance | rg 'test_correctness_(observation_contract|summary_builder_contract)\\.py$'"` currently fails exactly on this cleanup because both superseded files still exist.
+
+## Completion Notes
+- Added `tests/conformance/test_correctness_builder_contracts.py`, folding the existing builder-layer normalization, observation-summary, fixture-summary, and scorecard-aggregation assertions into one local pytest module with the same synthetic manifest and case-result helpers.
+- Deleted `tests/conformance/test_correctness_observation_contract.py` and `tests/conformance/test_correctness_summary_builder_contract.py`; `git diff --name-status -- tests/conformance/test_correctness_builder_contracts.py tests/conformance/test_correctness_observation_contract.py tests/conformance/test_correctness_summary_builder_contract.py` reports `D` for both deleted modules, and `git status --short --untracked-files=all -- ...` shows the new consolidated suite path alongside those deletions.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_correctness_builder_contracts.py` (`9 passed in 0.06s`) and `bash -lc "! rg --files tests/conformance | rg 'test_correctness_(observation_contract|summary_builder_contract)\\.py$'"` (no matches).
