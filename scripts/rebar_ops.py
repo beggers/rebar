@@ -1540,10 +1540,19 @@ def run_artifacts_newer_than_loop_state(loop_state: dict[str, Any], runs_root: P
         run_dirs = [path for path in runs_root.iterdir() if path.is_dir()]
     except OSError:
         return False
-    return any(
-        (run_started := parse_run_id_timestamp(path.name)) is not None and run_started > updated_at
-        for path in run_dirs
-    )
+    for path in run_dirs:
+        run_started = parse_run_id_timestamp(path.name)
+        if run_started is not None and run_started > updated_at:
+            return True
+        try:
+            # Directory mtime catches runs that started in the same second as the
+            # persisted loop state but finished later and left new artifacts behind.
+            run_modified = datetime.fromtimestamp(path.stat().st_mtime, UTC)
+        except OSError:
+            continue
+        if run_modified > updated_at:
+            return True
+    return False
 
 
 def agent_in_environment_backoff(agent: AgentSpec, loop_state: dict[str, Any]) -> bool:
