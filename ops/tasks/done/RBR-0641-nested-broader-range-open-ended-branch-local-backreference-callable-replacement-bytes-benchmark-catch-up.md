@@ -1,6 +1,6 @@
 # RBR-0641: Catch the nested broader-range open-ended branch-local-backreference callable-replacement bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -49,3 +49,4 @@ Created: 2026-03-18
   - `tests/benchmarks/benchmark_expectations.py` currently treats `broader-range-open-ended-branch-local-backreference` on `nested-group-callable-replacement-boundary` as the four `str` rows only, and the benchmark scorecard tests currently promote bytes rows only for the adjacent conditional slice;
   - `reports/benchmarks/latest.py` currently publishes `nested-group-callable-replacement-boundary` at `48` total workloads / `48` measured workloads / `0` known gaps and the combined source-tree report at `727` / `727` / `0`; and
   - a direct `PYTHONPATH=python ./.venv/bin/python` public-API probe from this planning run still raises `NotImplementedError` for `rebar.sub(rb"a((b|c){2,})\\2d", ...)`, so `RBR-0639` remains the immediate parity head rather than a stale no-op.
+- 2026-03-18 feature-implementation: added the four broader-range open-ended `{2,}` non-conditional bytes callable rows on the existing `nested-group-callable-replacement-boundary` manifest, widened the shared slice-backed benchmark expectations to carry those ids, and added focused scorecard assertions that keep this manifest on the existing slice-derived zero-gap path instead of a bytes-only special case. Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_python_benchmark_manifest_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_callable_replacement_boundary.py --report .rebar/tmp/rbr-0641-nested-broader-range-open-ended-branch-local-backreference-callable-replacement-bytes-benchmarks.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`; the tracked publication now reads `731` total / `731` measured / `0` known gaps overall, and `nested-group-callable-replacement-boundary` now reads `52` total / `52` measured / `0` known gaps with all four new bytes rows published as `implementation_timing.status == "measured"`.
