@@ -329,7 +329,7 @@ The published frontier is still narrow: the current correctness slice covers 130
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0643`: add the eight bytes replacement-template rows for the broader `{2,}` nested grouped-alternation plus branch-local-backreference slice, moving `reports/correctness/latest.py` from `1302` total cases to `1310` across the same `110` manifests while keeping the new bytes rows honest as `pass` or `unimplemented`.
+- `RBR-0645`: convert the eight bytes replacement-template rows that `RBR-0643` publishes for the broader `{2,}` nested grouped-alternation plus branch-local-backreference slice, moving `reports/correctness/latest.py` from `1310` total / `1302` passed / `8` `unimplemented` to `1310` / `1310` / `0` once that mixed-text manifest is live.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
