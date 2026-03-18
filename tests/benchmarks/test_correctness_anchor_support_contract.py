@@ -10,9 +10,11 @@ from tests.benchmarks import correctness_anchor_support as support
 
 @pytest.fixture(autouse=True)
 def _clear_anchor_support_caches() -> None:
+    support._manifest_workloads.cache_clear()
     support.published_case_ids_by_signature.cache_clear()
     support.published_cases_by_id.cache_clear()
     yield
+    support._manifest_workloads.cache_clear()
     support.published_case_ids_by_signature.cache_clear()
     support.published_cases_by_id.cache_clear()
 
@@ -135,6 +137,57 @@ def test_expected_anchored_workload_case_pairs_return_matching_objects(
     assert anchored_pair.case_id == "case-1"
     assert anchored_pair.workload is workload
     assert anchored_pair.case is case
+
+
+def test_manifest_workload_cache_reuses_one_load_for_repeated_anchor_queries(
+    monkeypatch,
+) -> None:
+    manifest_path = pathlib.Path("synthetic_boundary.py")
+    workloads = (
+        _workload("anchored", ("shared",)),
+        _workload("unanchored", ("missing",)),
+    )
+    case = SimpleNamespace(case_id="case-1")
+    load_calls: list[pathlib.Path] = []
+
+    def _load_manifest(path: pathlib.Path) -> SimpleNamespace:
+        load_calls.append(path)
+        return _manifest(workloads=workloads)
+
+    monkeypatch.setattr(support, "load_manifest", _load_manifest)
+    monkeypatch.setattr(support, "published_cases_by_id", lambda: {"case-1": case})
+
+    anchor_case_ids = {("shared",): ("case-1",)}
+    workload_signature = lambda workload: workload.signature
+
+    assert support.anchored_workload_case_ids(
+        manifest_path,
+        anchor_case_ids=anchor_case_ids,
+        workload_signature=workload_signature,
+    ) == {
+        ("synthetic_boundary.py", "anchored"): ("case-1",),
+        ("synthetic_boundary.py", "unanchored"): (),
+    }
+    assert support.unanchored_workload_ids(
+        manifest_path,
+        anchor_case_ids=anchor_case_ids,
+        workload_signature=workload_signature,
+    ) == ("unanchored",)
+    assert support.expected_anchored_workload_case_pairs(
+        manifest_path,
+        expected_anchor_case_ids={
+            ("synthetic_boundary.py", "anchored"): ("case-1",),
+        },
+    ) == (
+        support.AnchoredWorkloadCasePair(
+            manifest_name="synthetic_boundary.py",
+            workload_id="anchored",
+            case_id="case-1",
+            workload=workloads[0],
+            case=case,
+        ),
+    )
+    assert load_calls == [manifest_path]
 
 
 def test_expected_anchored_workload_case_pairs_rejects_manifest_name_drift(

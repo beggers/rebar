@@ -69,6 +69,11 @@ def published_cases_by_id() -> dict[str, Any]:
     return cases_by_id
 
 
+@cache
+def _manifest_workloads(manifest_path: pathlib.Path) -> tuple[Any, ...]:
+    return tuple(load_manifest(manifest_path).workloads)
+
+
 def anchored_workload_case_ids(
     manifest_path: pathlib.Path,
     *,
@@ -76,7 +81,7 @@ def anchored_workload_case_ids(
     workload_signature: Callable[[Any], tuple[Any, ...]],
     include_workload: Callable[[Any], bool] | None = None,
 ) -> dict[tuple[str, str], tuple[str, ...]]:
-    workloads = load_manifest(manifest_path).workloads
+    workloads = _manifest_workloads(manifest_path)
 
     return {
         (manifest_path.name, workload.workload_id): anchor_case_ids.get(
@@ -95,7 +100,7 @@ def unanchored_workload_ids(
     workload_signature: Callable[[Any], tuple[Any, ...]],
     include_workload: Callable[[Any], bool] | None = None,
 ) -> tuple[str, ...]:
-    workloads = load_manifest(manifest_path).workloads
+    workloads = _manifest_workloads(manifest_path)
 
     return tuple(
         workload.workload_id
@@ -114,7 +119,7 @@ def expected_anchored_workload_case_pairs(
     manifest_name = manifest_path.name
     workloads_by_id = {
         workload.workload_id: workload
-        for workload in load_manifest(manifest_path).workloads
+        for workload in _manifest_workloads(manifest_path)
         if include_workload is None or include_workload(workload)
     }
     published_cases = published_cases_by_id()
