@@ -10,6 +10,7 @@ import pytest
 import rebar
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
+    assert_direct_test_case_id_buckets_cover_selected_frontier,
     FixtureBundleSpec,
     assert_fixture_bundle_contract,
     assert_finditer_parity,
@@ -201,6 +202,26 @@ PUBLISHED_PATTERN_CASES = tuple(
     for case in COLLECTION_FIXTURE_BUNDLE.cases
     if case.operation == "pattern_call"
 )
+LITERAL_COLLECTION_DIRECT_TEST_CASE_ID_BUCKETS = {
+    "module-split": frozenset(
+        case.id for case in PUBLISHED_MODULE_CASES if case.helper == "split"
+    ),
+    "pattern-split": frozenset(
+        case.id for case in PUBLISHED_PATTERN_CASES if case.helper == "split"
+    ),
+    "module-findall": frozenset(
+        case.id for case in PUBLISHED_MODULE_CASES if case.helper == "findall"
+    ),
+    "pattern-findall": frozenset(
+        case.id for case in PUBLISHED_PATTERN_CASES if case.helper == "findall"
+    ),
+    "module-finditer": frozenset(
+        case.id for case in PUBLISHED_MODULE_CASES if case.helper == "finditer"
+    ),
+    "pattern-finditer": frozenset(
+        case.id for case in PUBLISHED_PATTERN_CASES if case.helper == "finditer"
+    ),
+}
 
 MODULE_SPLIT_CASES = tuple(
     case for case in PUBLISHED_MODULE_CASES if case.helper == "split"
@@ -337,6 +358,14 @@ def test_literal_collection_suite_stays_aligned_with_published_fixture_rows() ->
     bundle = COLLECTION_FIXTURE_BUNDLE
 
     assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
+
+
+def test_literal_collection_direct_test_buckets_cover_selected_frontier() -> None:
+    assert_direct_test_case_id_buckets_cover_selected_frontier(
+        LITERAL_COLLECTION_DIRECT_TEST_CASE_ID_BUCKETS,
+        selected_case_ids=TARGET_FIXTURE_CASE_IDS,
+        coverage_label="literal collection direct-test case-id buckets",
+    )
 
 
 @pytest.mark.parametrize("case", MODULE_SPLIT_CASES, ids=lambda case: case.id)
