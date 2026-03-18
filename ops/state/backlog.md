@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0578` should publish the bounded quantified-alternation nested-branch bytes pair for `rb"a((b|c)|de){1,2}d"` and `rb"a(?P<word>(b|c)|de){1,2}d"` on the existing correctness/parity path, mirroring the ten adjacent `str` cases so the quantified-alternation frontier reopens on tracked correctness before Rust-backed bytes parity and later Python-path benchmark catch-up land.
+`RBR-0580` should convert the bounded quantified-alternation nested-branch bytes pair for `rb"a((b|c)|de){1,2}d"` and `rb"a(?P<word>(b|c)|de){1,2}d"` behind `rebar._rebar` on the existing quantified-alternation parity surface, turning the mixed `str`/`bytes` nested-branch slice from honest `unimplemented` outcomes into real Rust-backed behavior before Python-path benchmark catch-up lands.
 
 ## Ordered Work
-1. `RBR-0578` should publish the bounded quantified-alternation nested-branch bytes pair for `rb"a((b|c)|de){1,2}d"` and `rb"a(?P<word>(b|c)|de){1,2}d"` through `tests/conformance/fixtures/quantified_alternation_nested_branch_workflows.py` and `tests/python/test_quantified_alternation_parity_suite.py`, mirroring the existing ten `str` rows through the quantified-alternation nested-branch manifest, correctness expectations, and published scorecard.
+1. `RBR-0580` should convert the bounded quantified-alternation nested-branch bytes pair for `rb"a((b|c)|de){1,2}d"` and `rb"a(?P<word>(b|c)|de){1,2}d"` through `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_quantified_alternation_parity_suite.py`, and `reports/correctness/latest.py`, reusing the published bytes follow-on anchor and exact ten nested-branch bytes cases instead of opening another correctness or parity surface.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
