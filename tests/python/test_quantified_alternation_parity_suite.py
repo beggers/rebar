@@ -1340,7 +1340,12 @@ def test_quantified_alternation_bounded_bytes_module_search_matches_cpython(
 
         assert observed is not None
         assert expected is not None
-        assert_match_parity(backend_name, observed, expected)
+        assert_match_result_parity(
+            backend_name,
+            observed,
+            expected,
+            check_regs=True,
+        )
 
 
 @pytest.mark.parametrize(
@@ -1406,7 +1411,12 @@ def test_quantified_alternation_bounded_bytes_pattern_fullmatch_matches_cpython(
 
         assert observed is not None
         assert expected is not None
-        assert_match_parity(backend_name, observed, expected)
+        assert_match_result_parity(
+            backend_name,
+            observed,
+            expected,
+            check_regs=True,
+        )
 
 
 @pytest.mark.parametrize(
@@ -1490,7 +1500,12 @@ def test_quantified_alternation_broader_range_bytes_module_search_matches_cpytho
 
         assert observed is not None
         assert expected is not None
-        assert_match_parity(backend_name, observed, expected)
+        assert_match_result_parity(
+            backend_name,
+            observed,
+            expected,
+            check_regs=True,
+        )
 
 
 @pytest.mark.parametrize(
@@ -1556,11 +1571,20 @@ def test_quantified_alternation_broader_range_bytes_pattern_fullmatch_matches_cp
 
         assert observed is not None
         assert expected is not None
-        assert_match_parity(backend_name, observed, expected)
+        assert_match_result_parity(
+            backend_name,
+            observed,
+            expected,
+            check_regs=True,
+        )
 
     for text in case.fullmatch_misses:
-        assert observed_pattern.fullmatch(text) is None
-        assert expected_pattern.fullmatch(text) is None
+        assert_match_result_parity(
+            backend_name,
+            observed_pattern.fullmatch(text),
+            expected_pattern.fullmatch(text),
+            check_regs=True,
+        )
 
 
 @pytest.mark.parametrize(
@@ -1644,7 +1668,12 @@ def test_quantified_alternation_open_ended_bytes_module_search_matches_cpython(
 
         assert observed is not None
         assert expected is not None
-        assert_match_parity(backend_name, observed, expected)
+        assert_match_result_parity(
+            backend_name,
+            observed,
+            expected,
+            check_regs=True,
+        )
 
 
 @pytest.mark.parametrize(
@@ -1710,11 +1739,20 @@ def test_quantified_alternation_open_ended_bytes_pattern_fullmatch_matches_cpyth
 
         assert observed is not None
         assert expected is not None
-        assert_match_parity(backend_name, observed, expected)
+        assert_match_result_parity(
+            backend_name,
+            observed,
+            expected,
+            check_regs=True,
+        )
 
     for text in case.fullmatch_misses:
-        assert observed_pattern.fullmatch(text) is None
-        assert expected_pattern.fullmatch(text) is None
+        assert_match_result_parity(
+            backend_name,
+            observed_pattern.fullmatch(text),
+            expected_pattern.fullmatch(text),
+            check_regs=True,
+        )
 
 
 @pytest.mark.parametrize(
