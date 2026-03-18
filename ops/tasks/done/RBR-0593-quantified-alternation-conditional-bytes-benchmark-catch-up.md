@@ -1,6 +1,6 @@
 # RBR-0593: Catch the quantified-alternation conditional bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -49,3 +49,8 @@ Created: 2026-03-18
   - `reports/benchmarks/latest.py` currently publishes `quantified-alternation-boundary` at `72` total workloads / `72` measured workloads / `0` known gaps and the combined source-tree report at `692` / `692` / `0`; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so this benchmark follow-on stays sequenced behind `RBR-0592` until parity lands.
 - No further quantified-alternation bytes family should be queued ahead of this benchmark catch-up while the conditional mixed `str`/`bytes` slice is still missing its source-tree benchmark mirrors.
+
+## Completion
+- 2026-03-18: Added the six quantified-alternation conditional bytes workload mirrors to `benchmarks/workloads/quantified_alternation_boundary.py`, widened the shared zero-gap quantified-alternation representative tuple, and regenerated `reports/benchmarks/latest.py`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`31 passed, 989 subtests passed`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/quantified_alternation_boundary.py --report .rebar/tmp/rbr-0593-quantified-alternation-conditional-bytes-benchmarks.py` (`78` total / `78` measured / `0` known gaps), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
+- The tracked published benchmark artifact now shows `quantified-alternation-boundary` at `78` total workloads / `78` measured workloads / `0` known gaps and the combined source-tree report at `698` total workloads / `698` measured workloads / `0` known gaps, with all six new `-bytes` conditional workload rows published as measured through the source-tree shim path.

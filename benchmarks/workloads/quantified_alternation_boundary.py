@@ -2116,6 +2116,236 @@ MANIFEST = {
       ]
     },
     {
+      "id": "module-compile-numbered-quantified-alternation-conditional-cold-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a((b|c){1,2})?(?(1)d|e)",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "conditional",
+        "optional-group",
+        "bytes",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals"
+      ],
+      "notes": [
+        "Cold bytes module.compile benchmark for the bounded numbered quantified-alternation-plus-conditional slice so compile metadata timing reaches the published report on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-numbered-quantified-alternation-conditional-lower-bound-b-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a((b|c){1,2})?(?(1)d|e)",
+      "haystack": "zzabdzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "conditional",
+        "optional-group",
+        "search",
+        "module",
+        "present",
+        "lower-bound",
+        "b-branch",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the bounded numbered quantified-alternation-plus-conditional workflow when one `b` branch repetition selects the conditional yes arm on the bytes path."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-quantified-alternation-conditional-second-repetition-mixed-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a((b|c){1,2})?(?(1)d|e)",
+      "haystack": "abcd",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "conditional",
+        "optional-group",
+        "fullmatch",
+        "present",
+        "second-repetition",
+        "mixed-branches",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the bounded numbered quantified-alternation-plus-conditional workflow after one `b` branch plus one `c` branch repetition."
+      ]
+    },
+    {
+      "id": "module-compile-named-quantified-alternation-conditional-warm-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<outer>(b|c){1,2})?(?(outer)d|e)",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "conditional",
+        "optional-group",
+        "named-group",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm bytes module.compile benchmark for the bounded named quantified-alternation-plus-conditional slice so named compile metadata timing reaches the published report on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-named-quantified-alternation-conditional-absent-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<outer>(b|c){1,2})?(?(outer)d|e)",
+      "haystack": "zzaezz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "conditional",
+        "optional-group",
+        "named-group",
+        "search",
+        "module",
+        "absent",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the bounded named quantified-alternation-plus-conditional workflow when the optional quantified alternation is skipped and the else arm accepts `e` on the bytes path."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-quantified-alternation-conditional-second-repetition-c-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<outer>(b|c){1,2})?(?(outer)d|e)",
+      "haystack": "accd",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "conditional",
+        "optional-group",
+        "named-group",
+        "fullmatch",
+        "present",
+        "second-repetition",
+        "c-branch",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "conditionals",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the bounded named quantified-alternation-plus-conditional workflow after two `c` branch repetitions."
+      ]
+    },
+    {
       "id": "module-compile-numbered-quantified-alternation-backtracking-heavy-cold-str",
       "bucket": "module-compile",
       "family": "module",
