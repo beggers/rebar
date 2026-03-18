@@ -1,6 +1,6 @@
 # RBR-0628: Collapse the grouped replacement-template parity suite onto shared owners
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
 
@@ -135,3 +135,8 @@ PY`
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_literal_replacement_template.py tests/python/test_fixture_backed_replacement_parity_suite.py` passes (`876 passed in 0.63s`);
   - the inline ownership probe above currently fails exactly on this cleanup with `AssertionError` because the grouped-capture suite still leaves two grouped-match rows uncovered and `tests/python/test_fixture_backed_replacement_parity_suite.py` still exposes only the `open-ended-quantified-group-replacement` and `conditional-group-exists-replacement` surfaces; and
   - `bash -lc "! rg --files tests/python | rg 'test_grouped_literal_replacement_template\\.py$'"` currently fails exactly on this cleanup because the detached grouped replacement-template suite still exists.
+- 2026-03-18 completion:
+  - Moved all six `grouped-match-workflows` rows onto `tests/python/test_grouped_capture_parity_suite.py`, making `GROUPED_MATCH_TRACKED_CASE_IDS` the full six-row frontier, emptying `GROUPED_MATCH_UNCOVERED_CASE_IDS`, and keeping the added single-capture fullmatch/match rows on the suite's existing compile/module/pattern/match-group-access path.
+  - Added a leading `grouped-replacement-template` surface to `tests/python/test_fixture_backed_replacement_parity_suite.py`, covering the selected `module-sub-grouping-template` row plus the named/grouped/nested replacement manifests through one local `ReplacementSurfaceSpec`, preserved the existing grouped template-expand, named-group match-access, grouped/nested no-match, and repeated-replacement coverage there, and kept the absorbed surface `str`-only.
+  - Deleted `tests/python/test_grouped_literal_replacement_template.py`; `git diff --name-status -- tests/python/test_grouped_literal_replacement_template.py` now reports `D`.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py tests/python/test_fixture_backed_replacement_parity_suite.py` (`1311 passed in 0.95s`), the inline ownership probe above (`ok`), and `bash -lc "! rg --files tests/python | rg 'test_grouped_literal_replacement_template\\.py$'"` (no matches).

@@ -19,8 +19,10 @@ from tests.python.fixture_parity_support import (
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
+    assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
+    assert_valid_match_group_access_parity,
     case_pattern,
     case_replacement_argument,
     case_text_argument,
@@ -71,6 +73,80 @@ NO_MATCH_TEXT_CANDIDATES = (
 CONDITIONAL_REPLACEMENT_SELECTOR_FIXTURE_PATHS = select_correctness_fixture_paths(
     CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR
 )
+GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID = "grouped-replacement-template"
+GROUPED_TEMPLATE_SELECTED_CASE_ID = "module-sub-grouping-template"
+GROUPED_REPLACEMENT_BUNDLE_MANIFEST_IDS = (
+    "collection-replacement-workflows",
+    "named-group-replacement-workflows",
+    "grouped-alternation-replacement-workflows",
+    "nested-group-replacement-workflows",
+    "nested-group-alternation-replacement-workflows",
+    "nested-group-alternation-wrapper-replacement-workflows",
+    "quantified-nested-group-replacement-workflows",
+)
+GROUPED_REPLACEMENT_NAMED_CASE_IDS = (
+    "module-sub-template-named-group-str",
+    "module-subn-template-named-group-str",
+    "pattern-sub-template-named-group-str",
+    "pattern-subn-template-named-group-str",
+)
+GROUPED_TEMPLATE_OPERATION_HELPER_COUNTS = Counter({("module_call", "sub"): 1})
+NESTED_GROUP_ALTERNATION_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("module_call", "sub"): 1,
+        ("pattern_call", "subn"): 1,
+    }
+)
+GROUPED_REPLACEMENT_SHARED_GROUP_KIND_COUNTS = Counter(
+    {
+        ("module_call", "sub", "numbered"): 1,
+        ("module_call", "sub", "named"): 1,
+        ("module_call", "subn", "numbered"): 1,
+        ("module_call", "subn", "named"): 1,
+        ("pattern_call", "sub", "numbered"): 1,
+        ("pattern_call", "sub", "named"): 1,
+        ("pattern_call", "subn", "numbered"): 1,
+        ("pattern_call", "subn", "named"): 1,
+    }
+)
+GROUPED_REPLACEMENT_NESTED_ALTERNATION_GROUP_KIND_COUNTS = Counter(
+    {
+        ("module_call", "sub", "numbered"): 1,
+        ("pattern_call", "subn", "named"): 1,
+    }
+)
+GROUPED_REPLACEMENT_BUNDLE_CONTRACT_MANIFEST_IDS = frozenset(
+    {
+        "grouped-alternation-replacement-workflows",
+        "nested-group-replacement-workflows",
+        "nested-group-alternation-replacement-workflows",
+        "nested-group-alternation-wrapper-replacement-workflows",
+        "quantified-nested-group-replacement-workflows",
+    }
+)
+GROUPED_REPLACEMENT_MATCH_GROUP_ACCESS_MANIFEST_IDS = (
+    "named-group-replacement-workflows",
+)
+GROUPED_REPLACEMENT_TEMPLATE_EXPAND_MANIFEST_IDS = (
+    "collection-replacement-workflows",
+    "named-group-replacement-workflows",
+    "grouped-alternation-replacement-workflows",
+    "nested-group-replacement-workflows",
+    "nested-group-alternation-replacement-workflows",
+    "nested-group-alternation-wrapper-replacement-workflows",
+)
+GROUPED_REPLACEMENT_COMPILE_PATTERNS = (
+    "(?P<word>abc)",
+    "(abc)",
+    "a((b))d",
+    "a((bc)+)d",
+    "a((b|c))d",
+    "a(?P<outer>(?P<inner>b))d",
+    "a(?P<outer>(?P<inner>bc)+)d",
+    "a(?P<outer>(b|c))d",
+    "a(?P<word>b|c)d",
+    "a(b|c)d",
+)
 
 
 @dataclass(frozen=True)
@@ -92,6 +168,7 @@ class ReplacementSurfaceSpec:
     pattern_extractor: Callable[[FixtureCase], TextValue]
     compile_patterns: tuple[TextValue, ...] = ()
     match_snapshot_manifest_ids: tuple[str, ...] = ()
+    match_group_access_manifest_ids: tuple[str, ...] = ()
     template_expand_manifest_ids: tuple[str, ...] = ()
     selector_fixture_paths: tuple[pathlib.Path, ...] = ()
     known_uncovered_published_fixture_filenames: tuple[str, ...] = ()
@@ -110,6 +187,7 @@ class LoadedReplacementSurface:
     module_cases: tuple[FixtureCase, ...]
     pattern_cases: tuple[FixtureCase, ...]
     match_snapshot_cases: tuple[FixtureCase, ...]
+    match_group_access_cases: tuple[FixtureCase, ...]
     template_expand_cases: tuple[FixtureCase, ...]
     discovered_no_match_cases: tuple[FixtureCase, ...]
 
@@ -379,6 +457,178 @@ CONDITIONAL_SUPPLEMENTAL_REPEATED_CASES = (
     ),
 )
 
+GROUPED_REPLACEMENT_SUPPLEMENTAL_NO_MATCH_CASES = (
+    SupplementalReplacementCase(
+        id="module-sub-template-named-group-no-match",
+        use_compiled_pattern=False,
+        helper="sub",
+        pattern=r"(?P<word>abc)",
+        replacement=r"<\g<word>>",
+        string="xyzxyz",
+    ),
+    SupplementalReplacementCase(
+        id="module-subn-template-named-group-no-match",
+        use_compiled_pattern=False,
+        helper="subn",
+        pattern=r"(?P<word>abc)",
+        replacement=r"<\g<word>>",
+        string="xyzxyz",
+        count=1,
+    ),
+    SupplementalReplacementCase(
+        id="pattern-sub-template-named-group-no-match",
+        use_compiled_pattern=True,
+        helper="sub",
+        pattern=r"(?P<word>abc)",
+        replacement=r"<\g<word>>",
+        string="xyzxyz",
+    ),
+    SupplementalReplacementCase(
+        id="pattern-subn-template-named-group-no-match",
+        use_compiled_pattern=True,
+        helper="subn",
+        pattern=r"(?P<word>abc)",
+        replacement=r"<\g<word>>",
+        string="xyzxyz",
+        count=1,
+    ),
+    SupplementalReplacementCase(
+        id="module-numbered-nested-group-sub-no-match",
+        use_compiled_pattern=False,
+        helper="sub",
+        pattern=r"a((b))d",
+        replacement=r"\1x",
+        string="zzadzz",
+        count=0,
+    ),
+    SupplementalReplacementCase(
+        id="module-numbered-nested-group-subn-no-match",
+        use_compiled_pattern=False,
+        helper="subn",
+        pattern=r"a((b))d",
+        replacement=r"\2x",
+        string="zzadzz",
+        count=1,
+    ),
+    SupplementalReplacementCase(
+        id="pattern-numbered-nested-group-sub-no-match",
+        use_compiled_pattern=True,
+        helper="sub",
+        pattern=r"a((b))d",
+        replacement=r"\1x",
+        string="zzadzz",
+        count=0,
+    ),
+    SupplementalReplacementCase(
+        id="pattern-numbered-nested-group-subn-no-match",
+        use_compiled_pattern=True,
+        helper="subn",
+        pattern=r"a((b))d",
+        replacement=r"\2x",
+        string="zzadzz",
+        count=1,
+    ),
+    SupplementalReplacementCase(
+        id="module-named-nested-group-sub-no-match",
+        use_compiled_pattern=False,
+        helper="sub",
+        pattern=r"a(?P<outer>(?P<inner>b))d",
+        replacement=r"\g<outer>x",
+        string="zzadzz",
+        count=0,
+    ),
+    SupplementalReplacementCase(
+        id="module-named-nested-group-subn-no-match",
+        use_compiled_pattern=False,
+        helper="subn",
+        pattern=r"a(?P<outer>(?P<inner>b))d",
+        replacement=r"\g<inner>x",
+        string="zzadzz",
+        count=1,
+    ),
+    SupplementalReplacementCase(
+        id="pattern-named-nested-group-sub-no-match",
+        use_compiled_pattern=True,
+        helper="sub",
+        pattern=r"a(?P<outer>(?P<inner>b))d",
+        replacement=r"\g<outer>x",
+        string="zzadzz",
+        count=0,
+    ),
+    SupplementalReplacementCase(
+        id="pattern-named-nested-group-subn-no-match",
+        use_compiled_pattern=True,
+        helper="subn",
+        pattern=r"a(?P<outer>(?P<inner>b))d",
+        replacement=r"\g<inner>x",
+        string="zzadzz",
+        count=1,
+    ),
+)
+
+GROUPED_REPLACEMENT_SUPPLEMENTAL_REPEATED_CASES = (
+    SupplementalReplacementCase(
+        id="module-grouped-template-sub-single-match",
+        use_compiled_pattern=False,
+        helper="sub",
+        pattern=r"(abc)",
+        replacement=r"\1x",
+        string="abc",
+        count=0,
+        expected_result="abcx",
+    ),
+    SupplementalReplacementCase(
+        id="module-grouped-template-sub-repeated",
+        use_compiled_pattern=False,
+        helper="sub",
+        pattern=r"(abc)",
+        replacement=r"\1x",
+        string="abcabc",
+        count=0,
+        expected_result="abcxabcx",
+    ),
+    SupplementalReplacementCase(
+        id="module-grouped-template-subn-first-match-only",
+        use_compiled_pattern=False,
+        helper="subn",
+        pattern=r"(abc)",
+        replacement=r"\1x",
+        string="abcabc",
+        count=1,
+        expected_result=("abcxabc", 1),
+    ),
+    SupplementalReplacementCase(
+        id="pattern-grouped-template-sub-single-match",
+        use_compiled_pattern=True,
+        helper="sub",
+        pattern=r"(abc)",
+        replacement=r"\1x",
+        string="abc",
+        count=0,
+        expected_result="abcx",
+    ),
+    SupplementalReplacementCase(
+        id="pattern-grouped-template-sub-repeated",
+        use_compiled_pattern=True,
+        helper="sub",
+        pattern=r"(abc)",
+        replacement=r"\1x",
+        string="abcabc",
+        count=0,
+        expected_result="abcxabcx",
+    ),
+    SupplementalReplacementCase(
+        id="pattern-grouped-template-subn-first-match-only",
+        use_compiled_pattern=True,
+        helper="subn",
+        pattern=r"(abc)",
+        replacement=r"\1x",
+        string="abcabc",
+        count=1,
+        expected_result=("abcxabc", 1),
+    ),
+)
+
 
 def _pattern_from_extractor(
     pattern_extractor: Callable[[FixtureCase], TextValue],
@@ -412,6 +662,75 @@ def _pattern_param_id(pattern: TextValue) -> str:
     if isinstance(pattern, bytes):
         return repr(pattern)
     return pattern
+
+
+def _compiled_str_pattern(case: FixtureCase) -> re.Pattern[str]:
+    return re.compile(str_case_pattern(case), case.flags or 0)
+
+
+def _grouped_replacement_group_kind(case: FixtureCase) -> str:
+    return "named" if _compiled_str_pattern(case).groupindex else "numbered"
+
+
+def _expected_grouped_replacement_template(case: FixtureCase) -> str:
+    compiled = _compiled_str_pattern(case)
+    target_group_index = (
+        1
+        if case.helper == "sub" or "outer-capture" in case.categories
+        else compiled.groups
+    )
+    if compiled.groupindex:
+        group_names_by_index = {
+            index: group_name for group_name, index in compiled.groupindex.items()
+        }
+        replacement = rf"\g<{group_names_by_index[target_group_index]}>"
+    else:
+        replacement = rf"\{target_group_index}"
+    if "wrapper-template" in case.categories:
+        return f"<{replacement}>"
+    if compiled.groupindex and compiled.pattern == r"(?P<word>abc)":
+        return f"<{replacement}>"
+    return f"{replacement}x"
+
+
+def _assert_grouped_replacement_fixture_bundle_contract(bundle: FixtureBundle) -> None:
+    expected_group_kind_counts = (
+        GROUPED_REPLACEMENT_NESTED_ALTERNATION_GROUP_KIND_COUNTS
+        if bundle.expected_manifest_id
+        in {
+            "nested-group-alternation-replacement-workflows",
+            "nested-group-alternation-wrapper-replacement-workflows",
+        }
+        else GROUPED_REPLACEMENT_SHARED_GROUP_KIND_COUNTS
+    )
+    assert Counter(
+        (case.operation, case.helper, _grouped_replacement_group_kind(case))
+        for case in bundle.cases
+    ) == expected_group_kind_counts
+
+    for case in bundle.cases:
+        compiled = _compiled_str_pattern(case)
+        count_index = 3 if case.operation == "module_call" else 2
+
+        assert case.kwargs == {}
+        assert "replacement-template" in case.categories
+        assert "str" in case.categories
+        assert case.helper in {"sub", "subn"}
+        assert case.helper in case.categories
+        if case.operation == "module_call":
+            assert "module" in case.categories
+        else:
+            assert "pattern" in case.categories
+
+        if compiled.groupindex:
+            assert "named-group" in case.categories
+
+        assert case_replacement_argument(case) == _expected_grouped_replacement_template(case)
+        if case.helper == "sub":
+            assert len(case.args) == count_index
+        else:
+            assert len(case.args) == count_index + 1
+            assert case.args[count_index] == 1
 
 
 def _cases_for_manifest_ids(
@@ -479,6 +798,10 @@ def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
         match_snapshot_cases=_cases_for_manifest_ids(
             replacement_cases,
             spec.match_snapshot_manifest_ids,
+        ),
+        match_group_access_cases=_cases_for_manifest_ids(
+            replacement_cases,
+            spec.match_group_access_manifest_ids,
         ),
         template_expand_cases=_cases_for_manifest_ids(
             replacement_cases,
@@ -634,6 +957,97 @@ def _run_supplemental_replacement_case(
 
 
 REPLACEMENT_SURFACE_SPECS = (
+    ReplacementSurfaceSpec(
+        id=GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID,
+        bundle_specs=(
+            FixtureBundleSpec(
+                "collection_replacement_workflows.py",
+                expected_manifest_id="collection-replacement-workflows",
+                selected_case_ids=(GROUPED_TEMPLATE_SELECTED_CASE_ID,),
+                expected_patterns=frozenset({"(abc)"}),
+                expected_operation_helper_counts=GROUPED_TEMPLATE_OPERATION_HELPER_COUNTS,
+                expected_text_models=frozenset({"str"}),
+            ),
+            FixtureBundleSpec(
+                "named_group_replacement_workflows.py",
+                expected_manifest_id="named-group-replacement-workflows",
+                expected_patterns=frozenset({r"(?P<word>abc)"}),
+                expected_operation_helper_counts=Counter(
+                    {
+                        ("module_call", "sub"): 1,
+                        ("module_call", "subn"): 1,
+                        ("pattern_call", "sub"): 1,
+                        ("pattern_call", "subn"): 1,
+                    }
+                ),
+            ),
+            FixtureBundleSpec(
+                "grouped_alternation_replacement_workflows.py",
+                expected_manifest_id="grouped-alternation-replacement-workflows",
+                expected_patterns=frozenset(
+                    {
+                        r"a(b|c)d",
+                        r"a(?P<word>b|c)d",
+                    }
+                ),
+                expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
+            ),
+            FixtureBundleSpec(
+                "nested_group_replacement_workflows.py",
+                expected_manifest_id="nested-group-replacement-workflows",
+                expected_patterns=frozenset(
+                    {
+                        r"a((b))d",
+                        r"a(?P<outer>(?P<inner>b))d",
+                    }
+                ),
+                expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
+            ),
+            FixtureBundleSpec(
+                "nested_group_alternation_replacement_workflows.py",
+                expected_manifest_id="nested-group-alternation-replacement-workflows",
+                expected_patterns=frozenset(
+                    {
+                        r"a((b|c))d",
+                        r"a(?P<outer>(b|c))d",
+                    }
+                ),
+                expected_operation_helper_counts=(
+                    NESTED_GROUP_ALTERNATION_OPERATION_HELPER_COUNTS
+                ),
+            ),
+            FixtureBundleSpec(
+                "nested_group_alternation_wrapper_replacement_workflows.py",
+                expected_manifest_id="nested-group-alternation-wrapper-replacement-workflows",
+                expected_patterns=frozenset(
+                    {
+                        r"a((b|c))d",
+                        r"a(?P<outer>(b|c))d",
+                    }
+                ),
+                expected_operation_helper_counts=(
+                    NESTED_GROUP_ALTERNATION_OPERATION_HELPER_COUNTS
+                ),
+            ),
+            FixtureBundleSpec(
+                "quantified_nested_group_replacement_workflows.py",
+                expected_manifest_id="quantified-nested-group-replacement-workflows",
+                expected_patterns=frozenset(
+                    {
+                        r"a((bc)+)d",
+                        r"a(?P<outer>(?P<inner>bc)+)d",
+                    }
+                ),
+                expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
+            ),
+        ),
+        pattern_extractor=str_case_pattern,
+        compile_patterns=GROUPED_REPLACEMENT_COMPILE_PATTERNS,
+        match_group_access_manifest_ids=GROUPED_REPLACEMENT_MATCH_GROUP_ACCESS_MANIFEST_IDS,
+        template_expand_manifest_ids=GROUPED_REPLACEMENT_TEMPLATE_EXPAND_MANIFEST_IDS,
+        supplemental_no_match_cases=GROUPED_REPLACEMENT_SUPPLEMENTAL_NO_MATCH_CASES,
+        supplemental_repeated_cases=GROUPED_REPLACEMENT_SUPPLEMENTAL_REPEATED_CASES,
+    ),
     ReplacementSurfaceSpec(
         id="open-ended-quantified-group-replacement",
         bundle_specs=(
@@ -1006,6 +1420,11 @@ REPLACEMENT_SURFACE_SPECS = (
 REPLACEMENT_SURFACES = tuple(
     _load_surface(spec) for spec in REPLACEMENT_SURFACE_SPECS
 )
+GROUPED_REPLACEMENT_TEMPLATE_SURFACE = next(
+    surface
+    for surface in REPLACEMENT_SURFACES
+    if surface.spec.id == GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID
+)
 OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE = next(
     surface
     for surface in REPLACEMENT_SURFACES
@@ -1048,6 +1467,11 @@ MATCH_SNAPSHOT_CASE_PARAMS = tuple(
     for surface in REPLACEMENT_SURFACES
     for case in surface.match_snapshot_cases
 )
+MATCH_GROUP_ACCESS_CASE_PARAMS = tuple(
+    pytest.param(surface, case, id=case.case_id)
+    for surface in REPLACEMENT_SURFACES
+    for case in surface.match_group_access_cases
+)
 TEMPLATE_EXPAND_CASE_PARAMS = tuple(
     pytest.param(surface, case, id=case.case_id)
     for surface in REPLACEMENT_SURFACES
@@ -1089,7 +1513,7 @@ def _expected_selected_replacement_case_ids(
         case.case_id
         for bundle in surface.bundles
         if manifest_id is None or bundle.expected_manifest_id == manifest_id
-        for case in bundle.manifest.cases
+        for case in bundle.cases
         if not _is_pending_bytes_follow_on_case(surface, case)
     )
 
@@ -1102,7 +1526,7 @@ def _expected_uncovered_replacement_case_ids(
         case.case_id
         for bundle in surface.bundles
         if bundle.expected_manifest_id == manifest_id
-        for case in bundle.manifest.cases
+        for case in bundle.cases
         if _is_pending_bytes_follow_on_case(surface, case)
     )
 
@@ -1146,6 +1570,46 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
         bundle,
         pattern_extractor=surface.spec.pattern_extractor,
     )
+    if (
+        surface.spec.id == GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID
+        and bundle.expected_manifest_id in GROUPED_REPLACEMENT_BUNDLE_CONTRACT_MANIFEST_IDS
+    ):
+        _assert_grouped_replacement_fixture_bundle_contract(bundle)
+
+
+def test_grouped_replacement_surface_keeps_selected_bundle_ownership_explicit() -> None:
+    surface = GROUPED_REPLACEMENT_TEMPLATE_SURFACE
+
+    assert tuple(bundle.expected_manifest_id for bundle in surface.bundles) == (
+        GROUPED_REPLACEMENT_BUNDLE_MANIFEST_IDS
+    )
+
+    grouped_template_bundle = surface.bundles[0]
+    assert tuple(case.case_id for case in grouped_template_bundle.cases) == (
+        GROUPED_TEMPLATE_SELECTED_CASE_ID,
+    )
+    (grouped_template_case,) = grouped_template_bundle.cases
+    assert grouped_template_case.operation == "module_call"
+    assert grouped_template_case.helper == "sub"
+    assert str_case_pattern(grouped_template_case) == "(abc)"
+    assert case_replacement_argument(grouped_template_case) == r"\1x"
+    assert case_text_argument(grouped_template_case) == "abc"
+    assert "replacement-template" in grouped_template_case.categories
+    assert "grouping-dependent" in grouped_template_case.categories
+
+    named_bundle = next(
+        bundle
+        for bundle in surface.bundles
+        if bundle.expected_manifest_id == "named-group-replacement-workflows"
+    )
+    assert tuple(case.case_id for case in named_bundle.cases) == (
+        GROUPED_REPLACEMENT_NAMED_CASE_IDS
+    )
+    for case in named_bundle.cases:
+        assert case_replacement_argument(case) == r"<\g<word>>"
+        assert "named-group" in case.categories
+        assert "replacement-template" in case.categories
+        assert case.text_model == "str"
 
 
 @pytest.mark.parametrize(("surface", "bundle"), BUNDLE_PARAMS)
@@ -1153,6 +1617,15 @@ def test_replacement_suite_tracks_published_case_frontier(
     surface: LoadedReplacementSurface,
     bundle: FixtureBundle,
 ) -> None:
+    if len(bundle.cases) != len(bundle.manifest.cases):
+        assert tuple(case.case_id for case in bundle.cases) == (
+            _expected_selected_replacement_case_ids(
+                surface,
+                manifest_id=bundle.expected_manifest_id,
+            )
+        )
+        return
+
     assert_fixture_bundle_tracks_published_case_frontier(
         bundle,
         selected_case_ids=_expected_selected_replacement_case_ids(
@@ -1289,6 +1762,52 @@ def test_replacement_match_snapshot_matches_cpython(
         check_regs=True,
     )
     assert_match_convenience_api_parity(observed_match, expected_match)
+
+
+@pytest.mark.parametrize(("surface", "case"), MATCH_GROUP_ACCESS_CASE_PARAMS)
+def test_replacement_match_group_accessors_match_cpython(
+    regex_backend: tuple[str, object],
+    surface: LoadedReplacementSurface,
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_match, expected_match = _search_match_for_case(
+        surface,
+        backend_name,
+        backend,
+        case,
+    )
+
+    assert_match_parity(
+        backend_name,
+        observed_match,
+        expected_match,
+        check_regs=True,
+    )
+    assert_valid_match_group_access_parity(observed_match, expected_match)
+
+
+@pytest.mark.parametrize(("surface", "case"), MATCH_GROUP_ACCESS_CASE_PARAMS)
+def test_replacement_invalid_group_access_errors_match_cpython(
+    regex_backend: tuple[str, object],
+    surface: LoadedReplacementSurface,
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_match, expected_match = _search_match_for_case(
+        surface,
+        backend_name,
+        backend,
+        case,
+    )
+
+    assert_match_parity(
+        backend_name,
+        observed_match,
+        expected_match,
+        check_regs=True,
+    )
+    assert_invalid_match_group_access_parity(observed_match, expected_match)
 
 
 @pytest.mark.parametrize(("surface", "case"), TEMPLATE_EXPAND_CASE_PARAMS)
@@ -1468,6 +1987,7 @@ def test_no_match_text_filters_candidates_by_case_text_model() -> None:
         module_cases=(),
         pattern_cases=(),
         match_snapshot_cases=(),
+        match_group_access_cases=(),
         template_expand_cases=(),
         discovered_no_match_cases=(),
     )

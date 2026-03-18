@@ -24,19 +24,16 @@ from tests.python.fixture_parity_support import (
     published_fixture_bundle_by_manifest_id,
     str_case_pattern,
 )
-GROUPED_MATCH_BUNDLE_CASE_IDS = (
+GROUPED_MATCH_TRACKED_CASE_IDS = (
+    "grouped-module-search-single-capture-str",
+    "grouped-module-fullmatch-single-capture-str",
+    "grouped-pattern-search-single-capture-str",
+    "grouped-pattern-match-single-capture-str",
     "grouped-module-fullmatch-two-capture-gap-str",
     "grouped-pattern-fullmatch-two-capture-gap-str",
 )
-GROUPED_MATCH_TRACKED_CASE_IDS = (
-    "grouped-module-search-single-capture-str",
-    "grouped-pattern-search-single-capture-str",
-    *GROUPED_MATCH_BUNDLE_CASE_IDS,
-)
-GROUPED_MATCH_UNCOVERED_CASE_IDS = (
-    "grouped-module-fullmatch-single-capture-str",
-    "grouped-pattern-match-single-capture-str",
-)
+GROUPED_MATCH_BUNDLE_CASE_IDS = GROUPED_MATCH_TRACKED_CASE_IDS
+GROUPED_MATCH_UNCOVERED_CASE_IDS = ()
 NAMED_GROUP_CASE_IDS = (
     "named-group-compile-metadata-str",
     "named-group-module-search-metadata-str",
@@ -162,10 +159,13 @@ SELECTED_CASE_BUNDLE_SPECS = (
         fixture_name="grouped_match_workflows.py",
         expected_manifest_id="grouped-match-workflows",
         selected_case_ids=GROUPED_MATCH_BUNDLE_CASE_IDS,
-        expected_patterns=frozenset({r"(ab)(c)"}),
+        expected_patterns=frozenset({r"(abc)", r"(ab)(c)"}),
         expected_operation_helper_counts=Counter(
             {
-                ("module_call", "fullmatch"): 1,
+                ("module_call", "search"): 1,
+                ("module_call", "fullmatch"): 2,
+                ("pattern_call", "search"): 1,
+                ("pattern_call", "match"): 1,
                 ("pattern_call", "fullmatch"): 1,
             }
         ),
@@ -432,7 +432,9 @@ SUPPLEMENTAL_MISS_CASES = (
 )
 MATCH_GROUP_ACCESS_CASE_IDS = (
     "grouped-module-search-single-capture-str",
+    "grouped-module-fullmatch-single-capture-str",
     "grouped-pattern-search-single-capture-str",
+    "grouped-pattern-match-single-capture-str",
     "grouped-segment-module-search-str",
     "grouped-segment-leading-capture-module-search-str",
     "grouped-segment-pattern-fullmatch-str",
@@ -464,6 +466,10 @@ MATCH_GROUP_ACCESS_CASE_IDS = (
 )
 REGS_PARITY_CASE_IDS = frozenset(
     {
+        "grouped-module-search-single-capture-str",
+        "grouped-module-fullmatch-single-capture-str",
+        "grouped-pattern-search-single-capture-str",
+        "grouped-pattern-match-single-capture-str",
         "optional-group-alternation-module-search-present-str",
         "optional-group-alternation-pattern-fullmatch-absent-str",
         "named-optional-group-alternation-module-search-present-str",
