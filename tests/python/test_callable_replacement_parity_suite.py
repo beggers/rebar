@@ -775,6 +775,86 @@ def _callable_no_match_text(pattern: str, flags: int = 0) -> str:
     raise AssertionError(f"could not find a shared no-match text for pattern {pattern!r}")
 
 
+def assert_callable_replacement_negative_count_short_circuits(
+    *,
+    backend: object,
+    helper: str,
+    pattern: str,
+    string: str,
+    use_compiled_pattern: bool = False,
+) -> None:
+    callback_calls: list[object] = []
+
+    def replacement(match: object) -> str:
+        callback_calls.append(match)
+        return "X"
+
+    observed = _invoke_callable_replacement(
+        backend,
+        pattern=pattern,
+        helper=helper,
+        string=string,
+        count=-1,
+        replacement=replacement,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+    expected = _invoke_callable_replacement(
+        re,
+        pattern=pattern,
+        helper=helper,
+        string=string,
+        count=-1,
+        replacement=replacement,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+    expected_result: object = string if helper == "sub" else (string, 0)
+
+    assert observed == expected == expected_result
+    assert callback_calls == []
+
+
+def assert_callable_replacement_invalid_count_typeerror_parity(
+    *,
+    backend: object,
+    helper: str,
+    pattern: str,
+    string: str,
+    count: object,
+    use_compiled_pattern: bool = False,
+) -> None:
+    callback_calls: list[object] = []
+
+    def replacement(match: object) -> str:
+        callback_calls.append(match)
+        return "X"
+
+    with pytest.raises(TypeError) as observed_error:
+        _invoke_callable_replacement(
+            backend,
+            pattern=pattern,
+            helper=helper,
+            string=string,
+            count=count,
+            replacement=replacement,
+            use_compiled_pattern=use_compiled_pattern,
+        )
+
+    with pytest.raises(TypeError) as expected_error:
+        _invoke_callable_replacement(
+            re,
+            pattern=pattern,
+            helper=helper,
+            string=string,
+            count=count,
+            replacement=replacement,
+            use_compiled_pattern=use_compiled_pattern,
+        )
+
+    assert type(observed_error.value) is type(expected_error.value)
+    assert observed_error.value.args == expected_error.value.args
+    assert callback_calls == []
+
+
 def _assert_source_callable_replacement_reference_is_valid(case: FixtureCase) -> None:
     replacement = _source_callable_replacement(case)
     assert replacement.get("type") == "callable_match_group"
@@ -1057,6 +1137,119 @@ def test_callable_replacement_near_miss_paths_leave_input_unchanged(
 
     assert observed == expected == near_miss_case.expected_result
     assert callback_calls == []
+
+
+@pytest.mark.parametrize(
+    ("helper", "use_compiled_pattern"),
+    CALLABLE_NO_MATCH_VARIANTS,
+)
+def test_literal_callable_replacement_negative_count_short_circuits_without_callback(
+    regex_backend: tuple[str, object],
+    helper: str,
+    use_compiled_pattern: bool,
+) -> None:
+    _, backend = regex_backend
+
+    assert_callable_replacement_negative_count_short_circuits(
+        backend=backend,
+        helper=helper,
+        pattern=_literal_callable_pattern(),
+        string=_literal_callable_string(),
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+
+@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
+def test_module_callable_replacement_negative_count_short_circuits_without_callback(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+
+    _skip_pending_rebar_callable_parity(backend_name, case)
+    assert_callable_replacement_negative_count_short_circuits(
+        backend=backend,
+        helper=case.helper,
+        pattern=str_case_pattern(case),
+        string=_case_string(case),
+    )
+
+
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
+def test_pattern_callable_replacement_negative_count_short_circuits_without_callback(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+
+    _skip_pending_rebar_callable_parity(backend_name, case)
+    assert_callable_replacement_negative_count_short_circuits(
+        backend=backend,
+        helper=case.helper,
+        pattern=str_case_pattern(case),
+        string=_case_string(case),
+        use_compiled_pattern=True,
+    )
+
+
+@pytest.mark.parametrize(
+    ("helper", "use_compiled_pattern"),
+    CALLABLE_NO_MATCH_VARIANTS,
+)
+def test_literal_callable_replacement_none_count_matches_cpython_typeerror(
+    regex_backend: tuple[str, object],
+    helper: str,
+    use_compiled_pattern: bool,
+) -> None:
+    _, backend = regex_backend
+
+    assert_callable_replacement_invalid_count_typeerror_parity(
+        backend=backend,
+        helper=helper,
+        pattern=_literal_callable_pattern(),
+        string=_literal_callable_string(),
+        count=None,
+        use_compiled_pattern=use_compiled_pattern,
+    )
+
+
+@pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
+def test_module_callable_replacement_none_count_matches_cpython_typeerror(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+
+    _skip_pending_rebar_callable_parity(backend_name, case)
+    assert_callable_replacement_invalid_count_typeerror_parity(
+        backend=backend,
+        helper=case.helper,
+        pattern=str_case_pattern(case),
+        string=_case_string(case),
+        count=None,
+    )
+
+
+@pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
+def test_pattern_callable_replacement_none_count_matches_cpython_typeerror(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+
+    _skip_pending_rebar_callable_parity(backend_name, case)
+    assert_callable_replacement_invalid_count_typeerror_parity(
+        backend=backend,
+        helper=case.helper,
+        pattern=str_case_pattern(case),
+        string=_case_string(case),
+        count=None,
+        use_compiled_pattern=True,
+    )
 
 
 @pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)
