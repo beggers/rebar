@@ -1,8 +1,9 @@
 # RBR-0606: Collapse the quantified-alternation bytes follow-on parity ladders onto one table
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Replace the duplicated quantified-alternation bytes follow-on anchor checks and per-family bytes compile/module/pattern parity ladders in `tests/python/test_quantified_alternation_parity_suite.py` with one local spec-driven surface plus shared parametrized assertions, so the suite stops restating the same logic for the bounded, broader-range, conditional, open-ended, nested-branch, and backtracking-heavy bytes pairs.
@@ -88,3 +89,11 @@ PY`
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py` passes (`750 passed in 0.54s`)
   - the inline `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` probe above passes (`ok`)
   - `bash -lc "! rg -n '^def test_quantified_alternation_(bounded|broader_range|conditional|open_ended|nested_branch|backtracking_heavy)_bytes_' tests/python/test_quantified_alternation_parity_suite.py"` currently fails exactly on this cleanup because the duplicate per-family bytes ladders are still present
+
+## Completion Notes
+- 2026-03-18: Added one local `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` table plus shared helpers in `tests/python/test_quantified_alternation_parity_suite.py`, keeping the existing six bytes case tuples and `DIRECT_BYTES_FOLLOW_ON_SPECS`, `DIRECT_BYTES_FOLLOW_ON_SPEC_IDS`, and `DIRECT_BYTES_FOLLOW_ON_BUNDLES` intact while moving the differing bundle Counters, published bytes text maps, and exact per-case bytes payload expectations onto the shared surface.
+- 2026-03-18: Replaced the six per-family bytes follow-on anchor tests and the forty-two per-family bytes compile/module/pattern parity tests with shared parametrized direct-bytes follow-on tests over the combined twelve-case surface, preserving compile parity, module-search result parity, module-search convenience parity, module-search group-access parity, pattern-fullmatch result parity, pattern-fullmatch convenience parity, and pattern-fullmatch group-access parity with the existing `check_regs=True` result-parity behavior.
+- 2026-03-18 verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py` (`750 passed in 0.56s`)
+  - the inline `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` probe from the task text (`ok`)
+  - `bash -lc "! rg -n '^def test_quantified_alternation_(bounded|broader_range|conditional|open_ended|nested_branch|backtracking_heavy)_bytes_' tests/python/test_quantified_alternation_parity_suite.py"` (passes)
