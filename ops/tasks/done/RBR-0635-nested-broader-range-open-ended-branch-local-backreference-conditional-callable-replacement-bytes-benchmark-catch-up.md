@@ -1,8 +1,9 @@
 # RBR-0635: Catch the nested broader-range open-ended branch-local-backreference conditional callable-replacement bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Extend the published source-tree benchmark surface so the exact broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement bytes pair produces real `rebar` timings on the existing nested-group callable benchmark manifest once `RBR-0633` lands.
@@ -49,3 +50,10 @@ Created: 2026-03-18
   - `tests/benchmarks/benchmark_expectations.py` currently treats `broader-range-open-ended-conditional-branch-local-backreference` on `nested-group-callable-replacement-boundary` as the four `str` rows only, so the bytes follow-on can stay on the existing shared zero-gap expectation surface;
   - `reports/benchmarks/latest.py` currently publishes `nested-group-callable-replacement-boundary` at `44` total workloads / `44` measured workloads / `0` known gaps and the combined source-tree report at `723` / `723` / `0`; and
   - `reports/correctness/latest.py` still publishes `nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows` at `16` total / `8` passed / `8` `unimplemented`, while direct `PYTHONPATH=python ./.venv/bin/python` public-API probes still raise `NotImplementedError` for the target bytes callable workflows at `rebar.sub(...)`, so `RBR-0633` remains the immediate parity head rather than a stale no-op.
+
+## Completion Notes
+- Added the four bounded bytes mirror workloads to `benchmarks/workloads/nested_group_callable_replacement_boundary.py` for the numbered module and named compiled-`Pattern` broader-range open-ended `{2,}` conditional callable-replacement slice, keeping them on the existing zero-gap `nested-group-callable-replacement-boundary` manifest.
+- Updated `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the shared `broader-range-open-ended-conditional-branch-local-backreference` callable slice now includes those bytes rows and explicitly checks them as measured.
+- Republished `reports/benchmarks/latest.py`; the tracked benchmark artifact now shows `nested-group-callable-replacement-boundary` at `48` total workloads / `48` measured workloads / `0` known gaps and the combined source-tree report at `727` total workloads / `727` measured workloads / `0` known gaps, with the four new bytes workload ids present as measured rows in the tracked diff.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_python_benchmark_manifest_contract.py tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`43 passed, 1134 subtests passed`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_callable_replacement_boundary.py --report .rebar/tmp/rbr-0635-nested-broader-range-open-ended-branch-local-backreference-conditional-callable-replacement-bytes-benchmarks.py` (`48` total / `48` measured / `0` known gaps), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` (`727` total / `727` measured / `0` known gaps).
+- The task-file parity command `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k "nested_broader_range_open_ended_conditional"` currently deselects the suite (`1492 deselected`, exit code `5`) because the live parametrized ids use hyphenated manifest names rather than that underscore-only filter; used `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py -k "broader and conditional and bytes"` as the narrowest matching parity subset instead (`113 passed, 1379 deselected`).
