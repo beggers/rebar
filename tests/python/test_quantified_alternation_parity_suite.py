@@ -69,6 +69,8 @@ class BoundedPatternCase:
     helper: str
     string: str | bytes
     bounds: tuple[int, int]
+    unsupported_backends: tuple[str, ...] = ()
+    unsupported_backend_reason: str | None = None
 
 
 FIXTURE_BUNDLE_SPECS = (
@@ -719,6 +721,15 @@ PATTERN_BOUNDS_MATCH_CASES = (
         bounds=(-50, 999),
     ),
     BoundedPatternCase(
+        id="quantified-alternation-conditional-named-bytes-match-honors-else-window",
+        pattern_case_id="quantified-alternation-conditional-named-compile-metadata-bytes",
+        helper="match",
+        string=b"xxaezz",
+        bounds=(2, 4),
+        unsupported_backends=("rebar",),
+        unsupported_backend_reason=CONDITIONAL_BYTES_UNSUPPORTED_REASON,
+    ),
+    BoundedPatternCase(
         id="quantified-alternation-nested-branch-named-bytes-search-normalizes-negative-and-oversized-bounds",
         pattern_case_id="quantified-alternation-nested-branch-named-compile-metadata-bytes",
         helper="search",
@@ -775,6 +786,15 @@ PATTERN_BOUNDS_NO_MATCH_CASES = (
         helper="search",
         string=b"xxabcbcdzz",
         bounds=(3, 10),
+    ),
+    BoundedPatternCase(
+        id="quantified-alternation-conditional-numbered-bytes-match-fails-when-endpos-truncates-yes-arm",
+        pattern_case_id="quantified-alternation-conditional-numbered-compile-metadata-bytes",
+        helper="match",
+        string=b"xxabcdzz",
+        bounds=(2, 5),
+        unsupported_backends=("rebar",),
+        unsupported_backend_reason=CONDITIONAL_BYTES_UNSUPPORTED_REASON,
     ),
     BoundedPatternCase(
         id="quantified-alternation-nested-branch-named-bytes-search-fails-when-endpos-truncates-tail",
@@ -1623,6 +1643,9 @@ def test_pattern_bounds_cases_stay_anchored_to_quantified_alternation_patterns()
         "quantified-alternation-open-ended-named-bytes-search-normalizes-negative-and-oversized-bounds": (
             rb"a(?P<word>b|c){1,}d"
         ),
+        "quantified-alternation-conditional-named-bytes-match-honors-else-window": (
+            rb"a(?P<outer>(b|c){1,2})?(?(outer)d|e)"
+        ),
         "quantified-alternation-nested-branch-named-bytes-search-normalizes-negative-and-oversized-bounds": (
             rb"a(?P<word>(b|c)|de){1,2}d"
         ),
@@ -1648,6 +1671,9 @@ def test_pattern_bounds_cases_stay_anchored_to_quantified_alternation_patterns()
         ),
         "quantified-alternation-open-ended-named-bytes-search-skips-match-before-pos": (
             rb"a(?P<word>b|c){1,}d"
+        ),
+        "quantified-alternation-conditional-numbered-bytes-match-fails-when-endpos-truncates-yes-arm": (
+            rb"a((b|c){1,2})?(?(1)d|e)"
         ),
         "quantified-alternation-nested-branch-named-bytes-search-fails-when-endpos-truncates-tail": (
             rb"a(?P<word>(b|c)|de){1,2}d"
