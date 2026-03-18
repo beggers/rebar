@@ -80,6 +80,60 @@ class BoundedPatternCase:
 
 FIXTURE_BUNDLE_SPECS = (
     FixtureBundleSpec(
+        "exact_repeat_quantified_group_workflows.py",
+        expected_manifest_id="exact-repeat-quantified-group-workflows",
+        expected_case_ids=frozenset(
+            {
+                "exact-repeat-numbered-group-compile-metadata-str",
+                "exact-repeat-numbered-group-module-search-str",
+                "exact-repeat-numbered-group-pattern-fullmatch-str",
+                "exact-repeat-named-group-compile-metadata-str",
+                "exact-repeat-named-group-module-search-str",
+                "exact-repeat-named-group-pattern-fullmatch-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(bc){2}d",
+                r"a(?P<word>bc){2}d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 2,
+            }
+        ),
+    ),
+    FixtureBundleSpec(
+        "ranged_repeat_quantified_group_workflows.py",
+        expected_manifest_id="ranged-repeat-quantified-group-workflows",
+        expected_case_ids=frozenset(
+            {
+                "ranged-repeat-numbered-group-compile-metadata-str",
+                "ranged-repeat-numbered-group-module-search-lower-bound-str",
+                "ranged-repeat-numbered-group-pattern-fullmatch-upper-bound-str",
+                "ranged-repeat-named-group-compile-metadata-str",
+                "ranged-repeat-named-group-module-search-upper-bound-str",
+                "ranged-repeat-named-group-pattern-fullmatch-lower-bound-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(bc){1,2}d",
+                r"a(?P<word>bc){1,2}d",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 2,
+            }
+        ),
+    ),
+    FixtureBundleSpec(
         "wider_ranged_repeat_quantified_group_workflows.py",
         expected_manifest_id="wider-ranged-repeat-quantified-group-workflows",
         expected_patterns=frozenset(

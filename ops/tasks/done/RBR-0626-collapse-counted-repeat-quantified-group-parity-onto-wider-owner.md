@@ -1,8 +1,9 @@
 # RBR-0626: Collapse the counted-repeat quantified-group parity suite onto the wider-ranged-repeat owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Delete `tests/python/test_counted_repeat_quantified_group_parity_suite.py` by moving its exact-repeat and ranged-repeat quantified-group coverage onto `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`, so this counted-repeat lane has one owner suite instead of a detached 144-line module that repeats the same compile/module/pattern parity ladder already present on the wider-ranged-repeat surface.
@@ -112,3 +113,14 @@ PY`
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_counted_repeat_quantified_group_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` passes (`1308 passed in 0.94s`);
   - the inline manifest-order probe above currently fails exactly on this cleanup with `AssertionError` because `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` still starts at `wider-ranged-repeat-quantified-group-workflows` and does not yet absorb the exact/ranged manifests; and
   - `bash -lc "! rg --files tests/python | rg 'test_counted_repeat_quantified_group_parity_suite\\.py$'"` currently fails exactly on this cleanup because the detached suite still exists.
+
+## Completion
+- Moved the exact-repeat and ranged-repeat quantified-group bundle specs into `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` ahead of the existing wider-ranged-repeat owner manifests, preserving their current manifest ids, exact case-id sets, pattern sets, and `("compile" | "module_call" | "pattern_call")` helper counts as `str`-only rows.
+- Left the wider owner’s existing shared compile/module/pattern parity ladder, direct-bytes follow-on routing, direct-test bucket accounting, bounded-pattern cases, and backtracking-trace coverage untouched so the absorbed counted-repeat rows now run on the same owner surface instead of through a detached sibling module.
+- Deleted `tests/python/test_counted_repeat_quantified_group_parity_suite.py`.
+
+## Verification
+- `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (`1340 passed in 0.97s`)
+- `PYTHONPATH=python ./.venv/bin/python - <<'PY' ...` manifest-order probe from the acceptance criteria (`ok`)
+- `bash -lc "! rg --files tests/python | rg 'test_counted_repeat_quantified_group_parity_suite\\.py$'"` (passes with no output)
+- `git diff --name-status -- tests/python/test_counted_repeat_quantified_group_parity_suite.py` (`D	tests/python/test_counted_repeat_quantified_group_parity_suite.py`)
