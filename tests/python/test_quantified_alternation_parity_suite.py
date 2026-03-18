@@ -565,10 +565,6 @@ COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_ca
     FIXTURE_BUNDLES,
     DIRECT_BYTES_FOLLOW_ON_BUNDLES,
 )
-SELECTED_CASE_IDS_BY_MANIFEST = {
-    bundle.expected_manifest_id: tuple(case.case_id for case in bundle.cases)
-    for bundle in FIXTURE_BUNDLES
-}
 QUANTIFIED_ALTERNATION_SELECTED_CASE_IDS = tuple(
     case.case_id for bundle in FIXTURE_BUNDLES for case in bundle.cases
 )
@@ -889,7 +885,7 @@ def test_quantified_alternation_parity_suite_tracks_published_case_frontier() ->
     for bundle in FIXTURE_BUNDLES:
         assert_fixture_bundle_tracks_published_case_frontier(
             bundle,
-            selected_case_ids=SELECTED_CASE_IDS_BY_MANIFEST[bundle.expected_manifest_id],
+            selected_case_ids=tuple(case.case_id for case in bundle.cases),
         )
 
 

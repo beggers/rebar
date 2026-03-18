@@ -110,26 +110,6 @@ NESTED_GROUP_ALTERNATION_CASE_IDS = (
     "named-nested-group-alternation-module-search-str",
     "named-nested-group-alternation-pattern-fullmatch-str",
 )
-GROUPED_CAPTURE_TRACKED_CASE_IDS_BY_MANIFEST = {
-    "grouped-match-workflows": GROUPED_MATCH_TRACKED_CASE_IDS,
-    "named-group-workflows": NAMED_GROUP_CASE_IDS,
-    "grouped-segment-workflows": GROUPED_SEGMENT_CASE_IDS,
-    "grouped-alternation-workflows": GROUPED_ALTERNATION_CASE_IDS,
-    "optional-group-workflows": OPTIONAL_GROUP_CASE_IDS,
-    "optional-group-alternation-workflows": OPTIONAL_GROUP_ALTERNATION_CASE_IDS,
-    "nested-group-workflows": NESTED_GROUP_CASE_IDS,
-    "nested-group-alternation-workflows": NESTED_GROUP_ALTERNATION_CASE_IDS,
-}
-GROUPED_CAPTURE_UNCOVERED_CASE_IDS_BY_MANIFEST = {
-    "grouped-match-workflows": GROUPED_MATCH_UNCOVERED_CASE_IDS,
-    "named-group-workflows": (),
-    "grouped-segment-workflows": (),
-    "grouped-alternation-workflows": (),
-    "optional-group-workflows": (),
-    "optional-group-alternation-workflows": (),
-    "nested-group-workflows": (),
-    "nested-group-alternation-workflows": (),
-}
 GROUPED_CAPTURE_TRACKED_CASE_IDS = (
     *GROUPED_MATCH_TRACKED_CASE_IDS,
     *NAMED_GROUP_CASE_IDS,
@@ -690,12 +670,16 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(bundle) -
 def test_grouped_capture_parity_suite_tracks_published_case_frontier() -> None:
     for bundle in FIXTURE_BUNDLES:
         manifest_id = bundle.expected_manifest_id
+        if manifest_id == "grouped-match-workflows":
+            selected_case_ids = GROUPED_MATCH_TRACKED_CASE_IDS
+            expected_uncovered_case_ids = GROUPED_MATCH_UNCOVERED_CASE_IDS
+        else:
+            selected_case_ids = tuple(case.case_id for case in bundle.cases)
+            expected_uncovered_case_ids = ()
         assert_fixture_bundle_tracks_published_case_frontier(
             bundle,
-            selected_case_ids=GROUPED_CAPTURE_TRACKED_CASE_IDS_BY_MANIFEST[manifest_id],
-            expected_uncovered_case_ids=GROUPED_CAPTURE_UNCOVERED_CASE_IDS_BY_MANIFEST[
-                manifest_id
-            ],
+            selected_case_ids=selected_case_ids,
+            expected_uncovered_case_ids=expected_uncovered_case_ids,
         )
 
 

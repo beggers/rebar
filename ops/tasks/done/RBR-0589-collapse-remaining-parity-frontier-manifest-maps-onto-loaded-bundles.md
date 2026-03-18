@@ -1,8 +1,9 @@
 # RBR-0589: Collapse remaining parity-frontier manifest maps onto loaded bundles
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Delete the remaining suite-local manifest-id lookup tables that restate already-loaded parity frontier case ids, so the frontier assertions derive selected rows from each `FixtureBundle` instead of maintaining parallel manifest registries.
@@ -89,3 +90,10 @@ Created: 2026-03-18
     - `tests/python/test_quantified_alternation_parity_suite.py:still-local:SELECTED_CASE_IDS_BY_MANIFEST = {`
     - `tests/python/test_grouped_capture_parity_suite.py:still-local:GROUPED_CAPTURE_TRACKED_CASE_IDS_BY_MANIFEST = {`
     - `tests/python/test_grouped_capture_parity_suite.py:still-local:GROUPED_CAPTURE_UNCOVERED_CASE_IDS_BY_MANIFEST = {`
+
+## Completion Notes
+- 2026-03-18: Removed the remaining suite-local manifest-id lookup tables from `tests/python/test_public_surface_parity_suite.py`, `tests/python/test_grouped_capture_parity_suite.py`, and `tests/python/test_quantified_alternation_parity_suite.py`, and rewrote the frontier assertions to derive selected case ids directly from each loaded bundle in bundle order.
+- 2026-03-18: Kept the grouped-match special case as the only widened grouped-capture frontier beyond bundle-local rows, with `GROUPED_MATCH_TRACKED_CASE_IDS` and `GROUPED_MATCH_UNCOVERED_CASE_IDS` still carrying the explicit exception while every other grouped-capture manifest now uses `bundle.cases` and `()`.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_public_surface_parity_suite.py tests/python/test_grouped_capture_parity_suite.py tests/python/test_quantified_alternation_parity_suite.py` (`1158 passed in 0.92s`)
+  - `python3 - <<'PY' ... PY` task probe (`ok`)
