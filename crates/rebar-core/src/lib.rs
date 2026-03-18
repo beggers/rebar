@@ -9954,6 +9954,69 @@ pub fn nested_broader_range_open_ended_quantified_group_alternation_branch_local
 
 /// Discover repeated spans for the published broader-range open-ended
 /// counted-repeat nested-group alternation plus branch-local-backreference
+/// callable replacement slice on `bytes`, preserving capture spans for
+/// callable result marshalling.
+#[must_use]
+pub fn nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_bytes(
+    pattern: &[u8],
+    flags: i32,
+    string: &[u8],
+    pos: isize,
+    endpos: Option<isize>,
+) -> CapturedFindSpansOutcome {
+    let (normalized_pos, normalized_endpos) = normalize_bounds(string.len(), pos, endpos);
+    let Some(grouped_pattern) =
+        parse_quantified_nested_group_alternation_branch_local_backreference_pattern_bytes(pattern)
+            .filter(|grouped_pattern| {
+                grouped_pattern.min_repeat == 2 && grouped_pattern.max_repeat.is_none()
+            })
+    else {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    };
+    if flags != 0 {
+        return CapturedFindSpansOutcome {
+            status: MatchStatus::Unsupported,
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            matches: Vec::new(),
+        };
+    }
+
+    let mut matches = Vec::new();
+    let mut next_start = normalized_pos;
+    while let Some((span, group_spans)) =
+        find_quantified_nested_group_alternation_branch_local_backreference_match_span_bytes(
+            &grouped_pattern,
+            flags,
+            MatchMode::Search,
+            string,
+            next_start,
+            normalized_endpos,
+        )
+    {
+        matches.push(CapturedMatchSpan { span, group_spans });
+        next_start = span.1;
+    }
+
+    CapturedFindSpansOutcome {
+        status: if matches.is_empty() {
+            MatchStatus::NoMatch
+        } else {
+            MatchStatus::Matched
+        },
+        pos: normalized_pos,
+        endpos: normalized_endpos,
+        matches,
+    }
+}
+
+/// Discover repeated spans for the published broader-range open-ended
+/// counted-repeat nested-group alternation plus branch-local-backreference
 /// conditional replacement slice on `bytes`, preserving capture spans for
 /// callable result marshalling.
 #[must_use]
