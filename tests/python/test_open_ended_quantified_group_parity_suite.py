@@ -365,11 +365,32 @@ BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
         fullmatch_misses=(b"abcd",),
     ),
 )
-DIRECT_BYTES_FOLLOW_ON_BUNDLES = (
-    BROADER_RANGE_OPEN_ENDED_ALTERNATION_BUNDLE,
-    OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
-    BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BUNDLE,
-    BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
+DIRECT_BYTES_FOLLOW_ON_SPECS = (
+    (
+        BROADER_RANGE_OPEN_ENDED_ALTERNATION_BUNDLE,
+        BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
+    ),
+    (
+        OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
+        OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    ),
+    (
+        BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BUNDLE,
+        BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    ),
+    (
+        BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
+        BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    ),
+)
+DIRECT_BYTES_FOLLOW_ON_SPEC_IDS = (
+    "broader-range-alternation",
+    "open-ended-backtracking-heavy",
+    "broader-range-conditional",
+    "broader-range-backtracking-heavy",
+)
+DIRECT_BYTES_FOLLOW_ON_BUNDLES = tuple(
+    bundle for bundle, _ in DIRECT_BYTES_FOLLOW_ON_SPECS
 )
 
 
@@ -1068,16 +1089,6 @@ def test_open_ended_backtracking_heavy_bytes_cases_stay_explicit_with_one_direct
     }
 
 
-def test_open_ended_backtracking_heavy_bytes_fixture_rows_route_through_direct_follow_on_anchor(
-) -> None:
-    assert_direct_bytes_follow_on_bundle_routing(
-        OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
-        compile_cases=COMPILE_CASES,
-        module_cases=MODULE_CASES,
-        pattern_cases=PATTERN_CASES,
-    )
-
-
 def test_broader_range_open_ended_alternation_bytes_cases_stay_explicit_with_one_direct_follow_on_anchor(
 ) -> None:
     bundle_str_cases = tuple(
@@ -1160,16 +1171,6 @@ def test_broader_range_open_ended_alternation_bytes_cases_stay_explicit_with_one
     }
 
 
-def test_broader_range_open_ended_alternation_bytes_fixture_rows_route_through_direct_follow_on_anchor(
-) -> None:
-    assert_direct_bytes_follow_on_bundle_routing(
-        BROADER_RANGE_OPEN_ENDED_ALTERNATION_BUNDLE,
-        compile_cases=COMPILE_CASES,
-        module_cases=MODULE_CASES,
-        pattern_cases=PATTERN_CASES,
-    )
-
-
 def test_broader_range_open_ended_conditional_bytes_cases_stay_explicit_with_one_direct_follow_on_anchor(
 ) -> None:
     bundle_str_cases = tuple(
@@ -1250,16 +1251,6 @@ def test_broader_range_open_ended_conditional_bytes_cases_stay_explicit_with_one
         numbered_case.pattern: {b"abcded", b"abcbcded", b"abcdede", b"abcd"},
         named_case.pattern: {b"abcbcded", b"ad"},
     }
-
-
-def test_broader_range_open_ended_conditional_bytes_fixture_rows_route_through_direct_follow_on_anchor(
-) -> None:
-    assert_direct_bytes_follow_on_bundle_routing(
-        BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BUNDLE,
-        compile_cases=COMPILE_CASES,
-        module_cases=MODULE_CASES,
-        pattern_cases=PATTERN_CASES,
-    )
 
 
 def test_broader_range_open_ended_backtracking_heavy_bytes_cases_stay_explicit_with_one_direct_follow_on_anchor(
@@ -1350,13 +1341,27 @@ def test_broader_range_open_ended_backtracking_heavy_bytes_cases_stay_explicit_w
     }
 
 
-def test_broader_range_open_ended_backtracking_heavy_bytes_fixture_rows_route_through_direct_follow_on_anchor(
+@pytest.mark.parametrize(
+    ("bundle", "supplemental_cases"),
+    DIRECT_BYTES_FOLLOW_ON_SPECS,
+    ids=DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
+)
+def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
+    bundle: FixtureBundle,
+    supplemental_cases: tuple[SupplementalCase, ...],
 ) -> None:
-    assert_direct_bytes_follow_on_bundle_routing(
-        BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
+    _, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
+        bundle,
         compile_cases=COMPILE_CASES,
         module_cases=MODULE_CASES,
         pattern_cases=PATTERN_CASES,
+    )
+
+    assert bundle_bytes_cases
+    assert {case.pattern for case in supplemental_cases} == frozenset(
+        case_pattern(case)
+        for case in fixture_cases_for_operation((bundle,), "compile")
+        if case.text_model == "bytes"
     )
 
 

@@ -1,6 +1,6 @@
 # RBR-0583: Collapse open-ended direct-bytes follow-on routing onto one spec table
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
 
@@ -112,3 +112,8 @@ Created: 2026-03-18
     - `function:still-present:test_broader_range_open_ended_alternation_bytes_fixture_rows_route_through_direct_follow_on_anchor`
     - `function:still-present:test_broader_range_open_ended_conditional_bytes_fixture_rows_route_through_direct_follow_on_anchor`
     - `function:still-present:test_broader_range_open_ended_backtracking_heavy_bytes_fixture_rows_route_through_direct_follow_on_anchor`
+
+## Completion Notes
+- 2026-03-18 architecture-implementation: Replaced the handwritten `DIRECT_BYTES_FOLLOW_ON_BUNDLES` tuple in `tests/python/test_open_ended_quantified_group_parity_suite.py` with one shared `DIRECT_BYTES_FOLLOW_ON_SPECS` table plus `DIRECT_BYTES_FOLLOW_ON_SPEC_IDS`, deriving the direct-follow-on bundle tuple from that registry while keeping the same four open-ended bytes follow-on anchors and the same `COMPILE_CASES`, `MODULE_CASES`, and `PATTERN_CASES` partitioning.
+- Replaced the four one-off `*_route_through_direct_follow_on_anchor` tests with the parametrized `test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(...)`, mirroring the adjacent quantified-alternation and wider-ranged-repeat parity-suite shape without changing any explicit bytes supplemental cases or bundle-specific assertions.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py` (`3891 passed in 2.72s`) and the task acceptance AST probe (`ok`).
