@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0621` should convert the already-published bytes counterparts for the broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference conditional pair behind `rebar._rebar` by updating `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_branch_local_backreference_parity_suite.py`, and `reports/correctness/latest.py`, so `match.nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional` can move from `20` total / `10` passed / `10` `unimplemented` to `20` / `20` / `0` with mixed `str`/`bytes` coverage while the combined correctness report moves from `1278` / `1268` / `10` to `1278` / `1278` / `0` across `111` manifests without widening into bytes benchmarks or deeper grouped execution.
+`RBR-0623` should catch the same broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference conditional bytes pair up on the existing `benchmarks/workloads/branch_local_backreference_boundary.py` surface by updating that manifest, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, so `branch-local-backreference-boundary` can move from `24` total workloads / `24` measured workloads / `0` known gaps to `30` / `30` / `0` while the combined benchmark report moves from `713` / `713` / `0` to `719` / `719` / `0` through the source-tree shim.
 
 ## Ordered Work
-1. `RBR-0621` should convert the already-published ten bytes counterparts for `rb"a((b|c){2,})\\2(?(2)d|e)"` and `rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)"` to real Rust-backed parity on the existing `tests/python/test_branch_local_backreference_parity_suite.py` surface before the same bytes pair reaches the existing `benchmarks/workloads/branch_local_backreference_boundary.py` benchmark rows or deeper grouped execution.
+1. `RBR-0623` should add the six existing `branch_local_backreference_boundary.py` bytes benchmark mirrors for `rb"a((b|c){2,})\\2(?(2)d|e)"` and `rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)"`, keeping the slice on the shared branch-local benchmark expectation surface so the same bytes pair reaches the Python-path benchmark report before deeper grouped execution broadens that family.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
