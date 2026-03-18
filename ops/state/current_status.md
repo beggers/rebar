@@ -329,7 +329,7 @@ The published frontier is still narrow: the current correctness slice covers 126
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0619` should publish the 10 bytes counterparts for the broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference conditional pair, moving that correctness manifest from `10 / 10 / 0` to `20 / 10 / 10` and the combined correctness report from `1268 / 1268 / 0` to `1278 / 1268 / 10` without widening into bytes parity or bytes benchmarks.
+- `RBR-0621` should convert the same broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference conditional bytes pair behind `rebar._rebar`, moving that correctness manifest from `20 / 10 / 10` to `20 / 20 / 0` and the combined correctness report from `1278 / 1268 / 10` to `1278 / 1278 / 0` without widening into bytes benchmarks.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
