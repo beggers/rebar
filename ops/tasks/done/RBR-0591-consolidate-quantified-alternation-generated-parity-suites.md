@@ -1,8 +1,9 @@
 # RBR-0591: Consolidate the generated quantified-alternation parity modules into one fixture-backed pytest suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Replace the three generated quantified-alternation parity modules with one backend-parameterized pytest suite so this frontier stops repeating the same bundle loading, generated text-matrix construction, compile path, and match-parity assertions across three singleton files.
@@ -61,3 +62,11 @@ Created: 2026-03-18
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_backtracking_heavy_quantified_alternation_generated_parity_suite.py tests/python/test_bounded_quantified_alternation_generated_parity_suite.py tests/python/test_broader_range_quantified_alternation_generated_parity_suite.py` passes (`27 passed in 0.54s`);
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_generated_parity_suite.py` currently fails exactly on this cleanup with `ERROR: file or directory not found: tests/python/test_quantified_alternation_generated_parity_suite.py`; and
   - `bash -lc "! rg --files tests/python | rg 'test_(backtracking_heavy_quantified_alternation_generated|bounded_quantified_alternation_generated|broader_range_quantified_alternation_generated)_parity_suite\\.py$'"` currently fails exactly on this cleanup because all three superseded files still exist.
+
+## Completion
+- 2026-03-18: Added `tests/python/test_quantified_alternation_generated_parity_suite.py` with one local generated-slice spec table covering the bounded `{1,2}`, broader-range `{1,3}`, and backtracking-heavy `{1,2}` quantified-alternation compile bundles, while keeping the shared `HELPERS`, `BODY_ATOMS`, `WRAPPER_PAIRS`, CPython compile path, bytes-versus-str candidate handling, parity assertions, and twenty-entry failure preview unchanged.
+- 2026-03-18: Deleted `tests/python/test_backtracking_heavy_quantified_alternation_generated_parity_suite.py`, `tests/python/test_bounded_quantified_alternation_generated_parity_suite.py`, and `tests/python/test_broader_range_quantified_alternation_generated_parity_suite.py` after moving their duplicated generated text-matrix parity logic into the consolidated fixture-backed suite.
+
+## Verification
+- 2026-03-18: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_generated_parity_suite.py` (`27 passed in 0.54s`)
+- 2026-03-18: `bash -lc "! rg --files tests/python | rg 'test_(backtracking_heavy_quantified_alternation_generated|bounded_quantified_alternation_generated|broader_range_quantified_alternation_generated)_parity_suite\\.py$'"` (no matches)
