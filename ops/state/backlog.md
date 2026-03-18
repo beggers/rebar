@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0582` should catch the bounded quantified-alternation nested-branch bytes pair up on the existing Python-facing quantified-alternation benchmark surface, mirroring the six published nested-branch `str` workloads for `rb"a((b|c)|de){1,2}d"` and `rb"a(?P<word>(b|c)|de){1,2}d"` so `quantified-alternation-boundary` grows from `60` to `66` measured workloads and the combined source-tree benchmark report grows from `680` to `686` without reopening another bytes family.
+`RBR-0584` should publish the bounded quantified-alternation backtracking-heavy bytes pair on the existing correctness/parity surface, adding the twelve bytes counterparts for `rb"a(b|bc){1,2}d"` and `rb"a(?P<word>b|bc){1,2}d"` to `tests/conformance/fixtures/quantified_alternation_backtracking_heavy_workflows.py` and one explicit bytes follow-on anchor in `tests/python/test_quantified_alternation_parity_suite.py` so the combined correctness report grows from `1200` to `1212` total cases with `12` honest `unimplemented` outcomes before Rust-backed bytes parity and later benchmark catch-up land.
 
 ## Ordered Work
-1. `RBR-0582` should catch the bounded quantified-alternation nested-branch bytes pair up through `benchmarks/workloads/quantified_alternation_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, reusing the existing fully measured quantified-alternation manifest instead of opening another benchmark family.
+1. `RBR-0584` should publish the bounded quantified-alternation backtracking-heavy bytes pair through `tests/conformance/fixtures/quantified_alternation_backtracking_heavy_workflows.py`, `tests/python/test_quantified_alternation_parity_suite.py`, `tests/conformance/correctness_expectations.py`, and `reports/correctness/latest.py`, keeping that bytes pair explicit and `rebar`-unsupported on the existing quantified-alternation parity surface instead of forking another manifest or bytes-only suite.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
