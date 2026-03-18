@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0588` should catch the bounded quantified-alternation backtracking-heavy bytes pair up on the existing Python-path benchmark surface, reusing `benchmarks/workloads/quantified_alternation_boundary.py` and the shared source-tree benchmark assertion path so the `quantified-alternation-boundary` manifest moves from `66` total / `66` measured / `0` known gaps to `72` / `72` / `0` and the combined published benchmark report moves from `686` / `686` / `0` to `692` / `692` / `0` without widening into another bytes family.
+`RBR-0590` should publish the bounded quantified-alternation conditional bytes pair on the existing correctness/parity surface by extending `tests/conformance/fixtures/quantified_alternation_conditional_workflows.py` and `tests/python/test_quantified_alternation_parity_suite.py`, so the tracked correctness report moves from `1212` total / `1212` passed / `0` `unimplemented` to `1224` / `1212` / `12` while `match.quantified_alternation_conditional` grows from `12` str-only cases to `24` mixed `str`/`bytes` cases before Rust-backed parity and later Python-path benchmark catch-up land.
 
 ## Ordered Work
-1. `RBR-0588` should add only the six backtracking-heavy bytes mirrors for `a(b|bc){1,2}d` and `a(?P<word>b|bc){1,2}d` through `benchmarks/workloads/quantified_alternation_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, keeping the quantified-alternation manifest on the existing fully measured assertion surface and leaving no further ready quantified-alternation bytes follow-on once that benchmark catch-up lands.
+1. `RBR-0590` should add only the twelve conditional bytes publication rows for `a((b|c){1,2})?(?(1)d|e)` and `a(?P<outer>(b|c){1,2})?(?(outer)d|e)` through `tests/conformance/fixtures/quantified_alternation_conditional_workflows.py`, `tests/python/test_quantified_alternation_parity_suite.py`, `tests/conformance/correctness_expectations.py`, and `reports/correctness/latest.py`, keeping the quantified-alternation conditional slice on the existing correctness/parity path and leaving Rust-backed bytes parity plus Python-path benchmark catch-up for later follow-ons.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

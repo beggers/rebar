@@ -329,7 +329,7 @@ The published frontier is still narrow: the current correctness slice covers 121
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0588` should catch the quantified-alternation backtracking-heavy bytes pair up on the existing Python-path benchmark surface now that `RBR-0586` has moved the published correctness report to `1212 / 1212 / 0`.
+- `RBR-0590` should publish the quantified-alternation conditional bytes pair on the existing correctness/parity surface, extending `quantified-alternation-conditional-workflows` from `12` str-only cases to `24` mixed `str`/`bytes` cases so the tracked report can move from `1212 / 1212 / 0` to `1224 / 1212 / 12` before Rust-backed parity re-closes that slice.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
