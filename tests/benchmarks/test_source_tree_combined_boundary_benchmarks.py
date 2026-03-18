@@ -38,36 +38,11 @@ from tests.report_assertions import (
 )
 
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"
-ZERO_GAP_MANIFEST_PROMOTION_CASES = (
-    (
-        "grouped-named-boundary",
-        (
-            "module-search-grouped-segment-cold-gap",
-            "pattern-search-grouped-segment-warm-gap",
-        ),
-        13,
-    ),
-    (
-        "numbered-backreference-boundary",
-        (
-            "module-search-numbered-backreference-segment-cold-gap",
-            "pattern-search-numbered-backreference-prefix-purged-gap",
-        ),
-        5,
-    ),
-    (
-        "nested-group-boundary",
-        (
-            "module-search-triple-nested-group-cold-gap",
-            "pattern-fullmatch-named-quantified-nested-group-purged-gap",
-        ),
-        8,
-    ),
-    (
-        "optional-group-boundary",
-        ("module-search-numbered-optional-group-conditional-cold-gap",),
-        7,
-    ),
+ZERO_GAP_PROMOTION_MANIFEST_IDS = (
+    "grouped-named-boundary",
+    "numbered-backreference-boundary",
+    "nested-group-boundary",
+    "optional-group-boundary",
 )
 
 
@@ -192,12 +167,13 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def _assert_zero_gap_manifest_representative_promotion(
         self,
         manifest_id: str,
-        expected_workload_ids: tuple[str, ...],
-        expected_measured_workload_count: int,
     ) -> None:
-        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
-            manifest_id
-        ]
+        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
+        expected_workload_ids = (
+            manifest_definition.representative_measured_workload_ids
+        )
+        self.assertIsNotNone(expected_workload_ids)
+        assert expected_workload_ids is not None
         self.assertIsNone(manifest_definition.known_gap_workload_ids)
         self.assertEqual(
             manifest_definition.representative_measured_workload_ids,
@@ -209,6 +185,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
 
         case = source_tree_combined_case(manifest_id)
+        expected_measured_workload_count = len(
+            case.selected_workload_ids_for_manifest(manifest_id)
+        )
         manifest_expectation = case.manifest_expectation
         self.assertEqual(manifest_expectation.known_gap_count, 0)
         self.assertEqual(
@@ -320,16 +299,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_zero_gap_manifest_representative_promotions_keep_selected_rows_measured(
         self,
     ) -> None:
-        for (
-            manifest_id,
-            expected_workload_ids,
-            expected_measured_workload_count,
-        ) in ZERO_GAP_MANIFEST_PROMOTION_CASES:
+        for manifest_id in ZERO_GAP_PROMOTION_MANIFEST_IDS:
             with self.subTest(manifest_id=manifest_id):
                 self._assert_zero_gap_manifest_representative_promotion(
-                    manifest_id,
-                    expected_workload_ids,
-                    expected_measured_workload_count,
+                    manifest_id
                 )
 
     def test_literal_flag_combined_case_preserves_expected_manifest_paths(self) -> None:

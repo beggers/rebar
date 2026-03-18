@@ -34,6 +34,23 @@ from tests.report_assertions import (
 class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
     maxDiff = None
 
+    def _assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation(
+        self,
+        manifest_id: str,
+    ) -> None:
+        case = source_tree_scorecard_case(manifest_id)
+        combined_case = source_tree_combined_case(manifest_id)
+
+        self.assertEqual(
+            case.manifest_expectations[manifest_id].known_gap_count,
+            0,
+        )
+        self.assertEqual(
+            case.representative_measured_workload_ids,
+            combined_case.manifest_expectation.representative_measured_workload_ids,
+        )
+        self.assertEqual(case.representative_known_gap_workload_ids, ())
+
     def test_raw_scorecard_case_definitions_use_direct_manifest_ids(self) -> None:
         for case_id, case_definition in SOURCE_TREE_SCORECARD_EXPECTATIONS.items():
             with self.subTest(case_id=case_id):
@@ -83,34 +100,14 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
     def test_numbered_backreference_manifest_promotes_grouped_segment_pair_to_measured(
         self,
     ) -> None:
-        case = source_tree_scorecard_case("numbered-backreference-boundary")
-        self.assertEqual(
-            case.manifest_expectations["numbered-backreference-boundary"].known_gap_count,
-            0,
+        self._assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation(
+            "numbered-backreference-boundary"
         )
-        self.assertEqual(
-            case.representative_measured_workload_ids,
-            (
-                "module-search-numbered-backreference-segment-cold-gap",
-                "pattern-search-numbered-backreference-prefix-purged-gap",
-            ),
-        )
-        self.assertEqual(case.representative_known_gap_workload_ids, ())
 
     def test_nested_group_manifest_promotes_nested_pair_to_measured(self) -> None:
-        case = source_tree_scorecard_case("nested-group-boundary")
-        self.assertEqual(
-            case.manifest_expectations["nested-group-boundary"].known_gap_count,
-            0,
+        self._assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation(
+            "nested-group-boundary"
         )
-        self.assertEqual(
-            case.representative_measured_workload_ids,
-            (
-                "module-search-triple-nested-group-cold-gap",
-                "pattern-fullmatch-named-quantified-nested-group-purged-gap",
-            ),
-        )
-        self.assertEqual(case.representative_known_gap_workload_ids, ())
 
     def test_case_builders_reuse_cached_source_tree_manifest_records(self) -> None:
         scorecard_case = source_tree_scorecard_case("post-parser-workflows")

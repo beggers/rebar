@@ -1,6 +1,6 @@
 # RBR-0581: Collapse source-tree zero-gap promotion literals onto shared manifest expectations
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
 
@@ -57,3 +57,8 @@ Created: 2026-03-18
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passes (`31 passed, 953 subtests passed in 22.73s`);
   - `rg -n "ZERO_GAP_MANIFEST_PROMOTION_CASES|module-search-numbered-backreference-segment-cold-gap|pattern-search-numbered-backreference-prefix-purged-gap|module-search-triple-nested-group-cold-gap|pattern-fullmatch-named-quantified-nested-group-purged-gap|module-search-grouped-segment-cold-gap|pattern-search-grouped-segment-warm-gap|module-search-numbered-optional-group-conditional-cold-gap" tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently returns the exact literal duplicates this cleanup removes.
 - This task stays off the active `RBR-0580` files under `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_quantified_alternation_parity_suite.py`, and `reports/correctness/latest.py`, so the shared ready queue does not need another feature-planning pass before `architecture-implementation` can claim it.
+
+## Completion Notes
+- 2026-03-18 architecture-implementation: Replaced the local zero-gap promotion table in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with the exact four manifest ids under explicit coverage, and made the helper derive representative workload ids from `SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id].representative_measured_workload_ids` plus measured-workload counts from `source_tree_combined_case(manifest_id)`.
+- Updated `tests/benchmarks/test_source_tree_benchmark_scorecards.py` so the single-manifest `numbered-backreference-boundary` and `nested-group-boundary` scorecard checks compare against the shared combined-manifest expectation surface via `source_tree_combined_case(...)` instead of repeating representative workload-id tuples locally.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`31 passed, 953 subtests passed in 22.63s`) and `rg -n "ZERO_GAP_MANIFEST_PROMOTION_CASES|module-search-numbered-backreference-segment-cold-gap|pattern-search-numbered-backreference-prefix-purged-gap|module-search-triple-nested-group-cold-gap|pattern-fullmatch-named-quantified-nested-group-purged-gap|module-search-grouped-segment-cold-gap|pattern-search-grouped-segment-warm-gap|module-search-numbered-optional-group-conditional-cold-gap" tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, which now returns no matches.
