@@ -51,11 +51,11 @@ class CallableNearMissCase:
     id: str
     manifest_id: str
     use_compiled_pattern: bool
-    pattern: str
+    pattern: str | bytes
     helper: str
-    text: str
+    text: str | bytes
     count: int
-    expected_result: str | tuple[str, int]
+    expected_result: str | bytes | tuple[str | bytes, int]
 
 
 TextValue = str | bytes
@@ -189,7 +189,7 @@ CALLABLE_MANIFEST_SPECS = (
         ),
         expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
         expected_text_models=MIXED_TEXT_MODELS,
-        has_near_miss_matrix=False,
+        has_near_miss_matrix=True,
     ),
 )
 CALLABLE_MANIFEST_SPECS_BY_ID = {
@@ -416,6 +416,102 @@ CALLABLE_NEAR_MISS_CASE_SPECS = (
         text="zzabbdzz",
         count=1,
         expected_result=("zzabbdzz", 0),
+    ),
+    CallableNearMissCase(
+        id="module-numbered-sub-no-match-missing-conditional-d-bytes",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=False,
+        pattern=rb"a((b|c){2,})\2(?(2)d|e)",
+        helper="sub",
+        text=b"zzabcbcczz",
+        count=0,
+        expected_result=b"zzabcbcczz",
+    ),
+    CallableNearMissCase(
+        id="module-numbered-subn-no-match-missing-conditional-d-bytes",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=False,
+        pattern=rb"a((b|c){2,})\2(?(2)d|e)",
+        helper="subn",
+        text=b"zzabcbcczz",
+        count=1,
+        expected_result=(b"zzabcbcczz", 0),
+    ),
+    CallableNearMissCase(
+        id="pattern-numbered-sub-no-match-missing-conditional-d-bytes",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=True,
+        pattern=rb"a((b|c){2,})\2(?(2)d|e)",
+        helper="sub",
+        text=b"zzabcbcczz",
+        count=0,
+        expected_result=b"zzabcbcczz",
+    ),
+    CallableNearMissCase(
+        id="pattern-numbered-subn-no-match-missing-conditional-d-bytes",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=True,
+        pattern=rb"a((b|c){2,})\2(?(2)d|e)",
+        helper="subn",
+        text=b"zzabcbcczz",
+        count=1,
+        expected_result=(b"zzabcbcczz", 0),
+    ),
+    CallableNearMissCase(
+        id="module-named-sub-no-match-below-lower-bound-bytes",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=False,
+        pattern=rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+        helper="sub",
+        text=b"zzabbdzz",
+        count=0,
+        expected_result=b"zzabbdzz",
+    ),
+    CallableNearMissCase(
+        id="module-named-subn-no-match-below-lower-bound-bytes",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=False,
+        pattern=rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+        helper="subn",
+        text=b"zzabbdzz",
+        count=1,
+        expected_result=(b"zzabbdzz", 0),
+    ),
+    CallableNearMissCase(
+        id="pattern-named-sub-no-match-below-lower-bound-bytes",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=True,
+        pattern=rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+        helper="sub",
+        text=b"zzabbdzz",
+        count=0,
+        expected_result=b"zzabbdzz",
+    ),
+    CallableNearMissCase(
+        id="pattern-named-subn-no-match-below-lower-bound-bytes",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=True,
+        pattern=rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+        helper="subn",
+        text=b"zzabbdzz",
+        count=1,
+        expected_result=(b"zzabbdzz", 0),
     ),
 )
 CALLABLE_NEAR_MISS_CASES = tuple(
