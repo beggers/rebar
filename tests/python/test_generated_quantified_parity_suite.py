@@ -29,7 +29,11 @@ class GeneratedParitySpec:
     expected_manifest_id: str
     expected_compile_case_ids: tuple[str, ...]
     expected_patterns: frozenset[str | bytes]
-    candidate_lengths: range
+    expected_operation_helper_counts: Counter[tuple[str, str | None]]
+    expected_text_models: frozenset[str] | None
+    candidate_kind: str
+    candidate_lengths: range | None
+    branch_choices: tuple[str, ...] | None
     expected_candidate_count: int
     failure_prefix: str
 
@@ -42,8 +46,9 @@ WRAPPER_PAIRS = (
     ("", "zz"),
     ("zz", "zz"),
 )
-EXPECTED_OPERATION_HELPER_COUNTS = Counter({("compile", None): 4})
-EXPECTED_TEXT_MODELS = frozenset({"bytes", "str"})
+STR_AND_BYTES_TEXT_MODELS = frozenset({"bytes", "str"})
+FOUR_COMPILE_CASES = Counter({("compile", None): 4})
+TWO_COMPILE_CASES = Counter({("compile", None): 2})
 
 GENERATED_PARITY_SPECS = (
     GeneratedParitySpec(
@@ -63,7 +68,11 @@ GENERATED_PARITY_SPECS = (
                 rb"a(?P<word>b|c){1,2}d",
             }
         ),
+        expected_operation_helper_counts=FOUR_COMPILE_CASES,
+        expected_text_models=STR_AND_BYTES_TEXT_MODELS,
+        candidate_kind="quantified_alternation",
         candidate_lengths=range(4),
+        branch_choices=None,
         expected_candidate_count=160,
         failure_prefix="bounded quantified alternation generated parity drifted",
     ),
@@ -84,7 +93,11 @@ GENERATED_PARITY_SPECS = (
                 rb"a(?P<word>b|c){1,3}d",
             }
         ),
+        expected_operation_helper_counts=FOUR_COMPILE_CASES,
+        expected_text_models=STR_AND_BYTES_TEXT_MODELS,
+        candidate_kind="quantified_alternation",
         candidate_lengths=range(5),
+        branch_choices=None,
         expected_candidate_count=484,
         failure_prefix="broader-range quantified alternation generated parity drifted",
     ),
@@ -105,11 +118,94 @@ GENERATED_PARITY_SPECS = (
                 rb"a(?P<word>b|bc){1,2}d",
             }
         ),
+        expected_operation_helper_counts=FOUR_COMPILE_CASES,
+        expected_text_models=STR_AND_BYTES_TEXT_MODELS,
+        candidate_kind="quantified_alternation",
         candidate_lengths=range(5),
+        branch_choices=None,
         expected_candidate_count=484,
         failure_prefix="backtracking-heavy quantified alternation generated parity drifted",
     ),
+    GeneratedParitySpec(
+        fixture_name="conditional_group_exists_quantified_workflows.py",
+        expected_manifest_id="conditional-group-exists-quantified-workflows",
+        expected_compile_case_ids=(
+            "conditional-group-exists-quantified-compile-metadata-str",
+            "named-conditional-group-exists-quantified-compile-metadata-str",
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)d|e){2}",
+                r"a(?P<word>b)?c(?(word)d|e){2}",
+            }
+        ),
+        expected_operation_helper_counts=TWO_COMPILE_CASES,
+        expected_text_models=None,
+        candidate_kind="quantified_conditional",
+        candidate_lengths=None,
+        branch_choices=("d", "e"),
+        expected_candidate_count=32,
+        failure_prefix="quantified conditional generated parity drifted",
+    ),
+    GeneratedParitySpec(
+        fixture_name="conditional_group_exists_quantified_alternation_workflows.py",
+        expected_manifest_id="conditional-group-exists-quantified-alternation-workflows",
+        expected_compile_case_ids=(
+            "conditional-group-exists-quantified-alternation-compile-metadata-str",
+            "named-conditional-group-exists-quantified-alternation-compile-metadata-str",
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)(de|df)|(eg|eh)){2}",
+                r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}",
+            }
+        ),
+        expected_operation_helper_counts=TWO_COMPILE_CASES,
+        expected_text_models=None,
+        candidate_kind="quantified_conditional",
+        candidate_lengths=None,
+        branch_choices=("de", "df", "eg", "eh"),
+        expected_candidate_count=128,
+        failure_prefix="quantified conditional alternation generated parity drifted",
+    ),
 )
+
+
+def _build_quantified_alternation_candidate_texts(
+    candidate_lengths: range,
+) -> tuple[str, ...]:
+    return tuple(
+        f"{prefix}a{''.join(body)}d{suffix}"
+        for length in candidate_lengths
+        for body in product(BODY_ATOMS, repeat=length)
+        for prefix, suffix in WRAPPER_PAIRS
+    )
+
+
+def _build_quantified_conditional_candidate_texts(
+    branch_choices: tuple[str, ...],
+) -> tuple[str, ...]:
+    cores = tuple(
+        ("abc" if present else "ac") + "".join(branches)
+        for present in (False, True)
+        for branches in product(branch_choices, repeat=2)
+    )
+    return tuple(
+        f"{wrapper_prefix}{core}{wrapper_suffix}"
+        for core in cores
+        for wrapper_prefix, wrapper_suffix in WRAPPER_PAIRS
+    )
+
+
+def _build_candidate_texts(spec: GeneratedParitySpec) -> tuple[str, ...]:
+    if spec.candidate_kind == "quantified_alternation":
+        assert spec.candidate_lengths is not None
+        return _build_quantified_alternation_candidate_texts(spec.candidate_lengths)
+    if spec.candidate_kind == "quantified_conditional":
+        assert spec.branch_choices is not None
+        return _build_quantified_conditional_candidate_texts(spec.branch_choices)
+    raise AssertionError(f"unexpected candidate_kind {spec.candidate_kind!r}")
+
 
 FIXTURE_BUNDLES = load_fixture_bundles(
     tuple(
@@ -118,8 +214,8 @@ FIXTURE_BUNDLES = load_fixture_bundles(
             expected_manifest_id=spec.expected_manifest_id,
             selected_case_ids=spec.expected_compile_case_ids,
             expected_patterns=spec.expected_patterns,
-            expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
-            expected_text_models=EXPECTED_TEXT_MODELS,
+            expected_operation_helper_counts=spec.expected_operation_helper_counts,
+            expected_text_models=spec.expected_text_models,
         )
         for spec in GENERATED_PARITY_SPECS
     )
@@ -127,18 +223,13 @@ FIXTURE_BUNDLES = load_fixture_bundles(
 SPEC_BY_MANIFEST_ID = {
     spec.expected_manifest_id: spec for spec in GENERATED_PARITY_SPECS
 }
-ASCII_CANDIDATE_TEXTS_BY_MANIFEST_ID = {
-    spec.expected_manifest_id: tuple(
-        f"{prefix}a{''.join(body)}d{suffix}"
-        for length in spec.candidate_lengths
-        for body in product(BODY_ATOMS, repeat=length)
-        for prefix, suffix in WRAPPER_PAIRS
-    )
+STR_CANDIDATE_TEXTS_BY_MANIFEST_ID = {
+    spec.expected_manifest_id: _build_candidate_texts(spec)
     for spec in GENERATED_PARITY_SPECS
 }
 BYTES_CANDIDATE_TEXTS_BY_MANIFEST_ID = {
     manifest_id: tuple(text.encode("ascii") for text in texts)
-    for manifest_id, texts in ASCII_CANDIDATE_TEXTS_BY_MANIFEST_ID.items()
+    for manifest_id, texts in STR_CANDIDATE_TEXTS_BY_MANIFEST_ID.items()
 }
 COMPILE_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
 
@@ -149,7 +240,7 @@ def _candidate_texts(
 ) -> tuple[str | bytes, ...]:
     if case.text_model == "bytes":
         return BYTES_CANDIDATE_TEXTS_BY_MANIFEST_ID[spec.expected_manifest_id]
-    return ASCII_CANDIDATE_TEXTS_BY_MANIFEST_ID[spec.expected_manifest_id]
+    return STR_CANDIDATE_TEXTS_BY_MANIFEST_ID[spec.expected_manifest_id]
 
 
 def _record_match_failure(
@@ -194,7 +285,7 @@ def test_generated_parity_suite_stays_anchored_to_published_compile_cases(
         expected_ordered_case_ids=spec.expected_compile_case_ids,
     )
     assert (
-        len(ASCII_CANDIDATE_TEXTS_BY_MANIFEST_ID[spec.expected_manifest_id])
+        len(STR_CANDIDATE_TEXTS_BY_MANIFEST_ID[spec.expected_manifest_id])
         == spec.expected_candidate_count
     )
 

@@ -1,6 +1,6 @@
 # RBR-0594: Collapse the remaining generated quantified parity modules into one fixture-backed pytest suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
 
@@ -64,3 +64,10 @@ Created: 2026-03-18
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_generated_parity_suite.py tests/python/test_conditional_group_exists_quantified_generated_parity_suite.py` passes (`37 passed in 0.62s`);
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_generated_quantified_parity_suite.py` currently fails exactly on this cleanup with `ERROR: file or directory not found: tests/python/test_generated_quantified_parity_suite.py`; and
   - `bash -lc "! rg --files tests/python | rg 'test_(quantified_alternation|conditional_group_exists_quantified)_generated_parity_suite\\.py$'"` currently fails exactly on this cleanup because both superseded files still exist.
+
+## Completion Notes
+- 2026-03-18: Added `tests/python/test_generated_quantified_parity_suite.py` with one local spec table covering the three quantified-alternation generated slices plus the quantified-conditional and quantified-conditional-alternation slices, while keeping the shared fixture-bundle loading, CPython compile path, helper loop, bytes-versus-str candidate handling, match/group parity assertions, and twenty-entry failure preview unchanged.
+- 2026-03-18: Deleted `tests/python/test_quantified_alternation_generated_parity_suite.py` and `tests/python/test_conditional_group_exists_quantified_generated_parity_suite.py` after consolidating their metadata and candidate builders into the new suite.
+- 2026-03-18 verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_generated_quantified_parity_suite.py` (`37 passed in 0.62s`)
+  - `bash -lc "! rg --files tests/python | rg 'test_(quantified_alternation|conditional_group_exists_quantified)_generated_parity_suite\\.py$'"`
