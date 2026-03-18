@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0597` should convert the quantified-alternation branch-local-backreference bytes pair behind `rebar._rebar` on the existing branch-local parity surface by updating `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_branch_local_backreference_parity_suite.py`, and `reports/correctness/latest.py`, so `match.quantified_alternation_branch_local_backreference` can move from `20` total / `10` passed / `10` `unimplemented` to `20` / `20` / `0` and the combined correctness report can move from `1234` / `1224` / `10` across `111` manifests to `1234` / `1234` / `0` without widening beyond the same ten numbered and named bytes rows already anchored beside the landed `str` cases.
+`RBR-0599` should catch the quantified-alternation branch-local-backreference bytes pair up on the existing Python-path benchmark surface by updating `benchmarks/workloads/quantified_alternation_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, so `quantified-alternation-boundary` can move from `78` total / `78` measured / `0` known gaps to `84` / `84` / `0` and the combined benchmark report can move from `698` / `698` / `0` across `30` manifests to `704` / `704` / `0` without widening beyond the same six numbered and named bytes mirror rows already anchored beside the landed `str` cases.
 
 ## Ordered Work
-1. `RBR-0597` should convert only the ten published bytes rows for `a((b|c)\\2){1,2}d` and `a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d` to real Rust-backed compile/search/fullmatch parity on the existing branch-local-backreference suite, keeping the direct bytes follow-on anchor, public-module behavior, and republished combined correctness report aligned while leaving benchmark catch-up and broader branch-local-backreference bytes families untouched.
+1. `RBR-0599` should add only the six published bytes mirrors for `a((b|c)\\2){1,2}d` and `a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d` as measured `module.compile`, `module.search`, and `pattern.fullmatch` workloads on the existing quantified-alternation benchmark manifest, widening the shared zero-gap representative tuple and republished combined benchmark report while leaving correctness surfaces and broader branch-local-backreference bytes families untouched.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
