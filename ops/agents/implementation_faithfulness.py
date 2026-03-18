@@ -7,7 +7,7 @@ SPEC = {
     "prompt_path": "ops/agents/implementation_faithfulness.md",
     "dispatch": {
         "mode": "interval",
-        "interval_seconds": 10800,
+        "interval_seconds": 21600,
         "timeout_seconds": 2700,
     },
     "codex": {
