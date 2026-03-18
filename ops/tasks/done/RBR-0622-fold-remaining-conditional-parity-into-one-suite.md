@@ -1,8 +1,9 @@
 # RBR-0622: Fold the detached nested-and-alternation conditional suite into the core conditional suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Expand `tests/python/test_conditional_group_exists_parity_suite.py` to absorb `tests/python/test_conditional_group_exists_nested_alternation_parity_suite.py`, so the conditional group-exists parity surface has one fixture-backed owner instead of a second detached suite that repeats the same bundle-contract plus compile/module/pattern parity ladders.
@@ -150,3 +151,7 @@ PY`
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_parity_suite.py tests/python/test_conditional_group_exists_nested_alternation_parity_suite.py` passes (`530 passed in 0.47s`);
   - the inline `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` manifest-order probe above currently fails exactly on this cleanup with `AssertionError` because `tests/python/test_conditional_group_exists_parity_suite.py` still exposes only the twelve base and quantified manifests; and
   - `bash -lc "! rg --files tests/python | rg 'test_conditional_group_exists_nested_alternation_parity_suite\\.py$'"` currently fails exactly on this cleanup because the detached suite still exists.
+- 2026-03-18 completion:
+  - Expanded `tests/python/test_conditional_group_exists_parity_suite.py` to carry all twenty-two conditional bundle specs in the required order, keeping the existing core bounded-window/generated-quantified tables intact while folding in the detached nested/alternation helper-count constants and compile/module/pattern partitions locally.
+  - Deleted `tests/python/test_conditional_group_exists_nested_alternation_parity_suite.py`; `git diff --name-status -- tests/python/test_conditional_group_exists_parity_suite.py tests/python/test_conditional_group_exists_nested_alternation_parity_suite.py` now reports `D` for the detached suite and `M` for the combined owner.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_parity_suite.py` (`530 passed in 0.48s`), the inline manifest-order probe (`ok`), and `bash -lc "! rg --files tests/python | rg 'test_conditional_group_exists_nested_alternation_parity_suite\\.py$'"` (no matches).
