@@ -37,6 +37,37 @@ from tests.report_assertions import (
 )
 
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"
+ZERO_GAP_MANIFEST_PROMOTION_CASES = (
+    (
+        "grouped-named-boundary",
+        (
+            "module-search-grouped-segment-cold-gap",
+            "pattern-search-grouped-segment-warm-gap",
+        ),
+        13,
+    ),
+    (
+        "numbered-backreference-boundary",
+        (
+            "module-search-numbered-backreference-segment-cold-gap",
+            "pattern-search-numbered-backreference-prefix-purged-gap",
+        ),
+        5,
+    ),
+    (
+        "nested-group-boundary",
+        (
+            "module-search-triple-nested-group-cold-gap",
+            "pattern-fullmatch-named-quantified-nested-group-purged-gap",
+        ),
+        8,
+    ),
+    (
+        "optional-group-boundary",
+        ("module-search-numbered-optional-group-conditional-cold-gap",),
+        7,
+    ),
+)
 
 
 class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
@@ -157,6 +188,44 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=expected_total_workload_count,
         )
 
+    def _assert_zero_gap_manifest_representative_promotion(
+        self,
+        manifest_id: str,
+        expected_workload_ids: tuple[str, ...],
+        expected_measured_workload_count: int,
+    ) -> None:
+        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+            manifest_id
+        ]
+        self.assertIsNone(manifest_definition.known_gap_workload_ids)
+        self.assertEqual(
+            manifest_definition.representative_measured_workload_ids,
+            expected_workload_ids,
+        )
+        self.assertEqual(
+            manifest_definition.representative_known_gap_workload_ids or (),
+            (),
+        )
+
+        case = source_tree_combined_case(manifest_id)
+        manifest_expectation = case.manifest_expectation
+        self.assertEqual(manifest_expectation.known_gap_count, 0)
+        self.assertEqual(
+            manifest_expectation.representative_measured_workload_ids,
+            expected_workload_ids,
+        )
+        self.assertEqual(
+            manifest_expectation.representative_known_gap_workload_ids,
+            (),
+        )
+
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            manifest_id,
+            expected_workload_ids,
+            expected_measured_workload_count,
+        )
+
     def test_raw_manifest_expectations_omit_empty_measured_representative_defaults(
         self,
     ) -> None:
@@ -247,171 +316,20 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             10,
         )
 
-    def test_grouped_named_manifest_promotes_legacy_grouped_segment_pair_to_measured(
+    def test_zero_gap_manifest_representative_promotions_keep_selected_rows_measured(
         self,
     ) -> None:
-        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
-            "grouped-named-boundary"
-        ]
-        self.assertIsNone(manifest_definition.known_gap_workload_ids)
-        self.assertIsNone(
-            manifest_definition.representative_known_gap_workload_ids
-        )
-        self.assertEqual(
-            manifest_definition.representative_measured_workload_ids,
-            (
-                "module-search-grouped-segment-cold-gap",
-                "pattern-search-grouped-segment-warm-gap",
-            ),
-        )
-
-        case = source_tree_combined_case("grouped-named-boundary")
-        manifest_expectation = case.manifest_expectation
-        self.assertEqual(manifest_expectation.known_gap_count, 0)
-        self.assertEqual(
-            manifest_expectation.representative_known_gap_workload_ids,
-            (),
-        )
-        self.assertEqual(
-            manifest_expectation.representative_measured_workload_ids,
-            (
-                "module-search-grouped-segment-cold-gap",
-                "pattern-search-grouped-segment-warm-gap",
-            ),
-        )
-
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "grouped-named-boundary",
-            (
-                "module-search-grouped-segment-cold-gap",
-                "pattern-search-grouped-segment-warm-gap",
-            ),
-            13,
-        )
-
-    def test_numbered_backreference_manifest_promotes_grouped_segment_pair_to_measured(
-        self,
-    ) -> None:
-        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
-            "numbered-backreference-boundary"
-        ]
-        self.assertIsNone(manifest_definition.known_gap_workload_ids)
-        self.assertEqual(
-            manifest_definition.representative_measured_workload_ids,
-            (
-                "module-search-numbered-backreference-segment-cold-gap",
-                "pattern-search-numbered-backreference-prefix-purged-gap",
-            ),
-        )
-        self.assertEqual(
-            manifest_definition.representative_known_gap_workload_ids,
-            (),
-        )
-
-        case = source_tree_combined_case("numbered-backreference-boundary")
-        manifest_expectation = case.manifest_expectation
-        self.assertEqual(manifest_expectation.known_gap_count, 0)
-        self.assertEqual(
-            manifest_expectation.representative_measured_workload_ids,
-            (
-                "module-search-numbered-backreference-segment-cold-gap",
-                "pattern-search-numbered-backreference-prefix-purged-gap",
-            ),
-        )
-        self.assertEqual(
-            manifest_expectation.representative_known_gap_workload_ids,
-            (),
-        )
-
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "numbered-backreference-boundary",
-            (
-                "module-search-numbered-backreference-segment-cold-gap",
-                "pattern-search-numbered-backreference-prefix-purged-gap",
-            ),
-            5,
-        )
-
-    def test_nested_group_manifest_promotes_nested_pair_to_measured(self) -> None:
-        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
-            "nested-group-boundary"
-        ]
-        self.assertIsNone(manifest_definition.known_gap_workload_ids)
-        self.assertEqual(
-            manifest_definition.representative_measured_workload_ids,
-            (
-                "module-search-triple-nested-group-cold-gap",
-                "pattern-fullmatch-named-quantified-nested-group-purged-gap",
-            ),
-        )
-        self.assertEqual(
-            manifest_definition.representative_known_gap_workload_ids,
-            (),
-        )
-
-        case = source_tree_combined_case("nested-group-boundary")
-        manifest_expectation = case.manifest_expectation
-        self.assertEqual(manifest_expectation.known_gap_count, 0)
-        self.assertEqual(
-            manifest_expectation.representative_measured_workload_ids,
-            (
-                "module-search-triple-nested-group-cold-gap",
-                "pattern-fullmatch-named-quantified-nested-group-purged-gap",
-            ),
-        )
-        self.assertEqual(
-            manifest_expectation.representative_known_gap_workload_ids,
-            (),
-        )
-
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "nested-group-boundary",
-            (
-                "module-search-triple-nested-group-cold-gap",
-                "pattern-fullmatch-named-quantified-nested-group-purged-gap",
-            ),
-            8,
-        )
-
-    def test_optional_group_manifest_promotes_conditional_anchor_to_measured(
-        self,
-    ) -> None:
-        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
-            "optional-group-boundary"
-        ]
-        self.assertIsNone(manifest_definition.known_gap_workload_ids)
-        self.assertEqual(
-            manifest_definition.representative_measured_workload_ids,
-            ("module-search-numbered-optional-group-conditional-cold-gap",),
-        )
-        self.assertEqual(
-            manifest_definition.representative_known_gap_workload_ids,
-            (),
-        )
-
-        case = source_tree_combined_case("optional-group-boundary")
-        manifest_expectation = case.manifest_expectation
-        self.assertEqual(manifest_expectation.known_gap_count, 0)
-        self.assertEqual(
-            manifest_expectation.representative_measured_workload_ids,
-            ("module-search-numbered-optional-group-conditional-cold-gap",),
-        )
-        self.assertEqual(
-            manifest_expectation.representative_known_gap_workload_ids,
-            (),
-        )
-
-        self._assert_zero_gap_manifest_workloads_measured(
-            case,
-            "optional-group-boundary",
-            (
-                "module-search-numbered-optional-group-conditional-cold-gap",
-            ),
-            7,
-        )
+        for (
+            manifest_id,
+            expected_workload_ids,
+            expected_measured_workload_count,
+        ) in ZERO_GAP_MANIFEST_PROMOTION_CASES:
+            with self.subTest(manifest_id=manifest_id):
+                self._assert_zero_gap_manifest_representative_promotion(
+                    manifest_id,
+                    expected_workload_ids,
+                    expected_measured_workload_count,
+                )
 
     def test_literal_flag_combined_case_preserves_expected_manifest_paths(self) -> None:
         case = source_tree_combined_case("literal-flag-boundary")

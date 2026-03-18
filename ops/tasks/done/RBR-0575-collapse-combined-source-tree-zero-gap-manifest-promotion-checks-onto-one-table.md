@@ -1,6 +1,6 @@
 # RBR-0575: Collapse the combined source-tree zero-gap manifest promotion checks onto one table
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
 
@@ -153,3 +153,10 @@ Created: 2026-03-18
     - `class:missing:_assert_zero_gap_manifest_representative_promotion,test_zero_gap_manifest_representative_promotions_keep_selected_rows_measured`
     - `class:still-has-old-pure-tests:test_grouped_named_manifest_promotes_legacy_grouped_segment_pair_to_measured,test_nested_group_manifest_promotes_nested_pair_to_measured,test_numbered_backreference_manifest_promotes_grouped_segment_pair_to_measured,test_optional_group_manifest_promotes_conditional_anchor_to_measured`
     - `class:missing:new-loop-test`
+
+## Completion Notes
+- 2026-03-18: Added the module-level `ZERO_GAP_MANIFEST_PROMOTION_CASES` table, introduced `SourceTreeCombinedBoundaryBenchmarkSuiteTest._assert_zero_gap_manifest_representative_promotion(...)`, and replaced the four repeated zero-gap single-manifest promotion tests with the looped `test_zero_gap_manifest_representative_promotions_keep_selected_rows_measured(...)` while leaving the adjacent literal-flag, counted-repeat, quantified-alternation, and zero-default restoration special cases untouched.
+- 2026-03-18: Kept the cleanup local to `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`; the helper preserves the existing raw/public assertion depth and normalizes the one omitted raw empty-known-gap default to `()` inside the shared check instead of changing benchmark expectation data.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`16 passed, 696 subtests passed in 21.96s`)
+  - Task acceptance AST probe (`ok`)
