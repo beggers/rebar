@@ -223,6 +223,27 @@ SELECTOR_EXPECTATIONS = (
         id="callable-replacement",
     ),
 )
+DIRECT_BYTES_FOLLOW_ON_MIXED_MANIFESTS = (
+    pytest.param(
+        "quantified_alternation_open_ended_workflows.py",
+        id="open-ended-quantified-alternation",
+    ),
+    pytest.param(
+        "quantified_alternation_branch_local_backreference_workflows.py",
+        id="branch-local-quantified-alternation",
+    ),
+    pytest.param(
+        "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
+        id="branch-local-quantified-nested-group",
+    ),
+    pytest.param(
+        (
+            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_"
+            "branch_local_backreference_workflows.py"
+        ),
+        id="branch-local-nested-broader-range",
+    ),
+)
 
 
 def _duplicate_items(counter: Counter[str]) -> list[str]:
@@ -737,24 +758,14 @@ def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract() 
     )
 
 
+@pytest.mark.parametrize("fixture_name", DIRECT_BYTES_FOLLOW_ON_MIXED_MANIFESTS)
 def test_assert_direct_bytes_follow_on_bundle_routing_accepts_mixed_manifest_buckets(
+    fixture_name: str,
 ) -> None:
-    fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
+    fixture_path = FIXTURES_DIR / fixture_name
     (bundle,) = load_published_fixture_bundles((fixture_path,))
-    compile_cases = tuple(
-        case
-        for case in fixture_cases_for_operation((bundle,), "compile")
-        if case.text_model == "str"
-    )
-    module_cases = tuple(
-        case
-        for case in fixture_cases_for_operation((bundle,), "module_call")
-        if case.text_model == "str"
-    )
-    pattern_cases = tuple(
-        case
-        for case in fixture_cases_for_operation((bundle,), "pattern_call")
-        if case.text_model == "str"
+    compile_cases, module_cases, pattern_cases = (
+        partition_direct_bytes_follow_on_case_buckets((bundle,), (bundle,))
     )
 
     bundle_str_cases, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
@@ -764,9 +775,15 @@ def test_assert_direct_bytes_follow_on_bundle_routing_accepts_mixed_manifest_buc
         pattern_cases=pattern_cases,
     )
 
-    assert len(bundle_str_cases) == len(bundle_bytes_cases) == 16
+    assert len(bundle_str_cases) == len(bundle_bytes_cases) == len(bundle.cases) // 2
     assert {case.text_model for case in bundle_str_cases} == {"str"}
     assert {case.text_model for case in bundle_bytes_cases} == {"bytes"}
+    assert Counter((case.operation, case.helper) for case in bundle_str_cases) == Counter(
+        (case.operation, case.helper) for case in bundle_bytes_cases
+    )
+    assert {case.case_id for case in bundle_bytes_cases} == {
+        f"{case.case_id.removesuffix('-str')}-bytes" for case in bundle_str_cases
+    }
 
 
 def test_assert_direct_bytes_follow_on_bundle_routing_rejects_bytes_left_in_generic_bucket(
@@ -925,9 +942,11 @@ def test_mixed_text_model_manifest_helper_reports_direct_follow_on_order_drift(
         )
 
 
+@pytest.mark.parametrize("fixture_name", DIRECT_BYTES_FOLLOW_ON_MIXED_MANIFESTS)
 def test_partition_direct_bytes_follow_on_case_buckets_drops_only_follow_on_bytes_rows(
+    fixture_name: str,
 ) -> None:
-    fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
+    fixture_path = FIXTURES_DIR / fixture_name
     (bundle,) = load_published_fixture_bundles((fixture_path,))
 
     compile_cases, module_cases, pattern_cases = (
