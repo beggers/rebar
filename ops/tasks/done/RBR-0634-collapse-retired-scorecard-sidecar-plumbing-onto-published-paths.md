@@ -1,6 +1,6 @@
 # RBR-0634: Collapse retired scorecard sidecar plumbing onto published report paths
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
 
@@ -61,3 +61,8 @@ Created: 2026-03-18
   - those matches are now plumbing-only: the repo no longer tracks any published JSON scorecards, but the descriptor still stores a separate `legacy_path`, carries a second published-write wrapper, and exposes a sidecar-removal method largely to support those deleted tracked artifacts.
 - 2026-03-18 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_scorecard_io_contract.py tests/python/test_readme_reporting.py tests/benchmarks/test_built_native_benchmark_modes.py` passes (`20 passed, 2 skipped in 1.82s`).
+
+## Completion
+- 2026-03-18: Removed `legacy_path` / `legacy_path_error`, derived the retired `latest.json` sidecar from each published `.py` report path inside `python/rebar_harness/scorecard_io.py`, and folded published-write cleanup into the remaining descriptor `write(...)` path.
+- Updated `python/rebar_harness/correctness.py`, `python/rebar_harness/benchmarks.py`, `scripts/rebar_ops.py`, and the report-facing tests to use the simplified descriptor contract while preserving the blocked tracked-JSON error text and benchmark `report_path=None` behavior.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_scorecard_io_contract.py tests/python/test_readme_reporting.py tests/benchmarks/test_built_native_benchmark_modes.py` (`20 passed, 2 skipped in 1.84s`) and `bash -lc "! rg -n 'legacy_path|legacy_path_error|remove_legacy_sidecar|write_resolved_report' python/rebar_harness/scorecard_io.py python/rebar_harness/correctness.py python/rebar_harness/benchmarks.py scripts/rebar_ops.py tests/python/test_scorecard_io_contract.py tests/python/test_readme_reporting.py"` (passes with no matches).

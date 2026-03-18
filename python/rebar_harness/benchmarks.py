@@ -38,7 +38,6 @@ REPORT_SCHEMA_VERSION = "1.0"
 MANIFEST_SCHEMA_VERSION = 1
 SCORECARD_REPORT = build_scorecard_report_descriptor(
     published_path=REPO_ROOT / "reports" / "benchmarks" / "latest.py",
-    legacy_path=REPO_ROOT / "reports" / "benchmarks" / "latest.json",
     scorecard_kind="benchmark",
 )
 DEFAULT_REPORT_PATH = SCORECARD_REPORT.published_path
@@ -1594,7 +1593,7 @@ def run_benchmarks(
             execution_model=run_context.execution_model,
         )
         if resolved_report_path is not None:
-            SCORECARD_REPORT.write_resolved_report(scorecard, resolved_report_path)
+            SCORECARD_REPORT.write(scorecard, resolved_report_path)
         return scorecard
     finally:
         run_context.cleanup()

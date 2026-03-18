@@ -245,22 +245,45 @@ def _display_scorecard_path(path: pathlib.Path) -> str:
     return pathlib.PurePosixPath(*path.parts[reports_root_index:]).as_posix()
 
 
+def retired_published_scorecard_sidecar_path(
+    published_path: pathlib.Path | str,
+) -> pathlib.Path:
+    return pathlib.Path(published_path).with_suffix(".json")
+
+
+def _retired_published_scorecard_path_error(published_path: pathlib.Path) -> str:
+    retired_path = retired_published_scorecard_sidecar_path(published_path)
+    return (
+        f"{_display_scorecard_path(retired_path)} is a retired legacy published "
+        "scorecard path; use "
+        f"{_display_scorecard_path(published_path)} for the tracked published "
+        "scorecard or a non-tracked temporary .json path for scratch output."
+    )
+
+
+def _resolve_report_path(report_path: pathlib.Path | str) -> pathlib.Path:
+    expanded = pathlib.Path(report_path).expanduser()
+    if not expanded.is_absolute():
+        expanded = pathlib.Path.cwd() / expanded
+    return expanded.resolve()
+
+
 @dataclass(frozen=True, slots=True)
 class ScorecardReportDescriptor:
     published_path: pathlib.Path
-    legacy_path: pathlib.Path
-    legacy_path_error: str
     report_attribute: str
     scorecard_kind: str
     module_name_prefix: str
 
     def validate_path(self, report_path: pathlib.Path | str) -> pathlib.Path:
-        expanded = pathlib.Path(report_path).expanduser()
-        if not expanded.is_absolute():
-            expanded = pathlib.Path.cwd() / expanded
-        resolved_path = expanded.resolve()
-        if resolved_path == self.legacy_path:
-            raise ValueError(self.legacy_path_error)
+        resolved_path = _resolve_report_path(report_path)
+        retired_path = _resolve_report_path(
+            retired_published_scorecard_sidecar_path(self.published_path)
+        )
+        if resolved_path == retired_path:
+            raise ValueError(
+                _retired_published_scorecard_path_error(self.published_path)
+            )
         return resolved_path
 
     def resolve_optional_path(
@@ -280,51 +303,32 @@ class ScorecardReportDescriptor:
         )
 
     def write(self, scorecard: dict[str, Any], report_path: pathlib.Path | str) -> None:
+        resolved_report_path = self.validate_path(report_path)
         write_scorecard_report(
             scorecard,
-            pathlib.Path(report_path),
+            resolved_report_path,
             report_attribute=self.report_attribute,
             scorecard_kind=self.scorecard_kind,
         )
-
-    def write_resolved_report(
-        self,
-        scorecard: dict[str, Any],
-        report_path: pathlib.Path | str,
-    ) -> None:
-        resolved_report_path = pathlib.Path(report_path)
-        self.write(scorecard, resolved_report_path)
-        if resolved_report_path == self.published_path:
-            self.remove_legacy_sidecar()
-
-    def remove_legacy_sidecar(self) -> bool:
-        try:
-            self.legacy_path.unlink()
-        except FileNotFoundError:
-            return False
-        return True
+        published_path = _resolve_report_path(self.published_path)
+        if resolved_report_path == published_path:
+            retired_path = _resolve_report_path(
+                retired_published_scorecard_sidecar_path(self.published_path)
+            )
+            retired_path.unlink(missing_ok=True)
 
 
 def build_scorecard_report_descriptor(
     *,
     published_path: pathlib.Path,
-    legacy_path: pathlib.Path,
     scorecard_kind: str,
     report_attribute: str = "REPORT",
     module_name_prefix: str | None = None,
 ) -> ScorecardReportDescriptor:
     published_path = pathlib.Path(published_path)
-    legacy_path = pathlib.Path(legacy_path)
     module_name_prefix = module_name_prefix or f"_rebar_{scorecard_kind}_scorecard"
     return ScorecardReportDescriptor(
         published_path=published_path,
-        legacy_path=legacy_path,
-        legacy_path_error=(
-            f"{_display_scorecard_path(legacy_path)} is a retired legacy published "
-            "scorecard path; use "
-            f"{_display_scorecard_path(published_path)} for the tracked published "
-            "scorecard or a non-tracked temporary .json path for scratch output."
-        ),
         report_attribute=report_attribute,
         scorecard_kind=scorecard_kind,
         module_name_prefix=module_name_prefix,

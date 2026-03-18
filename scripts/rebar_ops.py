@@ -2848,7 +2848,10 @@ def load_correctness_harness_module() -> Any:
 
 
 def published_correctness_report_needs_refresh(correctness_harness: Any) -> bool:
-    if correctness_harness.SCORECARD_REPORT.legacy_path.exists():
+    retired_sidecar_path = load_scorecard_io_module().retired_published_scorecard_sidecar_path(
+        correctness_harness.SCORECARD_REPORT.published_path
+    )
+    if retired_sidecar_path.exists():
         return True
 
     try:
@@ -2884,7 +2887,11 @@ def published_correctness_report_needs_refresh(correctness_harness: Any) -> bool
 
 def refresh_published_correctness_scorecard() -> dict[str, Any] | None:
     correctness_harness = load_correctness_harness_module()
-    removed_legacy_report = bool(correctness_harness.SCORECARD_REPORT.remove_legacy_sidecar())
+    retired_sidecar_path = load_scorecard_io_module().retired_published_scorecard_sidecar_path(
+        correctness_harness.SCORECARD_REPORT.published_path
+    )
+    removed_legacy_report = retired_sidecar_path.exists()
+    retired_sidecar_path.unlink(missing_ok=True)
     if not published_correctness_report_needs_refresh(correctness_harness):
         if removed_legacy_report:
             return correctness_harness.SCORECARD_REPORT.load(
@@ -2892,7 +2899,6 @@ def refresh_published_correctness_scorecard() -> dict[str, Any] | None:
             )
         return None
     scorecard = correctness_harness.run_correctness_harness()
-    correctness_harness.SCORECARD_REPORT.remove_legacy_sidecar()
     return scorecard
 
 

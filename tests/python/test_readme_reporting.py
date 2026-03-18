@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import unittest
 
-from rebar_harness import benchmarks, correctness
+from rebar_harness import benchmarks, correctness, scorecard_io
 from tests.harness_cli_test_support import (
     REPO_ROOT,
     load_rebar_ops_module,
@@ -13,9 +13,13 @@ from tests.harness_cli_test_support import (
 
 PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py"
 CORRECTNESS_REPORT_PATH = correctness.SCORECARD_REPORT.published_path
-LEGACY_CORRECTNESS_REPORT_PATH = correctness.SCORECARD_REPORT.legacy_path
+LEGACY_CORRECTNESS_REPORT_PATH = scorecard_io.retired_published_scorecard_sidecar_path(
+    CORRECTNESS_REPORT_PATH
+)
 BENCHMARK_REPORT_PATH = benchmarks.SCORECARD_REPORT.published_path
-LEGACY_BENCHMARK_REPORT_PATH = benchmarks.SCORECARD_REPORT.legacy_path
+LEGACY_BENCHMARK_REPORT_PATH = scorecard_io.retired_published_scorecard_sidecar_path(
+    BENCHMARK_REPORT_PATH
+)
 
 
 def _load_correctness_scorecard(report_path):
