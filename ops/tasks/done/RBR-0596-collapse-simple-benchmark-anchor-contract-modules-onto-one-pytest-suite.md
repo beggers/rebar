@@ -1,6 +1,6 @@
 # RBR-0596: Collapse the remaining simple benchmark anchor contract modules onto one pytest suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
 
@@ -61,3 +61,9 @@ Created: 2026-03-18
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_compile_proxy_correctness_anchor_contract.py tests/benchmarks/test_optional_group_benchmark_correctness_anchor_contract.py tests/benchmarks/test_nested_group_benchmark_correctness_anchor_contract.py` passes (`10 passed, 6 subtests passed in 0.08s`);
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_simple_benchmark_correctness_anchor_contracts.py` currently fails exactly on this cleanup with `ERROR: file or directory not found: tests/benchmarks/test_simple_benchmark_correctness_anchor_contracts.py`; and
   - `bash -lc "! rg --files tests/benchmarks | rg 'test_(optional_group_benchmark_correctness_anchor_contract|nested_group_benchmark_correctness_anchor_contract|compile_proxy_correctness_anchor_contract)\\.py$'"` currently fails exactly on this cleanup because all three superseded files still exist.
+
+## Completion Notes
+- Added `tests/benchmarks/test_simple_benchmark_correctness_anchor_contracts.py` as one parameterized pytest suite with a single local definition table for the compile-proxy, optional-group conditional, and measured nested-group anchor-contract surfaces.
+- Kept the exact compile-proxy nine-row anchor map across `benchmarks/workloads/compile_matrix.py` and `benchmarks/workloads/regression_matrix.py`, preserved the optional-group conditional single-row scope and direct parity check, and preserved the nested-group measured-row order plus exclusion of `module-search-triple-nested-group-cold-gap` and `pattern-fullmatch-named-quantified-nested-group-purged-gap`.
+- Deleted `tests/benchmarks/test_compile_proxy_correctness_anchor_contract.py`, `tests/benchmarks/test_optional_group_benchmark_correctness_anchor_contract.py`, and `tests/benchmarks/test_nested_group_benchmark_correctness_anchor_contract.py`; `git diff --name-status -- ...` now reports each path as `D`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_simple_benchmark_correctness_anchor_contracts.py` (`13 passed in 0.08s`) and `bash -lc "! rg --files tests/benchmarks | rg 'test_(optional_group_benchmark_correctness_anchor_contract|nested_group_benchmark_correctness_anchor_contract|compile_proxy_correctness_anchor_contract)\\.py$'"` (no matches).
