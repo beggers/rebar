@@ -56,9 +56,16 @@ MIXED_TEXT_MODEL_OPERATION_HELPER_COUNTS = Counter(
     }
 )
 MIXED_TEXT_MODELS = frozenset({"bytes", "str"})
+NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID = (
+    "nested-broader-range-open-ended-quantified-group-alternation-"
+    "branch-local-backreference-replacement-workflows"
+)
 NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_MANIFEST_ID = (
     "nested-broader-range-open-ended-quantified-group-alternation-"
     "branch-local-backreference-conditional-replacement-workflows"
+)
+NESTED_BROADER_RANGE_OPEN_ENDED_PENDING_BYTES_MANIFEST_IDS = frozenset(
+    {NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID}
 )
 KNOWN_UNCOVERED_PUBLISHED_FIXTURE_FILENAMES: tuple[str, ...] = ()
 NO_MATCH_TEXT_CANDIDATES = (
@@ -1091,27 +1098,38 @@ REPLACEMENT_SURFACE_SPECS = (
             FixtureBundleSpec(
                 "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
                 expected_manifest_id=(
-                    "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows"
+                    NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID
                 ),
                 expected_case_ids=frozenset(
                     {
                         "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
+                        "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-bytes",
                         "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
+                        "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-bytes",
                         "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
+                        "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-bytes",
                         "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-str",
+                        "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-bytes",
                         "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
+                        "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-bytes",
                         "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-str",
+                        "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-bytes",
                         "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
+                        "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-bytes",
                         "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+                        "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-bytes",
                     }
                 ),
                 expected_patterns=frozenset(
                     {
                         r"a((b|c){2,})\2d",
                         r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+                        rb"a((b|c){2,})\2d",
+                        rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
                     }
                 ),
-                expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
+                expected_operation_helper_counts=MIXED_TEXT_MODEL_OPERATION_HELPER_COUNTS,
+                expected_text_models=MIXED_TEXT_MODELS,
             ),
             FixtureBundleSpec(
                 "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
@@ -1166,11 +1184,14 @@ REPLACEMENT_SURFACE_SPECS = (
         ),
         template_expand_manifest_ids=(
             "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows",
-            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows",
+            NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID,
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-replacement-workflows",
         ),
         supplemental_no_match_cases=OPEN_ENDED_SUPPLEMENTAL_NO_MATCH_CASES,
         supplemental_repeated_cases=OPEN_ENDED_SUPPLEMENTAL_REPEATED_CASES,
+        pending_bytes_follow_on_manifest_ids=(
+            NESTED_BROADER_RANGE_OPEN_ENDED_PENDING_BYTES_MANIFEST_IDS
+        ),
     ),
     ReplacementSurfaceSpec(
         id="conditional-group-exists-replacement",
@@ -1449,6 +1470,11 @@ MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE = next(
     for bundle in OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE.bundles
     if bundle.expected_manifest_id
     == NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_MANIFEST_ID
+)
+PENDING_BYTES_FOLLOW_ON_REPLACEMENT_BUNDLE = next(
+    bundle
+    for bundle in OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE.bundles
+    if bundle.expected_manifest_id == NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID
 )
 
 SELECTOR_SURFACE_PARAMS = tuple(
@@ -1731,30 +1757,82 @@ def test_mixed_replacement_manifest_routes_bytes_rows_through_shared_parity_surf
     assert shared_template_expand_case_ids == str_case_ids | bytes_case_ids
 
 
+def test_pending_bytes_follow_on_replacement_manifest_keeps_mixed_bundle_contract_explicit(
+) -> None:
+    bundle = PENDING_BYTES_FOLLOW_ON_REPLACEMENT_BUNDLE
+    surface = OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE
+    ordered_str_case_ids = tuple(
+        case.case_id for case in bundle.cases if case.text_model == "str"
+    )
+    ordered_bytes_case_ids = tuple(
+        case.case_id for case in bundle.cases if case.text_model == "bytes"
+    )
+    expected_str_module_case_ids = frozenset(
+        case.case_id
+        for case in bundle.cases
+        if case.operation == "module_call" and case.text_model == "str"
+    )
+    expected_str_pattern_case_ids = frozenset(
+        case.case_id
+        for case in bundle.cases
+        if case.operation == "pattern_call" and case.text_model == "str"
+    )
+    shared_module_case_ids = frozenset(
+        case.case_id
+        for case in surface.module_cases
+        if case.manifest_id == bundle.expected_manifest_id
+    )
+    shared_pattern_case_ids = frozenset(
+        case.case_id
+        for case in surface.pattern_cases
+        if case.manifest_id == bundle.expected_manifest_id
+    )
+
+    assert {case.text_model for case in bundle.cases} == MIXED_TEXT_MODELS
+    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
+        MIXED_TEXT_MODEL_OPERATION_HELPER_COUNTS
+    )
+    assert len(ordered_str_case_ids) == len(ordered_bytes_case_ids) == 8
+    assert ordered_bytes_case_ids == tuple(
+        f"{case_id.removesuffix('-str')}-bytes" for case_id in ordered_str_case_ids
+    )
+    assert shared_module_case_ids == expected_str_module_case_ids
+    assert shared_pattern_case_ids == expected_str_pattern_case_ids
+    assert _expected_selected_replacement_case_ids(
+        surface,
+        manifest_id=bundle.expected_manifest_id,
+    ) == ordered_str_case_ids
+    assert _expected_uncovered_replacement_case_ids(
+        surface,
+        bundle.expected_manifest_id,
+    ) == ordered_bytes_case_ids
+
+
 def test_pending_bytes_follow_on_replacement_manifest_filters_bytes_from_selected_frontier(
 ) -> None:
-    manifest_id = NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_MANIFEST_ID
+    manifest_id = NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID
     surface = _load_surface(
         ReplacementSurfaceSpec(
             id="pending-replacement-bytes-follow-on-contract",
             bundle_specs=(
                 FixtureBundleSpec(
-                    fixture_name=MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE.manifest.path.name,
+                    fixture_name=PENDING_BYTES_FOLLOW_ON_REPLACEMENT_BUNDLE.manifest.path.name,
                     expected_manifest_id=manifest_id,
-                    expected_patterns=MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE.expected_patterns,
+                    expected_patterns=PENDING_BYTES_FOLLOW_ON_REPLACEMENT_BUNDLE.expected_patterns,
                     expected_operation_helper_counts=(
-                        MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE.expected_operation_helper_counts
+                        PENDING_BYTES_FOLLOW_ON_REPLACEMENT_BUNDLE.expected_operation_helper_counts
                     ),
-                    expected_case_ids=MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE.expected_case_ids,
+                    expected_case_ids=PENDING_BYTES_FOLLOW_ON_REPLACEMENT_BUNDLE.expected_case_ids,
                     expected_text_models=(
-                        MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE.expected_text_models
+                        PENDING_BYTES_FOLLOW_ON_REPLACEMENT_BUNDLE.expected_text_models
                     ),
                 ),
             ),
             pattern_extractor=case_pattern,
-            match_group_access_manifest_ids=(manifest_id,),
             template_expand_manifest_ids=(manifest_id,),
-            pending_bytes_follow_on_manifest_ids=frozenset({manifest_id}),
+            pending_bytes_follow_on_manifest_ids=(
+                NESTED_BROADER_RANGE_OPEN_ENDED_PENDING_BYTES_MANIFEST_IDS
+            ),
         )
     )
     (bundle,) = surface.bundles
@@ -1786,9 +1864,7 @@ def test_pending_bytes_follow_on_replacement_manifest_filters_bytes_from_selecte
     assert tuple(case.case_id for case in surface.pattern_cases) == (
         expected_str_pattern_case_ids
     )
-    assert tuple(case.case_id for case in surface.match_group_access_cases) == (
-        expected_str_case_ids
-    )
+    assert tuple(case.case_id for case in surface.match_group_access_cases) == ()
     assert tuple(case.case_id for case in surface.template_expand_cases) == (
         expected_str_case_ids
     )
