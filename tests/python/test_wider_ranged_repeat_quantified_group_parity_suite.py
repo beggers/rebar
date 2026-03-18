@@ -12,6 +12,7 @@ from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
     assert_direct_bytes_follow_on_bundle_routing,
+    assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -644,6 +645,24 @@ COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_ca
     FIXTURE_BUNDLES,
     DIRECT_BYTES_FOLLOW_ON_BUNDLES,
 )
+WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SELECTED_CASE_IDS = tuple(
+    case.case_id for bundle in FIXTURE_BUNDLES for case in bundle.cases
+)
+WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS = {
+    "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
+    "shared-module-search": frozenset(case.case_id for case in MODULE_CASES),
+    "shared-pattern-fullmatch": frozenset(case.case_id for case in PATTERN_CASES),
+    **{
+        f"{spec_id}-bytes-follow-on": frozenset(
+            case.case_id for case in bundle.cases if case.text_model == "bytes"
+        )
+        for spec_id, bundle in zip(
+            DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
+            DIRECT_BYTES_FOLLOW_ON_BUNDLES,
+            strict=True,
+        )
+    },
+}
 
 
 def _build_backtracking_trace_cases(
@@ -812,6 +831,17 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     assert_fixture_bundle_contract(
         bundle,
         pattern_extractor=case_pattern,
+    )
+
+
+def test_wider_ranged_repeat_quantified_group_direct_test_case_id_buckets_cover_selected_frontier(
+) -> None:
+    assert_direct_test_case_id_buckets_cover_selected_frontier(
+        WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS,
+        selected_case_ids=WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_SELECTED_CASE_IDS,
+        coverage_label=(
+            "wider-ranged-repeat quantified group direct-test case-id buckets"
+        ),
     )
 
 
