@@ -1,6 +1,6 @@
 # RBR-0588: Catch the quantified-alternation backtracking-heavy bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -48,3 +48,6 @@ Created: 2026-03-18
   - `reports/benchmarks/latest.py` currently publishes `quantified-alternation-boundary` at `66` total workloads / `66` measured workloads / `0` known gaps and the combined source-tree report at `686` / `686` / `0`; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so this benchmark follow-on stays sequenced behind `RBR-0586` until parity lands.
 - No further quantified-alternation bytes family should be queued ahead of this benchmark catch-up while the backtracking-heavy mixed `str`/`bytes` slice is still missing its source-tree benchmark mirrors.
+
+## Completion
+- 2026-03-18: Added the six bounded `{1,2}` quantified-alternation backtracking-heavy bytes mirrors to [`benchmarks/workloads/quantified_alternation_boundary.py`](../../../benchmarks/workloads/quantified_alternation_boundary.py), widened the shared quantified-alternation fully measured expectation tuple in [`tests/benchmarks/benchmark_expectations.py`](../../../tests/benchmarks/benchmark_expectations.py) from `66` to `72`, and refreshed the shared source-tree benchmark tests so the new bytes rows stay on the existing zero-gap assertion path. Regenerated the published benchmark scorecard at [`reports/benchmarks/latest.py`](../../../reports/benchmarks/latest.py); the tracked report now publishes `quantified-alternation-boundary` at `72` total / `72` measured / `0` known gaps and the combined source-tree report at `692` total / `692` measured / `0` known gaps, with all six new bytes rows recorded at `implementation_timing.status == "measured"`. Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/quantified_alternation_boundary.py --report .rebar/tmp/rbr-0588-quantified-alternation-backtracking-heavy-bytes-benchmarks.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`. `reports/correctness/latest.py` was not changed in this benchmark-only task.

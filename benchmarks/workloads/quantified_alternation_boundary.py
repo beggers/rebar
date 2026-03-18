@@ -2318,6 +2318,222 @@ MANIFEST = {
       "notes": [
         "Purged-cache Pattern.fullmatch probe for the bounded named quantified-alternation backtracking-heavy workflow after one `bc` branch repetition followed by one `b` branch repetition."
       ]
+    },
+    {
+      "id": "module-compile-numbered-quantified-alternation-backtracking-heavy-cold-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(b|bc){1,2}d",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "cold",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "backtracking-heavy",
+        "bytes",
+        "cold-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats"
+      ],
+      "notes": [
+        "Cold bytes module.compile benchmark for the bounded numbered quantified-alternation backtracking-heavy slice so compile metadata timing reaches the published benchmark report on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-numbered-quantified-alternation-backtracking-heavy-lower-bound-b-branch-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(b|bc){1,2}d",
+      "haystack": "zzabdzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "backtracking-heavy",
+        "bytes",
+        "search",
+        "module",
+        "lower-bound",
+        "b-branch",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the bounded numbered quantified-alternation backtracking-heavy workflow on the lower-bound `b`-branch success case."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-numbered-quantified-alternation-backtracking-heavy-lower-bound-bc-branch-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(b|bc){1,2}d",
+      "haystack": "abcd",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "backtracking-heavy",
+        "bytes",
+        "fullmatch",
+        "lower-bound",
+        "bc-branch",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the bounded numbered quantified-alternation backtracking-heavy workflow on the lower-bound `bc`-branch success case."
+      ]
+    },
+    {
+      "id": "module-compile-named-quantified-alternation-backtracking-heavy-warm-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "a(?P<word>b|bc){1,2}d",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "compile",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "backtracking-heavy",
+        "bytes",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm bytes module.compile benchmark for the bounded named quantified-alternation backtracking-heavy slice so named compile metadata joins the published report on the bytes path."
+      ]
+    },
+    {
+      "id": "module-search-named-quantified-alternation-backtracking-heavy-lower-bound-bc-branch-warm-bytes",
+      "bucket": "module-search",
+      "family": "module",
+      "operation": "module.search",
+      "pattern": "a(?P<word>b|bc){1,2}d",
+      "haystack": "zzabcdzz",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "warm",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "backtracking-heavy",
+        "bytes",
+        "search",
+        "module",
+        "lower-bound",
+        "bc-branch",
+        "warm-cache"
+      ],
+      "syntax_features": [
+        "module-search",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups"
+      ],
+      "notes": [
+        "Warm bytes module.search helper path for the bounded named quantified-alternation backtracking-heavy workflow on the lower-bound `bc`-branch success case."
+      ]
+    },
+    {
+      "id": "pattern-fullmatch-named-quantified-alternation-backtracking-heavy-second-repetition-bc-then-b-purged-bytes",
+      "bucket": "pattern-fullmatch",
+      "family": "module",
+      "operation": "pattern.fullmatch",
+      "pattern": "a(?P<word>b|bc){1,2}d",
+      "haystack": "abcbd",
+      "flags": 0,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "pattern-helper-call",
+      "categories": [
+        "pattern",
+        "grouped",
+        "alternation",
+        "quantifier",
+        "counted-repeat",
+        "named-group",
+        "backtracking-heavy",
+        "bytes",
+        "fullmatch",
+        "second-repetition",
+        "bc-then-b",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "pattern-fullmatch",
+        "pattern-text-model",
+        "grouping-forms",
+        "alternation",
+        "quantifiers",
+        "counted-repeats",
+        "named-groups",
+        "cache-purge"
+      ],
+      "notes": [
+        "Purged-cache bytes Pattern.fullmatch probe for the bounded named quantified-alternation backtracking-heavy workflow after one `bc` branch repetition followed by one `b` branch repetition."
+      ]
     }
   ]
 }
