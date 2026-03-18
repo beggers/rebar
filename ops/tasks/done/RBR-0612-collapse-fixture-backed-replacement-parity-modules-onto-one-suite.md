@@ -1,6 +1,6 @@
 # RBR-0612: Collapse the fixture-backed replacement parity modules onto one suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
 
@@ -79,3 +79,7 @@ Created: 2026-03-18
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_replacement_template_parity_suite.py tests/python/test_conditional_group_exists_replacement_parity_suite.py` passes (`674 passed in 0.51s`);
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py` currently fails exactly on this cleanup with `ERROR: file or directory not found: tests/python/test_fixture_backed_replacement_parity_suite.py`; and
   - `bash -lc "! rg --files tests/python | rg 'test_(conditional_group_exists_replacement_parity_suite|open_ended_quantified_group_replacement_template_parity_suite)\\.py$'"` currently fails exactly on this cleanup because both superseded files still exist.
+- 2026-03-18 completion:
+  - Replaced the two superseded replacement parity modules with `tests/python/test_fixture_backed_replacement_parity_suite.py`, driven by one local `ReplacementSurfaceSpec` table that keeps the existing thirteen `FixtureBundleSpec(...)` declarations, open-ended compile-pattern coverage, conditional selector-backed fixture-frontier check, template-expand partitions, shared no-match discovery, and explicit supplemental no-match/repeated rows on one fixture-backed path.
+  - Deleted `tests/python/test_open_ended_quantified_group_replacement_template_parity_suite.py` and `tests/python/test_conditional_group_exists_replacement_parity_suite.py`, and verified the final git diff reports both paths as `D`.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py` (`674 passed in 0.50s`) and `bash -lc "! rg --files tests/python | rg 'test_(conditional_group_exists_replacement_parity_suite|open_ended_quantified_group_replacement_template_parity_suite)\\.py$'"` (no matches).
