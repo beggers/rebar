@@ -16,6 +16,7 @@ from tests.python.fixture_parity_support import (
     assert_fixture_bundle_tracks_published_case_frontier,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
+    assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing,
     assert_match_parity,
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
@@ -743,6 +744,15 @@ def test_branch_local_backreference_direct_test_case_id_buckets_cover_selected_f
         BRANCH_LOCAL_BACKREFERENCE_DIRECT_TEST_CASE_ID_BUCKETS,
         selected_case_ids=BRANCH_LOCAL_BACKREFERENCE_SELECTED_CASE_IDS,
         coverage_label="branch-local-backreference direct-test case-id buckets",
+    )
+
+
+def test_branch_local_backreference_mixed_text_model_manifests_keep_explicit_direct_bytes_follow_on_routing(
+) -> None:
+    assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing(
+        FIXTURE_BUNDLES,
+        direct_bytes_follow_on_bundles=DIRECT_BYTES_FOLLOW_ON_BUNDLES,
+        coverage_label="branch-local-backreference",
     )
 
 

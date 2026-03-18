@@ -627,6 +627,50 @@ def assert_direct_bytes_follow_on_bundle_routing(
     return bundle_str_cases, bundle_bytes_cases
 
 
+def assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing(
+    bundles: Iterable[FixtureBundle],
+    *,
+    direct_bytes_follow_on_bundles: Iterable[FixtureBundle],
+    coverage_label: str,
+) -> None:
+    loaded_bundles = tuple(bundles)
+    loaded_direct_bundles = tuple(direct_bytes_follow_on_bundles)
+    ordered_mixed_manifest_ids = tuple(
+        bundle.manifest.manifest_id
+        for bundle in loaded_bundles
+        if {case.text_model for case in bundle.cases} == {"bytes", "str"}
+    )
+    ordered_direct_manifest_ids = tuple(
+        bundle.manifest.manifest_id for bundle in loaded_direct_bundles
+    )
+    if ordered_mixed_manifest_ids == ordered_direct_manifest_ids:
+        return
+
+    mixed_manifest_id_set = frozenset(ordered_mixed_manifest_ids)
+    direct_manifest_id_set = frozenset(ordered_direct_manifest_ids)
+    missing_mixed_manifest_ids = tuple(
+        manifest_id
+        for manifest_id in ordered_mixed_manifest_ids
+        if manifest_id not in direct_manifest_id_set
+    )
+    unexpected_direct_manifest_ids = tuple(
+        manifest_id
+        for manifest_id in ordered_direct_manifest_ids
+        if manifest_id not in mixed_manifest_id_set
+    )
+    if missing_mixed_manifest_ids or unexpected_direct_manifest_ids:
+        raise AssertionError(
+            f"{coverage_label} direct bytes follow-on manifest routing drifted; "
+            f"missing mixed manifests: {missing_mixed_manifest_ids}; "
+            f"unexpected direct manifests: {unexpected_direct_manifest_ids}"
+        )
+
+    raise AssertionError(
+        f"{coverage_label} direct bytes follow-on manifest order drifted; "
+        f"expected {ordered_mixed_manifest_ids}, got {ordered_direct_manifest_ids}"
+    )
+
+
 def assert_fixture_bundle_tracks_published_case_frontier(
     bundle: FixtureBundle,
     *,

@@ -49,6 +49,7 @@ from tests.python.fixture_parity_support import (
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
+    assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing,
     assert_finditer_parity,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -830,6 +831,97 @@ def test_assert_direct_bytes_follow_on_bundle_routing_rejects_missing_str_rows()
             compile_cases=compile_cases,
             module_cases=module_cases,
             pattern_cases=pattern_cases,
+        )
+
+
+def test_mixed_text_model_manifest_helper_accepts_exact_direct_follow_on_coverage(
+) -> None:
+    mixed_fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
+    str_only_fixture_path = FIXTURES_DIR / "grouped_match_workflows.py"
+    mixed_bundle, str_only_bundle = load_published_fixture_bundles(
+        (mixed_fixture_path, str_only_fixture_path)
+    )
+
+    assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing(
+        (mixed_bundle, str_only_bundle),
+        direct_bytes_follow_on_bundles=(mixed_bundle,),
+        coverage_label="fixture parity support contract",
+    )
+
+
+def test_mixed_text_model_manifest_helper_reports_missing_direct_follow_on_bundle(
+) -> None:
+    mixed_fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
+    str_only_fixture_path = FIXTURES_DIR / "grouped_match_workflows.py"
+    mixed_bundle, str_only_bundle = load_published_fixture_bundles(
+        (mixed_fixture_path, str_only_fixture_path)
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "fixture parity support contract direct bytes follow-on manifest routing "
+            "drifted; missing mixed manifests: "
+            "('quantified-alternation-open-ended-workflows',); "
+            "unexpected direct manifests: ()"
+        ),
+    ):
+        assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing(
+            (mixed_bundle, str_only_bundle),
+            direct_bytes_follow_on_bundles=(),
+            coverage_label="fixture parity support contract",
+        )
+
+
+def test_mixed_text_model_manifest_helper_reports_unexpected_direct_follow_on_bundle(
+) -> None:
+    mixed_fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
+    str_only_fixture_path = FIXTURES_DIR / "grouped_match_workflows.py"
+    mixed_bundle, str_only_bundle = load_published_fixture_bundles(
+        (mixed_fixture_path, str_only_fixture_path)
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "fixture parity support contract direct bytes follow-on manifest routing "
+            "drifted; missing mixed manifests: "
+            "('quantified-alternation-open-ended-workflows',); "
+            "unexpected direct manifests: ('grouped-match-workflows',)"
+        ),
+    ):
+        assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing(
+            (mixed_bundle, str_only_bundle),
+            direct_bytes_follow_on_bundles=(str_only_bundle,),
+            coverage_label="fixture parity support contract",
+        )
+
+
+def test_mixed_text_model_manifest_helper_reports_direct_follow_on_order_drift(
+) -> None:
+    first_mixed_fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
+    second_mixed_fixture_path = (
+        FIXTURES_DIR / "broader_range_open_ended_quantified_group_alternation_workflows.py"
+    )
+    first_bundle, second_bundle = load_published_fixture_bundles(
+        (first_mixed_fixture_path, second_mixed_fixture_path)
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "fixture parity support contract direct bytes follow-on manifest order "
+            "drifted; expected "
+            "('quantified-alternation-open-ended-workflows', "
+            "'broader-range-open-ended-quantified-group-alternation-workflows'), "
+            "got ('broader-range-open-ended-quantified-group-alternation-workflows', "
+            "'quantified-alternation-open-ended-workflows')"
+        ),
+    ):
+        assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing(
+            (first_bundle, second_bundle),
+            direct_bytes_follow_on_bundles=(second_bundle, first_bundle),
+            coverage_label="fixture parity support contract",
         )
 
 
