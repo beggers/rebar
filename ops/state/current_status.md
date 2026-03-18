@@ -329,7 +329,7 @@ The published frontier is still narrow: the current correctness slice covers 128
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0629` should catch the four adjacent bytes benchmark rows up on `nested-group-replacement-boundary`, moving that manifest from `24 / 24 / 0` to `28 / 28 / 0` and the combined benchmark report from `719 / 719 / 0` to `723 / 723 / 0`.
+- `RBR-0631` should publish the eight adjacent bytes callable-replacement rows on `nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows`, moving that manifest from `8 / 8 / 0` to `16 / 8 / 8` and the combined correctness report from `1286 / 1286 / 0` to `1294 / 1286 / 8`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
