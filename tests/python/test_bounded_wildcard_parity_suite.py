@@ -13,6 +13,7 @@ from tests.python.fixture_parity_support import (
     LITERAL_FLAG_DELEGATED_CASE_IDS,
     RecordingNativeBoundary,
     assert_fixture_bundle_contract,
+    assert_fixture_bundle_tracks_published_case_frontier,
     assert_finditer_parity,
     assert_match_convenience_api_parity,
     assert_match_result_parity,
@@ -91,9 +92,58 @@ LITERAL_FLAG_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "literal-flag-workflows",
 )
+COLLECTION_REPLACEMENT_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "collection-replacement-workflows",
+)
 PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 MODULE_SEARCH_CASES = tuple(case for case in PUBLISHED_CASES if case.helper == "search")
 MODULE_FINDALL_CASES = tuple(case for case in PUBLISHED_CASES if case.helper == "findall")
+
+LITERAL_FLAG_UNCOVERED_CASE_IDS = (
+    "flag-module-search-ignorecase-str-hit",
+    "flag-module-search-ignorecase-str-miss",
+    "flag-module-search-ignorecase-ascii-str-hit",
+    "flag-module-fullmatch-ignorecase-bytes-hit",
+    "flag-pattern-search-ignorecase-str-hit",
+    "flag-pattern-search-ignorecase-ascii-str-hit",
+    "flag-pattern-match-ignorecase-bytes-hit",
+    "flag-pattern-fullmatch-ignorecase-str-miss",
+    "flag-cache-hit-bytes-ignorecase",
+    "flag-cache-distinct-str-normalized",
+    "flag-unsupported-inline-flag-search",
+    "flag-unsupported-locale-bytes-search",
+)
+COLLECTION_REPLACEMENT_UNCOVERED_CASE_IDS = (
+    "module-split-str-leading-trailing",
+    "module-split-str-no-match",
+    "pattern-split-bytes-maxsplit",
+    "module-findall-bytes-repeated",
+    "pattern-findall-str-no-match",
+    "module-finditer-str-repeated",
+    "pattern-finditer-bytes-bounded",
+    "module-sub-str-repeated",
+    "module-subn-bytes-count",
+    "pattern-sub-str-no-match",
+    "pattern-subn-str-count",
+    "module-sub-template-str",
+    "module-sub-callable-str",
+    "module-sub-grouping-template",
+)
+PUBLISHED_FRONTIER_EXPECTATIONS = (
+    pytest.param(
+        LITERAL_FLAG_BUNDLE,
+        LITERAL_FLAG_DELEGATED_CASE_IDS,
+        LITERAL_FLAG_UNCOVERED_CASE_IDS,
+        id="literal-flag",
+    ),
+    pytest.param(
+        COLLECTION_REPLACEMENT_BUNDLE,
+        ("module-findall-nonliteral-str",),
+        COLLECTION_REPLACEMENT_UNCOVERED_CASE_IDS,
+        id="collection-replacement",
+    ),
+)
 
 COMPILE_CASES = (
     CompileCase(id="bounded-wildcard-compile-default", pattern="a.c"),
@@ -169,6 +219,22 @@ def test_bounded_wildcard_suite_absorbs_delegated_literal_flag_case() -> None:
     delegated_case_ids = tuple(case.case_id for case in LITERAL_FLAG_BUNDLE.cases)
 
     assert delegated_case_ids == LITERAL_FLAG_DELEGATED_CASE_IDS
+
+
+@pytest.mark.parametrize(
+    ("bundle", "selected_case_ids", "expected_uncovered_case_ids"),
+    PUBLISHED_FRONTIER_EXPECTATIONS,
+)
+def test_bounded_wildcard_suite_tracks_published_case_frontier(
+    bundle,
+    selected_case_ids: tuple[str, ...],
+    expected_uncovered_case_ids: tuple[str, ...],
+) -> None:
+    assert_fixture_bundle_tracks_published_case_frontier(
+        bundle,
+        selected_case_ids=selected_case_ids,
+        expected_uncovered_case_ids=expected_uncovered_case_ids,
+    )
 
 
 @pytest.mark.parametrize(
