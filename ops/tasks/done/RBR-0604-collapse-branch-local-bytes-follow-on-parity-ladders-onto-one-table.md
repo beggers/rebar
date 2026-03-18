@@ -1,8 +1,9 @@
 # RBR-0604: Collapse the branch-local bytes follow-on parity ladders onto one table
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Replace the duplicated branch-local bytes follow-on test ladders in `tests/python/test_branch_local_backreference_parity_suite.py` with one local definition table plus shared parametrized assertions, so the suite stops repeating the same compile/module/pattern parity checks for the quantified-alternation and quantified-nested-group follow-on pairs.
@@ -80,3 +81,11 @@ PY`
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py` passes (`331 passed, 14 skipped in 0.26s`)
   - the inline `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` probe above passes (`ok`)
   - `bash -lc "! rg -n '^def test_quantified_(alternation|nested_group_alternation)_branch_local_backreference_bytes_' tests/python/test_branch_local_backreference_parity_suite.py"` currently fails exactly on this cleanup because the duplicate per-manifest bytes follow-on ladders are still present
+
+## Completion Notes
+- 2026-03-18: Collapsed the duplicated quantified-alternation and quantified-nested-group bytes follow-on anchor checks onto one local `DIRECT_BYTES_FOLLOW_ON_SPECS` table in `tests/python/test_branch_local_backreference_parity_suite.py`, keeping the existing bytes case tables and `DIRECT_BYTES_FOLLOW_ON_BUNDLES` intact while moving the differing bucket labels and published bytes-text expectations into the shared table.
+- 2026-03-18: Replaced the per-manifest bytes compile/module/pattern parity ladders with shared parametrized tests over the combined direct bytes follow-on case set, preserving the existing compile parity, module-search result parity, match-convenience parity, match-group-access parity, pattern-fullmatch result parity, and the nested-group `rebar` skip gating tied to `RBR-0603`.
+- 2026-03-18 verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py` (`331 passed, 14 skipped in 0.28s`)
+  - the inline `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` probe from the task text (`ok`)
+  - `bash -lc "! rg -n '^def test_quantified_(alternation|nested_group_alternation)_branch_local_backreference_bytes_' tests/python/test_branch_local_backreference_parity_suite.py"` (passes)
