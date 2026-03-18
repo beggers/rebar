@@ -27,7 +27,8 @@ from tests.python.fixture_parity_support import (
 
 
 MODULE_WORKFLOW_FIXTURE_PATH = FIXTURES_DIR / "module_workflow_surface.py"
-EXPECTED_CASE_IDS = (
+MATCH_BEHAVIOR_FIXTURE_PATH = FIXTURES_DIR / "match_behavior_smoke.py"
+MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-compile-str-literal",
     "workflow-compile-str-anchored-literal",
     "workflow-compile-str-verbose-regression",
@@ -41,7 +42,7 @@ EXPECTED_CASE_IDS = (
     "workflow-escape-str",
     "workflow-escape-bytes",
 )
-EXPECTED_PATTERNS = frozenset(
+MODULE_WORKFLOW_EXPECTED_PATTERNS = frozenset(
     {
         "abc",
         "^abc$",
@@ -55,7 +56,7 @@ EXPECTED_PATTERNS = frozenset(
         b"a-b.c",
     }
 )
-EXPECTED_OPERATION_HELPER_COUNTS = Counter(
+MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
         ("compile", None): 4,
         ("pattern_call", "search"): 1,
@@ -66,17 +67,41 @@ EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("module_call", "escape"): 2,
     }
 )
+MATCH_BEHAVIOR_EXPECTED_CASE_IDS = (
+    "search-str-success-literal",
+    "search-str-no-match",
+    "match-str-success-literal",
+    "match-str-no-match",
+    "fullmatch-str-success-literal",
+    "fullmatch-bytes-success-literal",
+)
+MATCH_BEHAVIOR_EXPECTED_PATTERNS = frozenset({"abc", "ab", "123", b"123"})
+MATCH_BEHAVIOR_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
+    {
+        ("module_call", "search"): 2,
+        ("module_call", "match"): 2,
+        ("module_call", "fullmatch"): 2,
+    }
+)
 SELECTED_CASE_BUNDLE_SPECS = (
     FixtureBundleSpec(
         fixture_name="module_workflow_surface.py",
         expected_manifest_id="module-workflow-surface",
-        selected_case_ids=EXPECTED_CASE_IDS,
-        expected_patterns=EXPECTED_PATTERNS,
-        expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
+        selected_case_ids=MODULE_WORKFLOW_EXPECTED_CASE_IDS,
+        expected_patterns=MODULE_WORKFLOW_EXPECTED_PATTERNS,
+        expected_operation_helper_counts=MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS,
+        expected_text_models=frozenset({"bytes", "str"}),
+    ),
+    FixtureBundleSpec(
+        fixture_name="match_behavior_smoke.py",
+        expected_manifest_id="match-behavior-smoke",
+        selected_case_ids=MATCH_BEHAVIOR_EXPECTED_CASE_IDS,
+        expected_patterns=MATCH_BEHAVIOR_EXPECTED_PATTERNS,
+        expected_operation_helper_counts=MATCH_BEHAVIOR_EXPECTED_OPERATION_HELPER_COUNTS,
         expected_text_models=frozenset({"bytes", "str"}),
     ),
 )
-(MODULE_WORKFLOW_BUNDLE,) = load_fixture_bundles(
+(MODULE_WORKFLOW_BUNDLE, MATCH_BEHAVIOR_BUNDLE) = load_fixture_bundles(
     SELECTED_CASE_BUNDLE_SPECS
 )
 
@@ -95,6 +120,10 @@ ESCAPE_CASES = tuple(
     case
     for case in fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "module_call")
     if case.helper == "escape"
+)
+MATCH_BEHAVIOR_CASES = tuple(MATCH_BEHAVIOR_BUNDLE.cases)
+MATCH_BEHAVIOR_DIRECT_TEST_CASE_IDS = frozenset(
+    case.case_id for case in MATCH_BEHAVIOR_CASES
 )
 MODULE_WORKFLOW_DIRECT_TEST_CASE_ID_BUCKETS = {
     "compile": frozenset(case.case_id for case in COMPILE_CASES),
@@ -136,6 +165,15 @@ class CompiledPatternModuleHelperErrorCase:
 class CompiledPatternCompileCase:
     case_id: str
     pattern: str | bytes
+
+
+@dataclass(frozen=True)
+class SupplementalMatchBehaviorCase:
+    case_id: str
+    helper: str
+    pattern: bytes
+    string: bytes
+    matches: bool
 
 
 class _EscapeStrSubclass(str):
@@ -372,6 +410,43 @@ ESCAPE_INVALID_INPUT_CASES = (
         input_factory=lambda: {"pattern": "a-b.c"},
     ),
 )
+SUPPLEMENTAL_BYTES_CASES = (
+    SupplementalMatchBehaviorCase(
+        case_id="search-bytes-success-literal",
+        helper="search",
+        pattern=b"abc",
+        string=b"zzabczz",
+        matches=True,
+    ),
+    SupplementalMatchBehaviorCase(
+        case_id="search-bytes-no-match",
+        helper="search",
+        pattern=b"abc",
+        string=b"zzz",
+        matches=False,
+    ),
+    SupplementalMatchBehaviorCase(
+        case_id="match-bytes-success-literal",
+        helper="match",
+        pattern=b"ab",
+        string=b"abbb",
+        matches=True,
+    ),
+    SupplementalMatchBehaviorCase(
+        case_id="match-bytes-no-match",
+        helper="match",
+        pattern=b"abc",
+        string=b"zabc",
+        matches=False,
+    ),
+    SupplementalMatchBehaviorCase(
+        case_id="fullmatch-bytes-no-match",
+        helper="fullmatch",
+        pattern=b"123",
+        string=b"1234",
+        matches=False,
+    ),
+)
 
 # CPython accepts multiple zero-valued flag spellings for compiled-pattern entry
 # points; keep those variants covered in one place so helper wrappers do not
@@ -454,6 +529,12 @@ def _capture_error(callback) -> BaseException:
     raise AssertionError("expected call to raise")
 
 
+def _match_behavior_case_string(case: FixtureCase) -> str | bytes:
+    string = case.args[1]
+    assert isinstance(string, (str, bytes))
+    return string
+
+
 def _assert_verbose_compile_case_matches_cpython(
     backend_name: str,
     observed_pattern: object,
@@ -484,23 +565,109 @@ def test_module_workflow_parity_suite_stays_aligned_with_published_fixture() -> 
         MODULE_WORKFLOW_BUNDLE,
         pattern_extractor=case_pattern,
         expected_fixture_path=MODULE_WORKFLOW_FIXTURE_PATH,
-        expected_ordered_case_ids=EXPECTED_CASE_IDS,
+        expected_ordered_case_ids=MODULE_WORKFLOW_EXPECTED_CASE_IDS,
     )
 
 
 def test_module_workflow_parity_suite_tracks_published_case_frontier() -> None:
     assert_fixture_bundle_tracks_published_case_frontier(
         MODULE_WORKFLOW_BUNDLE,
-        selected_case_ids=EXPECTED_CASE_IDS,
+        selected_case_ids=MODULE_WORKFLOW_EXPECTED_CASE_IDS,
     )
 
 
 def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
         MODULE_WORKFLOW_DIRECT_TEST_CASE_ID_BUCKETS,
-        selected_case_ids=EXPECTED_CASE_IDS,
+        selected_case_ids=MODULE_WORKFLOW_EXPECTED_CASE_IDS,
         coverage_label="module workflow direct-test case-id buckets",
     )
+
+
+def test_match_behavior_parity_suite_stays_aligned_with_published_fixture() -> None:
+    assert_fixture_bundle_contract(
+        MATCH_BEHAVIOR_BUNDLE,
+        pattern_extractor=case_pattern,
+        expected_fixture_path=MATCH_BEHAVIOR_FIXTURE_PATH,
+        expected_ordered_case_ids=MATCH_BEHAVIOR_EXPECTED_CASE_IDS,
+    )
+
+
+def test_match_behavior_parity_suite_tracks_published_case_frontier() -> None:
+    assert_fixture_bundle_tracks_published_case_frontier(
+        MATCH_BEHAVIOR_BUNDLE,
+        selected_case_ids=MATCH_BEHAVIOR_EXPECTED_CASE_IDS,
+    )
+
+
+def test_match_behavior_direct_test_bucket_covers_selected_frontier() -> None:
+    assert_direct_test_case_id_buckets_cover_selected_frontier(
+        {"module-call": MATCH_BEHAVIOR_DIRECT_TEST_CASE_IDS},
+        selected_case_ids=MATCH_BEHAVIOR_EXPECTED_CASE_IDS,
+        coverage_label="match behavior direct-test case-id bucket",
+    )
+
+
+def test_match_behavior_supplemental_bytes_cases_cover_missing_module_paths() -> None:
+    assert {(case.helper, case.matches) for case in SUPPLEMENTAL_BYTES_CASES} == {
+        ("search", True),
+        ("search", False),
+        ("match", True),
+        ("match", False),
+        ("fullmatch", False),
+    }
+    assert all(
+        isinstance(payload, bytes)
+        for case in SUPPLEMENTAL_BYTES_CASES
+        for payload in (case.pattern, case.string)
+    )
+
+
+@pytest.mark.parametrize("case", MATCH_BEHAVIOR_CASES, ids=lambda case: case.case_id)
+def test_match_behavior_module_calls_match_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.operation == "module_call"
+    assert case.helper is not None
+
+    observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
+    expected = getattr(re, case.helper)(*case.args, **case.kwargs)
+
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+    if expected is None:
+        assert observed is None
+        return
+
+    assert observed is not None
+    assert_match_convenience_api_parity(observed, expected)
+    assert type(observed.group(0)) is type(expected.group(0))
+    assert observed.re.pattern == expected.re.pattern == case_pattern(case)
+    assert observed.string == expected.string == _match_behavior_case_string(case)
+
+
+@pytest.mark.parametrize("case", SUPPLEMENTAL_BYTES_CASES, ids=lambda case: case.case_id)
+def test_match_behavior_supplemental_bytes_module_calls_match_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalMatchBehaviorCase,
+) -> None:
+    backend_name, backend = regex_backend
+
+    observed = getattr(backend, case.helper)(case.pattern, case.string)
+    expected = getattr(re, case.helper)(case.pattern, case.string)
+
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+    assert (expected is not None) is case.matches
+    if expected is None:
+        assert observed is None
+        return
+
+    assert observed is not None
+    assert_match_convenience_api_parity(observed, expected)
+    assert type(observed.group(0)) is type(expected.group(0)) is bytes
+    assert observed.re.pattern == expected.re.pattern == case.pattern
+    assert observed.string == expected.string == case.string
 
 
 @pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)

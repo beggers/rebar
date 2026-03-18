@@ -1,6 +1,6 @@
 # RBR-0620: Fold the detached match-behavior parity suite into the module workflow suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
 
@@ -97,3 +97,6 @@ PY`
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_match_behavior_parity_suite.py tests/python/test_module_workflow_parity_suite.py` passes (`227 passed in 0.19s`);
   - the inline `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` manifest-order probe above currently fails exactly on this cleanup with `AssertionError` because `tests/python/test_module_workflow_parity_suite.py` still declares only `module-workflow-surface`; and
   - `bash -lc "! rg --files tests/python | rg 'test_match_behavior_parity_suite\\.py$'"` currently fails exactly on this cleanup because the detached suite still exists.
+
+## Completion Note
+- 2026-03-18: Folded the `match-behavior-smoke` bundle, its direct-bucket checks, and the five local supplemental bytes follow-ons into `tests/python/test_module_workflow_parity_suite.py`, then deleted `tests/python/test_match_behavior_parity_suite.py`. Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`227 passed in 0.21s`), the manifest-order probe, and the live `rg --files` deletion check.
