@@ -27,6 +27,10 @@ LITERAL_FLAG_DELEGATED_CASE_IDS: tuple[str, ...] = (
 )
 
 
+def _duplicate_string_ids(ids: tuple[str, ...]) -> tuple[str, ...]:
+    return tuple(case_id for case_id, count in Counter(ids).items() if count > 1)
+
+
 class RecordingNativeBoundary:
     def __init__(self, *, native_placeholder_messages: bool = False) -> None:
         self.calls: list[tuple[object, ...]] = []
@@ -679,6 +683,22 @@ def assert_fixture_bundle_tracks_published_case_frontier(
 ) -> None:
     ordered_selected_case_ids = tuple(selected_case_ids)
     ordered_expected_uncovered_case_ids = tuple(expected_uncovered_case_ids)
+    duplicate_selected_case_ids = _duplicate_string_ids(ordered_selected_case_ids)
+    if duplicate_selected_case_ids:
+        raise AssertionError(
+            f"{bundle.expected_manifest_id} selected_case_ids contain duplicate ids: "
+            f"{duplicate_selected_case_ids}"
+        )
+
+    duplicate_uncovered_case_ids = _duplicate_string_ids(
+        ordered_expected_uncovered_case_ids
+    )
+    if duplicate_uncovered_case_ids:
+        raise AssertionError(
+            f"{bundle.expected_manifest_id} expected_uncovered_case_ids contain "
+            f"duplicate ids: {duplicate_uncovered_case_ids}"
+        )
+
     selected_case_id_set = frozenset(ordered_selected_case_ids)
 
     overlapping_case_ids = tuple(
@@ -730,6 +750,13 @@ def assert_direct_test_case_id_buckets_cover_selected_frontier(
     coverage_label: str = "direct-test case-id buckets",
 ) -> None:
     ordered_selected_case_ids = tuple(selected_case_ids)
+    duplicate_selected_case_ids = _duplicate_string_ids(ordered_selected_case_ids)
+    if duplicate_selected_case_ids:
+        raise AssertionError(
+            f"{coverage_label} selected_case_ids contain duplicate ids: "
+            f"{duplicate_selected_case_ids}"
+        )
+
     selected_case_id_set = frozenset(ordered_selected_case_ids)
 
     if isinstance(direct_test_case_id_buckets, Mapping):

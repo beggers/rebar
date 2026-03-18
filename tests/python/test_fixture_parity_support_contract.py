@@ -1497,6 +1497,43 @@ def test_published_case_frontier_helper_preserves_ordered_uncovered_case_ids() -
     )
 
 
+def test_published_case_frontier_helper_rejects_duplicate_selected_case_ids() -> None:
+    spec, bundle, uncovered_case_ids = _grouped_match_bundle_and_uncovered_case_ids()
+    duplicated_selected_case_ids = (*spec.selected_case_ids, spec.selected_case_ids[0])
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "grouped-match-workflows selected_case_ids contain duplicate ids: "
+            f"{(spec.selected_case_ids[0],)}"
+        ),
+    ):
+        assert_fixture_bundle_tracks_published_case_frontier(
+            bundle,
+            selected_case_ids=duplicated_selected_case_ids,
+            expected_uncovered_case_ids=uncovered_case_ids,
+        )
+
+
+def test_published_case_frontier_helper_rejects_duplicate_uncovered_case_ids() -> None:
+    spec, bundle, uncovered_case_ids = _grouped_match_bundle_and_uncovered_case_ids()
+    assert uncovered_case_ids
+    duplicated_uncovered_case_ids = (*uncovered_case_ids, uncovered_case_ids[0])
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "grouped-match-workflows expected_uncovered_case_ids contain duplicate "
+            f"ids: {(uncovered_case_ids[0],)}"
+        ),
+    ):
+        assert_fixture_bundle_tracks_published_case_frontier(
+            bundle,
+            selected_case_ids=spec.selected_case_ids,
+            expected_uncovered_case_ids=duplicated_uncovered_case_ids,
+        )
+
+
 def test_published_case_frontier_helper_rejects_selected_and_uncovered_overlap() -> None:
     spec, bundle, _ = _grouped_match_bundle_and_uncovered_case_ids()
     overlapping_case_ids = (spec.selected_case_ids[0],)
@@ -1566,6 +1603,26 @@ def test_direct_test_case_id_bucket_helper_accepts_exact_selected_frontier_cover
         ),
         coverage_label="fixture parity support contract buckets",
     )
+
+
+def test_direct_test_case_id_bucket_helper_rejects_duplicate_selected_ids() -> None:
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "fixture parity support contract buckets selected_case_ids contain "
+            "duplicate ids: ('grouped-module-fullmatch-two-capture-gap-str',)"
+        ),
+    ):
+        assert_direct_test_case_id_buckets_cover_selected_frontier(
+            {
+                "module": frozenset({"grouped-module-fullmatch-two-capture-gap-str"}),
+            },
+            selected_case_ids=(
+                "grouped-module-fullmatch-two-capture-gap-str",
+                "grouped-module-fullmatch-two-capture-gap-str",
+            ),
+            coverage_label="fixture parity support contract buckets",
+        )
 
 
 def test_direct_test_case_id_bucket_helper_reports_missing_and_unexpected_ids_clearly(
