@@ -9,8 +9,18 @@ import pytest
 
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
+    BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
+    BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
+    DIRECT_BYTES_FOLLOW_ON_SPECS,
     FixtureBundle,
     FixtureBundleSpec,
+    NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES,
+    OPEN_ENDED_ALTERNATION_BYTES_CASES,
+    OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    SupplementalCase,
     assert_direct_bytes_follow_on_bundle_routing,
     assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
@@ -42,18 +52,6 @@ OPEN_ENDED_BACKTRACKING_BRANCH_BYTES = {
     branch: text.encode("ascii")
     for branch, text in OPEN_ENDED_BACKTRACKING_BRANCH_TEXT.items()
 }
-
-
-@dataclass(frozen=True)
-class SupplementalCase:
-    id: str
-    pattern: bytes
-    search_matches: tuple[bytes, ...] = ()
-    search_misses: tuple[bytes, ...] = ()
-    fullmatch_matches: tuple[bytes, ...] = ()
-    fullmatch_misses: tuple[bytes, ...] = ()
-    unsupported_backends: tuple[str, ...] = ()
-    unsupported_backend_reason: str | None = None
 
 
 @dataclass(frozen=True)
@@ -252,145 +250,15 @@ OPEN_ENDED_TRACE_BUNDLES = (
     OPEN_ENDED_ALTERNATION_BUNDLE,
     NESTED_OPEN_ENDED_ALTERNATION_BUNDLE,
 )
-OPEN_ENDED_ALTERNATION_BYTES_CASES = (
-    SupplementalCase(
-        id="open-ended-grouped-alternation-numbered-bytes",
-        pattern=rb"a(bc|de){1,}d",
-        search_matches=(b"zzabcdzz", b"zzadedzz"),
-        fullmatch_matches=(b"abcbcd", b"abcded", b"abcbcded"),
-        fullmatch_misses=(b"ad", b"abed"),
-    ),
-    SupplementalCase(
-        id="open-ended-grouped-alternation-named-bytes",
-        pattern=rb"a(?P<word>bc|de){1,}d",
-        search_matches=(b"zzabcdzz", b"zzadedzz"),
-        fullmatch_matches=(b"abcded", b"abcbcded", b"adededed"),
-        fullmatch_misses=(b"ad", b"abed"),
-    ),
-)
-NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES = (
-    SupplementalCase(
-        id="nested-open-ended-grouped-alternation-numbered-bytes",
-        pattern=rb"a((bc|de){1,})d",
-        search_matches=(b"zzabcdzz", b"zzadedzz"),
-        fullmatch_matches=(b"abcbcded", b"adededed"),
-        fullmatch_misses=(b"ae", b"abcbcdede"),
-    ),
-    SupplementalCase(
-        id="nested-open-ended-grouped-alternation-named-bytes",
-        pattern=rb"a(?P<outer>(bc|de){1,})d",
-        search_matches=(b"zzabcdzz", b"zzadedzz"),
-        fullmatch_matches=(b"abcbcded", b"adededed"),
-        fullmatch_misses=(b"ae", b"abcbcdede"),
-    ),
-)
-OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
-    SupplementalCase(
-        id="open-ended-grouped-conditional-numbered-bytes",
-        pattern=rb"a((bc|de){1,})?(?(1)d|e)",
-        search_matches=(b"zzaezz", b"zzabcdzz", b"zzabcbcdzz", b"zzadedzz"),
-        fullmatch_matches=(b"abcded", b"abcbcded"),
-        fullmatch_misses=(b"abcde",),
-    ),
-    SupplementalCase(
-        id="open-ended-grouped-conditional-named-bytes",
-        pattern=rb"a(?P<outer>(bc|de){1,})?(?(outer)d|e)",
-        search_matches=(b"zzaezz", b"zzadedzz", b"zzadedededzz"),
-        fullmatch_matches=(b"abcbcded",),
-        fullmatch_misses=(b"ad",),
-    ),
-)
-OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
-    SupplementalCase(
-        id="open-ended-grouped-backtracking-heavy-numbered-bytes",
-        pattern=rb"a((bc|b)c){1,}d",
-        fullmatch_matches=(b"abccd", b"abcbcd", b"abcbccd"),
-        fullmatch_misses=(b"abcccd",),
-        search_matches=(b"zzabcdzz",),
-    ),
-    SupplementalCase(
-        id="open-ended-grouped-backtracking-heavy-named-bytes",
-        pattern=rb"a(?P<word>(bc|b)c){1,}d",
-        search_matches=(b"zzabccdzz", b"zzabccbcdzz", b"zzabcbccbcdzz"),
-        search_misses=(b"zzabccbdzz",),
-        fullmatch_matches=(b"abcbcbcbcd",),
-    ),
-)
-BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES = (
-    SupplementalCase(
-        id="broader-range-open-ended-grouped-alternation-numbered-bytes",
-        pattern=rb"a(bc|de){2,}d",
-        search_matches=(b"zzabcbcdzz", b"zzadededzz"),
-        fullmatch_matches=(b"abcded", b"abcbcded", b"adededed"),
-        fullmatch_misses=(b"abcd", b"ad"),
-    ),
-    SupplementalCase(
-        id="broader-range-open-ended-grouped-alternation-named-bytes",
-        pattern=rb"a(?P<word>bc|de){2,}d",
-        search_matches=(b"zzabcbcdzz", b"zzadededzz"),
-        fullmatch_matches=(b"abcded", b"abcbcded", b"adededed"),
-        fullmatch_misses=(b"abcd", b"ad"),
-    ),
-)
-BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
-    SupplementalCase(
-        id="broader-range-open-ended-grouped-conditional-numbered-bytes",
-        pattern=rb"a((bc|de){2,})?(?(1)d|e)",
-        search_matches=(b"zzaezz", b"zzabcbcdzz", b"zzadededzz"),
-        fullmatch_matches=(b"abcded", b"abcbcded"),
-        fullmatch_misses=(b"abcdede", b"abcd"),
-    ),
-    SupplementalCase(
-        id="broader-range-open-ended-grouped-conditional-named-bytes",
-        pattern=rb"a(?P<outer>(bc|de){2,})?(?(outer)d|e)",
-        search_matches=(b"zzaezz", b"zzadededzz", b"zzadedededzz"),
-        fullmatch_matches=(b"abcbcded",),
-        fullmatch_misses=(b"ad",),
-    ),
-)
-BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
-    SupplementalCase(
-        id="broader-range-open-ended-grouped-backtracking-heavy-numbered-bytes",
-        pattern=rb"a((bc|b)c){2,}d",
-        search_matches=(b"zzabcbcdzz", b"zzabcbccdzz"),
-        fullmatch_matches=(b"abccbcd", b"abcbcbcbcd"),
-        fullmatch_misses=(b"abcd", b"abccbd"),
-    ),
-    SupplementalCase(
-        id="broader-range-open-ended-grouped-backtracking-heavy-named-bytes",
-        pattern=rb"a(?P<word>(bc|b)c){2,}d",
-        search_matches=(b"zzabcbccdzz", b"zzabccbcdzz", b"zzabcbcbcbcdzz"),
-        search_misses=(b"zzabccbdzz",),
-        fullmatch_matches=(b"abcbccd", b"abcbcbcbcd"),
-        fullmatch_misses=(b"abcd",),
-    ),
-)
-DIRECT_BYTES_FOLLOW_ON_SPECS = (
+DIRECT_BYTES_FOLLOW_ON_BUNDLE_SPECS = tuple(
     (
-        BROADER_RANGE_OPEN_ENDED_ALTERNATION_BUNDLE,
-        BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
-    ),
-    (
-        OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
-        OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
-    ),
-    (
-        BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BUNDLE,
-        BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
-    ),
-    (
-        BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
-        BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
-    ),
-)
-DIRECT_BYTES_FOLLOW_ON_SPEC_IDS = (
-    "broader-range-alternation",
-    "open-ended-backtracking-heavy",
-    "broader-range-conditional",
-    "broader-range-backtracking-heavy",
+        published_fixture_bundle_by_manifest_id(FIXTURE_BUNDLES, spec.manifest_id),
+        spec.supplemental_cases,
+    )
+    for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
 )
 DIRECT_BYTES_FOLLOW_ON_BUNDLES = tuple(
-    bundle for bundle, _ in DIRECT_BYTES_FOLLOW_ON_SPECS
+    bundle for bundle, _ in DIRECT_BYTES_FOLLOW_ON_BUNDLE_SPECS
 )
 
 
@@ -1343,7 +1211,7 @@ def test_broader_range_open_ended_backtracking_heavy_bytes_cases_stay_explicit_w
 
 @pytest.mark.parametrize(
     ("bundle", "supplemental_cases"),
-    DIRECT_BYTES_FOLLOW_ON_SPECS,
+    DIRECT_BYTES_FOLLOW_ON_BUNDLE_SPECS,
     ids=DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
 )
 def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(

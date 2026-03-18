@@ -23,7 +23,7 @@ from tests.benchmarks.correctness_anchor_support import (
     published_case_ids_by_signature,
     unanchored_workload_ids,
 )
-from tests.python.test_open_ended_quantified_group_parity_suite import (
+from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,

@@ -30,11 +30,21 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
+    BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
+    BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
+    DIRECT_BYTES_FOLLOW_ON_SPECS,
     FIXTURES_DIR,
+    NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES,
+    OPEN_ENDED_ALTERNATION_BYTES_CASES,
+    OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    OPEN_ENDED_CONDITIONAL_BYTES_CASES,
     _match_api_templates,
     FixtureBundle,
     FixtureBundleSpec,
     RecordingNativeBoundary,
+    SupplementalCase,
     assert_direct_bytes_follow_on_bundle_routing,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
@@ -232,6 +242,118 @@ BRANCH_LOCAL_BACKREFERENCE_CASES = _fixture_cases(
     "branch_local_backreference_workflows.py"
 )
 COLLECTION_REPLACEMENT_CASES = _fixture_cases("collection_replacement_workflows.py")
+
+
+@pytest.mark.parametrize(
+    ("supplemental_cases", "expected_case_ids"),
+    (
+        pytest.param(
+            OPEN_ENDED_ALTERNATION_BYTES_CASES,
+            (
+                "open-ended-grouped-alternation-numbered-bytes",
+                "open-ended-grouped-alternation-named-bytes",
+            ),
+            id="open-ended-alternation",
+        ),
+        pytest.param(
+            NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES,
+            (
+                "nested-open-ended-grouped-alternation-numbered-bytes",
+                "nested-open-ended-grouped-alternation-named-bytes",
+            ),
+            id="nested-open-ended-alternation",
+        ),
+        pytest.param(
+            OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+            (
+                "open-ended-grouped-conditional-numbered-bytes",
+                "open-ended-grouped-conditional-named-bytes",
+            ),
+            id="open-ended-conditional",
+        ),
+        pytest.param(
+            OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+            (
+                "open-ended-grouped-backtracking-heavy-numbered-bytes",
+                "open-ended-grouped-backtracking-heavy-named-bytes",
+            ),
+            id="open-ended-backtracking-heavy",
+        ),
+        pytest.param(
+            BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
+            (
+                "broader-range-open-ended-grouped-alternation-numbered-bytes",
+                "broader-range-open-ended-grouped-alternation-named-bytes",
+            ),
+            id="broader-range-open-ended-alternation",
+        ),
+        pytest.param(
+            BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+            (
+                "broader-range-open-ended-grouped-conditional-numbered-bytes",
+                "broader-range-open-ended-grouped-conditional-named-bytes",
+            ),
+            id="broader-range-open-ended-conditional",
+        ),
+        pytest.param(
+            BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+            (
+                "broader-range-open-ended-grouped-backtracking-heavy-numbered-bytes",
+                "broader-range-open-ended-grouped-backtracking-heavy-named-bytes",
+            ),
+            id="broader-range-open-ended-backtracking-heavy",
+        ),
+    ),
+)
+def test_open_ended_supplemental_bytes_case_tables_keep_case_ids_in_order(
+    supplemental_cases: tuple[SupplementalCase, ...],
+    expected_case_ids: tuple[str, ...],
+) -> None:
+    assert tuple(case.id for case in supplemental_cases) == expected_case_ids
+
+
+def test_open_ended_direct_bytes_follow_on_specs_keep_expected_manifest_pairings(
+) -> None:
+    assert DIRECT_BYTES_FOLLOW_ON_SPEC_IDS == (
+        "broader-range-alternation",
+        "open-ended-backtracking-heavy",
+        "broader-range-conditional",
+        "broader-range-backtracking-heavy",
+    )
+    assert tuple((spec.id, spec.manifest_id) for spec in DIRECT_BYTES_FOLLOW_ON_SPECS) == (
+        (
+            "broader-range-alternation",
+            "broader-range-open-ended-quantified-group-alternation-workflows",
+        ),
+        (
+            "open-ended-backtracking-heavy",
+            "open-ended-quantified-group-alternation-backtracking-heavy-workflows",
+        ),
+        (
+            "broader-range-conditional",
+            "broader-range-open-ended-quantified-group-alternation-conditional-workflows",
+        ),
+        (
+            "broader-range-backtracking-heavy",
+            "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows",
+        ),
+    )
+    assert (
+        DIRECT_BYTES_FOLLOW_ON_SPECS[0].supplemental_cases
+        is BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES
+    )
+    assert (
+        DIRECT_BYTES_FOLLOW_ON_SPECS[1].supplemental_cases
+        is OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES
+    )
+    assert (
+        DIRECT_BYTES_FOLLOW_ON_SPECS[2].supplemental_cases
+        is BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES
+    )
+    assert (
+        DIRECT_BYTES_FOLLOW_ON_SPECS[3].supplemental_cases
+        is BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES
+    )
 
 
 def _optional_named_group_match(

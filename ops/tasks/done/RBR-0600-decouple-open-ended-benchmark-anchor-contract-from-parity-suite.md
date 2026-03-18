@@ -1,8 +1,9 @@
 # RBR-0600: Decouple the open-ended benchmark anchor contract from the parity suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Move the shared open-ended supplemental bytes case tables onto the existing fixture-support path so the last bespoke benchmark anchor-contract module stops importing another test module for expected-result data.
@@ -123,3 +124,12 @@ Created: 2026-03-18
     - `tests/python/test_open_ended_quantified_group_parity_suite.py:still-local:OPEN_ENDED_ALTERNATION_BYTES_CASES = (`
     - `tests/python/test_open_ended_quantified_group_parity_suite.py:still-local:DIRECT_BYTES_FOLLOW_ON_SPECS = (`
     - `tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py:still-local:from tests.python.test_open_ended_quantified_group_parity_suite import`
+
+## Completion Notes
+- 2026-03-18: Moved `SupplementalCase`, the seven open-ended `*_BYTES_CASES` tables, and the direct-bytes follow-on id-to-manifest metadata onto `tests/python/fixture_parity_support.py`, keeping the existing case ids, payloads, and four manifest pairings unchanged.
+- 2026-03-18: Updated `tests/python/test_open_ended_quantified_group_parity_suite.py` to import the shared support surface and resolve the shared follow-on specs back onto the already-loaded fixture bundles without changing the existing direct-bytes routing or generic bucket partitioning.
+- 2026-03-18: Updated `tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py` to source its direct bytes signature data from `tests/python/fixture_parity_support.py`, removing the remaining cross-test import from the benchmark anchor contract.
+- 2026-03-18: Added focused coverage in `tests/python/test_fixture_parity_support_contract.py` that locks the seven supplemental bytes case-id orders and the four direct-follow-on id-to-manifest mappings in place.
+- 2026-03-18 verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_open_ended_quantified_group_parity_suite.py tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py` (`4060 passed in 2.82s`)
+  - The inline `python3` ownership probe from the task text (`ok`)
