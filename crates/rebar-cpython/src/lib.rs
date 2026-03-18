@@ -15,6 +15,7 @@ use rebar_core::{
     conditional_group_exists_quantified_alternation_find_spans_str as core_conditional_group_exists_quantified_alternation_find_spans_str,
     conditional_group_exists_quantified_find_spans_str as core_conditional_group_exists_quantified_find_spans_str,
     escape_bytes as core_escape_bytes, escape_str as core_escape_str,
+    expand_literal_replacement_template_bytes as core_expand_literal_replacement_template_bytes,
     expand_literal_replacement_template_str as core_expand_literal_replacement_template_str,
     grouped_alternation_find_spans_str as core_grouped_alternation_find_spans_str,
     grouped_literal_find_spans_str as core_grouped_literal_find_spans_str,
@@ -31,6 +32,10 @@ use rebar_core::{
 };
 
 const SCAFFOLD_STATUS: &str = "scaffold-only";
+const NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NUMBERED_BYTES_TEMPLATE_PATTERN: &[u8] =
+    br"a((b|c){2,})\2(?(2)d|e)";
+const NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NAMED_BYTES_TEMPLATE_PATTERN: &[u8] =
+    br"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)";
 
 #[pyfunction]
 fn target_cpython_series() -> &'static str {
@@ -110,6 +115,64 @@ fn replacement_limit(count: isize, total_matches: usize) -> usize {
     } else {
         usize::min(count as usize, total_matches)
     }
+}
+
+fn supports_bounded_literal_template_bytes_pattern(pattern: &[u8]) -> bool {
+    pattern == NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NUMBERED_BYTES_TEMPLATE_PATTERN
+        || pattern == NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NAMED_BYTES_TEMPLATE_PATTERN
+}
+
+fn collect_bounded_literal_template_matches_bytes(
+    pattern: &[u8],
+    flags: i32,
+    string: &[u8],
+) -> PyResult<(MatchStatus, Vec<CapturedMatchSpan>)> {
+    if !supports_bounded_literal_template_bytes_pattern(pattern) {
+        return Ok((MatchStatus::Unsupported, Vec::new()));
+    }
+
+    let mut matches = Vec::new();
+    let mut search_start = 0usize;
+    loop {
+        let outcome = core_literal_match(
+            PatternRef::Bytes(pattern),
+            flags,
+            MatchMode::Search,
+            PatternRef::Bytes(string),
+            search_start as isize,
+            None,
+        )
+        .map_err(|error| PyTypeError::new_err(error.message()))?;
+
+        match outcome.status {
+            MatchStatus::Unsupported => return Ok((MatchStatus::Unsupported, Vec::new())),
+            MatchStatus::NoMatch => break,
+            MatchStatus::Matched => {
+                let Some(span) = outcome.span else {
+                    break;
+                };
+                matches.push(CapturedMatchSpan {
+                    span,
+                    group_spans: outcome.group_spans,
+                });
+                search_start = if span.1 > span.0 {
+                    span.1
+                } else {
+                    span.0.saturating_add(1)
+                };
+                if search_start > string.len() {
+                    break;
+                }
+            }
+        }
+    }
+
+    let status = if matches.is_empty() {
+        MatchStatus::NoMatch
+    } else {
+        MatchStatus::Matched
+    };
+    Ok((status, matches))
 }
 
 fn raise_re_error<T>(
@@ -1094,6 +1157,100 @@ fn boundary_literal_template_subn(
     }
 }
 
+#[pyfunction(signature = (pattern, flags, repl, string, count=0))]
+fn boundary_literal_template_subn_bytes(
+    py: Python<'_>,
+    pattern: &[u8],
+    flags: i32,
+    repl: &[u8],
+    string: &[u8],
+    count: isize,
+) -> PyResult<(&'static str, PyObject, usize)> {
+    if !supports_bounded_literal_template_bytes_pattern(pattern) {
+        return Ok(("unsupported", py.None(), 0));
+    }
+
+    let compile_outcome = core_compile(PatternRef::Bytes(pattern), flags)
+        .map_err(|error| PyTypeError::new_err(error.message))?;
+    if compile_outcome.status != CompileStatus::Compiled {
+        return Ok(("unsupported", py.None(), 0));
+    }
+
+    let empty_bytes = b"" as &[u8];
+    let empty_numbered_captures = std::iter::repeat(Some(empty_bytes))
+        .take(compile_outcome.group_count)
+        .collect::<Vec<_>>();
+    let empty_named_captures = compile_outcome
+        .named_groups
+        .iter()
+        .map(|group| (group.name.as_str(), empty_bytes))
+        .collect::<Vec<_>>();
+    if core_expand_literal_replacement_template_bytes(
+        repl,
+        empty_bytes,
+        &empty_numbered_captures,
+        &empty_named_captures,
+    )
+    .is_none()
+    {
+        return Ok(("unsupported", py.None(), 0));
+    }
+
+    let (status, matches) = collect_bounded_literal_template_matches_bytes(pattern, flags, string)?;
+    if status == MatchStatus::Unsupported {
+        return Ok(("unsupported", py.None(), 0));
+    }
+    if count < 0 {
+        return Ok(("supported", PyBytes::new(py, string).unbind().into_any(), 0));
+    }
+
+    let replacement_limit = replacement_limit(count, matches.len());
+    if replacement_limit == 0 {
+        return Ok(("supported", PyBytes::new(py, string).unbind().into_any(), 0));
+    }
+
+    let mut output = Vec::new();
+    let mut last_end = 0;
+    for matched in matches.iter().take(replacement_limit) {
+        let (start, end) = matched.span;
+        output.extend_from_slice(&string[last_end..start]);
+
+        let whole_match = &string[start..end];
+        let numbered_captures = matched
+            .group_spans
+            .iter()
+            .map(|span| {
+                span.map(|(capture_start, capture_end)| &string[capture_start..capture_end])
+            })
+            .collect::<Vec<_>>();
+        let named_captures = compile_outcome
+            .named_groups
+            .iter()
+            .filter_map(|group| {
+                numbered_captures
+                    .get(group.index - 1)
+                    .map(|capture| (group.name.as_str(), capture.unwrap_or(empty_bytes)))
+            })
+            .collect::<Vec<_>>();
+        let expanded = core_expand_literal_replacement_template_bytes(
+            repl,
+            whole_match,
+            &numbered_captures,
+            &named_captures,
+        )
+        .ok_or_else(|| PyTypeError::new_err("unsupported literal replacement template"))?;
+        output.extend_from_slice(&expanded);
+        last_end = end;
+    }
+    output.extend_from_slice(&string[last_end..]);
+
+    Ok((
+        "supported",
+        PyBytes::new(py, &output).unbind().into_any(),
+        replacement_limit,
+    ))
+}
+
 #[pyfunction]
 fn boundary_escape(py: Python<'_>, pattern: &Bound<'_, PyAny>) -> PyResult<PyObject> {
     if let Ok(value) = pattern.extract::<&str>() {
@@ -1203,6 +1360,10 @@ fn _rebar(module: &Bound<'_, PyModule>) -> PyResult<()> {
     )?)?;
     module.add_function(wrap_pyfunction!(boundary_literal_subn, module)?)?;
     module.add_function(wrap_pyfunction!(boundary_literal_template_subn, module)?)?;
+    module.add_function(wrap_pyfunction!(
+        boundary_literal_template_subn_bytes,
+        module
+    )?)?;
     module.add_function(wrap_pyfunction!(boundary_escape, module)?)?;
     module.add_function(wrap_pyfunction!(scaffold_purge, module)?)?;
     module.add_function(wrap_pyfunction!(scaffold_search, module)?)?;

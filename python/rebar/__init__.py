@@ -100,6 +100,18 @@ _EXACT_NUMBERED_QUANTIFIED_NESTED_GROUP_PATTERN: Final[str] = r"a((bc)+)d"
 _EXACT_NAMED_QUANTIFIED_NESTED_GROUP_PATTERN: Final[str] = (
     r"a(?P<outer>(?P<inner>bc)+)d"
 )
+_NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NUMBERED_BYTES_TEMPLATE_PATTERN: Final[
+    bytes
+] = br"a((b|c){2,})\2(?(2)d|e)"
+_NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NAMED_BYTES_TEMPLATE_PATTERN: Final[
+    bytes
+] = br"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)"
+_NATIVE_TEMPLATE_BYTES_PATTERNS: Final[frozenset[bytes]] = frozenset(
+    {
+        _NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NUMBERED_BYTES_TEMPLATE_PATTERN,
+        _NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NAMED_BYTES_TEMPLATE_PATTERN,
+    }
+)
 _MATCH_FALLBACK_UNSUPPORTED = object()
 
 
@@ -632,7 +644,9 @@ def _grouped_literal_body(pattern: str) -> str | None:
 
 
 def _allow_native_template_passthrough(pattern: str | bytes) -> bool:
-    return _native is not None and isinstance(pattern, str)
+    return _native is not None and (
+        isinstance(pattern, str) or pattern in _NATIVE_TEMPLATE_BYTES_PATTERNS
+    )
 
 
 def _literal_match_base_flags(pattern: str | bytes) -> int:
@@ -1151,7 +1165,12 @@ def _run_native_literal_subn(
             helper_name=helper_name,
         )
 
-    if isinstance(compiled_pattern.pattern, str) and isinstance(repl, str) and "\\" in repl:
+    if (
+        isinstance(compiled_pattern.pattern, str)
+        and isinstance(repl, str)
+        and "\\" in repl
+        and _allow_native_template_passthrough(compiled_pattern.pattern)
+    ):
         # Capture-sensitive template expansion stays in the native boundary.
         status, substituted, replacement_count = _native.boundary_literal_template_subn(
             compiled_pattern.pattern,
@@ -1159,6 +1178,24 @@ def _run_native_literal_subn(
             repl,
             string,
             count,
+        )
+        if status == "unsupported":
+            return compiled_pattern._raise_placeholder(helper_name)
+        return substituted, replacement_count
+    if (
+        isinstance(compiled_pattern.pattern, bytes)
+        and isinstance(repl, bytes)
+        and b"\\" in repl
+        and _allow_native_template_passthrough(compiled_pattern.pattern)
+    ):
+        status, substituted, replacement_count = (
+            _native.boundary_literal_template_subn_bytes(
+                compiled_pattern.pattern,
+                compiled_pattern.flags,
+                repl,
+                string,
+                count,
+            )
         )
         if status == "unsupported":
             return compiled_pattern._raise_placeholder(helper_name)
@@ -1782,7 +1819,7 @@ def _ensure_literal_replacement_payload(
         if defer_cross_type_mismatch and isinstance(repl, str):
             return repl
         raise TypeError(f"sequence item 0: expected a bytes-like object, {type(repl).__name__} found")
-    if b"\\" in repl:
+    if b"\\" in repl and not allow_native_template_passthrough:
         unsupported(helper_name)
         raise AssertionError("unsupported() should raise")  # pragma: no cover
     return repl

@@ -1146,6 +1146,8 @@ REPLACEMENT_SURFACE_SPECS = (
             r"a(?P<outer>(?P<inner>b|c){1,})(?P=inner)d",
             r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
             r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+            rb"a((b|c){2,})\2(?(2)d|e)",
+            rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
         ),
         template_expand_manifest_ids=(
             "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows",
@@ -1154,9 +1156,6 @@ REPLACEMENT_SURFACE_SPECS = (
         ),
         supplemental_no_match_cases=OPEN_ENDED_SUPPLEMENTAL_NO_MATCH_CASES,
         supplemental_repeated_cases=OPEN_ENDED_SUPPLEMENTAL_REPEATED_CASES,
-        pending_bytes_follow_on_manifest_ids=frozenset(
-            {NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_MANIFEST_ID}
-        ),
     ),
     ReplacementSurfaceSpec(
         id="conditional-group-exists-replacement",
@@ -1430,7 +1429,7 @@ OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE = next(
     for surface in REPLACEMENT_SURFACES
     if surface.spec.id == "open-ended-quantified-group-replacement"
 )
-PENDING_BYTES_REPLACEMENT_BUNDLE = next(
+MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE = next(
     bundle
     for bundle in OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE.bundles
     if bundle.expected_manifest_id
@@ -1650,9 +1649,9 @@ def test_replacement_direct_test_buckets_cover_selected_frontier(
     )
 
 
-def test_mixed_replacement_manifest_keeps_bytes_rows_explicit_as_pending_follow_on(
+def test_mixed_replacement_manifest_routes_bytes_rows_through_shared_parity_surface(
 ) -> None:
-    bundle = PENDING_BYTES_REPLACEMENT_BUNDLE
+    bundle = MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE
     surface = OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE
     str_case_ids = frozenset(
         case.case_id for case in bundle.cases if case.text_model == "str"
@@ -1663,12 +1662,10 @@ def test_mixed_replacement_manifest_keeps_bytes_rows_explicit_as_pending_follow_
     expected_module_case_ids = frozenset(
         case.case_id
         for case in fixture_cases_for_operation((bundle,), "module_call")
-        if case.text_model == "str"
     )
     expected_pattern_case_ids = frozenset(
         case.case_id
         for case in fixture_cases_for_operation((bundle,), "pattern_call")
-        if case.text_model == "str"
     )
     shared_module_case_ids = frozenset(
         case.case_id
@@ -1693,7 +1690,7 @@ def test_mixed_replacement_manifest_keeps_bytes_rows_explicit_as_pending_follow_
     }
     assert shared_module_case_ids == expected_module_case_ids
     assert shared_pattern_case_ids == expected_pattern_case_ids
-    assert shared_template_expand_case_ids == str_case_ids
+    assert shared_template_expand_case_ids == str_case_ids | bytes_case_ids
 
 
 @pytest.mark.parametrize(("surface", "pattern"), COMPILE_PATTERN_PARAMS)

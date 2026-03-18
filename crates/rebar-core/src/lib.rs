@@ -581,6 +581,73 @@ pub fn expand_literal_replacement_template_str(
     Some(expanded)
 }
 
+/// Expand the bounded whole-match replacement-template slice for `bytes`.
+#[must_use]
+pub fn expand_literal_replacement_template_bytes(
+    template: &[u8],
+    whole_match: &[u8],
+    numbered_captures: &[Option<&[u8]>],
+    named_captures: &[(&str, &[u8])],
+) -> Option<Vec<u8>> {
+    let mut expanded = Vec::new();
+    let mut index = 0;
+
+    while let Some(&byte) = template.get(index) {
+        if byte != b'\\' {
+            expanded.push(byte);
+            index += 1;
+            continue;
+        }
+
+        index += 1;
+        match template.get(index).copied() {
+            Some(b'g') => {
+                index += 1;
+                if template.get(index) != Some(&b'<') {
+                    return None;
+                }
+                index += 1;
+
+                let group_name_start = index;
+                while let Some(&group_byte) = template.get(index) {
+                    if group_byte == b'>' {
+                        break;
+                    }
+                    index += 1;
+                }
+
+                if template.get(index) != Some(&b'>') {
+                    return None;
+                }
+
+                let group_name = std::str::from_utf8(&template[group_name_start..index]).ok()?;
+                if group_name == "0" {
+                    expanded.extend_from_slice(whole_match);
+                } else {
+                    let (_, value) = named_captures
+                        .iter()
+                        .find(|(name, _)| *name == group_name)
+                        .copied()?;
+                    expanded.extend_from_slice(value);
+                }
+                index += 1;
+            }
+            Some(group) if group.is_ascii_digit() && group != b'0' => {
+                let group_index = usize::from(group - b'0');
+                match numbered_captures.get(group_index - 1).copied() {
+                    Some(Some(value)) => expanded.extend_from_slice(value),
+                    Some(None) => {}
+                    None => return None,
+                }
+                index += 1;
+            }
+            _ => return None,
+        }
+    }
+
+    Some(expanded)
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct CaptureLiteralPattern<'a> {
     captures: Vec<LiteralCapture<'a>>,

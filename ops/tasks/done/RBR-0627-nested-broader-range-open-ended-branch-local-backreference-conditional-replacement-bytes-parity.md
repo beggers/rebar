@@ -1,8 +1,9 @@
 # RBR-0627: Convert the nested broader-range open-ended branch-local-backreference conditional replacement-template bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Convert the exact broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference conditional replacement-template bytes pair published by `RBR-0625` from honest `unimplemented` outcomes into Rust-backed behavior on the existing shared replacement parity surface, without widening into benchmark catch-up, callable replacement, or another bytes frontier.
@@ -44,3 +45,9 @@ Created: 2026-03-18
 - `benchmarks/workloads/nested_group_replacement_boundary.py` already publishes the four adjacent `str` benchmark rows for this exact slice as `module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-str`, `module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-first-match-only-b-branch-warm-str`, `pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-purged-str`, and `pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-c-branch-first-match-only-purged-str`, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass.
 - Direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes replacement workflows at `rebar.sub(...)`, so the Rust-backed bytes parity work is not already satisfied in the current checkout.
 - A later benchmark follow-on should catch the same bytes pair up on the existing `benchmarks/workloads/nested_group_replacement_boundary.py` surface before deeper grouped execution broadens that family.
+
+## Completion Notes
+- Added the bounded bytes replacement-template expander in `crates/rebar-core/src/lib.rs`, a dedicated `boundary_literal_template_subn_bytes()` path in `crates/rebar-cpython/src/lib.rs`, and exact-pattern passthrough gating in `python/rebar/__init__.py`, so the published numbered and named bytes pair now executes behind `rebar._rebar` instead of raising `NotImplementedError`.
+- Updated `tests/python/test_fixture_backed_replacement_parity_suite.py` so the shared replacement surface now treats the mixed `str`/`bytes` manifest as active parity coverage, including the shared module, pattern, template-expand, and compile-metadata partitions for the eight bytes rows.
+- Republished `reports/correctness/latest.py`; the tracked combined scorecard now reads `1286` total / `1286` passed / `0` failed / `0` `unimplemented`, and `nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-replacement-workflows` now reads `16` total / `16` passed / `0` `unimplemented` in the tracked artifact.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py --report .rebar/tmp/rbr-0627-nested-broader-range-open-ended-branch-local-backreference-conditional-replacement-bytes-parity.py` (`16` total / `16` passed / `0` `unimplemented`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1286` total / `1286` passed / `0` `unimplemented`), and `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`932 passed, 1511 subtests passed`).
