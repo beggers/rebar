@@ -96,6 +96,14 @@ PATTERN_KEYWORD_CALL_CASES = (
         result_kind="match",
     ),
     PatternKeywordCallCase(
+        case_id="pattern-search-bool-endpos-keyword-str",
+        helper="search",
+        pattern="z",
+        args=("zabcabc",),
+        kwargs={"endpos": True},
+        result_kind="match",
+    ),
+    PatternKeywordCallCase(
         case_id="pattern-search-endpos-keyword-bytes",
         helper="search",
         pattern=b"abc",
@@ -109,6 +117,14 @@ PATTERN_KEYWORD_CALL_CASES = (
         pattern="abc",
         args=("zabcabc",),
         kwargs={"pos": 1},
+        result_kind="match",
+    ),
+    PatternKeywordCallCase(
+        case_id="pattern-match-bool-pos-keyword-str",
+        helper="match",
+        pattern="abc",
+        args=("zabcabc",),
+        kwargs={"pos": True},
         result_kind="match",
     ),
     PatternKeywordCallCase(
@@ -128,11 +144,27 @@ PATTERN_KEYWORD_CALL_CASES = (
         result_kind="value",
     ),
     PatternKeywordCallCase(
+        case_id="pattern-findall-bool-window-keyword-str",
+        helper="findall",
+        pattern="abc",
+        args=("zabcabcz",),
+        kwargs={"pos": True, "endpos": 7},
+        result_kind="value",
+    ),
+    PatternKeywordCallCase(
         case_id="pattern-finditer-window-keyword-bytes",
         helper="finditer",
         pattern=b"abc",
         args=(b"zabcabcz",),
         kwargs={"pos": 1, "endpos": 7},
+        result_kind="iter",
+    ),
+    PatternKeywordCallCase(
+        case_id="pattern-finditer-bool-window-keyword-bytes",
+        helper="finditer",
+        pattern=b"abc",
+        args=(b"zabcabcz",),
+        kwargs={"pos": True, "endpos": 7},
         result_kind="iter",
     ),
     PatternKeywordCallCase(
