@@ -16,7 +16,9 @@ from rebar_harness.correctness import (
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
+    assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
+    assert_fixture_bundle_tracks_published_case_frontier,
     assert_match_convenience_api_parity,
     assert_match_parity,
     case_pattern,
@@ -1068,6 +1070,52 @@ SUPPLEMENTAL_REPEATED_CASE_PARAMS = tuple(
 )
 
 
+def _is_pending_bytes_follow_on_case(
+    surface: LoadedReplacementSurface,
+    case: FixtureCase,
+) -> bool:
+    return (
+        case.text_model == "bytes"
+        and case.manifest_id in surface.spec.pending_bytes_follow_on_manifest_ids
+    )
+
+
+def _expected_selected_replacement_case_ids(
+    surface: LoadedReplacementSurface,
+    *,
+    manifest_id: str | None = None,
+) -> tuple[str, ...]:
+    return tuple(
+        case.case_id
+        for bundle in surface.bundles
+        if manifest_id is None or bundle.expected_manifest_id == manifest_id
+        for case in bundle.manifest.cases
+        if not _is_pending_bytes_follow_on_case(surface, case)
+    )
+
+
+def _expected_uncovered_replacement_case_ids(
+    surface: LoadedReplacementSurface,
+    manifest_id: str,
+) -> tuple[str, ...]:
+    return tuple(
+        case.case_id
+        for bundle in surface.bundles
+        if bundle.expected_manifest_id == manifest_id
+        for case in bundle.manifest.cases
+        if _is_pending_bytes_follow_on_case(surface, case)
+    )
+
+
+def _replacement_direct_test_case_id_buckets(
+    surface: LoadedReplacementSurface,
+) -> dict[str, frozenset[str]]:
+    return {
+        "module": frozenset(case.case_id for case in surface.module_cases),
+        "pattern": frozenset(case.case_id for case in surface.pattern_cases),
+    }
+
+
 @pytest.mark.parametrize("surface", SELECTOR_SURFACE_PARAMS)
 def test_replacement_parity_suite_tracks_published_fixture_coverage_frontier(
     surface: LoadedReplacementSurface,
@@ -1097,6 +1145,35 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     assert_fixture_bundle_contract(
         bundle,
         pattern_extractor=surface.spec.pattern_extractor,
+    )
+
+
+@pytest.mark.parametrize(("surface", "bundle"), BUNDLE_PARAMS)
+def test_replacement_suite_tracks_published_case_frontier(
+    surface: LoadedReplacementSurface,
+    bundle: FixtureBundle,
+) -> None:
+    assert_fixture_bundle_tracks_published_case_frontier(
+        bundle,
+        selected_case_ids=_expected_selected_replacement_case_ids(
+            surface,
+            manifest_id=bundle.expected_manifest_id,
+        ),
+        expected_uncovered_case_ids=_expected_uncovered_replacement_case_ids(
+            surface,
+            bundle.expected_manifest_id,
+        ),
+    )
+
+
+@pytest.mark.parametrize("surface", SELECTOR_SURFACE_PARAMS)
+def test_replacement_direct_test_buckets_cover_selected_frontier(
+    surface: LoadedReplacementSurface,
+) -> None:
+    assert_direct_test_case_id_buckets_cover_selected_frontier(
+        _replacement_direct_test_case_id_buckets(surface),
+        selected_case_ids=_expected_selected_replacement_case_ids(surface),
+        coverage_label=f"{surface.spec.id} replacement direct-test case-id buckets",
     )
 
 
