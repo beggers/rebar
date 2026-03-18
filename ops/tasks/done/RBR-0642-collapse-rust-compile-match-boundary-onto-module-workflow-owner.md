@@ -1,8 +1,9 @@
 # RBR-0642: Collapse the detached Rust compile/match boundary suite onto the module-workflow owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Delete `tests/python/test_rust_compile_match_boundary.py` by moving its remaining source-tree `_native` boundary coverage onto `tests/python/test_module_workflow_parity_suite.py`, so compile/match/collection/replacement dispatch through the native bridge stops living on a detached legacy file beside the existing module-workflow owner.
@@ -84,3 +85,8 @@ PY`
   - the manifest-order probe in Acceptance currently passes (`ok`);
   - `bash -lc "! rg --files tests/python | rg 'test_rust_compile_match_boundary\\.py$'"` currently fails exactly on this cleanup because the detached suite still exists; and
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_rust_compile_match_boundary.py tests/python/test_module_workflow_parity_suite.py` currently fails exactly inside the detached suite on a stale bytes-escape call expectation, while a direct probe from the same checkout shows `rebar.escape(b"a-b")` currently records `[('escape', 'a-b')]` through that file's `_FakeNativeBoundary`. The absorbed owner coverage should keep the live routing honest instead of carrying the stale detached expectation forward.
+
+## Completion Notes
+- 2026-03-18: Moved the detached fake-native compile/search/collection/replacement placeholder coverage into `tests/python/test_module_workflow_parity_suite.py` as file-local `_ModuleWorkflowFakeNativeBoundary` tests, keeping the owner suite's manifest selector unchanged and matching the live bytes `escape()` routing through `("escape", "a-b")`.
+- 2026-03-18: Deleted `tests/python/test_rust_compile_match_boundary.py` outright after absorbing its five boundary tests onto the module-workflow owner.
+- 2026-03-18: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`476 passed in 0.49s`), the task's manifest-order probe (`ok`), `bash -lc "! rg --files tests/python | rg 'test_rust_compile_match_boundary\\.py$'"` (passes), and `git diff --name-status -- tests/python/test_module_workflow_parity_suite.py tests/python/test_rust_compile_match_boundary.py` (`M` on the owner suite and `D` on the deleted detached suite).
