@@ -1,8 +1,9 @@
 # RBR-0619: Publish the nested broader-range open-ended branch-local-backreference conditional bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Extend the existing broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference conditional correctness publication with the exact bytes pair on the existing branch-local parity surface, so the frontier reopens on the tracked correctness path before Rust-backed bytes parity and later Python-path benchmark catch-up land.
@@ -42,3 +43,12 @@ Created: 2026-03-18
   - `benchmarks/workloads/branch_local_backreference_boundary.py` already publishes the six adjacent `str` benchmark rows for this exact broader-range open-ended conditional slice as `module-compile-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-cold-str`, `module-search-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-str`, `pattern-fullmatch-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-mixed-branches-purged-str`, `module-compile-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-warm-str`, `module-search-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-warm-str`, and `pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-purged-str`, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass; and
   - direct public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`.
 - A later parity follow-on should convert the same bytes pair behind `rebar._rebar` on the existing branch-local-backreference parity surface before the benchmark surface mirrors the six adjacent `str` rows already published on `benchmarks/workloads/branch_local_backreference_boundary.py`.
+
+## Completion Notes
+- 2026-03-18: Added the ten bytes counterparts for `rb"a((b|c){2,})\\2(?(2)d|e)"` and `rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)"` to `tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py`, keeping the published lower-bound, mixed-branches, and no-match observations aligned with the existing `str` slice.
+- 2026-03-18: Updated `tests/python/test_branch_local_backreference_parity_suite.py` so the manifest is now an explicit mixed `str`/`bytes` bundle with `4` compile, `4` module, and `12` pattern rows, and added one direct bytes follow-on anchor for this manifest that skips `rebar` pending the later bytes parity task while keeping the bytes texts visible on the parity path.
+- 2026-03-18: Expanded the relevant representative-case expectations in `tests/conformance/correctness_expectations.py` and republished `reports/correctness/latest.py`. The tracked report now shows `match.nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional` at `20` total / `10` passed / `10` `unimplemented` with `['bytes', 'str']`, and the combined published report at `1278` total / `1268` passed / `10` `unimplemented`.
+- 2026-03-18 verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`452 passed, 14 skipped, 1491 subtests passed in 26.24s`)
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py --report .rebar/tmp/rbr-0619-nested-broader-range-open-ended-branch-local-backreference-conditional-bytes.py` (`20` total / `10` passed / `10` `unimplemented`)
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1278` total / `1268` passed / `10` `unimplemented`)

@@ -450,21 +450,34 @@ FIXTURE_BUNDLE_SPECS = (
                 "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-lower-bound-b-branch-workflow-str",
                 "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-mixed-branches-workflow-str",
                 "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-no-match-below-lower-bound-workflow-str",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-compile-metadata-bytes",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-module-search-lower-bound-b-branch-workflow-bytes",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-lower-bound-c-branch-workflow-bytes",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-mixed-branches-workflow-bytes",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-no-match-missing-conditional-d-workflow-bytes",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-compile-metadata-bytes",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-module-search-lower-bound-c-branch-workflow-bytes",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-lower-bound-b-branch-workflow-bytes",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-mixed-branches-workflow-bytes",
+                "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-no-match-below-lower-bound-workflow-bytes",
             }
         ),
         expected_patterns=frozenset(
             {
                 r"a((b|c){2,})\2(?(2)d|e)",
                 r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+                rb"a((b|c){2,})\2(?(2)d|e)",
+                rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
             }
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("compile", None): 2,
-                ("module_call", "search"): 2,
-                ("pattern_call", "fullmatch"): 6,
+                ("compile", None): 4,
+                ("module_call", "search"): 4,
+                ("pattern_call", "fullmatch"): 12,
             }
         ),
+        expected_text_models=frozenset({"bytes", "str"}),
     ),
 )
 FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
@@ -598,6 +611,12 @@ NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
         "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-workflows",
     )
 )
+NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BUNDLE = (
+    published_fixture_bundle_by_manifest_id(
+        FIXTURE_BUNDLES,
+        "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-workflows",
+    )
+)
 QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES = (
     BranchLocalBackreferenceBytesFollowOnCase(
         id="quantified-alternation-branch-local-numbered-bytes",
@@ -662,11 +681,40 @@ NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES = (
         fullmatch_misses=(b"accd",),
     ),
 )
+NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BYTES_CASES = (
+    BranchLocalBackreferenceBytesFollowOnCase(
+        id="nested-broader-range-open-ended-branch-local-backreference-conditional-numbered-bytes",
+        pattern=rb"a((b|c){2,})\2(?(2)d|e)",
+        search_matches=(b"zzabbbdzz",),
+        fullmatch_matches=(b"acccd", b"abcbccd"),
+        fullmatch_misses=(b"abcbcc",),
+        unsupported_backends=("rebar",),
+        unsupported_backend_reason=(
+            "rebar bytes parity for the nested broader-range open-ended "
+            "branch-local-backreference conditional slice is pending the "
+            "follow-on parity task"
+        ),
+    ),
+    BranchLocalBackreferenceBytesFollowOnCase(
+        id="nested-broader-range-open-ended-branch-local-backreference-conditional-named-bytes",
+        pattern=rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+        search_matches=(b"zzacccdzz",),
+        fullmatch_matches=(b"abbbd", b"abcbccd"),
+        fullmatch_misses=(b"abbd",),
+        unsupported_backends=("rebar",),
+        unsupported_backend_reason=(
+            "rebar bytes parity for the nested broader-range open-ended "
+            "branch-local-backreference conditional slice is pending the "
+            "follow-on parity task"
+        ),
+    ),
+)
 DIRECT_BYTES_FOLLOW_ON_BUNDLES = (
     QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
     QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
     NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
     NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
+    NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BUNDLE,
 )
 DIRECT_BYTES_FOLLOW_ON_SPECS = (
     BranchLocalBytesFollowOnSpec(
@@ -789,6 +837,45 @@ DIRECT_BYTES_FOLLOW_ON_SPECS = (
                 1
             ].pattern: frozenset({b"abbbd", b"abcccd", b"accd"}),
         },
+    ),
+    BranchLocalBytesFollowOnSpec(
+        bundle=NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BUNDLE,
+        cases=(
+            NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BYTES_CASES
+        ),
+        bucket_label=(
+            "nested-broader-range-open-ended-quantified-group-alternation-"
+            "branch-local-backreference-conditional-bytes-follow-on"
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 6,
+            }
+        ),
+        expected_module_search_texts_by_pattern={
+            NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BYTES_CASES[
+                0
+            ].pattern: frozenset({b"zzabbbdzz"}),
+            NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BYTES_CASES[
+                1
+            ].pattern: frozenset({b"zzacccdzz"}),
+        },
+        expected_pattern_fullmatch_texts_by_pattern={
+            NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BYTES_CASES[
+                0
+            ].pattern: frozenset({b"acccd", b"abcbccd", b"abcbcc"}),
+            NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BYTES_CASES[
+                1
+            ].pattern: frozenset({b"abbbd", b"abcbccd", b"abbd"}),
+        },
+        expected_unsupported_backends=("rebar",),
+        expected_unsupported_backend_reason=(
+            "rebar bytes parity for the nested broader-range open-ended "
+            "branch-local-backreference conditional slice is pending the "
+            "follow-on parity task"
+        ),
     ),
 )
 DIRECT_BYTES_FOLLOW_ON_CASES = tuple(

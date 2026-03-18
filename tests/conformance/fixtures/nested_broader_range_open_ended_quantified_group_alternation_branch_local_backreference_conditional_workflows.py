@@ -120,6 +120,188 @@ MANIFEST = {
       "notes": [
         "Documents the named no-match path on `abbd`, keeping the broader-range `{2,}` floor honest because only one inner repetition is available before the replayed final branch and later conditional yes arm."
       ]
+    },
+    {
+      "id": "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_numbered_compile_metadata",
+      "pattern": "a((b|c){2,})\\2(?(2)d|e)",
+      "text_model": "bytes",
+      "categories": ["grouped", "nested-group", "alternation", "numbered-backreference", "branch-local", "conditional", "group-exists", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Publishes the same numbered broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference conditional compile frontier for bytes payloads while keeping the bytes parity gap explicit until the follow-on parity task lands."
+      ]
+    },
+    {
+      "id": "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-module-search-lower-bound-b-branch-workflow-bytes",
+      "operation": "module_call",
+      "family": "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_numbered_module_lower_bound_b_branch_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a((b|c){2,})\\2(?(2)d|e)"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzabbbdzz"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "numbered-backreference", "branch-local", "conditional", "group-exists", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "search", "module", "lower-bound", "b-branch", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered lower-bound search success path on `abbbd` with bytes payloads, where two inner `b` repetitions satisfy the broader `{2,}` floor before the replayed branch and trailing conditional yes-arm `d` both match."
+      ]
+    },
+    {
+      "id": "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-lower-bound-c-branch-workflow-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_numbered_pattern_lower_bound_c_branch_workflow",
+      "pattern": "a((b|c){2,})\\2(?(2)d|e)",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "acccd"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "numbered-backreference", "branch-local", "conditional", "group-exists", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "fullmatch", "pattern", "lower-bound", "c-branch", "final-inner-capture", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered compiled-pattern lower-bound success path on `acccd` with bytes payloads, keeping the minimum accepted `c`-branch replay plus later conditional yes arm explicit at the public API."
+      ]
+    },
+    {
+      "id": "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-mixed-branches-workflow-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_numbered_pattern_mixed_branches_workflow",
+      "pattern": "a((b|c){2,})\\2(?(2)d|e)",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbccd"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "numbered-backreference", "branch-local", "conditional", "group-exists", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "fullmatch", "pattern", "mixed-branches", "final-inner-capture", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered mixed-branch broader-range success path on `abcbccd` with bytes payloads, so the publication includes one longer nested alternation whose final selected `c` branch is replayed before the trailing conditional `d`."
+      ]
+    },
+    {
+      "id": "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-pattern-fullmatch-no-match-missing-conditional-d-workflow-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_numbered_pattern_no_match_missing_conditional_d_workflow",
+      "pattern": "a((b|c){2,})\\2(?(2)d|e)",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbcc"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "numbered-backreference", "branch-local", "conditional", "group-exists", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "fullmatch", "pattern", "no-match", "missing-conditional-d", "bytes", "gap"],
+      "notes": [
+        "Documents the numbered no-match path on `abcbcc` with bytes payloads, proving the later conditional yes arm still requires a trailing `d` after the replayed final branch instead of rescuing the broader-range match."
+      ]
+    },
+    {
+      "id": "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-compile-metadata-bytes",
+      "operation": "compile",
+      "family": "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_named_compile_metadata",
+      "pattern": "a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+      "text_model": "bytes",
+      "categories": ["grouped", "nested-group", "alternation", "named-group", "named-backreference", "branch-local", "conditional", "group-exists", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "compile", "metadata", "bytes", "gap"],
+      "notes": [
+        "Publishes the matching named broader-range open-ended `{2,}` compile frontier for bytes payloads while keeping the visible `outer` capture, `inner` replay, and later conditional parity gap explicit until the follow-on task lands."
+      ]
+    },
+    {
+      "id": "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-module-search-lower-bound-c-branch-workflow-bytes",
+      "operation": "module_call",
+      "family": "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_named_module_lower_bound_c_branch_workflow",
+      "helper": "search",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)"
+        },
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zzacccdzz"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "named-group", "named-backreference", "branch-local", "conditional", "group-exists", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "search", "module", "lower-bound", "c-branch", "outer-capture", "final-inner-capture", "bytes", "gap"],
+      "notes": [
+        "Documents the named lower-bound search success path on `acccd` with bytes payloads, keeping both `outer` and `inner` observable when the minimum accepted `c`-branch replay is followed by the conditional yes-arm `d`."
+      ]
+    },
+    {
+      "id": "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-lower-bound-b-branch-workflow-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_named_pattern_lower_bound_b_branch_workflow",
+      "pattern": "a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abbbd"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "named-group", "named-backreference", "branch-local", "conditional", "group-exists", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "fullmatch", "pattern", "lower-bound", "b-branch", "outer-capture", "final-inner-capture", "bytes", "gap"],
+      "notes": [
+        "Documents the named compiled-pattern lower-bound success path on `abbbd` with bytes payloads, keeping the visible `outer` capture and final selected `inner` branch observable at the minimum accepted `{2,}` width."
+      ]
+    },
+    {
+      "id": "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-mixed-branches-workflow-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_named_pattern_mixed_branches_workflow",
+      "pattern": "a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abcbccd"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "named-group", "named-backreference", "branch-local", "conditional", "group-exists", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "fullmatch", "pattern", "mixed-branches", "outer-capture", "final-inner-capture", "bytes", "gap"],
+      "notes": [
+        "Documents the named mixed-branch broader-range success path on `abcbccd` with bytes payloads, so the visible `outer` capture and final selected `inner` branch stay explicit under the open-ended `{2,}` repeat."
+      ]
+    },
+    {
+      "id": "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-no-match-below-lower-bound-workflow-bytes",
+      "operation": "pattern_call",
+      "family": "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_named_pattern_no_match_below_lower_bound_workflow",
+      "pattern": "a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+      "helper": "fullmatch",
+      "text_model": "bytes",
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "abbd"
+        }
+      ],
+      "categories": ["grouped", "nested-group", "alternation", "named-group", "named-backreference", "branch-local", "conditional", "group-exists", "quantifier", "open-ended-repeat", "broader-range", "counted-repeat", "fullmatch", "pattern", "no-match", "below-repeat-floor", "bytes", "gap"],
+      "notes": [
+        "Documents the named no-match path on `abbd` with bytes payloads, keeping the broader-range `{2,}` floor honest because only one inner repetition is available before the replayed final branch and later conditional yes arm."
+      ]
     }
   ]
 }
