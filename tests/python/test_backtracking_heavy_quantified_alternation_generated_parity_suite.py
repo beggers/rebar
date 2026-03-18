@@ -27,14 +27,18 @@ BACKTRACKING_HEAVY_FIXTURE_PATH = (
 EXPECTED_COMPILE_CASE_IDS = (
     "quantified-alternation-backtracking-heavy-numbered-compile-metadata-str",
     "quantified-alternation-backtracking-heavy-named-compile-metadata-str",
+    "quantified-alternation-backtracking-heavy-numbered-compile-metadata-bytes",
+    "quantified-alternation-backtracking-heavy-named-compile-metadata-bytes",
 )
 EXPECTED_PATTERNS = frozenset(
     {
         r"a(b|bc){1,2}d",
         r"a(?P<word>b|bc){1,2}d",
+        rb"a(b|bc){1,2}d",
+        rb"a(?P<word>b|bc){1,2}d",
     }
 )
-EXPECTED_OPERATION_HELPER_COUNTS = Counter({("compile", None): 2})
+EXPECTED_OPERATION_HELPER_COUNTS = Counter({("compile", None): 4})
 HELPERS = ("search", "match", "fullmatch")
 BODY_ATOMS = ("b", "c", "e")
 WRAPPER_PAIRS = (
@@ -52,6 +56,7 @@ WRAPPER_PAIRS = (
             selected_case_ids=EXPECTED_COMPILE_CASE_IDS,
             expected_patterns=EXPECTED_PATTERNS,
             expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
+            expected_text_models=frozenset({"bytes", "str"}),
         ),
     )
 )
@@ -64,13 +69,19 @@ ASCII_CANDIDATE_TEXTS = tuple(
 )
 
 
+def _candidate_texts(case: FixtureCase) -> tuple[str | bytes, ...]:
+    if case.text_model == "bytes":
+        return tuple(text.encode("ascii") for text in ASCII_CANDIDATE_TEXTS)
+    return ASCII_CANDIDATE_TEXTS
+
+
 def _record_match_failure(
     failures: list[str],
     *,
     label: str,
     backend_name: str,
     observed: object,
-    expected: re.Match[str] | None,
+    expected: re.Match[str] | re.Match[bytes] | None,
 ) -> None:
     try:
         assert_match_result_parity(
@@ -115,7 +126,7 @@ def test_backtracking_heavy_quantified_alternation_generated_text_matrix_matches
     )
 
     failures: list[str] = []
-    for text in ASCII_CANDIDATE_TEXTS:
+    for text in _candidate_texts(case):
         for helper in HELPERS:
             _record_match_failure(
                 failures,
