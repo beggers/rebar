@@ -1,8 +1,9 @@
 # RBR-0574: Convert the bounded quantified-alternation bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-17
+Completed: 2026-03-18
 
 ## Goal
 - Convert the exact bounded `{1,2}` quantified-alternation bytes pair published by `RBR-0572` from honest `unimplemented` outcomes into Rust-backed behavior on the existing quantified-alternation parity surface, without widening into benchmark catch-up or another bytes frontier.
@@ -43,3 +44,13 @@ Created: 2026-03-17
   - `benchmarks/workloads/quantified_alternation_boundary.py` already publishes the six adjacent bounded `str` benchmark rows for this exact pair, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so the Rust-backed bytes parity work is not already satisfied in the current checkout.
 - A later benchmark follow-on should catch the same bytes pair up on the existing quantified-alternation benchmark surface before another quantified-alternation bytes family broadens the frontier.
+
+## Completion Notes
+- 2026-03-18: Wired `rb"a(b|c){1,2}d"` and `rb"a(?P<word>b|c){1,2}d"` into the existing Rust quantified-alternation bytes parser/matcher path in `crates/rebar-core/src/lib.rs`, so the bounded bytes pair now compiles and executes through `rebar._rebar` with CPython-matching capture metadata and visible `word` group details.
+- 2026-03-18: Removed the `rebar`-unsupported gating from the bounded bytes direct follow-on anchor in `tests/python/test_quantified_alternation_parity_suite.py` while leaving the broader-range and open-ended bytes anchors unchanged.
+- 2026-03-18: Regenerated the tracked published correctness report in `reports/correctness/latest.py`; the combined scorecard now records `1190` total / `1190` passed / `0` unimplemented cases, and `match.quantified_alternation` now records `12` total / `12` passed / `0` unimplemented with mixed `bytes`/`str` coverage.
+- Verification:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`644 passed, 1315 subtests passed`)
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/quantified_alternation_workflows.py --report .rebar/tmp/rbr-0574-quantified-alternation-bounded-bytes-parity.py` (`12` total / `12` passed / `0` unimplemented)
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1190` total / `1190` passed / `0` unimplemented)

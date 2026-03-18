@@ -39,6 +39,8 @@ const PARSER_STRESS_COMPILE_PROXY_PATTERN: &str =
     r"(?i:(?P<lemma>[a-z]+))(?:_(?>[a-z]{2,4}+|\d{2}))?(?:(?<=foo)bar)?(?P=lemma)";
 const BYTES_NAMED_BACKREFERENCE_COMPILE_PROXY_PATTERN: &[u8] =
     br"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}";
+const BOUNDED_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN: &[u8] = br"a(b|c){1,2}d";
+const BOUNDED_QUANTIFIED_ALTERNATION_NAMED_BYTES_PATTERN: &[u8] = br"a(?P<word>b|c){1,2}d";
 const BROADER_RANGE_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN: &[u8] = br"a(b|c){1,3}d";
 const BROADER_RANGE_QUANTIFIED_ALTERNATION_NAMED_BYTES_PATTERN: &[u8] = br"a(?P<word>b|c){1,3}d";
 const OPEN_ENDED_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN: &[u8] = br"a(b|c){1,}d";
@@ -5222,6 +5224,18 @@ fn parse_quantified_alternation_pattern_bytes(
     pattern: &[u8],
 ) -> Option<QuantifiedAlternationBytesPattern> {
     match pattern {
+        BOUNDED_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN => {
+            Some(QuantifiedAlternationBytesPattern {
+                capture_name: None,
+                max_repeat: Some(2),
+            })
+        }
+        BOUNDED_QUANTIFIED_ALTERNATION_NAMED_BYTES_PATTERN => {
+            Some(QuantifiedAlternationBytesPattern {
+                capture_name: Some(OPEN_ENDED_QUANTIFIED_ALTERNATION_CAPTURE_NAME),
+                max_repeat: Some(2),
+            })
+        }
         BROADER_RANGE_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN => {
             Some(QuantifiedAlternationBytesPattern {
                 capture_name: None,

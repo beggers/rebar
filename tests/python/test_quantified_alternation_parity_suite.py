@@ -414,10 +414,6 @@ QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES = (
         search_matches=(b"zzacdz",),
         fullmatch_matches=(b"abcd",),
         fullmatch_misses=(),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            "bounded quantified-alternation bytes parity is not implemented yet"
-        ),
     ),
     QuantifiedAlternationBytesCase(
         id="quantified-alternation-named-bytes",
@@ -425,10 +421,6 @@ QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES = (
         search_matches=(b"zzacbdzz",),
         fullmatch_matches=(b"abd",),
         fullmatch_misses=(),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            "bounded quantified-alternation bytes parity is not implemented yet"
-        ),
     ),
 )
 QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES = (
@@ -858,11 +850,8 @@ def test_quantified_alternation_bounded_bytes_cases_stay_explicit_with_one_direc
     )
 
     for case in QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert (
-            case.unsupported_backend_reason
-            == "bounded quantified-alternation bytes parity is not implemented yet"
-        )
+        assert case.unsupported_backends == ()
+        assert case.unsupported_backend_reason is None
         assert case.fullmatch_misses == ()
         assert all(
             isinstance(text, bytes)
