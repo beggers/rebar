@@ -58,6 +58,8 @@ class CallableNearMissCase:
     expected_result: str | tuple[str, int]
 
 
+TextValue = str | bytes
+
 CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS = Counter(
     {
         ("module_call", "sub"): 2,
@@ -444,7 +446,7 @@ def _assert_callback_match_sequence_parity(
     *,
     backend_name: str,
     observed_matches: list[object],
-    expected_matches: list[re.Match[str]],
+    expected_matches: list[re.Match[str] | re.Match[bytes]],
 ) -> None:
     assert len(observed_matches) == len(expected_matches)
 
@@ -460,27 +462,34 @@ def _assert_callback_match_sequence_parity(
         assert_invalid_match_group_access_parity(observed, expected)
 
 
+def _callable_replacement_marker(value: TextValue) -> TextValue:
+    if isinstance(value, bytes):
+        return b"X"
+    return "X"
+
+
 def assert_callable_replacement_match_parity(
     *,
     backend_name: str,
     backend: object,
     helper: str,
-    pattern: str,
-    string: str,
+    pattern: TextValue,
+    string: TextValue,
     count: int,
     group_names: tuple[str, ...] = (),
     use_compiled_pattern: bool = False,
 ) -> None:
     observed_matches: list[object] = []
-    expected_matches: list[re.Match[str]] = []
+    expected_matches: list[re.Match[str] | re.Match[bytes]] = []
+    replacement_value = _callable_replacement_marker(string)
 
-    def observed_replacement(match: object) -> str:
+    def observed_replacement(match: object) -> TextValue:
         observed_matches.append(match)
-        return "X"
+        return replacement_value
 
-    def expected_replacement(match: re.Match[str]) -> str:
+    def expected_replacement(match: re.Match[str] | re.Match[bytes]) -> TextValue:
         expected_matches.append(match)
-        return "X"
+        return replacement_value
 
     if use_compiled_pattern:
         observed_target = backend.compile(pattern)
@@ -522,23 +531,25 @@ def assert_callable_replacement_exception_parity(
     backend_name: str,
     backend: object,
     helper: str,
-    pattern: str,
-    string: str,
+    pattern: TextValue,
+    string: TextValue,
     count: int,
     group_names: tuple[str, ...] = (),
     use_compiled_pattern: bool = False,
 ) -> None:
     observed_matches: list[object] = []
-    expected_matches: list[re.Match[str]] = []
+    expected_matches: list[re.Match[str] | re.Match[bytes]] = []
     marker_message = "callable replacement callback exploded"
     observed_marker = CallbackExplosion(marker_message)
     expected_marker = CallbackExplosion(marker_message)
 
-    def observed_replacement(match: object) -> str:
+    def observed_replacement(match: object) -> TextValue:
         observed_matches.append(match)
         raise observed_marker
 
-    def expected_replacement(match: re.Match[str]) -> str:
+    def expected_replacement(
+        match: re.Match[str] | re.Match[bytes],
+    ) -> TextValue:
         expected_matches.append(match)
         raise expected_marker
 
@@ -713,6 +724,16 @@ MODULE_CASES = tuple(
 )
 PATTERN_CASES = tuple(
     case for case in SHARED_CALLABLE_CASES if case.operation == "pattern_call"
+)
+BYTES_MODULE_CASES = tuple(
+    case
+    for case in PUBLISHED_CALLABLE_CASES
+    if case.operation == "module_call" and case.text_model == "bytes"
+)
+BYTES_PATTERN_CASES = tuple(
+    case
+    for case in PUBLISHED_CALLABLE_CASES
+    if case.operation == "pattern_call" and case.text_model == "bytes"
 )
 CALLABLE_RETURN_TYPE_ERROR_MANIFEST_KEYWORDS = (
     "quantified",
@@ -1478,6 +1499,46 @@ def test_module_callable_replacement_callback_exception_matches_cpython(
     )
 
 
+@pytest.mark.parametrize("case", BYTES_MODULE_CASES, ids=lambda case: case.case_id)
+def test_module_bytes_callable_replacement_callback_match_objects_match_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+    assert case.text_model == "bytes"
+
+    _skip_pending_rebar_callable_parity(backend_name, case)
+    assert_callable_replacement_match_parity(
+        backend_name=backend_name,
+        backend=backend,
+        helper=case.helper,
+        pattern=case_pattern(case),
+        string=case_text_argument(case),
+        count=_case_count(case),
+    )
+
+
+@pytest.mark.parametrize("case", BYTES_MODULE_CASES, ids=lambda case: case.case_id)
+def test_module_bytes_callable_replacement_callback_exception_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+    assert case.text_model == "bytes"
+
+    _skip_pending_rebar_callable_parity(backend_name, case)
+    assert_callable_replacement_exception_parity(
+        backend_name=backend_name,
+        backend=backend,
+        helper=case.helper,
+        pattern=case_pattern(case),
+        string=case_text_argument(case),
+        count=_case_count(case),
+    )
+
+
 @pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
 def test_pattern_callable_replacement_callback_match_objects_match_cpython(
     regex_backend: tuple[str, object],
@@ -1499,6 +1560,27 @@ def test_pattern_callable_replacement_callback_match_objects_match_cpython(
     )
 
 
+@pytest.mark.parametrize("case", BYTES_PATTERN_CASES, ids=lambda case: case.case_id)
+def test_pattern_bytes_callable_replacement_callback_match_objects_match_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+    assert case.text_model == "bytes"
+
+    _skip_pending_rebar_callable_parity(backend_name, case)
+    assert_callable_replacement_match_parity(
+        backend_name=backend_name,
+        backend=backend,
+        helper=case.helper,
+        pattern=case_pattern(case),
+        string=case_text_argument(case),
+        count=_case_count(case),
+        use_compiled_pattern=True,
+    )
+
+
 @pytest.mark.parametrize("case", PATTERN_CASES, ids=lambda case: case.case_id)
 def test_pattern_callable_replacement_callback_exception_matches_cpython(
     regex_backend: tuple[str, object],
@@ -1516,6 +1598,27 @@ def test_pattern_callable_replacement_callback_exception_matches_cpython(
         string=_case_string(case),
         count=_case_count(case),
         group_names=_case_group_names(case),
+        use_compiled_pattern=True,
+    )
+
+
+@pytest.mark.parametrize("case", BYTES_PATTERN_CASES, ids=lambda case: case.case_id)
+def test_pattern_bytes_callable_replacement_callback_exception_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    assert case.helper is not None
+    assert case.text_model == "bytes"
+
+    _skip_pending_rebar_callable_parity(backend_name, case)
+    assert_callable_replacement_exception_parity(
+        backend_name=backend_name,
+        backend=backend,
+        helper=case.helper,
+        pattern=case_pattern(case),
+        string=case_text_argument(case),
+        count=_case_count(case),
         use_compiled_pattern=True,
     )
 
