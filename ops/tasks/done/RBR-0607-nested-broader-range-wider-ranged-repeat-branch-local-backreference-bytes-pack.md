@@ -1,8 +1,9 @@
 # RBR-0607: Publish the nested broader-range wider-ranged-repeat branch-local-backreference bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Extend the existing broader `{1,4}` nested grouped-alternation plus branch-local-backreference correctness publication with the exact bytes pair on the existing branch-local parity surface, so the frontier reopens on the tracked correctness path before Rust-backed bytes parity and later Python-path benchmark catch-up land.
@@ -42,3 +43,9 @@ Created: 2026-03-18
   - `benchmarks/workloads/nested_group_alternation_boundary.py` already publishes the three adjacent `str` benchmark rows for this exact broader `{1,4}` slice as `module-search-numbered-wider-ranged-repeat-quantified-nested-group-branch-local-backreference-lower-bound-b-branch-warm-str`, `module-compile-named-wider-ranged-repeat-quantified-nested-group-branch-local-backreference-warm-str`, and `pattern-fullmatch-named-wider-ranged-repeat-quantified-nested-group-branch-local-backreference-upper-bound-all-c-purged-str`, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`.
 - A later parity follow-on should convert the same bytes pair behind `rebar._rebar` on the existing branch-local-backreference parity surface before the benchmark surface mirrors the three adjacent `str` rows already published on `benchmarks/workloads/nested_group_alternation_boundary.py`.
+
+## Completion Note
+- 2026-03-18: Added the 14 bytes mirrors for `rb"a((b|c){1,4})\\2d"` and `rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d"` to `tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py`, keeping this manifest as the only correctness publication surface for the broader `{1,4}` nested branch-local-backreference slice.
+- Updated `tests/python/test_branch_local_backreference_parity_suite.py` so the manifest is now a mixed `str`/`bytes` bundle with `4` compile / `8` module / `16` pattern rows, and routed its new bytes rows through one explicit direct bytes follow-on anchor that stays marked unsupported on the `rebar` backend pending the later bytes parity task.
+- Refreshed `tests/conformance/correctness_expectations.py` and republished `reports/correctness/latest.py`; the tracked report now shows the combined correctness surface at `1258` total / `1244` passed / `14` unimplemented, while `match.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference` now shows `28` total / `14` passed / `14` unimplemented with `['bytes', 'str']` coverage.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_workflows.py --report .rebar/tmp/rbr-0607-nested-broader-range-wider-ranged-repeat-branch-local-backreference-bytes.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.

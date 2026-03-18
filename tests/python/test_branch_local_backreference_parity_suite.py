@@ -65,6 +65,7 @@ class BranchLocalBytesFollowOnSpec:
     bundle: FixtureBundle
     cases: tuple[BranchLocalBackreferenceBytesFollowOnCase, ...]
     bucket_label: str
+    expected_operation_helper_counts: Counter[tuple[str, str | None]]
     expected_module_search_texts_by_pattern: dict[bytes, frozenset[bytes]]
     expected_pattern_fullmatch_texts_by_pattern: dict[bytes, frozenset[bytes]]
 
@@ -320,21 +321,38 @@ FIXTURE_BUNDLE_SPECS = (
                 "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-upper-bound-all-c-str",
                 "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-missing-replay-mixed-str",
                 "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-overflow-str",
+                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-compile-metadata-bytes",
+                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-b-branch-bytes",
+                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-module-search-lower-bound-c-branch-bytes",
+                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-second-iteration-b-branch-bytes",
+                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-fourth-repetition-mixed-branches-bytes",
+                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-missing-replay-lower-bound-bytes",
+                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-no-match-overflow-bytes",
+                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-compile-metadata-bytes",
+                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-bytes",
+                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-module-search-lower-bound-b-branch-bytes",
+                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-second-iteration-mixed-branches-bytes",
+                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-upper-bound-all-c-bytes",
+                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-missing-replay-mixed-bytes",
+                "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-overflow-bytes",
             }
         ),
         expected_patterns=frozenset(
             {
                 r"a((b|c){1,4})\2d",
                 r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
+                rb"a((b|c){1,4})\2d",
+                rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
             }
         ),
         expected_operation_helper_counts=Counter(
             {
-                ("compile", None): 2,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 8,
+                ("compile", None): 4,
+                ("module_call", "search"): 8,
+                ("pattern_call", "fullmatch"): 16,
             }
         ),
+        expected_text_models=frozenset({"bytes", "str"}),
     ),
     FixtureBundleSpec(
         "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_workflows.py",
@@ -412,6 +430,15 @@ QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
         "quantified-nested-group-alternation-branch-local-backreference-workflows",
     )
 )
+NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
+    published_fixture_bundle_by_manifest_id(
+        FIXTURE_BUNDLES,
+        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-workflows",
+    )
+)
+NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_REASON = (
+    "broader {1,4} nested branch-local-backreference bytes parity is still unpublished for rebar"
+)
 QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES = (
     BranchLocalBackreferenceBytesFollowOnCase(
         id="quantified-alternation-branch-local-numbered-bytes",
@@ -444,15 +471,47 @@ QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES = (
         fullmatch_misses=(b"acbd",),
     ),
 )
+NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES = (
+    BranchLocalBackreferenceBytesFollowOnCase(
+        id="nested-broader-range-wider-ranged-repeat-branch-local-numbered-bytes",
+        pattern=rb"a((b|c){1,4})\2d",
+        search_matches=(b"zzabbdzz", b"zzaccdzz"),
+        fullmatch_matches=(b"abbbd", b"abcbccd"),
+        fullmatch_misses=(b"abcd", b"abbbbbbd"),
+        unsupported_backends=("rebar",),
+        unsupported_backend_reason=(
+            NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_REASON
+        ),
+    ),
+    BranchLocalBackreferenceBytesFollowOnCase(
+        id="nested-broader-range-wider-ranged-repeat-branch-local-named-bytes",
+        pattern=rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
+        search_matches=(b"zzaccdzz", b"zzabbdzz"),
+        fullmatch_matches=(b"abccd", b"acccccd"),
+        fullmatch_misses=(b"abcbcd", b"accccccd"),
+        unsupported_backends=("rebar",),
+        unsupported_backend_reason=(
+            NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_REASON
+        ),
+    ),
+)
 DIRECT_BYTES_FOLLOW_ON_BUNDLES = (
     QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
     QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
+    NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
 )
 DIRECT_BYTES_FOLLOW_ON_SPECS = (
     BranchLocalBytesFollowOnSpec(
         bundle=QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES,
         bucket_label="quantified-alternation-branch-local-backreference-bytes-follow-on",
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 6,
+            }
+        ),
         expected_module_search_texts_by_pattern={
             QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES[0].pattern: frozenset(
                 {b"zzabbdzz"}
@@ -477,6 +536,13 @@ DIRECT_BYTES_FOLLOW_ON_SPECS = (
             "quantified-nested-group-alternation-branch-local-backreference-"
             "bytes-follow-on"
         ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 2,
+                ("pattern_call", "fullmatch"): 6,
+            }
+        ),
         expected_module_search_texts_by_pattern={
             QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES[
                 0
@@ -492,6 +558,37 @@ DIRECT_BYTES_FOLLOW_ON_SPECS = (
             QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES[
                 1
             ].pattern: frozenset({b"abbd", b"abccd", b"acbd"}),
+        },
+    ),
+    BranchLocalBytesFollowOnSpec(
+        bundle=NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
+        cases=NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES,
+        bucket_label=(
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-"
+            "branch-local-backreference-bytes-follow-on"
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 4,
+                ("pattern_call", "fullmatch"): 8,
+            }
+        ),
+        expected_module_search_texts_by_pattern={
+            NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES[
+                0
+            ].pattern: frozenset({b"zzabbdzz", b"zzaccdzz"}),
+            NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES[
+                1
+            ].pattern: frozenset({b"zzaccdzz", b"zzabbdzz"}),
+        },
+        expected_pattern_fullmatch_texts_by_pattern={
+            NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES[
+                0
+            ].pattern: frozenset({b"abbbd", b"abcbccd", b"abcd", b"abbbbbbd"}),
+            NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES[
+                1
+            ].pattern: frozenset({b"abccd", b"acccccd", b"abcbcd", b"accccccd"}),
         },
     ),
 )
@@ -806,6 +903,14 @@ def _workflow_result_for_case(
 def _assert_direct_bytes_follow_on_case_backend_gating(
     case: BranchLocalBackreferenceBytesFollowOnCase,
 ) -> None:
+    if case in NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES:
+        assert case.unsupported_backends == ("rebar",)
+        assert (
+            case.unsupported_backend_reason
+            == NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_REASON
+        )
+        return
+
     assert case.unsupported_backends == ()
     assert case.unsupported_backend_reason is None
 
@@ -919,23 +1024,24 @@ def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_an
     )
     assert len(spec.cases) == 2
     assert {case.pattern for case in spec.cases} == expected_compile_patterns
-    assert len(bundle_str_cases) == len(bundle_bytes_cases) == 10
+    assert len(bundle_str_cases) == len(bundle_bytes_cases) == sum(
+        spec.expected_operation_helper_counts.values()
+    )
     assert {case.case_id for case in bundle_bytes_cases} == {
         f"{case.case_id.removesuffix('-str')}-bytes" for case in bundle_str_cases
     }
-    assert Counter((case.operation, case.helper) for case in bundle_bytes_cases) == Counter(
-        {
-            ("compile", None): 2,
-            ("module_call", "search"): 2,
-            ("pattern_call", "fullmatch"): 6,
-        }
+    assert Counter((case.operation, case.helper) for case in bundle_bytes_cases) == (
+        spec.expected_operation_helper_counts
     )
 
     for case in spec.cases:
         _assert_direct_bytes_follow_on_case_backend_gating(case)
-        assert len(case.search_matches) == 1
-        assert len(case.fullmatch_matches) == 2
-        assert len(case.fullmatch_misses) == 1
+        assert frozenset(case.search_matches) == spec.expected_module_search_texts_by_pattern[
+            case.pattern
+        ]
+        assert frozenset((*case.fullmatch_matches, *case.fullmatch_misses)) == (
+            spec.expected_pattern_fullmatch_texts_by_pattern[case.pattern]
+        )
         assert set(case.search_matches).isdisjoint(case.fullmatch_misses)
         assert set(case.fullmatch_matches).isdisjoint(case.fullmatch_misses)
         assert all(
