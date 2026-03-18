@@ -1149,6 +1149,9 @@ REPLACEMENT_SURFACE_SPECS = (
             rb"a((b|c){2,})\2(?(2)d|e)",
             rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
         ),
+        match_group_access_manifest_ids=(
+            NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_MANIFEST_ID,
+        ),
         template_expand_manifest_ids=(
             "nested-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows",
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows",
@@ -1677,6 +1680,11 @@ def test_mixed_replacement_manifest_routes_bytes_rows_through_shared_parity_surf
         for case in surface.pattern_cases
         if case.manifest_id == bundle.expected_manifest_id
     )
+    shared_match_group_access_case_ids = frozenset(
+        case.case_id
+        for case in surface.match_group_access_cases
+        if case.manifest_id == bundle.expected_manifest_id
+    )
     shared_template_expand_case_ids = frozenset(
         case.case_id
         for case in surface.template_expand_cases
@@ -1690,6 +1698,7 @@ def test_mixed_replacement_manifest_routes_bytes_rows_through_shared_parity_surf
     }
     assert shared_module_case_ids == expected_module_case_ids
     assert shared_pattern_case_ids == expected_pattern_case_ids
+    assert shared_match_group_access_case_ids == str_case_ids | bytes_case_ids
     assert shared_template_expand_case_ids == str_case_ids | bytes_case_ids
 
 
