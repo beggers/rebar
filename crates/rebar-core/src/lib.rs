@@ -41,6 +41,12 @@ const BYTES_NAMED_BACKREFERENCE_COMPILE_PROXY_PATTERN: &[u8] =
     br"(?P<tag>[A-Z]{2})(?:-(?P=tag)){1,2}";
 const BOUNDED_QUANTIFIED_ALTERNATION_NUMBERED_BYTES_PATTERN: &[u8] = br"a(b|c){1,2}d";
 const BOUNDED_QUANTIFIED_ALTERNATION_NAMED_BYTES_PATTERN: &[u8] = br"a(?P<word>b|c){1,2}d";
+const QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_NUMBERED_BYTES_PATTERN: &[u8] =
+    br"a((b|c)\2){1,2}d";
+const QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_NAMED_BYTES_PATTERN: &[u8] =
+    br"a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d";
+const QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_OUTER_NAME: &str = "outer";
+const QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_INNER_NAME: &str = "inner";
 const BOUNDED_QUANTIFIED_ALTERNATION_CONDITIONAL_NUMBERED_BYTES_PATTERN: &[u8] =
     br"a((b|c){1,2})?(?(1)d|e)";
 const BOUNDED_QUANTIFIED_ALTERNATION_CONDITIONAL_NAMED_BYTES_PATTERN: &[u8] =
@@ -728,6 +734,12 @@ struct QuantifiedAlternationPattern<'a> {
     suffix: &'a str,
     min_repeat: usize,
     max_repeat: Option<usize>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct QuantifiedAlternationBranchLocalBackreferenceBytesPattern {
+    outer_name: Option<&'static str>,
+    inner_name: Option<&'static str>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1685,6 +1697,52 @@ impl<'a> QuantifiedAlternationConditionalPattern<'a> {
     }
 }
 
+impl QuantifiedAlternationBranchLocalBackreferenceBytesPattern {
+    fn group_count(&self) -> usize {
+        2
+    }
+
+    fn named_groups(&self) -> Vec<NamedGroup> {
+        let mut groups = Vec::new();
+        if let Some(name) = self.outer_name {
+            groups.push(NamedGroup {
+                name: name.to_string(),
+                index: 1,
+            });
+        }
+        if let Some(name) = self.inner_name {
+            groups.push(NamedGroup {
+                name: name.to_string(),
+                index: 2,
+            });
+        }
+        groups
+    }
+
+    fn group_spans(
+        &self,
+        match_start: usize,
+        repeat_count: usize,
+        last_branch: &[u8],
+    ) -> Vec<Option<(usize, usize)>> {
+        let prefix_len = OPEN_ENDED_QUANTIFIED_ALTERNATION_PREFIX_BYTES.len();
+        let branch_len = last_branch.len();
+        let repeated_branch_len = branch_len * 2;
+        let outer_start =
+            match_start + prefix_len + repeated_branch_len * repeat_count.saturating_sub(1);
+        let inner_end = outer_start + branch_len;
+        let outer_end = inner_end + branch_len;
+        vec![
+            Some((outer_start, outer_end)),
+            Some((outer_start, inner_end)),
+        ]
+    }
+
+    fn lastindex(&self) -> usize {
+        1
+    }
+}
+
 impl QuantifiedAlternationBytesPattern {
     fn group_count(&self) -> usize {
         1
@@ -2514,6 +2572,25 @@ fn compile_known_supported_case(
         {
             let grouped_pattern = parse_quantified_alternation_pattern_bytes(pattern)
                 .expect("guarded quantified alternation bytes literal");
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
+                warning: None,
+            })
+        }
+        PatternRef::Bytes(pattern)
+            if parse_quantified_alternation_branch_local_backreference_pattern_bytes(pattern)
+                .is_some()
+                && normalized_flags == 0 =>
+        {
+            let grouped_pattern =
+                parse_quantified_alternation_branch_local_backreference_pattern_bytes(pattern)
+                    .expect(
+                        "guarded quantified alternation branch-local backreference bytes literal",
+                    );
             Some(CompileOutcome {
                 status: CompileStatus::Compiled,
                 normalized_flags,
@@ -5395,6 +5472,26 @@ fn parse_quantified_alternation_pattern_bytes(
                 capture_name: Some(OPEN_ENDED_QUANTIFIED_ALTERNATION_CAPTURE_NAME),
                 branches: QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BRANCHES_BYTES,
                 max_repeat: Some(2),
+            })
+        }
+        _ => None,
+    }
+}
+
+fn parse_quantified_alternation_branch_local_backreference_pattern_bytes(
+    pattern: &[u8],
+) -> Option<QuantifiedAlternationBranchLocalBackreferenceBytesPattern> {
+    match pattern {
+        QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_NUMBERED_BYTES_PATTERN => {
+            Some(QuantifiedAlternationBranchLocalBackreferenceBytesPattern {
+                outer_name: None,
+                inner_name: None,
+            })
+        }
+        QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_NAMED_BYTES_PATTERN => {
+            Some(QuantifiedAlternationBranchLocalBackreferenceBytesPattern {
+                outer_name: Some(QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_OUTER_NAME),
+                inner_name: Some(QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_INNER_NAME),
             })
         }
         _ => None,
@@ -8311,6 +8408,51 @@ fn literal_match_bytes(
         });
         let lastindex = if span.is_some() {
             grouped_pattern.matched_lastindex(&group_spans)
+        } else {
+            None
+        };
+        return MatchOutcome {
+            status: if span.is_some() {
+                MatchStatus::Matched
+            } else {
+                MatchStatus::NoMatch
+            },
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            span,
+            group_spans,
+            lastindex,
+        };
+    }
+
+    if let Some(grouped_pattern) =
+        parse_quantified_alternation_branch_local_backreference_pattern_bytes(pattern)
+    {
+        if flags != 0 {
+            return MatchOutcome {
+                status: MatchStatus::Unsupported,
+                pos: normalized_pos,
+                endpos: normalized_endpos,
+                span: None,
+                group_spans: Vec::new(),
+                lastindex: None,
+            };
+        }
+
+        let (span, group_spans) =
+            find_quantified_alternation_branch_local_backreference_match_span_bytes(
+                &grouped_pattern,
+                flags,
+                mode,
+                string,
+                normalized_pos,
+                normalized_endpos,
+            )
+            .map_or((None, Vec::new()), |(span, group_spans)| {
+                (Some(span), group_spans)
+            });
+        let lastindex = if span.is_some() {
+            Some(grouped_pattern.lastindex())
         } else {
             None
         };
@@ -12312,6 +12454,138 @@ fn quantified_alternation_matches_exact_repeats_bytes(
     }
 
     None
+}
+
+fn quantified_alternation_branch_local_backreference_matches_at_bytes(
+    _pattern: &QuantifiedAlternationBranchLocalBackreferenceBytesPattern,
+    flags: i32,
+    string: &[u8],
+    start: usize,
+    endpos: usize,
+) -> Option<(usize, &'static [u8], usize)> {
+    if !literal_matches_at_bytes(
+        OPEN_ENDED_QUANTIFIED_ALTERNATION_PREFIX_BYTES,
+        flags,
+        string,
+        start,
+        endpos,
+    ) {
+        return None;
+    }
+
+    let repetition_start = start + OPEN_ENDED_QUANTIFIED_ALTERNATION_PREFIX_BYTES.len();
+    let mut max_repeat = 0usize;
+    let mut cursor = repetition_start;
+    while max_repeat < 2 {
+        let mut matched_branch = None;
+        for branch in OPEN_ENDED_QUANTIFIED_ALTERNATION_BRANCHES_BYTES {
+            let branch_end = cursor + branch.len();
+            let outer_end = branch_end + branch.len();
+            if literal_matches_at_bytes(branch, flags, string, cursor, endpos)
+                && literal_matches_at_bytes(branch, flags, string, branch_end, endpos)
+            {
+                matched_branch = Some(outer_end);
+                break;
+            }
+        }
+
+        let Some(branch_end) = matched_branch else {
+            break;
+        };
+        max_repeat += 1;
+        cursor = branch_end;
+    }
+
+    if max_repeat == 0 {
+        return None;
+    }
+
+    for repeat_count in (1..=max_repeat).rev() {
+        let mut cursor = repetition_start;
+        let mut last_branch = None;
+
+        for _ in 0..repeat_count {
+            let mut matched_branch = None;
+            for branch in OPEN_ENDED_QUANTIFIED_ALTERNATION_BRANCHES_BYTES {
+                let branch_end = cursor + branch.len();
+                let outer_end = branch_end + branch.len();
+                if literal_matches_at_bytes(branch, flags, string, cursor, endpos)
+                    && literal_matches_at_bytes(branch, flags, string, branch_end, endpos)
+                {
+                    matched_branch = Some((branch, outer_end));
+                    break;
+                }
+            }
+
+            let Some((branch, branch_end)) = matched_branch else {
+                last_branch = None;
+                break;
+            };
+            last_branch = Some(branch);
+            cursor = branch_end;
+        }
+
+        let Some(last_branch) = last_branch else {
+            continue;
+        };
+
+        if literal_matches_at_bytes(
+            OPEN_ENDED_QUANTIFIED_ALTERNATION_SUFFIX_BYTES,
+            flags,
+            string,
+            cursor,
+            endpos,
+        ) {
+            return Some((
+                repeat_count,
+                last_branch,
+                cursor + OPEN_ENDED_QUANTIFIED_ALTERNATION_SUFFIX_BYTES.len(),
+            ));
+        }
+    }
+
+    None
+}
+
+fn find_quantified_alternation_branch_local_backreference_match_span_bytes(
+    pattern: &QuantifiedAlternationBranchLocalBackreferenceBytesPattern,
+    flags: i32,
+    mode: MatchMode,
+    string: &[u8],
+    pos: usize,
+    endpos: usize,
+) -> Option<((usize, usize), Vec<Option<(usize, usize)>>)> {
+    match mode {
+        MatchMode::Search => (pos..=endpos).find_map(|start| {
+            quantified_alternation_branch_local_backreference_matches_at_bytes(
+                pattern, flags, string, start, endpos,
+            )
+            .map(|(repeat_count, last_branch, match_end)| {
+                (
+                    (start, match_end),
+                    pattern.group_spans(start, repeat_count, last_branch),
+                )
+            })
+        }),
+        MatchMode::Match => quantified_alternation_branch_local_backreference_matches_at_bytes(
+            pattern, flags, string, pos, endpos,
+        )
+        .map(|(repeat_count, last_branch, match_end)| {
+            (
+                (pos, match_end),
+                pattern.group_spans(pos, repeat_count, last_branch),
+            )
+        }),
+        MatchMode::Fullmatch => quantified_alternation_branch_local_backreference_matches_at_bytes(
+            pattern, flags, string, pos, endpos,
+        )
+        .and_then(|(repeat_count, last_branch, match_end)| {
+            (match_end == endpos).then_some((
+                (pos, match_end),
+                pattern.group_spans(pos, repeat_count, last_branch),
+            ))
+        }),
+    }
 }
 
 fn quantified_alternation_nested_branch_matches_at_bytes(

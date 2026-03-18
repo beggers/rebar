@@ -54,8 +54,6 @@ class QuantifiedAlternationBranchLocalBackreferenceBytesCase:
     search_matches: tuple[bytes, ...]
     fullmatch_matches: tuple[bytes, ...]
     fullmatch_misses: tuple[bytes, ...]
-    unsupported_backends: tuple[str, ...] = ()
-    unsupported_backend_reason: str | None = None
 
 
 FIXTURE_BUNDLE_SPECS = (
@@ -382,9 +380,6 @@ QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
         "quantified-alternation-branch-local-backreference-workflows",
     )
 )
-QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_UNSUPPORTED_REASON = (
-    "rebar bytes parity for quantified alternation branch-local backreferences is pending the later follow-on"
-)
 QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES = (
     QuantifiedAlternationBranchLocalBackreferenceBytesCase(
         id="quantified-alternation-branch-local-numbered-bytes",
@@ -392,10 +387,6 @@ QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES = (
         search_matches=(b"zzabbdzz",),
         fullmatch_matches=(b"accd", b"abbbbd"),
         fullmatch_misses=(b"abcd",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_UNSUPPORTED_REASON
-        ),
     ),
     QuantifiedAlternationBranchLocalBackreferenceBytesCase(
         id="quantified-alternation-branch-local-named-bytes",
@@ -403,10 +394,6 @@ QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES = (
         search_matches=(b"zzaccdzz",),
         fullmatch_matches=(b"accccd", b"abbccd"),
         fullmatch_misses=(b"abcd",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_UNSUPPORTED_REASON
-        ),
     ),
 )
 DIRECT_BYTES_FOLLOW_ON_BUNDLES = (
@@ -791,11 +778,6 @@ def test_quantified_alternation_branch_local_backreference_bytes_cases_stay_expl
     )
 
     for case in QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES:
-        assert case.unsupported_backends == ("rebar",)
-        assert (
-            case.unsupported_backend_reason
-            == QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_UNSUPPORTED_REASON
-        )
         assert len(case.search_matches) == 1
         assert len(case.fullmatch_matches) == 2
         assert len(case.fullmatch_misses) == 1

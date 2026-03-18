@@ -1,6 +1,6 @@
 # RBR-0597: Convert the quantified-alternation branch-local-backreference bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -43,3 +43,14 @@ Created: 2026-03-18
   - `benchmarks/workloads/quantified_alternation_boundary.py` already publishes the six adjacent `str` benchmark rows for this exact pair as `module-search-numbered-quantified-alternation-branch-backref-cold-str`, `module-compile-numbered-quantified-alternation-branch-backref-cold-str`, `pattern-fullmatch-numbered-quantified-alternation-branch-backref-second-repetition-purged-str`, `module-compile-named-quantified-alternation-branch-backref-warm-str`, `module-search-named-quantified-alternation-branch-backref-lower-bound-c-branch-warm-str`, and `pattern-fullmatch-named-quantified-alternation-branch-backref-second-repetition-purged-str`, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so the Rust-backed bytes parity work is not already satisfied in the current checkout.
 - A later benchmark follow-on should catch the same bytes pair up on the existing quantified-alternation benchmark surface before another quantified-alternation branch-local-backreference bytes family broadens the frontier.
+
+## Completion
+- Added bounded bytes compile and match support for `rb"a((b|c)\\2){1,2}d"` and `rb"a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d"` in `crates/rebar-core/src/lib.rs`, including CPython-matching group spans, `lastindex`, and named-group metadata.
+- Dropped the temporary `rebar` unsupported gating from the existing direct bytes anchor in `tests/python/test_branch_local_backreference_parity_suite.py`; no extra bytes-only suite or fixture path was added.
+- No changes were required in `crates/rebar-cpython/src/lib.rs` or `python/rebar/__init__.py` because the existing generic native compile/match marshalling already carried the new core metadata and spans once the Rust support landed.
+- Verified with:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/quantified_alternation_branch_local_backreference_workflows.py --report .rebar/tmp/rbr-0597-quantified-alternation-branch-local-backreference-bytes-parity.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+- Republished `reports/correctness/latest.py`; the tracked combined report now reads `1234` total / `1234` passed / `0` unimplemented, and `match.quantified_alternation_branch_local_backreference` now reads `20` total / `20` passed / `0` unimplemented.
