@@ -1,6 +1,6 @@
 # RBR-0638: Collapse the detached simple-backreference parity suite onto the shared backreference owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
 
@@ -107,3 +107,7 @@ PY`
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py` passes (`162 passed in 0.20s`);
   - the inline `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` probe above currently fails exactly on this cleanup because `tests/python/test_branch_local_backreference_parity_suite.py` still starts with the branch-local manifests and does not yet expose the simple workflow or bounded-window surfaces there; and
   - `bash -lc "! rg --files tests/python | rg 'test_simple_backreference_parity_suite\\.py$'"` currently fails exactly on this cleanup because the detached suite file still exists.
+
+## Completion Notes
+- 2026-03-18: Folded `named-backreference-workflows` and `numbered-backreference-workflows` into `tests/python/test_branch_local_backreference_parity_suite.py`, added the six simple workflow case ids to the shared match-convenience and match-group-access selectors, preserved the four bounded-window match rows, four bounded-window no-match rows, and the named/numbered/grouped-segment miss texts on the shared supplemental miss surface, and deleted `tests/python/test_simple_backreference_parity_suite.py`.
+- 2026-03-18: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py` (`559 passed in 0.85s`), `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py` (`162 passed in 0.20s`), the task’s inline `PY` probe (`ok`), `bash -lc "! rg --files tests/python | rg 'test_simple_backreference_parity_suite\\.py$'"` (passes), and `git diff --name-status -- tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_simple_backreference_parity_suite.py` (`M` on the shared suite and `D` on the deleted detached suite).

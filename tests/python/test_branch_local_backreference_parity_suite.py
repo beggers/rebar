@@ -107,9 +107,63 @@ WRAPPER_PAIRS = (
 )
 FAILURE_PREVIEW_LIMIT = 20
 STR_AND_BYTES_TEXT_MODELS = frozenset({"bytes", "str"})
+SIMPLE_BACKREFERENCE_WORKFLOW_CASE_IDS = (
+    "named-backreference-module-search-str",
+    "named-backreference-pattern-search-str",
+    "numbered-backreference-module-search-str",
+    "numbered-backreference-pattern-search-str",
+    "numbered-backreference-segment-module-search-str",
+    "numbered-backreference-prefix-pattern-search-str",
+)
 
 
 FIXTURE_BUNDLE_SPECS = (
+    FixtureBundleSpec(
+        "named_backreference_workflows.py",
+        expected_manifest_id="named-backreference-workflows",
+        expected_case_ids=frozenset(
+            {
+                "named-backreference-compile-metadata-str",
+                "named-backreference-module-search-str",
+                "named-backreference-pattern-search-str",
+            }
+        ),
+        expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 1,
+                ("module_call", "search"): 1,
+                ("pattern_call", "search"): 1,
+            }
+        ),
+    ),
+    FixtureBundleSpec(
+        "numbered_backreference_workflows.py",
+        expected_manifest_id="numbered-backreference-workflows",
+        expected_case_ids=frozenset(
+            {
+                "numbered-backreference-compile-metadata-str",
+                "numbered-backreference-module-search-str",
+                "numbered-backreference-pattern-search-str",
+                "numbered-backreference-segment-module-search-str",
+                "numbered-backreference-prefix-pattern-search-str",
+            }
+        ),
+        expected_patterns=frozenset(
+            {
+                r"(ab)\1",
+                r"(ab)x\1",
+                r"x(ab)\1",
+            }
+        ),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 1,
+                ("module_call", "search"): 2,
+                ("pattern_call", "search"): 2,
+            }
+        ),
+    ),
     FixtureBundleSpec(
         "branch_local_backreference_workflows.py",
         expected_manifest_id="branch-local-backreference-workflows",
@@ -948,11 +1002,14 @@ MATCH_CONVENIENCE_MANIFEST_IDS = frozenset(
     }
 )
 MATCH_CONVENIENCE_CASE_IDS = frozenset(
+    SIMPLE_BACKREFERENCE_WORKFLOW_CASE_IDS
+) | frozenset(
     case.case_id
     for case in WORKFLOW_CASES
     if case.manifest_id in MATCH_CONVENIENCE_MANIFEST_IDS and case.operation != "compile"
 )
 MATCH_GROUP_ACCESS_CASE_IDS = (
+    *SIMPLE_BACKREFERENCE_WORKFLOW_CASE_IDS,
     "nested-group-alternation-branch-local-numbered-backreference-module-search-b-branch-str",
     "nested-group-alternation-branch-local-numbered-backreference-pattern-fullmatch-c-branch-str",
     "nested-group-alternation-branch-local-named-backreference-module-search-c-branch-str",
@@ -961,6 +1018,14 @@ MATCH_GROUP_ACCESS_CASE_IDS = (
     "quantified-alternation-branch-local-numbered-backreference-pattern-fullmatch-second-repetition-b-branch-str",
     "quantified-alternation-branch-local-named-backreference-module-search-lower-bound-c-branch-str",
     "quantified-alternation-branch-local-named-backreference-pattern-fullmatch-second-repetition-mixed-branches-str",
+)
+SIMPLE_NAMED_PATTERN_SEARCH_CASE_ID = "named-backreference-pattern-search-str"
+SIMPLE_NUMBERED_PATTERN_SEARCH_CASE_ID = "numbered-backreference-pattern-search-str"
+SIMPLE_NUMBERED_SEGMENT_MODULE_SEARCH_CASE_ID = (
+    "numbered-backreference-segment-module-search-str"
+)
+SIMPLE_NUMBERED_PREFIX_PATTERN_SEARCH_CASE_ID = (
+    "numbered-backreference-prefix-pattern-search-str"
 )
 NESTED_GROUP_NUMBERED_COMPILE_CASE_ID = (
     "nested-group-alternation-branch-local-numbered-backreference-compile-metadata-str"
@@ -978,6 +1043,34 @@ OPEN_ENDED_NAMED_COMPILE_CASE_ID = (
     "backreference-compile-metadata-str"
 )
 PATTERN_BOUNDS_MATCH_CASES = (
+    BoundedPatternCase(
+        id="numbered-backreference-match-honors-narrowed-window",
+        pattern_case_id=SIMPLE_NUMBERED_PATTERN_SEARCH_CASE_ID,
+        helper="match",
+        string="zzababzz",
+        bounds=(2, 6),
+    ),
+    BoundedPatternCase(
+        id="named-backreference-fullmatch-honors-narrowed-window",
+        pattern_case_id=SIMPLE_NAMED_PATTERN_SEARCH_CASE_ID,
+        helper="fullmatch",
+        string="zzababzz",
+        bounds=(2, 6),
+    ),
+    BoundedPatternCase(
+        id="numbered-backreference-segment-search-honors-narrowed-window",
+        pattern_case_id=SIMPLE_NUMBERED_SEGMENT_MODULE_SEARCH_CASE_ID,
+        helper="search",
+        string="zzabxabzz",
+        bounds=(2, 7),
+    ),
+    BoundedPatternCase(
+        id="numbered-backreference-prefix-search-normalizes-negative-and-oversized-bounds",
+        pattern_case_id=SIMPLE_NUMBERED_PREFIX_PATTERN_SEARCH_CASE_ID,
+        helper="search",
+        string="zzxababzz",
+        bounds=(-100, 999),
+    ),
     BoundedPatternCase(
         id="numbered-nested-match-window",
         pattern_case_id=NESTED_GROUP_NUMBERED_COMPILE_CASE_ID,
@@ -1008,6 +1101,34 @@ PATTERN_BOUNDS_MATCH_CASES = (
     ),
 )
 PATTERN_BOUNDS_NO_MATCH_CASES = (
+    BoundedPatternCase(
+        id="numbered-backreference-search-skips-match-before-pos",
+        pattern_case_id=SIMPLE_NUMBERED_PATTERN_SEARCH_CASE_ID,
+        helper="search",
+        string="zzababzz",
+        bounds=(3, 8),
+    ),
+    BoundedPatternCase(
+        id="named-backreference-fullmatch-does-not-expand-to-the-whole-string",
+        pattern_case_id=SIMPLE_NAMED_PATTERN_SEARCH_CASE_ID,
+        helper="fullmatch",
+        string="zzababzz",
+        bounds=(-100, 999),
+    ),
+    BoundedPatternCase(
+        id="numbered-backreference-segment-search-skips-match-before-pos",
+        pattern_case_id=SIMPLE_NUMBERED_SEGMENT_MODULE_SEARCH_CASE_ID,
+        helper="search",
+        string="zzabxabzz",
+        bounds=(3, 9),
+    ),
+    BoundedPatternCase(
+        id="numbered-backreference-prefix-search-fails-when-endpos-truncates-the-replay",
+        pattern_case_id=SIMPLE_NUMBERED_PREFIX_PATTERN_SEARCH_CASE_ID,
+        helper="search",
+        string="zzxababzz",
+        bounds=(2, 6),
+    ),
     BoundedPatternCase(
         id="numbered-nested-search-skips-match-before-pos",
         pattern_case_id=NESTED_GROUP_NUMBERED_COMPILE_CASE_ID,
@@ -1139,6 +1260,90 @@ DIRECT_BYTES_PATTERN_BOUNDS_NO_MATCH_CASES = (
     ),
 )
 SUPPLEMENTAL_MISS_CASES = (
+    SupplementalMissCase(
+        id="simple-named-module-search-miss-partial",
+        target="module",
+        pattern=r"(?P<word>ab)(?P=word)",
+        helper="search",
+        text="zzabzz",
+    ),
+    SupplementalMissCase(
+        id="simple-named-module-search-miss-short",
+        target="module",
+        pattern=r"(?P<word>ab)(?P=word)",
+        helper="search",
+        text="zzz",
+    ),
+    SupplementalMissCase(
+        id="simple-named-pattern-search-miss-partial",
+        target="pattern",
+        pattern=r"(?P<word>ab)(?P=word)",
+        helper="search",
+        text="zzabzz",
+    ),
+    SupplementalMissCase(
+        id="simple-named-pattern-search-miss-short",
+        target="pattern",
+        pattern=r"(?P<word>ab)(?P=word)",
+        helper="search",
+        text="zzz",
+    ),
+    SupplementalMissCase(
+        id="simple-numbered-module-search-miss-partial",
+        target="module",
+        pattern=r"(ab)\1",
+        helper="search",
+        text="zzabzz",
+    ),
+    SupplementalMissCase(
+        id="simple-numbered-module-search-miss-short",
+        target="module",
+        pattern=r"(ab)\1",
+        helper="search",
+        text="zzz",
+    ),
+    SupplementalMissCase(
+        id="simple-numbered-pattern-search-miss-partial",
+        target="pattern",
+        pattern=r"(ab)\1",
+        helper="search",
+        text="zzabzz",
+    ),
+    SupplementalMissCase(
+        id="simple-numbered-pattern-search-miss-short",
+        target="pattern",
+        pattern=r"(ab)\1",
+        helper="search",
+        text="zzz",
+    ),
+    SupplementalMissCase(
+        id="simple-numbered-segment-module-search-miss-partial",
+        target="module",
+        pattern=r"(ab)x\1",
+        helper="search",
+        text="zzabzz",
+    ),
+    SupplementalMissCase(
+        id="simple-numbered-segment-module-search-miss-short",
+        target="module",
+        pattern=r"(ab)x\1",
+        helper="search",
+        text="zzz",
+    ),
+    SupplementalMissCase(
+        id="simple-numbered-prefix-pattern-search-miss-partial",
+        target="pattern",
+        pattern=r"x(ab)\1",
+        helper="search",
+        text="zzabzz",
+    ),
+    SupplementalMissCase(
+        id="simple-numbered-prefix-pattern-search-miss-short",
+        target="pattern",
+        pattern=r"x(ab)\1",
+        helper="search",
+        text="zzz",
+    ),
     SupplementalMissCase(
         id="module-numbered-search-miss-mismatched-replay",
         target="module",
@@ -1359,12 +1564,22 @@ def _published_bytes_follow_on_texts_by_pattern(
     )
 
 
-def test_match_group_access_rows_remain_on_branch_local_fixture_paths() -> None:
+def test_match_group_access_rows_remain_on_shared_backreference_fixture_paths() -> None:
     assert tuple(case.case_id for case in MATCH_GROUP_ACCESS_CASES) == MATCH_GROUP_ACCESS_CASE_IDS
     assert {case.text_model for case in MATCH_GROUP_ACCESS_CASES} == {"str"}
 
 
-def test_pattern_bounds_cases_stay_anchored_to_supported_branch_local_patterns() -> None:
+def test_pattern_bounds_cases_stay_anchored_to_supported_backreference_patterns() -> None:
+    assert str_case_pattern(CASES_BY_ID[SIMPLE_NAMED_PATTERN_SEARCH_CASE_ID]) == (
+        r"(?P<word>ab)(?P=word)"
+    )
+    assert str_case_pattern(CASES_BY_ID[SIMPLE_NUMBERED_PATTERN_SEARCH_CASE_ID]) == r"(ab)\1"
+    assert str_case_pattern(CASES_BY_ID[SIMPLE_NUMBERED_SEGMENT_MODULE_SEARCH_CASE_ID]) == (
+        r"(ab)x\1"
+    )
+    assert str_case_pattern(CASES_BY_ID[SIMPLE_NUMBERED_PREFIX_PATTERN_SEARCH_CASE_ID]) == (
+        r"x(ab)\1"
+    )
     assert str_case_pattern(CASES_BY_ID[NESTED_GROUP_NUMBERED_COMPILE_CASE_ID]) == r"a((b|c))\2d"
     assert str_case_pattern(CASES_BY_ID[BROADER_RANGE_NAMED_COMPILE_CASE_ID]) == (
         r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d"
