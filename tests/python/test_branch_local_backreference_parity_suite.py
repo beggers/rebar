@@ -688,12 +688,6 @@ NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BYTES_CAS
         search_matches=(b"zzabbbdzz",),
         fullmatch_matches=(b"acccd", b"abcbccd"),
         fullmatch_misses=(b"abcbcc",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            "rebar bytes parity for the nested broader-range open-ended "
-            "branch-local-backreference conditional slice is pending the "
-            "follow-on parity task"
-        ),
     ),
     BranchLocalBackreferenceBytesFollowOnCase(
         id="nested-broader-range-open-ended-branch-local-backreference-conditional-named-bytes",
@@ -701,12 +695,6 @@ NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BYTES_CAS
         search_matches=(b"zzacccdzz",),
         fullmatch_matches=(b"abbbd", b"abcbccd"),
         fullmatch_misses=(b"abbd",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason=(
-            "rebar bytes parity for the nested broader-range open-ended "
-            "branch-local-backreference conditional slice is pending the "
-            "follow-on parity task"
-        ),
     ),
 )
 DIRECT_BYTES_FOLLOW_ON_BUNDLES = (
@@ -870,12 +858,6 @@ DIRECT_BYTES_FOLLOW_ON_SPECS = (
                 1
             ].pattern: frozenset({b"abbbd", b"abcbccd", b"abbd"}),
         },
-        expected_unsupported_backends=("rebar",),
-        expected_unsupported_backend_reason=(
-            "rebar bytes parity for the nested broader-range open-ended "
-            "branch-local-backreference conditional slice is pending the "
-            "follow-on parity task"
-        ),
     ),
 )
 DIRECT_BYTES_FOLLOW_ON_CASES = tuple(
@@ -1060,6 +1042,26 @@ DIRECT_BYTES_PATTERN_BOUNDS_MATCH_CASES = (
         helper="fullmatch",
         string=b"yyaccccdzz",
         bounds=(2, 8),
+    ),
+    DirectBytesBoundedPatternCase(
+        id=(
+            "nested-broader-range-open-ended-branch-local-backreference-"
+            "conditional-numbered-bytes-fullmatch-window"
+        ),
+        pattern=rb"a((b|c){2,})\2(?(2)d|e)",
+        helper="fullmatch",
+        string=b"xxacccdyy",
+        bounds=(2, 7),
+    ),
+    DirectBytesBoundedPatternCase(
+        id=(
+            "nested-broader-range-open-ended-branch-local-backreference-"
+            "conditional-named-bytes-fullmatch-window"
+        ),
+        pattern=rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+        helper="fullmatch",
+        string=b"yyabbbdzz",
+        bounds=(2, 7),
     ),
 )
 DIRECT_BYTES_PATTERN_BOUNDS_NO_MATCH_CASES = (

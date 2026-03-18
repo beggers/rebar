@@ -1,6 +1,6 @@
 # RBR-0621: Convert the nested broader-range open-ended branch-local-backreference conditional bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -42,3 +42,9 @@ Created: 2026-03-18
 - `benchmarks/workloads/branch_local_backreference_boundary.py` already publishes the six adjacent `str` benchmark rows for this exact slice as `module-compile-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-cold-str`, `module-search-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-str`, `pattern-fullmatch-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-mixed-branches-purged-str`, `module-compile-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-warm-str`, `module-search-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-warm-str`, and `pattern-fullmatch-named-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-purged-str`, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass.
 - Direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so the Rust-backed bytes parity work is not already satisfied in the current checkout.
 - A later benchmark follow-on should catch the same bytes pair up on the existing `benchmarks/workloads/branch_local_backreference_boundary.py` surface before deeper grouped execution broadens that family.
+
+## Completion
+- Added bounded bytes compile/match support for `rb"a((b|c){2,})\\2(?(2)d|e)"` and `rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)"` in `crates/rebar-core/src/lib.rs` by reusing the existing quantified nested-group branch-local backreference matcher with the reachable conditional yes-arm suffix.
+- Dropped the direct-bytes `rebar` unsupported gating for the two published follow-on cases and added the missing bounded-window anchors in `tests/python/test_branch_local_backreference_parity_suite.py` so the supported-bytes pattern inventory stays coherent.
+- Republished `reports/correctness/latest.py`; the tracked combined scorecard now reads `1278` total / `1278` passed / `0` unimplemented, and `match.nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional` now reads `20` / `20` / `0`.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_workflows.py --report .rebar/tmp/rbr-0621-nested-broader-range-open-ended-branch-local-backreference-conditional-bytes-parity.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`, and `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`470` passed, `1491` subtests passed).

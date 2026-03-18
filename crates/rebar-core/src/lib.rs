@@ -59,6 +59,10 @@ const NESTED_BROADER_RANGE_OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_BRANCH_LOCAL_
     &[u8] = br"a((b|c){2,})\2d";
 const NESTED_BROADER_RANGE_OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_NAMED_BYTES_PATTERN:
     &[u8] = br"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d";
+const NESTED_BROADER_RANGE_OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_NUMBERED_BYTES_PATTERN:
+    &[u8] = br"a((b|c){2,})\2(?(2)d|e)";
+const NESTED_BROADER_RANGE_OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_NAMED_BYTES_PATTERN:
+    &[u8] = br"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)";
 const QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_OUTER_NAME: &str = "outer";
 const QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_INNER_NAME: &str = "inner";
 const BOUNDED_QUANTIFIED_ALTERNATION_CONDITIONAL_NUMBERED_BYTES_PATTERN: &[u8] =
@@ -2627,6 +2631,29 @@ fn compile_known_supported_case(
                 )
                 .expect(
                     "guarded quantified nested-group alternation branch-local backreference bytes literal",
+                );
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: grouped_pattern.group_count(),
+                named_groups: grouped_pattern.named_groups(),
+                warning: None,
+            })
+        }
+        PatternRef::Bytes(pattern)
+            if parse_broader_range_open_ended_quantified_nested_group_alternation_branch_local_backreference_conditional_pattern_bytes(
+                pattern,
+            )
+            .is_some()
+                && normalized_flags == 0 =>
+        {
+            let grouped_pattern =
+                parse_broader_range_open_ended_quantified_nested_group_alternation_branch_local_backreference_conditional_pattern_bytes(
+                    pattern,
+                )
+                .expect(
+                    "guarded broader-range open-ended quantified nested-group alternation branch-local backreference conditional bytes literal",
                 );
             Some(CompileOutcome {
                 status: CompileStatus::Compiled,
@@ -5663,6 +5690,44 @@ fn parse_quantified_nested_group_alternation_branch_local_backreference_pattern_
     }
 }
 
+fn parse_broader_range_open_ended_quantified_nested_group_alternation_branch_local_backreference_conditional_pattern_bytes(
+    pattern: &[u8],
+) -> Option<QuantifiedNestedGroupAlternationBranchLocalBackreferencePattern<'static>> {
+    match pattern {
+        NESTED_BROADER_RANGE_OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_NUMBERED_BYTES_PATTERN => {
+            Some(
+                QuantifiedNestedGroupAlternationBranchLocalBackreferencePattern {
+                    prefix: "a",
+                    outer_name: None,
+                    inner_name: None,
+                    branches: vec!["b", "c"],
+                    suffix: "d",
+                    min_repeat: 2,
+                    max_repeat: None,
+                },
+            )
+        }
+        NESTED_BROADER_RANGE_OPEN_ENDED_QUANTIFIED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_NAMED_BYTES_PATTERN => {
+            Some(
+                QuantifiedNestedGroupAlternationBranchLocalBackreferencePattern {
+                    prefix: "a",
+                    outer_name: Some(
+                        QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_OUTER_NAME,
+                    ),
+                    inner_name: Some(
+                        QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_INNER_NAME,
+                    ),
+                    branches: vec!["b", "c"],
+                    suffix: "d",
+                    min_repeat: 2,
+                    max_repeat: None,
+                },
+            )
+        }
+        _ => None,
+    }
+}
+
 fn parse_open_ended_quantified_group_alternation_pattern_bytes(
     pattern: &[u8],
 ) -> Option<OpenEndedQuantifiedGroupAlternationBytesPattern> {
@@ -8605,6 +8670,53 @@ fn literal_match_bytes(
 
     if let Some(grouped_pattern) =
         parse_quantified_nested_group_alternation_branch_local_backreference_pattern_bytes(pattern)
+    {
+        if flags != 0 {
+            return MatchOutcome {
+                status: MatchStatus::Unsupported,
+                pos: normalized_pos,
+                endpos: normalized_endpos,
+                span: None,
+                group_spans: Vec::new(),
+                lastindex: None,
+            };
+        }
+
+        let (span, group_spans) =
+            find_quantified_nested_group_alternation_branch_local_backreference_match_span_bytes(
+                &grouped_pattern,
+                flags,
+                mode,
+                string,
+                normalized_pos,
+                normalized_endpos,
+            )
+            .map_or((None, Vec::new()), |(span, group_spans)| {
+                (Some(span), group_spans)
+            });
+        let lastindex = if span.is_some() {
+            grouped_pattern.matched_lastindex(&group_spans)
+        } else {
+            None
+        };
+        return MatchOutcome {
+            status: if span.is_some() {
+                MatchStatus::Matched
+            } else {
+                MatchStatus::NoMatch
+            },
+            pos: normalized_pos,
+            endpos: normalized_endpos,
+            span,
+            group_spans,
+            lastindex,
+        };
+    }
+
+    if let Some(grouped_pattern) =
+        parse_broader_range_open_ended_quantified_nested_group_alternation_branch_local_backreference_conditional_pattern_bytes(
+            pattern,
+        )
     {
         if flags != 0 {
             return MatchOutcome {
