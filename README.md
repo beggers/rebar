@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness report now covers 1224 cases across 111 manifests, with 1212 passing, 0 explicit failures, and 12 honest gaps; the main benchmark report covers 692 workloads across 30 manifests with 692 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is still bounded and not yet a near-full parity or native-path performance signal. |
-| Current milestone | `RBR-0592` is the surviving queue head: close the published quantified-alternation conditional bytes pair from `1224 / 1212 / 12` to `1224 / 1224 / 0` on the existing Rust-backed parity surface before the later benchmark follow-on. |
-| Work queue | `1` ready, `0` in progress, `591` done, `0` blocked |
+| Delivery estimate | The published correctness report now covers 1224 cases across 111 manifests, with 1224 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 692 workloads across 30 manifests with 692 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is still bounded and not yet a near-full parity or native-path performance signal. |
+| Current milestone | `RBR-0593` should catch the same bounded quantified-alternation conditional bytes pair up on the existing Python-path benchmark surface by extending `benchmarks/workloads/quantified_alternation_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, so the tracked quantified-alternation manifest can move from `72` total / `72` measured / `0` known gaps to `78` / `78` / `0` and the combined source-tree report can move from `692` / `692` / `0` to `698` / `698` / `0` without widening beyond the six adjacent conditional bytes mirrors already anchored by the current numbered and named `str` rows. |
+| Work queue | `1` ready, `0` in progress, `592` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -22,13 +22,13 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Metric | Value |
 | --- | --- |
 | Published cases | `1224` |
-| Passing in published slice | `1212` |
+| Passing in published slice | `1224` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `12` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `111` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness report now covers 1224 cases across 111 manifests, with 1212 passing, 0 explicit failures, and 12 honest gaps; the main benchmark report covers 692 workloads across 30 manifests with 692 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is still bounded and not yet a near-full parity or native-path performance signal._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness report now covers 1224 cases across 111 manifests, with 1224 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 692 workloads across 30 manifests with 692 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is still bounded and not yet a near-full parity or native-path performance signal._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0592` should close the already-published quantified-alternation conditional bytes pair from `1224 / 1212 / 12` to `1224 / 1224 / 0` on the existing Rust-backed parity surface before benchmark catch-up resumes.
+- `RBR-0593` should catch the same quantified-alternation conditional bytes pair up on the existing Python-path benchmark surface, growing `quantified-alternation-boundary` from `72 / 72 / 0` to `78 / 78 / 0` and the combined benchmark report from `692 / 692 / 0` to `698 / 698 / 0`.
 
 ### Current Risks
 
@@ -55,7 +55,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The current published correctness slice spans 1224 cases across 111 manifests, with 1212 passing and 12 honest gaps. The ready queue is now at `RBR-0592`, which aims to close that published bytes slice back to zero honest gaps before benchmark catch-up resumes.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The current published correctness slice spans 1224 cases across 111 manifests and is fully passing. The ready queue is now at `RBR-0593`, which aims to catch the same quantified-alternation conditional bytes pair up on the existing Python-path benchmark surface.
 
 The benchmark story is similarly early. The clearest trustworthy positive signal today is still the tiny parser compile-proxy slice, where 8 workloads are about 2.9x faster on median than CPython. The broader 692-workload publication still goes through the source-tree shim and is slower overall, so that is signal rather than a general speed claim.
 
