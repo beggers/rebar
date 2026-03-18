@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | The published correctness report now covers 1286 cases across 111 manifests, with all 1286 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 723 workloads across 30 manifests with 723 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is fully passing but still bounded and not yet a near-full parity or native-path performance signal. |
-| Current milestone | `RBR-0631` should publish the eight bytes callable-replacement mirrors for the broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference conditional slice on the existing shared correctness surface by updating `tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py`, `tests/python/test_callable_replacement_parity_suite.py`, `tests/conformance/correctness_expectations.py`, and `reports/correctness/latest.py`, so that manifest moves from `8` total cases / `8` passed / `0` `unimplemented` to `16` / `8` / `8` with mixed `str`/`bytes` coverage while the combined correctness report moves from `1286` / `1286` / `0` to `1294` / `1286` / `8` across `111` manifests. |
-| Work queue | `1` ready, `0` in progress, `630` done, `0` blocked |
+| Delivery estimate | The published correctness report now covers 1294 cases across 111 manifests, with 1286 passing, 0 explicit failures, and 8 honest gaps; the main benchmark report covers 723 workloads across 30 manifests with 723 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader but still mixed and not yet a near-full parity or native-path performance signal. |
+| Current milestone | `RBR-0633` should convert the eight published bytes callable-replacement mirrors for the broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference conditional slice to real Rust-backed parity by updating `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_callable_replacement_parity_suite.py`, and `reports/correctness/latest.py`, so that manifest moves from `16` total cases / `8` passed / `8` `unimplemented` to `16` / `16` / `0` with mixed `str`/`bytes` coverage while the combined correctness report moves from `1294` / `1286` / `8` to `1294` / `1294` / `0` across `111` manifests. |
+| Work queue | `1` ready, `0` in progress, `632` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1286` |
+| Published cases | `1294` |
 | Passing in published slice | `1286` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
+| Honest gaps (`unimplemented`) | `8` |
 | Covered manifests | `111` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness report now covers 1286 cases across 111 manifests, with all 1286 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 723 workloads across 30 manifests with 723 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is fully passing but still bounded and not yet a near-full parity or native-path performance signal._
+_These correctness counts cover only the published slice. Overall delivery estimate: The published correctness report now covers 1294 cases across 111 manifests, with 1286 passing, 0 explicit failures, and 8 honest gaps; the main benchmark report covers 723 workloads across 30 manifests with 723 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is broader but still mixed and not yet a near-full parity or native-path performance signal._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0631`: publish the bytes callable-replacement half of the broader `{2,}` nested grouped conditional replacement slice on the existing correctness surface.
+- `RBR-0633`: convert the eight published bytes callable-replacement gaps in the broader `{2,}` nested grouped conditional and branch-local-backreference slice to Rust-backed parity.
 
 ### Current Risks
 
@@ -55,7 +55,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The current publication is still a bounded slice rather than near-full `re` parity, but that slice is now fully passing at 1286 cases across 111 manifests with 0 honest gaps; the live queue front, `RBR-0631`, is the bytes callable-replacement follow-on for that same broader `{2,}` nested grouped conditional replacement surface.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The current publication is still a bounded slice rather than near-full `re` parity, and it is not fully green: 1294 published cases across 111 manifests, 1286 passing, and 8 honest gaps. The live queue front, `RBR-0633`, is the Rust-backed parity follow-on for those eight bytes callable-replacement cases on the broader `{2,}` nested grouped conditional and branch-local-backreference surface.
 
 The benchmark story is similarly early. The clearest trustworthy positive signal today is still the tiny parser compile-proxy slice, where 8 workloads are about 2.7x faster on median than CPython. Outside that slice, the main 723-workload published benchmark report still runs through the source-tree shim and is slower overall, so it is methodology signal rather than a general speed claim.
 
