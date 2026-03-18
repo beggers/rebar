@@ -9,6 +9,7 @@ import pytest
 
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
+    FIXTURES_DIR,
     FixtureBundle,
     FixtureBundleSpec,
     assert_direct_bytes_follow_on_bundle_routing,
@@ -80,6 +81,18 @@ class QuantifiedAlternationDirectBytesFollowOnSpec:
 
 
 @dataclass(frozen=True)
+class GeneratedQuantifiedAlternationParitySpec:
+    bundle: FixtureBundle
+    fixture_name: str
+    expected_compile_case_ids: tuple[str, ...]
+    expected_patterns: frozenset[str | bytes]
+    expected_text_models: frozenset[str]
+    candidate_lengths: range
+    expected_candidate_count: int
+    failure_prefix: str
+
+
+@dataclass(frozen=True)
 class BoundedPatternCase:
     id: str
     pattern_case_id: str
@@ -88,6 +101,18 @@ class BoundedPatternCase:
     bounds: tuple[int, int]
     unsupported_backends: tuple[str, ...] = ()
     unsupported_backend_reason: str | None = None
+
+
+HELPERS = ("search", "match", "fullmatch")
+BODY_ATOMS = ("b", "c", "e")
+WRAPPER_PAIRS = (
+    ("", ""),
+    ("zz", ""),
+    ("", "zz"),
+    ("zz", "zz"),
+)
+FAILURE_PREVIEW_LIMIT = 20
+STR_AND_BYTES_TEXT_MODELS = frozenset({"bytes", "str"})
 
 
 FIXTURE_BUNDLE_SPECS = (
@@ -482,6 +507,146 @@ BACKTRACKING_HEAVY_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "quantified-alternation-backtracking-heavy-workflows",
 )
+GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS = (
+    GeneratedQuantifiedAlternationParitySpec(
+        bundle=QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE,
+        fixture_name="quantified_alternation_workflows.py",
+        expected_compile_case_ids=(
+            "quantified-alternation-numbered-compile-metadata-str",
+            "quantified-alternation-named-compile-metadata-str",
+            "quantified-alternation-numbered-compile-metadata-bytes",
+            "quantified-alternation-named-compile-metadata-bytes",
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b|c){1,2}d",
+                r"a(?P<word>b|c){1,2}d",
+                rb"a(b|c){1,2}d",
+                rb"a(?P<word>b|c){1,2}d",
+            }
+        ),
+        expected_text_models=STR_AND_BYTES_TEXT_MODELS,
+        candidate_lengths=range(4),
+        expected_candidate_count=160,
+        failure_prefix="bounded quantified alternation generated parity drifted",
+    ),
+    GeneratedQuantifiedAlternationParitySpec(
+        bundle=QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE,
+        fixture_name="quantified_alternation_broader_range_workflows.py",
+        expected_compile_case_ids=(
+            "quantified-alternation-broader-range-numbered-compile-metadata-str",
+            "quantified-alternation-broader-range-named-compile-metadata-str",
+            "quantified-alternation-broader-range-numbered-compile-metadata-bytes",
+            "quantified-alternation-broader-range-named-compile-metadata-bytes",
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b|c){1,3}d",
+                r"a(?P<word>b|c){1,3}d",
+                rb"a(b|c){1,3}d",
+                rb"a(?P<word>b|c){1,3}d",
+            }
+        ),
+        expected_text_models=STR_AND_BYTES_TEXT_MODELS,
+        candidate_lengths=range(5),
+        expected_candidate_count=484,
+        failure_prefix="broader-range quantified alternation generated parity drifted",
+    ),
+    GeneratedQuantifiedAlternationParitySpec(
+        bundle=BACKTRACKING_HEAVY_BUNDLE,
+        fixture_name="quantified_alternation_backtracking_heavy_workflows.py",
+        expected_compile_case_ids=(
+            "quantified-alternation-backtracking-heavy-numbered-compile-metadata-str",
+            "quantified-alternation-backtracking-heavy-named-compile-metadata-str",
+            "quantified-alternation-backtracking-heavy-numbered-compile-metadata-bytes",
+            "quantified-alternation-backtracking-heavy-named-compile-metadata-bytes",
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b|bc){1,2}d",
+                r"a(?P<word>b|bc){1,2}d",
+                rb"a(b|bc){1,2}d",
+                rb"a(?P<word>b|bc){1,2}d",
+            }
+        ),
+        expected_text_models=STR_AND_BYTES_TEXT_MODELS,
+        candidate_lengths=range(5),
+        expected_candidate_count=484,
+        failure_prefix=(
+            "backtracking-heavy quantified alternation generated parity drifted"
+        ),
+    ),
+)
+
+
+def _build_generated_quantified_alternation_candidate_texts(
+    candidate_lengths: range,
+) -> tuple[str, ...]:
+    return tuple(
+        f"{prefix}a{''.join(body)}d{suffix}"
+        for length in candidate_lengths
+        for body in product(BODY_ATOMS, repeat=length)
+        for prefix, suffix in WRAPPER_PAIRS
+    )
+
+
+GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPEC_BY_MANIFEST_ID = {
+    spec.bundle.expected_manifest_id: spec
+    for spec in GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS
+}
+GENERATED_STR_CANDIDATE_TEXTS_BY_MANIFEST_ID = {
+    spec.bundle.expected_manifest_id: _build_generated_quantified_alternation_candidate_texts(
+        spec.candidate_lengths
+    )
+    for spec in GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS
+}
+GENERATED_BYTES_CANDIDATE_TEXTS_BY_MANIFEST_ID = {
+    manifest_id: tuple(text.encode("ascii") for text in texts)
+    for manifest_id, texts in GENERATED_STR_CANDIDATE_TEXTS_BY_MANIFEST_ID.items()
+}
+GENERATED_QUANTIFIED_ALTERNATION_COMPILE_CASES = tuple(
+    case
+    for spec in GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS
+    for case in fixture_cases_for_operation((spec.bundle,), "compile")
+)
+
+
+def _generated_candidate_texts(
+    spec: GeneratedQuantifiedAlternationParitySpec,
+    case: FixtureCase,
+) -> tuple[str | bytes, ...]:
+    if case.text_model == "bytes":
+        return GENERATED_BYTES_CANDIDATE_TEXTS_BY_MANIFEST_ID[
+            spec.bundle.expected_manifest_id
+        ]
+    return GENERATED_STR_CANDIDATE_TEXTS_BY_MANIFEST_ID[spec.bundle.expected_manifest_id]
+
+
+def _record_generated_match_failure(
+    failures: list[str],
+    *,
+    label: str,
+    backend_name: str,
+    observed: object,
+    expected: re.Match[str] | re.Match[bytes] | None,
+) -> None:
+    try:
+        assert_match_result_parity(
+            backend_name,
+            observed,
+            expected,
+            check_regs=True,
+        )
+        if expected is None:
+            return
+
+        assert_match_convenience_api_parity(observed, expected)
+        assert_valid_match_group_access_parity(observed, expected)
+        assert_invalid_match_group_access_parity(observed, expected)
+    except AssertionError as exc:
+        failures.append(f"{label}: {exc}")
+
+
 QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES = (
     QuantifiedAlternationBytesCase(
         id="quantified-alternation-numbered-bytes",
@@ -1198,6 +1363,30 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
 
 
+@pytest.mark.parametrize(
+    "spec",
+    GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPECS,
+    ids=lambda spec: spec.bundle.expected_manifest_id,
+)
+def test_generated_quantified_alternation_compile_cases_stay_anchored_to_published_manifests(
+    spec: GeneratedQuantifiedAlternationParitySpec,
+) -> None:
+    compile_cases = fixture_cases_for_operation((spec.bundle,), "compile")
+
+    assert spec.bundle.manifest.path == FIXTURES_DIR / spec.fixture_name
+    assert tuple(case.case_id for case in compile_cases) == spec.expected_compile_case_ids
+    assert {case_pattern(case) for case in compile_cases} == spec.expected_patterns
+    assert {case.text_model for case in compile_cases} == spec.expected_text_models
+    assert (
+        len(
+            GENERATED_STR_CANDIDATE_TEXTS_BY_MANIFEST_ID[
+                spec.bundle.expected_manifest_id
+            ]
+        )
+        == spec.expected_candidate_count
+    )
+
+
 def test_quantified_alternation_parity_suite_tracks_published_case_frontier() -> None:
     for bundle in FIXTURE_BUNDLES:
         assert_fixture_bundle_tracks_published_case_frontier(
@@ -1340,6 +1529,49 @@ def test_compile_metadata_matches_cpython(
 ) -> None:
     backend_name, backend = regex_backend
     compile_with_cpython_parity(backend_name, backend, case_pattern(case), case.flags or 0)
+
+
+@pytest.mark.parametrize(
+    "case",
+    GENERATED_QUANTIFIED_ALTERNATION_COMPILE_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_generated_quantified_alternation_text_matrix_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    spec = GENERATED_QUANTIFIED_ALTERNATION_PARITY_SPEC_BY_MANIFEST_ID[case.manifest_id]
+    backend_name, backend = regex_backend
+    pattern = case_pattern(case)
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+        case.flags or 0,
+    )
+
+    failures: list[str] = []
+    for text in _generated_candidate_texts(spec, case):
+        for helper in HELPERS:
+            _record_generated_match_failure(
+                failures,
+                label=f"module.{helper}({pattern!r}, {text!r})",
+                backend_name=backend_name,
+                observed=getattr(backend, helper)(pattern, text),
+                expected=getattr(re, helper)(pattern, text),
+            )
+            _record_generated_match_failure(
+                failures,
+                label=f"pattern.{helper}({pattern!r}, {text!r})",
+                backend_name=backend_name,
+                observed=getattr(observed_pattern, helper)(text),
+                expected=getattr(expected_pattern, helper)(text),
+            )
+
+    failure_preview = "\n".join(failures[:FAILURE_PREVIEW_LIMIT])
+    if len(failures) > FAILURE_PREVIEW_LIMIT:
+        failure_preview += f"\n... {len(failures) - FAILURE_PREVIEW_LIMIT} more"
+    assert not failures, f"{spec.failure_prefix}:\n{failure_preview}"
 
 
 @pytest.mark.parametrize("case", MODULE_CASES, ids=lambda case: case.case_id)

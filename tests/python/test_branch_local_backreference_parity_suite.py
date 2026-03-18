@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass
+from itertools import product
 import re
 
 import pytest
 
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
+    FIXTURES_DIR,
     FixtureBundle,
     FixtureBundleSpec,
     assert_direct_bytes_follow_on_bundle_routing,
@@ -79,6 +81,30 @@ class BranchLocalBytesFollowOnSpec:
     expected_pattern_fullmatch_texts_by_pattern: dict[bytes, frozenset[bytes]]
     expected_unsupported_backends: tuple[str, ...] = ()
     expected_unsupported_backend_reason: str | None = None
+
+
+@dataclass(frozen=True)
+class GeneratedQuantifiedBranchLocalParitySpec:
+    bundle: FixtureBundle
+    fixture_name: str
+    expected_compile_case_ids: tuple[str, ...]
+    expected_patterns: frozenset[str | bytes]
+    expected_text_models: frozenset[str]
+    candidate_lengths: range
+    expected_candidate_count: int
+    failure_prefix: str
+
+
+HELPERS = ("search", "match", "fullmatch")
+BODY_ATOMS = ("b", "c", "e")
+WRAPPER_PAIRS = (
+    ("", ""),
+    ("zz", ""),
+    ("", "zz"),
+    ("zz", "zz"),
+)
+FAILURE_PREVIEW_LIMIT = 20
+STR_AND_BYTES_TEXT_MODELS = frozenset({"bytes", "str"})
 
 
 FIXTURE_BUNDLE_SPECS = (
@@ -454,6 +480,112 @@ QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
         "quantified-nested-group-alternation-branch-local-backreference-workflows",
     )
 )
+GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS = (
+    GeneratedQuantifiedBranchLocalParitySpec(
+        bundle=QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
+        fixture_name=(
+            "quantified_nested_group_alternation_branch_local_backreference_"
+            "workflows.py"
+        ),
+        expected_compile_case_ids=(
+            "quantified-nested-group-alternation-branch-local-numbered-"
+            "backreference-compile-metadata-str",
+            "quantified-nested-group-alternation-branch-local-named-"
+            "backreference-compile-metadata-str",
+            "quantified-nested-group-alternation-branch-local-numbered-"
+            "backreference-compile-metadata-bytes",
+            "quantified-nested-group-alternation-branch-local-named-"
+            "backreference-compile-metadata-bytes",
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a((b|c)+)\2d",
+                r"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
+                rb"a((b|c)+)\2d",
+                rb"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d",
+            }
+        ),
+        expected_text_models=STR_AND_BYTES_TEXT_MODELS,
+        candidate_lengths=range(5),
+        expected_candidate_count=484,
+        failure_prefix=(
+            "quantified nested-group alternation branch-local-backreference "
+            "generated parity drifted"
+        ),
+    ),
+)
+
+
+def _build_generated_quantified_branch_local_candidate_texts(
+    candidate_lengths: range,
+) -> tuple[str, ...]:
+    return tuple(
+        f"{prefix}a{''.join(body)}d{suffix}"
+        for length in candidate_lengths
+        for body in product(BODY_ATOMS, repeat=length)
+        for prefix, suffix in WRAPPER_PAIRS
+    )
+
+
+GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPEC_BY_MANIFEST_ID = {
+    spec.bundle.expected_manifest_id: spec
+    for spec in GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS
+}
+GENERATED_STR_BRANCH_LOCAL_CANDIDATE_TEXTS_BY_MANIFEST_ID = {
+    spec.bundle.expected_manifest_id: _build_generated_quantified_branch_local_candidate_texts(
+        spec.candidate_lengths
+    )
+    for spec in GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS
+}
+GENERATED_BYTES_BRANCH_LOCAL_CANDIDATE_TEXTS_BY_MANIFEST_ID = {
+    manifest_id: tuple(text.encode("ascii") for text in texts)
+    for manifest_id, texts in GENERATED_STR_BRANCH_LOCAL_CANDIDATE_TEXTS_BY_MANIFEST_ID.items()
+}
+GENERATED_QUANTIFIED_BRANCH_LOCAL_COMPILE_CASES = tuple(
+    case
+    for spec in GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS
+    for case in fixture_cases_for_operation((spec.bundle,), "compile")
+)
+
+
+def _generated_branch_local_candidate_texts(
+    spec: GeneratedQuantifiedBranchLocalParitySpec,
+    case: FixtureCase,
+) -> tuple[str | bytes, ...]:
+    if case.text_model == "bytes":
+        return GENERATED_BYTES_BRANCH_LOCAL_CANDIDATE_TEXTS_BY_MANIFEST_ID[
+            spec.bundle.expected_manifest_id
+        ]
+    return GENERATED_STR_BRANCH_LOCAL_CANDIDATE_TEXTS_BY_MANIFEST_ID[
+        spec.bundle.expected_manifest_id
+    ]
+
+
+def _record_generated_match_failure(
+    failures: list[str],
+    *,
+    label: str,
+    backend_name: str,
+    observed: object,
+    expected: re.Match[str] | re.Match[bytes] | None,
+) -> None:
+    try:
+        assert_match_result_parity(
+            backend_name,
+            observed,
+            expected,
+            check_regs=True,
+        )
+        if expected is None:
+            return
+
+        assert_match_convenience_api_parity(observed, expected)
+        assert_valid_match_group_access_parity(observed, expected)
+        assert_invalid_match_group_access_parity(observed, expected)
+    except AssertionError as exc:
+        failures.append(f"{label}: {exc}")
+
+
 NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
     published_fixture_bundle_by_manifest_id(
         FIXTURE_BUNDLES,
@@ -1130,6 +1262,30 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
 
 
+@pytest.mark.parametrize(
+    "spec",
+    GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS,
+    ids=lambda spec: spec.bundle.expected_manifest_id,
+)
+def test_generated_quantified_branch_local_compile_cases_stay_anchored_to_published_manifests(
+    spec: GeneratedQuantifiedBranchLocalParitySpec,
+) -> None:
+    compile_cases = fixture_cases_for_operation((spec.bundle,), "compile")
+
+    assert spec.bundle.manifest.path == FIXTURES_DIR / spec.fixture_name
+    assert tuple(case.case_id for case in compile_cases) == spec.expected_compile_case_ids
+    assert {case_pattern(case) for case in compile_cases} == spec.expected_patterns
+    assert {case.text_model for case in compile_cases} == spec.expected_text_models
+    assert (
+        len(
+            GENERATED_STR_BRANCH_LOCAL_CANDIDATE_TEXTS_BY_MANIFEST_ID[
+                spec.bundle.expected_manifest_id
+            ]
+        )
+        == spec.expected_candidate_count
+    )
+
+
 def test_branch_local_backreference_parity_suite_tracks_published_case_frontier() -> None:
     for bundle in FIXTURE_BUNDLES:
         assert_fixture_bundle_tracks_published_case_frontier(
@@ -1243,6 +1399,49 @@ def test_compile_metadata_matches_cpython(
         str_case_pattern(case),
         case.flags or 0,
     )
+
+
+@pytest.mark.parametrize(
+    "case",
+    GENERATED_QUANTIFIED_BRANCH_LOCAL_COMPILE_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_generated_quantified_branch_local_text_matrix_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    spec = GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPEC_BY_MANIFEST_ID[case.manifest_id]
+    backend_name, backend = regex_backend
+    pattern = case_pattern(case)
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+        case.flags or 0,
+    )
+
+    failures: list[str] = []
+    for text in _generated_branch_local_candidate_texts(spec, case):
+        for helper in HELPERS:
+            _record_generated_match_failure(
+                failures,
+                label=f"module.{helper}({pattern!r}, {text!r})",
+                backend_name=backend_name,
+                observed=getattr(backend, helper)(pattern, text),
+                expected=getattr(re, helper)(pattern, text),
+            )
+            _record_generated_match_failure(
+                failures,
+                label=f"pattern.{helper}({pattern!r}, {text!r})",
+                backend_name=backend_name,
+                observed=getattr(observed_pattern, helper)(text),
+                expected=getattr(expected_pattern, helper)(text),
+            )
+
+    failure_preview = "\n".join(failures[:FAILURE_PREVIEW_LIMIT])
+    if len(failures) > FAILURE_PREVIEW_LIMIT:
+        failure_preview += f"\n... {len(failures) - FAILURE_PREVIEW_LIMIT} more"
+    assert not failures, f"{spec.failure_prefix}:\n{failure_preview}"
 
 
 @pytest.mark.parametrize("case", WORKFLOW_CASES, ids=lambda case: case.case_id)

@@ -1,6 +1,6 @@
 # RBR-0618: Fold the detached generated quantified parity suite into its owning suites
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
 
@@ -80,3 +80,8 @@ Created: 2026-03-18
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_generated_quantified_parity_suite.py` passes (`46 passed in 0.81s`);
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py` passes (`1552 passed in 1.88s`); and
   - `bash -lc "! rg --files tests/python | rg 'test_generated_quantified_parity_suite\\.py$'"` currently fails exactly on this cleanup because the detached suite still exists.
+
+## Completion Notes
+- 2026-03-18: Folded the detached generated quantified text-matrix parity coverage into the quantified alternation, conditional group-exists, and branch-local-backreference owner suites without changing the candidate frontier or assertion flow.
+- Deleted `tests/python/test_generated_quantified_parity_suite.py` after moving its six generated slices onto the three owner-suite paths.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py` (`1552 passed in 1.92s`), `git diff --name-status -- tests/python/test_generated_quantified_parity_suite.py` (`D tests/python/test_generated_quantified_parity_suite.py`), and `bash -lc "! rg --files tests/python | rg 'test_generated_quantified_parity_suite\\.py$'"`.

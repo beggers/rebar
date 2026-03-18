@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass
+from itertools import product
 import re
 
 import pytest
 
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
+    FIXTURES_DIR,
     FixtureBundle,
     FixtureBundleSpec,
     assert_fixture_bundle_contract,
@@ -20,6 +22,7 @@ from tests.python.fixture_parity_support import (
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
     load_fixture_bundles,
+    published_fixture_bundle_by_manifest_id,
     str_case_pattern,
 )
 
@@ -63,6 +66,27 @@ class SupplementalMissCase:
     pattern: str
     helper: str
     text: str
+
+
+@dataclass(frozen=True)
+class GeneratedQuantifiedConditionalParitySpec:
+    bundle: FixtureBundle
+    fixture_name: str
+    expected_compile_case_ids: tuple[str, ...]
+    expected_patterns: frozenset[str]
+    branch_choices: tuple[str, ...]
+    expected_candidate_count: int
+    failure_prefix: str
+
+
+HELPERS = ("search", "match", "fullmatch")
+WRAPPER_PAIRS = (
+    ("", ""),
+    ("zz", ""),
+    ("", "zz"),
+    ("zz", "zz"),
+)
+FAILURE_PREVIEW_LIMIT = 20
 
 
 EXPECTED_OPERATION_HELPER_COUNTS = Counter(
@@ -398,6 +422,14 @@ PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
 MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
 PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
+QUANTIFIED_CONDITIONAL_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "conditional-group-exists-quantified-workflows",
+)
+QUANTIFIED_CONDITIONAL_ALTERNATION_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "conditional-group-exists-quantified-alternation-workflows",
+)
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
 BASE_MANIFEST_ID_SET = frozenset(BASE_MANIFEST_IDS)
 QUANTIFIED_MANIFEST_ID_SET = frozenset(QUANTIFIED_MANIFEST_IDS)
@@ -413,6 +445,100 @@ BASE_PATTERN_CASES = tuple(
 QUANTIFIED_PATTERN_CASES = tuple(
     case for case in PATTERN_CASES if case.manifest_id in QUANTIFIED_MANIFEST_ID_SET
 )
+GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS = (
+    GeneratedQuantifiedConditionalParitySpec(
+        bundle=QUANTIFIED_CONDITIONAL_BUNDLE,
+        fixture_name="conditional_group_exists_quantified_workflows.py",
+        expected_compile_case_ids=(
+            "conditional-group-exists-quantified-compile-metadata-str",
+            "named-conditional-group-exists-quantified-compile-metadata-str",
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)d|e){2}",
+                r"a(?P<word>b)?c(?(word)d|e){2}",
+            }
+        ),
+        branch_choices=("d", "e"),
+        expected_candidate_count=32,
+        failure_prefix="quantified conditional generated parity drifted",
+    ),
+    GeneratedQuantifiedConditionalParitySpec(
+        bundle=QUANTIFIED_CONDITIONAL_ALTERNATION_BUNDLE,
+        fixture_name="conditional_group_exists_quantified_alternation_workflows.py",
+        expected_compile_case_ids=(
+            "conditional-group-exists-quantified-alternation-compile-metadata-str",
+            "named-conditional-group-exists-quantified-alternation-compile-metadata-str",
+        ),
+        expected_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)(de|df)|(eg|eh)){2}",
+                r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}",
+            }
+        ),
+        branch_choices=("de", "df", "eg", "eh"),
+        expected_candidate_count=128,
+        failure_prefix="quantified conditional alternation generated parity drifted",
+    ),
+)
+
+
+def _build_generated_quantified_conditional_candidate_texts(
+    branch_choices: tuple[str, ...],
+) -> tuple[str, ...]:
+    cores = tuple(
+        ("abc" if present else "ac") + "".join(branches)
+        for present in (False, True)
+        for branches in product(branch_choices, repeat=2)
+    )
+    return tuple(
+        f"{wrapper_prefix}{core}{wrapper_suffix}"
+        for core in cores
+        for wrapper_prefix, wrapper_suffix in WRAPPER_PAIRS
+    )
+
+
+GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPEC_BY_MANIFEST_ID = {
+    spec.bundle.expected_manifest_id: spec
+    for spec in GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS
+}
+GENERATED_CONDITIONAL_CANDIDATE_TEXTS_BY_MANIFEST_ID = {
+    spec.bundle.expected_manifest_id: _build_generated_quantified_conditional_candidate_texts(
+        spec.branch_choices
+    )
+    for spec in GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS
+}
+GENERATED_QUANTIFIED_CONDITIONAL_COMPILE_CASES = tuple(
+    case
+    for spec in GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS
+    for case in fixture_cases_for_operation((spec.bundle,), "compile")
+)
+
+
+def _record_generated_match_failure(
+    failures: list[str],
+    *,
+    label: str,
+    backend_name: str,
+    observed: object,
+    expected: re.Match[str] | re.Match[bytes] | None,
+) -> None:
+    try:
+        assert_match_result_parity(
+            backend_name,
+            observed,
+            expected,
+            check_regs=True,
+        )
+        if expected is None:
+            return
+
+        assert_match_convenience_api_parity(observed, expected)
+        assert_valid_match_group_access_parity(observed, expected)
+        assert_invalid_match_group_access_parity(observed, expected)
+    except AssertionError as exc:
+        failures.append(f"{label}: {exc}")
+
 
 PATTERN_BOUNDS_MATCH_CASES = (
     BoundedPatternCase(
@@ -784,6 +910,30 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     )
 
 
+@pytest.mark.parametrize(
+    "spec",
+    GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS,
+    ids=lambda spec: spec.bundle.expected_manifest_id,
+)
+def test_generated_quantified_conditional_compile_cases_stay_anchored_to_published_manifests(
+    spec: GeneratedQuantifiedConditionalParitySpec,
+) -> None:
+    compile_cases = fixture_cases_for_operation((spec.bundle,), "compile")
+
+    assert spec.bundle.manifest.path == FIXTURES_DIR / spec.fixture_name
+    assert tuple(case.case_id for case in compile_cases) == spec.expected_compile_case_ids
+    assert {str_case_pattern(case) for case in compile_cases} == spec.expected_patterns
+    assert {case.text_model for case in compile_cases} == {"str"}
+    assert (
+        len(
+            GENERATED_CONDITIONAL_CANDIDATE_TEXTS_BY_MANIFEST_ID[
+                spec.bundle.expected_manifest_id
+            ]
+        )
+        == spec.expected_candidate_count
+    )
+
+
 def test_pattern_bounds_cases_stay_anchored_to_published_conditional_patterns() -> None:
     assert str_case_pattern(
         CASES_BY_ID["optional-group-conditional-compile-metadata-str"]
@@ -831,6 +981,51 @@ def test_compile_metadata_matches_cpython(
         str_case_pattern(case),
         case.flags or 0,
     )
+
+
+@pytest.mark.parametrize(
+    "case",
+    GENERATED_QUANTIFIED_CONDITIONAL_COMPILE_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_generated_quantified_conditional_text_matrix_matches_cpython(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    spec = GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPEC_BY_MANIFEST_ID[case.manifest_id]
+    backend_name, backend = regex_backend
+    pattern = str_case_pattern(case)
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+        case.flags or 0,
+    )
+
+    failures: list[str] = []
+    for text in GENERATED_CONDITIONAL_CANDIDATE_TEXTS_BY_MANIFEST_ID[
+        spec.bundle.expected_manifest_id
+    ]:
+        for helper in HELPERS:
+            _record_generated_match_failure(
+                failures,
+                label=f"module.{helper}({pattern!r}, {text!r})",
+                backend_name=backend_name,
+                observed=getattr(backend, helper)(pattern, text),
+                expected=getattr(re, helper)(pattern, text),
+            )
+            _record_generated_match_failure(
+                failures,
+                label=f"pattern.{helper}({pattern!r}, {text!r})",
+                backend_name=backend_name,
+                observed=getattr(observed_pattern, helper)(text),
+                expected=getattr(expected_pattern, helper)(text),
+            )
+
+    failure_preview = "\n".join(failures[:FAILURE_PREVIEW_LIMIT])
+    if len(failures) > FAILURE_PREVIEW_LIMIT:
+        failure_preview += f"\n... {len(failures) - FAILURE_PREVIEW_LIMIT} more"
+    assert not failures, f"{spec.failure_prefix}:\n{failure_preview}"
 
 
 @pytest.mark.parametrize("case", BASE_MODULE_CASES, ids=lambda case: case.case_id)
