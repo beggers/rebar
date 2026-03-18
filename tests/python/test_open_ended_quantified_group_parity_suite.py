@@ -22,6 +22,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     load_fixture_bundles,
+    partition_direct_bytes_follow_on_case_buckets,
     published_fixture_bundle_by_manifest_id,
 )
 
@@ -364,34 +365,17 @@ BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
         fullmatch_misses=(b"abcd",),
     ),
 )
-DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS = frozenset(
-    {
-        "broader-range-open-ended-quantified-group-alternation-workflows",
-        "open-ended-quantified-group-alternation-backtracking-heavy-workflows",
-        "broader-range-open-ended-quantified-group-alternation-conditional-workflows",
-        "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows",
-    }
+DIRECT_BYTES_FOLLOW_ON_BUNDLES = (
+    BROADER_RANGE_OPEN_ENDED_ALTERNATION_BUNDLE,
+    OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
+    BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BUNDLE,
+    BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
 )
 
 
-def _uses_direct_bytes_follow_on(case: FixtureCase) -> bool:
-    return case.manifest_id in DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS and case.text_model == "bytes"
-
-
-COMPILE_CASES = tuple(
-    case
-    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
-    if not _uses_direct_bytes_follow_on(case)
-)
-MODULE_CASES = tuple(
-    case
-    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
-    if not _uses_direct_bytes_follow_on(case)
-)
-PATTERN_CASES = tuple(
-    case
-    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
-    if not _uses_direct_bytes_follow_on(case)
+COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_case_buckets(
+    FIXTURE_BUNDLES,
+    DIRECT_BYTES_FOLLOW_ON_BUNDLES,
 )
 
 

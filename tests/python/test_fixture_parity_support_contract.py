@@ -57,6 +57,7 @@ from tests.python.fixture_parity_support import (
     load_published_fixture_bundles,
     manifest_case_ids,
     ordered_manifest_cases_from_bundles,
+    partition_direct_bytes_follow_on_case_buckets,
     published_fixture_bundle_by_manifest_id,
     published_fixture_paths_from_bundles,
     str_case_pattern,
@@ -708,6 +709,66 @@ def test_assert_direct_bytes_follow_on_bundle_routing_rejects_missing_str_rows()
             module_cases=module_cases,
             pattern_cases=pattern_cases,
         )
+
+
+def test_partition_direct_bytes_follow_on_case_buckets_drops_only_follow_on_bytes_rows(
+) -> None:
+    fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
+    (bundle,) = load_published_fixture_bundles((fixture_path,))
+
+    compile_cases, module_cases, pattern_cases = (
+        partition_direct_bytes_follow_on_case_buckets((bundle,), (bundle,))
+    )
+
+    for operation, bucket_cases in (
+        ("compile", compile_cases),
+        ("module_call", module_cases),
+        ("pattern_call", pattern_cases),
+    ):
+        original_cases = fixture_cases_for_operation((bundle,), operation)
+        assert {case.text_model for case in original_cases} == {"bytes", "str"}
+        assert {case.text_model for case in bucket_cases} == {"str"}
+        assert {case.case_id for case in bucket_cases} == {
+            case.case_id
+            for case in original_cases
+            if case.text_model == "str"
+        }
+
+
+def test_partition_direct_bytes_follow_on_case_buckets_preserves_unrelated_bytes_rows(
+) -> None:
+    follow_on_fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
+    preserved_fixture_path = (
+        FIXTURES_DIR
+        / "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py"
+    )
+    follow_on_bundle, preserved_bundle = load_published_fixture_bundles(
+        (follow_on_fixture_path, preserved_fixture_path)
+    )
+
+    compile_cases, module_cases, pattern_cases = (
+        partition_direct_bytes_follow_on_case_buckets(
+            (follow_on_bundle, preserved_bundle),
+            (follow_on_bundle,),
+        )
+    )
+
+    for operation, bucket_cases in (
+        ("compile", compile_cases),
+        ("module_call", module_cases),
+        ("pattern_call", pattern_cases),
+    ):
+        bucket_case_ids = {case.case_id for case in bucket_cases}
+        assert {
+            case.case_id
+            for case in preserved_bundle.cases
+            if case.operation == operation and case.text_model == "bytes"
+        }.issubset(bucket_case_ids)
+        assert {
+            case.case_id
+            for case in follow_on_bundle.cases
+            if case.operation == operation and case.text_model == "bytes"
+        }.isdisjoint(bucket_case_ids)
 
 
 def test_published_fixture_bundle_lookup_by_manifest_id_supports_success_and_clear_failures(

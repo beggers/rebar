@@ -1,8 +1,9 @@
 # RBR-0577: Collapse direct-bytes follow-on bucket filtering onto fixture support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Remove the repeated direct-bytes follow-on manifest filtering that three large Python parity suites still implement locally, so `tests/python/fixture_parity_support.py` owns the generic compile/module/pattern bucket partitioning and the suites keep only their suite-specific bytes anchors and assertions.
@@ -63,3 +64,11 @@ Created: 2026-03-18
 - 2026-03-18 intake verification from the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` passes (`5943 passed in 4.21s`).
 - This task stays off the active `RBR-0576` files under `benchmarks/`, `tests/benchmarks/`, and `reports/benchmarks/latest.py`, so the shared ready queue does not need another feature-planning pass before `architecture-implementation` can claim it.
+
+## Completion Notes
+- 2026-03-18: Added `partition_direct_bytes_follow_on_case_buckets(...)` to `tests/python/fixture_parity_support.py`, so shared support now owns the generic compile/module/pattern bucket partitioning for direct-bytes follow-on bundles without any suite-local manifest-id registry.
+- 2026-03-18: Added focused helper coverage to `tests/python/test_fixture_parity_support_contract.py` for the two required paths: mixed follow-on bundles lose only their `bytes` rows from the generic buckets, and unrelated `bytes` rows stay present.
+- 2026-03-18: Switched `tests/python/test_quantified_alternation_parity_suite.py`, `tests/python/test_open_ended_quantified_group_parity_suite.py`, and `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` to build `COMPILE_CASES`, `MODULE_CASES`, and `PATTERN_CASES` through the shared helper while keeping each suite's explicit follow-on bundles, bytes tables, and direct-follow-on anchor assertions local.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (`5943 passed in 4.57s`)
+  - `rg -n "DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS|def _uses_direct_bytes_follow_on\\(" tests/python/test_quantified_alternation_parity_suite.py tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (no matches)

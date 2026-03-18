@@ -24,6 +24,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     load_fixture_bundles,
+    partition_direct_bytes_follow_on_case_buckets,
     published_fixture_bundle_by_manifest_id,
 )
 BACKTRACKING_BRANCH_TEXT = {
@@ -455,13 +456,6 @@ QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES = (
         fullmatch_misses=(b"ad", b"abed"),
     ),
 )
-DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS = frozenset(
-    {
-        "quantified-alternation-workflows",
-        "quantified-alternation-broader-range-workflows",
-        "quantified-alternation-open-ended-workflows",
-    }
-)
 DIRECT_BYTES_FOLLOW_ON_SPECS = (
     (
         QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE,
@@ -481,29 +475,17 @@ DIRECT_BYTES_FOLLOW_ON_SPEC_IDS = (
     "broader-range",
     "open-ended",
 )
-
-
-def _uses_direct_bytes_follow_on(case: FixtureCase) -> bool:
-    return case.manifest_id in DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS and case.text_model == "bytes"
+DIRECT_BYTES_FOLLOW_ON_BUNDLES = tuple(
+    bundle for bundle, _ in DIRECT_BYTES_FOLLOW_ON_SPECS
+)
 
 
 # Keep the shared manifest contract honest, but route the published bytes slice
 # through one explicit follow-on anchor so the generic shared buckets stay
 # focused on the currently supported `str` cases.
-COMPILE_CASES = tuple(
-    case
-    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
-    if not _uses_direct_bytes_follow_on(case)
-)
-MODULE_CASES = tuple(
-    case
-    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
-    if not _uses_direct_bytes_follow_on(case)
-)
-PATTERN_CASES = tuple(
-    case
-    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
-    if not _uses_direct_bytes_follow_on(case)
+COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_case_buckets(
+    FIXTURE_BUNDLES,
+    DIRECT_BYTES_FOLLOW_ON_BUNDLES,
 )
 SELECTED_CASE_IDS_BY_MANIFEST = {
     bundle.expected_manifest_id: tuple(case.case_id for case in bundle.cases)
@@ -776,12 +758,6 @@ def test_quantified_alternation_direct_test_case_id_buckets_cover_selected_front
         selected_case_ids=QUANTIFIED_ALTERNATION_SELECTED_CASE_IDS,
         coverage_label="quantified alternation direct-test case-id buckets",
     )
-
-
-def test_direct_bytes_follow_on_manifest_specs_cover_every_routed_manifest() -> None:
-    assert {
-        bundle.manifest.manifest_id for bundle, _ in DIRECT_BYTES_FOLLOW_ON_SPECS
-    } == DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS
 
 
 @pytest.mark.parametrize(

@@ -282,6 +282,30 @@ def fixture_cases_for_operation(
     )
 
 
+def partition_direct_bytes_follow_on_case_buckets(
+    bundles: Iterable[FixtureBundle],
+    direct_bytes_follow_on_bundles: Iterable[FixtureBundle],
+) -> tuple[tuple[FixtureCase, ...], tuple[FixtureCase, ...], tuple[FixtureCase, ...]]:
+    loaded_bundles = tuple(bundles)
+    direct_bytes_follow_on_manifest_ids = frozenset(
+        bundle.manifest.manifest_id for bundle in direct_bytes_follow_on_bundles
+    )
+
+    def _partition_operation(operation: str) -> tuple[FixtureCase, ...]:
+        return tuple(
+            case
+            for case in fixture_cases_for_operation(loaded_bundles, operation)
+            if case.text_model != "bytes"
+            or case.manifest_id not in direct_bytes_follow_on_manifest_ids
+        )
+
+    return (
+        _partition_operation("compile"),
+        _partition_operation("module_call"),
+        _partition_operation("pattern_call"),
+    )
+
+
 def load_published_fixture_bundles(
     fixture_paths: Iterable[pathlib.Path],
 ) -> tuple[FixtureBundle, ...]:

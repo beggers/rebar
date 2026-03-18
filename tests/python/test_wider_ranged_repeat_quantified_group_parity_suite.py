@@ -22,6 +22,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     load_fixture_bundles,
+    partition_direct_bytes_follow_on_case_buckets,
 )
 BACKTRACKING_BRANCH_TEXT = {
     "short": "bc",
@@ -371,15 +372,6 @@ NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BYTES_CASES = (
         fullmatch_misses=(b"abccbd", b"abcbcbcbcbcd"),
     ),
 )
-DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS = frozenset(
-    {
-        "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows",
-        "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
-        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-workflows",
-        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows",
-        "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
-    }
-)
 DIRECT_BYTES_FOLLOW_ON_SPECS = (
     (
         BROADER_RANGE_CONDITIONAL_BUNDLE,
@@ -409,29 +401,17 @@ DIRECT_BYTES_FOLLOW_ON_SPEC_IDS = (
     "nested-broader-range-conditional",
     "nested-broader-range-backtracking-heavy",
 )
-
-
-def _uses_direct_bytes_follow_on(case: FixtureCase) -> bool:
-    return case.manifest_id in DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS and case.text_model == "bytes"
+DIRECT_BYTES_FOLLOW_ON_BUNDLES = tuple(
+    bundle for bundle, _ in DIRECT_BYTES_FOLLOW_ON_SPECS
+)
 
 
 # Keep the shared manifest contract honest, but route the published bytes slices
 # through explicit supplemental parity anchors so the direct bytes contracts
 # stay covered without duplicating the shared manifest rows in this suite.
-COMPILE_CASES = tuple(
-    case
-    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
-    if not _uses_direct_bytes_follow_on(case)
-)
-MODULE_CASES = tuple(
-    case
-    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
-    if not _uses_direct_bytes_follow_on(case)
-)
-PATTERN_CASES = tuple(
-    case
-    for case in fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")
-    if not _uses_direct_bytes_follow_on(case)
+COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_case_buckets(
+    FIXTURE_BUNDLES,
+    DIRECT_BYTES_FOLLOW_ON_BUNDLES,
 )
 
 
@@ -602,12 +582,6 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
         bundle,
         pattern_extractor=case_pattern,
     )
-
-
-def test_direct_bytes_follow_on_manifest_specs_cover_every_routed_manifest() -> None:
-    assert {
-        bundle.manifest.manifest_id for bundle, _ in DIRECT_BYTES_FOLLOW_ON_SPECS
-    } == DIRECT_BYTES_FOLLOW_ON_MANIFEST_IDS
 
 
 @pytest.mark.parametrize(
