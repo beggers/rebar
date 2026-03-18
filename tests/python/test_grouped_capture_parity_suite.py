@@ -21,6 +21,7 @@ from tests.python.fixture_parity_support import (
     fixture_cases_from_bundles,
     load_fixture_bundles,
     ordered_manifest_cases_from_bundles,
+    published_fixture_bundle_by_manifest_id,
     str_case_pattern,
 )
 GROUPED_MATCH_BUNDLE_CASE_IDS = (
@@ -314,10 +315,9 @@ SELECTED_CASE_BUNDLE_SPECS = (
     ),
 )
 FIXTURE_BUNDLES = load_fixture_bundles(SELECTED_CASE_BUNDLE_SPECS)
-GROUPED_SEGMENT_FIXTURE_BUNDLE = next(
-    bundle
-    for bundle in FIXTURE_BUNDLES
-    if bundle.expected_manifest_id == "grouped-segment-workflows"
+GROUPED_SEGMENT_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "grouped-segment-workflows",
 )
 
 

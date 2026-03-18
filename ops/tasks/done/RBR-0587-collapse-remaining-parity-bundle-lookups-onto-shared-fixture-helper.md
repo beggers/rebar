@@ -1,8 +1,9 @@
 # RBR-0587: Collapse remaining parity bundle lookups onto shared fixture helper
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Delete the last parity-suite bundle-selection scans and the one suite-local manifest-id lookup table so the remaining parity bundle routing consistently goes through `tests/python/fixture_parity_support.py::published_fixture_bundle_by_manifest_id(...)`.
@@ -112,3 +113,10 @@ Created: 2026-03-18
     - `tests/python/test_grouped_capture_parity_suite.py:still-local:if bundle.expected_manifest_id == "grouped-segment-workflows"`
     - `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py:missing:published_fixture_bundle_by_manifest_id`
     - `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py:still-local:FIXTURE_BUNDLES_BY_MANIFEST_ID = {`
+
+## Completion Notes
+- 2026-03-18: Updated `tests/python/test_public_surface_parity_suite.py`, `tests/python/test_bounded_wildcard_parity_suite.py`, `tests/python/test_grouped_capture_parity_suite.py`, and `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` to import and use `published_fixture_bundle_by_manifest_id(...)` for the remaining manifest-id bundle selection points instead of suite-local scans or a local manifest-id dictionary.
+- 2026-03-18: Kept the existing bundle names, selected case ids, delegated literal-flag routing, grouped-segment bundle ownership, and `BACKTRACKING_TRACE_BUNDLES` membership/order intact while deleting the remaining local lookup drift.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_public_surface_parity_suite.py tests/python/test_bounded_wildcard_parity_suite.py tests/python/test_grouped_capture_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (`1749 passed in 1.36s`)
+  - `PYTHONPATH=python python3 - <<'PY' ... PY` task probe (`ok`)

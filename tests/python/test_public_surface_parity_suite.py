@@ -23,6 +23,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     load_fixture_bundles,
+    published_fixture_bundle_by_manifest_id,
 )
 
 
@@ -112,18 +113,17 @@ FIXTURE_BUNDLE_SPECS = (
     ),
 )
 FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
-PUBLIC_API_BUNDLE = next(
-    bundle for bundle in FIXTURE_BUNDLES if bundle.expected_manifest_id == "public-api-surface"
+PUBLIC_API_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "public-api-surface",
 )
-EXPORTED_SYMBOL_BUNDLE = next(
-    bundle
-    for bundle in FIXTURE_BUNDLES
-    if bundle.expected_manifest_id == "exported-symbol-surface"
+EXPORTED_SYMBOL_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "exported-symbol-surface",
 )
-PATTERN_OBJECT_BUNDLE = next(
-    bundle
-    for bundle in FIXTURE_BUNDLES
-    if bundle.expected_manifest_id == "pattern-object-surface"
+PATTERN_OBJECT_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "pattern-object-surface",
 )
 
 PUBLIC_HELPER_CASES = fixture_cases_for_operation((PUBLIC_API_BUNDLE,), "module_has_attr")

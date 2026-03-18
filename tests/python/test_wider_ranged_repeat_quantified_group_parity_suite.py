@@ -23,6 +23,7 @@ from tests.python.fixture_parity_support import (
     fixture_cases_for_operation,
     load_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
+    published_fixture_bundle_by_manifest_id,
 )
 BACKTRACKING_BRANCH_TEXT = {
     "short": "bc",
@@ -264,24 +265,26 @@ FIXTURE_BUNDLE_SPECS = (
     ),
 )
 FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
-FIXTURE_BUNDLES_BY_MANIFEST_ID = {
-    bundle.manifest.manifest_id: bundle for bundle in FIXTURE_BUNDLES
-}
-NESTED_BROADER_RANGE_ALTERNATION_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-workflows"
-]
-NESTED_BROADER_RANGE_CONDITIONAL_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
-]
-BROADER_RANGE_CONDITIONAL_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
-]
-BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
-]
-NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE = FIXTURE_BUNDLES_BY_MANIFEST_ID[
-    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows"
-]
+NESTED_BROADER_RANGE_ALTERNATION_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-workflows",
+)
+NESTED_BROADER_RANGE_CONDITIONAL_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows",
+)
+BROADER_RANGE_CONDITIONAL_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows",
+)
+BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+)
+NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-workflows",
+)
 BACKTRACKING_TRACE_BUNDLES = (
     BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE,
     NESTED_BROADER_RANGE_BACKTRACKING_HEAVY_BUNDLE,

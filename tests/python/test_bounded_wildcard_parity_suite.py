@@ -20,6 +20,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_from_bundles,
     load_fixture_bundles,
+    published_fixture_bundle_by_manifest_id,
 )
 
 
@@ -86,6 +87,10 @@ SELECTED_CASE_BUNDLE_SPECS = (
     ),
 )
 FIXTURE_BUNDLES = load_fixture_bundles(SELECTED_CASE_BUNDLE_SPECS)
+LITERAL_FLAG_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "literal-flag-workflows",
+)
 PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
 MODULE_SEARCH_CASES = tuple(case for case in PUBLISHED_CASES if case.helper == "search")
 MODULE_FINDALL_CASES = tuple(case for case in PUBLISHED_CASES if case.helper == "findall")
@@ -161,12 +166,7 @@ def _call_pattern_helper(pattern: object, case: PatternCase) -> object:
 
 
 def test_bounded_wildcard_suite_absorbs_delegated_literal_flag_case() -> None:
-    delegated_case_ids = tuple(
-        case.case_id
-        for bundle in FIXTURE_BUNDLES
-        if bundle.manifest.manifest_id == "literal-flag-workflows"
-        for case in bundle.cases
-    )
+    delegated_case_ids = tuple(case.case_id for case in LITERAL_FLAG_BUNDLE.cases)
 
     assert delegated_case_ids == LITERAL_FLAG_DELEGATED_CASE_IDS
 
