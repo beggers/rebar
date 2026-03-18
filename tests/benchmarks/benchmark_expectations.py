@@ -26,6 +26,18 @@ from tests.harness_cli_test_support import run_harness_scorecard
 
 BASE_SOURCE_TREE_MANIFEST_IDS = frozenset({"compile-matrix", "regression-matrix"})
 
+ZERO_GAP_PROMOTION_MANIFEST_IDS = (
+    "grouped-named-boundary",
+    "numbered-backreference-boundary",
+    "nested-group-boundary",
+    "optional-group-boundary",
+)
+
+COUNTED_REPEAT_FULLY_MEASURED_MANIFEST_IDS = (
+    "exact-repeat-quantified-group-boundary",
+    "ranged-repeat-quantified-group-boundary",
+)
+
 ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES = (
     (
         "exact-repeat-quantified-group-boundary",
@@ -89,6 +101,29 @@ _ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES_BY_ID = {
         expected_total_workload_count,
     ) in ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES
 }
+
+
+def zero_gap_fully_measured_manifest_case(
+    manifest_id: str,
+) -> tuple[str, tuple[str, ...], int, int | None]:
+    try:
+        (
+            expected_workload_ids,
+            expected_measured_workload_count,
+            expected_total_workload_count,
+        ) = _ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES_BY_ID[manifest_id]
+    except KeyError as exc:
+        raise AssertionError(
+            f"unknown zero-gap fully measured manifest {manifest_id!r}"
+        ) from exc
+
+    return (
+        manifest_id,
+        expected_workload_ids,
+        expected_measured_workload_count,
+        expected_total_workload_count,
+    )
+
 
 ZERO_GAP_BYTES_CASES = (
     (

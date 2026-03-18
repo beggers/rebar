@@ -1,8 +1,9 @@
 # RBR-0585: Collapse remaining source-tree zero-gap manifest lookups onto shared benchmark support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Remove the last local zero-gap manifest-selection literals and tuple-indexed fully measured case lookups from the two source-tree benchmark test modules so `tests/benchmarks/benchmark_expectations.py` owns the shared zero-gap manifest ids and case lookup path.
@@ -122,3 +123,10 @@ Created: 2026-03-18
     - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py:still-literal:ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES[:2]`
     - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py:still-literal:if case[0] == "quantified-alternation-boundary"`
 - This task stays off the active `RBR-0584` feature files under `tests/conformance/fixtures/quantified_alternation_backtracking_heavy_workflows.py`, `tests/python/test_quantified_alternation_parity_suite.py`, `tests/conformance/correctness_expectations.py`, and `reports/correctness/latest.py`, so `architecture-implementation` can claim it without shared-file contention against the current feature queue front.
+
+## Completion Notes
+- 2026-03-18: Added `ZERO_GAP_PROMOTION_MANIFEST_IDS`, `COUNTED_REPEAT_FULLY_MEASURED_MANIFEST_IDS`, and `zero_gap_fully_measured_manifest_case(...)` to `tests/benchmarks/benchmark_expectations.py`, keeping the shared zero-gap manifest registries in one support module and routing helper lookups through `_ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES_BY_ID`.
+- 2026-03-18: Updated `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to import the shared counted-repeat manifest ids and helper, remove the remaining `ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES[:2]` slices and quantified-alternation `next(... if case[0] == ...)` scans, and delete the combined-suite local `ZERO_GAP_PROMOTION_MANIFEST_IDS` tuple.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`31 passed, 965 subtests passed in 22.74s`)
+  - `PYTHONPATH=python python3 - <<'PY' ... PY` task probe (`ok`)

@@ -8,10 +8,10 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 
 from tests.benchmarks.benchmark_expectations import (
+    COUNTED_REPEAT_FULLY_MEASURED_MANIFEST_IDS,
     SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS,
     SOURCE_TREE_SCORECARD_EXPECTATIONS,
     ZERO_GAP_BYTES_CASES,
-    ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES,
     SourceTreeScorecardCase,
     relative_manifest_path,
     run_source_tree_benchmark_scorecard,
@@ -20,6 +20,7 @@ from tests.benchmarks.benchmark_expectations import (
     source_tree_combined_slice_expectations,
     source_tree_scorecard_case,
     source_tree_scorecard_case_ids,
+    zero_gap_fully_measured_manifest_case,
 )
 from tests.report_assertions import (
     assert_benchmark_manifest_contract,
@@ -235,10 +236,8 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
             expected_workload_ids,
             expected_measured_workload_count,
             expected_total_workload_count,
-        ) = next(
-            case
-            for case in ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES
-            if case[0] == "quantified-alternation-boundary"
+        ) = zero_gap_fully_measured_manifest_case(
+            "quantified-alternation-boundary"
         )
         manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
         self.assertIsNone(manifest_definition.known_gap_workload_ids)
@@ -302,9 +301,10 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
     def test_combined_cases_treat_counted_repeat_manifest_pair_as_fully_measured(
         self,
     ) -> None:
-        for manifest_id, expected_workload_ids, _, _ in (
-            ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES[:2]
-        ):
+        for manifest_id in COUNTED_REPEAT_FULLY_MEASURED_MANIFEST_IDS:
+            _, expected_workload_ids, _, _ = (
+                zero_gap_fully_measured_manifest_case(manifest_id)
+            )
             with self.subTest(manifest_id=manifest_id):
                 case = source_tree_combined_case(manifest_id)
                 self.assertEqual(case.manifest_expectation.known_gap_count, 0)
