@@ -25,11 +25,11 @@ from typing import Any, Callable
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYTHON_SOURCE = REPO_ROOT / "python"
 
-from rebar_harness.descriptor_values import materialize_descriptor_value
 from rebar_harness.scorecard_io import (
     build_cpython_baseline,
     build_scorecard_report_descriptor,
     load_python_dict_attribute,
+    materialize_descriptor_value,
 )
 
 
