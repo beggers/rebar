@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 import pathlib
-import platform
-import sys
 from typing import Any
 
 from rebar_harness.benchmarks import BenchmarkManifest, Workload, workload_to_payload
+from rebar_harness.scorecard_io import build_cpython_baseline
 
 _KNOWN_GAP_STATUSES = {"known-gap", "unimplemented"}
 
@@ -86,23 +85,12 @@ def _assert_cpython_baseline_contract(
     *,
     expected_re_module: str,
 ) -> None:
-    testcase.assertEqual(
-        baseline["python_implementation"],
-        platform.python_implementation(),
-    )
-    testcase.assertEqual(baseline["python_version"], platform.python_version())
-    testcase.assertEqual(baseline["python_version_family"], "3.12.x")
-    testcase.assertEqual(
-        baseline["python_build"],
-        {
-            "name": platform.python_build()[0],
-            "date": platform.python_build()[1],
-        },
-    )
-    testcase.assertEqual(baseline["python_compiler"], platform.python_compiler())
-    testcase.assertEqual(baseline["platform"], platform.platform())
-    testcase.assertEqual(baseline["executable"], sys.executable)
-    testcase.assertEqual(baseline["re_module"], expected_re_module)
+    expected_baseline = {
+        **build_cpython_baseline(version_family="3.12.x"),
+        "re_module": expected_re_module,
+    }
+    for key, expected_value in expected_baseline.items():
+        testcase.assertEqual(baseline[key], expected_value)
 
 
 def _correctness_cases_for_suite(
