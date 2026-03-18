@@ -1,6 +1,6 @@
 # RBR-0605: Catch the quantified nested-group alternation branch-local-backreference bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
 
@@ -46,3 +46,9 @@ Created: 2026-03-18
   - `reports/benchmarks/latest.py` currently publishes `nested-group-alternation-boundary` at `22` total workloads / `22` measured workloads / `0` known gaps and the combined source-tree report at `704` / `704` / `0`; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes patterns at `rebar.compile(...)`, so this benchmark follow-on stays sequenced behind `RBR-0603` until parity lands.
 - No further quantified nested-group branch-local-backreference bytes family should be queued ahead of this benchmark catch-up while the mixed `str`/`bytes` slice is still missing these source-tree benchmark mirrors.
+
+## Completion Note
+- 2026-03-18: Added the three bounded bytes mirrors on the existing `nested-group-alternation-boundary` manifest in `benchmarks/workloads/nested_group_alternation_boundary.py` for `rb"a((b|c)+)\\2d"` through `module.search(..., b"zzabbdzz")`, `rb"a(?P<outer>(?P<inner>b|c)+)(?P=inner)d"` through `module.compile(...)`, and `Pattern.fullmatch(b"abccd")`.
+- Widened the shared `quantified-branch-local-backreference` slice in `tests/benchmarks/benchmark_expectations.py` so the existing slice-derived zero-gap representative path now treats the three new bytes rows as measured without adding a manifest-local override or a bytes-only benchmark family.
+- Republished the tracked benchmark scorecard in `reports/benchmarks/latest.py`; the tracked artifact now shows `nested-group-alternation-boundary` at `25` total / `25` measured / `0` known gaps and the combined source-tree report at `707` total / `707` measured / `0` known gaps, with all three new bytes workload rows recorded as `implementation_timing.status == "measured"`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py -k quantified-nested-group-alternation-branch-local-backreference`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_alternation_boundary.py --report .rebar/tmp/rbr-0605-quantified-nested-group-alternation-branch-local-backreference-bytes-benchmarks.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.

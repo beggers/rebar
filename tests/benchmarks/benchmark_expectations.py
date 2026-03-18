@@ -1044,8 +1044,11 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
         excluded_syntax_features=("counted-repeats",),
         expected_workload_ids=(
             "module-search-numbered-quantified-nested-group-branch-local-backreference-lower-bound-b-branch-warm-str",
+            "module-search-numbered-quantified-nested-group-branch-local-backreference-lower-bound-b-branch-warm-bytes",
             "module-compile-named-quantified-nested-group-branch-local-backreference-warm-str",
+            "module-compile-named-quantified-nested-group-branch-local-backreference-warm-bytes",
             "pattern-fullmatch-named-quantified-nested-group-branch-local-backreference-repeated-mixed-purged-str",
+            "pattern-fullmatch-named-quantified-nested-group-branch-local-backreference-repeated-mixed-purged-bytes",
         ),
         expected_patterns={
             r"a((b|c)+)\2d",
