@@ -68,6 +68,48 @@ ADDITIONAL_PUBLIC_HELPER_NAMES = (
     pytest.param("template", id="template"),
     pytest.param("escape", id="escape"),
 )
+PRIMARY_FLAG_EXPORTS = (
+    "NOFLAG",
+    "ASCII",
+    "A",
+    "IGNORECASE",
+    "I",
+    "LOCALE",
+    "L",
+    "MULTILINE",
+    "M",
+    "DOTALL",
+    "S",
+    "VERBOSE",
+    "X",
+    "UNICODE",
+    "U",
+    "DEBUG",
+    "TEMPLATE",
+    "T",
+)
+FLAG_ALIAS_PAIRS = (
+    ("A", "ASCII"),
+    ("I", "IGNORECASE"),
+    ("L", "LOCALE"),
+    ("M", "MULTILINE"),
+    ("S", "DOTALL"),
+    ("X", "VERBOSE"),
+    ("U", "UNICODE"),
+    ("T", "TEMPLATE"),
+)
+NON_INSTANTIABLE_EXPORTS = (
+    pytest.param(
+        "Pattern",
+        "cannot create 're.Pattern' instances",
+        id="Pattern",
+    ),
+    pytest.param(
+        "Match",
+        "cannot create 're.Match' instances",
+        id="Match",
+    ),
+)
 
 # These manifests include helper-presence and exported-attribute rows that do not
 # have a regex pattern payload, so the contract check anchors on stable case ids.
@@ -382,3 +424,51 @@ def test_pattern_object_calls_match_cpython(
     assert expected is not None
     assert_match_result_parity(backend_name, observed, expected, check_regs=True)
     assert_match_convenience_api_parity(observed, expected)
+
+
+def test_public_surface_exports_cover_cpython_contract() -> None:
+    assert set(re.__all__).issubset(set(rebar.__all__))
+
+
+def test_public_surface_exported_metadata_matches_source_package_contract() -> None:
+    assert rebar.RegexFlag is rebar.ASCII.__class__
+    assert rebar.error is re.error
+    assert isinstance(rebar.Pattern, type)
+    assert isinstance(rebar.Match, type)
+    assert rebar.RegexFlag.__module__ == "re"
+    assert rebar.Pattern.__module__ == "re"
+    assert rebar.Match.__module__ == "re"
+
+
+def test_public_surface_primary_flag_exports_match_cpython_values_and_aliases() -> None:
+    for name in PRIMARY_FLAG_EXPORTS:
+        assert hasattr(rebar, name)
+        assert int(getattr(rebar, name)) == int(getattr(re, name))
+
+    for short_name, long_name in FLAG_ALIAS_PAIRS:
+        assert getattr(rebar, short_name) is getattr(rebar, long_name)
+
+
+def test_public_surface_regexflag_members_match_cpython() -> None:
+    assert {member.name: int(member) for member in rebar.RegexFlag} == {
+        member.name: int(member) for member in re.RegexFlag
+    }
+
+
+@pytest.mark.parametrize(
+    ("constructor_name", "expected_message"),
+    NON_INSTANTIABLE_EXPORTS,
+)
+def test_public_surface_exported_type_constructors_stay_non_instantiable(
+    constructor_name: str,
+    expected_message: str,
+) -> None:
+    with pytest.raises(TypeError, match=re.escape(expected_message)):
+        getattr(rebar, constructor_name)()
+
+
+def test_public_surface_template_placeholder_stays_loud() -> None:
+    with pytest.raises(NotImplementedError) as raised:
+        rebar.template("abc")
+
+    assert "rebar.template() is a scaffold placeholder" in str(raised.value)

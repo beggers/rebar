@@ -11,6 +11,8 @@ import textwrap
 
 import pytest
 
+import rebar
+
 from rebar_harness import benchmarks
 
 
@@ -121,6 +123,20 @@ PROBE = textwrap.dedent(
     print(json.dumps(result))
     """
 )
+
+
+def test_source_tree_shim_metadata_contract() -> None:
+    assert rebar.TARGET_CPYTHON_SERIES == "3.12.x"
+    assert rebar.SCAFFOLD_STATUS == "scaffold-only"
+    assert rebar.NATIVE_MODULE_NAME == "rebar._rebar"
+    assert isinstance(rebar.native_module_loaded(), bool)
+
+    if rebar.native_module_loaded():
+        assert rebar.native_scaffold_status() == "scaffold-only"
+        assert rebar.native_target_cpython_series() == "3.12.x"
+    else:
+        assert rebar.native_scaffold_status() is None
+        assert rebar.native_target_cpython_series() is None
 
 
 @pytest.mark.skipif(

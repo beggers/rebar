@@ -125,6 +125,22 @@ MATCH_BEHAVIOR_CASES = tuple(MATCH_BEHAVIOR_BUNDLE.cases)
 MATCH_BEHAVIOR_DIRECT_TEST_CASE_IDS = frozenset(
     case.case_id for case in MATCH_BEHAVIOR_CASES
 )
+EXPLICIT_ESCAPE_STR_CASES = (
+    ("", ""),
+    ("abc_123", "abc_123"),
+    (".^$*+?{}[]\\|()", "\\.\\^\\$\\*\\+\\?\\{\\}\\[\\]\\\\\\|\\(\\)"),
+    (' !"#%&,/:;<=>@`~', '\\ !"\\#%\\&,/:;<=>@`\\~'),
+    (" \t\n\r\x0b\x0c", "\\ \\\t\\\n\\\r\\\x0b\\\x0c"),
+    ("a-b", "a\\-b"),
+)
+EXPLICIT_ESCAPE_BYTES_CASES = (
+    (b"", b""),
+    (b"abc_123", b"abc_123"),
+    (br".^$*+?{}[]\|()", b"\\.\\^\\$\\*\\+\\?\\{\\}\\[\\]\\\\\\|\\(\\)"),
+    (b' !"#%&,/:;<=>@`~', b'\\ !"\\#%\\&,/:;<=>@`\\~'),
+    (b" \t\n\r\x0b\x0c", b"\\ \\\t\\\n\\\r\\\x0b\\\x0c"),
+    (b"a-b", b"a\\-b"),
+)
 MODULE_WORKFLOW_DIRECT_TEST_CASE_ID_BUCKETS = {
     "compile": frozenset(case.case_id for case in COMPILE_CASES),
     "pattern": frozenset(case.case_id for case in PATTERN_CASES),
@@ -747,6 +763,32 @@ def _capture_error(callback) -> BaseException:
     raise AssertionError("expected call to raise")
 
 
+def _assert_placeholder_message(error: BaseException, expected_prefix: str) -> None:
+    assert expected_prefix in str(error)
+
+
+def _assert_literal_match_contract(
+    match: rebar.Match,
+    expected_group0: str | bytes,
+    expected_span: tuple[int, int],
+    expected_endpos: int,
+) -> None:
+    assert type(match) is rebar.Match
+    assert bool(match)
+    assert match.group() == expected_group0
+    assert match.group(0) == expected_group0
+    assert match.group(0, 0) == (expected_group0, expected_group0)
+    assert match.groups() == ()
+    assert match.groupdict() == {}
+    assert match.span() == expected_span
+    assert match.start() == expected_span[0]
+    assert match.end() == expected_span[1]
+    assert match.pos == 0
+    assert match.endpos == expected_endpos
+    assert match.lastindex is None
+    assert match.lastgroup is None
+
+
 def _match_behavior_case_string(case: FixtureCase) -> str | bytes:
     string = case.args[1]
     assert isinstance(string, (str, bytes))
@@ -1335,3 +1377,363 @@ def test_escape_rejects_invalid_input_shapes_like_cpython(
 
     assert type(observed_error) is type(expected_error)
     assert observed_error.args == expected_error.args
+
+
+def test_source_package_compile_metadata_matches_pinned_literal_contract() -> None:
+    literal_pattern, expected_literal = compile_with_cpython_parity(
+        "rebar",
+        rebar,
+        "abc",
+        int(rebar.IGNORECASE),
+    )
+    assert type(literal_pattern) is rebar.Pattern
+    assert literal_pattern.pattern == expected_literal.pattern == "abc"
+    assert literal_pattern.flags == expected_literal.flags == int(
+        rebar.IGNORECASE | rebar.UNICODE
+    )
+    assert literal_pattern.groups == expected_literal.groups == 0
+    assert literal_pattern.groupindex == expected_literal.groupindex == {}
+
+    bytes_pattern, expected_bytes = compile_with_cpython_parity(
+        "rebar",
+        rebar,
+        b"abc",
+        int(rebar.IGNORECASE),
+    )
+    assert type(bytes_pattern) is rebar.Pattern
+    assert bytes_pattern.pattern == expected_bytes.pattern == b"abc"
+    assert bytes_pattern.flags == expected_bytes.flags == int(rebar.IGNORECASE)
+    assert bytes_pattern.groups == expected_bytes.groups == 0
+    assert bytes_pattern.groupindex == expected_bytes.groupindex == {}
+
+    anchored_pattern, expected_anchored = compile_with_cpython_parity(
+        "rebar",
+        rebar,
+        "^abc$",
+    )
+    assert type(anchored_pattern) is rebar.Pattern
+    assert anchored_pattern.pattern == expected_anchored.pattern == "^abc$"
+    assert anchored_pattern.flags == expected_anchored.flags == int(rebar.UNICODE)
+    assert anchored_pattern.groups == expected_anchored.groups == 0
+    assert anchored_pattern.groupindex == expected_anchored.groupindex == {}
+
+
+@pytest.mark.skipif(
+    not rebar.native_module_loaded(),
+    reason="verbose regression compile support requires rebar._rebar",
+)
+def test_source_package_verbose_compile_metadata_and_neighbor_gaps_remain_pinned() -> None:
+    pattern = case_pattern(VERBOSE_COMPILE_CASE)
+    assert isinstance(pattern, str)
+
+    compiled, expected = _compile_verbose_regression_pattern("rebar", rebar)
+
+    assert type(compiled) is rebar.Pattern
+    assert compiled.pattern == expected.pattern == pattern
+    assert compiled.flags == expected.flags == int(
+        re.MULTILINE | re.VERBOSE | re.UNICODE
+    )
+    assert compiled.groups == expected.groups == 1
+    assert compiled.groupindex == expected.groupindex == {"key": 1}
+    assert rebar.compile(pattern, VERBOSE_COMPILE_CASE.flags or 0) is compiled
+
+    with pytest.raises(NotImplementedError) as missing_verbose:
+        rebar.compile(pattern, rebar.MULTILINE)
+
+    _assert_placeholder_message(
+        missing_verbose.value,
+        "rebar.compile() is a scaffold placeholder",
+    )
+
+    with pytest.raises(NotImplementedError) as bytes_variant:
+        rebar.compile(pattern.encode("ascii"), int(VERBOSE_COMPILE_CASE.flags or 0))
+
+    _assert_placeholder_message(
+        bytes_variant.value,
+        "rebar.compile() is a scaffold placeholder",
+    )
+
+
+def test_source_package_compile_reuses_existing_pattern_without_reprocessing_flags() -> None:
+    pattern = rebar.compile("abc")
+
+    assert rebar.compile(pattern) is pattern
+
+    with pytest.raises(ValueError) as raised:
+        rebar.compile(pattern, rebar.IGNORECASE)
+
+    assert str(raised.value) == "cannot process flags argument with a compiled pattern"
+
+
+def test_source_package_compile_rejects_non_pattern_inputs() -> None:
+    with pytest.raises(TypeError) as raised:
+        rebar.compile(123)
+
+    assert str(raised.value) == "first argument must be string or compiled pattern"
+
+
+def test_source_package_module_literal_match_contract_matches_cpython() -> None:
+    search_match = rebar.search("abc", "zzabczz")
+    expected_search = re.search("abc", "zzabczz")
+    assert search_match is not None
+    assert expected_search is not None
+    assert_match_result_parity("rebar", search_match, expected_search, check_regs=True)
+    assert_match_convenience_api_parity(search_match, expected_search)
+    _assert_literal_match_contract(search_match, "abc", (2, 5), 7)
+
+    anchored_match = rebar.match("abc", "abcdef")
+    expected_match = re.match("abc", "abcdef")
+    assert anchored_match is not None
+    assert expected_match is not None
+    assert_match_result_parity("rebar", anchored_match, expected_match, check_regs=True)
+    assert_match_convenience_api_parity(anchored_match, expected_match)
+    _assert_literal_match_contract(anchored_match, "abc", (0, 3), 6)
+
+    full_match = rebar.fullmatch("abc", "abc")
+    expected_fullmatch = re.fullmatch("abc", "abc")
+    assert full_match is not None
+    assert expected_fullmatch is not None
+    assert_match_result_parity("rebar", full_match, expected_fullmatch, check_regs=True)
+    assert_match_convenience_api_parity(full_match, expected_fullmatch)
+    _assert_literal_match_contract(full_match, "abc", (0, 3), 3)
+
+    assert rebar.search("abc", "zzz") is re.search("abc", "zzz") is None
+    assert rebar.match("abc", "zabc") is re.match("abc", "zabc") is None
+    assert rebar.fullmatch("abc", "abcz") is re.fullmatch("abc", "abcz") is None
+
+
+def test_source_package_pattern_literal_str_match_contract_matches_cpython() -> None:
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        "rebar",
+        rebar,
+        "abc",
+    )
+
+    search_match = observed_pattern.search("zzabczz")
+    expected_search = expected_pattern.search("zzabczz")
+    assert search_match is not None
+    assert expected_search is not None
+    assert_match_result_parity("rebar", search_match, expected_search, check_regs=True)
+    assert_match_convenience_api_parity(search_match, expected_search)
+    _assert_literal_match_contract(search_match, "abc", (2, 5), 7)
+
+    anchored_match = observed_pattern.match("abcdef")
+    expected_match = expected_pattern.match("abcdef")
+    assert anchored_match is not None
+    assert expected_match is not None
+    assert_match_result_parity("rebar", anchored_match, expected_match, check_regs=True)
+    assert_match_convenience_api_parity(anchored_match, expected_match)
+    _assert_literal_match_contract(anchored_match, "abc", (0, 3), 6)
+
+    full_match = observed_pattern.fullmatch("abc")
+    expected_fullmatch = expected_pattern.fullmatch("abc")
+    assert full_match is not None
+    assert expected_fullmatch is not None
+    assert_match_result_parity("rebar", full_match, expected_fullmatch, check_regs=True)
+    assert_match_convenience_api_parity(full_match, expected_fullmatch)
+    _assert_literal_match_contract(full_match, "abc", (0, 3), 3)
+
+    assert observed_pattern.search("zzz") is expected_pattern.search("zzz") is None
+    assert observed_pattern.match("zabc") is expected_pattern.match("zabc") is None
+    assert (
+        observed_pattern.fullmatch("abcz")
+        is expected_pattern.fullmatch("abcz")
+        is None
+    )
+
+
+def test_source_package_pattern_literal_bytes_match_contract_matches_cpython() -> None:
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        "rebar",
+        rebar,
+        b"abc",
+    )
+
+    search_match = observed_pattern.search(b"zzabczz")
+    expected_search = expected_pattern.search(b"zzabczz")
+    assert search_match is not None
+    assert expected_search is not None
+    assert_match_result_parity("rebar", search_match, expected_search, check_regs=True)
+    assert_match_convenience_api_parity(search_match, expected_search)
+    _assert_literal_match_contract(search_match, b"abc", (2, 5), 7)
+
+    anchored_match = observed_pattern.match(b"abcdef")
+    expected_match = expected_pattern.match(b"abcdef")
+    assert anchored_match is not None
+    assert expected_match is not None
+    assert_match_result_parity("rebar", anchored_match, expected_match, check_regs=True)
+    assert_match_convenience_api_parity(anchored_match, expected_match)
+    _assert_literal_match_contract(anchored_match, b"abc", (0, 3), 6)
+
+    full_match = observed_pattern.fullmatch(b"abc")
+    expected_fullmatch = expected_pattern.fullmatch(b"abc")
+    assert full_match is not None
+    assert expected_fullmatch is not None
+    assert_match_result_parity("rebar", full_match, expected_fullmatch, check_regs=True)
+    assert_match_convenience_api_parity(full_match, expected_fullmatch)
+    _assert_literal_match_contract(full_match, b"abc", (0, 3), 3)
+
+    assert observed_pattern.search(b"zzz") is expected_pattern.search(b"zzz") is None
+    assert observed_pattern.match(b"zabc") is expected_pattern.match(b"zabc") is None
+    assert (
+        observed_pattern.fullmatch(b"abcz")
+        is expected_pattern.fullmatch(b"abcz")
+        is None
+    )
+
+
+@pytest.mark.parametrize("accessor_name", ("group", "span", "start", "end"))
+def test_source_package_match_accessors_reject_missing_groups_like_cpython(
+    accessor_name: str,
+) -> None:
+    observed_match = rebar.search("abc", "abc")
+    expected_match = re.search("abc", "abc")
+    assert observed_match is not None
+    assert expected_match is not None
+
+    observed_error = _capture_error(lambda: getattr(observed_match, accessor_name)(1))
+    expected_error = _capture_error(lambda: getattr(expected_match, accessor_name)(1))
+
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args == ("no such group",)
+
+
+def test_source_package_match_group_rejects_missing_named_groups_like_cpython() -> None:
+    observed_match = rebar.search("abc", "abc")
+    expected_match = re.search("abc", "abc")
+    assert observed_match is not None
+    assert expected_match is not None
+
+    observed_error = _capture_error(lambda: observed_match.group("name"))
+    expected_error = _capture_error(lambda: expected_match.group("name"))
+
+    assert type(observed_error) is type(expected_error)
+    assert observed_error.args == expected_error.args == ("no such group",)
+
+
+def test_source_package_matching_rejects_string_bytes_mismatch_like_cpython() -> None:
+    observed_string_error = _capture_error(lambda: rebar.search("abc", b"abc"))
+    expected_string_error = _capture_error(lambda: re.search("abc", b"abc"))
+    assert type(observed_string_error) is type(expected_string_error)
+    assert observed_string_error.args == expected_string_error.args == (
+        "cannot use a string pattern on a bytes-like object",
+    )
+
+    observed_bytes_error = _capture_error(lambda: rebar.search(b"abc", "abc"))
+    expected_bytes_error = _capture_error(lambda: re.search(b"abc", "abc"))
+    assert type(observed_bytes_error) is type(expected_bytes_error)
+    assert observed_bytes_error.args == expected_bytes_error.args == (
+        "cannot use a bytes pattern on a string-like object",
+    )
+
+
+def test_source_package_unsupported_match_surface_stays_loud() -> None:
+    with pytest.raises(NotImplementedError) as module_flags:
+        rebar.search("abc", "abc", rebar.IGNORECASE | rebar.VERBOSE)
+
+    _assert_placeholder_message(
+        module_flags.value,
+        "rebar.search() is a scaffold placeholder",
+    )
+
+    with pytest.raises(NotImplementedError) as module_meta:
+        rebar.search("[ab]c", "abc")
+
+    _assert_placeholder_message(
+        module_meta.value,
+        "rebar.compile() is a scaffold placeholder",
+    )
+
+    pattern = rebar.compile("abc", rebar.IGNORECASE | rebar.VERBOSE)
+    for method_name in ("search", "match", "fullmatch"):
+        with pytest.raises(NotImplementedError) as bound_flags:
+            getattr(pattern, method_name)("abc")
+
+        _assert_placeholder_message(
+            bound_flags.value,
+            f"rebar.Pattern.{method_name}() is a scaffold placeholder",
+        )
+
+
+def test_source_package_compile_reuses_cached_patterns_for_supported_inputs() -> None:
+    first = rebar.compile("abc")
+    second = rebar.compile("abc")
+    flagged = rebar.compile("abc", rebar.IGNORECASE)
+    flagged_again = rebar.compile("abc", rebar.IGNORECASE)
+    bytes_pattern = rebar.compile(b"abc")
+    bytes_pattern_again = rebar.compile(b"abc")
+
+    assert first is second
+    assert flagged is flagged_again
+    assert bytes_pattern is bytes_pattern_again
+    assert first is not flagged
+    assert first is not bytes_pattern
+
+
+def test_source_package_purge_clears_cached_patterns_and_returns_none() -> None:
+    original = rebar.compile("abc")
+
+    assert rebar.purge() is None
+    assert rebar.purge() is None
+
+    refreshed = rebar.compile("abc")
+    assert original is not refreshed
+    assert refreshed is rebar.compile("abc")
+
+
+def test_source_package_unsupported_compile_requests_do_not_mutate_cache() -> None:
+    cached = rebar.compile("abc")
+
+    with pytest.raises(NotImplementedError) as placeholder:
+        rebar.compile("[ab]c")
+
+    _assert_placeholder_message(
+        placeholder.value,
+        "rebar.compile() is a scaffold placeholder",
+    )
+    assert rebar.compile("abc") is cached
+
+    with pytest.raises(TypeError) as wrong_type:
+        rebar.compile(123)
+
+    assert str(wrong_type.value) == "first argument must be string or compiled pattern"
+    assert rebar.compile("abc") is cached
+
+    with pytest.raises(ValueError) as compiled_flags:
+        rebar.compile(cached, rebar.IGNORECASE)
+
+    assert str(compiled_flags.value) == (
+        "cannot process flags argument with a compiled pattern"
+    )
+    assert rebar.compile("abc") is cached
+
+
+def test_source_package_cache_keys_distinguish_normalized_flags() -> None:
+    default_pattern = rebar.compile("abc")
+    unicode_pattern = rebar.compile("abc", rebar.UNICODE)
+    ascii_pattern = rebar.compile("abc", rebar.ASCII)
+
+    assert default_pattern is unicode_pattern
+    assert default_pattern is not ascii_pattern
+
+
+@pytest.mark.parametrize(("raw", "expected"), EXPLICIT_ESCAPE_STR_CASES)
+def test_source_package_escape_preserves_explicit_str_cases(
+    raw: str,
+    expected: str,
+) -> None:
+    escaped = rebar.escape(raw)
+
+    assert type(escaped) is str
+    assert escaped == re.escape(raw) == expected
+
+
+@pytest.mark.parametrize(("raw", "expected"), EXPLICIT_ESCAPE_BYTES_CASES)
+def test_source_package_escape_preserves_explicit_bytes_cases(
+    raw: bytes,
+    expected: bytes,
+) -> None:
+    escaped = rebar.escape(raw)
+
+    assert type(escaped) is bytes
+    assert escaped == re.escape(raw) == expected

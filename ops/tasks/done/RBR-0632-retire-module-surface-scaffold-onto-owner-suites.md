@@ -1,8 +1,9 @@
 # RBR-0632: Retire the module surface scaffold onto owner suites
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Delete `tests/python/test_module_surface_scaffold.py` by moving its remaining source-package coverage onto the existing owner suites, so the Python-facing surface stops keeping one legacy catch-all scaffold module beside the fixture-backed public-surface, module-workflow, replacement, and native-smoke owners.
@@ -86,3 +87,6 @@ PY`
   - the current failing structural probes belong exactly to this cleanup:
     - `rg -n "TARGET_CPYTHON_SERIES|SCAFFOLD_STATUS|NATIVE_MODULE_NAME" tests/python/test_native_extension_smoke.py` currently exits nonzero because those assertions are still only in `tests/python/test_module_surface_scaffold.py`; and
     - `bash -lc "! rg --files tests/python | rg 'test_module_surface_scaffold\\.py$'"` currently fails because the legacy scaffold file still exists.
+
+## Completion Note
+- 2026-03-18: Moved the scaffold-owned direct source-package assertions into `tests/python/test_public_surface_parity_suite.py`, `tests/python/test_module_workflow_parity_suite.py`, `tests/python/test_fixture_backed_replacement_parity_suite.py`, and `tests/python/test_native_extension_smoke.py`, then deleted `tests/python/test_module_surface_scaffold.py`. Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_public_surface_parity_suite.py tests/python/test_module_workflow_parity_suite.py tests/python/test_fixture_backed_replacement_parity_suite.py tests/python/test_native_extension_smoke.py` (`1391 passed, 1 skipped in 1.03s`), the inline fixture-order probe (`ok`), `rg -n "TARGET_CPYTHON_SERIES|SCAFFOLD_STATUS|NATIVE_MODULE_NAME" tests/python/test_native_extension_smoke.py` (three source-tree metadata assertions present), `bash -lc "! rg --files tests/python | rg 'test_module_surface_scaffold\\.py$'"` (no matches), and `git diff --name-status -- tests/python/test_module_surface_scaffold.py` (`D`).
