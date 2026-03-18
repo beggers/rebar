@@ -1,8 +1,9 @@
 # RBR-0602: Collapse the open-ended benchmark anchor contract onto the shared pytest suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Fold the last dedicated benchmark-anchor contract module into `tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py` so the benchmark-to-correctness anchor surface lives in one ordinary pytest suite instead of one shared suite plus one open-ended holdout.
@@ -92,3 +93,12 @@ Created: 2026-03-18
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py` passes (`61 passed in 0.13s`);
   - the Python probe in the acceptance section currently fails exactly on this cleanup with `missing-open-ended-definition`; and
   - `bash -lc "! test -f tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py"` currently fails exactly on this cleanup because the dedicated file still exists.
+
+## Completion Notes
+- 2026-03-18: Folded the open-ended benchmark-anchor contract into `tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py` by adding one open-ended definition that reuses the shared compile/search/fullmatch signature path, keeps the anchored case-id map intact, and carries the exact 26 special-unanchored workload ids.
+- 2026-03-18: Extended the shared suite with open-ended-only checks for the explicit unanchored split, bytes direct-parity coverage through `tests/python/fixture_parity_support.py`, and manual CPython dispatch parity for the benchmark-only special rows without changing any workload manifests or correctness fixtures.
+- 2026-03-18: Deleted `tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py`; `git diff --name-status -- tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py` now reports `D`.
+- 2026-03-18 verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py` (`63 passed in 0.13s`)
+  - The inline `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` probe from the task text (`ok`)
+  - `bash -lc "! test -f tests/benchmarks/test_open_ended_quantified_group_benchmark_correctness_anchor_contract.py"` (passes)

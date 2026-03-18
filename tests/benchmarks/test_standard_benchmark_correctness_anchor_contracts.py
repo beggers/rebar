@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from functools import cache
 import pathlib
+import re
 from typing import Any
 
 import pytest
@@ -29,15 +31,27 @@ GROUPED_ALTERNATION_MANIFEST_PATH = (
 GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_replacement_boundary.py"
 )
+OPEN_ENDED_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
+)
 
 from rebar_harness.benchmarks import load_manifest
 from tests.benchmarks.correctness_anchor_support import (
     anchored_workload_case_ids,
     assert_anchored_workload_case_result_parity,
+    assert_benchmark_workload_matches_expected_result,
     expected_anchored_workload_case_pairs,
     freeze_signature_value,
     published_case_ids_by_signature,
     unanchored_workload_ids,
+)
+from tests.python.fixture_parity_support import (
+    BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
+    BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    OPEN_ENDED_ALTERNATION_BYTES_CASES,
+    OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    OPEN_ENDED_CONDITIONAL_BYTES_CASES,
 )
 
 
@@ -58,6 +72,9 @@ class StandardBenchmarkAnchorContractDefinition:
     callback_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]] = field(
         default_factory=dict
     )
+    expected_special_unanchored_workload_ids: tuple[str, ...] = ()
+    direct_parity_supplemental_cases: tuple[Any, ...] = ()
+    run_special_unanchored_result_parity: bool = False
 
 
 EXPECTED_COMPILE_ANCHOR_CASE_IDS = {
@@ -311,6 +328,251 @@ EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_LEGACY_NESTED_ANCHOR_CASE_IDS = {
     ),
 }
 
+EXPECTED_OPEN_ENDED_SPECIAL_UNANCHORED_WORKLOAD_IDS = (
+    "module-search-numbered-open-ended-group-alternation-lower-bound-bc-warm-bytes",
+    "pattern-fullmatch-numbered-open-ended-group-alternation-third-repetition-mixed-purged-bytes",
+    "module-search-named-open-ended-group-alternation-lower-bound-de-warm-bytes",
+    "pattern-fullmatch-named-open-ended-group-alternation-fourth-repetition-de-purged-bytes",
+    "module-search-numbered-open-ended-group-broader-range-lower-bound-bc-warm-bytes",
+    "pattern-fullmatch-numbered-open-ended-group-broader-range-third-repetition-mixed-purged-bytes",
+    "module-search-named-open-ended-group-broader-range-lower-bound-de-warm-bytes",
+    "pattern-fullmatch-named-open-ended-group-broader-range-third-repetition-de-purged-bytes",
+    "module-search-numbered-open-ended-group-broader-range-conditional-second-repetition-bc-warm-bytes",
+    "pattern-fullmatch-numbered-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
+    "module-search-named-open-ended-group-broader-range-conditional-fourth-repetition-de-warm-bytes",
+    "pattern-fullmatch-named-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
+    "pattern-fullmatch-named-open-ended-group-broader-range-backtracking-heavy-purged-str",
+    "module-search-numbered-open-ended-group-broader-range-backtracking-heavy-lower-bound-b-branch-warm-bytes",
+    "pattern-fullmatch-numbered-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-purged-bytes",
+    "module-search-named-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-warm-bytes",
+    "pattern-fullmatch-named-open-ended-group-broader-range-backtracking-heavy-purged-bytes",
+    "module-search-numbered-open-ended-group-conditional-warm-gap",
+    "module-search-numbered-open-ended-group-conditional-second-repetition-bc-warm-bytes",
+    "pattern-fullmatch-numbered-open-ended-group-conditional-third-repetition-mixed-purged-bytes",
+    "module-search-named-open-ended-group-conditional-fourth-repetition-de-warm-bytes",
+    "pattern-fullmatch-named-open-ended-group-conditional-third-repetition-mixed-purged-bytes",
+    "module-search-numbered-open-ended-group-backtracking-heavy-lower-bound-b-branch-warm-bytes",
+    "pattern-fullmatch-numbered-open-ended-group-backtracking-heavy-second-repetition-b-then-bc-purged-bytes",
+    "module-search-named-open-ended-group-backtracking-heavy-third-repetition-mixed-warm-bytes",
+    "pattern-fullmatch-named-open-ended-group-backtracking-heavy-purged-bytes",
+)
+
+EXPECTED_OPEN_ENDED_ANCHOR_CASE_IDS = {
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-numbered-open-ended-group-alternation-cold-str",
+    ): ("open-ended-quantified-group-alternation-numbered-compile-metadata-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-search-numbered-open-ended-group-alternation-lower-bound-bc-warm-str",
+    ): ("open-ended-quantified-group-alternation-numbered-module-search-lower-bound-bc-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "pattern-fullmatch-numbered-open-ended-group-alternation-third-repetition-mixed-purged-str",
+    ): ("open-ended-quantified-group-alternation-numbered-pattern-fullmatch-third-repetition-mixed-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-named-open-ended-group-alternation-warm-str",
+    ): ("open-ended-quantified-group-alternation-named-compile-metadata-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-search-named-open-ended-group-alternation-lower-bound-de-warm-str",
+    ): ("open-ended-quantified-group-alternation-named-module-search-lower-bound-de-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "pattern-fullmatch-named-open-ended-group-alternation-fourth-repetition-de-purged-str",
+    ): ("open-ended-quantified-group-alternation-named-pattern-fullmatch-fourth-repetition-de-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-numbered-open-ended-group-alternation-cold-bytes",
+    ): ("open-ended-quantified-group-alternation-numbered-compile-metadata-bytes",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-named-open-ended-group-alternation-warm-bytes",
+    ): ("open-ended-quantified-group-alternation-named-compile-metadata-bytes",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-numbered-open-ended-group-conditional-cold-str",
+    ): ("open-ended-quantified-group-alternation-conditional-numbered-compile-metadata-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-numbered-open-ended-group-broader-range-cold-str",
+    ): ("broader-range-open-ended-quantified-group-alternation-numbered-compile-metadata-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-search-numbered-open-ended-group-broader-range-cold-gap",
+    ): (
+        "broader-range-open-ended-quantified-group-alternation-numbered-module-search-lower-bound-bc-str",
+    ),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "pattern-fullmatch-numbered-open-ended-group-broader-range-third-repetition-mixed-purged-str",
+    ): ("broader-range-open-ended-quantified-group-alternation-numbered-pattern-fullmatch-third-repetition-mixed-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-named-open-ended-group-broader-range-warm-str",
+    ): ("broader-range-open-ended-quantified-group-alternation-named-compile-metadata-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-search-named-open-ended-group-broader-range-lower-bound-de-warm-str",
+    ): ("broader-range-open-ended-quantified-group-alternation-named-module-search-lower-bound-de-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "pattern-fullmatch-named-open-ended-group-broader-range-third-repetition-de-purged-str",
+    ): ("broader-range-open-ended-quantified-group-alternation-named-pattern-fullmatch-fourth-repetition-de-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-numbered-open-ended-group-broader-range-cold-bytes",
+    ): ("broader-range-open-ended-quantified-group-alternation-numbered-compile-metadata-bytes",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-named-open-ended-group-broader-range-warm-bytes",
+    ): ("broader-range-open-ended-quantified-group-alternation-named-compile-metadata-bytes",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-numbered-open-ended-group-broader-range-conditional-cold-str",
+    ): ("broader-range-open-ended-quantified-group-alternation-conditional-numbered-compile-metadata-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-search-numbered-open-ended-group-broader-range-conditional-warm-gap",
+    ): (
+        "broader-range-open-ended-quantified-group-alternation-conditional-numbered-module-search-lower-bound-bc-workflow-str",
+    ),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "pattern-fullmatch-numbered-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-str",
+    ): (
+        "broader-range-open-ended-quantified-group-alternation-conditional-numbered-pattern-fullmatch-third-repetition-mixed-workflow-str",
+    ),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-named-open-ended-group-broader-range-conditional-warm-str",
+    ): ("broader-range-open-ended-quantified-group-alternation-conditional-named-compile-metadata-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-search-named-open-ended-group-broader-range-conditional-fourth-repetition-de-warm-str",
+    ): (
+        "broader-range-open-ended-quantified-group-alternation-conditional-named-module-search-fourth-repetition-de-workflow-str",
+    ),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "pattern-fullmatch-named-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-str",
+    ): (
+        "broader-range-open-ended-quantified-group-alternation-conditional-named-pattern-fullmatch-third-repetition-mixed-workflow-str",
+    ),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-numbered-open-ended-group-broader-range-conditional-cold-bytes",
+    ): ("broader-range-open-ended-quantified-group-alternation-conditional-numbered-compile-metadata-bytes",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-named-open-ended-group-broader-range-conditional-warm-bytes",
+    ): ("broader-range-open-ended-quantified-group-alternation-conditional-named-compile-metadata-bytes",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-numbered-open-ended-group-broader-range-backtracking-heavy-cold-str",
+    ): ("broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-search-numbered-open-ended-group-broader-range-backtracking-heavy-lower-bound-b-branch-warm-str",
+    ): (
+        "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-short-branch-str",
+    ),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "pattern-fullmatch-numbered-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-purged-str",
+    ): (
+        "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-long-then-short-str",
+    ),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-named-open-ended-group-broader-range-backtracking-heavy-warm-str",
+    ): ("broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-compile-metadata-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-search-named-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-warm-str",
+    ): (
+        "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-module-search-second-repetition-long-then-short-str",
+    ),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-numbered-open-ended-group-broader-range-backtracking-heavy-cold-bytes",
+    ): ("broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-bytes",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-named-open-ended-group-broader-range-backtracking-heavy-warm-bytes",
+    ): ("broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-compile-metadata-bytes",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "pattern-fullmatch-numbered-open-ended-group-conditional-third-repetition-mixed-purged-str",
+    ): ("open-ended-quantified-group-alternation-conditional-numbered-pattern-fullmatch-third-repetition-mixed-workflow-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-named-open-ended-group-conditional-warm-str",
+    ): ("open-ended-quantified-group-alternation-conditional-named-compile-metadata-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-search-named-open-ended-group-conditional-fourth-repetition-de-warm-str",
+    ): ("open-ended-quantified-group-alternation-conditional-named-module-search-fourth-repetition-de-workflow-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "pattern-fullmatch-named-open-ended-group-conditional-third-repetition-mixed-purged-str",
+    ): ("open-ended-quantified-group-alternation-conditional-named-pattern-fullmatch-third-repetition-mixed-workflow-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-numbered-open-ended-group-conditional-cold-bytes",
+    ): ("open-ended-quantified-group-alternation-conditional-numbered-compile-metadata-bytes",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-named-open-ended-group-conditional-warm-bytes",
+    ): ("open-ended-quantified-group-alternation-conditional-named-compile-metadata-bytes",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-numbered-open-ended-group-backtracking-heavy-cold-str",
+    ): ("open-ended-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-search-numbered-open-ended-group-backtracking-heavy-lower-bound-b-branch-warm-str",
+    ): (
+        "open-ended-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-short-branch-str",
+    ),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "pattern-fullmatch-numbered-open-ended-group-backtracking-heavy-second-repetition-b-then-bc-purged-str",
+    ): (
+        "open-ended-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-short-then-long-str",
+    ),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-named-open-ended-group-backtracking-heavy-warm-str",
+    ): ("open-ended-quantified-group-alternation-backtracking-heavy-named-compile-metadata-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-search-named-open-ended-group-backtracking-heavy-third-repetition-mixed-warm-str",
+    ): ("open-ended-quantified-group-alternation-backtracking-heavy-named-module-search-third-repetition-mixed-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "pattern-fullmatch-named-open-ended-group-backtracking-heavy-purged-gap",
+    ): ("open-ended-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-fourth-repetition-short-only-str",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-numbered-open-ended-group-backtracking-heavy-cold-bytes",
+    ): ("open-ended-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-bytes",),
+    (
+        "open_ended_quantified_group_boundary.py",
+        "module-compile-named-open-ended-group-backtracking-heavy-warm-bytes",
+    ): ("open-ended-quantified-group-alternation-backtracking-heavy-named-compile-metadata-bytes",),
+}
+
+OPEN_ENDED_DIRECT_PARITY_BYTES_CASES = (
+    *OPEN_ENDED_ALTERNATION_BYTES_CASES,
+    *OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    *OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+    *BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
+    *BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    *BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+)
+
 
 def _compile_proxy_signature(
     pattern: str | bytes,
@@ -539,6 +801,10 @@ def _is_non_alternation_counted_repeat_workload(workload: Any) -> bool:
     } and "|" not in workload.pattern
 
 
+def _is_non_special_open_ended_workload(workload: Any) -> bool:
+    return workload.workload_id not in EXPECTED_OPEN_ENDED_SPECIAL_UNANCHORED_WORKLOAD_IDS
+
+
 def _grouped_alternation_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
@@ -699,6 +965,95 @@ def _include_all_workloads(_: Any) -> bool:
     return True
 
 
+@cache
+def _manifest_workloads_by_id(manifest_path: pathlib.Path) -> dict[str, Any]:
+    return {
+        workload.workload_id: workload for workload in load_manifest(manifest_path).workloads
+    }
+
+
+def _definition_workloads_by_id(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> dict[str, Any]:
+    workloads_by_id: dict[str, Any] = {}
+    for manifest_path in definition.manifest_paths:
+        workloads_by_id.update(_manifest_workloads_by_id(manifest_path))
+    return workloads_by_id
+
+
+@cache
+def _direct_parity_case_ids_by_signature(
+    supplemental_cases: tuple[Any, ...],
+) -> dict[tuple[str, bytes, bytes], tuple[str, ...]]:
+    case_ids_by_signature: dict[tuple[str, bytes, bytes], list[str]] = {}
+
+    for case in supplemental_cases:
+        for haystack in case.search_matches + case.search_misses:
+            case_ids_by_signature.setdefault(
+                ("module.search", case.pattern, haystack),
+                [],
+            ).append(case.id)
+        for haystack in case.fullmatch_matches + case.fullmatch_misses:
+            case_ids_by_signature.setdefault(
+                ("pattern.fullmatch", case.pattern, haystack),
+                [],
+            ).append(case.id)
+
+    return {
+        signature: tuple(case_ids)
+        for signature, case_ids in case_ids_by_signature.items()
+    }
+
+
+def _manual_expected_result(workload: Any) -> object:
+    pattern = workload.pattern_payload()
+    re.purge()
+    try:
+        if workload.operation == "module.compile":
+            return re.compile(pattern, workload.flags)
+        if workload.operation == "module.search":
+            return re.search(pattern, workload.haystack_payload(), workload.flags)
+        if workload.operation == "pattern.fullmatch":
+            compiled = re.compile(pattern, workload.flags)
+            return compiled.fullmatch(workload.haystack_payload())
+        if workload.operation == "module.sub":
+            return re.sub(
+                pattern,
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+                workload.count,
+                workload.flags,
+            )
+        if workload.operation == "module.subn":
+            return re.subn(
+                pattern,
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+                workload.count,
+                workload.flags,
+            )
+        if workload.operation == "pattern.sub":
+            compiled = re.compile(pattern, workload.flags)
+            return compiled.sub(
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+                workload.count,
+            )
+        if workload.operation == "pattern.subn":
+            compiled = re.compile(pattern, workload.flags)
+            return compiled.subn(
+                workload.replacement_payload(),
+                workload.haystack_payload(),
+                workload.count,
+            )
+    finally:
+        re.purge()
+
+    raise AssertionError(
+        f"unexpected special-unanchored benchmark workload operation {workload.operation!r}"
+    )
+
+
 STANDARD_BENCHMARK_DEFINITIONS = (
     StandardBenchmarkAnchorContractDefinition(
         name="compile-proxy",
@@ -780,6 +1135,20 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         ),
         callback_anchor_case_ids=EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS,
     ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="open-ended-grouped-alternation",
+        manifest_paths=(OPEN_ENDED_MANIFEST_PATH,),
+        expected_anchor_case_ids=EXPECTED_OPEN_ENDED_ANCHOR_CASE_IDS,
+        include_workload=_is_non_special_open_ended_workload,
+        correctness_case_signature=_counted_repeat_correctness_case_signature,
+        workload_signature=_counted_repeat_workload_signature,
+        run_callback_result_parity=True,
+        expected_special_unanchored_workload_ids=(
+            EXPECTED_OPEN_ENDED_SPECIAL_UNANCHORED_WORKLOAD_IDS
+        ),
+        direct_parity_supplemental_cases=OPEN_ENDED_DIRECT_PARITY_BYTES_CASES,
+        run_special_unanchored_result_parity=True,
+    ),
 )
 
 STANDARD_BENCHMARK_MANIFEST_DEFINITIONS = tuple(
@@ -801,6 +1170,26 @@ STANDARD_BENCHMARK_CALLBACK_PARITY_DEFINITIONS = tuple(
     for definition in STANDARD_BENCHMARK_DEFINITIONS
     if definition.run_callback_result_parity
 )
+STANDARD_BENCHMARK_SPECIAL_UNANCHORED_DEFINITIONS = tuple(
+    definition
+    for definition in STANDARD_BENCHMARK_DEFINITIONS
+    if definition.expected_special_unanchored_workload_ids
+)
+STANDARD_BENCHMARK_SPECIAL_UNANCHORED_DIRECT_PARITY_DEFINITIONS = tuple(
+    definition
+    for definition in STANDARD_BENCHMARK_SPECIAL_UNANCHORED_DEFINITIONS
+    if definition.direct_parity_supplemental_cases
+)
+STANDARD_BENCHMARK_SPECIAL_UNANCHORED_RESULT_PARITY_CASES = tuple(
+    (definition, workload_id)
+    for definition in STANDARD_BENCHMARK_DEFINITIONS
+    if definition.run_special_unanchored_result_parity
+    for workload_id in definition.expected_special_unanchored_workload_ids
+)
+STANDARD_BENCHMARK_SPECIAL_UNANCHORED_RESULT_PARITY_IDS = [
+    f"{definition.name}:{workload_id}"
+    for definition, workload_id in STANDARD_BENCHMARK_SPECIAL_UNANCHORED_RESULT_PARITY_CASES
+]
 
 
 def _expected_workload_ids(
@@ -868,6 +1257,19 @@ def _unanchored_case_ids(
         ),
         workload_signature=definition.workload_signature,
         include_workload=definition.include_workload,
+    )
+
+
+def _all_unanchored_case_ids(
+    definition: StandardBenchmarkAnchorContractDefinition,
+    manifest_path: pathlib.Path,
+) -> tuple[str, ...]:
+    return unanchored_workload_ids(
+        manifest_path,
+        anchor_case_ids=published_case_ids_by_signature(
+            definition.correctness_case_signature
+        ),
+        workload_signature=definition.workload_signature,
     )
 
 
@@ -955,6 +1357,60 @@ def test_standard_benchmark_workloads_stay_pinned_to_exact_case_ids(
 
 @pytest.mark.parametrize(
     "definition",
+    STANDARD_BENCHMARK_SPECIAL_UNANCHORED_DEFINITIONS,
+    ids=lambda definition: definition.name,
+)
+def test_standard_benchmark_special_unanchored_workloads_stay_explicit(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> None:
+    assert tuple(
+        workload_id
+        for manifest_path in definition.manifest_paths
+        for workload_id in _all_unanchored_case_ids(definition, manifest_path)
+    ) == definition.expected_special_unanchored_workload_ids
+
+
+@pytest.mark.parametrize(
+    "definition",
+    STANDARD_BENCHMARK_SPECIAL_UNANCHORED_DIRECT_PARITY_DEFINITIONS,
+    ids=lambda definition: definition.name,
+)
+def test_standard_benchmark_special_unanchored_bytes_workloads_stay_covered_by_direct_parity_cases(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> None:
+    workloads_by_id = _definition_workloads_by_id(definition)
+    direct_parity_case_ids = _direct_parity_case_ids_by_signature(
+        definition.direct_parity_supplemental_cases
+    )
+    uncovered_workload_ids: list[str] = []
+
+    for workload_id in definition.expected_special_unanchored_workload_ids:
+        workload = workloads_by_id[workload_id]
+        if workload.text_model != "bytes":
+            continue
+        if workload.operation not in {"module.search", "pattern.fullmatch"}:
+            raise AssertionError(
+                "expected bytes special-unanchored workload to stay on a direct-parity "
+                f"search/fullmatch path, got {workload.operation!r}"
+            )
+
+        signature = (
+            workload.operation,
+            workload.pattern_payload(),
+            workload.haystack_payload(),
+        )
+        case_ids = direct_parity_case_ids.get(signature)
+        if case_ids is None:
+            uncovered_workload_ids.append(workload_id)
+            continue
+
+        assert len(case_ids) == 1
+
+    assert uncovered_workload_ids == []
+
+
+@pytest.mark.parametrize(
+    "definition",
     STANDARD_BENCHMARK_LEGACY_DEFINITIONS,
     ids=lambda definition: definition.name,
 )
@@ -981,4 +1437,20 @@ def test_standard_benchmark_workload_callbacks_match_anchor_case_results(
             definition,
             expected_anchor_case_ids=_expected_callback_anchor_case_ids(definition),
         )
+    )
+
+
+@pytest.mark.parametrize(
+    ("definition", "workload_id"),
+    STANDARD_BENCHMARK_SPECIAL_UNANCHORED_RESULT_PARITY_CASES,
+    ids=STANDARD_BENCHMARK_SPECIAL_UNANCHORED_RESULT_PARITY_IDS,
+)
+def test_standard_benchmark_special_unanchored_workloads_match_manual_cpython_dispatch(
+    definition: StandardBenchmarkAnchorContractDefinition,
+    workload_id: str,
+) -> None:
+    workload = _definition_workloads_by_id(definition)[workload_id]
+    assert_benchmark_workload_matches_expected_result(
+        workload,
+        _manual_expected_result(workload),
     )
