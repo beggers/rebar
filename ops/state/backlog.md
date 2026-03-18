@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0593` should catch the same bounded quantified-alternation conditional bytes pair up on the existing Python-path benchmark surface by extending `benchmarks/workloads/quantified_alternation_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, so the tracked quantified-alternation manifest can move from `72` total / `72` measured / `0` known gaps to `78` / `78` / `0` and the combined source-tree report can move from `692` / `692` / `0` to `698` / `698` / `0` without widening beyond the six adjacent conditional bytes mirrors already anchored by the current numbered and named `str` rows.
+`RBR-0595` should publish the quantified-alternation branch-local-backreference bytes pair on the existing correctness/parity path by extending `tests/conformance/fixtures/quantified_alternation_branch_local_backreference_workflows.py`, `tests/python/test_branch_local_backreference_parity_suite.py`, `tests/conformance/correctness_expectations.py`, and `reports/correctness/latest.py`, so `match.quantified_alternation_branch_local_backreference` can move from `10` total / `10` passed / `0` `unimplemented` to `20` / `10` / `10` and the combined correctness report can move from `1224` / `1224` / `0` across `111` manifests to `1234` / `1224` / `10` without widening beyond the ten adjacent numbered and named bytes mirrors already anchored by the current `str` rows.
 
 ## Ordered Work
-1. `RBR-0593` should add only the six conditional bytes benchmark mirrors for `a((b|c){1,2})?(?(1)d|e)` and `a(?P<outer>(b|c){1,2})?(?(outer)d|e)` on the existing quantified-alternation benchmark path, keeping the workload ids, haystacks, fully measured expectation tuple, combined source-tree scorecard tests, and published benchmark report aligned while leaving broader quantified-alternation bytes families untouched.
+1. `RBR-0595` should add only the ten bytes correctness mirrors for `a((b|c)\\2){1,2}d` and `a(?P<outer>(?P<inner>b|c)(?P=inner)){1,2}d` on the existing branch-local-backreference correctness/parity path, keeping the case ids, shared bundle expectations, direct bytes follow-on routing, correctness expectations, and published combined report aligned while leaving broader branch-local-backreference bytes families untouched.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
