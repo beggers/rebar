@@ -8,7 +8,6 @@ SPEC = {
     "dispatch": {
         "mode": "interval",
         "interval_seconds": 3600,
-        "allow_dirty_worktree": True,
         "timeout_seconds": 1800,
     },
     "codex": {
