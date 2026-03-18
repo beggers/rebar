@@ -521,8 +521,6 @@ NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES = (
         search_matches=(b"zzabbbdzz",),
         fullmatch_matches=(b"acccd", b"abcbccd"),
         fullmatch_misses=(b"abbd",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason="feature slice is stdlib-only pending RBR-0615",
     ),
     BranchLocalBackreferenceBytesFollowOnCase(
         id="nested-broader-range-open-ended-branch-local-named-bytes",
@@ -530,8 +528,6 @@ NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES = (
         search_matches=(b"zzacccdzz",),
         fullmatch_matches=(b"abbbd", b"abcccd"),
         fullmatch_misses=(b"accd",),
-        unsupported_backends=("rebar",),
-        unsupported_backend_reason="feature slice is stdlib-only pending RBR-0615",
     ),
 )
 DIRECT_BYTES_FOLLOW_ON_BUNDLES = (
@@ -661,8 +657,6 @@ DIRECT_BYTES_FOLLOW_ON_SPECS = (
                 1
             ].pattern: frozenset({b"abbbd", b"abcccd", b"accd"}),
         },
-        expected_unsupported_backends=("rebar",),
-        expected_unsupported_backend_reason="feature slice is stdlib-only pending RBR-0615",
     ),
 )
 DIRECT_BYTES_FOLLOW_ON_CASES = tuple(
@@ -834,6 +828,20 @@ DIRECT_BYTES_PATTERN_BOUNDS_MATCH_CASES = (
         string=b"yyabccdzz",
         bounds=(2, 7),
     ),
+    DirectBytesBoundedPatternCase(
+        id="nested-broader-range-open-ended-branch-local-numbered-bytes-fullmatch-window",
+        pattern=rb"a((b|c){2,})\2d",
+        helper="fullmatch",
+        string=b"xxabbbbdyy",
+        bounds=(2, 8),
+    ),
+    DirectBytesBoundedPatternCase(
+        id="nested-broader-range-open-ended-branch-local-named-bytes-fullmatch-window",
+        pattern=rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        helper="fullmatch",
+        string=b"yyaccccdzz",
+        bounds=(2, 8),
+    ),
 )
 DIRECT_BYTES_PATTERN_BOUNDS_NO_MATCH_CASES = (
     DirectBytesBoundedPatternCase(
@@ -849,6 +857,20 @@ DIRECT_BYTES_PATTERN_BOUNDS_NO_MATCH_CASES = (
         helper="fullmatch",
         string=b"yyabccdzz",
         bounds=(2, 6),
+    ),
+    DirectBytesBoundedPatternCase(
+        id="nested-broader-range-open-ended-branch-local-numbered-bytes-fullmatch-truncated-endpos",
+        pattern=rb"a((b|c){2,})\2d",
+        helper="fullmatch",
+        string=b"xxabbbbdyy",
+        bounds=(2, 7),
+    ),
+    DirectBytesBoundedPatternCase(
+        id="nested-broader-range-open-ended-branch-local-named-bytes-fullmatch-starts-inside-window",
+        pattern=rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        helper="fullmatch",
+        string=b"yyaccccdzz",
+        bounds=(3, 8),
     ),
 )
 SUPPLEMENTAL_MISS_CASES = (
