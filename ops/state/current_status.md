@@ -329,7 +329,7 @@ The published frontier is still narrow: the current correctness slice covers 130
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0639`: convert the eight bytes callable-replacement rows that `RBR-0637` published for the broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference slice from honest `unimplemented` outcomes into Rust-backed parity, moving `reports/correctness/latest.py` from `1302` total / `1294` passed / `8` honest gaps to `1302` / `1302` / `0`.
+- `RBR-0641`: catch the four bytes callable benchmark rows for the broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference slice up on `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, moving `reports/benchmarks/latest.py` from `727` total / `727` measured / `0` known gaps to `731` / `731` / `0` while keeping the shared `nested-group-callable-replacement-boundary` manifest at zero known gaps.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
