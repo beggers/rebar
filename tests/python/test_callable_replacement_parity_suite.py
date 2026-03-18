@@ -42,6 +42,7 @@ class CallableManifestSpec:
     expected_compile_patterns: frozenset[str | bytes]
     expected_operation_helper_counts: Counter[tuple[str, str | None]]
     expected_text_models: frozenset[str]
+    expected_near_miss_patterns: frozenset[str | bytes]
     has_near_miss_matrix: bool
     pending_rebar_case_ids: frozenset[str] = frozenset()
 
@@ -103,6 +104,12 @@ CALLABLE_MANIFEST_SPECS = (
         ),
         expected_operation_helper_counts=CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS,
         expected_text_models=STR_ONLY_TEXT_MODELS,
+        expected_near_miss_patterns=frozenset(
+            {
+                r"a((b|c)+)d",
+                r"a(?P<outer>(?P<inner>b|c)+)d",
+            }
+        ),
         has_near_miss_matrix=True,
     ),
     CallableManifestSpec(
@@ -127,6 +134,12 @@ CALLABLE_MANIFEST_SPECS = (
         ),
         expected_operation_helper_counts=CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS,
         expected_text_models=STR_ONLY_TEXT_MODELS,
+        expected_near_miss_patterns=frozenset(
+            {
+                r"a(b)?c(?(1)d|e)",
+                r"a(?P<word>b)?c(?(word)d|e)",
+            }
+        ),
         has_near_miss_matrix=True,
     ),
     CallableManifestSpec(
@@ -163,6 +176,14 @@ CALLABLE_MANIFEST_SPECS = (
         ),
         expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
         expected_text_models=MIXED_TEXT_MODELS,
+        expected_near_miss_patterns=frozenset(
+            {
+                r"a((b|c){2,})\2d",
+                r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+                rb"a((b|c){2,})\2d",
+                rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+            }
+        ),
         has_near_miss_matrix=True,
         pending_rebar_case_ids=frozenset(
             {
@@ -211,6 +232,12 @@ CALLABLE_MANIFEST_SPECS = (
         ),
         expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
         expected_text_models=MIXED_TEXT_MODELS,
+        expected_near_miss_patterns=frozenset(
+            {
+                rb"a((b|c){2,})\2(?(2)d|e)",
+                rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+            }
+        ),
         has_near_miss_matrix=True,
     ),
 )
@@ -438,6 +465,102 @@ CALLABLE_NEAR_MISS_CASE_SPECS = (
         text="zzabbdzz",
         count=1,
         expected_result=("zzabbdzz", 0),
+    ),
+    CallableNearMissCase(
+        id="module-numbered-sub-no-match-missing-replay-broader-range-bytes",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=False,
+        pattern=rb"a((b|c){2,})\2d",
+        helper="sub",
+        text=b"zzabbdzz",
+        count=0,
+        expected_result=b"zzabbdzz",
+    ),
+    CallableNearMissCase(
+        id="module-numbered-subn-no-match-missing-replay-broader-range-bytes",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=False,
+        pattern=rb"a((b|c){2,})\2d",
+        helper="subn",
+        text=b"zzabbdzz",
+        count=1,
+        expected_result=(b"zzabbdzz", 0),
+    ),
+    CallableNearMissCase(
+        id="pattern-numbered-sub-no-match-missing-replay-broader-range-bytes",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=True,
+        pattern=rb"a((b|c){2,})\2d",
+        helper="sub",
+        text=b"zzabbdzz",
+        count=0,
+        expected_result=b"zzabbdzz",
+    ),
+    CallableNearMissCase(
+        id="pattern-numbered-subn-no-match-missing-replay-broader-range-bytes",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=True,
+        pattern=rb"a((b|c){2,})\2d",
+        helper="subn",
+        text=b"zzabbdzz",
+        count=1,
+        expected_result=(b"zzabbdzz", 0),
+    ),
+    CallableNearMissCase(
+        id="module-named-sub-no-match-missing-replay-broader-range-bytes",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=False,
+        pattern=rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        helper="sub",
+        text=b"zzabbdzz",
+        count=0,
+        expected_result=b"zzabbdzz",
+    ),
+    CallableNearMissCase(
+        id="module-named-subn-no-match-missing-replay-broader-range-bytes",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=False,
+        pattern=rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        helper="subn",
+        text=b"zzabbdzz",
+        count=1,
+        expected_result=(b"zzabbdzz", 0),
+    ),
+    CallableNearMissCase(
+        id="pattern-named-sub-no-match-missing-replay-broader-range-bytes",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=True,
+        pattern=rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        helper="sub",
+        text=b"zzabbdzz",
+        count=0,
+        expected_result=b"zzabbdzz",
+    ),
+    CallableNearMissCase(
+        id="pattern-named-subn-no-match-missing-replay-broader-range-bytes",
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
+        ),
+        use_compiled_pattern=True,
+        pattern=rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d",
+        helper="subn",
+        text=b"zzabbdzz",
+        count=1,
+        expected_result=(b"zzabbdzz", 0),
     ),
     CallableNearMissCase(
         id="module-numbered-sub-no-match-missing-conditional-d-bytes",
@@ -812,6 +935,12 @@ def _pending_rebar_bytes_no_match_patterns() -> frozenset[bytes]:
         if _is_pending_rebar_callable_case(case) and case.text_model == "bytes"
     )
 
+
+def _is_pending_rebar_no_match_pattern(pattern: TextValue) -> bool:
+    if isinstance(pattern, bytes):
+        return pattern in PENDING_REBAR_BYTES_NO_MATCH_PATTERNS
+    return pattern in PENDING_REBAR_NO_MATCH_PATTERNS
+
 COLLECTION_REPLACEMENT_BUNDLE, = load_fixture_bundles(
     (
         FixtureBundleSpec(
@@ -972,6 +1101,16 @@ def _observe_published_callable_case(backend: object, case: FixtureCase) -> tupl
         return ("result", _invoke_published_callable_case(backend, case))
     except Exception as exc:
         return ("exception", normalize_exception(exc))
+
+
+def _near_miss_patterns_for_manifest(
+    manifest_id: str,
+) -> frozenset[str | bytes]:
+    return frozenset(
+        near_miss_case.pattern
+        for near_miss_case in CALLABLE_NEAR_MISS_CASE_SPECS
+        if near_miss_case.manifest_id == manifest_id
+    )
 
 
 def _callable_no_match_text(pattern: TextValue, flags: int = 0) -> TextValue:
@@ -1233,6 +1372,9 @@ def test_callable_replacement_cases_stay_aligned_with_published_fixture(
     assert {
         case.case_id for case in bundle.cases if _is_pending_rebar_callable_case(case)
     } == manifest_spec.pending_rebar_case_ids
+    assert _near_miss_patterns_for_manifest(manifest_spec.manifest_id) == (
+        manifest_spec.expected_near_miss_patterns
+    )
     assert manifest_spec.has_near_miss_matrix is (
         manifest_spec.manifest_id in CALLABLE_NEAR_MISS_MANIFEST_IDS
     )
@@ -1313,12 +1455,6 @@ def test_mixed_text_callable_manifest_partitions_track_pending_or_landed_bytes_c
             case.case_id
             for case in PATTERN_RETURN_TYPE_ERROR_CASES
             if case.case_id in manifest_spec.pending_rebar_case_ids
-        }
-        assert not {
-            near_miss_case.id
-            for near_miss_case in CALLABLE_NEAR_MISS_CASE_SPECS
-            if near_miss_case.manifest_id == manifest_spec.manifest_id
-            and isinstance(near_miss_case.pattern, bytes)
         }
 
 
@@ -1459,9 +1595,8 @@ def test_callable_replacement_near_miss_paths_leave_input_unchanged(
     near_miss_case: CallableNearMissCase,
 ) -> None:
     backend_name, backend = regex_backend
-    if (
-        backend_name == "rebar"
-        and near_miss_case.pattern in PENDING_REBAR_NO_MATCH_PATTERNS
+    if backend_name == "rebar" and _is_pending_rebar_no_match_pattern(
+        near_miss_case.pattern
     ):
         pytest.skip(
             f"callable replacement parity for pattern {near_miss_case.pattern!r} remains queued behind a later Rust-backed parity task"
