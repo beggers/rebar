@@ -1062,34 +1062,78 @@ def test_callable_replacement_cases_stay_aligned_with_published_fixture(
     tuple(
         pytest.param(spec, id=spec.manifest_id)
         for spec in CALLABLE_MANIFEST_SPECS
-        if spec.pending_rebar_case_ids
+        if spec.expected_text_models == MIXED_TEXT_MODELS
     ),
 )
-def test_pending_bytes_follow_on_cases_stay_out_of_shared_callable_partitions(
+def test_mixed_text_callable_manifest_partitions_track_pending_or_landed_bytes_cases(
     manifest_spec: CallableManifestSpec,
 ) -> None:
     bundle = published_fixture_bundle_by_manifest_id(
         FIXTURE_BUNDLES,
         manifest_spec.manifest_id,
     )
-    shared_case_ids = frozenset(
+    shared_module_case_ids = frozenset(
         case.case_id
-        for case in (*MODULE_CASES, *PATTERN_CASES)
+        for case in MODULE_CASES
         if case.manifest_id == manifest_spec.manifest_id
     )
-
-    assert {case.case_id for case in bundle.cases if case.text_model == "bytes"} == (
-        manifest_spec.pending_rebar_case_ids
-    )
-    assert shared_case_ids == (
-        manifest_spec.expected_case_ids - manifest_spec.pending_rebar_case_ids
-    )
-    assert not {
+    shared_pattern_case_ids = frozenset(
         case.case_id
-        for case in PATTERN_RETURN_TYPE_ERROR_CASES
-        if case.case_id in manifest_spec.pending_rebar_case_ids
-    }
-    assert manifest_spec.manifest_id not in CALLABLE_NEAR_MISS_MANIFEST_IDS
+        for case in PATTERN_CASES
+        if case.manifest_id == manifest_spec.manifest_id
+    )
+    bytes_module_case_ids = frozenset(
+        case.case_id
+        for case in BYTES_MODULE_CASES
+        if case.manifest_id == manifest_spec.manifest_id
+    )
+    bytes_pattern_case_ids = frozenset(
+        case.case_id
+        for case in BYTES_PATTERN_CASES
+        if case.manifest_id == manifest_spec.manifest_id
+    )
+    expected_bytes_module_case_ids = frozenset(
+        case.case_id
+        for case in bundle.cases
+        if case.text_model == "bytes" and case.operation == "module_call"
+    )
+    expected_bytes_pattern_case_ids = frozenset(
+        case.case_id
+        for case in bundle.cases
+        if case.text_model == "bytes" and case.operation == "pattern_call"
+    )
+    expected_shared_module_case_ids = frozenset(
+        case.case_id
+        for case in bundle.cases
+        if case.operation == "module_call"
+        and case.case_id not in manifest_spec.pending_rebar_case_ids
+    )
+    expected_shared_pattern_case_ids = frozenset(
+        case.case_id
+        for case in bundle.cases
+        if case.operation == "pattern_call"
+        and case.case_id not in manifest_spec.pending_rebar_case_ids
+    )
+
+    assert {
+        case.case_id for case in bundle.cases if case.text_model == "bytes"
+    } == (
+        expected_bytes_module_case_ids | expected_bytes_pattern_case_ids
+    )
+    assert bytes_module_case_ids == expected_bytes_module_case_ids
+    assert bytes_pattern_case_ids == expected_bytes_pattern_case_ids
+    assert shared_module_case_ids == expected_shared_module_case_ids
+    assert shared_pattern_case_ids == expected_shared_pattern_case_ids
+    assert manifest_spec.pending_rebar_case_ids <= (
+        bytes_module_case_ids | bytes_pattern_case_ids
+    )
+    if manifest_spec.pending_rebar_case_ids:
+        assert not {
+            case.case_id
+            for case in PATTERN_RETURN_TYPE_ERROR_CASES
+            if case.case_id in manifest_spec.pending_rebar_case_ids
+        }
+        assert manifest_spec.manifest_id not in CALLABLE_NEAR_MISS_MANIFEST_IDS
 
 
 def test_pattern_callable_replacement_return_type_error_cases_cover_quantified_callable_fixture_frontier(
