@@ -664,6 +664,68 @@ GROUPED_REPLACEMENT_SUPPLEMENTAL_REPEATED_CASES = (
         expected_result=("abcxabc", 1),
     ),
 )
+SUPPLEMENTAL_NEGATIVE_COUNT_CASES = (
+    SupplementalReplacementCase(
+        id="module-grouped-template-negative-count",
+        use_compiled_pattern=False,
+        helper="sub",
+        pattern=r"(abc)",
+        replacement=r"\1x",
+        string="abcabc",
+        count=-1,
+        expected_result="abcabc",
+    ),
+    SupplementalReplacementCase(
+        id="pattern-named-group-template-negative-count",
+        use_compiled_pattern=True,
+        helper="subn",
+        pattern=r"(?P<word>abc)",
+        replacement=r"<\g<word>>",
+        string="abcabc",
+        count=-1,
+        expected_result=("abcabc", 0),
+    ),
+    SupplementalReplacementCase(
+        id="module-conditional-template-negative-count",
+        use_compiled_pattern=False,
+        helper="sub",
+        pattern=r"a(b)?c(?(1)d|e)",
+        replacement=r"\1x",
+        string="abcdaceabcd",
+        count=-1,
+        expected_result="abcdaceabcd",
+    ),
+    SupplementalReplacementCase(
+        id="pattern-named-conditional-template-negative-count",
+        use_compiled_pattern=True,
+        helper="subn",
+        pattern=r"a(?P<word>b)?c(?(word)d|e)",
+        replacement=r"\g<word>x",
+        string="abcdaceabcd",
+        count=-1,
+        expected_result=("abcdaceabcd", 0),
+    ),
+    SupplementalReplacementCase(
+        id="module-numbered-bytes-template-negative-count",
+        use_compiled_pattern=False,
+        helper="sub",
+        pattern=rb"a((b|c){2,})\2(?(2)d|e)",
+        replacement=rb"\1x",
+        string=b"abbbdzzabcccd",
+        count=-1,
+        expected_result=b"abbbdzzabcccd",
+    ),
+    SupplementalReplacementCase(
+        id="pattern-named-bytes-template-negative-count",
+        use_compiled_pattern=True,
+        helper="subn",
+        pattern=rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+        replacement=rb"\g<inner>x",
+        string=b"abbbdzzabcccd",
+        count=-1,
+        expected_result=(b"abbbdzzabcccd", 0),
+    ),
+)
 
 
 def _pattern_from_extractor(
@@ -1532,6 +1594,9 @@ SUPPLEMENTAL_REPEATED_CASE_PARAMS = tuple(
     for surface in REPLACEMENT_SURFACES
     for case in surface.spec.supplemental_repeated_cases
 )
+SUPPLEMENTAL_NEGATIVE_COUNT_CASE_PARAMS = tuple(
+    pytest.param(case, id=case.id) for case in SUPPLEMENTAL_NEGATIVE_COUNT_CASES
+)
 
 
 def _is_pending_bytes_follow_on_case(
@@ -2067,6 +2132,22 @@ def test_supplemental_no_match_paths_match_cpython(
 
 @pytest.mark.parametrize("case", SUPPLEMENTAL_REPEATED_CASE_PARAMS)
 def test_repeated_replacement_paths_match_cpython(
+    regex_backend: tuple[str, object],
+    case: SupplementalReplacementCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = _run_supplemental_replacement_case(
+        backend_name,
+        backend,
+        case,
+    )
+
+    assert case.expected_result is not None
+    assert observed == expected == case.expected_result
+
+
+@pytest.mark.parametrize("case", SUPPLEMENTAL_NEGATIVE_COUNT_CASE_PARAMS)
+def test_negative_replacement_counts_short_circuit_like_cpython(
     regex_backend: tuple[str, object],
     case: SupplementalReplacementCase,
 ) -> None:
