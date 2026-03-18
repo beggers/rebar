@@ -121,21 +121,6 @@ def materialize_descriptor_value(
     return value
 
 
-def validate_scorecard_report_path(
-    report_path: pathlib.Path,
-    *,
-    legacy_path: pathlib.Path,
-    legacy_path_error: str,
-) -> pathlib.Path:
-    expanded = report_path.expanduser()
-    if not expanded.is_absolute():
-        expanded = pathlib.Path.cwd() / expanded
-    resolved_path = expanded.resolve()
-    if resolved_path == legacy_path:
-        raise ValueError(legacy_path_error)
-    return resolved_path
-
-
 def format_python_scorecard_module(
     scorecard: dict[str, Any],
     *,
@@ -252,14 +237,6 @@ def write_scorecard_report(
     )
 
 
-def remove_scorecard_sidecar(legacy_path: pathlib.Path) -> bool:
-    try:
-        legacy_path.unlink()
-    except FileNotFoundError:
-        return False
-    return True
-
-
 def _display_scorecard_path(path: pathlib.Path) -> str:
     try:
         reports_root_index = path.parts.index("reports")
@@ -278,11 +255,13 @@ class ScorecardReportDescriptor:
     module_name_prefix: str
 
     def validate_path(self, report_path: pathlib.Path | str) -> pathlib.Path:
-        return validate_scorecard_report_path(
-            pathlib.Path(report_path),
-            legacy_path=self.legacy_path,
-            legacy_path_error=self.legacy_path_error,
-        )
+        expanded = pathlib.Path(report_path).expanduser()
+        if not expanded.is_absolute():
+            expanded = pathlib.Path.cwd() / expanded
+        resolved_path = expanded.resolve()
+        if resolved_path == self.legacy_path:
+            raise ValueError(self.legacy_path_error)
+        return resolved_path
 
     def resolve_optional_path(
         self,
@@ -319,7 +298,11 @@ class ScorecardReportDescriptor:
             self.remove_legacy_sidecar()
 
     def remove_legacy_sidecar(self) -> bool:
-        return remove_scorecard_sidecar(self.legacy_path)
+        try:
+            self.legacy_path.unlink()
+        except FileNotFoundError:
+            return False
+        return True
 
 
 def build_scorecard_report_descriptor(
