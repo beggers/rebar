@@ -1,8 +1,9 @@
 # RBR-0625: Publish the nested broader-range open-ended branch-local-backreference conditional replacement-template bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
+Completed: 2026-03-18
 
 ## Goal
 - Extend the existing broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference conditional replacement-template correctness publication with the exact bytes pair on the shared replacement surface, so the frontier reopens on the tracked correctness path before Rust-backed bytes replacement parity and later Python-path benchmark catch-up land.
@@ -41,3 +42,9 @@ Created: 2026-03-18
   - `benchmarks/workloads/nested_group_replacement_boundary.py` already publishes the four adjacent `str` replacement-template benchmark rows for this exact slice as `module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-str`, `module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-first-match-only-b-branch-warm-str`, `pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-purged-str`, and `pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-c-branch-first-match-only-purged-str`, so a later Python-path benchmark catch-up can mirror those rows without another synthesis pass; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for both target bytes replacement workflows at `rebar.sub(...)`.
 - A later parity follow-on should convert the same bytes pair behind `rebar._rebar` on the existing shared replacement surface before the benchmark surface mirrors the four adjacent `str` rows already published on `benchmarks/workloads/nested_group_replacement_boundary.py`.
+
+## Completion Notes
+- Added the eight bytes replacement-template mirrors to `tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py`, keeping this manifest as the only correctness publication for the slice and bringing it to 16 total rows with 8 `str` and 8 `bytes` cases.
+- Updated `tests/python/test_fixture_backed_replacement_parity_suite.py` so the shared replacement bundle contract now expects the mixed manifest honestly (`4` rows for each of `module_call/sub`, `module_call/subn`, `pattern_call/sub`, and `pattern_call/subn`), while the active shared compile/module/pattern/template-expand buckets still route only the supported `str` rows and leave the new bytes rows explicit as the pending follow-on within the same suite.
+- Refreshed `tests/conformance/correctness_expectations.py` and republished `reports/correctness/latest.py`; the tracked combined scorecard now reads `1286` total / `1278` passed / `8` `unimplemented`, and `nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-replacement-workflows` now reads `16` total / `8` passed / `8` `unimplemented` in the tracked report artifact.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`679 passed, 1511 subtests passed`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py --report .rebar/tmp/rbr-0625-nested-broader-range-open-ended-branch-local-backreference-conditional-replacement-bytes.py` (`16` total / `8` passed / `8` `unimplemented`), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1286` total / `1278` passed / `8` `unimplemented`).
