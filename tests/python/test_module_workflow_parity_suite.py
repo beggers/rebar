@@ -158,6 +158,7 @@ MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-compile-str-literal",
     "workflow-compile-str-anchored-literal",
     "workflow-compile-str-verbose-regression",
+    "workflow-compile-bytes-verbose-regression",
     "workflow-compile-bytes-literal",
     "workflow-pattern-search-str",
     "workflow-pattern-match-str",
@@ -173,6 +174,7 @@ MODULE_WORKFLOW_EXPECTED_PATTERNS = frozenset(
         "abc",
         "^abc$",
         "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+        b"^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
         b"abc",
         b"123",
         "cache-me",
@@ -184,7 +186,7 @@ MODULE_WORKFLOW_EXPECTED_PATTERNS = frozenset(
 )
 MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
-        ("compile", None): 4,
+        ("compile", None): 5,
         ("pattern_call", "search"): 1,
         ("pattern_call", "match"): 1,
         ("pattern_call", "fullmatch"): 1,
@@ -236,6 +238,7 @@ NOFLAG_COMPILE_CASES = tuple(
     case for case in COMPILE_CASES if (case.flags or 0) == 0
 )
 VERBOSE_COMPILE_CASE_ID = "workflow-compile-str-verbose-regression"
+VERBOSE_BYTES_COMPILE_CASE_ID = "workflow-compile-bytes-verbose-regression"
 (VERBOSE_COMPILE_CASE,) = tuple(
     case for case in COMPILE_CASES if case.case_id == VERBOSE_COMPILE_CASE_ID
 )
@@ -464,6 +467,7 @@ MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS = (
     "workflow-compile-str-literal",
     "workflow-compile-str-anchored-literal",
     VERBOSE_COMPILE_CASE_ID,
+    VERBOSE_BYTES_COMPILE_CASE_ID,
     "workflow-compile-bytes-literal",
 )
 MODULE_WORKFLOW_COMPILE_ONLY_PATTERNS = frozenset(
@@ -1793,7 +1797,7 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
     )
 
 
-def test_module_workflow_surface_bundle_contract_covers_verbose_compile_case() -> None:
+def test_module_workflow_surface_bundle_contract_covers_verbose_compile_cases() -> None:
     assert MODULE_WORKFLOW_BUNDLE.manifest.path == MODULE_WORKFLOW_FIXTURE_PATH
     assert_fixture_bundle_contract(
         MODULE_WORKFLOW_BUNDLE,
@@ -1802,7 +1806,10 @@ def test_module_workflow_surface_bundle_contract_covers_verbose_compile_case() -
         expected_ordered_case_ids=MODULE_WORKFLOW_EXPECTED_CASE_IDS,
     )
     assert VERBOSE_COMPILE_CASE.case_id == VERBOSE_COMPILE_CASE_ID
-    assert VERBOSE_COMPILE_CASE_ID in {case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases}
+    assert {
+        VERBOSE_COMPILE_CASE_ID,
+        VERBOSE_BYTES_COMPILE_CASE_ID,
+    } <= {case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases}
 
 
 def test_module_workflow_surface_compile_case_selection_preserves_row_order() -> None:
@@ -2044,11 +2051,22 @@ def test_compile_workflows_match_cpython(
     case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
+    pattern = case_pattern(case)
+
+    if backend_name == "rebar" and case.case_id == VERBOSE_BYTES_COMPILE_CASE_ID:
+        with pytest.raises(NotImplementedError) as missing_verbose:
+            backend.compile(pattern, case.flags or 0)
+
+        _assert_placeholder_message(
+            missing_verbose.value,
+            "rebar.compile() is a scaffold placeholder",
+        )
+        return
 
     compile_with_cpython_parity(
         backend_name,
         backend,
-        case_pattern(case),
+        pattern,
         case.flags or 0,
     )
 

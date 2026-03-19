@@ -1,6 +1,6 @@
 # RBR-0704: Publish the module-workflow verbose compile bytes follow-on
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -47,3 +47,11 @@ Created: 2026-03-19
   - `tests/python/test_module_workflow_parity_suite.py` currently pins the exact bytes follow-on `rebar.compile(pattern.encode("ascii"), int(VERBOSE_COMPILE_CASE.flags or 0))` as a `NotImplementedError` neighbor gap inside `test_source_package_verbose_compile_metadata_and_neighbor_gaps_remain_pinned()`;
   - `reports/correctness/latest.py` currently reports `1382` total / `1382` passed / `0` `unimplemented` across `114` manifests, and `module.workflow` at `12` total / `12` passed / `0` `unimplemented`, so this bytes verbose compile row is not yet represented on the tracked scorecard; and
   - `benchmarks/workloads/regression_matrix.py` already owns the adjacent `regression-module-compile-verbose-purged` `str` benchmark row, so any later Python-path benchmark catch-up for this same verbose compile family can stay on the existing regression manifest instead of inventing another benchmark surface.
+
+## Completion
+- 2026-03-19: Added `workflow-compile-bytes-verbose-regression` to the shared `module_workflow_surface.py` manifest, kept the shared module-workflow owner aligned with the new compile row, and preserved the explicit source-package gap where `rebar.compile(pattern.encode("ascii"), MULTILINE | VERBOSE)` still raises `NotImplementedError`.
+- Republished `reports/correctness/latest.py`; the tracked combined scorecard now reports `1383` total / `1382` passed / `1` unimplemented across the same `114` manifests. `module.workflow` is now `13` total / `12` passed / `1` unimplemented, and both `module.workflow.bytes` and `module.workflow.compile` are `5` total / `4` passed / `1` unimplemented because the new bytes verbose compile row is published honestly as unimplemented.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0704-module-workflow-verbose-bytes.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

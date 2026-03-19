@@ -40,6 +40,18 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-compile-bytes-verbose-regression",
+      "operation": "compile",
+      "family": "compile_workflow",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "flags": 72,
+      "text_model": "bytes",
+      "categories": ["workflow", "compile", "verbose", "multiline", "regression", "bytes"],
+      "notes": [
+        "Publishes the bytes sibling of the exact verbose module compile workflow without broadening into additional bytes-only variants."
+      ]
+    },
+    {
       "id": "workflow-compile-bytes-literal",
       "operation": "compile",
       "family": "compile_workflow",

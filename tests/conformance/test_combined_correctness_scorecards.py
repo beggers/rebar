@@ -85,6 +85,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
         representative_case_ids=(
             "workflow-compile-str-anchored-literal",
             "workflow-compile-str-verbose-regression",
+            "workflow-compile-bytes-verbose-regression",
             "workflow-cache-hit-str",
             "workflow-purge-reset-str",
             "workflow-pattern-search-str",
