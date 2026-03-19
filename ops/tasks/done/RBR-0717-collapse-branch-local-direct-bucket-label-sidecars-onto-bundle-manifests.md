@@ -1,6 +1,6 @@
 # RBR-0717: Collapse branch-local direct bucket-label sidecars onto bundle manifests
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -104,3 +104,7 @@ PY` reported the highest existing tail as `RBR-0707` through `RBR-0716` and no r
 - This simplification matches the current branch-local parity information flow:
   - `DIRECT_BYTES_FOLLOW_ON_SPECS` already owns the canonical per-manifest bundle ordering plus the bytes-case and expected-text metadata for this direct follow-on surface; and
   - the current `bucket_label` strings are mechanically `spec.bundle.expected_manifest_id.removesuffix("-workflows") + "-bytes-follow-on"`, so deleting them removes one more mirrored owner layer without changing published correctness coverage.
+
+## Completion Notes
+- 2026-03-19: Deleted the `bucket_label` field and constructor sidecars from `tests/python/test_branch_local_backreference_parity_suite.py`, added a small bundle-manifest-driven helper for direct-bytes follow-on bucket naming, and switched the direct bucket map plus the direct-follow-on anchor assertion to derive keys from each bundle's canonical manifest id.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py` (`561 passed in 0.84s`), the inline source-absence probe (`ok`), the import/bucket-order probe (`ok`), and `bash -lc "! rg -n 'bucket_label: str|bucket_label=|spec\\.bucket_label' tests/python/test_branch_local_backreference_parity_suite.py"`.

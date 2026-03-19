@@ -76,7 +76,6 @@ class BranchLocalBackreferenceBytesFollowOnCase:
 class BranchLocalBytesFollowOnSpec:
     bundle: FixtureBundle
     cases: tuple[BranchLocalBackreferenceBytesFollowOnCase, ...]
-    bucket_label: str
     expected_operation_helper_counts: Counter[tuple[str, str | None]]
     expected_module_search_texts_by_pattern: dict[bytes, frozenset[bytes]]
     expected_pattern_fullmatch_texts_by_pattern: dict[bytes, frozenset[bytes]]
@@ -791,11 +790,16 @@ NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BYTES_CAS
         fullmatch_misses=(b"abbd",),
     ),
 )
+
+
+def _direct_bytes_follow_on_bucket_label(bundle: FixtureBundle) -> str:
+    return f"{bundle.expected_manifest_id.removesuffix('-workflows')}-bytes-follow-on"
+
+
 DIRECT_BYTES_FOLLOW_ON_SPECS = (
     BranchLocalBytesFollowOnSpec(
         bundle=QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES,
-        bucket_label="quantified-alternation-branch-local-backreference-bytes-follow-on",
         expected_operation_helper_counts=Counter(
             {
                 ("compile", None): 2,
@@ -823,10 +827,6 @@ DIRECT_BYTES_FOLLOW_ON_SPECS = (
     BranchLocalBytesFollowOnSpec(
         bundle=QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
         cases=QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES,
-        bucket_label=(
-            "quantified-nested-group-alternation-branch-local-backreference-"
-            "bytes-follow-on"
-        ),
         expected_operation_helper_counts=Counter(
             {
                 ("compile", None): 2,
@@ -854,10 +854,6 @@ DIRECT_BYTES_FOLLOW_ON_SPECS = (
     BranchLocalBytesFollowOnSpec(
         bundle=NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
         cases=NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES,
-        bucket_label=(
-            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-"
-            "branch-local-backreference-bytes-follow-on"
-        ),
         expected_operation_helper_counts=Counter(
             {
                 ("compile", None): 2,
@@ -885,10 +881,6 @@ DIRECT_BYTES_FOLLOW_ON_SPECS = (
     BranchLocalBytesFollowOnSpec(
         bundle=NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
         cases=NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_BYTES_CASES,
-        bucket_label=(
-            "nested-broader-range-open-ended-quantified-group-alternation-"
-            "branch-local-backreference-bytes-follow-on"
-        ),
         expected_operation_helper_counts=Counter(
             {
                 ("compile", None): 2,
@@ -917,10 +909,6 @@ DIRECT_BYTES_FOLLOW_ON_SPECS = (
         bundle=NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BUNDLE,
         cases=(
             NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BYTES_CASES
-        ),
-        bucket_label=(
-            "nested-broader-range-open-ended-quantified-group-alternation-"
-            "branch-local-backreference-conditional-bytes-follow-on"
         ),
         expected_operation_helper_counts=Counter(
             {
@@ -973,7 +961,7 @@ BRANCH_LOCAL_BACKREFERENCE_DIRECT_TEST_CASE_ID_BUCKETS = {
     "shared-module": frozenset(case.case_id for case in MODULE_CASES),
     "shared-pattern": frozenset(case.case_id for case in PATTERN_CASES),
     **{
-        spec.bucket_label: frozenset(
+        _direct_bytes_follow_on_bucket_label(spec.bundle): frozenset(
             case.case_id for case in spec.bundle.cases if case.text_model == "bytes"
         )
         for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
@@ -1663,9 +1651,9 @@ def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_an
         if case.text_model == "bytes"
     )
 
-    assert BRANCH_LOCAL_BACKREFERENCE_DIRECT_TEST_CASE_ID_BUCKETS[spec.bucket_label] == frozenset(
-        case.case_id for case in bundle_bytes_cases
-    )
+    assert BRANCH_LOCAL_BACKREFERENCE_DIRECT_TEST_CASE_ID_BUCKETS[
+        _direct_bytes_follow_on_bucket_label(spec.bundle)
+    ] == frozenset(case.case_id for case in bundle_bytes_cases)
     assert len(spec.cases) == 2
     assert {case.pattern for case in spec.cases} == expected_compile_patterns
     assert len(bundle_str_cases) == len(bundle_bytes_cases) == sum(
