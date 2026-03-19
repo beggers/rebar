@@ -87,6 +87,20 @@ NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_
     "quantified_group_alternation_branch_local_backreference_"
     "conditional.callable"
 )
+NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BACKTRACKING_HEAVY_CALLABLE_REPLACEMENT_FIXTURE_PATH = (
+    REPO_ROOT
+    / "tests"
+    / "conformance"
+    / "fixtures"
+    / (
+        "nested_broader_range_wider_ranged_repeat_quantified_group_"
+        "alternation_backtracking_heavy_callable_replacement_workflows.py"
+    )
+)
+NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BACKTRACKING_HEAVY_CALLABLE_REPLACEMENT_SUITE_ID = (
+    "collection.replacement.nested_broader_range_wider_ranged_repeat_"
+    "quantified_group_alternation_backtracking_heavy.callable"
+)
 TRACKED_REPORT_FRESHNESS_CASES = (
     (
         "numbered-backreference",
@@ -117,6 +131,11 @@ TRACKED_REPORT_FRESHNESS_CASES = (
         "nested-broader-range-wider-ranged-repeat-branch-local-backreference-conditional-callable-replacement",
         NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_CALLABLE_REPLACEMENT_FIXTURE_PATH,
         NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_CALLABLE_REPLACEMENT_SUITE_ID,
+    ),
+    (
+        "nested-broader-range-wider-ranged-repeat-backtracking-heavy-callable-replacement",
+        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BACKTRACKING_HEAVY_CALLABLE_REPLACEMENT_FIXTURE_PATH,
+        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BACKTRACKING_HEAVY_CALLABLE_REPLACEMENT_SUITE_ID,
     ),
 )
 
@@ -1688,6 +1707,18 @@ NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_SCORECARD_
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-second-repetition-long-then-short-str",
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-invalid-tail-str",
             "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-no-match-overflow-str",
+        ),
+    ),
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
+        representative_case_ids=(
+            "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-lower-bound-short-branch-str",
+            "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-first-match-only-long-branch-str",
+            "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-mixed-branches-str",
+            "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-upper-bound-b-branch-first-match-only-str",
+            "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-mixed-branches-str",
+            "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-first-match-only-long-branch-str",
+            "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-upper-bound-mixed-str",
+            "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-b-branch-first-match-only-str",
         ),
     ),
 }

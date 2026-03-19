@@ -11,6 +11,7 @@ import pytest
 
 import rebar
 from rebar_harness.correctness import (
+    CALLABLE_REPLACEMENT_FIXTURE_SELECTOR,
     BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR,
     BOUNDED_WILDCARD_FIXTURE_SELECTOR,
     CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR,
@@ -147,6 +148,26 @@ SELECTOR_EXPECTATIONS = (
         LITERAL_FLAG_FIXTURE_SELECTOR,
         ("literal_flag_workflows.py",),
         id="literal-flag",
+    ),
+    pytest.param(
+        CALLABLE_REPLACEMENT_FIXTURE_SELECTOR,
+        (
+            "conditional_group_exists_callable_replacement_workflows.py",
+            "grouped_alternation_callable_replacement_workflows.py",
+            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
+            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_callable_replacement_workflows.py",
+            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
+            "nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+            "nested_group_alternation_callable_replacement_workflows.py",
+            "nested_group_callable_replacement_workflows.py",
+            "nested_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+            "quantified_nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+            "quantified_nested_group_alternation_callable_replacement_workflows.py",
+            "quantified_nested_group_callable_replacement_workflows.py",
+        ),
+        id="callable-replacement",
     ),
     pytest.param(
         OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR,
