@@ -329,7 +329,7 @@ The published slice is still narrow and not yet fully green: 1318 of 1326 correc
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0657`: convert the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template bytes pair behind `rebar._rebar` on the existing shared replacement surface, moving that mixed-text manifest from `16` total / `8` passed / `8` `unimplemented` to `16` / `16` / `0` and the published correctness surface to `1326` / `1326` / `0`.
+- `RBR-0659`: catch the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template bytes pair up on `benchmarks/workloads/nested_group_replacement_boundary.py`, moving that shared benchmark owner from `36` total / `36` measured / `0` known-gap workloads to `40` / `40` / `0` and the published source-tree benchmark surface from `739` / `739` / `0` to `743` / `743` / `0`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
