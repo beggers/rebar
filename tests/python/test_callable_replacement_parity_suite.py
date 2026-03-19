@@ -1309,22 +1309,28 @@ def _assert_source_callable_replacement_reference_is_valid(case: FixtureCase) ->
         assert group_reference in compiled.groupindex
 
 
-def _live_unimplemented_callable_manifest_ids() -> frozenset[str]:
+def _live_unimplemented_callable_cases() -> tuple[FixtureCase, ...]:
     cpython_adapter = CpythonReAdapter()
     rebar_adapter = RebarAdapter()
-    manifest_ids: set[str] = set()
 
-    for bundle in FIXTURE_BUNDLES:
-        for case in bundle.cases:
-            evaluation = evaluate_case(case, cpython_adapter, rebar_adapter)
-            if evaluation["comparison"] == "unimplemented":
-                manifest_ids.add(case.manifest_id)
+    return tuple(
+        case
+        for bundle in FIXTURE_BUNDLES
+        for case in bundle.cases
+        if evaluate_case(case, cpython_adapter, rebar_adapter)["comparison"]
+        == "unimplemented"
+    )
 
-    return frozenset(manifest_ids)
 
+def test_pending_rebar_callable_frontier_matches_live_unimplemented_cases() -> None:
+    live_unimplemented_cases = _live_unimplemented_callable_cases()
 
-def test_pending_rebar_callable_manifest_ids_match_live_unimplemented_manifests() -> None:
-    assert _live_unimplemented_callable_manifest_ids() == PENDING_REBAR_MANIFEST_IDS
+    assert {case.case_id for case in live_unimplemented_cases} == (
+        PENDING_REBAR_CASE_IDS
+    )
+    assert {case.manifest_id for case in live_unimplemented_cases} == (
+        PENDING_REBAR_MANIFEST_IDS
+    )
 
 
 @pytest.mark.parametrize(
