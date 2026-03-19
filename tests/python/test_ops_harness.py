@@ -31,8 +31,8 @@ def load_rebar_ops_module(module_name: str = "rebar_ops_for_tests") -> object:
 
 
 PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py"
-COMPILE_SMOKE_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "compile_smoke.py"
+COMPILE_MATRIX_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
 )
 CORRECTNESS_REPORT_PATH = correctness.SCORECARD_REPORT.published_path
 LEGACY_CORRECTNESS_REPORT_PATH = scorecard_io.retired_published_scorecard_sidecar_path(
@@ -787,17 +787,17 @@ class ReadmeReportingTest(unittest.TestCase):
             "rebar_harness.benchmarks",
             [
                 "--manifest",
-                str(COMPILE_SMOKE_MANIFEST_PATH),
+                str(COMPILE_MATRIX_MANIFEST_PATH),
             ],
-            report_name="compile-smoke.py",
+            report_name="compile-matrix.py",
         )
 
         self.assertEqual(scorecard["suite"], "benchmarks")
         self.assertEqual(
             scorecard["artifacts"]["manifest"],
-            str(COMPILE_SMOKE_MANIFEST_PATH.relative_to(REPO_ROOT)),
+            str(COMPILE_MATRIX_MANIFEST_PATH.relative_to(REPO_ROOT)),
         )
-        self.assertEqual(scorecard["artifacts"]["manifest_id"], "compile-smoke")
+        self.assertEqual(scorecard["artifacts"]["manifest_id"], "compile-matrix")
         self.assertEqual(
             {key: scorecard["summary"][key] for key in summary},
             summary,

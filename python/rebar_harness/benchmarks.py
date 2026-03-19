@@ -44,7 +44,6 @@ DEFAULT_REPORT_PATH = SCORECARD_REPORT.published_path
 BENCHMARK_WORKLOADS_ROOT = REPO_ROOT / "benchmarks" / "workloads"
 PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR = "published-full-suite"
 BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR = "built-native-smoke"
-COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR = "compile-smoke-provenance"
 _BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR = {
     PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR: (
         "compile_matrix.py",
@@ -83,7 +82,6 @@ _BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR = {
         "collection_replacement_boundary.py",
         "literal_flag_boundary.py",
     ),
-    COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR: ("compile_smoke.py",),
 }
 
 
@@ -93,15 +91,6 @@ def select_benchmark_manifest_paths(selector: str) -> tuple[pathlib.Path, ...]:
     except KeyError as exc:
         raise ValueError(f"unknown benchmark manifest selector {selector!r}") from exc
     return tuple(BENCHMARK_WORKLOADS_ROOT / filename for filename in manifest_filenames)
-
-
-def select_benchmark_manifest_path(selector: str) -> pathlib.Path:
-    manifest_paths = select_benchmark_manifest_paths(selector)
-    if len(manifest_paths) != 1:
-        raise ValueError(
-            f"benchmark manifest selector {selector!r} does not resolve to exactly one path"
-        )
-    return manifest_paths[0]
 
 
 SOURCE_TREE_SHIM_MODE = "source-tree-shim"

@@ -23,7 +23,6 @@ from rebar_harness.benchmarks import (
     BENCHMARK_WORKLOADS_ROOT,
     BenchmarkManifest,
     BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR,
-    COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR,
     PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR,
     Workload,
     build_callable,
@@ -33,7 +32,6 @@ from rebar_harness.benchmarks import (
     load_manifests,
     published_benchmark_manifests,
     run_internal_workload_probe,
-    select_benchmark_manifest_path,
     select_benchmark_manifest_paths,
     select_workloads,
     workload_to_payload,
@@ -711,12 +709,6 @@ class SourceTreeDeferredExpectation:
 
 
 @dataclass(frozen=True, slots=True)
-class _SourceTreeManifestKnownGapCountOverride:
-    manifest_id: str
-    known_gap_count: int
-
-
-@dataclass(frozen=True, slots=True)
 class SourceTreeScorecardCase(SourceTreeBenchmarkCommonCase):
     case_id: str
     manifest_expectations: dict[str, SourceTreeManifestExpectation]
@@ -734,9 +726,6 @@ class _SourceTreeScorecardDefinition:
     representative_known_gap_workload_ids: tuple[str, ...] = ()
     expected_first_deferred: SourceTreeDeferredExpectation | None = None
     expected_workload_order: tuple[str, ...] | None = None
-    _manifest_known_gap_count_overrides: tuple[
-        _SourceTreeManifestKnownGapCountOverride, ...
-    ] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -790,22 +779,6 @@ class SourceTreeCombinedSliceExpectation:
 
 
 SOURCE_TREE_SCORECARD_EXPECTATIONS = {
-    "compile-smoke": _SourceTreeScorecardDefinition(
-        manifest_ids=("compile-smoke",),
-        selection_mode="full",
-        _manifest_known_gap_count_overrides=(
-            _SourceTreeManifestKnownGapCountOverride(
-                manifest_id="compile-smoke",
-                known_gap_count=1,
-            ),
-        ),
-        expected_first_deferred=SourceTreeDeferredExpectation(
-            area="module-boundary",
-            follow_up="RBR-0015",
-        ),
-        representative_measured_workload_ids=("compile-literal-cold",),
-        representative_known_gap_workload_ids=("compile-character-class-warm",),
-    ),
     "compile-matrix": _SourceTreeScorecardDefinition(
         manifest_ids=("compile-matrix",),
         expected_first_deferred=SourceTreeDeferredExpectation(
@@ -2345,11 +2318,9 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
 
 @cache
 def _source_tree_manifest_records() -> dict[str, BenchmarkManifest]:
-    compile_smoke_manifest = load_manifest(
-        select_benchmark_manifest_path(COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR)
-    )
-    manifests = (compile_smoke_manifest, *published_benchmark_manifests())
-    return {manifest.manifest_id: manifest for manifest in manifests}
+    return {
+        manifest.manifest_id: manifest for manifest in published_benchmark_manifests()
+    }
 
 
 def _source_tree_manifest_record(manifest_id: str) -> BenchmarkManifest:
@@ -2564,16 +2535,9 @@ def _source_tree_manifest_known_gap_counts(
     *,
     selection_mode: str,
 ) -> dict[str, int]:
-    explicit_known_gap_counts = {
-        override.manifest_id: override.known_gap_count
-        for override in case_definition._manifest_known_gap_count_overrides
-    }
     known_gap_counts: dict[str, int] = {}
     for manifest in manifests:
         manifest_id = manifest.manifest_id
-        if manifest_id in explicit_known_gap_counts:
-            known_gap_counts[manifest_id] = explicit_known_gap_counts[manifest_id]
-            continue
         manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
         if manifest_expectation is None:
             raise AssertionError(
@@ -4356,12 +4320,16 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
 
     def test_case_selection_helpers_derive_workload_ids_from_manifests(self) -> None:
-        compile_smoke = source_tree_scorecard_case("compile-smoke")
+        compile_matrix = source_tree_scorecard_case("compile-matrix")
         self.assertEqual(
-            compile_smoke.selected_workload_ids_for_manifest("compile-smoke"),
+            compile_matrix.selected_workload_ids_for_manifest("compile-matrix"),
             (
-                "compile-literal-cold",
-                "compile-character-class-warm",
+                "compile-inline-locale-bytes-warm",
+                "compile-lookbehind-cold",
+                "compile-character-class-ignorecase-warm",
+                "compile-possessive-quantifier-cold",
+                "compile-atomic-group-purged",
+                "compile-parser-stress-cold",
             ),
         )
 
@@ -4438,17 +4406,22 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                     (),
                 )
 
-    def test_compile_smoke_case_restores_single_manifest_expectations(self) -> None:
-        case = source_tree_scorecard_case("compile-smoke")
-        manifest_expectation = case.manifest_expectations["compile-smoke"]
-        self.assertEqual(manifest_expectation.known_gap_count, 1)
+    def test_compile_matrix_manifest_reuses_zero_gap_expectation(self) -> None:
+        case = source_tree_scorecard_case("compile-matrix")
+        manifest_expectation = case.manifest_expectations["compile-matrix"]
+        self.assertEqual(manifest_expectation.known_gap_count, 0)
         self.assertEqual(
-            manifest_expectation.representative_measured_workload_ids,
-            ("compile-literal-cold",),
+            case.representative_measured_workload_ids,
+            (
+                "compile-inline-locale-bytes-warm",
+                "compile-lookbehind-cold",
+                "compile-atomic-group-purged",
+                "compile-parser-stress-cold",
+            ),
         )
         self.assertEqual(
-            manifest_expectation.representative_known_gap_workload_ids,
-            ("compile-character-class-warm",),
+            case.representative_known_gap_workload_ids,
+            (),
         )
         self.assertIsNotNone(case.expected_first_deferred)
         assert case.expected_first_deferred is not None
@@ -4838,9 +4811,6 @@ OPEN_ENDED_MANIFEST_PATH = (
 
 support = sys.modules[__name__]
 MATURIN = shutil.which("maturin")
-COMPILE_SMOKE_PROVENANCE_MANIFEST_PATH = select_benchmark_manifest_path(
-    COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR
-)
 _MISSING_MATURIN_REASON = (
     "built-native mode unavailable because no `maturin` executable was found on PATH"
 )
@@ -6701,29 +6671,13 @@ def test_default_benchmark_manifest_selector_rejects_unknown_selector() -> None:
         select_benchmark_manifest_paths("missing-selector")
 
 
-def test_default_benchmark_single_manifest_selector_helper_rejects_full_suite_selector() -> None:
-    with pytest.raises(
-        ValueError,
-        match=(
-            "benchmark manifest selector 'published-full-suite' "
-            "does not resolve to exactly one path"
-        ),
-    ):
-        select_benchmark_manifest_path(PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR)
-
-
-def test_default_benchmark_published_full_suite_selector_covers_tracked_manifests_except_compile_smoke() -> None:
+def test_default_benchmark_published_full_suite_selector_covers_tracked_manifests() -> None:
     published_manifest_paths = select_benchmark_manifest_paths(
         PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
     )
     tracked_manifest_paths = _tracked_benchmark_manifest_paths()
-    compile_smoke_manifest_path = select_benchmark_manifest_path(
-        COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR
-    )
 
-    assert set(published_manifest_paths) == set(tracked_manifest_paths) - {
-        compile_smoke_manifest_path
-    }
+    assert set(published_manifest_paths) == set(tracked_manifest_paths)
     assert len(published_manifest_paths) == len(set(published_manifest_paths))
 
     for path in published_manifest_paths:
@@ -6739,9 +6693,6 @@ def test_default_benchmark_shared_selectors_keep_expected_inventory_shapes() -> 
     native_smoke_manifest_paths = select_benchmark_manifest_paths(
         BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR
     )
-    compile_smoke_manifest_path = select_benchmark_manifest_path(
-        COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR
-    )
 
     assert tuple(path.name for path in native_smoke_manifest_paths) == (
         "pattern_boundary.py",
@@ -6749,9 +6700,6 @@ def test_default_benchmark_shared_selectors_keep_expected_inventory_shapes() -> 
         "literal_flag_boundary.py",
     )
     assert set(native_smoke_manifest_paths).issubset(set(published_manifest_paths))
-    assert compile_smoke_manifest_path.name == "compile_smoke.py"
-    assert compile_smoke_manifest_path.is_relative_to(BENCHMARK_WORKLOADS_ROOT)
-    assert compile_smoke_manifest_path not in published_manifest_paths
 
 
 def test_default_benchmark_published_manifest_helper_is_cached_and_preserves_selector_order() -> None:
@@ -6854,7 +6802,7 @@ def test_run_benchmarks_falls_back_to_source_shim_when_build_tooling_is_unavaila
         return_value=(None, None, _MISSING_MATURIN_REASON),
     ):
         scorecard = benchmarks.run_benchmarks(
-            manifest_paths=[COMPILE_SMOKE_PROVENANCE_MANIFEST_PATH],
+            manifest_paths=[COMPILE_MATRIX_MANIFEST_PATH],
             report_path=report_path,
             adapter_mode=benchmarks.BUILT_NATIVE_MODE,
         )
@@ -6878,7 +6826,7 @@ def test_run_benchmarks_reports_built_native_provenance_when_available(
     tmp_path: pathlib.Path,
 ) -> None:
     scorecard = benchmarks.run_benchmarks(
-        manifest_paths=[COMPILE_SMOKE_PROVENANCE_MANIFEST_PATH],
+        manifest_paths=[COMPILE_MATRIX_MANIFEST_PATH],
         report_path=tmp_path / "benchmarks-native.json",
         adapter_mode=benchmarks.BUILT_NATIVE_MODE,
     )

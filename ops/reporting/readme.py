@@ -65,7 +65,7 @@ CONFIG = {
             "description": "Tracked benchmark runner and workload manifest for parser and module-boundary measurements.",
             "paths_any": [
                 "python/rebar_harness/benchmarks.py",
-                "benchmarks/workloads/compile_smoke.py",
+                "benchmarks/workloads/compile_matrix.py",
             ],
             "task": "RBR-0008-benchmark-harness-scaffold.md",
         },
