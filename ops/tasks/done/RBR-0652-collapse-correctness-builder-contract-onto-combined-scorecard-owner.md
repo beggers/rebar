@@ -1,6 +1,6 @@
 # RBR-0652: Collapse the detached correctness builder contract onto the combined scorecard owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -76,3 +76,6 @@ PY`
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py tests/conformance/test_correctness_builder_contracts.py` currently passes (`17 passed, 1734 subtests passed in 30.89s`);
   - the inline source probe in Acceptance currently fails exactly on this cleanup with `AssertionError: build_scorecard(` because `tests/conformance/test_combined_correctness_scorecards.py` does not yet carry the absorbed builder coverage; and
   - `bash -lc "! rg --files tests/conformance | rg 'test_correctness_builder_contracts\\.py$'"` currently fails exactly on this cleanup because the detached file still exists.
+
+## Completion Note
+- 2026-03-19: Moved the direct correctness-builder normalization, comparison, summary, and synthetic scorecard coverage into `tests/conformance/test_combined_correctness_scorecards.py`; deleted `tests/conformance/test_correctness_builder_contracts.py`; and verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py`, the inline source probe from Acceptance, and `bash -lc "! rg --files tests/conformance | rg 'test_correctness_builder_contracts\\.py$'"`.
