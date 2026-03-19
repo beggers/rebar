@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass, fields, replace
+import json
 import pathlib
 import re
 import textwrap
@@ -231,6 +232,40 @@ def _declared_correctness_fixture_selectors() -> dict[str, str]:
 
 def _duplicate_items(counter: Counter[str]) -> list[str]:
     return sorted(item for item, count in counter.items() if count > 1)
+
+
+def _assert_json_literal_safe(value: object) -> None:
+    if value is None or isinstance(value, (bool, int, float, str)):
+        return
+    if isinstance(value, list):
+        for item in value:
+            _assert_json_literal_safe(item)
+        return
+    if isinstance(value, dict):
+        for key, item in value.items():
+            assert isinstance(key, str)
+            _assert_json_literal_safe(item)
+        return
+    raise AssertionError(f"unexpected non-JSON-literal payload {value!r}")
+
+
+def _payload_type_markers(value: object) -> Counter[str]:
+    markers: Counter[str] = Counter()
+    if isinstance(value, list):
+        for item in value:
+            markers.update(_payload_type_markers(item))
+        return markers
+    if isinstance(value, dict):
+        if set(value) == {"encoding", "value"} and all(
+            isinstance(value[key], str) for key in ("encoding", "value")
+        ):
+            markers["normalized-bytes"] += 1
+        marker = value.get("type")
+        if isinstance(marker, str):
+            markers[marker] += 1
+        for item in value.values():
+            markers.update(_payload_type_markers(item))
+    return markers
 
 
 def _tracked_fixture_paths() -> tuple[pathlib.Path, ...]:
@@ -895,6 +930,42 @@ def test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids() -> N
 
     for case in cases:
         assert case.manifest_id in manifest_ids
+
+
+def test_default_fixture_inventory_serialized_case_payloads_are_json_safe_and_exercise_special_normalization_paths(
+) -> None:
+    manifests = published_fixture_manifests()
+    cases = [case for manifest in manifests for case in manifest.cases]
+
+    observed_payload_type_markers: Counter[str] = Counter()
+    bytes_pattern_cases = 0
+    nonempty_kwargs_cases = 0
+
+    for case in cases:
+        if case.pattern is not None:
+            pattern_payload = case.pattern_payload()
+            if case.text_model == "bytes":
+                assert isinstance(pattern_payload, bytes)
+                bytes_pattern_cases += 1
+            else:
+                assert isinstance(pattern_payload, str)
+
+        serialized_args = case.serialized_args()
+        serialized_kwargs = case.serialized_kwargs()
+
+        json.dumps({"args": serialized_args, "kwargs": serialized_kwargs}, sort_keys=True)
+        _assert_json_literal_safe(serialized_args)
+        _assert_json_literal_safe(serialized_kwargs)
+        observed_payload_type_markers.update(_payload_type_markers(serialized_args))
+        observed_payload_type_markers.update(_payload_type_markers(serialized_kwargs))
+
+        if serialized_kwargs:
+            nonempty_kwargs_cases += 1
+
+    assert bytes_pattern_cases > 0
+    assert nonempty_kwargs_cases > 0
+    assert observed_payload_type_markers["normalized-bytes"] > 0
+    assert observed_payload_type_markers["callable"] > 0
 
 
 def test_fixture_case_pattern_payload_supports_encoding_override_and_clear_errors(
