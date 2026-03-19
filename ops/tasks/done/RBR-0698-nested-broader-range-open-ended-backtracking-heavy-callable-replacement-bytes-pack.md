@@ -1,6 +1,6 @@
 # RBR-0698: Publish the nested broader-range open-ended backtracking-heavy callable-replacement bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -45,3 +45,8 @@ Created: 2026-03-19
   - `tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_callable_replacement_workflows.py` currently contains the 8 published `str` rows for this manifest and no bytes rows;
   - `tests/python/test_callable_replacement_parity_suite.py` currently treats `nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows` as `str`-only with the 8 published `str` case ids, two `str` compile patterns, `CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS`, and `expected_text_models == {'str'}`; and
   - `reports/correctness/latest.py` currently publishes `1374` total / `1374` passed / `0` `unimplemented` across `114` manifests, while `collection.replacement.nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy.callable` stays at `8` total / `8` passed / `0` `unimplemented` with `text_models == ['str']`, so this mixed-text publication slice is not already represented on the tracked scorecard.
+- 2026-03-19 completion:
+  - Added the 8 bytes callable-replacement counterparts to the existing manifest, keeping this as the only correctness fixture for the `{2,}` nested broader-range open-ended backtracking-heavy callable slice.
+  - Updated the shared callable parity suite to treat this manifest as mixed `str`/`bytes` with four compile patterns, mixed helper counts, and the 8 new bytes case ids recorded in `pending_rebar_case_ids` because live `rebar` still reports scaffold `NotImplementedError` outcomes for them.
+  - Regenerated the tracked combined correctness report. The tracked `reports/correctness/latest.py` diff now publishes `1382` total / `1374` passed / `8` `unimplemented` across `114` manifests, and `collection.replacement.nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy.callable` now publishes `16` total / `8` passed / `8` `unimplemented` with `text_models == ['bytes', 'str']`.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_callable_replacement_workflows.py --report .rebar/tmp/rbr-0698-nested-broader-range-open-ended-backtracking-heavy-callable-replacement-bytes.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
