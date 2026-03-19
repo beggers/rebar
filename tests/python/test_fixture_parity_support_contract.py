@@ -38,14 +38,18 @@ from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
     RecordingNativeBoundary,
+    assert_bounded_pattern_case_match_parity,
+    assert_bounded_pattern_case_no_match_parity,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_finditer_parity,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
+    assert_module_search_case_parity,
     assert_match_parity,
     assert_match_result_parity,
     assert_pattern_parity,
+    assert_pattern_fullmatch_case_parity,
     assert_valid_match_group_access_parity,
     case_pattern,
     compile_with_cpython_parity,
@@ -409,6 +413,30 @@ SYNTHETIC_COMPILED_PATTERN_CASE = replace(
     helper="search",
     source_args=["zzabczz"],
     args=["zzabczz"],
+)
+SYNTHETIC_MODULE_BYTES_SEARCH_CASE = replace(
+    SYNTHETIC_MODULE_PATTERN_CASE,
+    case_id="synthetic-module-pattern-bytes",
+    pattern="abc",
+    text_model="bytes",
+    source_args=[b"abc", b"zzabczz"],
+    args=[b"abc", b"zzabczz"],
+)
+SYNTHETIC_FULLMATCH_PATTERN_CASE = replace(
+    SYNTHETIC_PATTERN_HELPER_CASE,
+    case_id="synthetic-pattern-fullmatch-str",
+    operation="pattern_call",
+    helper="fullmatch",
+    source_args=["abc"],
+    args=["abc"],
+)
+SYNTHETIC_FULLMATCH_BYTES_PATTERN_CASE = replace(
+    SYNTHETIC_FULLMATCH_PATTERN_CASE,
+    case_id="synthetic-pattern-fullmatch-bytes",
+    pattern="abc",
+    text_model="bytes",
+    source_args=[b"abc"],
+    args=[b"abc"],
 )
 SYNTHETIC_BYTES_PATTERN_CASE = replace(
     SYNTHETIC_PATTERN_HELPER_CASE,
@@ -1219,6 +1247,208 @@ def test_invoke_bounded_pattern_case_preserves_helper_and_bound_semantics(
     assert observed is not None
     assert observed.group(0) == expected_group0
     assert observed.span() == expected_span
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        pytest.param(SYNTHETIC_MODULE_PATTERN_CASE, id="str-match"),
+        pytest.param(SYNTHETIC_MODULE_BYTES_SEARCH_CASE, id="bytes-match"),
+    ),
+)
+def test_module_search_case_parity_helper_accepts_representative_cases(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    assert_module_search_case_parity(
+        regex_backend,
+        case,
+        check_regs=True,
+        check_convenience_api=True,
+        check_group_access=True,
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        pytest.param(
+            replace(
+                SYNTHETIC_MODULE_PATTERN_CASE,
+                case_id="synthetic-module-pattern-str-no-match",
+                source_args=[SYNTHETIC_CASE_PATTERN, "zzzzz"],
+                args=[SYNTHETIC_CASE_PATTERN, "zzzzz"],
+            ),
+            id="str-no-match",
+        ),
+        pytest.param(
+            replace(
+                SYNTHETIC_MODULE_BYTES_SEARCH_CASE,
+                case_id="synthetic-module-pattern-bytes-no-match",
+                source_args=[b"abc", b"zzzzz"],
+                args=[b"abc", b"zzzzz"],
+            ),
+            id="bytes-no-match",
+        ),
+    ),
+)
+def test_module_search_case_parity_helper_accepts_shared_no_match_cases(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    assert_module_search_case_parity(
+        regex_backend,
+        case,
+        check_regs=True,
+        check_convenience_api=True,
+        check_group_access=True,
+    )
+
+
+def test_module_search_case_parity_helper_rejects_non_search_cases(
+    regex_backend: tuple[str, object],
+) -> None:
+    with pytest.raises(AssertionError):
+        assert_module_search_case_parity(
+            regex_backend,
+            replace(SYNTHETIC_MODULE_PATTERN_CASE, helper="match"),
+        )
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        pytest.param(SYNTHETIC_FULLMATCH_PATTERN_CASE, id="str-match"),
+        pytest.param(SYNTHETIC_FULLMATCH_BYTES_PATTERN_CASE, id="bytes-match"),
+    ),
+)
+def test_pattern_fullmatch_case_parity_helper_accepts_representative_cases(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    assert_pattern_fullmatch_case_parity(
+        regex_backend,
+        case,
+        check_regs=True,
+        check_convenience_api=True,
+        check_group_access=True,
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        pytest.param(
+            replace(
+                SYNTHETIC_FULLMATCH_PATTERN_CASE,
+                case_id="synthetic-pattern-fullmatch-str-no-match",
+                source_args=["abcx"],
+                args=["abcx"],
+            ),
+            id="str-no-match",
+        ),
+        pytest.param(
+            replace(
+                SYNTHETIC_FULLMATCH_BYTES_PATTERN_CASE,
+                case_id="synthetic-pattern-fullmatch-bytes-no-match",
+                source_args=[b"abcx"],
+                args=[b"abcx"],
+            ),
+            id="bytes-no-match",
+        ),
+    ),
+)
+def test_pattern_fullmatch_case_parity_helper_accepts_shared_no_match_cases(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    assert_pattern_fullmatch_case_parity(
+        regex_backend,
+        case,
+        check_regs=True,
+        check_convenience_api=True,
+        check_group_access=True,
+    )
+
+
+def test_pattern_fullmatch_case_parity_helper_rejects_non_fullmatch_cases(
+    regex_backend: tuple[str, object],
+) -> None:
+    with pytest.raises(AssertionError):
+        assert_pattern_fullmatch_case_parity(
+            regex_backend,
+            replace(SYNTHETIC_FULLMATCH_PATTERN_CASE, helper="search"),
+        )
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        pytest.param(
+            SimpleNamespace(
+                pattern=SYNTHETIC_CASE_PATTERN,
+                helper="search",
+                string="zzabczz",
+                bounds=(0, 7),
+            ),
+            id="str-search-match",
+        ),
+        pytest.param(
+            SimpleNamespace(
+                pattern=BYTES_LITERAL_PATTERN,
+                helper="search",
+                string=b"zzabczz",
+                bounds=(0, 7),
+            ),
+            id="bytes-search-match",
+        ),
+    ),
+)
+def test_bounded_pattern_case_match_parity_helper_accepts_representative_cases(
+    regex_backend: tuple[str, object],
+    case: SimpleNamespace,
+) -> None:
+    assert_bounded_pattern_case_match_parity(
+        regex_backend,
+        case,
+        check_regs=True,
+        check_convenience_api=True,
+        check_group_access=True,
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        pytest.param(
+            SimpleNamespace(
+                pattern=SYNTHETIC_CASE_PATTERN,
+                helper="fullmatch",
+                string="abcx",
+                bounds=(0, 4),
+            ),
+            id="str-fullmatch-no-match",
+        ),
+        pytest.param(
+            SimpleNamespace(
+                pattern=BYTES_LITERAL_PATTERN,
+                helper="search",
+                string=b"zzabczz",
+                bounds=(0, 2),
+            ),
+            id="bytes-search-no-match",
+        ),
+    ),
+)
+def test_bounded_pattern_case_no_match_parity_helper_accepts_representative_cases(
+    regex_backend: tuple[str, object],
+    case: SimpleNamespace,
+) -> None:
+    assert_bounded_pattern_case_no_match_parity(
+        regex_backend,
+        case,
+        check_regs=True,
+    )
 
 
 def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_case_ids(
