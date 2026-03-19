@@ -1,8 +1,9 @@
 # RBR-0667: Collapse the open-ended direct-bytes support contract onto its parity owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Move the open-ended quantified-group direct-bytes follow-on support coverage off `tests/python/test_fixture_parity_support_contract.py` and onto `tests/python/test_open_ended_quantified_group_parity_suite.py`, so the open-ended owner keeps the bytes-follow-on routing contract beside the workflows it already exercises instead of leaving that slice in a detached helper-contract suite.
@@ -89,3 +90,12 @@ PY`
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py` currently passes (`181 passed in 0.22s`);
   - the acceptance inline source probe currently fails exactly on this cleanup because the moved `test_*` definitions still live on `tests/python/test_fixture_parity_support_contract.py` instead of the open-ended owner; and
   - `bash -lc "! rg -n 'DIRECT_BYTES_FOLLOW_ON_SPEC_IDS|DIRECT_BYTES_FOLLOW_ON_SPECS|assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing|partition_direct_bytes_follow_on_case_buckets|published_bytes_texts_by_pattern' tests/python/test_fixture_parity_support_contract.py"` currently fails exactly on this cleanup because the detached contract still imports and exercises that owner-specific direct-bytes slice.
+
+## Completion Note
+- 2026-03-19: Moved the 14 open-ended direct-bytes follow-on ownership tests onto `tests/python/test_open_ended_quantified_group_parity_suite.py`, kept their routing/error-string expectations intact, and trimmed `tests/python/test_fixture_parity_support_contract.py` back to generic fixture/support coverage.
+
+## Verification
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py` (`3918 passed in 2.63s`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py` (`155 passed in 0.28s`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` (passed; confirmed the 14 moved test definitions exist only on `tests/python/test_open_ended_quantified_group_parity_suite.py`)
+- 2026-03-19: `bash -lc "! rg -n 'DIRECT_BYTES_FOLLOW_ON_SPEC_IDS|DIRECT_BYTES_FOLLOW_ON_SPECS|assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing|partition_direct_bytes_follow_on_case_buckets|published_bytes_texts_by_pattern' tests/python/test_fixture_parity_support_contract.py"` (no matches)
