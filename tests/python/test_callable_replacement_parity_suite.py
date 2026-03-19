@@ -986,7 +986,7 @@ def _bytes_case_pattern(case: FixtureCase) -> bytes:
     return pattern
 
 
-def _pending_rebar_compile_patterns() -> frozenset[str]:
+def _pending_rebar_str_patterns() -> frozenset[str]:
     return frozenset(
         str_case_pattern(case)
         for case in PUBLISHED_CALLABLE_CASES
@@ -994,18 +994,12 @@ def _pending_rebar_compile_patterns() -> frozenset[str]:
     )
 
 
-def _pending_rebar_bytes_no_match_patterns() -> frozenset[bytes]:
+def _pending_rebar_bytes_patterns() -> frozenset[bytes]:
     return frozenset(
         _bytes_case_pattern(case)
         for case in PUBLISHED_CALLABLE_CASES
         if _is_pending_rebar_callable_case(case) and case.text_model == "bytes"
     )
-
-
-def _is_pending_rebar_no_match_pattern(pattern: TextValue) -> bool:
-    if isinstance(pattern, bytes):
-        return pattern in PENDING_REBAR_BYTES_NO_MATCH_PATTERNS
-    return pattern in PENDING_REBAR_NO_MATCH_PATTERNS
 
 COLLECTION_REPLACEMENT_BUNDLE, = load_fixture_bundles(
     (
@@ -1040,7 +1034,7 @@ BYTES_NO_MATCH_PATTERNS = tuple(
     sorted(
         {
             _bytes_case_pattern(case)
-            for case in PUBLISHED_CALLABLE_CASES
+            for case in SHARED_CALLABLE_CASES
             if case.text_model == "bytes"
         }
     )
@@ -1547,10 +1541,56 @@ def test_pattern_callable_replacement_return_type_error_cases_cover_quantified_c
     } == PATTERN_RETURN_TYPE_ERROR_EXPECTED_MANIFEST_IDS
 
 
+def test_shared_callable_pattern_pools_exclude_pending_rebar_frontier() -> None:
+    shared_str_patterns = frozenset(
+        str_case_pattern(case)
+        for case in SHARED_CALLABLE_CASES
+        if case.text_model == "str"
+    )
+    shared_bytes_patterns = frozenset(
+        _bytes_case_pattern(case)
+        for case in SHARED_CALLABLE_CASES
+        if case.text_model == "bytes"
+    )
+    published_str_patterns = frozenset(
+        str_case_pattern(case)
+        for case in PUBLISHED_CALLABLE_CASES
+        if case.text_model == "str"
+    )
+    published_bytes_patterns = frozenset(
+        _bytes_case_pattern(case)
+        for case in PUBLISHED_CALLABLE_CASES
+        if case.text_model == "bytes"
+    )
+    near_miss_str_patterns = frozenset(
+        near_miss_case.pattern
+        for near_miss_case in CALLABLE_NEAR_MISS_CASE_SPECS
+        if isinstance(near_miss_case.pattern, str)
+    )
+    near_miss_bytes_patterns = frozenset(
+        near_miss_case.pattern
+        for near_miss_case in CALLABLE_NEAR_MISS_CASE_SPECS
+        if isinstance(near_miss_case.pattern, bytes)
+    )
+
+    assert set(COMPILE_PATTERNS) == shared_str_patterns
+    assert set(NO_MATCH_PATTERNS) == shared_str_patterns | {_literal_callable_pattern()}
+    assert set(BYTES_NO_MATCH_PATTERNS) == shared_bytes_patterns
+    assert shared_str_patterns | PENDING_REBAR_STR_PATTERNS == published_str_patterns
+    assert shared_bytes_patterns | PENDING_REBAR_BYTES_PATTERNS == (
+        published_bytes_patterns
+    )
+    assert shared_str_patterns.isdisjoint(PENDING_REBAR_STR_PATTERNS)
+    assert shared_bytes_patterns.isdisjoint(PENDING_REBAR_BYTES_PATTERNS)
+    assert near_miss_str_patterns <= shared_str_patterns
+    assert near_miss_bytes_patterns <= shared_bytes_patterns
+    assert near_miss_str_patterns.isdisjoint(PENDING_REBAR_STR_PATTERNS)
+    assert near_miss_bytes_patterns.isdisjoint(PENDING_REBAR_BYTES_PATTERNS)
+
+
 NO_MATCH_PATTERNS = tuple(sorted({*COMPILE_PATTERNS, _literal_callable_pattern()}))
-PENDING_REBAR_COMPILE_PATTERNS = _pending_rebar_compile_patterns()
-PENDING_REBAR_NO_MATCH_PATTERNS = PENDING_REBAR_COMPILE_PATTERNS
-PENDING_REBAR_BYTES_NO_MATCH_PATTERNS = _pending_rebar_bytes_no_match_patterns()
+PENDING_REBAR_STR_PATTERNS = _pending_rebar_str_patterns()
+PENDING_REBAR_BYTES_PATTERNS = _pending_rebar_bytes_patterns()
 
 
 @pytest.mark.parametrize("pattern", COMPILE_PATTERNS)
@@ -1558,12 +1598,7 @@ def test_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
     pattern: str,
 ) -> None:
-    backend_name, backend = regex_backend
-
-    if backend_name == "rebar" and pattern in PENDING_REBAR_COMPILE_PATTERNS:
-        pytest.skip(
-            f"callable replacement parity for pattern {pattern!r} remains queued behind a later Rust-backed parity task"
-        )
+    _, backend = regex_backend
 
     observed = backend.compile(pattern)
     expected = re.compile(pattern)
@@ -1631,11 +1666,7 @@ def test_callable_replacement_no_match_paths_leave_input_unchanged(
     helper: str,
     use_compiled_pattern: bool,
 ) -> None:
-    backend_name, backend = regex_backend
-    if backend_name == "rebar" and pattern in PENDING_REBAR_NO_MATCH_PATTERNS:
-        pytest.skip(
-            f"callable replacement parity for pattern {pattern!r} remains queued behind a later Rust-backed parity task"
-        )
+    _, backend = regex_backend
 
     assert_callable_replacement_no_match_path_leaves_input_unchanged(
         backend=backend,
@@ -1656,11 +1687,7 @@ def test_bytes_callable_replacement_no_match_paths_leave_input_unchanged(
     helper: str,
     use_compiled_pattern: bool,
 ) -> None:
-    backend_name, backend = regex_backend
-    if backend_name == "rebar" and pattern in PENDING_REBAR_BYTES_NO_MATCH_PATTERNS:
-        pytest.skip(
-            f"callable replacement parity for pattern {pattern!r} remains queued behind a later Rust-backed parity task"
-        )
+    _, backend = regex_backend
 
     assert_callable_replacement_no_match_path_leaves_input_unchanged(
         backend=backend,
@@ -1675,13 +1702,7 @@ def test_callable_replacement_near_miss_paths_leave_input_unchanged(
     regex_backend: tuple[str, object],
     near_miss_case: CallableNearMissCase,
 ) -> None:
-    backend_name, backend = regex_backend
-    if backend_name == "rebar" and _is_pending_rebar_no_match_pattern(
-        near_miss_case.pattern
-    ):
-        pytest.skip(
-            f"callable replacement parity for pattern {near_miss_case.pattern!r} remains queued behind a later Rust-backed parity task"
-        )
+    _, backend = regex_backend
 
     callback_calls: list[object] = []
 
