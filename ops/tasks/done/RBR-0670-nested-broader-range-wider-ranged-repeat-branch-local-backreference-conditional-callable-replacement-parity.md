@@ -1,8 +1,9 @@
 # RBR-0670: Convert the nested broader-range wider-ranged-repeat branch-local-backreference conditional callable-replacement pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Convert the exact broader `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement `str` pair that `RBR-0668` publishes from honest `unimplemented` outcomes into Rust-backed behavior on the existing shared callable parity surface, without widening into bytes, benchmark catch-up, replacement-template flows, broader callback helpers, or another grouped frontier.
@@ -44,3 +45,15 @@ Created: 2026-03-19
   - `reports/correctness/latest.py` currently reports `collection.replacement.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional.callable` at `8` total / `0` passed / `8` `unimplemented`, so the published frontier is still a real gap rather than a stale no-op;
   - `benchmarks/workloads/nested_group_callable_replacement_boundary.py` already owns the adjacent callable benchmark family for this grouped frontier, so a later Python-path benchmark catch-up can stay on that existing manifest path instead of inventing another benchmark surface; and
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for numbered and named `rebar.sub(...)` calls on `a((b|c){1,4})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)(?(inner)d|e)`, so this parity slice is not already satisfied in the current checkout.
+
+## Completion
+- 2026-03-19: Added a Rust-backed parser and captured-span path for the exact wider `{1,4}` numbered and named nested grouped-alternation plus branch-local-backreference conditional `str` pair, exposed it through a dedicated `_rebar` finditer boundary, and routed native callable-replacement marshalling through that path.
+- 2026-03-19: Removed the shared callable-suite pending bookkeeping for `nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows` and expanded the shared pattern return-type-error expectation set now that those pattern-level rows execute live.
+- 2026-03-19: Republished `reports/correctness/latest.py`; the tracked combined scorecard now reads `1342` total / `1342` passed / `0` failed / `0` `unimplemented`, and `collection.replacement.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional.callable` now reads `8` total / `8` passed / `0` `unimplemented`.
+
+## Verification
+- 2026-03-19: `cargo build -p rebar-cpython`
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`2007 passed, 1776 subtests passed`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py --report .rebar/tmp/rbr-0670-nested-broader-range-wider-ranged-repeat-branch-local-backreference-conditional-callable-replacement-parity.py` (`{"executed_cases": 8, "failed_cases": 0, "passed_cases": 8, "skipped_cases": 0, "total_cases": 8, "unimplemented_cases": 0}`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`{"executed_cases": 1342, "failed_cases": 0, "passed_cases": 1342, "skipped_cases": 0, "total_cases": 1342, "unimplemented_cases": 0}`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py` (`17 passed, 1776 subtests passed`)
