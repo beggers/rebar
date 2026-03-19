@@ -1,8 +1,9 @@
 # RBR-0674: Publish the nested broader-range wider-ranged-repeat branch-local-backreference conditional callable-replacement bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Extend the existing broader `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement correctness publication with the exact bytes pair on the shared callable parity surface, so the frontier reopens on the tracked correctness path before Rust-backed bytes parity and later Python-path benchmark catch-up land.
@@ -46,3 +47,13 @@ Created: 2026-03-19
   - `reports/correctness/latest.py` currently publishes `collection.replacement.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional.callable` at `8` total / `8` passed / `0` `unimplemented` with `text_models == ['str']`, while the combined report stays at `1342` total / `1342` passed / `0` `unimplemented` across `112` manifests; and
   - `benchmarks/workloads/nested_group_callable_replacement_boundary.py` already publishes the four adjacent `str` benchmark rows for this exact slice on the shared callable owner path after `RBR-0672`, so later Python-path benchmark catch-up can mirror those rows without another synthesis pass.
 - A later parity follow-on should convert the same bytes pair behind `rebar._rebar` on the existing shared callable parity surface before the benchmark surface mirrors the four adjacent `str` rows already published on `benchmarks/workloads/nested_group_callable_replacement_boundary.py`.
+
+## Completion
+- 2026-03-19: Added the 8 byte-typed numbered and named counterparts to `tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py`, keeping this manifest as the only correctness owner for the broader `{1,4}` conditional callable slice.
+- 2026-03-19: Promoted `tests/python/test_callable_replacement_parity_suite.py` to treat this manifest as mixed `str`/`bytes`, growing its helper counts from `2` to `4` per operation/helper pair, adding the bytes compile patterns, and marking the new 8 bytes rows as `pending_rebar_case_ids` so the shared suite reports the live placeholder boundary honestly.
+- 2026-03-19: Updated `tests/conformance/test_combined_correctness_scorecards.py` to keep the new bytes anchors explicit, then republished `reports/correctness/latest.py`; the tracked artifact now publishes `1350` total / `1342` passed / `8` unimplemented cases across `112` manifests, and `collection.replacement.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional.callable` now publishes `16` total cases with `text_models == ['bytes', 'str']` and `8` `unimplemented` cases.
+
+## Verification
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`2040 passed, 32 skipped, 1806 subtests passed`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py --report .rebar/tmp/rbr-0674-nested-broader-range-wider-ranged-repeat-branch-local-backreference-conditional-callable-replacement-bytes.py` (`{"executed_cases": 16, "failed_cases": 0, "passed_cases": 8, "skipped_cases": 0, "total_cases": 16, "unimplemented_cases": 8}`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`{"executed_cases": 1350, "failed_cases": 0, "passed_cases": 1342, "skipped_cases": 0, "total_cases": 1350, "unimplemented_cases": 8}`)

@@ -79,6 +79,18 @@ CALLABLE_MIXED_OPERATION_HELPER_COUNTS = Counter(
 )
 STR_ONLY_TEXT_MODELS = frozenset({"str"})
 MIXED_TEXT_MODELS = frozenset({"str", "bytes"})
+WIDER_RANGED_REPEAT_CONDITIONAL_CALLABLE_PENDING_BYTES_CASE_IDS = frozenset(
+    {
+        "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-numbered-lower-bound-b-branch-bytes",
+        "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-numbered-first-match-only-b-branch-bytes",
+        "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-numbered-mixed-branches-bytes",
+        "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-numbered-c-branch-first-match-only-bytes",
+        "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-named-mixed-branches-bytes",
+        "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-named-first-match-only-b-branch-bytes",
+        "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-named-upper-bound-c-branch-bytes",
+        "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-bytes",
+    }
+)
 
 
 CALLABLE_MANIFEST_SPECS = (
@@ -196,17 +208,23 @@ CALLABLE_MANIFEST_SPECS = (
                 "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-named-upper-bound-c-branch-str",
                 "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-str",
             }
-        ),
+        )
+        | WIDER_RANGED_REPEAT_CONDITIONAL_CALLABLE_PENDING_BYTES_CASE_IDS,
         expected_compile_patterns=frozenset(
             {
                 r"a((b|c){1,4})\2(?(2)d|e)",
                 r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)(?(inner)d|e)",
+                rb"a((b|c){1,4})\2(?(2)d|e)",
+                rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)(?(inner)d|e)",
             }
         ),
-        expected_operation_helper_counts=CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS,
-        expected_text_models=STR_ONLY_TEXT_MODELS,
+        expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
+        expected_text_models=MIXED_TEXT_MODELS,
         expected_near_miss_patterns=frozenset(),
         has_near_miss_matrix=False,
+        pending_rebar_case_ids=(
+            WIDER_RANGED_REPEAT_CONDITIONAL_CALLABLE_PENDING_BYTES_CASE_IDS
+        ),
     ),
     CallableManifestSpec(
         manifest_id=(
