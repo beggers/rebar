@@ -150,18 +150,6 @@ CALLABLE_MANIFEST_SPECS = (
         expected_text_models=MIXED_TEXT_MODELS,
         expected_near_miss_patterns=frozenset(),
         has_near_miss_matrix=False,
-        pending_rebar_case_ids=frozenset(
-            {
-                "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-lower-bound-short-branch-bytes",
-                "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-first-match-only-long-branch-bytes",
-                "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-mixed-branches-bytes",
-                "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-upper-bound-b-branch-first-match-only-bytes",
-                "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-mixed-branches-bytes",
-                "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-first-match-only-long-branch-bytes",
-                "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-upper-bound-mixed-bytes",
-                "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-b-branch-first-match-only-bytes",
-            }
-        ),
     ),
     CallableManifestSpec(
         manifest_id="conditional-group-exists-callable-replacement-workflows",
