@@ -226,26 +226,8 @@ SELECTOR_EXPECTATIONS = (
         id="callable-replacement",
     ),
 )
-DIRECT_BYTES_FOLLOW_ON_MIXED_MANIFESTS = (
-    pytest.param(
-        "quantified_alternation_open_ended_workflows.py",
-        id="open-ended-quantified-alternation",
-    ),
-    pytest.param(
-        "quantified_alternation_branch_local_backreference_workflows.py",
-        id="branch-local-quantified-alternation",
-    ),
-    pytest.param(
-        "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
-        id="branch-local-quantified-nested-group",
-    ),
-    pytest.param(
-        (
-            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_"
-            "branch_local_backreference_workflows.py"
-        ),
-        id="branch-local-nested-broader-range",
-    ),
+DIRECT_BYTES_FOLLOW_ON_SPEC_PARAMS = tuple(
+    pytest.param(spec, id=spec.id) for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
 )
 
 
@@ -255,6 +237,21 @@ def _duplicate_items(counter: Counter[str]) -> list[str]:
 
 def _tracked_fixture_paths() -> tuple[pathlib.Path, ...]:
     return tuple(sorted(FIXTURES_DIR.glob("*.py"), key=lambda path: path.name))
+
+
+def _published_fixture_path_for_manifest_id(manifest_id: str) -> pathlib.Path:
+    matching_paths = tuple(
+        manifest.path
+        for manifest in published_fixture_manifests()
+        if manifest.manifest_id == manifest_id
+    )
+    if not matching_paths:
+        raise AssertionError(f"published fixtures do not contain manifest_id {manifest_id!r}")
+    if len(matching_paths) > 1:
+        raise AssertionError(
+            f"published fixtures contain duplicate manifest_id {manifest_id!r}"
+        )
+    return matching_paths[0]
 
 
 def _fixture_cases(fixture_name: str) -> dict[str, FixtureCase]:
@@ -527,6 +524,30 @@ def test_open_ended_direct_bytes_follow_on_specs_keep_expected_manifest_pairings
     assert (
         DIRECT_BYTES_FOLLOW_ON_SPECS[3].supplemental_cases
         is BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES
+    )
+
+
+def test_open_ended_direct_bytes_follow_on_specs_resolve_to_expected_published_mixed_fixtures(
+) -> None:
+    fixture_paths = tuple(
+        _published_fixture_path_for_manifest_id(spec.manifest_id)
+        for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
+    )
+    bundles = load_published_fixture_bundles(fixture_paths)
+
+    assert tuple(bundle.manifest.manifest_id for bundle in bundles) == tuple(
+        spec.manifest_id for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
+    )
+    assert tuple(path.name for path in fixture_paths) == (
+        "broader_range_open_ended_quantified_group_alternation_workflows.py",
+        "open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+        "broader_range_open_ended_quantified_group_alternation_conditional_workflows.py",
+        "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
+    )
+    assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing(
+        bundles,
+        direct_bytes_follow_on_bundles=bundles,
+        coverage_label="fixture parity support contract",
     )
 
 
@@ -912,11 +933,11 @@ def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract() 
     )
 
 
-@pytest.mark.parametrize("fixture_name", DIRECT_BYTES_FOLLOW_ON_MIXED_MANIFESTS)
+@pytest.mark.parametrize("spec", DIRECT_BYTES_FOLLOW_ON_SPEC_PARAMS)
 def test_assert_direct_bytes_follow_on_bundle_routing_accepts_mixed_manifest_buckets(
-    fixture_name: str,
+    spec,
 ) -> None:
-    fixture_path = FIXTURES_DIR / fixture_name
+    fixture_path = _published_fixture_path_for_manifest_id(spec.manifest_id)
     (bundle,) = load_published_fixture_bundles((fixture_path,))
     compile_cases, module_cases, pattern_cases = (
         partition_direct_bytes_follow_on_case_buckets((bundle,), (bundle,))
@@ -1096,11 +1117,11 @@ def test_mixed_text_model_manifest_helper_reports_direct_follow_on_order_drift(
         )
 
 
-@pytest.mark.parametrize("fixture_name", DIRECT_BYTES_FOLLOW_ON_MIXED_MANIFESTS)
+@pytest.mark.parametrize("spec", DIRECT_BYTES_FOLLOW_ON_SPEC_PARAMS)
 def test_partition_direct_bytes_follow_on_case_buckets_drops_only_follow_on_bytes_rows(
-    fixture_name: str,
+    spec,
 ) -> None:
-    fixture_path = FIXTURES_DIR / fixture_name
+    fixture_path = _published_fixture_path_for_manifest_id(spec.manifest_id)
     (bundle,) = load_published_fixture_bundles((fixture_path,))
 
     compile_cases, module_cases, pattern_cases = (
