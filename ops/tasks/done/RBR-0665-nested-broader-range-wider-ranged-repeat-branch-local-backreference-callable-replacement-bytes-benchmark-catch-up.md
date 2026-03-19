@@ -1,6 +1,6 @@
 # RBR-0665: Catch the nested broader-range wider-ranged-repeat branch-local-backreference callable-replacement bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -48,3 +48,12 @@ Created: 2026-03-19
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently treats `broader-range-branch-local-backreference` on `nested-group-callable-replacement-boundary` as the four `str` rows only, while the same owner already promotes the adjacent broader-range open-ended callable bytes rows on that manifest as measured workloads;
   - `reports/benchmarks/latest.py` currently publishes `nested-group-callable-replacement-boundary` at `52` total workloads / `52` measured workloads / `0` known gaps and the combined source-tree report at `743` / `743` / `0`; and
   - the four adjacent `str` benchmark rows already pin the exact public-path patterns, callable descriptors, and haystacks this bytes follow-on should mirror without another synthesis pass.
+
+## Completion Notes
+- 2026-03-19: Added the four broader `{1,4}` bytes callable-replacement rows to `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, keeping the existing `text_model == "bytes"` manifest encoding and the shared `nested-group-callable-replacement-boundary` surface.
+- Expanded `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the `broader-range-branch-local-backreference` slice now expects the four new bytes ids alongside the existing four `str` ids, and added explicit manifest/scorecard promotion assertions for those bytes rows.
+- Regenerated `reports/benchmarks/latest.py`; the tracked report now publishes `nested-group-callable-replacement-boundary` at `56` total workloads / `56` measured workloads / `0` known gaps and the combined source-tree suite at `747` total workloads / `747` measured workloads / `0` known gaps, with all four new bytes rows marked `status == "measured"` and `implementation_timing.status == "measured"` through the source-tree shim path.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_callable_replacement_boundary.py --report .rebar/tmp/rbr-0665-nested-broader-range-wider-ranged-repeat-branch-local-backreference-callable-replacement-bytes-benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`

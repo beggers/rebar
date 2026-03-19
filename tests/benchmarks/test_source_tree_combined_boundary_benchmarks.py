@@ -1714,6 +1714,10 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "module-subn-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-mixed-branches-first-match-only-warm-str",
             "pattern-sub-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-all-c-purged-str",
             "pattern-subn-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-c-branch-first-match-only-purged-str",
+            "module-sub-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-bytes",
+            "module-subn-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-mixed-branches-first-match-only-warm-bytes",
+            "pattern-sub-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-all-c-purged-bytes",
+            "pattern-subn-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-c-branch-first-match-only-purged-bytes",
         ),
         expected_patterns={
             r"a((b|c){1,4})\2d",
@@ -3583,6 +3587,54 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=expected_workload_count,
         )
 
+    def test_nested_group_callable_replacement_manifest_promotes_broader_range_branch_local_backreference_bytes_rows_to_measured(
+        self,
+    ) -> None:
+        manifest_id = "nested-group-callable-replacement-boundary"
+        expected_workload_ids = (
+            "module-sub-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-bytes",
+            "module-subn-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-mixed-branches-first-match-only-warm-bytes",
+            "pattern-sub-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-all-c-purged-bytes",
+            "pattern-subn-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-c-branch-first-match-only-purged-bytes",
+        )
+        expected_workload_count = len(
+            source_tree_combined_case(manifest_id).selected_workload_ids_for_manifest(
+                manifest_id
+            )
+        )
+        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
+        self.assertIsNone(manifest_definition.known_gap_workload_ids)
+        self.assertIsNone(manifest_definition.representative_measured_workload_ids)
+        self.assertIsNone(
+            manifest_definition.representative_known_gap_workload_ids
+        )
+        for workload_id in expected_workload_ids:
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(
+                    workload_id,
+                    source_tree_combined_manifest_representative_measured_workload_ids(
+                        manifest_id
+                    ),
+                )
+
+        case = source_tree_combined_case(manifest_id)
+        self.assertEqual(case.manifest_expectation.known_gap_count, 0)
+        self.assertEqual(
+            case.manifest_expectation.representative_measured_workload_ids,
+            (),
+        )
+        self.assertEqual(
+            case.manifest_expectation.representative_known_gap_workload_ids,
+            (),
+        )
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            manifest_id,
+            expected_workload_ids,
+            expected_workload_count,
+            expected_total_workload_count=expected_workload_count,
+        )
+
     def test_nested_group_callable_replacement_manifest_promotes_broader_range_open_ended_branch_local_backreference_bytes_rows_to_measured(
         self,
     ) -> None:
@@ -4310,6 +4362,32 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             case.representative_measured_workload_ids,
             source_tree_combined_manifest_representative_measured_workload_ids(
                 "nested-group-replacement-boundary"
+            ),
+        )
+        self.assertEqual(case.representative_known_gap_workload_ids, ())
+        for workload_id in expected_workload_ids:
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(workload_id, case.representative_measured_workload_ids)
+                self.assertNotIn(
+                    workload_id,
+                    case.representative_known_gap_workload_ids,
+                )
+
+    def test_nested_group_callable_replacement_scorecard_promotes_broader_range_branch_local_backreference_bytes_rows_to_measured(
+        self,
+    ) -> None:
+        case = source_tree_scorecard_case("nested-group-callable-replacement-boundary")
+        expected_workload_ids = (
+            "module-sub-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-bytes",
+            "module-subn-callable-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-mixed-branches-first-match-only-warm-bytes",
+            "pattern-sub-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-all-c-purged-bytes",
+            "pattern-subn-callable-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-c-branch-first-match-only-purged-bytes",
+        )
+
+        self.assertEqual(
+            case.representative_measured_workload_ids,
+            source_tree_combined_manifest_representative_measured_workload_ids(
+                "nested-group-callable-replacement-boundary"
             ),
         )
         self.assertEqual(case.representative_known_gap_workload_ids, ())
