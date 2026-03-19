@@ -972,34 +972,12 @@ QUANTIFIED_ALTERNATION_DIRECT_TEST_CASE_ID_BUCKETS = {
     "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
     "shared-module-search": frozenset(case.case_id for case in MODULE_CASES),
     "shared-pattern-fullmatch": frozenset(case.case_id for case in PATTERN_CASES),
-    "bounded-bytes-follow-on": frozenset(
-        case.case_id
-        for case in QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE.cases
-        if case.text_model == "bytes"
-    ),
-    "broader-range-bytes-follow-on": frozenset(
-        case.case_id
-        for case in QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE.cases
-        if case.text_model == "bytes"
-    ),
-    "conditional-bytes-follow-on": frozenset(
-        case.case_id
-        for case in QUANTIFIED_ALTERNATION_CONDITIONAL_BUNDLE.cases
-        if case.text_model == "bytes"
-    ),
-    "open-ended-bytes-follow-on": frozenset(
-        case.case_id
-        for case in QUANTIFIED_ALTERNATION_OPEN_ENDED_BUNDLE.cases
-        if case.text_model == "bytes"
-    ),
-    "nested-branch-bytes-follow-on": frozenset(
-        case.case_id
-        for case in QUANTIFIED_ALTERNATION_NESTED_BRANCH_BUNDLE.cases
-        if case.text_model == "bytes"
-    ),
-    "backtracking-heavy-bytes-follow-on": frozenset(
-        case.case_id for case in BACKTRACKING_HEAVY_BUNDLE.cases if case.text_model == "bytes"
-    ),
+    **{
+        f"{spec.id}-bytes-follow-on": frozenset(
+            case.case_id for case in spec.bundle.cases if case.text_model == "bytes"
+        )
+        for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+    },
 }
 MATCH_GROUP_ACCESS_CASES = tuple(
     case for case in (*MODULE_CASES, *PATTERN_CASES) if "no-match" not in case.case_id

@@ -1,6 +1,6 @@
 # RBR-0711: Collapse quantified-alternation direct-test bucket sidecars onto canonical follow-on specs
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -102,3 +102,7 @@ PY`
 - This simplification matches the current parity-harness information flow:
   - `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` and `tests/python/test_open_ended_quantified_group_parity_suite.py` already derive their direct-test bytes-follow-on buckets from canonical spec records instead of hard-coding each follow-on bucket separately; and
   - `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` in the quantified-alternation owner already carries the canonical six-id ordering plus the bundle/case pairing needed to build those buckets without a second owner layer.
+
+## Completion Notes
+- 2026-03-19: Replaced the six hard-coded `*-bytes-follow-on` entries in `QUANTIFIED_ALTERNATION_DIRECT_TEST_CASE_ID_BUCKETS` with one dictionary comprehension over `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES`, preserving the existing key order and bytes-case routing while leaving the canonical follow-on specs unchanged.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py` (`777 passed in 1.11s`), the inline source-absence probe (`ok`), the import/order/routing probe (`ok`), and `bash -lc "! rg -n '\"(bounded|broader-range|conditional|open-ended|nested-branch|backtracking-heavy)-bytes-follow-on\": frozenset\\(' tests/python/test_quantified_alternation_parity_suite.py"`.
