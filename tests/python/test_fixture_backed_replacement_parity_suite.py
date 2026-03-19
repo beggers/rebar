@@ -782,16 +782,16 @@ def _pattern_param_id(pattern: TextValue) -> str:
     return pattern
 
 
-def _compiled_str_pattern(case: FixtureCase) -> re.Pattern[str]:
-    return re.compile(str_case_pattern(case), case.flags or 0)
+def _compiled_case_pattern(case: FixtureCase) -> re.Pattern[str] | re.Pattern[bytes]:
+    return re.compile(case_pattern(case), case.flags or 0)
 
 
 def _grouped_replacement_group_kind(case: FixtureCase) -> str:
-    return "named" if _compiled_str_pattern(case).groupindex else "numbered"
+    return "named" if _compiled_case_pattern(case).groupindex else "numbered"
 
 
-def _expected_grouped_replacement_template(case: FixtureCase) -> str:
-    compiled = _compiled_str_pattern(case)
+def _expected_grouped_replacement_template(case: FixtureCase) -> TextValue:
+    compiled = _compiled_case_pattern(case)
     target_group_index = (
         1
         if case.helper == "sub" or "outer-capture" in case.categories
@@ -805,17 +805,28 @@ def _expected_grouped_replacement_template(case: FixtureCase) -> str:
     else:
         replacement = rf"\{target_group_index}"
     if "wrapper-template" in case.categories:
-        return f"<{replacement}>"
-    if compiled.groupindex and compiled.pattern == r"(?P<word>abc)":
-        return f"<{replacement}>"
-    return f"{replacement}x"
+        template = f"<{replacement}>"
+    elif compiled.groupindex and compiled.pattern in {r"(?P<word>abc)", br"(?P<word>abc)"}:
+        template = f"<{replacement}>"
+    else:
+        template = f"{replacement}x"
+    if case.text_model == "bytes":
+        return template.encode("latin-1")
+    return template
 
 
 def _assert_grouped_replacement_fixture_bundle_contract(bundle: FixtureBundle) -> None:
+    text_models = {case.text_model for case in bundle.cases}
     expected_group_kind_counts = (
         GROUPED_REPLACEMENT_NESTED_ALTERNATION_GROUP_KIND_COUNTS
         if bundle.expected_manifest_id == "nested-group-alternation-replacement-workflows"
         else GROUPED_REPLACEMENT_SHARED_GROUP_KIND_COUNTS
+    )
+    expected_group_kind_counts = Counter(
+        {
+            key: value * len(text_models)
+            for key, value in expected_group_kind_counts.items()
+        }
     )
     assert Counter(
         (case.operation, case.helper, _grouped_replacement_group_kind(case))
@@ -823,12 +834,13 @@ def _assert_grouped_replacement_fixture_bundle_contract(bundle: FixtureBundle) -
     ) == expected_group_kind_counts
 
     for case in bundle.cases:
-        compiled = _compiled_str_pattern(case)
+        compiled = _compiled_case_pattern(case)
         count_index = 3 if case.operation == "module_call" else 2
 
         assert case.kwargs == {}
         assert "replacement-template" in case.categories
-        assert "str" in case.categories
+        assert case.text_model in {"str", "bytes"}
+        assert case.text_model in case.categories
         assert case.helper in {"sub", "subn"}
         assert case.helper in case.categories
         if case.operation == "module_call":
@@ -1157,22 +1169,33 @@ REPLACEMENT_SURFACE_SPECS = (
                 expected_case_ids=frozenset(
                     {
                         "module-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
+                        "module-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-bytes",
                         "module-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
+                        "module-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-bytes",
                         "pattern-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
+                        "pattern-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-bytes",
                         "pattern-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-str",
+                        "pattern-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-bytes",
                         "module-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
+                        "module-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-mixed-branches-bytes",
                         "module-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-str",
+                        "module-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-bytes",
                         "pattern-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-upper-bound-c-branch-str",
+                        "pattern-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-upper-bound-c-branch-bytes",
                         "pattern-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+                        "pattern-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-bytes",
                     }
                 ),
                 expected_patterns=frozenset(
                     {
                         r"a((b|c){1,4})\2d",
                         r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
+                        rb"a((b|c){1,4})\2d",
+                        rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
                     }
                 ),
-                expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
+                expected_operation_helper_counts=MIXED_TEXT_MODEL_OPERATION_HELPER_COUNTS,
+                expected_text_models=MIXED_TEXT_MODELS,
             ),
         ),
         pattern_extractor=str_case_pattern,
@@ -1181,6 +1204,9 @@ REPLACEMENT_SURFACE_SPECS = (
         template_expand_manifest_ids=GROUPED_REPLACEMENT_TEMPLATE_EXPAND_MANIFEST_IDS,
         supplemental_no_match_cases=GROUPED_REPLACEMENT_SUPPLEMENTAL_NO_MATCH_CASES,
         supplemental_repeated_cases=GROUPED_REPLACEMENT_SUPPLEMENTAL_REPEATED_CASES,
+        pending_bytes_follow_on_manifest_ids=frozenset(
+            {NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID}
+        ),
     ),
     ReplacementSurfaceSpec(
         id="open-ended-quantified-group-replacement",
@@ -1594,6 +1620,12 @@ BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE = (
         NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID,
     )
 )
+BROADER_RANGE_WIDER_RANGED_REPEAT_PENDING_BYTES_REPLACEMENT_BUNDLE = (
+    published_fixture_bundle_by_manifest_id(
+        GROUPED_REPLACEMENT_TEMPLATE_SURFACE.bundles,
+        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
+    )
+)
 
 SELECTOR_SURFACE_PARAMS = tuple(
     pytest.param(surface, id=surface.spec.id)
@@ -1752,9 +1784,14 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     surface: LoadedReplacementSurface,
     bundle: FixtureBundle,
 ) -> None:
+    pattern_extractor = (
+        case_pattern
+        if bundle.expected_text_models == MIXED_TEXT_MODELS
+        else surface.spec.pattern_extractor
+    )
     assert_fixture_bundle_contract(
         bundle,
-        pattern_extractor=surface.spec.pattern_extractor,
+        pattern_extractor=pattern_extractor,
     )
     if (
         surface.spec.id == GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID
@@ -1958,6 +1995,67 @@ def test_broader_range_open_ended_replacement_manifest_routes_bytes_rows_through
     assert shared_pattern_case_ids == expected_pattern_case_ids
     assert shared_template_expand_case_ids == (
         frozenset(ordered_str_case_ids) | frozenset(ordered_bytes_case_ids)
+    )
+
+
+def test_broader_range_wider_ranged_repeat_replacement_manifest_keeps_bytes_pending_on_shared_parity_surface(
+) -> None:
+    manifest_id = NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID
+    bundle = BROADER_RANGE_WIDER_RANGED_REPEAT_PENDING_BYTES_REPLACEMENT_BUNDLE
+    surface = GROUPED_REPLACEMENT_TEMPLATE_SURFACE
+    ordered_str_case_ids = tuple(
+        case.case_id for case in bundle.cases if case.text_model == "str"
+    )
+    ordered_bytes_case_ids = tuple(
+        case.case_id for case in bundle.cases if case.text_model == "bytes"
+    )
+    expected_module_case_ids = tuple(
+        case.case_id
+        for case in fixture_cases_for_operation((bundle,), "module_call")
+        if case.text_model == "str"
+    )
+    expected_pattern_case_ids = tuple(
+        case.case_id
+        for case in fixture_cases_for_operation((bundle,), "pattern_call")
+        if case.text_model == "str"
+    )
+
+    assert {case.text_model for case in bundle.cases} == MIXED_TEXT_MODELS
+    assert Counter((case.operation, case.helper) for case in bundle.cases) == (
+        MIXED_TEXT_MODEL_OPERATION_HELPER_COUNTS
+    )
+    assert len(ordered_str_case_ids) == len(ordered_bytes_case_ids) == 8
+    assert ordered_bytes_case_ids == tuple(
+        f"{case_id.removesuffix('-str')}-bytes" for case_id in ordered_str_case_ids
+    )
+    assert tuple(
+        case.case_id
+        for case in surface.replacement_cases
+        if case.manifest_id == manifest_id
+    ) == ordered_str_case_ids
+    assert tuple(
+        case.case_id for case in surface.module_cases if case.manifest_id == manifest_id
+    ) == expected_module_case_ids
+    assert tuple(
+        case.case_id for case in surface.pattern_cases if case.manifest_id == manifest_id
+    ) == expected_pattern_case_ids
+    assert tuple(
+        case.case_id
+        for case in surface.template_expand_cases
+        if case.manifest_id == manifest_id
+    ) == ordered_str_case_ids
+    assert _expected_selected_replacement_case_ids(
+        surface,
+        manifest_id=manifest_id,
+    ) == ordered_str_case_ids
+    assert _expected_uncovered_replacement_case_ids(
+        surface,
+        manifest_id,
+    ) == ordered_bytes_case_ids
+    assert_fixture_bundle_tracks_published_case_frontier(
+        bundle,
+        selected_case_ids=ordered_str_case_ids,
+        expected_uncovered_case_ids=ordered_bytes_case_ids,
     )
 
 

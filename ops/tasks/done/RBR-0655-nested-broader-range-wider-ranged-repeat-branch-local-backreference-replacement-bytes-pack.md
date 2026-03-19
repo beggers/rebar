@@ -1,8 +1,9 @@
 # RBR-0655: Publish the nested broader-range wider-ranged-repeat branch-local-backreference replacement-template bytes pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Extend the existing broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template correctness publication with the exact bytes pair on the shared replacement surface, so the frontier reopens on the tracked correctness path before Rust-backed bytes replacement parity and later Python-path benchmark catch-up land.
@@ -47,3 +48,10 @@ Created: 2026-03-19
   - `tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_replacement_workflows.py` currently publishes only the 8 `str` replacement-template rows for this exact slice, so the bytes publication step is still missing rather than a stale no-op; and
   - `benchmarks/workloads/nested_group_replacement_boundary.py` already carries the adjacent broader `{1,4}` callable-replacement `str` rows, and the ready `RBR-0653` task already pins the matching non-callable template `str` rows on that same manifest, so later Python-path benchmark catch-up for the bytes pair can stay on the existing shared owner path without another synthesis pass.
 - A later parity follow-on should convert the same bytes pair behind `rebar._rebar` on the existing shared replacement surface before the benchmark surface mirrors the four adjacent broader `{1,4}` non-callable `str` rows already queued by `RBR-0653`.
+
+## Completion Note
+- 2026-03-19: Added the exact 8 bytes publication rows to `tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_replacement_workflows.py`, keeping the manifest on the shared replacement surface and mirroring the existing `str` case ids, helpers, and observations one-for-one.
+- 2026-03-19: Updated `tests/python/test_fixture_backed_replacement_parity_suite.py` so this manifest is now a mixed `str`/`bytes` bundle with `4` helper rows each for `module.sub`, `module.subn`, `Pattern.sub`, and `Pattern.subn`, while the live unimplemented bytes slice stays staged as a pending follow-on on the existing grouped replacement owner instead of being forced through the current `str`-only direct parity buckets.
+- 2026-03-19: Updated `tests/conformance/correctness_expectations.py` so the mixed-text manifest keeps explicit bytes representative rows alongside the existing `str` representatives on both the feature scorecard table and the combined table.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`1124 passed, 1747 subtests passed in 27.54s`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_replacement_workflows.py --report .rebar/tmp/rbr-0655-nested-broader-range-wider-ranged-repeat-branch-local-backreference-replacement-bytes.py` (`16` total / `8` passed / `8` `unimplemented`), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1326` total / `1318` passed / `8` `unimplemented`).
+- 2026-03-19: The tracked published scorecard now reports `collection.replacement.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference` at `16` total / `8` passed / `8` `unimplemented` with `text_models == ['bytes', 'str']`, keeping the new bytes rows visible and honest until `RBR-0657` lands parity.
