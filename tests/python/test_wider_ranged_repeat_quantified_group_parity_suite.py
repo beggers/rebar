@@ -868,6 +868,64 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
     )
 
 
+def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract() -> None:
+    bundle = BROADER_RANGE_CONDITIONAL_BUNDLE
+
+    assert bundle.manifest.manifest_id == (
+        "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
+    )
+    assert bundle.expected_case_ids is None
+    assert bundle.expected_text_models == frozenset({"bytes", "str"})
+    assert bundle.expected_patterns == frozenset(
+        {
+            r"a((bc|de){1,4})?(?(1)d|e)",
+            r"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
+            rb"a((bc|de){1,4})?(?(1)d|e)",
+            rb"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
+        }
+    )
+    assert Counter((case.operation, case.helper) for case in bundle.cases) == Counter(
+        {
+            ("compile", None): 4,
+            ("module_call", "search"): 12,
+            ("pattern_call", "fullmatch"): 12,
+        }
+    )
+    assert {
+        isinstance(case_pattern(case), str)
+        for case in bundle.cases
+        if case.text_model == "str"
+    } == {True}
+    assert {
+        isinstance(case_pattern(case), bytes)
+        for case in bundle.cases
+        if case.text_model == "bytes"
+    } == {True}
+
+    str_case_ids = frozenset(
+        case.case_id for case in bundle.cases if case.text_model == "str"
+    )
+    bytes_case_ids = frozenset(
+        case.case_id for case in bundle.cases if case.text_model == "bytes"
+    )
+
+    assert len(str_case_ids) == len(bytes_case_ids) == 14
+    assert bytes_case_ids == {
+        f"{case_id.removesuffix('-str')}-bytes" for case_id in str_case_ids
+    }
+    assert bundle.manifest.path.name == (
+        "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py"
+    )
+    assert_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=case_pattern,
+        expected_fixture_path=bundle.manifest.path,
+        expected_ordered_case_ids=tuple(
+            case.case_id for case in bundle.manifest.cases
+        ),
+    )
+
+
 def test_wider_ranged_repeat_quantified_group_direct_test_case_id_buckets_cover_selected_frontier(
 ) -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(

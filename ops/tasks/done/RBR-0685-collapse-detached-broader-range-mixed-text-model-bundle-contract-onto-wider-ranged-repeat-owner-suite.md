@@ -1,8 +1,9 @@
 # RBR-0685: Collapse the detached broader-range mixed-text-model bundle contract onto the wider-ranged-repeat owner suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Move the remaining broader `{1,4}` mixed-text-model published-bundle loading contract off `tests/python/test_fixture_parity_support_contract.py` and onto `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`, so the wider-ranged-repeat owner keeps that manifest's load-order, text-model, and paired `str`/`bytes` bundle semantics beside `FIXTURE_BUNDLES`, `BROADER_RANGE_CONDITIONAL_BUNDLE`, and the direct-bytes follow-on tables it already owns instead of leaving one detached manifest-specific seam in the generic support-contract file.
@@ -77,3 +78,13 @@ PY`
 - This simplification matches the current information flow:
   - the wider-ranged-repeat owner already carries the authoritative bundle spec, manifest id, mixed-text-model expectations, and bytes follow-on routing for this broader-range conditional slice; and
   - the support-contract file is only keeping one second manifest-specific `load_published_fixture_bundles(...)` seam alive beside that owner.
+
+## Completion
+- 2026-03-19: Moved `test_published_fixture_bundle_loading_preserves_mixed_text_model_contract(...)` onto `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`, deriving the manifest-specific assertions from the owner suite's existing `BROADER_RANGE_CONDITIONAL_BUNDLE`, `FIXTURE_BUNDLES`, `case_pattern(...)`, and `assert_fixture_bundle_contract(...)`.
+- 2026-03-19: Removed the detached broader-range mixed-text-model probe and the now-unused `load_published_fixture_bundles` import from `tests/python/test_fixture_parity_support_contract.py`, leaving the remaining generic selector, fixture-loader, helper-parity, and manifest-loader coverage in place.
+
+## Verification
+- 2026-03-19: `./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (`1341 passed`)
+- 2026-03-19: `./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py` (`119 passed`)
+- 2026-03-19: `./.venv/bin/python - <<'PY' ... PY` (`ok`)
+- 2026-03-19: `bash -lc "! rg -n 'load_published_fixture_bundles|def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract\\(' tests/python/test_fixture_parity_support_contract.py"` (no matches)

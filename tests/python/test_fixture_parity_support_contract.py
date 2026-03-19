@@ -50,7 +50,6 @@ from tests.python.fixture_parity_support import (
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
     load_fixture_bundles,
-    load_published_fixture_bundles,
     str_case_pattern,
 )
 OPTIONAL_NAMED_GROUP_PATTERN = r"a(?P<word>b)?d"
@@ -579,67 +578,6 @@ def test_case_pattern_helpers_extract_str_and_bytes_patterns_from_published_fixt
     assert case_pattern(pattern_case) == r"(?P<word>abc)"
     assert str_case_pattern(pattern_case) == r"(?P<word>abc)"
     assert case_pattern(bytes_case) == b"abc"
-
-
-def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract() -> None:
-    fixture_path = (
-        CORRECTNESS_FIXTURES_ROOT
-        / "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py"
-    )
-
-    (bundle,) = load_published_fixture_bundles((fixture_path,))
-
-    assert bundle.manifest.manifest_id == (
-        "broader-range-wider-ranged-repeat-quantified-group-alternation-conditional-workflows"
-    )
-    assert bundle.expected_case_ids is None
-    assert bundle.expected_text_models == frozenset({"bytes", "str"})
-    assert bundle.expected_patterns == frozenset(
-        {
-            r"a((bc|de){1,4})?(?(1)d|e)",
-            r"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
-            rb"a((bc|de){1,4})?(?(1)d|e)",
-            rb"a(?P<outer>(bc|de){1,4})?(?(outer)d|e)",
-        }
-    )
-    assert Counter((case.operation, case.helper) for case in bundle.cases) == Counter(
-        {
-            ("compile", None): 4,
-            ("module_call", "search"): 12,
-            ("pattern_call", "fullmatch"): 12,
-        }
-    )
-    assert tuple(case.case_id for case in bundle.cases) == tuple(
-        case.case_id for case in bundle.manifest.cases
-    )
-    assert {
-        isinstance(case_pattern(case), str)
-        for case in bundle.cases
-        if case.text_model == "str"
-    } == {True}
-    assert {
-        isinstance(case_pattern(case), bytes)
-        for case in bundle.cases
-        if case.text_model == "bytes"
-    } == {True}
-
-    str_case_ids = frozenset(
-        case.case_id for case in bundle.cases if case.text_model == "str"
-    )
-    bytes_case_ids = frozenset(
-        case.case_id for case in bundle.cases if case.text_model == "bytes"
-    )
-
-    assert len(str_case_ids) == len(bytes_case_ids) == 14
-    assert bytes_case_ids == {
-        f"{case_id.removesuffix('-str')}-bytes" for case_id in str_case_ids
-    }
-    assert (bundle.manifest.path,) == (fixture_path,)
-    assert_fixture_bundle_contract(
-        bundle,
-        pattern_extractor=case_pattern,
-        expected_fixture_path=fixture_path,
-    )
 
 
 def test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids() -> None:
