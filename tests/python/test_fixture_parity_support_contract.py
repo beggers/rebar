@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, fields, replace
 import pathlib
 import re
 import textwrap
@@ -34,6 +34,7 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
+    FixtureBundle,
     FixtureBundleSpec,
     RecordingNativeBoundary,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
@@ -1412,28 +1413,38 @@ def test_invoke_bounded_pattern_case_preserves_helper_and_bound_semantics(
     assert observed.span() == expected_span
 
 
+NAMED_BACKREFERENCE_SELECTED_CASE_IDS = (
+    "named-backreference-pattern-search-str",
+    "named-backreference-compile-metadata-str",
+)
+
+
+def _named_backreference_bundle_spec() -> FixtureBundleSpec:
+    return FixtureBundleSpec(
+        "named_backreference_workflows.py",
+        expected_manifest_id="named-backreference-workflows",
+        expected_case_ids=frozenset(
+            {
+                "named-backreference-compile-metadata-str",
+                "named-backreference-module-search-str",
+                "named-backreference-pattern-search-str",
+            }
+        ),
+        expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 1,
+                ("module_call", "search"): 1,
+                ("pattern_call", "search"): 1,
+            }
+        ),
+    )
+
+
 def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_case_ids() -> None:
     named_bundle, open_ended_bundle = load_fixture_bundles(
         (
-            FixtureBundleSpec(
-                "named_backreference_workflows.py",
-                expected_manifest_id="named-backreference-workflows",
-                expected_case_ids=frozenset(
-                    {
-                        "named-backreference-compile-metadata-str",
-                        "named-backreference-module-search-str",
-                        "named-backreference-pattern-search-str",
-                    }
-                ),
-                expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
-                expected_operation_helper_counts=Counter(
-                    {
-                        ("compile", None): 1,
-                        ("module_call", "search"): 1,
-                        ("pattern_call", "search"): 1,
-                    }
-                ),
-            ),
+            _named_backreference_bundle_spec(),
             FixtureBundleSpec(
                 "open_ended_quantified_group_alternation_workflows.py",
                 expected_manifest_id="open-ended-quantified-group-alternation-workflows",
@@ -1476,6 +1487,141 @@ def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_ca
         "named_backreference_workflows.py",
         "open_ended_quantified_group_alternation_workflows.py",
     )
+
+
+def test_whole_manifest_bundle_contract_supports_expected_case_ids_and_fixture_path_validation(
+) -> None:
+    spec = _named_backreference_bundle_spec()
+    (bundle,) = load_fixture_bundles((spec,))
+
+    assert bundle.manifest.path == CORRECTNESS_FIXTURES_ROOT / spec.fixture_name
+    assert bundle.expected_case_ids is not None
+    assert_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=str_case_pattern,
+        expected_fixture_path=CORRECTNESS_FIXTURES_ROOT / spec.fixture_name,
+    )
+
+
+def test_fixture_bundle_exposes_derived_manifest_id_without_storing_duplicate_field(
+) -> None:
+    field_names = {field.name for field in fields(FixtureBundle)}
+    (bundle,) = load_fixture_bundles((_named_backreference_bundle_spec(),))
+
+    assert "expected_manifest_id" not in field_names
+    assert bundle.expected_manifest_id == "named-backreference-workflows"
+    assert bundle.expected_manifest_id == bundle.manifest.manifest_id
+
+
+def test_load_fixture_bundles_rejects_mismatched_expected_manifest_id() -> None:
+    spec = _named_backreference_bundle_spec()
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "named_backreference_workflows.py expected_manifest_id "
+            "'wrong-manifest-id' does not match loaded manifest_id "
+            "'named-backreference-workflows'"
+        ),
+    ):
+        load_fixture_bundles(
+            (replace(spec, expected_manifest_id="wrong-manifest-id"),)
+        )
+
+
+def test_load_fixture_bundles_selected_case_ids_preserve_requested_order() -> None:
+    spec = _named_backreference_bundle_spec()
+    (bundle,) = load_fixture_bundles(
+        (
+            replace(
+                spec,
+                selected_case_ids=NAMED_BACKREFERENCE_SELECTED_CASE_IDS,
+                expected_case_ids=None,
+                expected_operation_helper_counts=Counter(
+                    {
+                        ("compile", None): 1,
+                        ("pattern_call", "search"): 1,
+                    }
+                ),
+            ),
+        )
+    )
+    compile_cases = fixture_cases_for_operation((bundle,), "compile")
+    pattern_cases = fixture_cases_for_operation((bundle,), "pattern_call")
+
+    assert bundle.expected_case_ids == frozenset(
+        NAMED_BACKREFERENCE_SELECTED_CASE_IDS
+    )
+    assert bundle.expected_text_models is None
+    assert tuple(case.case_id for case in compile_cases) == (
+        "named-backreference-compile-metadata-str",
+    )
+    assert tuple(case.case_id for case in pattern_cases) == (
+        "named-backreference-pattern-search-str",
+    )
+    assert fixture_cases_for_operation((bundle,), "module_call") == ()
+    assert_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=str_case_pattern,
+        expected_fixture_path=CORRECTNESS_FIXTURES_ROOT / spec.fixture_name,
+        expected_ordered_case_ids=NAMED_BACKREFERENCE_SELECTED_CASE_IDS,
+    )
+
+
+def test_load_fixture_bundles_full_manifest_defaults_str_text_model_expectation() -> None:
+    spec = _named_backreference_bundle_spec()
+    (bundle,) = load_fixture_bundles((replace(spec, expected_case_ids=None),))
+
+    assert bundle.expected_case_ids is None
+    assert bundle.expected_text_models == frozenset({"str"})
+    assert_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=str_case_pattern,
+        expected_fixture_path=CORRECTNESS_FIXTURES_ROOT / spec.fixture_name,
+    )
+
+
+@pytest.mark.parametrize(
+    ("selected_case_ids", "error_message"),
+    (
+        pytest.param(
+            (),
+            "named_backreference_workflows.py selected_case_ids must not be empty",
+            id="empty",
+        ),
+        pytest.param(
+            (
+                "named-backreference-compile-metadata-str",
+                "named-backreference-compile-metadata-str",
+            ),
+            "named_backreference_workflows.py selected_case_ids contains duplicate ids: "
+            "('named-backreference-compile-metadata-str',)",
+            id="duplicate",
+        ),
+        pytest.param(
+            ("missing-case-id",),
+            "named_backreference_workflows.py is missing expected fixture rows: "
+            "('missing-case-id',)",
+            id="missing",
+        ),
+    ),
+)
+def test_load_fixture_bundles_rejects_invalid_selected_case_ids(
+    selected_case_ids: tuple[str, ...],
+    error_message: str,
+) -> None:
+    spec = _named_backreference_bundle_spec()
+
+    with pytest.raises(ValueError, match=re.escape(error_message)):
+        load_fixture_bundles(
+            (
+                replace(
+                    spec,
+                    selected_case_ids=selected_case_ids,
+                    expected_case_ids=None,
+                ),
+            )
+        )
 
 @pytest.mark.parametrize(
     "pattern",
