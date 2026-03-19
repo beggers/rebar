@@ -1,6 +1,6 @@
 # RBR-0681: Collapse the detached replacement-helper contract onto the replacement owner suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -79,3 +79,12 @@ PY`
 - This simplification matches the current information flow:
   - the fixture-backed replacement owner already carries the manifest ids, selected case ids, template positions, and helper semantics those detached tests assert; and
   - the support-contract file is only keeping a second replacement-specific contract seam alive beside that owner.
+
+## Completion
+- 2026-03-19: Widened the grouped replacement owner’s `collection-replacement-workflows` bundle selection to the existing two-row helper-contract slice (`module-sub-callable-str` plus `module-sub-grouping-template`), updated the owner-local compile/template-expand expectations to match that structural ownership, and moved the two replacement-helper contract tests onto `tests/python/test_fixture_backed_replacement_parity_suite.py`.
+- 2026-03-19: Removed the moved replacement-specific tests plus the now-unused `bundle_patterns`, `case_replacement_argument`, and `case_text_argument` imports from `tests/python/test_fixture_parity_support_contract.py`, leaving the remaining generic selector, fixture-loader, bundle-contract, and helper-parity coverage in place.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py`
+  - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY`
+  - `bash -lc "! rg -n 'test_bundle_pattern_projection_and_case_source_payloads_cover_published_fixtures|test_case_argument_helpers_cover_module_and_pattern_replacement_rows|bundle_patterns|case_replacement_argument|case_text_argument' tests/python/test_fixture_parity_support_contract.py"`

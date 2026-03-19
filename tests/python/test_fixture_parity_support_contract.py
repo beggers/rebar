@@ -44,10 +44,7 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_pattern_parity,
     assert_valid_match_group_access_parity,
-    bundle_patterns,
-    case_replacement_argument,
     case_pattern,
-    case_text_argument,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
@@ -1325,43 +1322,6 @@ def test_load_fixture_bundles_rejects_mismatched_expected_manifest_id() -> None:
         )
 
 
-def test_bundle_pattern_projection_and_case_source_payloads_cover_published_fixtures() -> None:
-    selected_case_ids = (
-        "module-sub-callable-str",
-        "module-sub-grouping-template",
-    )
-    (bundle,) = load_fixture_bundles(
-        (
-            FixtureBundleSpec(
-                "collection_replacement_workflows.py",
-                expected_manifest_id="collection-replacement-workflows",
-                expected_case_ids=frozenset(selected_case_ids),
-                expected_patterns=frozenset({"abc", "(abc)"}),
-                expected_operation_helper_counts=Counter({("module_call", "sub"): 2}),
-                selected_case_ids=selected_case_ids,
-                expected_text_models=frozenset({"str"}),
-            ),
-        )
-    )
-
-    cases_by_id = {case.case_id: case for case in bundle.cases}
-
-    assert bundle_patterns(bundle, pattern_extractor=case_pattern) == frozenset(
-        {"abc", "(abc)"}
-    )
-    assert bundle_patterns(bundle, pattern_extractor=str_case_pattern) == frozenset(
-        {"abc", "(abc)"}
-    )
-    assert set(cases_by_id) == set(selected_case_ids)
-    assert cases_by_id["module-sub-callable-str"].source_args[1] == {
-        "type": "callable_constant",
-        "value": "x",
-    }
-    assert cases_by_id["module-sub-callable-str"].source_kwargs == {}
-    assert cases_by_id["module-sub-grouping-template"].source_args[1] == r"\1x"
-    assert cases_by_id["module-sub-grouping-template"].source_kwargs == {}
-
-
 def test_direct_test_case_id_bucket_helper_accepts_exact_selected_frontier_coverage(
 ) -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
@@ -1456,39 +1416,6 @@ def test_direct_test_case_id_bucket_helper_rejects_duplicate_ids_across_position
             selected_case_ids=("grouped-pattern-fullmatch-two-capture-gap-str",),
             coverage_label="fixture parity support contract buckets",
         )
-
-
-def test_case_argument_helpers_cover_module_and_pattern_replacement_rows() -> None:
-    module_bundle, pattern_bundle = load_fixture_bundles(
-        (
-            FixtureBundleSpec(
-                "collection_replacement_workflows.py",
-                expected_manifest_id="collection-replacement-workflows",
-                expected_case_ids=frozenset({"module-sub-grouping-template"}),
-                expected_patterns=frozenset({"(abc)"}),
-                expected_operation_helper_counts=Counter({("module_call", "sub"): 1}),
-                selected_case_ids=("module-sub-grouping-template",),
-                expected_text_models=frozenset({"str"}),
-            ),
-            FixtureBundleSpec(
-                "named_group_replacement_workflows.py",
-                expected_manifest_id="named-group-replacement-workflows",
-                expected_case_ids=frozenset({"pattern-sub-template-named-group-str"}),
-                expected_patterns=frozenset({r"(?P<word>abc)"}),
-                expected_operation_helper_counts=Counter({("pattern_call", "sub"): 1}),
-                selected_case_ids=("pattern-sub-template-named-group-str",),
-                expected_text_models=frozenset({"str"}),
-            ),
-        )
-    )
-
-    module_case = module_bundle.cases[0]
-    pattern_case = pattern_bundle.cases[0]
-
-    assert case_replacement_argument(module_case) == module_case.args[1]
-    assert case_text_argument(module_case) == module_case.args[2]
-    assert case_replacement_argument(pattern_case) == pattern_case.args[0]
-    assert case_text_argument(pattern_case) == pattern_case.args[1]
 
 
 @pytest.mark.parametrize(

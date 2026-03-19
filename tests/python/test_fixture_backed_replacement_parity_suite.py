@@ -86,7 +86,12 @@ CONDITIONAL_REPLACEMENT_SELECTOR_FIXTURE_PATHS = select_correctness_fixture_path
     CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR
 )
 GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID = "grouped-replacement-template"
+GROUPED_TEMPLATE_CALLABLE_CASE_ID = "module-sub-callable-str"
 GROUPED_TEMPLATE_SELECTED_CASE_ID = "module-sub-grouping-template"
+GROUPED_REPLACEMENT_COLLECTION_CASE_IDS = (
+    GROUPED_TEMPLATE_CALLABLE_CASE_ID,
+    GROUPED_TEMPLATE_SELECTED_CASE_ID,
+)
 GROUPED_REPLACEMENT_BUNDLE_MANIFEST_IDS = (
     "collection-replacement-workflows",
     "named-group-replacement-workflows",
@@ -108,7 +113,10 @@ NESTED_GROUP_ALTERNATION_REPLACEMENT_CASE_IDS = (
     "module-sub-template-nested-group-alternation-numbered-wrapper-str",
     "pattern-subn-template-nested-group-alternation-named-wrapper-first-match-only-str",
 )
-GROUPED_TEMPLATE_OPERATION_HELPER_COUNTS = Counter({("module_call", "sub"): 1})
+GROUPED_REPLACEMENT_COLLECTION_PATTERNS = frozenset({"abc", "(abc)"})
+GROUPED_TEMPLATE_OPERATION_HELPER_COUNTS = Counter(
+    {("module_call", "sub"): len(GROUPED_REPLACEMENT_COLLECTION_CASE_IDS)}
+)
 NESTED_GROUP_ALTERNATION_OPERATION_HELPER_COUNTS = Counter(
     {
         ("module_call", "sub"): 2,
@@ -166,6 +174,7 @@ GROUPED_REPLACEMENT_COMPILE_PATTERNS = (
     "a(?P<outer>(b|c))d",
     "a(?P<word>b|c)d",
     "a(b|c)d",
+    "abc",
     rb"a((b|c){1,4})\2d",
     rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
 )
@@ -931,9 +940,13 @@ def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
             replacement_cases,
             spec.match_group_access_manifest_ids,
         ),
-        template_expand_cases=_cases_for_manifest_ids(
-            replacement_cases,
-            spec.template_expand_manifest_ids,
+        template_expand_cases=tuple(
+            case
+            for case in _cases_for_manifest_ids(
+                replacement_cases,
+                spec.template_expand_manifest_ids,
+            )
+            if "replacement-template" in case.categories
         ),
         discovered_no_match_cases=(
             replacement_cases if spec.discover_no_match_on_all_replacement_cases else ()
@@ -1095,8 +1108,8 @@ REPLACEMENT_SURFACE_SPECS = (
             FixtureBundleSpec(
                 "collection_replacement_workflows.py",
                 expected_manifest_id="collection-replacement-workflows",
-                selected_case_ids=(GROUPED_TEMPLATE_SELECTED_CASE_ID,),
-                expected_patterns=frozenset({"(abc)"}),
+                selected_case_ids=GROUPED_REPLACEMENT_COLLECTION_CASE_IDS,
+                expected_patterns=GROUPED_REPLACEMENT_COLLECTION_PATTERNS,
                 expected_operation_helper_counts=GROUPED_TEMPLATE_OPERATION_HELPER_COUNTS,
                 expected_text_models=frozenset({"str"}),
             ),
@@ -1813,9 +1826,13 @@ def test_grouped_replacement_surface_keeps_selected_bundle_ownership_explicit() 
 
     grouped_template_bundle = surface.bundles[0]
     assert tuple(case.case_id for case in grouped_template_bundle.cases) == (
-        GROUPED_TEMPLATE_SELECTED_CASE_ID,
+        GROUPED_REPLACEMENT_COLLECTION_CASE_IDS
     )
-    (grouped_template_case,) = grouped_template_bundle.cases
+    grouped_template_case = next(
+        case
+        for case in grouped_template_bundle.cases
+        if case.case_id == GROUPED_TEMPLATE_SELECTED_CASE_ID
+    )
     assert grouped_template_case.operation == "module_call"
     assert grouped_template_case.helper == "sub"
     assert str_case_pattern(grouped_template_case) == "(abc)"
@@ -1852,6 +1869,59 @@ def test_grouped_replacement_surface_keeps_selected_bundle_ownership_explicit() 
         "module-sub-template-nested-group-alternation-numbered-wrapper-str",
         "pattern-subn-template-nested-group-alternation-named-wrapper-first-match-only-str",
     }
+
+
+def test_bundle_pattern_projection_and_case_source_payloads_cover_published_fixtures(
+) -> None:
+    bundle = published_fixture_bundle_by_manifest_id(
+        GROUPED_REPLACEMENT_TEMPLATE_SURFACE.bundles,
+        "collection-replacement-workflows",
+    )
+    cases_by_id = {case.case_id: case for case in bundle.cases}
+
+    assert tuple(case.case_id for case in bundle.cases) == (
+        GROUPED_REPLACEMENT_COLLECTION_CASE_IDS
+    )
+    assert {case_pattern(case) for case in bundle.cases} == (
+        GROUPED_REPLACEMENT_COLLECTION_PATTERNS
+    )
+    assert {str_case_pattern(case) for case in bundle.cases} == (
+        GROUPED_REPLACEMENT_COLLECTION_PATTERNS
+    )
+    assert cases_by_id[GROUPED_TEMPLATE_CALLABLE_CASE_ID].source_args[1] == {
+        "type": "callable_constant",
+        "value": "x",
+    }
+    assert cases_by_id[GROUPED_TEMPLATE_CALLABLE_CASE_ID].source_kwargs == {}
+    assert cases_by_id[GROUPED_TEMPLATE_SELECTED_CASE_ID].source_args[1] == r"\1x"
+    assert cases_by_id[GROUPED_TEMPLATE_SELECTED_CASE_ID].source_kwargs == {}
+
+
+def test_case_argument_helpers_cover_module_and_pattern_replacement_rows() -> None:
+    module_bundle = published_fixture_bundle_by_manifest_id(
+        GROUPED_REPLACEMENT_TEMPLATE_SURFACE.bundles,
+        "collection-replacement-workflows",
+    )
+    named_bundle = published_fixture_bundle_by_manifest_id(
+        GROUPED_REPLACEMENT_TEMPLATE_SURFACE.bundles,
+        "named-group-replacement-workflows",
+    )
+
+    module_case = next(
+        case
+        for case in module_bundle.cases
+        if case.case_id == GROUPED_TEMPLATE_SELECTED_CASE_ID
+    )
+    pattern_case = next(
+        case
+        for case in named_bundle.cases
+        if case.case_id == "pattern-sub-template-named-group-str"
+    )
+
+    assert case_replacement_argument(module_case) == module_case.args[1]
+    assert case_text_argument(module_case) == module_case.args[2]
+    assert case_replacement_argument(pattern_case) == pattern_case.args[0]
+    assert case_text_argument(pattern_case) == pattern_case.args[1]
 
 
 @pytest.mark.parametrize(("surface", "bundle"), BUNDLE_PARAMS)
@@ -2108,6 +2178,11 @@ def test_broader_range_open_ended_replacement_manifest_can_stage_bytes_as_pendin
         for case in fixture_cases_for_operation((bundle,), "pattern_call")
         if case.text_model == "str"
     )
+    expected_template_expand_case_ids = tuple(
+        case.case_id
+        for case in bundle.cases
+        if case.text_model == "str" and "replacement-template" in case.categories
+    )
 
     assert {case.text_model for case in bundle.cases} == MIXED_TEXT_MODELS
     assert tuple(case.case_id for case in surface.replacement_cases) == (
@@ -2120,7 +2195,7 @@ def test_broader_range_open_ended_replacement_manifest_can_stage_bytes_as_pendin
     assert tuple(case.case_id for case in surface.pattern_cases) == expected_pattern_case_ids
     assert tuple(case.case_id for case in surface.match_group_access_cases) == ()
     assert tuple(case.case_id for case in surface.template_expand_cases) == (
-        expected_selected_case_ids
+        expected_template_expand_case_ids
     )
     assert _expected_selected_replacement_case_ids(
         surface,
