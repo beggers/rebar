@@ -1,6 +1,6 @@
 # RBR-0714: Catch up the module-workflow multiline compile regression benchmark
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -52,3 +52,8 @@ Created: 2026-03-19
   - `reports/benchmarks/latest.py` currently reports `772` total / `772` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 764` and `REPORT["summary"]["regression_workloads"] == 6`;
   - `reports/benchmarks/latest.py` does not yet publish any `regression-module-compile-multiline-purged` row; and
   - the adjacent bytes sibling stays out of scope for this task because `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... rebar.compile(bytes_pattern, rebar.MULTILINE) ... PY` still raises `NotImplementedError`, so the next bounded benchmark catch-up here is the newly landed `str` multiline row, not a broader bytes expansion.
+
+## Completion
+- 2026-03-19: Added the exact `regression-module-compile-multiline-purged` workload to the existing `regression_matrix.py` manifest, kept it on the shared compile-proxy anchor path via `workflow-compile-str-multiline-regression`, and updated the shared source-tree benchmark-contract expectations without creating a new manifest or suite.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/regression_matrix.py --report .rebar/tmp/rbr-0714-regression-matrix.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
+- Verified the tracked `reports/benchmarks/latest.py` diff before closing the task. The published combined benchmark scorecard now reads `773` total / `773` measured / `0` known gaps across `30` manifests, with `REPORT["summary"]["module_workloads"] == 765`, `REPORT["summary"]["regression_workloads"] == 7`, and `REPORT["manifests"]["regression-matrix"]` at `7` selected / `7` measured / `0` known gaps; the new `regression-module-compile-multiline-purged` row is published as `measured`.

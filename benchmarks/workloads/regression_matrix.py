@@ -124,6 +124,33 @@ MANIFEST = {
       ]
     },
     {
+      "id": "regression-module-compile-multiline-purged",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "flags": 8,
+      "text_model": "str",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "regression",
+        "compile",
+        "multiline",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "assertions-and-anchors",
+        "flag-syntax",
+        "quantifiers",
+        "cache-purge"
+      ],
+      "notes": [
+        "Multiline-only module compile regression probe that keeps the shared module-workflow compile neighbor visible on the purged-cache path."
+      ]
+    },
+    {
       "id": "regression-module-compile-verbose-purged-bytes",
       "bucket": "module-compile",
       "family": "module",

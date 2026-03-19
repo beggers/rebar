@@ -591,6 +591,7 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS = {
             "module-compile-literal-purged",
             "regression-import-cold",
             "regression-parser-bytes-backreference-purged",
+            "regression-module-compile-multiline-purged",
             "regression-module-compile-verbose-purged-bytes",
             "regression-module-search-bytes-cold-miss",
         ),
@@ -4118,13 +4119,14 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
 
         manifest_summary = scorecard["manifests"]["regression-matrix"]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
-        self.assertEqual(manifest_summary["measured_workloads"], 6)
+        self.assertEqual(manifest_summary["measured_workloads"], 7)
 
         self._assert_manifest_workload_contracts(
             scorecard_case.manifest_for_id("regression-matrix"),
             scorecard,
             (
                 ("regression-parser-bytes-backreference-purged", "measured"),
+                ("regression-module-compile-multiline-purged", "measured"),
                 ("regression-module-compile-verbose-purged-bytes", "measured"),
             ),
         )
@@ -4536,12 +4538,13 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                     case.representative_known_gap_workload_ids,
                 )
 
-    def test_regression_pack_full_promotes_bytes_regression_probes_to_measured(
+    def test_regression_pack_full_promotes_regression_probes_to_measured(
         self,
     ) -> None:
         case = source_tree_scorecard_case("regression-pack-full")
         for workload_id in (
             "regression-parser-bytes-backreference-purged",
+            "regression-module-compile-multiline-purged",
             "regression-module-compile-verbose-purged-bytes",
         ):
             with self.subTest(workload_id=workload_id):
@@ -6183,6 +6186,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                     ),
                     "regression-module-compile-verbose-purged": (
                         "workflow-compile-str-verbose-regression",
+                    ),
+                    "regression-module-compile-multiline-purged": (
+                        "workflow-compile-str-multiline-regression",
                     ),
                     "regression-module-compile-verbose-purged-bytes": (
                         "workflow-compile-bytes-verbose-regression",
