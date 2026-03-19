@@ -203,6 +203,95 @@ class PythonBenchmarkManifestContractTest(unittest.TestCase):
             },
         )
 
+    def test_python_benchmark_manifest_selected_workloads_preserves_filters_and_order(
+        self,
+    ) -> None:
+        manifest_source = """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "python-benchmark-selection-contract",
+            "workloads": [
+                {
+                    "id": "compile-literal-cold",
+                    "operation": "compile",
+                    "pattern": "abc",
+                },
+                {
+                    "id": "compile-smoke-flagged",
+                    "operation": "compile",
+                    "pattern": "def",
+                    "smoke": True,
+                },
+                {
+                    "id": "compile-smoke-categorized",
+                    "operation": "compile",
+                    "pattern": "ghi",
+                    "categories": ["smoke"],
+                },
+            ],
+        }
+        """
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            manifest_path = self._write_manifest(
+                pathlib.Path(temp_dir),
+                "python_benchmark_selection_contract.py",
+                manifest_source,
+            )
+            manifest = load_manifest(manifest_path)
+
+        self.assertEqual(
+            [workload.workload_id for workload in manifest.selected_workloads()],
+            [
+                "compile-literal-cold",
+                "compile-smoke-flagged",
+                "compile-smoke-categorized",
+            ],
+        )
+        self.assertEqual(
+            manifest.smoke_workload_ids(),
+            ["compile-smoke-flagged", "compile-smoke-categorized"],
+        )
+        self.assertEqual(
+            [
+                workload.workload_id
+                for workload in manifest.selected_workloads(
+                    selected_workload_ids=(
+                        "compile-smoke-categorized",
+                        "compile-literal-cold",
+                    )
+                )
+            ],
+            ["compile-smoke-categorized", "compile-literal-cold"],
+        )
+        self.assertEqual(
+            [
+                workload.workload_id
+                for workload in manifest.selected_workloads(
+                    selection_mode="smoke",
+                    selected_workload_ids=(
+                        "compile-smoke-categorized",
+                        "compile-literal-cold",
+                        "compile-smoke-flagged",
+                    ),
+                )
+            ],
+            ["compile-smoke-categorized", "compile-smoke-flagged"],
+        )
+
+        with self.assertRaisesRegex(
+            AssertionError,
+            "missing workload definition 'missing-workload' in "
+            "'python-benchmark-selection-contract'",
+        ):
+            manifest.selected_workloads(selected_workload_ids=("missing-workload",))
+
+        with self.assertRaisesRegex(
+            AssertionError,
+            "unknown benchmark selection mode 'unknown'",
+        ):
+            manifest.selected_workloads(selection_mode="unknown")
+
     def test_python_benchmark_manifest_measures_expected_exception_workloads(
         self,
     ) -> None:

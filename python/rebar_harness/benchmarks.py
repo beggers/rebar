@@ -258,7 +258,38 @@ class BenchmarkManifest:
         )
 
     def smoke_workload_ids(self) -> list[str]:
-        return [workload.workload_id for workload in self.workloads if workload.smoke]
+        return [
+            workload.workload_id
+            for workload in self.selected_workloads(selection_mode="smoke")
+        ]
+
+    def selected_workloads(
+        self,
+        *,
+        selection_mode: str = "full",
+        selected_workload_ids: tuple[str, ...] | None = None,
+    ) -> list[Workload]:
+        if selected_workload_ids is None:
+            workloads = list(self.workloads)
+        else:
+            workloads_by_id = {
+                workload.workload_id: workload for workload in self.workloads
+            }
+            workloads = []
+            for workload_id in selected_workload_ids:
+                if workload_id not in workloads_by_id:
+                    raise AssertionError(
+                        f"missing workload definition {workload_id!r} in {self.manifest_id!r}"
+                    )
+                workloads.append(workloads_by_id[workload_id])
+
+        if selection_mode == "full":
+            return workloads
+        if selection_mode == "smoke":
+            return [workload for workload in workloads if workload.smoke]
+        raise AssertionError(
+            f"unknown benchmark selection mode {selection_mode!r}"
+        )
 
 
 def normalize_workload_value(value: Any) -> Any:

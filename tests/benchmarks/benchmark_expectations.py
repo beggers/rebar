@@ -2091,20 +2091,6 @@ def _source_tree_manifest_known_gap_counts(
     return known_gap_counts
 
 
-def _selected_source_tree_manifest_workloads(
-    manifest: BenchmarkManifest,
-    *,
-    selection_mode: str,
-) -> tuple[Workload, ...]:
-    if selection_mode == "full":
-        return tuple(manifest.workloads)
-    if selection_mode == "smoke":
-        return tuple(workload for workload in manifest.workloads if workload.smoke)
-    raise AssertionError(
-        f"unknown source-tree benchmark selection mode {selection_mode!r}"
-    )
-
-
 def _selected_source_tree_manifest_workload_ids(
     manifest: BenchmarkManifest,
     *,
@@ -2112,10 +2098,7 @@ def _selected_source_tree_manifest_workload_ids(
 ) -> tuple[str, ...]:
     return tuple(
         workload.workload_id
-        for workload in _selected_source_tree_manifest_workloads(
-            manifest,
-            selection_mode=selection_mode,
-        )
+        for workload in manifest.selected_workloads(selection_mode=selection_mode)
     )
 
 
@@ -2290,9 +2273,8 @@ def expected_summary_for_manifests(
     selected_manifest_ids: list[str] = []
     for manifest in manifests:
         manifest_id = manifest.manifest_id
-        selected_manifest_workloads = _selected_source_tree_manifest_workloads(
-            manifest,
-            selection_mode=selection_mode,
+        selected_manifest_workloads = manifest.selected_workloads(
+            selection_mode=selection_mode
         )
         if selected_manifest_workloads:
             selected_manifest_ids.append(manifest_id)

@@ -399,10 +399,6 @@ def _assert_benchmark_summary_consistent(
         )
 
 
-def _smoke_workload_ids(workloads: list[Workload]) -> list[str]:
-    return [workload.workload_id for workload in workloads if workload.smoke]
-
-
 def _artifact_manifest_record(
     manifest_path: str,
     manifest: BenchmarkManifest,
@@ -412,30 +408,9 @@ def _artifact_manifest_record(
         "manifest_id": manifest.manifest_id,
         "manifest_schema_version": manifest.schema_version,
         "workload_count": len(manifest.workloads),
-        "smoke_workload_ids": _smoke_workload_ids(manifest.workloads),
+        "smoke_workload_ids": manifest.smoke_workload_ids(),
         "spec_refs": list(manifest.spec_refs),
     }
-
-
-def _selected_manifest_workloads(
-    manifest: BenchmarkManifest,
-    *,
-    selected_workload_ids: tuple[str, ...] | None,
-) -> list[Workload]:
-    if selected_workload_ids is None:
-        return list(manifest.workloads)
-
-    workloads_by_id = {
-        workload.workload_id: workload for workload in manifest.workloads
-    }
-    selected_workloads: list[Workload] = []
-    for workload_id in selected_workload_ids:
-        if workload_id not in workloads_by_id:
-            raise AssertionError(
-                f"missing workload definition {workload_id!r} in {manifest.manifest_id!r}"
-            )
-        selected_workloads.append(workloads_by_id[workload_id])
-    return selected_workloads
 
 
 def assert_source_tree_benchmark_contract(
@@ -552,11 +527,10 @@ def assert_benchmark_manifest_contract(
     selected_workload_ids: tuple[str, ...] | None = None,
 ) -> None:
     workloads = list(manifest.workloads)
-    selected_workloads = _selected_manifest_workloads(
-        manifest,
-        selected_workload_ids=selected_workload_ids,
+    selected_workloads = manifest.selected_workloads(
+        selected_workload_ids=selected_workload_ids
     )
-    smoke_ids = _smoke_workload_ids(workloads)
+    smoke_ids = manifest.smoke_workload_ids()
     operations = sorted({workload.operation for workload in selected_workloads})
     families = sorted(
         {
