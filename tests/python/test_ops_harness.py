@@ -31,6 +31,9 @@ def load_rebar_ops_module(module_name: str = "rebar_ops_for_tests") -> object:
 
 
 PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py"
+COMPILE_SMOKE_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "compile_smoke.py"
+)
 CORRECTNESS_REPORT_PATH = correctness.SCORECARD_REPORT.published_path
 LEGACY_CORRECTNESS_REPORT_PATH = scorecard_io.retired_published_scorecard_sidecar_path(
     CORRECTNESS_REPORT_PATH
@@ -760,6 +763,45 @@ class ReadmeReportingTest(unittest.TestCase):
                         ),
                         scorecard,
                     )
+
+    def test_run_harness_scorecard_loads_python_correctness_reports(self) -> None:
+        summary, scorecard = run_harness_scorecard(
+            "rebar_harness.correctness",
+            [
+                "--fixtures",
+                str(PARSER_FIXTURES_PATH),
+            ],
+            report_name="parser-only.py",
+        )
+
+        self.assertEqual(scorecard["suite"], "correctness")
+        self.assertEqual(
+            scorecard["fixtures"]["path"],
+            str(PARSER_FIXTURES_PATH.relative_to(REPO_ROOT)),
+        )
+        self.assertEqual(scorecard["fixtures"]["manifest_id"], "parser-matrix")
+        self.assertEqual(scorecard["summary"], summary)
+
+    def test_run_harness_scorecard_loads_python_benchmark_reports(self) -> None:
+        summary, scorecard = run_harness_scorecard(
+            "rebar_harness.benchmarks",
+            [
+                "--manifest",
+                str(COMPILE_SMOKE_MANIFEST_PATH),
+            ],
+            report_name="compile-smoke.py",
+        )
+
+        self.assertEqual(scorecard["suite"], "benchmarks")
+        self.assertEqual(
+            scorecard["artifacts"]["manifest"],
+            str(COMPILE_SMOKE_MANIFEST_PATH.relative_to(REPO_ROOT)),
+        )
+        self.assertEqual(scorecard["artifacts"]["manifest_id"], "compile-smoke")
+        self.assertEqual(
+            {key: scorecard["summary"][key] for key in summary},
+            summary,
+        )
 
     def test_scorecard_report_loaders_and_writers_reject_malformed_inputs(
         self,

@@ -15,6 +15,8 @@ PYTHON_SOURCE = REPO_ROOT / "python"
 if str(PYTHON_SOURCE) not in sys.path:
     sys.path.insert(0, str(PYTHON_SOURCE))
 
+from rebar_harness import benchmarks, correctness
+
 
 def run_harness_cli(
     module_name: str,
@@ -46,6 +48,15 @@ def run_harness_scorecard(
             [*cli_args, "--report", str(report_path)],
         )
         summary = json.loads(result.stdout.strip())
-        scorecard = json.loads(report_path.read_text(encoding="utf-8"))
+        if report_path.suffix == ".json":
+            scorecard = json.loads(report_path.read_text(encoding="utf-8"))
+        elif module_name == "rebar_harness.correctness":
+            scorecard = correctness.SCORECARD_REPORT.load(report_path)
+        elif module_name == "rebar_harness.benchmarks":
+            scorecard = benchmarks.SCORECARD_REPORT.load(report_path)
+        else:
+            raise ValueError(
+                f"run_harness_scorecard cannot load a non-JSON report for {module_name!r}"
+            )
 
     return summary, scorecard
