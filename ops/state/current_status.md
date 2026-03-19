@@ -9,17 +9,17 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-The published correctness report now covers 1310 cases across 110 manifests, with 1310 passing, 0 explicit failures, and 0 honest gaps; the main benchmark report covers 731 workloads across 30 manifests with 731 real `rebar` timings and 0 explicit known gaps through the source-tree shim, so the published slice is still bounded and not yet a native-path performance signal.
+Published parity is 1310/1310 cases across 110 manifests with 0 honest gaps; the benchmark publication is 731/731 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- `RBR-0647`: add the four bytes mirrors for the broader `{2,}` nested grouped-alternation plus branch-local-backreference replacement-template slice on the existing `nested-group-replacement-boundary` Python-path benchmark owner, moving `reports/benchmarks/latest.py` from `731` total / `731` measured / `0` known gaps to `735` / `735` / `0`.
+- `RBR-0647`: catch the broader `{2,}` nested-group alternation plus branch-local-backreference replacement bytes slice up on `nested-group-replacement-boundary`, moving the published benchmark report from `731` to `735` measured workloads while keeping known gaps at `0`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
-- The published benchmark surface is still bounded at 731 workloads even though the report no longer carries explicit known-gap rows.
+- The published benchmark surface is still bounded at 731 workloads, so zero known gaps does not yet imply broad performance coverage.
 
 ## Compatibility Heuristic
-The published frontier is still narrow: the current correctness slice covers 1310 cases across 110 manifests with 0 honest gaps, benchmark coverage still runs mainly through the source-tree shim across 731 measured workloads, and the broader stdlib `re` surface remains outside that published slice.
+The reports are clean inside a narrow slice: 1310 correctness cases carry 0 honest gaps, and 731 benchmark workloads are measured through the source-tree shim; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
