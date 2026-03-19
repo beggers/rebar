@@ -124,6 +124,35 @@ MANIFEST = {
       ]
     },
     {
+      "id": "regression-module-compile-verbose-purged-bytes",
+      "bucket": "module-compile",
+      "family": "module",
+      "operation": "module.compile",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "flags": 72,
+      "text_model": "bytes",
+      "cache_mode": "purged",
+      "timing_scope": "module-helper-call",
+      "categories": [
+        "regression",
+        "compile",
+        "verbose",
+        "bytes",
+        "purged-cache"
+      ],
+      "syntax_features": [
+        "module-compile",
+        "pattern-text-model",
+        "verbose-mode-tokenization",
+        "flag-syntax",
+        "quantifiers",
+        "cache-purge"
+      ],
+      "notes": [
+        "Bytes module compile regression probe that keeps the shared verbose-mode module-workflow compile pair caught up on the purged-cache path."
+      ]
+    },
+    {
       "id": "regression-module-search-bytes-cold-miss",
       "bucket": "module-search",
       "family": "module",

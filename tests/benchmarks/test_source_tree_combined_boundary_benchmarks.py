@@ -591,6 +591,7 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS = {
             "module-compile-literal-purged",
             "regression-import-cold",
             "regression-parser-bytes-backreference-purged",
+            "regression-module-compile-verbose-purged-bytes",
             "regression-module-search-bytes-cold-miss",
         ),
         representative_known_gap_workload_ids=(),
@@ -4117,12 +4118,15 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
 
         manifest_summary = scorecard["manifests"]["regression-matrix"]
         self.assertEqual(manifest_summary["known_gap_count"], 0)
-        self.assertEqual(manifest_summary["measured_workloads"], 5)
+        self.assertEqual(manifest_summary["measured_workloads"], 6)
 
         self._assert_manifest_workload_contracts(
             scorecard_case.manifest_for_id("regression-matrix"),
             scorecard,
-            (("regression-parser-bytes-backreference-purged", "measured"),),
+            (
+                ("regression-parser-bytes-backreference-purged", "measured"),
+                ("regression-module-compile-verbose-purged-bytes", "measured"),
+            ),
         )
 
     def test_scoped_manifests_keep_slice_backed_representatives(self) -> None:
@@ -4532,18 +4536,23 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                     case.representative_known_gap_workload_ids,
                 )
 
-    def test_regression_pack_full_promotes_bytes_backreference_probe_to_measured(
+    def test_regression_pack_full_promotes_bytes_regression_probes_to_measured(
         self,
     ) -> None:
         case = source_tree_scorecard_case("regression-pack-full")
-        self.assertIn(
+        for workload_id in (
             "regression-parser-bytes-backreference-purged",
-            case.representative_measured_workload_ids,
-        )
-        self.assertNotIn(
-            "regression-parser-bytes-backreference-purged",
-            case.representative_known_gap_workload_ids,
-        )
+            "regression-module-compile-verbose-purged-bytes",
+        ):
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(
+                    workload_id,
+                    case.representative_measured_workload_ids,
+                )
+                self.assertNotIn(
+                    workload_id,
+                    case.representative_known_gap_workload_ids,
+                )
 
     def test_numbered_backreference_manifest_promotes_grouped_segment_pair_to_measured(
         self,
@@ -6174,6 +6183,9 @@ STANDARD_BENCHMARK_DEFINITIONS = (
                     ),
                     "regression-module-compile-verbose-purged": (
                         "workflow-compile-str-verbose-regression",
+                    ),
+                    "regression-module-compile-verbose-purged-bytes": (
+                        "workflow-compile-bytes-verbose-regression",
                     ),
                 },
             )

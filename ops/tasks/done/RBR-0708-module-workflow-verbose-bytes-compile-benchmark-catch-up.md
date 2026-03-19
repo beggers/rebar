@@ -1,6 +1,6 @@
 # RBR-0708: Catch up the module-workflow verbose bytes compile regression benchmark
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -48,3 +48,12 @@ Created: 2026-03-19
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently anchors only `regression-module-compile-verbose-purged` to `workflow-compile-str-verbose-regression` and still expects the regression manifest to stay at `5` measured workloads;
   - `reports/benchmarks/latest.py` currently reports `771` total / `771` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 763`, `REPORT["summary"]["regression_workloads"] == 5`, and `REPORT["manifests"]["regression-matrix"]["measured_workloads"] == 5`; and
   - `tests/conformance/fixtures/module_workflow_surface.py` plus `tests/python/test_module_workflow_parity_suite.py` already publish and exercise the exact correctness anchor `workflow-compile-bytes-verbose-regression`, so this benchmark task can stay on the existing shared regression manifest instead of inventing another benchmark family.
+
+## Completion
+- 2026-03-19: Added `regression-module-compile-verbose-purged-bytes` to `benchmarks/workloads/regression_matrix.py` as the exact `bytes` sibling of the existing verbose module-compile regression row, reusing the same pattern, `flags == 72`, `cache_mode == "purged"`, and `timing_scope == "module-helper-call"` on the shared regression manifest.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` on the existing shared owner path so the regression pack keeps `0` known gaps with `6` measured regression workloads, the new bytes row is promoted on the shared `regression-pack-full` surface, and the compile-proxy anchor map now pins `regression-module-compile-verbose-purged-bytes` to `workflow-compile-bytes-verbose-regression`.
+- Republished `reports/benchmarks/latest.py`; the tracked report file remains in the diff and now shows `772` total / `772` measured / `0` known gaps overall, `REPORT["summary"]["module_workloads"] == 764`, `REPORT["summary"]["regression_workloads"] == 6`, `REPORT["manifests"]["regression-matrix"]["selected_workload_count"] == 6`, `REPORT["manifests"]["regression-matrix"]["measured_workloads"] == 6`, and the new workload published with `status == "measured"` and `implementation_timing.status == "measured"`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/regression_matrix.py --report .rebar/tmp/rbr-0708-regression-matrix.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`
