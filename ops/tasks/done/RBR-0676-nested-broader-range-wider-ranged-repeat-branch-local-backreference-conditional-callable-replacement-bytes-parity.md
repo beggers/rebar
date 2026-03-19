@@ -1,6 +1,6 @@
 # RBR-0676: Convert the nested broader-range wider-ranged-repeat branch-local-backreference conditional callable-replacement bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -48,4 +48,10 @@ Created: 2026-03-19
   - `benchmarks/workloads/nested_group_callable_replacement_boundary.py` already owns the adjacent wider `{1,4}` conditional callable `str` benchmark rows after `RBR-0672`, so a later Python-path benchmark catch-up for this same bytes pair can stay on that existing manifest path instead of inventing another benchmark surface.
 
 ## Completion
-- Not started.
+- 2026-03-19: Landed Rust-backed bytes callable-replacement parity for `rb"a((b|c){1,4})\\2(?(2)d|e)"` and `rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)(?(inner)d|e)"` by adding the bounded `{1,4}` conditional bytes compile/finditer path in `rebar-core`, exposing it through `rebar._rebar`, and removing the shared callable-suite pending bytes case ids instead of forking another manifest or parity suite.
+- Verification:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py --report .rebar/tmp/rbr-0676-nested-broader-range-wider-ranged-repeat-branch-local-backreference-conditional-callable-replacement-bytes-parity.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+- Published correctness now reads `1350` total / `1350` passed / `0` unimplemented across `112` manifests, and `collection.replacement.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional.callable` now reads `16` total / `16` passed / `0` unimplemented with the `bytes` partition at `8` / `8` / `0`.
