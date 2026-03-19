@@ -9,6 +9,7 @@ import pytest
 import rebar
 from rebar_harness.correctness import FixtureCase
 from tests.python.fixture_parity_support import (
+    FIXTURES_DIR,
     FixtureBundleSpec,
     RecordingNativeBoundary,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
@@ -380,6 +381,14 @@ NATIVE_MODULE_PARITY_CASES = (
     INLINE_NATIVE_MODULE_CASE,
     LOCALE_NATIVE_MODULE_CASE,
 )
+LITERAL_FLAG_SELECTED_CASE_CONTRACT_IDS = tuple(
+    case.id for case in NATIVE_MODULE_PARITY_CASES
+)
+assert LITERAL_FLAG_SELECTED_CASE_CONTRACT_IDS == tuple(
+    case_id
+    for case_id in TARGET_FIXTURE_CASE_IDS
+    if case_id in LITERAL_FLAG_DIRECT_TEST_CASE_ID_BUCKETS["native-boundary"]
+)
 NATIVE_PATTERN_PARITY_CASES = (
     PatternCallCase(
         id="inline-flag-pattern-search",
@@ -434,6 +443,30 @@ FAKE_BOUNDARY_CASES = (
 )
 
 
+def _literal_flag_selected_case_bundle_specs() -> tuple[FixtureBundleSpec, ...]:
+    (owner_spec,) = SELECTED_CASE_BUNDLE_SPECS
+    selected_cases = tuple(
+        LITERAL_FLAG_CASES_BY_ID[case_id]
+        for case_id in LITERAL_FLAG_SELECTED_CASE_CONTRACT_IDS
+    )
+    text_models = {case.text_model for case in selected_cases}
+    assert None not in text_models
+    return (
+        FixtureBundleSpec(
+            fixture_name=owner_spec.fixture_name,
+            expected_manifest_id=owner_spec.expected_manifest_id,
+            selected_case_ids=LITERAL_FLAG_SELECTED_CASE_CONTRACT_IDS,
+            expected_patterns=frozenset(
+                case_pattern(case) for case in selected_cases
+            ),
+            expected_operation_helper_counts=Counter(
+                (case.operation, case.helper) for case in selected_cases
+            ),
+            expected_text_models=frozenset(text_models),
+        ),
+    )
+
+
 def test_literal_flag_suite_stays_aligned_with_published_correctness_fixture() -> None:
     bundle = LITERAL_FLAG_FIXTURE_BUNDLE
 
@@ -453,6 +486,110 @@ def test_literal_flag_direct_test_buckets_cover_selected_frontier() -> None:
         selected_case_ids=TARGET_FIXTURE_CASE_IDS,
         coverage_label="literal flag direct-test case-id buckets",
     )
+
+
+def test_fixture_bundle_contract_supports_selected_case_path_and_order_validation() -> None:
+    (spec,) = _literal_flag_selected_case_bundle_specs()
+    (bundle,) = load_fixture_bundles((spec,))
+
+    assert bundle.expected_case_ids == frozenset(spec.selected_case_ids)
+    assert_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=case_pattern,
+        expected_fixture_path=FIXTURES_DIR / spec.fixture_name,
+        expected_ordered_case_ids=spec.selected_case_ids,
+    )
+
+
+def test_load_fixture_bundles_rejects_duplicate_selected_case_ids() -> None:
+    with pytest.raises(
+        ValueError,
+        match=(
+            "literal_flag_workflows.py selected_case_ids contains duplicate ids: "
+            "\\('flag-unsupported-inline-flag-search',\\)"
+        ),
+    ):
+        load_fixture_bundles(
+            (
+                FixtureBundleSpec(
+                    fixture_name="literal_flag_workflows.py",
+                    expected_manifest_id="literal-flag-workflows",
+                    selected_case_ids=(
+                        "flag-unsupported-inline-flag-search",
+                        "flag-unsupported-inline-flag-search",
+                    ),
+                    expected_patterns=frozenset({"(?i)abc"}),
+                    expected_operation_helper_counts=Counter(
+                        {("module_call", "search"): 2}
+                    ),
+                    expected_text_models=frozenset({"str"}),
+                ),
+            )
+        )
+
+
+def test_load_fixture_bundles_rejects_empty_selected_case_ids() -> None:
+    with pytest.raises(
+        ValueError,
+        match="literal_flag_workflows.py selected_case_ids must not be empty",
+    ):
+        load_fixture_bundles(
+            (
+                FixtureBundleSpec(
+                    fixture_name="literal_flag_workflows.py",
+                    expected_manifest_id="literal-flag-workflows",
+                    selected_case_ids=(),
+                    expected_patterns=frozenset(),
+                    expected_operation_helper_counts=Counter(),
+                ),
+            )
+        )
+
+
+def test_load_fixture_bundles_rejects_missing_selected_case_ids() -> None:
+    with pytest.raises(
+        ValueError,
+        match=(
+            "literal_flag_workflows.py is missing expected fixture rows: "
+            "\\('missing-selected-case-id',\\)"
+        ),
+    ):
+        load_fixture_bundles(
+            (
+                FixtureBundleSpec(
+                    fixture_name="literal_flag_workflows.py",
+                    expected_manifest_id="literal-flag-workflows",
+                    selected_case_ids=("missing-selected-case-id",),
+                    expected_patterns=frozenset(),
+                    expected_operation_helper_counts=Counter(),
+                ),
+            )
+        )
+
+
+def test_fixture_bundle_contract_rejects_wrong_selected_case_order() -> None:
+    (spec,) = _literal_flag_selected_case_bundle_specs()
+    (bundle,) = load_fixture_bundles((spec,))
+
+    with pytest.raises(AssertionError):
+        assert_fixture_bundle_contract(
+            bundle,
+            pattern_extractor=case_pattern,
+            expected_fixture_path=FIXTURES_DIR / spec.fixture_name,
+            expected_ordered_case_ids=tuple(reversed(spec.selected_case_ids)),
+        )
+
+
+def test_selected_case_bundle_specs_load_in_declared_bundle_order() -> None:
+    specs = tuple(reversed(_literal_flag_selected_case_bundle_specs()))
+
+    bundles = load_fixture_bundles(specs)
+
+    assert tuple(bundle.manifest.path.name for bundle in bundles) == tuple(
+        spec.fixture_name for spec in specs
+    )
+    for bundle in bundles:
+        assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
 
 
 @pytest.mark.parametrize("case", MODULE_IGNORECASE_CASES, ids=lambda case: case.id)

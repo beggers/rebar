@@ -1,6 +1,6 @@
 # RBR-0677: Collapse the detached literal-flag selected-case contract onto the literal-flag owner suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -84,3 +84,12 @@ PY`
 - This simplification matches the current information flow:
   - `tests/python/test_literal_flag_parity_suite.py` already owns the literal-flag selected bundle, loaded cases, frontier tracking, and direct-test bucket contract; and
   - the detached support file is only keeping a second literal-flag selected-case contract seam alive beside that owner.
+
+## Completion
+- 2026-03-19: Moved the literal-flag selected-case bundle-contract helper and its six selected-case/path-order/load-error tests onto `tests/python/test_literal_flag_parity_suite.py`, deriving the owner-local subset from the existing literal-flag bundle data and unsupported native-boundary case ids instead of keeping a detached helper block in `tests/python/test_fixture_parity_support_contract.py`.
+- 2026-03-19: Removed `_literal_flag_selected_case_bundle_specs(...)` and the six literal-flag-specific selected-case contract tests from `tests/python/test_fixture_parity_support_contract.py`, leaving the remaining generic selector, helper-parity, and non-literal-flag bundle-contract coverage in place.
+- Verification:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_literal_flag_parity_suite.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py`
+  - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY`
+  - `bash -lc "! rg -n '_literal_flag_selected_case_bundle_specs|test_fixture_bundle_contract_supports_selected_case_path_and_order_validation|test_load_fixture_bundles_rejects_duplicate_selected_case_ids|test_load_fixture_bundles_rejects_empty_selected_case_ids|test_load_fixture_bundles_rejects_missing_selected_case_ids|test_fixture_bundle_contract_rejects_wrong_selected_case_order|test_selected_case_bundle_specs_load_in_declared_bundle_order' tests/python/test_fixture_parity_support_contract.py"`
