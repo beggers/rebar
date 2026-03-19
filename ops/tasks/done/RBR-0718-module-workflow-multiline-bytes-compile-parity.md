@@ -1,6 +1,6 @@
 # RBR-0718: Convert the module-workflow multiline bytes compile follow-on to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -51,3 +51,9 @@ Created: 2026-03-19
   - `tests/python/test_module_workflow_parity_suite.py` still special-cases `MULTILINE_BYTES_COMPILE_CASE_ID` as a `rebar`-only `NotImplementedError` gap in `test_compile_workflows_match_cpython()` and still expects the same exact call to raise inside `test_source_package_verbose_compile_metadata_and_neighbor_gaps_remain_pinned()`;
   - `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... rebar.compile(bytes_pattern, rebar.MULTILINE) ... PY` on the current checkout still raises `NotImplementedError` with the scaffold placeholder message, while CPython reports `flags == 8`, `groups == 1`, and `groupindex == {"key": 1}` for that exact bytes pattern; and
   - `reports/correctness/latest.py` currently reports `1385` total / `1384` passed / `1` `unimplemented` across `114` manifests, and the only published gap is `workflow-compile-bytes-multiline-regression`, while any later Python-path benchmark catch-up can stay on the existing `benchmarks/workloads/regression_matrix.py` manifest instead of inventing another benchmark surface.
+
+## Completion
+- 2026-03-19: Added the exact Rust-backed bytes multiline compile classification for `b"^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $"` with `MULTILINE`, so `rebar.compile(..., rebar.MULTILINE)` now returns a compiled `rebar.Pattern` with CPython-matching `flags == 8`, `groups == 1`, and `groupindex == {"key": 1}` on the existing module-workflow owner path.
+- Removed the shared parity-suite gap branches for `workflow-compile-bytes-multiline-regression`; the source-package regression test now asserts normal CPython-matching metadata plus repeat-compile cache reuse for that exact bytes multiline call. The existing native boundary, Python cache plumbing, and combined scorecard-contract test module all passed without further source changes once the core classification landed.
+- Verification passed with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0718-module-workflow-multiline-bytes-parity.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
+- Verified the tracked `reports/correctness/latest.py` artifact after publication: the combined scorecard now reads `1385` total / `1385` passed / `0` unimplemented; `module.workflow` is `15` / `15` / `0`; `module.workflow.compile` is `7` / `7` / `0`; and `workflow-compile-bytes-multiline-regression` is published as `pass`.

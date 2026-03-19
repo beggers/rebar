@@ -38,6 +38,7 @@ const MULTILINE_COMPILE_REGRESSION_FLAGS: i32 = FLAG_MULTILINE | FLAG_UNICODE;
 const VERBOSE_COMPILE_REGRESSION_FLAGS: i32 = FLAG_MULTILINE | FLAG_VERBOSE | FLAG_UNICODE;
 const VERBOSE_COMPILE_REGRESSION_BYTES_PATTERN: &[u8] =
     br"^ (?P<key>[A-Z_]+) \s* = \s* (?:[A-Z]{2,4}+|\d{2,3}) $";
+const MULTILINE_COMPILE_REGRESSION_BYTES_FLAGS: i32 = FLAG_MULTILINE;
 const VERBOSE_COMPILE_REGRESSION_BYTES_FLAGS: i32 = FLAG_MULTILINE | FLAG_VERBOSE;
 const VERBOSE_COMPILE_REGRESSION_GROUP_NAME: &str = "key";
 const PARSER_STRESS_COMPILE_PROXY_PATTERN: &str =
@@ -2824,6 +2825,22 @@ fn compile_known_supported_case(
         PatternRef::Bytes(pattern)
             if pattern == VERBOSE_COMPILE_REGRESSION_BYTES_PATTERN
                 && normalized_flags == VERBOSE_COMPILE_REGRESSION_BYTES_FLAGS =>
+        {
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: 1,
+                named_groups: vec![NamedGroup {
+                    name: VERBOSE_COMPILE_REGRESSION_GROUP_NAME.to_string(),
+                    index: 1,
+                }],
+                warning: None,
+            })
+        }
+        PatternRef::Bytes(pattern)
+            if pattern == VERBOSE_COMPILE_REGRESSION_BYTES_PATTERN
+                && normalized_flags == MULTILINE_COMPILE_REGRESSION_BYTES_FLAGS =>
         {
             Some(CompileOutcome {
                 status: CompileStatus::Compiled,

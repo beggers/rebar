@@ -1653,17 +1653,6 @@ def _compile_verbose_regression_pattern(
     return observed_pattern, expected_pattern
 
 
-def _rebar_bytes_multiline_compile_supported() -> bool:
-    try:
-        rebar.compile(
-            case_pattern(MULTILINE_BYTES_COMPILE_CASE),
-            int(MULTILINE_BYTES_COMPILE_CASE.flags or 0),
-        )
-    except NotImplementedError:
-        return False
-    return True
-
-
 def _compile_compiled_pattern_case(
     regex_api: object,
     pattern: str | bytes,
@@ -2074,20 +2063,6 @@ def test_compile_workflows_match_cpython(
 ) -> None:
     backend_name, backend = regex_backend
     pattern = case_pattern(case)
-
-    if (
-        backend_name == "rebar"
-        and case.case_id == MULTILINE_BYTES_COMPILE_CASE_ID
-        and not _rebar_bytes_multiline_compile_supported()
-    ):
-        with pytest.raises(NotImplementedError) as raised:
-            backend.compile(pattern, case.flags or 0)
-
-        assert_placeholder_message_contains(
-            raised.value,
-            "rebar.compile() is a scaffold placeholder",
-        )
-        return
 
     compile_with_cpython_parity(
         backend_name,
@@ -2731,37 +2706,27 @@ def test_source_package_verbose_compile_metadata_and_neighbor_gaps_remain_pinned
     assert rebar.compile(multiline_pattern, rebar.MULTILINE) is compiled_multiline
 
     assert int(MULTILINE_BYTES_COMPILE_CASE.flags or 0) == int(rebar.MULTILINE)
-    if _rebar_bytes_multiline_compile_supported():
-        compiled_bytes_multiline, expected_bytes_multiline = compile_with_cpython_parity(
-            "rebar",
-            rebar,
-            bytes_pattern,
-            int(MULTILINE_BYTES_COMPILE_CASE.flags or 0),
-        )
+    compiled_bytes_multiline, expected_bytes_multiline = compile_with_cpython_parity(
+        "rebar",
+        rebar,
+        bytes_pattern,
+        int(MULTILINE_BYTES_COMPILE_CASE.flags or 0),
+    )
 
-        assert type(compiled_bytes_multiline) is rebar.Pattern
-        assert compiled_bytes_multiline.pattern == expected_bytes_multiline.pattern == bytes_pattern
-        assert compiled_bytes_multiline.flags == expected_bytes_multiline.flags == int(
-            re.MULTILINE
-        )
-        assert compiled_bytes_multiline.groups == expected_bytes_multiline.groups == 1
-        assert (
-            compiled_bytes_multiline.groupindex
-            == expected_bytes_multiline.groupindex
-            == {"key": 1}
-        )
-        assert (
-            rebar.compile(bytes_pattern, int(MULTILINE_BYTES_COMPILE_CASE.flags or 0))
-            is compiled_bytes_multiline
-        )
-        return
-
-    with pytest.raises(NotImplementedError) as bytes_multiline_gap:
+    assert type(compiled_bytes_multiline) is rebar.Pattern
+    assert compiled_bytes_multiline.pattern == expected_bytes_multiline.pattern == bytes_pattern
+    assert compiled_bytes_multiline.flags == expected_bytes_multiline.flags == int(
+        re.MULTILINE
+    )
+    assert compiled_bytes_multiline.groups == expected_bytes_multiline.groups == 1
+    assert (
+        compiled_bytes_multiline.groupindex
+        == expected_bytes_multiline.groupindex
+        == {"key": 1}
+    )
+    assert (
         rebar.compile(bytes_pattern, int(MULTILINE_BYTES_COMPILE_CASE.flags or 0))
-
-    assert_placeholder_message_contains(
-        bytes_multiline_gap.value,
-        "rebar.compile() is a scaffold placeholder",
+        is compiled_bytes_multiline
     )
 
 
