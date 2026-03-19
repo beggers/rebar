@@ -146,29 +146,6 @@ def load_optional_python_dict_attribute(
         return dict(default)
 
 
-def read_structured_dict(
-    path: Path,
-    *,
-    default: Any,
-    python_attribute: str = "REPORT",
-    label: str = "report",
-) -> Any:
-    if not path.exists():
-        return default
-    if path.suffix == ".json":
-        try:
-            payload = json.loads(path.read_text(encoding="utf-8"))
-        except (FileNotFoundError, OSError, json.JSONDecodeError):
-            return default
-        return payload if isinstance(payload, dict) else default
-    if path.suffix == ".py":
-        try:
-            return load_python_dict_attribute(path, attribute=python_attribute, label=label)
-        except (FileNotFoundError, OSError, ImportError, SyntaxError, RuntimeError):
-            return default
-    return default
-
-
 def resolve_repo_path(raw: str | Path) -> Path:
     path = Path(raw).expanduser()
     if path.is_absolute():
@@ -866,7 +843,15 @@ def scorecard_from_config(config: dict[str, Any], key: str, default_title: str, 
     if not path.exists():
         return scorecard
 
-    payload = read_structured_dict(path, default=None, label="scorecard")
+    try:
+        payload = load_scorecard_io_module().load_scorecard_report(
+            path,
+            module_name_prefix="_rebar_ops_scorecard",
+            report_attribute="REPORT",
+            scorecard_kind="scorecard",
+        )
+    except (OSError, ImportError, SyntaxError, ValueError):
+        payload = None
     if not isinstance(payload, dict):
         scorecard["error"] = "invalid_report"
         return scorecard
