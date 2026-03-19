@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0655` should widen the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template manifest to the exact bytes pair on `tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_replacement_workflows.py`, `tests/python/test_fixture_backed_replacement_parity_suite.py`, `tests/conformance/correctness_expectations.py`, and `reports/correctness/latest.py`, so the published correctness surface moves from `1318` total / `1318` passed / `0` `unimplemented` across `111` manifests to `1326` total across the same `111` manifests while reporting the new bytes rows honestly on the shared replacement path.
+`RBR-0657` should convert the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template bytes pair behind `rebar._rebar` on `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_fixture_backed_replacement_parity_suite.py`, and `reports/correctness/latest.py`, so the mixed-text replacement manifest moves from `16` total / `8` passed / `8` `unimplemented` to `16` / `16` / `0` and the published correctness surface can reach `1326` total / `1326` passed / `0` `unimplemented` across the same `111` manifests.
 
 ## Ordered Work
-1. `RBR-0655` should add only the 8 bytes counterparts to the existing `str` replacement-template rows for `rb"a((b|c){1,4})\\2d"` with `rb"\\1x"` / `rb"\\2x"` and `rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d"` with `rb"\\g<outer>x"` / `rb"\\g<inner>x"` to `tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_replacement_workflows.py`, widening the shared replacement owner to mixed `str`/`bytes` coverage while keeping any live `rebar` bytes result honest instead of silently dropping the frontier from publication.
+1. `RBR-0657` should convert only the 8 bytes `module.sub()`, `module.subn()`, `Pattern.sub()`, and `Pattern.subn()` rows for `rb"a((b|c){1,4})\\2d"` with `rb"\\1x"` / `rb"\\2x"` and `rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d"` with `rb"\\g<outer>x"` / `rb"\\g<inner>x"` on the existing `tests/python/test_fixture_backed_replacement_parity_suite.py` owner, keeping the mixed-text manifest on the shared replacement surface and leaving the later bytes benchmark catch-up on `benchmarks/workloads/nested_group_replacement_boundary.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

@@ -329,7 +329,7 @@ The published slice is fully green but still narrow: 1318 of 1318 correctness ca
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0655`: reopen correctness on the adjacent bytes pair for the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template slice, widening the published surface from `1318` to `1326` total cases across the same `111` manifests while keeping the new bytes rows honest.
+- `RBR-0657`: convert the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template bytes pair behind `rebar._rebar` on the existing shared replacement surface, moving that mixed-text manifest from `16` total / `8` passed / `8` `unimplemented` to `16` / `16` / `0` and the published correctness surface to `1326` / `1326` / `0`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
