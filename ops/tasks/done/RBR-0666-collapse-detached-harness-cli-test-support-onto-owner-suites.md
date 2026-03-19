@@ -1,8 +1,9 @@
 # RBR-0666: Collapse the detached harness CLI test support onto its owner suites
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Delete `tests/harness_cli_test_support.py` by moving its tiny `rebar_ops` loader plus harness CLI/scorecard helpers onto the three suites that actually consume them, so harness CLI coverage lives with its owner tests instead of a detached wrapper module beside those owners.
@@ -97,3 +98,14 @@ PY`
   - `tests/python/test_ops_harness.py` already owns direct `scripts/rebar_ops.py` loading and the harness/report CLI contract;
   - `tests/conformance/test_combined_correctness_scorecards.py` already owns correctness scorecard reruns and tracked correctness publication assertions; and
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` already owns source-tree benchmark scorecard reruns and tracked benchmark publication assertions.
+
+## Completion Note
+- 2026-03-19: Inlined the detached harness CLI helpers onto `tests/python/test_ops_harness.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, then deleted `tests/harness_cli_test_support.py` instead of replacing it with another shared support layer.
+
+## Verification
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_ops_harness.py` (`32 passed, 19 subtests passed in 1.86s`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`58 passed, 2924 subtests passed in 55.06s`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` (passed; confirmed the required helper definitions are present on the owner files and none of them import `tests.harness_cli_test_support`)
+- 2026-03-19: `bash -lc "! rg -n 'from tests\\.harness_cli_test_support import' tests -g '*.py'"` (no matches)
+- 2026-03-19: `bash -lc "! rg --files tests | rg 'harness_cli_test_support\\.py$'"` (no matches)
+- 2026-03-19: `git diff --name-status -- tests/harness_cli_test_support.py` (`D	tests/harness_cli_test_support.py`)
