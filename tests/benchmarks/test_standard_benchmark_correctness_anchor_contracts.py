@@ -520,15 +520,24 @@ class StandardBenchmarkAnchorContractDefinition:
     run_callback_result_parity: bool = False
     expected_excluded_workload_ids: frozenset[str] = frozenset()
     expected_legacy_workload_ids: frozenset[str] = frozenset()
-    expected_legacy_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]] = field(
-        default_factory=dict
-    )
     callback_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]] = field(
         default_factory=dict
     )
     expected_special_unanchored_workload_ids: tuple[str, ...] = ()
     direct_parity_supplemental_cases: tuple[Any, ...] = ()
     run_special_unanchored_result_parity: bool = False
+
+
+def _anchor_case_subset(
+    anchor_case_ids: dict[tuple[str, str], tuple[str, ...]],
+    workload_ids: Iterable[str],
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    selected_workload_ids = frozenset(workload_ids)
+    return {
+        key: case_ids
+        for key, case_ids in anchor_case_ids.items()
+        if key[1] in selected_workload_ids
+    }
 
 
 EXPECTED_COMPILE_ANCHOR_CASE_IDS = {
@@ -706,18 +715,6 @@ EXPECTED_GROUPED_ALTERNATION_ANCHOR_CASE_IDS = {
         "pattern-subn-template-nested-group-alternation-named-wrapper-first-match-only-str",
     ),
 }
-EXPECTED_GROUPED_ALTERNATION_LEGACY_WRAPPER_ANCHOR_CASE_IDS = {
-    (
-        "grouped_alternation_boundary.py",
-        "module-sub-template-nested-grouped-alternation-warm-gap",
-    ): ("module-sub-template-nested-group-alternation-numbered-wrapper-str",),
-    (
-        "grouped_alternation_boundary.py",
-        "pattern-subn-template-named-nested-grouped-alternation-purged-gap",
-    ): (
-        "pattern-subn-template-nested-group-alternation-named-wrapper-first-match-only-str",
-    ),
-}
 
 EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_LEGACY_NESTED_WORKLOAD_IDS = frozenset(
     {
@@ -758,18 +755,6 @@ EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS = {
         "grouped_alternation_replacement_boundary.py",
         "pattern-subn-template-named-grouped-alternation-purged-str",
     ): ("pattern-subn-template-named-grouped-alternation-str",),
-    (
-        "grouped_alternation_replacement_boundary.py",
-        "module-sub-template-nested-grouped-alternation-cold-gap",
-    ): ("module-sub-template-nested-group-alternation-numbered-outer-str",),
-    (
-        "grouped_alternation_replacement_boundary.py",
-        "pattern-subn-template-named-nested-grouped-alternation-replacement-purged-gap",
-    ): (
-        "pattern-subn-template-nested-group-alternation-named-outer-first-match-only-str",
-    ),
-}
-EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_LEGACY_NESTED_ANCHOR_CASE_IDS = {
     (
         "grouped_alternation_replacement_boundary.py",
         "module-sub-template-nested-grouped-alternation-cold-gap",
@@ -1733,10 +1718,10 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         workload_signature=_grouped_alternation_workload_signature,
         run_callback_result_parity=True,
         expected_legacy_workload_ids=EXPECTED_GROUPED_ALTERNATION_LEGACY_WRAPPER_WORKLOAD_IDS,
-        expected_legacy_anchor_case_ids=(
-            EXPECTED_GROUPED_ALTERNATION_LEGACY_WRAPPER_ANCHOR_CASE_IDS
+        callback_anchor_case_ids=_anchor_case_subset(
+            EXPECTED_GROUPED_ALTERNATION_ANCHOR_CASE_IDS,
+            EXPECTED_GROUPED_ALTERNATION_LEGACY_WRAPPER_WORKLOAD_IDS,
         ),
-        callback_anchor_case_ids=EXPECTED_GROUPED_ALTERNATION_LEGACY_WRAPPER_ANCHOR_CASE_IDS,
     ),
     StandardBenchmarkAnchorContractDefinition(
         name="grouped-alternation-replacement",
@@ -1750,9 +1735,6 @@ STANDARD_BENCHMARK_DEFINITIONS = (
         run_callback_result_parity=True,
         expected_legacy_workload_ids=(
             EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_LEGACY_NESTED_WORKLOAD_IDS
-        ),
-        expected_legacy_anchor_case_ids=(
-            EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_LEGACY_NESTED_ANCHOR_CASE_IDS
         ),
         callback_anchor_case_ids=EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS,
     ),
@@ -1799,7 +1781,7 @@ STANDARD_BENCHMARK_MANIFEST_IDS = [
 STANDARD_BENCHMARK_LEGACY_DEFINITIONS = tuple(
     definition
     for definition in STANDARD_BENCHMARK_DEFINITIONS
-    if definition.expected_legacy_anchor_case_ids
+    if definition.expected_legacy_workload_ids
 )
 STANDARD_BENCHMARK_CALLBACK_PARITY_DEFINITIONS = tuple(
     definition
@@ -1915,6 +1897,15 @@ def _expected_callback_anchor_case_ids(
     if definition.callback_anchor_case_ids:
         return definition.callback_anchor_case_ids
     return definition.expected_anchor_case_ids
+
+
+def _expected_legacy_anchor_case_ids(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    return _anchor_case_subset(
+        definition.expected_anchor_case_ids,
+        definition.expected_legacy_workload_ids,
+    )
 
 
 def _expected_anchored_pairs(
@@ -3046,7 +3037,7 @@ def test_standard_benchmark_legacy_workloads_stay_pinned_to_expected_case_ids(
         key: case_ids
         for key, case_ids in _anchored_case_ids(definition).items()
         if key[1] in definition.expected_legacy_workload_ids
-    } == definition.expected_legacy_anchor_case_ids
+    } == _expected_legacy_anchor_case_ids(definition)
 
 
 @pytest.mark.parametrize(
