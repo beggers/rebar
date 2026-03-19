@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness is 1326/1334 cases across 111 manifests with 8 honest gaps; the benchmark publication is 743/743 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | `RBR-0663` should convert the broader `{1,4}` nested grouped-alternation plus branch-local-backreference callable-replacement bytes pair to real Rust-backed parity on the shared callable surface, so `collection.replacement.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference.callable` can move from `16` total / `8` passed / `8` `unimplemented` with mixed `str`/`bytes` coverage to `16` total / `16` passed / `0` `unimplemented`, and the published correctness report can move from `1334` total / `1326` passed / `8` `unimplemented` to `1334` total / `1334` passed / `0` `unimplemented` across the same `111` manifests. |
-| Work queue | `1` ready, `0` in progress, `662` done, `0` blocked |
+| Delivery estimate | Published correctness is 1334/1334 cases across 111 manifests with 0 honest gaps; the benchmark publication is 743/743 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
+| Current milestone | `RBR-0665` should catch the broader `{1,4}` nested grouped-alternation plus branch-local-backreference callable-replacement bytes pair up on the existing `nested-group-callable-replacement-boundary` benchmark surface, so that manifest can move from `52` total workloads / `52` measured workloads / `0` known gaps to `56` / `56` / `0`, and the combined source-tree benchmark report can move from `743` total workloads / `743` measured workloads / `0` known gaps to `747` / `747` / `0` across the same `30` manifests. |
+| Work queue | `1` ready, `0` in progress, `664` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -22,13 +22,13 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Metric | Value |
 | --- | --- |
 | Published cases | `1334` |
-| Passing in published slice | `1326` |
+| Passing in published slice | `1334` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `8` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `111` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness is 1326/1334 cases across 111 manifests with 8 honest gaps; the benchmark publication is 743/743 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness is 1334/1334 cases across 111 manifests with 0 honest gaps; the benchmark publication is 743/743 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0663`: convert the just-published broader `{1,4}` nested grouped-alternation plus branch-local-backreference callable-replacement bytes pair to real parity on the shared callable surface, taking `collection.replacement.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference.callable` from `16` total / `8` passed / `8` `unimplemented` with mixed `str`/`bytes` coverage to `16` / `16` / `0` and the published correctness report from `1334` / `1326` / `8` to `1334` / `1334` / `0` across the same `111` manifests.
+- `RBR-0665` should catch the broader `{1,4}` nested grouped-alternation plus branch-local-backreference callable-replacement bytes pair up on the existing `nested-group-callable-replacement-boundary` benchmark surface, moving that manifest from `52` total workloads / `52` measured workloads / `0` known gaps to `56` / `56` / `0` and the combined source-tree benchmark report from `743` / `743` / `0` to `747` / `747` / `0` across the same `30` manifests.
 
 ### Current Risks
 
@@ -55,7 +55,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The current published correctness slice is still bounded and now carries one honest bytes callable-replacement frontier rather than a broad drop-in `re` claim. The next bounded follow-on is `RBR-0663`, which converts that just-published bytes pair to real parity.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The current published correctness slice is still bounded but now fully green, and the next follow-on is `RBR-0665`, which catches that newly landed bytes callable-replacement slice up on the benchmark side.
 
 The clearest benchmark signal worth trusting is still the tiny parser compile-proxy slice, where 8 parser workloads are 2.6814x faster on median than CPython. The broader module-facing publication still runs through the source-tree shim and sits at 0.0757x median, so it is methodology and coverage signal rather than a general speed claim.
 
