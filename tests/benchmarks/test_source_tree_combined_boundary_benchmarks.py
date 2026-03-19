@@ -54,6 +54,29 @@ TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 PYTHON_SOURCE = REPO_ROOT / "python"
 
 _KNOWN_GAP_STATUSES = {"known-gap", "unimplemented"}
+BENCHMARK_SELECTOR_EXPECTATION_TABLE = (
+    (
+        BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR,
+        (
+            "pattern_boundary.py",
+            "collection_replacement_boundary.py",
+            "literal_flag_boundary.py",
+        ),
+        "built-native-smoke",
+    ),
+)
+BENCHMARK_SELECTOR_EXPECTATIONS = tuple(
+    pytest.param(selector, expected_filenames, id=selector_id)
+    for selector, expected_filenames, selector_id in BENCHMARK_SELECTOR_EXPECTATION_TABLE
+)
+
+
+def _declared_benchmark_manifest_selectors() -> dict[str, str]:
+    return {
+        name: value
+        for name, value in vars(benchmarks).items()
+        if name.endswith("_MANIFEST_SELECTOR") and isinstance(value, str)
+    }
 
 
 def run_harness_scorecard(
@@ -6722,20 +6745,45 @@ def test_default_benchmark_published_full_suite_selector_covers_tracked_manifest
         assert path.suffix == ".py"
 
 
-def test_default_benchmark_shared_selectors_keep_expected_inventory_shapes() -> None:
+@pytest.mark.parametrize(
+    ("selector", "expected_filenames"),
+    BENCHMARK_SELECTOR_EXPECTATIONS,
+)
+def test_shared_benchmark_manifest_selectors_resolve_expected_published_paths(
+    selector: str,
+    expected_filenames: tuple[str, ...],
+) -> None:
     published_manifest_paths = select_benchmark_manifest_paths(
         PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
     )
-    native_smoke_manifest_paths = select_benchmark_manifest_paths(
-        BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR
+    selected_paths = select_benchmark_manifest_paths(selector)
+
+    assert tuple(path.name for path in selected_paths) == expected_filenames
+    assert set(selected_paths).issubset(set(published_manifest_paths))
+    assert all(path.is_relative_to(BENCHMARK_WORKLOADS_ROOT) for path in selected_paths)
+
+
+def test_declared_benchmark_manifest_selectors_match_registry_keys() -> None:
+    declared_selectors = _declared_benchmark_manifest_selectors()
+
+    assert declared_selectors
+    assert len(declared_selectors) == len(set(declared_selectors.values()))
+    assert set(declared_selectors.values()) == set(
+        benchmarks._BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR
     )
 
-    assert tuple(path.name for path in native_smoke_manifest_paths) == (
-        "pattern_boundary.py",
-        "collection_replacement_boundary.py",
-        "literal_flag_boundary.py",
+
+def test_benchmark_selector_expectation_table_covers_declared_nondefault_selectors() -> None:
+    declared_nondefault_selectors = set(_declared_benchmark_manifest_selectors().values())
+    declared_nondefault_selectors.remove(PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR)
+    expected_selectors = tuple(
+        selector
+        for selector, _expected_filenames, _selector_id in BENCHMARK_SELECTOR_EXPECTATION_TABLE
     )
-    assert set(native_smoke_manifest_paths).issubset(set(published_manifest_paths))
+
+    assert PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR not in expected_selectors
+    assert len(expected_selectors) == len(set(expected_selectors))
+    assert set(expected_selectors) == declared_nondefault_selectors
 
 
 def test_default_benchmark_published_manifest_helper_is_cached_and_preserves_selector_order() -> None:
