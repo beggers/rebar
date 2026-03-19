@@ -1,8 +1,9 @@
 # RBR-0650: Collapse the detached scorecard IO contract onto the ops harness owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Delete `tests/python/test_scorecard_io_contract.py` by moving its remaining `rebar_harness.scorecard_io` contract coverage onto `tests/python/test_ops_harness.py`, so the scorecard report/config/report-refresh path has one owner instead of a small detached utility suite beside the existing ops/report owner.
@@ -68,3 +69,8 @@ PY`
   - the inline source probe in Acceptance currently fails exactly on this cleanup with `AssertionError: build_cpython_baseline(` because `tests/python/test_ops_harness.py` does not yet carry the absorbed `scorecard_io` contract;
   - `bash -lc "! rg --files tests/python | rg 'test_scorecard_io_contract\\.py$'"` currently fails exactly on this cleanup because the detached suite still exists; and
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_ops_harness.py tests/python/test_scorecard_io_contract.py` is currently red for unrelated drift because `tests/python/test_ops_harness.py::OpsHarnessTest::test_dispatch_policies_match_the_current_specialist_mix` still expects interval dispatch for `cleanup`, so keep this cleanup's verification isolated to the scorecard subset instead of broadening into agent-dispatch policy work.
+
+## Completion Note
+- 2026-03-19: Moved the detached `scorecard_io` baseline, Python-module round-trip, supported `.py`/`.json` round-trip, malformed-input rejection, descriptor path-resolution, and descriptor sidecar-cleanup assertions onto `tests/python/test_ops_harness.py` as `OpsHarnessTest.test_scorecard_*` coverage.
+- 2026-03-19: Deleted `tests/python/test_scorecard_io_contract.py` outright after `tests/python/test_ops_harness.py` absorbed the direct `build_cpython_baseline()`, `format_python_scorecard_module()`, `load_scorecard_report()`, `write_scorecard_report()`, and `build_scorecard_report_descriptor()` contract checks.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_ops_harness.py -k scorecard` (`11 passed, 21 deselected, 2 subtests passed in 1.66s`), the acceptance inline source probe (`ok`), `bash -lc "! rg --files tests/python | rg 'test_scorecard_io_contract\\.py$'"` (passes), and `git diff --name-status -- tests/python/test_scorecard_io_contract.py` (`D`).
