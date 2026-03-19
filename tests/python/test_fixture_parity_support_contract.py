@@ -57,6 +57,7 @@ from tests.python.fixture_parity_support import (
     invoke_bounded_pattern_case,
     load_fixture_bundles,
     str_case_pattern,
+    workflow_result_with_cpython_parity,
 )
 OPTIONAL_NAMED_GROUP_PATTERN = r"a(?P<word>b)?d"
 BYTES_LITERAL_PATTERN = b"abc"
@@ -1247,6 +1248,44 @@ def test_invoke_bounded_pattern_case_preserves_helper_and_bound_semantics(
     assert observed is not None
     assert observed.group(0) == expected_group0
     assert observed.span() == expected_span
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        pytest.param(SYNTHETIC_MODULE_PATTERN_CASE, id="module-str"),
+        pytest.param(SYNTHETIC_MODULE_BYTES_SEARCH_CASE, id="module-bytes"),
+        pytest.param(SYNTHETIC_FULLMATCH_PATTERN_CASE, id="pattern-str"),
+        pytest.param(SYNTHETIC_FULLMATCH_BYTES_PATTERN_CASE, id="pattern-bytes"),
+    ),
+)
+def test_workflow_result_with_cpython_parity_accepts_representative_cases(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    backend_name, backend = regex_backend
+    observed, expected = workflow_result_with_cpython_parity(
+        backend_name,
+        backend,
+        case,
+    )
+
+    assert observed is not None
+    assert expected is not None
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+
+
+def test_workflow_result_with_cpython_parity_rejects_helperless_cases(
+    regex_backend: tuple[str, object],
+) -> None:
+    backend_name, backend = regex_backend
+
+    with pytest.raises(AssertionError):
+        workflow_result_with_cpython_parity(
+            backend_name,
+            backend,
+            replace(SYNTHETIC_MODULE_PATTERN_CASE, helper=None),
+        )
 
 
 @pytest.mark.parametrize(

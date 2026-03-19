@@ -24,11 +24,13 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
+    invoke_bounded_pattern_case,
     load_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
     published_fixture_bundle_by_manifest_id,
     record_generated_match_failure,
     str_case_pattern,
+    workflow_result_with_cpython_parity,
 )
 
 
@@ -1484,40 +1486,6 @@ MATCH_GROUP_ACCESS_CASES = tuple(
 )
 
 
-def _bounded_pattern(case: BoundedPatternCase) -> str:
-    return str_case_pattern(CASES_BY_ID[case.pattern_case_id])
-
-
-def _invoke_bound_helper(
-    pattern: object,
-    case: BoundedPatternCase | DirectBytesBoundedPatternCase,
-) -> object:
-    return getattr(pattern, case.helper)(case.string, *case.bounds)
-
-
-def _workflow_result_for_case(
-    backend_name: str,
-    backend: object,
-    case: FixtureCase,
-) -> tuple[object, re.Match[str] | None]:
-    assert case.helper is not None
-
-    if case.operation == "module_call":
-        observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
-        expected = getattr(re, case.helper)(*case.args, **case.kwargs)
-    else:
-        observed_pattern, expected_pattern = compile_with_cpython_parity(
-            backend_name,
-            backend,
-            case.pattern_payload(),
-            case.flags or 0,
-        )
-        observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
-        expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
-
-    return observed, expected
-
-
 def _assert_direct_bytes_follow_on_case_backend_gating(
     case: BranchLocalBackreferenceBytesFollowOnCase,
     *,
@@ -1815,7 +1783,11 @@ def test_published_workflows_match_cpython(
     case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
-    observed, expected = _workflow_result_for_case(backend_name, backend, case)
+    observed, expected = workflow_result_with_cpython_parity(
+        backend_name,
+        backend,
+        case,
+    )
 
     assert_match_result_parity(backend_name, observed, expected, check_regs=True)
     if expected is None:
@@ -1964,11 +1936,11 @@ def test_pattern_helper_bounds_match_cpython(
     observed_pattern, expected_pattern = compile_with_cpython_parity(
         backend_name,
         backend,
-        _bounded_pattern(case),
+        str_case_pattern(CASES_BY_ID[case.pattern_case_id]),
     )
 
-    observed = _invoke_bound_helper(observed_pattern, case)
-    expected = _invoke_bound_helper(expected_pattern, case)
+    observed = invoke_bounded_pattern_case(observed_pattern, case)
+    expected = invoke_bounded_pattern_case(expected_pattern, case)
 
     assert observed is not None
     assert expected is not None
@@ -1988,11 +1960,11 @@ def test_pattern_helper_bounds_no_match_paths_match_cpython(
     observed_pattern, expected_pattern = compile_with_cpython_parity(
         backend_name,
         backend,
-        _bounded_pattern(case),
+        str_case_pattern(CASES_BY_ID[case.pattern_case_id]),
     )
 
-    observed = _invoke_bound_helper(observed_pattern, case)
-    expected = _invoke_bound_helper(expected_pattern, case)
+    observed = invoke_bounded_pattern_case(observed_pattern, case)
+    expected = invoke_bounded_pattern_case(expected_pattern, case)
 
     assert observed is None
     assert expected is None
@@ -2015,8 +1987,8 @@ def test_direct_bytes_pattern_helper_bounds_match_cpython(
         case.pattern,
     )
 
-    observed = _invoke_bound_helper(observed_pattern, case)
-    expected = _invoke_bound_helper(expected_pattern, case)
+    observed = invoke_bounded_pattern_case(observed_pattern, case)
+    expected = invoke_bounded_pattern_case(expected_pattern, case)
 
     assert observed is not None
     assert expected is not None
@@ -2043,8 +2015,8 @@ def test_direct_bytes_pattern_helper_bounds_no_match_paths_match_cpython(
         case.pattern,
     )
 
-    observed = _invoke_bound_helper(observed_pattern, case)
-    expected = _invoke_bound_helper(expected_pattern, case)
+    observed = invoke_bounded_pattern_case(observed_pattern, case)
+    expected = invoke_bounded_pattern_case(expected_pattern, case)
 
     assert observed is None
     assert expected is None
@@ -2057,7 +2029,11 @@ def test_match_group_accessors_match_cpython(
     case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
-    observed, expected = _workflow_result_for_case(backend_name, backend, case)
+    observed, expected = workflow_result_with_cpython_parity(
+        backend_name,
+        backend,
+        case,
+    )
 
     assert observed is not None
     assert expected is not None
@@ -2071,7 +2047,11 @@ def test_invalid_match_group_access_errors_match_cpython(
     case: FixtureCase,
 ) -> None:
     backend_name, backend = regex_backend
-    observed, expected = _workflow_result_for_case(backend_name, backend, case)
+    observed, expected = workflow_result_with_cpython_parity(
+        backend_name,
+        backend,
+        case,
+    )
 
     assert observed is not None
     assert expected is not None

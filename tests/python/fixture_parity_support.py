@@ -907,6 +907,29 @@ def compile_with_cpython_parity(
     return observed, expected
 
 
+def workflow_result_with_cpython_parity(
+    backend_name: str,
+    backend: object,
+    case: FixtureCase,
+) -> tuple[object, re.Match[str] | re.Match[bytes] | None]:
+    assert case.helper is not None
+
+    if case.operation == "module_call":
+        observed = getattr(backend, case.helper)(*case.args, **case.kwargs)
+        expected = getattr(re, case.helper)(*case.args, **case.kwargs)
+        return observed, expected
+
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        case_pattern(case),
+        case.flags or 0,
+    )
+    observed = getattr(observed_pattern, case.helper)(*case.args, **case.kwargs)
+    expected = getattr(expected_pattern, case.helper)(*case.args, **case.kwargs)
+    return observed, expected
+
+
 def assert_pattern_parity(
     backend_name: str,
     observed: object,
