@@ -1,8 +1,9 @@
 # RBR-0662: Collapse the detached source-tree benchmark expectation module onto the combined owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Delete `tests/benchmarks/benchmark_expectations.py` by moving its remaining source-tree benchmark expectation tables, typed records, cached manifest helpers, and scorecard/combined-case builder utilities onto `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, so the tracked source-tree benchmark publication has one owner instead of a detached expectations-only support module beside the existing combined owner.
@@ -106,3 +107,8 @@ PY`
 - The ownership simplification matches the current benchmark harness shape:
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` already owns the tracked source-tree scorecard and combined-manifest assertions that consume this expectation surface; and
   - moving the file-local case tables, manifest-shape definitions, representative-workload helpers, and scorecard runner glue there removes one more detached source-tree benchmark layer without changing the public benchmark harness or report plumbing.
+
+## Completion Note
+- 2026-03-19: Moved the detached source-tree benchmark expectation records, manifest inventory, cached manifest/workload selectors, scorecard runner, combined-manifest helpers, and slice-selection helpers directly into `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, keeping the tracked source-tree benchmark publication surface owned by that one file.
+- 2026-03-19: Deleted `tests/benchmarks/benchmark_expectations.py` outright after the combined owner absorbed `SourceTreeBenchmarkCommonCase`, `SourceTreeManifestExpectation`, `SourceTreeDeferredExpectation`, `SourceTreeScorecardCase`, `SourceTreeCombinedCase`, `SourceTreeCombinedPatternGroupExpectation`, `SourceTreeCombinedManifestShapeExpectation`, `SourceTreeCombinedManifestExpectationDefinition`, `SourceTreeCombinedSliceExpectation`, the source-tree expectation tables, and the file-local helper surface.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`41 passed, 1164 subtests passed in 24.02s`), the acceptance inline source probe (`ok`), `bash -lc "! rg --files tests/benchmarks | rg 'benchmark_expectations\\.py$'"` (passes), and `git diff --name-status -- tests/benchmarks/benchmark_expectations.py` (`D`).
