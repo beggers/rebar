@@ -1255,6 +1255,26 @@ def test_assert_direct_bytes_follow_on_bundle_routing_rejects_missing_str_rows()
         )
 
 
+def test_assert_direct_bytes_follow_on_bundle_routing_rejects_str_only_manifest_bundle(
+) -> None:
+    fixture_path = FIXTURES_DIR / "grouped_match_workflows.py"
+    (bundle,) = load_published_fixture_bundles((fixture_path,))
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "grouped-match-workflows direct bytes follow-on routing requires both "
+            "str and bytes rows"
+        ),
+    ):
+        assert_direct_bytes_follow_on_bundle_routing(
+            bundle,
+            compile_cases=fixture_cases_for_operation((bundle,), "compile"),
+            module_cases=fixture_cases_for_operation((bundle,), "module_call"),
+            pattern_cases=fixture_cases_for_operation((bundle,), "pattern_call"),
+        )
+
+
 def test_mixed_text_model_manifest_helper_accepts_exact_direct_follow_on_coverage(
 ) -> None:
     mixed_fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
