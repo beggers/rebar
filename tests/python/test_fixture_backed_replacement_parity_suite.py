@@ -35,6 +35,7 @@ from tests.python.fixture_parity_support import (
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
     load_fixture_bundles,
+    published_fixture_bundle_by_manifest_id,
     published_fixture_paths_from_bundles,
     str_case_pattern,
 )
@@ -1568,26 +1569,30 @@ REPLACEMENT_SURFACE_SPECS = (
 REPLACEMENT_SURFACES = tuple(
     _load_surface(spec) for spec in REPLACEMENT_SURFACE_SPECS
 )
-GROUPED_REPLACEMENT_TEMPLATE_SURFACE = next(
-    surface
-    for surface in REPLACEMENT_SURFACES
-    if surface.spec.id == GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID
+
+
+def _replacement_surface_by_id(surface_id: str) -> LoadedReplacementSurface:
+    for surface in REPLACEMENT_SURFACES:
+        if surface.spec.id == surface_id:
+            return surface
+    raise AssertionError(f"unknown replacement surface {surface_id!r}")
+
+
+GROUPED_REPLACEMENT_TEMPLATE_SURFACE = _replacement_surface_by_id(
+    GROUPED_REPLACEMENT_TEMPLATE_SURFACE_ID
 )
-OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE = next(
-    surface
-    for surface in REPLACEMENT_SURFACES
-    if surface.spec.id == "open-ended-quantified-group-replacement"
+OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE = _replacement_surface_by_id(
+    "open-ended-quantified-group-replacement"
 )
-MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE = next(
-    bundle
-    for bundle in OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE.bundles
-    if bundle.expected_manifest_id
-    == NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_MANIFEST_ID
+MIXED_TEXT_MODEL_REPLACEMENT_BUNDLE = published_fixture_bundle_by_manifest_id(
+    OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE.bundles,
+    NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_MANIFEST_ID,
 )
-BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE = next(
-    bundle
-    for bundle in OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE.bundles
-    if bundle.expected_manifest_id == NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID
+BROADER_RANGE_OPEN_ENDED_MIXED_TEXT_REPLACEMENT_BUNDLE = (
+    published_fixture_bundle_by_manifest_id(
+        OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_SURFACE.bundles,
+        NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID,
+    )
 )
 
 SELECTOR_SURFACE_PARAMS = tuple(
@@ -1778,10 +1783,9 @@ def test_grouped_replacement_surface_keeps_selected_bundle_ownership_explicit() 
     assert "replacement-template" in grouped_template_case.categories
     assert "grouping-dependent" in grouped_template_case.categories
 
-    named_bundle = next(
-        bundle
-        for bundle in surface.bundles
-        if bundle.expected_manifest_id == "named-group-replacement-workflows"
+    named_bundle = published_fixture_bundle_by_manifest_id(
+        surface.bundles,
+        "named-group-replacement-workflows",
     )
     assert tuple(case.case_id for case in named_bundle.cases) == (
         GROUPED_REPLACEMENT_NAMED_CASE_IDS
@@ -1792,10 +1796,9 @@ def test_grouped_replacement_surface_keeps_selected_bundle_ownership_explicit() 
         assert "replacement-template" in case.categories
         assert case.text_model == "str"
 
-    nested_group_alternation_bundle = next(
-        bundle
-        for bundle in surface.bundles
-        if bundle.expected_manifest_id == "nested-group-alternation-replacement-workflows"
+    nested_group_alternation_bundle = published_fixture_bundle_by_manifest_id(
+        surface.bundles,
+        "nested-group-alternation-replacement-workflows",
     )
     assert tuple(case.case_id for case in nested_group_alternation_bundle.cases) == (
         NESTED_GROUP_ALTERNATION_REPLACEMENT_CASE_IDS
