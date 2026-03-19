@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0653` should catch the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template `str` slice up on `benchmarks/workloads/nested_group_replacement_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, so the published benchmark report moves from `735` total / `735` measured / `0` known gaps across `30` manifests to `739` / `739` / `0` once that same slice is live behind `rebar._rebar`.
+`RBR-0655` should widen the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template manifest to the exact bytes pair on `tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_replacement_workflows.py`, `tests/python/test_fixture_backed_replacement_parity_suite.py`, `tests/conformance/correctness_expectations.py`, and `reports/correctness/latest.py`, so the published correctness surface moves from `1318` total / `1318` passed / `0` `unimplemented` across `111` manifests to `1326` total across the same `111` manifests while reporting the new bytes rows honestly on the shared replacement path.
 
 ## Ordered Work
-1. `RBR-0653` should add the 4 representative `str` benchmark rows for `a((b|c){1,4})\\2d` with `\\1x` / `\\2x` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d` with `\\g<outer>x` / `\\g<inner>x` to `benchmarks/workloads/nested_group_replacement_boundary.py`, reusing the lower-bound, first-match-only, and upper-bound owner shapes already pinned on the shared replacement path so the same slice reaches the existing Python-path benchmark surface without another synthesis pass.
+1. `RBR-0655` should add only the 8 bytes counterparts to the existing `str` replacement-template rows for `rb"a((b|c){1,4})\\2d"` with `rb"\\1x"` / `rb"\\2x"` and `rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d"` with `rb"\\g<outer>x"` / `rb"\\g<inner>x"` to `tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_replacement_workflows.py`, widening the shared replacement owner to mixed `str`/`bytes` coverage while keeping any live `rebar` bytes result honest instead of silently dropping the frontier from publication.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
