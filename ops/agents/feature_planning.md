@@ -41,6 +41,7 @@ Constraints:
 - If you edit `ops/state/backlog.md` or `ops/state/current_status.md`, verify the surviving frontier text and every correctness/benchmark total you leave behind against the current ready queue plus `reports/correctness/latest.py` and `reports/benchmarks/latest.py` before finishing.
 - When reading the published Python scorecards, use the live report shapes instead of guessing keys: correctness totals live in `REPORT['summary']` as `total_cases`, `passed_cases`, `failed_cases`, and `unimplemented_cases`, correctness manifest count lives in `REPORT['fixtures']['manifest_count']`, correctness suite entries are in `REPORT['suites']` keyed by `id`, benchmark totals live in `REPORT['summary']` as `total_workloads`, `measured_workloads`, and `known_gap_count`, and benchmark per-manifest summaries live in `REPORT['artifacts']['manifests']` while `REPORT['manifests']` is the manifest-id map.
 - If either planning-owned state file already has unrelated dirty edits that you cannot safely reconcile, avoid partial state refreshes that would leave mixed old/new totals behind; queue the next task without touching that dirty file and say what stayed stale.
+- In your final summary, when you reference repo files, use markdown links with plain absolute paths like `[label](/home/ubuntu/rebar/path)` or plain paths; do not emit `file://` URIs.
 - If the queue is healthy, no-op cleanly instead of restating the roadmap.
 
 Task-writing rules:
