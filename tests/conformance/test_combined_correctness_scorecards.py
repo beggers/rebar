@@ -12,7 +12,7 @@ import warnings
 
 from rebar_harness import correctness
 from rebar_harness.scorecard_io import build_cpython_baseline
-from tests.harness_cli_support import REPO_ROOT, run_harness_scorecard
+from tests.conftest import REPO_ROOT, run_harness_scorecard
 
 TRACKED_REPORT_PATH = correctness.SCORECARD_REPORT.published_path
 NUMBERED_BACKREFERENCE_FIXTURE_PATH = (

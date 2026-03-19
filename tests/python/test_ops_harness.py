@@ -10,7 +10,7 @@ import unittest
 from unittest import mock
 
 from rebar_harness import benchmarks, correctness, scorecard_io
-from tests.harness_cli_support import REPO_ROOT, run_harness_cli, run_harness_scorecard
+from tests.conftest import REPO_ROOT, run_harness_cli, run_harness_scorecard
 
 
 def completed_process(*args: str, returncode: int = 0, stdout: str = "", stderr: str = ""):
