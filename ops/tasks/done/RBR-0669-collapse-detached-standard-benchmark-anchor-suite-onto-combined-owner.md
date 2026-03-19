@@ -1,6 +1,6 @@
 # RBR-0669: Collapse the detached standard benchmark anchor suite onto the combined benchmark owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -109,3 +109,8 @@ PY`
 - This simplification matches the current benchmark information flow:
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` already owns the tracked source-tree benchmark scorecard expectations, benchmark reruns, and publication assertions; and
   - `tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py` is now a detached second benchmark-side contract surface rather than a separate cross-owner boundary.
+
+## Completion
+- Moved the detached benchmark-anchor helper stack, manifest/anchor registry, and pytest contract coverage onto `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Deleted `tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py`; `git diff --name-status -- tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` now shows `D` for the detached suite and `M` for the combined owner.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`154 passed, 3 skipped, 1188 subtests passed`), the inline source/deletion probe from Acceptance (`ok`), and `bash -lc "! rg --files tests/benchmarks | rg 'test_standard_benchmark_correctness_anchor_contracts\\.py$'"`.
