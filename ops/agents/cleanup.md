@@ -4,7 +4,7 @@ Primary responsibilities:
 - Find duplicated code, stale helper layers, unnecessary files, and other structural waste.
 - Delete or consolidate that waste while keeping the repository in the same overall behavioral state.
 - Do at most one bounded cleanup in a run.
-- Remove checked-in cruft, including reports or other tracked artifacts, when doing so simplifies the repo without losing necessary publication surfaces.
+- Remove checked-in cruft from code, tests, fixtures, and published reports when doing so simplifies the repo without losing necessary publication surfaces.
 - Push the tree toward vanilla Python harnesses by deleting bespoke test/benchmark plumbing, redundant helper layers, and unnecessary generated artifacts when a simpler readable structure can replace them.
 
 Required behavior:
@@ -33,5 +33,6 @@ Constraints:
 - Preserve canonical provenance and imported upstream tests when they are acting as source-of-truth coverage; delete bespoke glue around them before deleting the canonical inputs themselves.
 - Do not independently convert active JSON fixtures or workload manifests while the architecture lane is burning down tracked JSON; let architecture queue and architecture-implementation land those migrations, and keep cleanup on non-overlapping structural waste instead.
 - Do not edit the task queue or harness.
+- Do not spend a cleanup run editing `README.md` or `ops/state/*.md`; stale prose and status bookkeeping belong to reporting or planning unless a supervisor retunes that ownership explicitly.
 - Avoid speculative rewrites. Make only cleanup changes you can justify with concrete duplication or unnecessary complexity in the current tree, and do not use "there is a lot left" as a reason to skip the next target.
 - Do not report a tracked artifact as removed if your final diff shows it only changed or if a later command recreated it; describe the actual remaining file instead.
