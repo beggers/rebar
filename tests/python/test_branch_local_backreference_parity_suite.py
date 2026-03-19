@@ -791,13 +791,6 @@ NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BYTES_CAS
         fullmatch_misses=(b"abbd",),
     ),
 )
-DIRECT_BYTES_FOLLOW_ON_BUNDLES = (
-    QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
-    QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
-    NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
-    NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
-    NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BUNDLE,
-)
 DIRECT_BYTES_FOLLOW_ON_SPECS = (
     BranchLocalBytesFollowOnSpec(
         bundle=QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
@@ -964,7 +957,7 @@ PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.ca
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
 COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_case_buckets(
     FIXTURE_BUNDLES,
-    DIRECT_BYTES_FOLLOW_ON_BUNDLES,
+    tuple(spec.bundle for spec in DIRECT_BYTES_FOLLOW_ON_SPECS),
 )
 _SHARED_WORKFLOW_CASE_IDS = frozenset(
     case.case_id for case in (*MODULE_CASES, *PATTERN_CASES)
@@ -1640,7 +1633,9 @@ def test_branch_local_backreference_mixed_text_model_manifests_keep_explicit_dir
 ) -> None:
     assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing(
         FIXTURE_BUNDLES,
-        direct_bytes_follow_on_bundles=DIRECT_BYTES_FOLLOW_ON_BUNDLES,
+        direct_bytes_follow_on_bundles=tuple(
+            spec.bundle for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
+        ),
         coverage_label="branch-local-backreference",
     )
 

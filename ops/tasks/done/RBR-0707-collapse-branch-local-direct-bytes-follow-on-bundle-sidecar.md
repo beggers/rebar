@@ -1,6 +1,6 @@
 # RBR-0707: Collapse branch-local direct-bytes follow-on bundle sidecar onto canonical spec records
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -74,3 +74,8 @@ PY` reported the highest existing tail as `RBR-0692` through `RBR-0706` and no r
 - This simplification matches the current parity-harness information flow:
   - `DIRECT_BYTES_FOLLOW_ON_SPECS` already owns the per-manifest bundle, bytes-case, bucket-label, and expected-search/fullmatch metadata for this branch-local follow-on surface; and
   - deleting the mirrored bundle tuple removes one more parallel owner layer without changing the published correctness slice or the direct-bytes follow-on routing contract.
+
+## Completion Notes
+- 2026-03-19: Removed `DIRECT_BYTES_FOLLOW_ON_BUNDLES` from `tests/python/test_branch_local_backreference_parity_suite.py`.
+- 2026-03-19: Repointed the direct-bytes bucket partitioning call and the mixed-text-model routing test to derive ordered follow-on bundles directly from `DIRECT_BYTES_FOLLOW_ON_SPECS`, preserving the existing manifest order and case routing.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py`, the inline source probe from Acceptance (`ok`), and `bash -lc "! rg -n 'DIRECT_BYTES_FOLLOW_ON_BUNDLES' tests/python/test_branch_local_backreference_parity_suite.py"`.
