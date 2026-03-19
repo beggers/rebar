@@ -4423,6 +4423,49 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
 class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     maxDiff = None
 
+    def test_combined_manifest_definition_defaults_to_fully_measured_representatives(
+        self,
+    ) -> None:
+        fully_measured_expectation = _combined_fully_measured_manifest_expectation(
+            coverage_group="contract",
+            representative_measured_workload_ids=("measured-a", "measured-b"),
+            expected_measured_workload_count=2,
+        )
+
+        definition = _combined_manifest_definition(
+            fully_measured_expectation=fully_measured_expectation,
+        )
+
+        self.assertEqual(
+            definition.representative_measured_workload_ids,
+            ("measured-a", "measured-b"),
+        )
+        self.assertIs(
+            definition.fully_measured_expectation,
+            fully_measured_expectation,
+        )
+
+    def test_combined_manifest_definition_rejects_fully_measured_representative_drift(
+        self,
+    ) -> None:
+        fully_measured_expectation = _combined_fully_measured_manifest_expectation(
+            coverage_group="contract",
+            representative_measured_workload_ids=("measured-a", "measured-b"),
+            expected_measured_workload_count=2,
+        )
+
+        with self.assertRaisesRegex(
+            AssertionError,
+            re.escape(
+                "fully measured manifest definitions must keep their "
+                "representative rows on the shared definition-owned contract"
+            ),
+        ):
+            _combined_manifest_definition(
+                fully_measured_expectation=fully_measured_expectation,
+                representative_measured_workload_ids=("drifted-measured-row",),
+            )
+
     def _assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation(
         self,
         manifest_id: str,
