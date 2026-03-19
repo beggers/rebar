@@ -43,7 +43,11 @@ from tests.python.fixture_parity_support import (
     OPEN_ENDED_ALTERNATION_BYTES_CASES,
     OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
     OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    _apply_match_accessor,
+    _capture_match_accessor_error,
+    _invalid_match_group_references,
     _match_api_templates,
+    _valid_match_group_references,
     FixtureBundle,
     FixtureBundleSpec,
     RecordingNativeBoundary,
@@ -2257,6 +2261,81 @@ def test_match_parity_helpers_cover_bytes_match_object_contracts(
     assert_match_convenience_api_parity(observed, expected)
     assert_valid_match_group_access_parity(observed, expected)
     assert_invalid_match_group_access_parity(observed, expected)
+
+
+def test_valid_match_group_references_include_bool_indexes_and_names() -> None:
+    match = re.fullmatch(r"(?P<word>a)(b)", "ab")
+
+    assert match is not None
+    assert _valid_match_group_references(match) == (0, 1, 2, False, True, "word")
+
+
+def test_invalid_match_group_references_avoid_existing_missing_name_collisions() -> None:
+    match = re.fullmatch(r"(?P<missing>a)(?P<missing_group>b)", "ab")
+
+    assert match is not None
+    assert _invalid_match_group_references(match) == (
+        -1,
+        3,
+        None,
+        (1,),
+        1.0,
+        b"missing",
+        "missing_group_group",
+    )
+
+
+@pytest.mark.parametrize(
+    ("accessor_name", "reference", "expected"),
+    (
+        pytest.param("group", 1, "ab", id="group"),
+        pytest.param("span", 1, (1, 3), id="span"),
+        pytest.param("start", 1, 1, id="start"),
+        pytest.param("end", 1, 3, id="end"),
+        pytest.param("getitem", 1, "ab", id="getitem"),
+    ),
+)
+def test_apply_match_accessor_dispatches_supported_accessors(
+    accessor_name: str,
+    reference: object,
+    expected: object,
+) -> None:
+    match = re.search(r"(ab)", "zabz")
+
+    assert match is not None
+    assert _apply_match_accessor(match, accessor_name, reference) == expected
+
+
+def test_apply_match_accessor_rejects_unknown_accessor() -> None:
+    match = re.search(r"(ab)", "zabz")
+
+    assert match is not None
+    with pytest.raises(AssertionError, match="unknown accessor 'unknown'"):
+        _apply_match_accessor(match, "unknown", 0)
+
+
+def test_capture_match_accessor_error_returns_underlying_exception_details() -> None:
+    match = re.search(r"(ab)", "zabz")
+
+    assert match is not None
+    observed_error = _capture_match_accessor_error(match, "group", 2)
+
+    with pytest.raises(IndexError) as expected:
+        match.group(2)
+
+    assert type(observed_error) is type(expected.value)
+    assert observed_error.args == expected.value.args
+
+
+def test_capture_match_accessor_error_rejects_accessors_that_succeed() -> None:
+    match = re.search(r"(ab)", "zabz")
+
+    assert match is not None
+    with pytest.raises(
+        AssertionError,
+        match=r"expected group\(0\) to raise for '\(ab\)'",
+    ):
+        _capture_match_accessor_error(match, "group", 0)
 
 
 @pytest.mark.parametrize(
