@@ -35,7 +35,6 @@ from tests.python.fixture_parity_support import (
     fixture_cases_for_operation,
     load_fixture_bundles,
     published_fixture_bundle_by_manifest_id,
-    published_fixture_paths_from_bundles,
     str_case_pattern,
 )
 
@@ -1764,7 +1763,12 @@ def test_replacement_parity_suite_tracks_published_fixture_coverage_frontier(
 ) -> None:
     assert surface.spec.selector_fixture_paths
 
-    covered_paths = published_fixture_paths_from_bundles(surface.bundles)
+    covered_paths = tuple(
+        sorted(
+            (bundle.manifest.path for bundle in surface.bundles),
+            key=lambda path: path.name,
+        )
+    )
     uncovered_paths = tuple(
         path
         for path in surface.spec.selector_fixture_paths

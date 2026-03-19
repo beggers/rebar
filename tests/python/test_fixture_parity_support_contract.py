@@ -73,7 +73,6 @@ from tests.python.fixture_parity_support import (
     ordered_manifest_cases_from_bundles,
     partition_direct_bytes_follow_on_case_buckets,
     published_fixture_bundle_by_manifest_id,
-    published_fixture_paths_from_bundles,
     str_case_pattern,
 )
 OPTIONAL_NAMED_GROUP_PATTERN = r"a(?P<word>b)?d"
@@ -904,7 +903,7 @@ def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract() 
     assert bytes_case_ids == {
         f"{case_id.removesuffix('-str')}-bytes" for case_id in str_case_ids
     }
-    assert published_fixture_paths_from_bundles((bundle,)) == (fixture_path,)
+    assert (bundle.manifest.path,) == (fixture_path,)
     assert_fixture_bundle_contract(
         bundle,
         pattern_extractor=case_pattern,
@@ -2048,7 +2047,7 @@ def test_expected_fixture_bundle_contract_supports_exact_case_id_validation() ->
         pattern_extractor=str_case_pattern,
         expected_fixture_path=FIXTURES_DIR / "named_backreference_workflows.py",
     )
-    assert published_fixture_paths_from_bundles((bundle,)) == (
+    assert (bundle.manifest.path,) == (
         FIXTURES_DIR / "named_backreference_workflows.py",
     )
 
@@ -2755,7 +2754,10 @@ def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_ca
     )
     assert tuple(
         path.name
-        for path in published_fixture_paths_from_bundles((open_ended_bundle, named_bundle))
+        for path in sorted(
+            (open_ended_bundle.manifest.path, named_bundle.manifest.path),
+            key=lambda path: path.name,
+        )
     ) == (
         "named_backreference_workflows.py",
         "open_ended_quantified_group_alternation_workflows.py",

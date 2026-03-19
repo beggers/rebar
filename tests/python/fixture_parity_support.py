@@ -533,12 +533,6 @@ def assert_fixture_bundle_contract(
     )
 
 
-def published_fixture_paths_from_bundles(
-    bundles: Iterable[FixtureBundle],
-) -> tuple[pathlib.Path, ...]:
-    return tuple(sorted((bundle.manifest.path for bundle in bundles), key=lambda path: path.name))
-
-
 def _manifest_bucket_case_ids(
     cases: Iterable[FixtureCase],
     *,
