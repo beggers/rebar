@@ -130,6 +130,8 @@ _NATIVE_TEMPLATE_BYTES_PATTERNS: Final[frozenset[bytes]] = frozenset(
 )
 _NATIVE_CALLABLE_BYTES_PATTERNS: Final[frozenset[bytes]] = frozenset(
     {
+        _NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NUMBERED_BYTES_TEMPLATE_PATTERN,
+        _NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NAMED_BYTES_TEMPLATE_PATTERN,
         _NESTED_BROADER_RANGE_OPEN_ENDED_NUMBERED_BYTES_CALLABLE_PATTERN,
         _NESTED_BROADER_RANGE_OPEN_ENDED_NAMED_BYTES_CALLABLE_PATTERN,
         _NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NUMBERED_BYTES_TEMPLATE_PATTERN,
@@ -1317,6 +1319,24 @@ def _native_callable_match_spans(
         )
 
     if isinstance(compiled_pattern.pattern, bytes):
+        status, normalized_pos, normalized_endpos, spans, group_spans = (
+            _native.boundary_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_finditer_bytes(
+                compiled_pattern.pattern,
+                compiled_pattern.flags,
+                compatible_string,
+                0,
+                None,
+            )
+        )
+        if status != "unsupported":
+            return (
+                status,
+                normalized_pos,
+                normalized_endpos,
+                spans,
+                [tuple(match_group_spans) for match_group_spans in group_spans],
+            )
+
         status, normalized_pos, normalized_endpos, spans, group_spans = (
             _native.boundary_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_finditer_bytes(
                 compiled_pattern.pattern,
