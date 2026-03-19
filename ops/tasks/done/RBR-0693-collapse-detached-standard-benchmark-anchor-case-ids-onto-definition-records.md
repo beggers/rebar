@@ -1,6 +1,6 @@
 # RBR-0693: Collapse the detached standard benchmark anchor case ids onto definition records
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -83,3 +83,8 @@ PY`
 - This simplification matches the current benchmark information flow:
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` already treats `STANDARD_BENCHMARK_DEFINITIONS` as the canonical registry for standard anchored benchmark slices; and
   - keeping the per-definition anchor ids on those definition records removes one more internal parallel layer without changing the combined benchmark owner boundary.
+
+## Completion Note
+- 2026-03-19: Collapsed the nine detached standard benchmark `*_ANCHOR_CASE_IDS` tables into `STANDARD_BENCHMARK_DEFINITIONS` by moving each anchor map inline onto its owning `StandardBenchmarkAnchorContractDefinition`, adding the small file-local `_definition_anchor_expectations(...)` helper, and replacing callback-specific case-id tables with definition-owned `callback_anchor_workload_ids` subsets derived from each definition's own anchor map.
+- 2026-03-19: Preserved the existing helper surface and benchmark semantics, including the grouped-alternation legacy subset, grouped-alternation-replacement callback parity, nested-group excluded workloads, nested-group-replacement special unanchored workloads, open-ended special unanchored workloads, and open-ended direct-bytes supplemental parity cases.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, the inline source probe from Acceptance, and `bash -lc "! rg -n 'EXPECTED_COMPILE_ANCHOR_CASE_IDS|EXPECTED_OPTIONAL_GROUP_CONDITIONAL_ANCHOR_CASE_IDS|EXPECTED_NESTED_GROUP_ANCHOR_CASE_IDS|EXACT_REPEAT_EXPECTED_ANCHOR_CASE_IDS|RANGED_REPEAT_EXPECTED_ANCHOR_CASE_IDS|EXPECTED_GROUPED_ALTERNATION_ANCHOR_CASE_IDS|EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS|EXPECTED_NESTED_GROUP_REPLACEMENT_ANCHOR_CASE_IDS|EXPECTED_OPEN_ENDED_ANCHOR_CASE_IDS' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`.
