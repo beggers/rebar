@@ -165,6 +165,63 @@ class OpsHarnessTest(unittest.TestCase):
             reporting_cfg,
         )
 
+    def test_readme_reporting_capability_tracks_reference_live_repo_evidence_and_tasks(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+        config = rebar_ops.load_config()
+        reporting_cfg = rebar_ops.load_readme_reporting_config(config)
+        task_index = rebar_ops.task_queue_index()
+        capability_tracks = reporting_cfg["capability_tracks"]
+
+        self.assertEqual(len(capability_tracks), len({track["label"] for track in capability_tracks}))
+
+        for track in capability_tracks:
+            with self.subTest(track=track["label"]):
+                self.assertTrue(track["label"].strip())
+                self.assertTrue(track["description"].strip())
+                self.assertTrue(track.get("paths_any") or track.get("globs_any"))
+
+                for key in ("paths_any", "globs_any"):
+                    for value in track.get(key, []):
+                        self.assertIsInstance(value, str)
+                        self.assertTrue(value)
+                        self.assertFalse(pathlib.Path(value).is_absolute())
+
+                matches = rebar_ops.matching_repo_paths(track)
+                self.assertTrue(matches)
+                self.assertTrue(all(path.is_file() for path in matches))
+                self.assertTrue(all(path.is_relative_to(REPO_ROOT) for path in matches))
+
+                task_name = track.get("task")
+                self.assertIsInstance(task_name, str)
+                self.assertIn(task_name, task_index)
+
+    def test_matching_repo_paths_preserves_unique_order_across_paths_and_globs(self) -> None:
+        rebar_ops = load_rebar_ops_module()
+
+        entry = {
+            "paths_any": [
+                "README.md",
+                "README.md",
+                "missing-file-does-not-exist.md",
+            ],
+            "globs_any": [
+                "README.md",
+                "ops/reporting/readme.py",
+                "README.md",
+                "ops/reporting/*.py",
+            ],
+        }
+
+        matches = rebar_ops.matching_repo_paths(entry)
+
+        self.assertEqual(
+            matches,
+            [
+                REPO_ROOT / "README.md",
+                REPO_ROOT / "ops" / "reporting" / "readme.py",
+            ],
+        )
+
     def test_render_prompt_includes_generated_commit_policy(self) -> None:
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
