@@ -2816,6 +2816,53 @@ def _case_result(
     }
 
 
+def _adapter_contract_case(
+    *,
+    case_id: str,
+    operation: str,
+    helper: str | None = None,
+    args: list[Any] | None = None,
+) -> FixtureCase:
+    observed_args = [] if args is None else list(args)
+    return FixtureCase(
+        case_id=case_id,
+        manifest_id="adapter-contract",
+        suite_id="adapter.contract",
+        layer="regression_and_coverage",
+        family="adapter_contracts",
+        operation=operation,
+        notes=[],
+        categories=["adapter-contract"],
+        pattern="abc",
+        flags=0,
+        text_model="str",
+        pattern_encoding="latin-1",
+        helper=helper,
+        source_args=list(observed_args),
+        source_kwargs={},
+        args=observed_args,
+        kwargs={},
+    )
+
+
+class _WarningModuleCallFailureModule:
+    def search(self, pattern: str, string: str) -> object:
+        warnings.warn("module helper warning", RuntimeWarning)
+        raise NotImplementedError("module helper todo")
+
+
+class _WarningCompileFailureModule:
+    def __init__(self, *, message: str) -> None:
+        self._message = message
+
+    def compile(self, pattern: str, flags: int = 0) -> object:
+        warnings.warn("compile warning", FutureWarning)
+        raise NotImplementedError(self._message)
+
+    def purge(self) -> None:
+        return None
+
+
 PARSER_MANIFEST = _fixture_manifest(
     filename="parser_matrix.py",
     manifest_id="parser-matrix",
@@ -2941,6 +2988,125 @@ CASE_RESULTS = [
 
 class CorrectnessBuilderContractTest(unittest.TestCase):
     maxDiff = None
+
+    def test_adapter_module_call_preserves_warning_payloads_and_unimplemented_mapping(
+        self,
+    ) -> None:
+        case = _adapter_contract_case(
+            case_id="adapter-module-call-contract",
+            operation="module_call",
+            helper="search",
+            args=["abc", "zzabczz"],
+        )
+
+        for adapter_cls in (CpythonReAdapter, RebarAdapter):
+            with self.subTest(adapter=adapter_cls.adapter_name):
+                adapter = adapter_cls()
+                adapter.module = _WarningModuleCallFailureModule()
+
+                observation = adapter.observe(case)
+
+                self.assertEqual(observation["adapter"], adapter_cls.adapter_name)
+                self.assertEqual(observation["operation"], "module_call")
+                self.assertEqual(observation["outcome"], "unimplemented")
+                self.assertEqual(
+                    observation["warnings"],
+                    [
+                        {
+                            "category": "RuntimeWarning",
+                            "message": "module helper warning",
+                        }
+                    ],
+                )
+                self.assertIsNone(observation["result"])
+                self.assertEqual(
+                    observation["exception"],
+                    {
+                        "type": "NotImplementedError",
+                        "message": "module helper todo",
+                    },
+                )
+
+    def test_adapter_compile_observation_preserves_warning_payloads_and_notimplemented_mapping(
+        self,
+    ) -> None:
+        case = _adapter_contract_case(
+            case_id="adapter-compile-contract",
+            operation="compile",
+        )
+
+        for adapter_cls, expected_outcome in (
+            (CpythonReAdapter, "exception"),
+            (RebarAdapter, "unimplemented"),
+        ):
+            with self.subTest(adapter=adapter_cls.adapter_name):
+                adapter = adapter_cls()
+                adapter.module = _WarningCompileFailureModule(
+                    message="compile helper todo"
+                )
+
+                observation = adapter.observe(case)
+
+                self.assertEqual(observation["adapter"], adapter_cls.adapter_name)
+                self.assertEqual(observation["operation"], "compile")
+                self.assertEqual(observation["outcome"], expected_outcome)
+                self.assertEqual(
+                    observation["warnings"],
+                    [
+                        {
+                            "category": "FutureWarning",
+                            "message": "compile warning",
+                        }
+                    ],
+                )
+                self.assertIsNone(observation["result"])
+                self.assertEqual(
+                    observation["exception"],
+                    {
+                        "type": "NotImplementedError",
+                        "message": "compile helper todo",
+                    },
+                )
+
+    def test_adapter_cache_workflow_preserves_warning_payloads_and_notimplemented_mapping(
+        self,
+    ) -> None:
+        case = _adapter_contract_case(
+            case_id="adapter-cache-workflow-contract",
+            operation="cache_workflow",
+        )
+
+        for adapter_cls, expected_outcome in (
+            (CpythonReAdapter, "exception"),
+            (RebarAdapter, "unimplemented"),
+        ):
+            with self.subTest(adapter=adapter_cls.adapter_name):
+                module = _WarningCompileFailureModule(message="cache helper todo")
+                adapter = adapter_cls()
+                adapter.module = module
+
+                observation = adapter.observe(case)
+
+                self.assertEqual(observation["adapter"], adapter_cls.adapter_name)
+                self.assertEqual(observation["operation"], "cache_workflow")
+                self.assertEqual(observation["outcome"], expected_outcome)
+                self.assertEqual(
+                    observation["warnings"],
+                    [
+                        {
+                            "category": "FutureWarning",
+                            "message": "compile warning",
+                        }
+                    ],
+                )
+                self.assertIsNone(observation["result"])
+                self.assertEqual(
+                    observation["exception"],
+                    {
+                        "type": "NotImplementedError",
+                        "message": "cache helper todo",
+                    },
+                )
 
     def test_normalize_match_metadata_preserves_bytes_named_capture_shape(self) -> None:
         match = re.search(rb"(?P<outer>(ab)?)(?P<inner>c)", b"zabc")
