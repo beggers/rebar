@@ -10,6 +10,7 @@ from types import SimpleNamespace
 import pytest
 
 import rebar
+from rebar_harness import correctness
 from rebar_harness.correctness import (
     CALLABLE_REPLACEMENT_FIXTURE_SELECTOR,
     BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR,
@@ -54,16 +55,16 @@ from tests.python.fixture_parity_support import (
 )
 OPTIONAL_NAMED_GROUP_PATTERN = r"a(?P<word>b)?d"
 BYTES_LITERAL_PATTERN = b"abc"
-SELECTOR_EXPECTATIONS = (
-    pytest.param(
+SELECTOR_EXPECTATION_TABLE = (
+    (
         COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
         (
             "exact_repeat_quantified_group_workflows.py",
             "ranged_repeat_quantified_group_workflows.py",
         ),
-        id="counted-repeat",
+        "counted-repeat",
     ),
-    pytest.param(
+    (
         QUANTIFIED_ALTERNATION_FIXTURE_SELECTOR,
         (
             "exact_repeat_quantified_group_alternation_workflows.py",
@@ -76,25 +77,25 @@ SELECTOR_EXPECTATIONS = (
             "quantified_alternation_workflows.py",
             "quantified_nested_group_alternation_workflows.py",
         ),
-        id="quantified-alternation",
+        "quantified-alternation",
     ),
-    pytest.param(
+    (
         BOUNDED_WILDCARD_FIXTURE_SELECTOR,
         (
             "collection_replacement_workflows.py",
             "literal_flag_workflows.py",
         ),
-        id="bounded-wildcard",
+        "bounded-wildcard",
     ),
-    pytest.param(
+    (
         SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR,
         (
             "named_backreference_workflows.py",
             "numbered_backreference_workflows.py",
         ),
-        id="simple-backreference",
+        "simple-backreference",
     ),
-    pytest.param(
+    (
         GROUPED_CAPTURE_FIXTURE_SELECTOR,
         (
             "grouped_alternation_workflows.py",
@@ -106,9 +107,9 @@ SELECTOR_EXPECTATIONS = (
             "optional_group_alternation_workflows.py",
             "optional_group_workflows.py",
         ),
-        id="grouped-capture",
+        "grouped-capture",
     ),
-    pytest.param(
+    (
         WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
         (
             "broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
@@ -122,9 +123,9 @@ SELECTOR_EXPECTATIONS = (
             "wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
             "wider_ranged_repeat_quantified_group_workflows.py",
         ),
-        id="wider-ranged-repeat",
+        "wider-ranged-repeat",
     ),
-    pytest.param(
+    (
         BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR,
         (
             "branch_local_backreference_workflows.py",
@@ -138,14 +139,14 @@ SELECTOR_EXPECTATIONS = (
             "quantified_branch_local_backreference_workflows.py",
             "quantified_nested_group_alternation_branch_local_backreference_workflows.py",
         ),
-        id="branch-local-backreference",
+        "branch-local-backreference",
     ),
-    pytest.param(
+    (
         LITERAL_FLAG_FIXTURE_SELECTOR,
         ("literal_flag_workflows.py",),
-        id="literal-flag",
+        "literal-flag",
     ),
-    pytest.param(
+    (
         CALLABLE_REPLACEMENT_FIXTURE_SELECTOR,
         (
             "conditional_group_exists_callable_replacement_workflows.py",
@@ -163,18 +164,18 @@ SELECTOR_EXPECTATIONS = (
             "quantified_nested_group_alternation_callable_replacement_workflows.py",
             "quantified_nested_group_callable_replacement_workflows.py",
         ),
-        id="callable-replacement",
+        "callable-replacement",
     ),
-    pytest.param(
+    (
         OPEN_ENDED_QUANTIFIED_GROUP_REPLACEMENT_TEMPLATE_FIXTURE_SELECTOR,
         (
             "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_replacement_workflows.py",
             "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
             "nested_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py",
         ),
-        id="open-ended-replacement-template",
+        "open-ended-replacement-template",
     ),
-    pytest.param(
+    (
         OPEN_ENDED_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
         (
             "broader_range_open_ended_quantified_group_alternation_backtracking_heavy_workflows.py",
@@ -185,9 +186,9 @@ SELECTOR_EXPECTATIONS = (
             "open_ended_quantified_group_alternation_conditional_workflows.py",
             "open_ended_quantified_group_alternation_workflows.py",
         ),
-        id="open-ended-quantified-group",
+        "open-ended-quantified-group",
     ),
-    pytest.param(
+    (
         CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR,
         (
             "conditional_group_exists_alternation_replacement_workflows.py",
@@ -201,9 +202,23 @@ SELECTOR_EXPECTATIONS = (
             "conditional_group_exists_replacement_template_workflows.py",
             "conditional_group_exists_replacement_workflows.py",
         ),
-        id="conditional-replacement",
+        "conditional-replacement",
     ),
 )
+SELECTOR_EXPECTATIONS = tuple(
+    pytest.param(selector, expected_filenames, id=selector_id)
+    for selector, expected_filenames, selector_id in SELECTOR_EXPECTATION_TABLE
+)
+
+
+def _declared_correctness_fixture_selectors() -> dict[str, str]:
+    return {
+        name: value
+        for name, value in vars(correctness).items()
+        if name.endswith("_FIXTURE_SELECTOR") and isinstance(value, str)
+    }
+
+
 def _duplicate_items(counter: Counter[str]) -> list[str]:
     return sorted(item for item, count in counter.items() if count > 1)
 
@@ -504,6 +519,28 @@ def test_shared_correctness_fixture_selectors_resolve_expected_published_paths(
 def test_unknown_correctness_fixture_selector_raises_clear_error() -> None:
     with pytest.raises(ValueError, match="unknown correctness fixture selector"):
         select_correctness_fixture_paths("missing-selector")
+
+
+def test_declared_correctness_fixture_selectors_match_registry_keys() -> None:
+    declared_selectors = _declared_correctness_fixture_selectors()
+
+    assert declared_selectors
+    assert len(declared_selectors) == len(set(declared_selectors.values()))
+    assert set(declared_selectors.values()) == set(
+        correctness._CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR
+    )
+
+
+def test_selector_expectation_table_covers_declared_nondefault_selectors() -> None:
+    declared_nondefault_selectors = set(_declared_correctness_fixture_selectors().values())
+    declared_nondefault_selectors.remove(PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR)
+    expected_selectors = tuple(
+        selector for selector, _expected_filenames, _selector_id in SELECTOR_EXPECTATION_TABLE
+    )
+
+    assert PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR not in expected_selectors
+    assert len(expected_selectors) == len(set(expected_selectors))
+    assert set(expected_selectors) == declared_nondefault_selectors
 
 
 def test_published_full_suite_fixture_selector_matches_tracked_fixture_inventory() -> None:
