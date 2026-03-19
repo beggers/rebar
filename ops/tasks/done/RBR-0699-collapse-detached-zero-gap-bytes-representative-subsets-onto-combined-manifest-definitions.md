@@ -1,6 +1,6 @@
 # RBR-0699: Collapse detached zero-gap bytes representative subsets onto combined manifest definitions
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -75,3 +75,9 @@ PY`
 - This simplification matches the current benchmark information flow:
   - `SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS` already acts as the canonical registry for public combined-manifest expectations; and
   - folding the remaining zero-gap bytes subset metadata onto those definition records removes one more parallel owner layer without changing the published benchmark boundary.
+
+## Completion
+- 2026-03-19: Added a definition-owned `zero_gap_bytes_representative_subsets` field on `SourceTreeCombinedManifestExpectationDefinition` and moved the detached zero-gap bytes subset groupings for `wider-ranged-repeat-quantified-group-boundary`, `open-ended-quantified-group-boundary`, and `branch-local-backreference-boundary` onto their owning manifest definitions.
+- Deleted the detached top-level bytes table from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` and updated the zero-gap bytes promotion tests to derive subset ids from definition-owned metadata while deriving manifest counts from the combined case / target manifest path instead of detached `100` / `72` / `30` literals.
+- The task prose claimed eleven live subset groupings, but the checked-in table actually held twelve (`6` wider-ranged-repeat, `5` open-ended, `1` branch-local-backreference); this cleanup preserved the live twelve-grouping contract exactly instead of silently collapsing any subset semantics.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, the inline source probe from the task, and `bash -lc "! rg -n 'ZERO_GAP_BYTES_CASES' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`.
