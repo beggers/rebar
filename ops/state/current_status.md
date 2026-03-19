@@ -9,17 +9,17 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-Published parity is 1310/1310 cases across 110 manifests with 0 honest gaps; the benchmark publication is 735/735 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
+Published parity is 1310/1318 cases across 111 manifests with 8 honest gaps; the benchmark publication is 735/735 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- `RBR-0649`: publish the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template `str` correctness pack, moving the published correctness report from `1310` total cases across `110` manifests to `1318` across `111`.
+- `RBR-0651`: convert the newly published broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template `str` slice to real parity on the shared replacement surface, moving the expanded correctness report from `1318` total / `1310` passed / `8` `unimplemented` across `111` manifests to `1318` / `1318` / `0`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
 - The published benchmark surface is still bounded at 735 workloads, so zero known gaps does not yet imply broad performance coverage.
 
 ## Compatibility Heuristic
-The reports are clean inside a narrow slice: 1310 correctness cases carry 0 honest gaps, and 735 benchmark workloads are measured through the source-tree shim; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
+The reports stay honest inside a narrow slice: 1310 of 1318 correctness cases pass, 8 remain explicit `unimplemented`, and 735 benchmark workloads are measured through the source-tree shim; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -310,7 +310,7 @@ The reports are clean inside a narrow slice: 1310 correctness cases carry 0 hone
 - Tracked state, task queue directories, and seeded ready tasks under `ops/`.
 
 ## What Does Not Exist Yet
-- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 110 manifests and 1310 cases, with 1310 passes and 0 honest `unimplemented` outcomes inside that published slice, so that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
+- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 111 manifests and 1318 cases, with 1310 passes and 8 honest `unimplemented` outcomes inside that published slice, so that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree shim while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
 - A primary benchmark publication: `reports/benchmarks/latest.py` now covers 735 workloads across 30 manifests with 735 real `rebar` timings and 0 explicit known gaps, so the published benchmark surface remains bounded.

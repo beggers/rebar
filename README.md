@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published parity is 1310/1310 cases across 110 manifests with 0 honest gaps; the benchmark publication is 735/735 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | `RBR-0649` should publish the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template `str` pack on the shared correctness path in `python/rebar_harness/correctness.py`, `tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_replacement_workflows.py`, `tests/conformance/correctness_expectations.py`, `tests/conformance/test_combined_correctness_scorecards.py`, `tests/python/test_fixture_backed_replacement_parity_suite.py`, and `reports/correctness/latest.py`, so the combined report moves from `1310` total cases across `110` manifests to `1318` total cases across `111` manifests while reopening the missing `{1,4}` nested replacement-template slice on the ordinary shared replacement surface and publishing its live `rebar` result honestly. |
-| Work queue | `1` ready, `0` in progress, `648` done, `0` blocked |
+| Delivery estimate | Published parity is 1310/1318 cases across 111 manifests with 8 honest gaps; the benchmark publication is 735/735 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
+| Current milestone | `RBR-0651` should turn the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template `str` rows on the shared replacement path in `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_fixture_backed_replacement_parity_suite.py`, and `reports/correctness/latest.py` into real Rust-backed parity, so the expanded combined report moves from `1318` total / `1310` passed / `8` `unimplemented` across `111` manifests to `1318` / `1318` / `0` while keeping that slice on the ordinary replacement surface before later Python-path benchmark catch-up reopens the family. |
+| Work queue | `1` ready, `0` in progress, `650` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1310` |
+| Published cases | `1318` |
 | Passing in published slice | `1310` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `0` |
-| Covered manifests | `110` |
+| Honest gaps (`unimplemented`) | `8` |
+| Covered manifests | `111` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published parity is 1310/1310 cases across 110 manifests with 0 honest gaps; the benchmark publication is 735/735 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published parity is 1310/1318 cases across 111 manifests with 8 honest gaps; the benchmark publication is 735/735 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0649`: publish the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template `str` correctness pack, moving the published correctness report from `1310` total cases across `110` manifests to `1318` across `111`.
+- `RBR-0651`: convert the newly published broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template `str` slice to real parity on the shared replacement surface, moving the expanded correctness report from `1318` total / `1310` passed / `8` `unimplemented` across `111` manifests to `1318` / `1318` / `0`.
 
 ### Current Risks
 
@@ -55,7 +55,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The current publication is fully green inside its tracked slice, but that slice is still bounded rather than near-full `re` parity. The next bounded follow-on is `RBR-0649`, which reopens correctness publication on the broader `{1,4}` nested replacement-template frontier.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The current publication is still narrow and no longer fully green after the latest broader `{1,4}` nested replacement-template publication: 1310 of 1318 cases pass, with 8 honest gaps. The next bounded follow-on is `RBR-0651`, which converts that slice to real parity on the shared replacement surface.
 
 The benchmark story is similarly early. The clearest trustworthy positive signal today is still the tiny parser compile-proxy slice, where the 8 parser workloads are 2.7302x faster on median than CPython. The broader module-facing publication still runs through the source-tree shim and sits at 0.0754x median, so it is methodology signal rather than a general speed claim.
 
