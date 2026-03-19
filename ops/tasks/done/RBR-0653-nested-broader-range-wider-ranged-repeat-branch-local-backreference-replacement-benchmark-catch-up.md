@@ -1,6 +1,6 @@
 # RBR-0653: Catch the nested broader-range wider-ranged-repeat branch-local-backreference replacement-template slice up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -49,3 +49,4 @@ Created: 2026-03-19
   - `tests/benchmarks/benchmark_expectations.py` already publishes the adjacent broader `{1,4}` callable-replacement slice on the same owner path and currently carries no corresponding `nested-group-replacement-boundary` expectation for the non-callable template slice, so the new benchmark work can stay on the shared expectation surface without another synthesis pass;
   - `tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_replacement_workflows.py` and the ready `RBR-0651` task already pin the exact patterns, replacement templates, haystacks, and representative lower-bound / first-match-only / upper-bound owner shapes this benchmark follow-on should mirror; and
   - `reports/benchmarks/latest.py` currently publishes `nested-group-replacement-boundary` at `32` total workloads / `32` measured workloads / `0` known gaps and the combined source-tree report at `735` / `735` / `0`, so the expected `36`-workload manifest and `739`-workload combined target are concrete before implementation starts.
+- 2026-03-19 completion: Added the four `{1,4}` replacement-template `str` workloads to `benchmarks/workloads/nested_group_replacement_boundary.py`, wired the shared `broader-range-branch-local-backreference` source-tree slice in `tests/benchmarks/benchmark_expectations.py`, and added focused zero-gap representative assertions in the source-tree scorecard tests. Verified `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`39 passed, 1140 subtests`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_replacement_boundary.py --report .rebar/tmp/rbr-0653-nested-broader-range-wider-ranged-repeat-branch-local-backreference-replacement-benchmarks.py` (`36` total / `36` measured / `0` gaps), and regenerated the tracked `reports/benchmarks/latest.py`, which now publishes `nested-group-replacement-boundary` at `36` / `36` / `0` and the combined source-tree report at `739` / `739` / `0` with the four new rows measured through the source-tree shim.

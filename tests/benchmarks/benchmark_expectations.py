@@ -1462,6 +1462,42 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
     ),
     _combined_slice_expectation(
         manifest_id="nested-group-replacement-boundary",
+        slice_id="broader-range-branch-local-backreference",
+        required_syntax_features=(
+            "branch-local-backreferences",
+            "replacement-template",
+            "quantifiers",
+            "counted-repeats",
+            "ranged-repeats",
+        ),
+        excluded_syntax_features=("conditionals",),
+        required_categories=("broader-range",),
+        expected_workload_ids=(
+            "module-sub-template-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
+            "module-subn-template-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
+            "pattern-sub-template-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-all-c-purged-str",
+            "pattern-subn-template-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-c-branch-first-match-only-purged-str",
+        ),
+        expected_patterns={
+            r"a((b|c){1,4})\2d",
+            r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"abbd", "abbbdaccd", "zzacccccdzz", "zzacccccdabbbdzz"},
+        required_row_categories=(
+            "nested-group",
+            "alternation",
+            "replacement",
+            "template",
+            "branch-local",
+            "quantified",
+            "ranged-repeat",
+            "counted-repeat",
+            "broader-range",
+        ),
+    ),
+    _combined_slice_expectation(
+        manifest_id="nested-group-replacement-boundary",
         slice_id="open-ended-branch-local-backreference",
         required_syntax_features=(
             "branch-local-backreferences",
