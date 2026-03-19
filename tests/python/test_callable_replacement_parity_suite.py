@@ -128,18 +128,40 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-first-match-only-long-branch-str",
                 "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-upper-bound-mixed-str",
                 "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-b-branch-first-match-only-str",
+                "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-lower-bound-short-branch-bytes",
+                "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-first-match-only-long-branch-bytes",
+                "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-mixed-branches-bytes",
+                "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-upper-bound-b-branch-first-match-only-bytes",
+                "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-mixed-branches-bytes",
+                "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-first-match-only-long-branch-bytes",
+                "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-upper-bound-mixed-bytes",
+                "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-b-branch-first-match-only-bytes",
             }
         ),
         expected_compile_patterns=frozenset(
             {
                 r"a(((bc|b)c){1,4})d",
                 r"a(?P<outer>(?:(?P<inner>bc|b)c){1,4})d",
+                rb"a(((bc|b)c){1,4})d",
+                rb"a(?P<outer>(?:(?P<inner>bc|b)c){1,4})d",
             }
         ),
-        expected_operation_helper_counts=CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS,
-        expected_text_models=STR_ONLY_TEXT_MODELS,
+        expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
+        expected_text_models=MIXED_TEXT_MODELS,
         expected_near_miss_patterns=frozenset(),
         has_near_miss_matrix=False,
+        pending_rebar_case_ids=frozenset(
+            {
+                "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-lower-bound-short-branch-bytes",
+                "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-first-match-only-long-branch-bytes",
+                "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-mixed-branches-bytes",
+                "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-numbered-upper-bound-b-branch-first-match-only-bytes",
+                "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-mixed-branches-bytes",
+                "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-first-match-only-long-branch-bytes",
+                "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-upper-bound-mixed-bytes",
+                "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-b-branch-first-match-only-bytes",
+            }
+        ),
     ),
     CallableManifestSpec(
         manifest_id="conditional-group-exists-callable-replacement-workflows",
