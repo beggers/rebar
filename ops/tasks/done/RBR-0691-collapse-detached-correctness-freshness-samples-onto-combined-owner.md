@@ -1,6 +1,6 @@
 # RBR-0691: Collapse detached correctness freshness samples onto the combined owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -77,3 +77,7 @@ PY`
   - the file already owns `CorrectnessScorecardManifestExpectation`, `COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS`, and multiple `published_fixture_manifests()`-backed registry helpers, so the freshness path already has a natural owner;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardSuitesTest::test_tracked_report_keeps_sample_manifests_fresh tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_suite_registry_target_manifests_follow_default_fixture_order` currently passes (`2 passed, 141 subtests passed in 4.64s`); and
   - the inline source probe and final `rg` check in Acceptance currently fail exactly on this cleanup because the detached constant block is still present at the top of the file.
+
+## Completion Note
+- 2026-03-19: Deleted the detached tracked-report freshness table and its fourteen duplicated fixture-path/suite-id constants from `tests/conformance/test_combined_correctness_scorecards.py`, marked the seven sample manifests on the existing scorecard expectation owners, and derived the freshness reruns from published `FixtureManifest` records so each rerun now takes `path` and `suite_id` from manifest-owned metadata instead of a parallel top-of-file registry.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardSuitesTest::test_tracked_report_keeps_sample_manifests_fresh tests/conformance/test_combined_correctness_scorecards.py::CorrectnessScorecardRegistryContractTest::test_suite_registry_target_manifests_follow_default_fixture_order`, the inline source probe from Acceptance, and `bash -lc "! rg -n 'TRACKED_REPORT_FRESHNESS_CASES|NUMBERED_BACKREFERENCE_FIXTURE_PATH|NUMBERED_BACKREFERENCE_SUITE_ID|QUANTIFIED_ALTERNATION_BROADER_RANGE_FIXTURE_PATH|QUANTIFIED_ALTERNATION_BROADER_RANGE_SUITE_ID|QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATH|QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_SUITE_ID|NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_FIXTURE_PATH|NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_SUITE_ID|NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CALLABLE_REPLACEMENT_FIXTURE_PATH|NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CALLABLE_REPLACEMENT_SUITE_ID|NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_CALLABLE_REPLACEMENT_FIXTURE_PATH|NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_CALLABLE_REPLACEMENT_SUITE_ID|NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BACKTRACKING_HEAVY_CALLABLE_REPLACEMENT_FIXTURE_PATH|NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BACKTRACKING_HEAVY_CALLABLE_REPLACEMENT_SUITE_ID' tests/conformance/test_combined_correctness_scorecards.py"`.

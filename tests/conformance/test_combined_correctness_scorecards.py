@@ -14,132 +14,6 @@ from rebar_harness import correctness
 from rebar_harness.scorecard_io import build_cpython_baseline
 from tests.conftest import REPO_ROOT, run_harness_scorecard
 
-TRACKED_REPORT_PATH = correctness.SCORECARD_REPORT.published_path
-NUMBERED_BACKREFERENCE_FIXTURE_PATH = (
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "numbered_backreference_workflows.py"
-)
-NUMBERED_BACKREFERENCE_SUITE_ID = "match.numbered_backreference"
-QUANTIFIED_ALTERNATION_BROADER_RANGE_FIXTURE_PATH = (
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "quantified_alternation_broader_range_workflows.py"
-)
-QUANTIFIED_ALTERNATION_BROADER_RANGE_SUITE_ID = (
-    "match.quantified_alternation_broader_range"
-)
-QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATH = (
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / "quantified_nested_group_alternation_branch_local_backreference_workflows.py"
-)
-QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_SUITE_ID = (
-    "match.quantified_nested_group_alternation_branch_local_backreference"
-)
-NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_FIXTURE_PATH = (
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / (
-        "nested_broader_range_open_ended_quantified_group_alternation_"
-        "branch_local_backreference_conditional_workflows.py"
-    )
-)
-NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_SUITE_ID = (
-    "match.nested_broader_range_open_ended_quantified_group_alternation_"
-    "branch_local_backreference_conditional"
-)
-NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CALLABLE_REPLACEMENT_FIXTURE_PATH = (
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / (
-        "nested_broader_range_open_ended_quantified_group_alternation_"
-        "branch_local_backreference_callable_replacement_workflows.py"
-    )
-)
-NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CALLABLE_REPLACEMENT_SUITE_ID = (
-    "collection.replacement.nested_broader_range_open_ended_quantified_group_"
-    "alternation_branch_local_backreference.callable"
-)
-NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_CALLABLE_REPLACEMENT_FIXTURE_PATH = (
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / (
-        "nested_broader_range_wider_ranged_repeat_quantified_group_"
-        "alternation_branch_local_backreference_conditional_"
-        "callable_replacement_workflows.py"
-    )
-)
-NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_CALLABLE_REPLACEMENT_SUITE_ID = (
-    "collection.replacement.nested_broader_range_wider_ranged_repeat_"
-    "quantified_group_alternation_branch_local_backreference_"
-    "conditional.callable"
-)
-NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BACKTRACKING_HEAVY_CALLABLE_REPLACEMENT_FIXTURE_PATH = (
-    REPO_ROOT
-    / "tests"
-    / "conformance"
-    / "fixtures"
-    / (
-        "nested_broader_range_wider_ranged_repeat_quantified_group_"
-        "alternation_backtracking_heavy_callable_replacement_workflows.py"
-    )
-)
-NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BACKTRACKING_HEAVY_CALLABLE_REPLACEMENT_SUITE_ID = (
-    "collection.replacement.nested_broader_range_wider_ranged_repeat_"
-    "quantified_group_alternation_backtracking_heavy.callable"
-)
-TRACKED_REPORT_FRESHNESS_CASES = (
-    (
-        "numbered-backreference",
-        NUMBERED_BACKREFERENCE_FIXTURE_PATH,
-        NUMBERED_BACKREFERENCE_SUITE_ID,
-    ),
-    (
-        "quantified-alternation-broader-range",
-        QUANTIFIED_ALTERNATION_BROADER_RANGE_FIXTURE_PATH,
-        QUANTIFIED_ALTERNATION_BROADER_RANGE_SUITE_ID,
-    ),
-    (
-        "quantified-nested-group-alternation-branch-local-backreference",
-        QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_FIXTURE_PATH,
-        QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_SUITE_ID,
-    ),
-    (
-        "nested-broader-range-open-ended-branch-local-backreference-conditional",
-        NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_FIXTURE_PATH,
-        NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_SUITE_ID,
-    ),
-    (
-        "nested-broader-range-open-ended-branch-local-backreference-callable-replacement",
-        NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CALLABLE_REPLACEMENT_FIXTURE_PATH,
-        NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CALLABLE_REPLACEMENT_SUITE_ID,
-    ),
-    (
-        "nested-broader-range-wider-ranged-repeat-branch-local-backreference-conditional-callable-replacement",
-        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_CALLABLE_REPLACEMENT_FIXTURE_PATH,
-        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_CALLABLE_REPLACEMENT_SUITE_ID,
-    ),
-    (
-        "nested-broader-range-wider-ranged-repeat-backtracking-heavy-callable-replacement",
-        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BACKTRACKING_HEAVY_CALLABLE_REPLACEMENT_FIXTURE_PATH,
-        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_BACKTRACKING_HEAVY_CALLABLE_REPLACEMENT_SUITE_ID,
-    ),
-)
-
-
 from rebar_harness.correctness import (
     CpythonReAdapter,
     FixtureCase,
@@ -151,10 +25,13 @@ from rebar_harness.correctness import (
     published_fixture_manifests,
 )
 
+TRACKED_REPORT_PATH = correctness.SCORECARD_REPORT.published_path
+
 
 @dataclass(frozen=True)
 class CorrectnessScorecardManifestExpectation:
     representative_case_ids: tuple[str, ...]
+    tracked_report_freshness_sample: bool = False
 
 
 COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
@@ -277,6 +154,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "numbered-backreference-segment-module-search-str",
             "numbered-backreference-prefix-pattern-search-str",
         ),
+        tracked_report_freshness_sample=True,
     ),
     "grouped-segment-workflows": CorrectnessScorecardManifestExpectation(
         representative_case_ids=(
@@ -606,6 +484,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-second-iteration-mixed-branches-bytes",
             "quantified-nested-group-alternation-branch-local-named-backreference-pattern-fullmatch-no-match-bytes",
         ),
+        tracked_report_freshness_sample=True,
     ),
     "quantified-nested-group-alternation-branch-local-backreference-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
         representative_case_ids=(
@@ -670,6 +549,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-named-mixed-branches-bytes",
             "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-bytes",
         ),
+        tracked_report_freshness_sample=True,
     ),
     "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-replacement-workflows": CorrectnessScorecardManifestExpectation(
         representative_case_ids=(
@@ -746,6 +626,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-mixed-branches-workflow-bytes",
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-pattern-fullmatch-no-match-below-lower-bound-workflow-bytes",
         ),
+        tracked_report_freshness_sample=True,
     ),
     "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows": CorrectnessScorecardManifestExpectation(
         representative_case_ids=(
@@ -790,6 +671,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-mixed-branches-bytes",
             "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-bytes",
         ),
+        tracked_report_freshness_sample=True,
     ),
     "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-callable-replacement-workflows": CorrectnessScorecardManifestExpectation(
         representative_case_ids=(
@@ -1128,6 +1010,7 @@ QUANTIFIED_ALTERNATION_CORRECTNESS_SCORECARD_EXPECTATIONS = {
             "quantified-alternation-broader-range-named-pattern-fullmatch-no-match-below-lower-bound-bytes",
             "quantified-alternation-broader-range-named-pattern-fullmatch-no-match-overflow-bytes",
         ),
+        tracked_report_freshness_sample=True,
     ),
     "quantified-alternation-open-ended-workflows": CorrectnessScorecardManifestExpectation(
         representative_case_ids=(
@@ -1728,6 +1611,7 @@ NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_ALTERNATION_SCORECARD_
             "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-upper-bound-mixed-bytes",
             "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-backtracking-heavy-named-b-branch-first-match-only-bytes",
         ),
+        tracked_report_freshness_sample=True,
     ),
 }
 
@@ -2384,6 +2268,45 @@ def _correctness_scorecard_suite_definition(
             f"expected one of {sorted(_CORRECTNESS_SCORECARD_SUITES_BY_ID)}"
         )
     return suite
+
+
+@lru_cache(maxsize=1)
+def _tracked_report_freshness_manifest_ids() -> tuple[str, ...]:
+    manifest_ids: list[str] = []
+    seen_manifest_ids: set[str] = set()
+
+    for suite in CORRECTNESS_SCORECARD_SUITE_REGISTRY:
+        for manifest_id, expectation in suite.expectation_table.items():
+            if not expectation.tracked_report_freshness_sample:
+                continue
+            if manifest_id in seen_manifest_ids:
+                raise AssertionError(
+                    "duplicate tracked report freshness manifest owner for "
+                    f"{manifest_id!r}"
+                )
+            seen_manifest_ids.add(manifest_id)
+            manifest_ids.append(manifest_id)
+
+    return tuple(manifest_ids)
+
+
+@lru_cache(maxsize=1)
+def _tracked_report_freshness_manifests() -> tuple[FixtureManifest, ...]:
+    freshness_manifest_ids = set(_tracked_report_freshness_manifest_ids())
+    manifests = tuple(
+        manifest
+        for manifest in published_fixture_manifests()
+        if manifest.manifest_id in freshness_manifest_ids
+    )
+    missing_manifest_ids = sorted(
+        freshness_manifest_ids - {manifest.manifest_id for manifest in manifests}
+    )
+    if missing_manifest_ids:
+        raise AssertionError(
+            "tracked report freshness sample manifests drifted from "
+            f"published_fixture_manifests(): missing {missing_manifest_ids}"
+        )
+    return manifests
 
 
 @lru_cache(maxsize=None)
@@ -3570,11 +3493,11 @@ class CorrectnessScorecardSuitesTest(unittest.TestCase):
     def test_tracked_report_keeps_sample_manifests_fresh(
         self,
     ) -> None:
-        for label, fixture_path, suite_id in TRACKED_REPORT_FRESHNESS_CASES:
-            with self.subTest(manifest=label):
+        for manifest in _tracked_report_freshness_manifests():
+            with self.subTest(manifest_id=manifest.manifest_id):
                 self._assert_tracked_report_keeps_manifest_fresh(
-                    fixture_path,
-                    suite_id,
+                    manifest.path,
+                    manifest.suite_id,
                 )
 
 
