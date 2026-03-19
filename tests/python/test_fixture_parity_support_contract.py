@@ -191,25 +191,6 @@ SELECTOR_EXPECTATIONS = (
         ),
         id="conditional-replacement",
     ),
-    pytest.param(
-        CALLABLE_REPLACEMENT_FIXTURE_SELECTOR,
-        (
-            "conditional_group_exists_callable_replacement_workflows.py",
-            "grouped_alternation_callable_replacement_workflows.py",
-            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-            "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
-            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
-            "nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-            "nested_group_alternation_callable_replacement_workflows.py",
-            "nested_group_callable_replacement_workflows.py",
-            "nested_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-            "quantified_nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
-            "quantified_nested_group_alternation_callable_replacement_workflows.py",
-            "quantified_nested_group_callable_replacement_workflows.py",
-        ),
-        id="callable-replacement",
-    ),
 )
 def _duplicate_items(counter: Counter[str]) -> list[str]:
     return sorted(item for item, count in counter.items() if count > 1)
@@ -504,6 +485,22 @@ def test_shared_correctness_fixture_selectors_resolve_expected_published_paths(
     assert tuple(path.name for path in selected_paths) == expected_filenames
     assert set(selected_paths).issubset(set(published_full_suite_paths))
     assert all(path.is_relative_to(CORRECTNESS_FIXTURES_ROOT) for path in selected_paths)
+
+
+def test_callable_replacement_selector_tracks_published_callable_manifests() -> None:
+    selected_paths = select_correctness_fixture_paths(CALLABLE_REPLACEMENT_FIXTURE_SELECTOR)
+    published_callable_paths = tuple(
+        manifest.path
+        for manifest in published_fixture_manifests()
+        if manifest.manifest_id.endswith("-callable-replacement-workflows")
+    )
+    expected_paths = tuple(sorted(published_callable_paths, key=lambda path: path.name))
+
+    assert expected_paths
+    assert selected_paths == expected_paths
+    assert tuple(path.name for path in selected_paths) == tuple(
+        path.name for path in expected_paths
+    )
 
 
 def test_unknown_correctness_fixture_selector_raises_clear_error() -> None:
