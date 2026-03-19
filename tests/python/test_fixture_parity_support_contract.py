@@ -43,11 +43,6 @@ from tests.python.fixture_parity_support import (
     OPEN_ENDED_ALTERNATION_BYTES_CASES,
     OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
     OPEN_ENDED_CONDITIONAL_BYTES_CASES,
-    _apply_match_accessor,
-    _capture_match_accessor_error,
-    _invalid_match_group_references,
-    _match_api_templates,
-    _valid_match_group_references,
     FixtureBundle,
     FixtureBundleSpec,
     RecordingNativeBoundary,
@@ -73,7 +68,6 @@ from tests.python.fixture_parity_support import (
     fixture_cases_from_bundles,
     load_fixture_bundles,
     load_published_fixture_bundles,
-    manifest_case_ids,
     ordered_manifest_cases_from_bundles,
     partition_direct_bytes_follow_on_case_buckets,
     published_fixture_bundle_by_manifest_id,
@@ -873,7 +867,9 @@ def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract() 
             ("pattern_call", "fullmatch"): 12,
         }
     )
-    assert tuple(case.case_id for case in bundle.cases) == manifest_case_ids(bundle)
+    assert tuple(case.case_id for case in bundle.cases) == tuple(
+        case.case_id for case in bundle.manifest.cases
+    )
     assert {
         isinstance(case_pattern(case), str)
         for case in bundle.cases
@@ -1587,13 +1583,15 @@ def test_bundle_pattern_projection_and_case_source_payloads_cover_published_fixt
     assert cases_by_id["module-sub-grouping-template"].source_kwargs == {}
 
 
-def test_manifest_case_helpers_cover_bundle_manifest_order_and_unselected_rows() -> None:
+def test_ordered_manifest_cases_from_bundles_cover_manifest_order_and_unselected_rows() -> None:
     specs = _selected_case_bundle_specs()
     bundles = load_fixture_bundles(specs)
 
     for spec, bundle in zip(specs, bundles, strict=True):
         manifest = load_fixture_manifest(FIXTURES_DIR / spec.fixture_name)
-        assert manifest_case_ids(bundle) == tuple(case.case_id for case in manifest.cases)
+        assert tuple(case.case_id for case in bundle.manifest.cases) == tuple(
+            case.case_id for case in manifest.cases
+        )
 
     selected_case_ids = (
         "grouped-pattern-search-single-capture-str",
@@ -1628,7 +1626,9 @@ def _grouped_match_bundle_and_uncovered_case_ids(
     (bundle,) = load_fixture_bundles((spec,))
     selected_case_ids = frozenset(spec.selected_case_ids)
     uncovered_case_ids = tuple(
-        case_id for case_id in manifest_case_ids(bundle) if case_id not in selected_case_ids
+        case.case_id
+        for case in bundle.manifest.cases
+        if case.case_id not in selected_case_ids
     )
     return spec, bundle, uncovered_case_ids
 
@@ -2053,23 +2053,6 @@ def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_ca
         "open_ended_quantified_group_alternation_workflows.py",
     )
 
-
-def test_match_api_templates_include_combined_named_group_templates() -> None:
-    case = BRANCH_LOCAL_BACKREFERENCE_CASES[
-        "branch-local-named-backreference-pattern-fullmatch-str"
-    ]
-    pattern = str_case_pattern(case)
-    compiled = re.compile(pattern)
-
-    templates = _match_api_templates(
-        pattern,
-        group_count=compiled.groups,
-        group_names=tuple(compiled.groupindex),
-    )
-
-    assert r"<\g<outer>|\g<inner>>" in templates
-
-
 @pytest.mark.parametrize(
     "pattern",
     (
@@ -2263,79 +2246,11 @@ def test_match_parity_helpers_cover_bytes_match_object_contracts(
     assert_invalid_match_group_access_parity(observed, expected)
 
 
-def test_valid_match_group_references_include_bool_indexes_and_names() -> None:
-    match = re.fullmatch(r"(?P<word>a)(b)", "ab")
-
-    assert match is not None
-    assert _valid_match_group_references(match) == (0, 1, 2, False, True, "word")
-
-
-def test_invalid_match_group_references_avoid_existing_missing_name_collisions() -> None:
+def test_invalid_match_group_access_parity_handles_missing_name_collisions() -> None:
     match = re.fullmatch(r"(?P<missing>a)(?P<missing_group>b)", "ab")
 
     assert match is not None
-    assert _invalid_match_group_references(match) == (
-        -1,
-        3,
-        None,
-        (1,),
-        1.0,
-        b"missing",
-        "missing_group_group",
-    )
-
-
-@pytest.mark.parametrize(
-    ("accessor_name", "reference", "expected"),
-    (
-        pytest.param("group", 1, "ab", id="group"),
-        pytest.param("span", 1, (1, 3), id="span"),
-        pytest.param("start", 1, 1, id="start"),
-        pytest.param("end", 1, 3, id="end"),
-        pytest.param("getitem", 1, "ab", id="getitem"),
-    ),
-)
-def test_apply_match_accessor_dispatches_supported_accessors(
-    accessor_name: str,
-    reference: object,
-    expected: object,
-) -> None:
-    match = re.search(r"(ab)", "zabz")
-
-    assert match is not None
-    assert _apply_match_accessor(match, accessor_name, reference) == expected
-
-
-def test_apply_match_accessor_rejects_unknown_accessor() -> None:
-    match = re.search(r"(ab)", "zabz")
-
-    assert match is not None
-    with pytest.raises(AssertionError, match="unknown accessor 'unknown'"):
-        _apply_match_accessor(match, "unknown", 0)
-
-
-def test_capture_match_accessor_error_returns_underlying_exception_details() -> None:
-    match = re.search(r"(ab)", "zabz")
-
-    assert match is not None
-    observed_error = _capture_match_accessor_error(match, "group", 2)
-
-    with pytest.raises(IndexError) as expected:
-        match.group(2)
-
-    assert type(observed_error) is type(expected.value)
-    assert observed_error.args == expected.value.args
-
-
-def test_capture_match_accessor_error_rejects_accessors_that_succeed() -> None:
-    match = re.search(r"(ab)", "zabz")
-
-    assert match is not None
-    with pytest.raises(
-        AssertionError,
-        match=r"expected group\(0\) to raise for '\(ab\)'",
-    ):
-        _capture_match_accessor_error(match, "group", 0)
+    assert_invalid_match_group_access_parity(match, match)
 
 
 @pytest.mark.parametrize(

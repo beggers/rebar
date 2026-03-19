@@ -542,10 +542,6 @@ def published_fixture_paths_from_bundles(
     return tuple(sorted((bundle.manifest.path for bundle in bundles), key=lambda path: path.name))
 
 
-def manifest_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
-    return tuple(case.case_id for case in bundle.manifest.cases)
-
-
 def _manifest_bucket_case_ids(
     cases: Iterable[FixtureCase],
     *,
@@ -736,7 +732,7 @@ def assert_fixture_bundle_tracks_published_case_frontier(
             f"{overlapping_case_ids}"
         )
 
-    published_case_ids = manifest_case_ids(bundle)
+    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
     published_case_id_set = frozenset(published_case_ids)
     expected_case_id_set = selected_case_id_set | frozenset(
         ordered_expected_uncovered_case_ids
@@ -1044,6 +1040,7 @@ def assert_match_convenience_api_parity(
     expected: re.Match[str] | re.Match[bytes],
 ) -> None:
     group_names = tuple(expected.re.groupindex)
+    templates: list[str] = [r"<\g<0>>"]
 
     for group_index in range(expected.re.groups + 1):
         assert observed[group_index] == expected[group_index]
@@ -1051,11 +1048,34 @@ def assert_match_convenience_api_parity(
     for group_name in group_names:
         assert observed[group_name] == expected[group_name]
 
-    for template in _match_api_templates(
-        expected.re.pattern,
-        group_count=expected.re.groups,
-        group_names=group_names,
-    ):
+    if expected.re.groups >= 1:
+        templates.append(
+            "<"
+            + "|".join(
+                f"\\{group_index}" for group_index in range(1, expected.re.groups + 1)
+            )
+            + ">"
+        )
+        templates.append(
+            "<"
+            + "|".join(
+                f"\\g<{group_index}>" for group_index in range(expected.re.groups + 1)
+            )
+            + ">"
+        )
+    if len(group_names) >= 2:
+        templates.append(
+            "<" + "|".join(fr"\g<{group_name}>" for group_name in group_names) + ">"
+        )
+    templates.extend(fr"<\g<{group_name}>>" for group_name in group_names)
+
+    expanded_templates: tuple[str | bytes, ...]
+    if isinstance(expected.re.pattern, bytes):
+        expanded_templates = tuple(template.encode("ascii") for template in templates)
+    else:
+        expanded_templates = tuple(templates)
+
+    for template in expanded_templates:
         assert observed.expand(template) == expected.expand(template)
 
 
@@ -1063,10 +1083,23 @@ def assert_valid_match_group_access_parity(
     observed: object,
     expected: re.Match[str] | re.Match[bytes],
 ) -> None:
-    for reference in _valid_match_group_references(expected):
+    def access(match: object, accessor_name: str, reference: object) -> object:
+        if accessor_name == "getitem":
+            return match[reference]
+        return getattr(match, accessor_name)(reference)
+
+    references: list[object] = list(range(expected.re.groups + 1))
+    references.append(False)
+    if expected.re.groups >= 1:
+        references.append(True)
+    references.extend(expected.re.groupindex)
+
+    for reference in tuple(references):
         for accessor_name in _MATCH_ACCESSOR_NAMES:
-            assert _apply_match_accessor(observed, accessor_name, reference) == (
-                _apply_match_accessor(expected, accessor_name, reference)
+            assert access(observed, accessor_name, reference) == access(
+                expected,
+                accessor_name,
+                reference,
             )
 
 
@@ -1074,91 +1107,39 @@ def assert_invalid_match_group_access_parity(
     observed: object,
     expected: re.Match[str] | re.Match[bytes],
 ) -> None:
-    for reference in _invalid_match_group_references(expected):
-        for accessor_name in _MATCH_ACCESSOR_NAMES:
-            expected_error = _capture_match_accessor_error(expected, accessor_name, reference)
-            observed_error = _capture_match_accessor_error(observed, accessor_name, reference)
-
-            assert type(observed_error) is type(expected_error)
-            assert observed_error.args == expected_error.args
-
-
-def _match_api_templates(
-    pattern: str | bytes,
-    *,
-    group_count: int,
-    group_names: tuple[str, ...],
-) -> tuple[str | bytes, ...]:
-    templates = [r"<\g<0>>"]
-    if group_count >= 1:
-        templates.append(
-            "<" + "|".join(f"\\{group_index}" for group_index in range(1, group_count + 1)) + ">"
+    def capture_error(
+        match: object,
+        accessor_name: str,
+        reference: object,
+    ) -> BaseException:
+        try:
+            if accessor_name == "getitem":
+                match[reference]
+            else:
+                getattr(match, accessor_name)(reference)
+        except BaseException as error:  # noqa: BLE001 - parity helper compares exception details.
+            return error
+        raise AssertionError(
+            f"expected {accessor_name}({reference!r}) to raise for {match.re.pattern!r}"
         )
-        templates.append(
-            "<"
-            + "|".join(f"\\g<{group_index}>" for group_index in range(group_count + 1))
-            + ">"
-        )
-    if len(group_names) >= 2:
-        templates.append(
-            "<" + "|".join(fr"\g<{group_name}>" for group_name in group_names) + ">"
-        )
-    for group_name in group_names:
-        templates.append(fr"<\g<{group_name}>>")
 
-    if isinstance(pattern, bytes):
-        return tuple(template.encode("ascii") for template in templates)
-    return tuple(templates)
-
-
-def _valid_match_group_references(
-    expected: re.Match[str] | re.Match[bytes],
-) -> tuple[object, ...]:
-    references: list[object] = list(range(expected.re.groups + 1))
-    # CPython accepts bools here because they are int subclasses.
-    references.append(False)
-    if expected.re.groups >= 1:
-        references.append(True)
-    references.extend(expected.re.groupindex)
-    return tuple(references)
-
-
-def _invalid_match_group_references(
-    expected: re.Match[str] | re.Match[bytes],
-) -> tuple[object, ...]:
     missing_name = "missing"
     while missing_name in expected.re.groupindex:
         missing_name += "_group"
-    return (-1, expected.re.groups + 1, None, (1,), 1.0, b"missing", missing_name)
 
-
-def _apply_match_accessor(
-    match: object,
-    accessor_name: str,
-    reference: object,
-) -> object:
-    if accessor_name == "group":
-        return match.group(reference)
-    if accessor_name == "span":
-        return match.span(reference)
-    if accessor_name == "start":
-        return match.start(reference)
-    if accessor_name == "end":
-        return match.end(reference)
-    if accessor_name == "getitem":
-        return match[reference]
-    raise AssertionError(f"unknown accessor {accessor_name!r}")
-
-
-def _capture_match_accessor_error(
-    match: object,
-    accessor_name: str,
-    reference: object,
-) -> BaseException:
-    try:
-        _apply_match_accessor(match, accessor_name, reference)
-    except BaseException as error:  # noqa: BLE001 - parity helper compares exception details.
-        return error
-    raise AssertionError(
-        f"expected {accessor_name}({reference!r}) to raise for {match.re.pattern!r}"
+    invalid_references = (
+        -1,
+        expected.re.groups + 1,
+        None,
+        (1,),
+        1.0,
+        b"missing",
+        missing_name,
     )
+    for reference in invalid_references:
+        for accessor_name in _MATCH_ACCESSOR_NAMES:
+            expected_error = capture_error(expected, accessor_name, reference)
+            observed_error = capture_error(observed, accessor_name, reference)
+
+            assert type(observed_error) is type(expected_error)
+            assert observed_error.args == expected_error.args
