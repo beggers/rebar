@@ -372,17 +372,6 @@ def git_upstream_ref(config: dict[str, Any]) -> str:
     branch = str(policy.get("push_branch") or git_branch() or "main")
     return f"{remote}/{branch}"
 
-
-def git_ahead_count(config: dict[str, Any]) -> int | None:
-    ahead, _ = git_ahead_behind_counts(config)
-    return ahead
-
-
-def git_behind_count(config: dict[str, Any]) -> int | None:
-    _, behind = git_ahead_behind_counts(config)
-    return behind
-
-
 def git_ahead_behind_counts(config: dict[str, Any]) -> tuple[int | None, int | None]:
     upstream = git_upstream_ref(config)
     result = git_run("rev-list", "--left-right", "--count", f"HEAD...{upstream}")
