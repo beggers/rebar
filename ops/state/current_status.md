@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness is 1366/1366 cases across 113 manifests with 0 honest gaps; the benchmark publication is 763/763 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- No ready or in-progress feature follow-on currently survives after the latest queue drain.
+- `RBR-0692` is ready to publish the shared callable-replacement correctness pack for `a(((bc|b)c){2,})d` and `a(?P<outer>(?:(?P<inner>bc|b)c){2,})d`.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
