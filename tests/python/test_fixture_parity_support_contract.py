@@ -4,6 +4,7 @@ from collections import Counter
 from dataclasses import dataclass, fields
 import pathlib
 import re
+import textwrap
 from types import SimpleNamespace
 
 import pytest
@@ -27,6 +28,7 @@ from rebar_harness.correctness import (
     SIMPLE_BACKREFERENCE_FIXTURE_SELECTOR,
     WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
     load_fixture_manifest,
+    load_fixture_manifests,
     published_fixture_manifests,
     select_correctness_fixture_paths,
 )
@@ -258,6 +260,16 @@ def _tracked_fixture_paths() -> tuple[pathlib.Path, ...]:
 def _fixture_cases(fixture_name: str) -> dict[str, FixtureCase]:
     manifest = load_fixture_manifest(FIXTURES_DIR / fixture_name)
     return {case.case_id: case for case in manifest.cases}
+
+
+def _write_fixture_module(
+    tmp_path: pathlib.Path,
+    filename: str,
+    source: str,
+) -> pathlib.Path:
+    path = tmp_path / filename
+    path.write_text(textwrap.dedent(source), encoding="utf-8")
+    return path
 
 
 NAMED_GROUP_CASES = _fixture_cases("named_group_workflows.py")
@@ -1202,6 +1214,673 @@ def test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids() -> N
 
     for case in cases:
         assert case.manifest_id in manifest_ids
+
+
+def test_fixture_manifest_loader_materializes_callable_replacement_descriptors(
+    tmp_path: pathlib.Path,
+) -> None:
+    fixture_path = _write_fixture_module(
+        tmp_path,
+        "quantified_nested_group_callable_fixture.py",
+        """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "quantified-nested-group-callable-loader-contract",
+            "layer": "module_workflow",
+            "suite_id": "collection.replacement.quantified_nested_group.callable.contract",
+            "defaults": {
+                "text_model": "str",
+            },
+            "cases": [
+                {
+                    "id": "module-sub-callable-numbered-contract-str",
+                    "operation": "module_call",
+                    "family": "quantified_nested_group_numbered_callable_contract",
+                    "helper": "sub",
+                    "args": [
+                        r"a((bc)+)d",
+                        {
+                            "type": "callable_match_group",
+                            "group": 1,
+                            "suffix": "x",
+                        },
+                        "zzabcbcdzz",
+                    ],
+                    "categories": ["workflow", "callable-replacement", "quantified", "nested-group", "str"],
+                    "notes": [
+                        "Ensures Python-backed fixtures can materialize numbered callable replacement descriptors for quantified nested-group workflows."
+                    ],
+                },
+                {
+                    "id": "pattern-subn-callable-named-contract-str",
+                    "operation": "pattern_call",
+                    "family": "quantified_nested_group_named_callable_contract",
+                    "pattern": r"a(?P<outer>(?P<inner>bc)+)d",
+                    "helper": "subn",
+                    "args": [
+                        {
+                            "type": "callable_match_group",
+                            "group": "inner",
+                            "prefix": "<",
+                            "suffix": ">",
+                        },
+                        "zzabcbcdabcbcdzz",
+                        1,
+                    ],
+                    "categories": ["workflow", "callable-replacement", "quantified", "nested-group", "str"],
+                    "notes": [
+                        "Ensures Python-backed fixtures can materialize named callable replacement descriptors for quantified nested-group workflows."
+                    ],
+                },
+                {
+                    "id": "module-sub-callable-constant-contract-str",
+                    "operation": "module_call",
+                    "family": "quantified_nested_group_constant_callable_contract",
+                    "helper": "sub",
+                    "args": [
+                        r"a((bc)+)d",
+                        {
+                            "type": "callable_constant",
+                            "value": "CONST",
+                        },
+                        "zzabcdzz",
+                    ],
+                    "categories": ["workflow", "callable-replacement", "quantified", "nested-group", "str"],
+                    "notes": [
+                        "Ensures Python-backed fixtures can materialize constant callable descriptors without falling back to raw dict payloads."
+                    ],
+                },
+            ],
+        }
+        """,
+    )
+
+    manifest = load_fixture_manifest(fixture_path)
+    cases = manifest.cases
+
+    assert manifest.manifest_id == "quantified-nested-group-callable-loader-contract"
+    assert manifest.layer == "module_workflow"
+    assert (
+        manifest.suite_id
+        == "collection.replacement.quantified_nested_group.callable.contract"
+    )
+    assert [case.case_id for case in cases] == [
+        "module-sub-callable-numbered-contract-str",
+        "pattern-subn-callable-named-contract-str",
+        "module-sub-callable-constant-contract-str",
+    ]
+
+    numbered_case = cases[0]
+    assert numbered_case.helper == "sub"
+    assert numbered_case.args[0] == r"a((bc)+)d"
+    assert numbered_case.source_args == [
+        r"a((bc)+)d",
+        {
+            "type": "callable_match_group",
+            "group": 1,
+            "suffix": "x",
+        },
+        "zzabcbcdzz",
+    ]
+    assert numbered_case.source_kwargs == {}
+    assert callable(numbered_case.args[1])
+    numbered_match = re.search(r"a((bc)+)d", "zzabcbcdzz")
+    assert numbered_match is not None
+    assert numbered_case.args[1](numbered_match) == "bcbcx"
+    assert numbered_case.serialized_args()[1] == {
+        "type": "callable",
+        "module": "rebar_harness.correctness",
+        "qualname": "callable_match_group",
+    }
+
+    named_case = cases[1]
+    assert named_case.helper == "subn"
+    assert named_case.pattern_payload() == r"a(?P<outer>(?P<inner>bc)+)d"
+    assert named_case.source_args == [
+        {
+            "type": "callable_match_group",
+            "group": "inner",
+            "prefix": "<",
+            "suffix": ">",
+        },
+        "zzabcbcdabcbcdzz",
+        1,
+    ]
+    assert named_case.source_kwargs == {}
+    assert callable(named_case.args[0])
+    named_match = re.search(named_case.pattern_payload(), "zzabcbcdzz")
+    assert named_match is not None
+    assert named_case.args[0](named_match) == "<bc>"
+    assert named_case.serialized_args()[0] == {
+        "type": "callable",
+        "module": "rebar_harness.correctness",
+        "qualname": "callable_match_group",
+    }
+
+    constant_case = cases[2]
+    assert constant_case.helper == "sub"
+    assert constant_case.source_args == [
+        r"a((bc)+)d",
+        {
+            "type": "callable_constant",
+            "value": "CONST",
+        },
+        "zzabcdzz",
+    ]
+    assert constant_case.source_kwargs == {}
+    assert callable(constant_case.args[1])
+    constant_match = re.search(r"a((bc)+)d", "zzabcdzz")
+    assert constant_match is not None
+    assert constant_case.args[1](constant_match) == "CONST"
+    assert constant_case.serialized_args()[1] == {
+        "type": "callable",
+        "module": "rebar_harness.correctness",
+        "qualname": "callable_constant",
+    }
+
+
+def test_fixture_manifest_loader_materializes_bytes_callables_without_aliasing_defaults(
+    tmp_path: pathlib.Path,
+) -> None:
+    fixture_path = _write_fixture_module(
+        tmp_path,
+        "bytes_callable_fixture.py",
+        """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "bytes-callable-loader-contract",
+            "layer": "module_workflow",
+            "suite_id": "collection.replacement.bytes.callable.contract",
+            "defaults": {
+                "operation": "pattern_call",
+                "helper": "sub",
+                "text_model": "bytes",
+                "pattern_encoding": "latin-1",
+                "args": [
+                    {
+                        "type": "callable_match_group",
+                        "group": 1,
+                        "prefix": {
+                            "type": "bytes",
+                            "value": "<",
+                        },
+                        "suffix": {
+                            "type": "bytes",
+                            "value": ">",
+                        },
+                    },
+                    {
+                        "type": "bytes",
+                        "value": "zzabcbcdzz",
+                    },
+                ],
+                "kwargs": {
+                    "count": 1,
+                },
+            },
+            "cases": [
+                {
+                    "id": "pattern-sub-callable-match-group-default-a-bytes",
+                    "family": "bytes_callable_match_group_default",
+                    "pattern": r"a((bc)+)d",
+                },
+                {
+                    "id": "pattern-sub-callable-match-group-default-b-bytes",
+                    "family": "bytes_callable_match_group_default",
+                    "pattern": r"a((bc)+)d",
+                },
+                {
+                    "id": "pattern-sub-callable-constant-override-bytes",
+                    "family": "bytes_callable_constant_override",
+                    "pattern": r"a((bc)+)d",
+                    "args": [
+                        {
+                            "type": "callable_constant",
+                            "value": {
+                                "type": "bytes",
+                                "value": "CONST",
+                            },
+                        },
+                        {
+                            "type": "bytes",
+                            "value": "zzabcbcdzz",
+                        },
+                    ],
+                },
+            ],
+        }
+        """,
+    )
+
+    manifest = load_fixture_manifest(fixture_path)
+    cases = manifest.cases
+
+    assert manifest.manifest_id == "bytes-callable-loader-contract"
+    assert manifest.layer == "module_workflow"
+    assert manifest.suite_id == "collection.replacement.bytes.callable.contract"
+    assert [case.case_id for case in cases] == [
+        "pattern-sub-callable-match-group-default-a-bytes",
+        "pattern-sub-callable-match-group-default-b-bytes",
+        "pattern-sub-callable-constant-override-bytes",
+    ]
+
+    first_default_case, second_default_case, constant_case = cases
+
+    assert first_default_case.pattern_payload() == b"a((bc)+)d"
+    assert second_default_case.pattern_payload() == b"a((bc)+)d"
+    assert constant_case.pattern_payload() == b"a((bc)+)d"
+
+    assert first_default_case.args is not second_default_case.args
+    assert first_default_case.kwargs is not second_default_case.kwargs
+    assert first_default_case.source_args is not second_default_case.source_args
+    assert first_default_case.source_kwargs is not second_default_case.source_kwargs
+    assert first_default_case.source_args == [
+        {
+            "type": "callable_match_group",
+            "group": 1,
+            "prefix": {
+                "type": "bytes",
+                "value": "<",
+            },
+            "suffix": {
+                "type": "bytes",
+                "value": ">",
+            },
+        },
+        {
+            "type": "bytes",
+            "value": "zzabcbcdzz",
+        },
+    ]
+    assert first_default_case.source_kwargs == {"count": 1}
+    assert second_default_case.source_args == [
+        {
+            "type": "callable_match_group",
+            "group": 1,
+            "prefix": {
+                "type": "bytes",
+                "value": "<",
+            },
+            "suffix": {
+                "type": "bytes",
+                "value": ">",
+            },
+        },
+        {
+            "type": "bytes",
+            "value": "zzabcbcdzz",
+        },
+    ]
+    assert second_default_case.source_kwargs == {"count": 1}
+    assert callable(first_default_case.args[0])
+    assert callable(second_default_case.args[0])
+    assert first_default_case.args[0] is not second_default_case.args[0]
+    assert first_default_case.source_args[0] is not second_default_case.source_args[0]
+    assert first_default_case.args[1] == b"zzabcbcdzz"
+    assert first_default_case.serialized_args() == [
+        {
+            "type": "callable",
+            "module": "rebar_harness.correctness",
+            "qualname": "callable_match_group",
+        },
+        {
+            "encoding": "latin-1",
+            "value": "zzabcbcdzz",
+        },
+    ]
+    assert first_default_case.serialized_kwargs() == {"count": 1}
+
+    match = re.search(first_default_case.pattern_payload(), first_default_case.args[1])
+    assert match is not None
+    assert first_default_case.args[0](match) == b"<bcbc>"
+
+    first_default_case.args[1] = b"mutated"
+    first_default_case.kwargs["count"] = 0
+    first_default_case.source_args[0]["prefix"]["value"] = "["
+    first_default_case.source_args[1]["value"] = "mutated-source"
+    first_default_case.source_kwargs["count"] = 0
+    assert second_default_case.args[1] == b"zzabcbcdzz"
+    assert second_default_case.kwargs["count"] == 1
+    assert second_default_case.source_args[0]["prefix"]["value"] == "<"
+    assert second_default_case.source_args[1]["value"] == "zzabcbcdzz"
+    assert second_default_case.source_kwargs["count"] == 1
+    assert constant_case.kwargs["count"] == 1
+    assert constant_case.source_kwargs["count"] == 1
+
+    assert callable(constant_case.args[0])
+    assert constant_case.source_args == [
+        {
+            "type": "callable_constant",
+            "value": {
+                "type": "bytes",
+                "value": "CONST",
+            },
+        },
+        {
+            "type": "bytes",
+            "value": "zzabcbcdzz",
+        },
+    ]
+    constant_match = re.search(constant_case.pattern_payload(), constant_case.args[1])
+    assert constant_match is not None
+    assert constant_case.args[0](constant_match) == b"CONST"
+    assert constant_case.serialized_args()[0] == {
+        "type": "callable",
+        "module": "rebar_harness.correctness",
+        "qualname": "callable_constant",
+    }
+    assert constant_case.serialized_args()[1] == {
+        "encoding": "latin-1",
+        "value": "zzabcbcdzz",
+    }
+
+
+def test_fixture_case_pattern_payload_supports_encoding_override_and_clear_errors(
+    tmp_path: pathlib.Path,
+) -> None:
+    fixture_path = _write_fixture_module(
+        tmp_path,
+        "pattern_payload_contract.py",
+        """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "pattern-payload-contract",
+            "defaults": {
+                "operation": "compile",
+                "text_model": "bytes",
+                "pattern_encoding": "latin-1",
+            },
+            "cases": [
+                {
+                    "id": "compile-pattern-utf8-bytes",
+                    "pattern": "caf\\u00e9",
+                    "pattern_encoding": "utf-8",
+                },
+                {
+                    "id": "compile-pattern-invalid-text-model",
+                    "pattern": "abc",
+                    "text_model": "utf-16",
+                },
+                {
+                    "id": "compile-pattern-missing-pattern",
+                },
+            ],
+        }
+        """,
+    )
+
+    cases = load_fixture_manifest(fixture_path).cases
+    encoded_case, invalid_text_model_case, missing_pattern_case = cases
+
+    assert encoded_case.pattern == "caf\u00e9"
+    assert encoded_case.pattern_encoding == "utf-8"
+    assert encoded_case.pattern_payload() == b"caf\xc3\xa9"
+
+    with pytest.raises(ValueError, match=r"unsupported text model 'utf-16'"):
+        invalid_text_model_case.pattern_payload()
+
+    with pytest.raises(
+        ValueError,
+        match=r"case 'compile-pattern-missing-pattern' is missing a pattern payload",
+    ):
+        missing_pattern_case.pattern_payload()
+
+
+@pytest.mark.parametrize(
+    ("filename", "source", "expected_suite_id", "expected_layer", "expected_operation"),
+    (
+        pytest.param(
+            "parser_compile_default.py",
+            """
+            MANIFEST = {
+                "schema_version": 1,
+                "manifest_id": "parser-compile-default",
+                "cases": [
+                    {
+                        "id": "compile-case",
+                        "pattern": "abc",
+                    },
+                ],
+            }
+            """,
+            "parser.compile",
+            "parser_acceptance_and_diagnostics",
+            "compile",
+            id="parser-compile-default",
+        ),
+        pytest.param(
+            "module_workflow_default.py",
+            """
+            MANIFEST = {
+                "schema_version": 1,
+                "manifest_id": "module-workflow-default",
+                "layer": "module_workflow",
+                "defaults": {
+                    "operation": "module_call",
+                },
+                "cases": [
+                    {
+                        "id": "module-case",
+                    },
+                ],
+            }
+            """,
+            "module-workflow-default",
+            "module_workflow",
+            "module_call",
+            id="module-workflow-default",
+        ),
+        pytest.param(
+            "parser_non_compile_default.py",
+            """
+            MANIFEST = {
+                "schema_version": 1,
+                "manifest_id": "parser-non-compile-default",
+                "defaults": {
+                    "operation": "module_call",
+                },
+                "cases": [
+                    {
+                        "id": "parser-non-compile-case",
+                    },
+                ],
+            }
+            """,
+            "parser-non-compile-default",
+            "parser_acceptance_and_diagnostics",
+            "module_call",
+            id="parser-non-compile-default",
+        ),
+    ),
+)
+def test_fixture_manifest_defaults_suite_id_from_layer_and_operation(
+    tmp_path: pathlib.Path,
+    filename: str,
+    source: str,
+    expected_suite_id: str,
+    expected_layer: str,
+    expected_operation: str,
+) -> None:
+    fixture_path = _write_fixture_module(tmp_path, filename, source)
+
+    manifest = load_fixture_manifest(fixture_path)
+    cases = manifest.cases
+
+    assert manifest.suite_id == expected_suite_id
+    assert manifest.layer == expected_layer
+    assert len(cases) == 1
+    assert cases[0].suite_id == expected_suite_id
+    assert cases[0].layer == expected_layer
+    assert cases[0].operation == expected_operation
+
+
+@pytest.mark.parametrize(
+    ("filename", "source", "error_pattern"),
+    (
+        pytest.param(
+            "non_python_suffix.json",
+            """
+            MANIFEST = {
+                "schema_version": 1,
+                "manifest_id": "non-python-suffix",
+                "cases": [],
+            }
+            """,
+            r"fixture manifests must be Python modules",
+            id="non-python-suffix",
+        ),
+        pytest.param(
+            "unsupported_schema.py",
+            """
+            MANIFEST = {
+                "schema_version": 99,
+                "manifest_id": "unsupported-schema",
+                "cases": [],
+            }
+            """,
+            r"unsupported fixture schema version 99; expected 1",
+            id="unsupported-schema",
+        ),
+        pytest.param(
+            "non_dict_defaults.py",
+            """
+            MANIFEST = {
+                "schema_version": 1,
+                "manifest_id": "non-dict-defaults",
+                "defaults": ["not-a-dict"],
+                "cases": [],
+            }
+            """,
+            r"fixture manifest defaults must be an object",
+            id="non-dict-defaults",
+        ),
+    ),
+)
+def test_fixture_manifest_loader_rejects_invalid_module_shape_details(
+    tmp_path: pathlib.Path,
+    filename: str,
+    source: str,
+    error_pattern: str,
+) -> None:
+    fixture_path = _write_fixture_module(tmp_path, filename, source)
+
+    with pytest.raises(ValueError, match=error_pattern):
+        load_fixture_manifest(fixture_path)
+
+
+@pytest.mark.parametrize(
+    ("filename", "source", "error_pattern"),
+    (
+        pytest.param(
+            "missing_manifest.py",
+            "FIXTURE = {}",
+            r"is missing a MANIFEST value",
+            id="missing-manifest",
+        ),
+        pytest.param(
+            "non_dict_manifest.py",
+            "MANIFEST = ['not-a-dict']",
+            r"must be a dict",
+            id="non-dict-manifest",
+        ),
+    ),
+)
+def test_fixture_manifest_loader_rejects_missing_and_non_dict_manifest_values(
+    tmp_path: pathlib.Path,
+    filename: str,
+    source: str,
+    error_pattern: str,
+) -> None:
+    fixture_path = _write_fixture_module(tmp_path, filename, source)
+
+    with pytest.raises(ValueError, match=error_pattern):
+        load_fixture_manifest(fixture_path)
+
+
+@pytest.mark.parametrize(
+    ("first_module", "second_module", "error_pattern"),
+    (
+        pytest.param(
+            (
+                "duplicate_fixture_manifest_a.py",
+                """
+                MANIFEST = {
+                    "schema_version": 1,
+                    "manifest_id": "duplicate-correctness-manifest-id",
+                    "cases": [
+                        {
+                            "id": "compile-case-a",
+                            "pattern": "abc",
+                        },
+                    ],
+                }
+                """,
+            ),
+            (
+                "duplicate_fixture_manifest_b.py",
+                """
+                MANIFEST = {
+                    "schema_version": 1,
+                    "manifest_id": "duplicate-correctness-manifest-id",
+                    "cases": [
+                        {
+                            "id": "compile-case-b",
+                            "pattern": "def",
+                        },
+                    ],
+                }
+                """,
+            ),
+            r"duplicate fixture manifest id .*duplicate-correctness-manifest-id",
+            id="duplicate-manifest-id",
+        ),
+        pytest.param(
+            (
+                "duplicate_fixture_case_a.py",
+                """
+                MANIFEST = {
+                    "schema_version": 1,
+                    "manifest_id": "correctness-duplicate-case-a",
+                    "cases": [
+                        {
+                            "id": "duplicate-correctness-case-id",
+                            "pattern": "abc",
+                        },
+                    ],
+                }
+                """,
+            ),
+            (
+                "duplicate_fixture_case_b.py",
+                """
+                MANIFEST = {
+                    "schema_version": 1,
+                    "manifest_id": "correctness-duplicate-case-b",
+                    "cases": [
+                        {
+                            "id": "duplicate-correctness-case-id",
+                            "pattern": "def",
+                        },
+                    ],
+                }
+                """,
+            ),
+            r"duplicate fixture case id .*duplicate-correctness-case-id",
+            id="duplicate-case-id",
+        ),
+    ),
+)
+def test_fixture_manifest_loader_rejects_duplicate_ids(
+    tmp_path: pathlib.Path,
+    first_module: tuple[str, str],
+    second_module: tuple[str, str],
+    error_pattern: str,
+) -> None:
+    first_path = _write_fixture_module(tmp_path, *first_module)
+    second_path = _write_fixture_module(tmp_path, *second_module)
+
+    with pytest.raises(ValueError, match=error_pattern):
+        load_fixture_manifests([first_path, second_path])
 
 
 def _whole_manifest_backreference_bundle_specs() -> tuple[FixtureBundleSpec, ...]:
