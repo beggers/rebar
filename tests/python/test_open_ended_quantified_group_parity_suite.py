@@ -258,21 +258,13 @@ OPEN_ENDED_TRACE_BUNDLES = (
     OPEN_ENDED_ALTERNATION_BUNDLE,
     NESTED_OPEN_ENDED_ALTERNATION_BUNDLE,
 )
-DIRECT_BYTES_FOLLOW_ON_BUNDLE_SPECS = tuple(
-    (
-        published_fixture_bundle_by_manifest_id(FIXTURE_BUNDLES, spec.manifest_id),
-        spec.supplemental_cases,
-    )
-    for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
-)
-DIRECT_BYTES_FOLLOW_ON_BUNDLES = tuple(
-    bundle for bundle, _ in DIRECT_BYTES_FOLLOW_ON_BUNDLE_SPECS
-)
-
 
 COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_case_buckets(
     FIXTURE_BUNDLES,
-    DIRECT_BYTES_FOLLOW_ON_BUNDLES,
+    tuple(
+        published_fixture_bundle_by_manifest_id(FIXTURE_BUNDLES, spec.manifest_id)
+        for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
+    ),
 )
 OPEN_ENDED_QUANTIFIED_GROUP_SELECTED_CASE_IDS = tuple(
     case.case_id for bundle in FIXTURE_BUNDLES for case in bundle.cases
@@ -283,11 +275,16 @@ OPEN_ENDED_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS = {
     "shared-pattern-fullmatch": frozenset(case.case_id for case in PATTERN_CASES),
     **{
         f"{spec_id}-bytes-follow-on": frozenset(
-            case.case_id for case in bundle.cases if case.text_model == "bytes"
+            case.case_id
+            for case in published_fixture_bundle_by_manifest_id(
+                FIXTURE_BUNDLES,
+                follow_on_spec.manifest_id,
+            ).cases
+            if case.text_model == "bytes"
         )
-        for spec_id, bundle in zip(
+        for spec_id, follow_on_spec in zip(
             DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
-            DIRECT_BYTES_FOLLOW_ON_BUNDLES,
+            DIRECT_BYTES_FOLLOW_ON_SPECS,
             strict=True,
         )
     },
@@ -918,7 +915,7 @@ def test_bytes_cases_stay_explicit_with_expected_bundle_coverage(
         if case.text_model == "bytes"
     )
     direct_manifest_ids = frozenset(
-        bundle.manifest.manifest_id for bundle in DIRECT_BYTES_FOLLOW_ON_BUNDLES
+        follow_on_spec.manifest_id for follow_on_spec in DIRECT_BYTES_FOLLOW_ON_SPECS
     )
 
     assert spec.routes_through_generic_case_buckets == (
@@ -1003,14 +1000,17 @@ def test_generic_bytes_fixture_rows_run_through_generic_case_buckets(
 
 
 @pytest.mark.parametrize(
-    ("bundle", "supplemental_cases"),
-    DIRECT_BYTES_FOLLOW_ON_BUNDLE_SPECS,
+    "follow_on_spec",
+    DIRECT_BYTES_FOLLOW_ON_SPECS,
     ids=DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
 )
 def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
-    bundle: FixtureBundle,
-    supplemental_cases: tuple[SupplementalCase, ...],
+    follow_on_spec: object,
 ) -> None:
+    bundle = published_fixture_bundle_by_manifest_id(
+        FIXTURE_BUNDLES,
+        follow_on_spec.manifest_id,
+    )
     _, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
         bundle,
         compile_cases=COMPILE_CASES,
@@ -1019,7 +1019,7 @@ def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_c
     )
 
     assert bundle_bytes_cases
-    assert {case.pattern for case in supplemental_cases} == frozenset(
+    assert {case.pattern for case in follow_on_spec.supplemental_cases} == frozenset(
         case_pattern(case)
         for case in fixture_cases_for_operation((bundle,), "compile")
         if case.text_model == "bytes"
@@ -1140,7 +1140,13 @@ def test_open_ended_direct_bytes_follow_on_specs_keep_expected_manifest_pairings
 
 def test_open_ended_direct_bytes_follow_on_specs_resolve_to_expected_published_mixed_fixtures(
 ) -> None:
-    fixture_paths = tuple(bundle.manifest.path for bundle in DIRECT_BYTES_FOLLOW_ON_BUNDLES)
+    fixture_paths = tuple(
+        published_fixture_bundle_by_manifest_id(
+            FIXTURE_BUNDLES,
+            spec.manifest_id,
+        ).manifest.path
+        for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
+    )
     bundles = load_published_fixture_bundles(fixture_paths)
 
     assert tuple(bundle.manifest.manifest_id for bundle in bundles) == tuple(
@@ -1160,13 +1166,17 @@ def test_open_ended_direct_bytes_follow_on_specs_resolve_to_expected_published_m
 
 
 @pytest.mark.parametrize(
-    "bundle",
-    DIRECT_BYTES_FOLLOW_ON_BUNDLES,
+    "follow_on_spec",
+    DIRECT_BYTES_FOLLOW_ON_SPECS,
     ids=DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
 )
 def test_assert_direct_bytes_follow_on_bundle_routing_accepts_mixed_manifest_buckets(
-    bundle: FixtureBundle,
+    follow_on_spec: object,
 ) -> None:
+    bundle = published_fixture_bundle_by_manifest_id(
+        FIXTURE_BUNDLES,
+        follow_on_spec.manifest_id,
+    )
     compile_cases, module_cases, pattern_cases = (
         partition_direct_bytes_follow_on_case_buckets((bundle,), (bundle,))
     )
@@ -1426,13 +1436,17 @@ def test_mixed_text_model_manifest_helper_reports_direct_follow_on_order_drift(
 
 
 @pytest.mark.parametrize(
-    "bundle",
-    DIRECT_BYTES_FOLLOW_ON_BUNDLES,
+    "follow_on_spec",
+    DIRECT_BYTES_FOLLOW_ON_SPECS,
     ids=DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
 )
 def test_partition_direct_bytes_follow_on_case_buckets_drops_only_follow_on_bytes_rows(
-    bundle: FixtureBundle,
+    follow_on_spec: object,
 ) -> None:
+    bundle = published_fixture_bundle_by_manifest_id(
+        FIXTURE_BUNDLES,
+        follow_on_spec.manifest_id,
+    )
     compile_cases, module_cases, pattern_cases = (
         partition_direct_bytes_follow_on_case_buckets((bundle,), (bundle,))
     )
