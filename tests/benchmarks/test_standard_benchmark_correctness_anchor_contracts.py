@@ -7,10 +7,12 @@ from functools import cache
 import json
 import pathlib
 import re
+import shutil
 import sys
 import textwrap
 from types import SimpleNamespace
 from typing import Any
+from unittest import mock
 
 import pytest
 
@@ -40,6 +42,7 @@ OPEN_ENDED_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
 )
 
+from rebar_harness import benchmarks
 from rebar_harness.benchmarks import (
     BENCHMARK_WORKLOADS_ROOT,
     BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR,
@@ -67,6 +70,14 @@ from tests.python.fixture_parity_support import (
 )
 
 support = sys.modules[__name__]
+MATURIN = shutil.which("maturin")
+COMPILE_SMOKE_PROVENANCE_MANIFEST_PATH = select_benchmark_manifest_path(
+    COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR
+)
+_MISSING_MATURIN_REASON = (
+    "built-native mode unavailable because no `maturin` executable was found on PATH"
+)
+_MISSING_MATURIN_PATTERN = "no `maturin` executable was found on PATH"
 
 
 @pytest.fixture
@@ -127,6 +138,137 @@ def _write_test_manifest(
     path = tmp_path / filename
     path.write_text(textwrap.dedent(source), encoding="utf-8")
     return path
+
+
+def _build_minimal_built_native_scorecard() -> dict[str, object]:
+    return {
+        "summary": {
+            "total_workloads": 0,
+            "parser_workloads": 0,
+            "module_workloads": 0,
+            "regression_workloads": 0,
+            "measured_workloads": 0,
+            "known_gap_count": 0,
+        }
+    }
+
+
+def _assert_built_native_runner_uses_optional_report_path(
+    *,
+    runner: Callable[..., dict[str, object]],
+    expected_manifest_selector: str,
+    expected_smoke_only: bool,
+) -> None:
+    expected_manifest_paths = select_benchmark_manifest_paths(expected_manifest_selector)
+    scorecard = _build_minimal_built_native_scorecard()
+    explicit_report_path = (
+        REPO_ROOT / "reports" / "benchmarks" / "explicit-native-check.json"
+    )
+
+    with mock.patch.object(benchmarks, "run_benchmarks", return_value=scorecard) as mocked_run:
+        returned = runner()
+
+    assert returned is scorecard
+    mocked_run.assert_called_once_with(
+        manifest_paths=list(expected_manifest_paths),
+        report_path=None,
+        smoke_only=expected_smoke_only,
+        adapter_mode=benchmarks.BUILT_NATIVE_MODE,
+        allow_fallback=False,
+    )
+
+    with mock.patch.object(benchmarks, "run_benchmarks", return_value=scorecard) as mocked_run:
+        returned = runner(report_path=explicit_report_path)
+
+    assert returned is scorecard
+    mocked_run.assert_called_once_with(
+        manifest_paths=list(expected_manifest_paths),
+        report_path=explicit_report_path,
+        smoke_only=expected_smoke_only,
+        adapter_mode=benchmarks.BUILT_NATIVE_MODE,
+        allow_fallback=False,
+    )
+
+
+def _assert_built_native_cli_uses_optional_report_path(
+    tmp_path: pathlib.Path,
+    *,
+    flag: str,
+    runner_name: str,
+    report_name: str,
+) -> None:
+    scorecard = _build_minimal_built_native_scorecard()
+
+    with (
+        mock.patch.object(benchmarks, runner_name, return_value=scorecard) as mocked_runner,
+        mock.patch("builtins.print"),
+    ):
+        exit_code = benchmarks.main([flag])
+
+    assert exit_code == 0
+    mocked_runner.assert_called_once_with(report_path=None)
+
+    report_path = tmp_path / report_name
+    with (
+        mock.patch.object(benchmarks, runner_name, return_value=scorecard) as mocked_runner,
+        mock.patch("builtins.print"),
+    ):
+        exit_code = benchmarks.main([flag, "--report", str(report_path)])
+
+    assert exit_code == 0
+    mocked_runner.assert_called_once_with(report_path=report_path)
+
+
+def _assert_built_native_mode_requires_real_built_runtime(
+    report_path: pathlib.Path,
+    *,
+    runner: Callable[..., dict[str, object]],
+) -> None:
+    with mock.patch.object(
+        benchmarks,
+        "provision_built_native_runtime",
+        return_value=(None, None, _MISSING_MATURIN_REASON),
+    ):
+        with pytest.raises(
+            benchmarks.NativeBenchmarkProvisionError,
+            match=_MISSING_MATURIN_PATTERN,
+        ):
+            runner(report_path=report_path)
+
+    assert not report_path.exists()
+
+
+def _assert_built_native_combined_scorecard_fields(
+    scorecard: dict[str, object],
+    *,
+    expected_phase: str,
+    expected_selection_mode: str,
+    expected_manifest_count: int,
+) -> None:
+    implementation = scorecard["implementation"]
+    environment = scorecard["environment"]
+    artifacts = scorecard["artifacts"]
+
+    assert scorecard["schema_version"] == "1.0"
+    assert scorecard["phase"] == expected_phase
+    assert implementation["module_name"] == "rebar"
+    assert implementation["adapter_mode_requested"] == "built-native"
+    assert implementation["adapter_mode_resolved"] == "built-native"
+    assert implementation["build_mode"] == "built-native"
+    assert implementation["timing_path"] == "built-native"
+    assert implementation["native_module_loaded"] is True
+    assert implementation["native_module_name"] == "rebar._rebar"
+    assert implementation["native_build_tool"] == "maturin"
+    assert str(implementation["native_wheel"]).startswith("rebar-")
+    assert implementation["native_unavailable_reason"] is None
+    assert (
+        environment["execution_model"]
+        == "single-interpreter subprocess workload probes against a built native wheel"
+    )
+    assert artifacts["manifest"] is None
+    assert artifacts["manifest_id"] == "combined-benchmark-suite"
+    assert artifacts["selection_mode"] == expected_selection_mode
+    assert len(artifacts["manifests"]) == expected_manifest_count
 
 
 # Local anchor helpers stay in this file because this test module is their only consumer.
@@ -1697,6 +1839,206 @@ def test_default_benchmark_published_manifest_inventory_has_unique_manifest_and_
 
     for workload in workloads:
         assert workload.manifest_id in published_manifest_ids
+
+
+def test_built_native_smoke_runner_uses_explicit_report_paths_only() -> None:
+    _assert_built_native_runner_uses_optional_report_path(
+        runner=benchmarks.run_built_native_smoke_benchmarks,
+        expected_manifest_selector=benchmarks.BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR,
+        expected_smoke_only=True,
+    )
+
+
+def test_built_native_smoke_cli_uses_explicit_report_paths_only(
+    tmp_path: pathlib.Path,
+) -> None:
+    _assert_built_native_cli_uses_optional_report_path(
+        tmp_path,
+        flag="--native-smoke",
+        runner_name="run_built_native_smoke_benchmarks",
+        report_name="benchmarks-native-smoke.json",
+    )
+
+
+def test_built_native_smoke_mode_requires_real_built_runtime(
+    tmp_path: pathlib.Path,
+) -> None:
+    _assert_built_native_mode_requires_real_built_runtime(
+        tmp_path / "benchmarks-native-smoke.json",
+        runner=benchmarks.run_built_native_smoke_benchmarks,
+    )
+
+
+@pytest.mark.skipif(
+    MATURIN is None,
+    reason="built-native benchmark smoke requires a maturin executable on PATH",
+)
+def test_built_native_smoke_mode_writes_built_native_report(
+    tmp_path: pathlib.Path,
+) -> None:
+    report_path = tmp_path / "benchmarks-native-smoke.json"
+    scorecard = benchmarks.run_built_native_smoke_benchmarks(
+        report_path=report_path,
+    )
+    assert report_path.is_file()
+    _assert_built_native_combined_scorecard_fields(
+        scorecard,
+        expected_phase="phase2-module-boundary-suite",
+        expected_selection_mode="smoke",
+        expected_manifest_count=3,
+    )
+    assert scorecard["implementation"]["adapter"] == "rebar.module-surface"
+    assert scorecard["summary"]["total_workloads"] == 6
+    assert scorecard["summary"]["parser_workloads"] == 0
+    assert scorecard["summary"]["module_workloads"] == 6
+    assert scorecard["summary"]["regression_workloads"] == 0
+    assert scorecard["summary"]["measured_workloads"] == 6
+    assert scorecard["summary"]["known_gap_count"] == 0
+    assert [workload["id"] for workload in scorecard["workloads"]] == [
+        "pattern-search-literal-warm-hit",
+        "pattern-fullmatch-bytes-purged-hit",
+        "module-split-literal-warm-str",
+        "pattern-subn-literal-purged-bytes",
+        "module-search-inline-flag-warm-str-hit",
+        "pattern-fullmatch-ignorecase-purged-bytes-hit",
+    ]
+
+
+def test_run_benchmarks_falls_back_to_source_shim_when_build_tooling_is_unavailable(
+    tmp_path: pathlib.Path,
+) -> None:
+    report_path = tmp_path / "benchmarks.json"
+    with mock.patch.object(
+        benchmarks,
+        "provision_built_native_runtime",
+        return_value=(None, None, _MISSING_MATURIN_REASON),
+    ):
+        scorecard = benchmarks.run_benchmarks(
+            manifest_paths=[COMPILE_SMOKE_PROVENANCE_MANIFEST_PATH],
+            report_path=report_path,
+            adapter_mode=benchmarks.BUILT_NATIVE_MODE,
+        )
+
+    implementation = scorecard["implementation"]
+    assert implementation["adapter_mode_requested"] == "built-native"
+    assert implementation["adapter_mode_resolved"] == "source-tree-shim"
+    assert implementation["build_mode"] == "source-tree-shim"
+    assert implementation["timing_path"] == "source-tree-shim"
+    assert isinstance(implementation["native_module_loaded"], bool)
+    assert "maturin" in implementation["native_unavailable_reason"]
+    assert implementation["native_build_tool"] is None
+    assert implementation["native_wheel"] is None
+
+
+@pytest.mark.skipif(
+    MATURIN is None,
+    reason="built-native benchmark provenance smoke requires a maturin executable on PATH",
+)
+def test_run_benchmarks_reports_built_native_provenance_when_available(
+    tmp_path: pathlib.Path,
+) -> None:
+    scorecard = benchmarks.run_benchmarks(
+        manifest_paths=[COMPILE_SMOKE_PROVENANCE_MANIFEST_PATH],
+        report_path=tmp_path / "benchmarks-native.json",
+        adapter_mode=benchmarks.BUILT_NATIVE_MODE,
+    )
+
+    implementation = scorecard["implementation"]
+    assert implementation["adapter_mode_requested"] == "built-native"
+    assert implementation["adapter_mode_resolved"] == "built-native"
+    assert implementation["build_mode"] == "built-native"
+    assert implementation["timing_path"] == "built-native"
+    assert implementation["native_module_loaded"] is True
+    assert implementation["native_module_name"] == "rebar._rebar"
+    assert implementation["native_scaffold_status"] == "scaffold-only"
+    assert implementation["native_target_cpython_series"] == "3.12.x"
+    assert implementation["native_unavailable_reason"] is None
+    assert implementation["native_build_tool"] == "maturin"
+    assert str(implementation["native_wheel"]).startswith("rebar-")
+    assert (
+        scorecard["environment"]["execution_model"]
+        == "single-interpreter subprocess workload probes against a built native wheel"
+    )
+
+
+def test_built_native_full_runner_uses_explicit_report_paths_only() -> None:
+    _assert_built_native_runner_uses_optional_report_path(
+        runner=benchmarks.run_built_native_full_benchmarks,
+        expected_manifest_selector=benchmarks.PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR,
+        expected_smoke_only=False,
+    )
+
+
+def test_built_native_full_cli_uses_explicit_report_paths_only(
+    tmp_path: pathlib.Path,
+) -> None:
+    _assert_built_native_cli_uses_optional_report_path(
+        tmp_path,
+        flag="--native-full",
+        runner_name="run_built_native_full_benchmarks",
+        report_name="benchmarks-native-full.json",
+    )
+
+
+def test_built_native_full_mode_requires_real_built_runtime(
+    tmp_path: pathlib.Path,
+) -> None:
+    _assert_built_native_mode_requires_real_built_runtime(
+        tmp_path / "benchmarks-native-full.json",
+        runner=benchmarks.run_built_native_full_benchmarks,
+    )
+
+
+@pytest.mark.skipif(
+    MATURIN is None,
+    reason="built-native full-suite benchmark requires a maturin executable on PATH",
+)
+def test_built_native_full_mode_writes_built_native_report_with_known_gaps(
+    tmp_path: pathlib.Path,
+) -> None:
+    published_manifests = benchmarks.published_benchmark_manifests()
+    selected_workloads = [
+        workload
+        for manifest in published_manifests
+        for workload in manifest.workloads
+    ]
+    expected_total = len(selected_workloads)
+    expected_parser = sum(1 for workload in selected_workloads if workload.family == "parser")
+    expected_module = sum(1 for workload in selected_workloads if workload.family == "module")
+    expected_regression = sum(
+        1 for workload in selected_workloads if workload.manifest_id == "regression-matrix"
+    )
+
+    report_path = tmp_path / "benchmarks-native-full.json"
+    scorecard = benchmarks.run_built_native_full_benchmarks(
+        report_path=report_path,
+    )
+    assert report_path.is_file()
+    _assert_built_native_combined_scorecard_fields(
+        scorecard,
+        expected_phase="phase3-regression-stability-suite",
+        expected_selection_mode="full",
+        expected_manifest_count=len(published_manifests),
+    )
+    assert scorecard["summary"]["total_workloads"] == expected_total
+    assert scorecard["summary"]["parser_workloads"] == expected_parser
+    assert scorecard["summary"]["module_workloads"] == expected_module
+    assert scorecard["summary"]["regression_workloads"] == expected_regression
+
+    unimplemented_workloads = [
+        workload
+        for workload in scorecard["workloads"]
+        if workload["implementation_timing"]["status"] == "unimplemented"
+    ]
+    measured_workloads = [
+        workload
+        for workload in scorecard["workloads"]
+        if workload["implementation_timing"]["status"] == "measured"
+    ]
+    assert len(unimplemented_workloads) > 0
+    assert scorecard["summary"]["known_gap_count"] == len(unimplemented_workloads)
+    assert scorecard["summary"]["measured_workloads"] == len(measured_workloads)
+    assert len(measured_workloads) + len(unimplemented_workloads) == expected_total
 
 
 def test_standard_benchmark_manifest_materializes_callable_replacement_descriptors(

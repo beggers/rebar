@@ -1,8 +1,9 @@
 # RBR-0658: Collapse the detached built-native benchmark mode suite onto the shared benchmark anchor owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Delete `tests/benchmarks/test_built_native_benchmark_modes.py` by moving its remaining direct built-native smoke/full wrapper, CLI, and provenance coverage onto `tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py`, so direct `rebar_harness.benchmarks` API coverage lives under one shared benchmark-contract owner instead of a detached mode-only suite beside the existing anchor owner.
@@ -88,3 +89,8 @@ PY`
 - The ownership simplification matches the current benchmark harness shape:
   - `tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py` already owns shared benchmark selector inventory, manifest-loading, workload-selection, replacement-payload, and internal-probe contracts for `rebar_harness.benchmarks`; and
   - that owner already keeps the `BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR` inventory explicit, so absorbing the remaining direct native wrapper/CLI/provenance coverage there removes the last detached benchmark-mode suite without changing the tracked source-tree publication owner.
+
+## Completion Note
+- 2026-03-19: Moved the detached built-native smoke/full wrapper, CLI forwarding, strict provisioning failure, direct provenance fallback, and built-native report-shape coverage into `tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py`, keeping the new minimal-scorecard and shared native assertion helpers file-local on that owner suite.
+- 2026-03-19: Deleted `tests/benchmarks/test_built_native_benchmark_modes.py` outright after the shared benchmark-contract owner absorbed the direct `run_built_native_smoke_benchmarks(...)`, `run_built_native_full_benchmarks(...)`, `--native-smoke`, `--native-full`, and `COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR` coverage.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py` (`94 passed, 3 skipped in 0.27s`), the acceptance inline source probe (`ok`), `bash -lc "! rg --files tests/benchmarks | rg 'test_built_native_benchmark_modes\\.py$'"` (passes), and `git diff --name-status -- tests/benchmarks/test_built_native_benchmark_modes.py` (`D`).
