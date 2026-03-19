@@ -1,6 +1,6 @@
 # RBR-0700: Convert the nested broader-range open-ended backtracking-heavy callable-replacement bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -46,3 +46,9 @@ Created: 2026-03-19
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for numbered and named `rebar.sub(...)` calls on `rb"a(((bc|b)c){2,})d"` and `rb"a(?P<outer>(?:(?P<inner>bc|b)c){2,})d"`, so this bytes parity slice is not already satisfied in the current checkout;
   - `reports/correctness/latest.py` currently reports `1382` total / `1374` passed / `8` `unimplemented` across `114` manifests, and `collection.replacement.nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy.callable` at `16` total / `8` passed / `8` `unimplemented` with `text_models == ['bytes', 'str']`; and
   - `benchmarks/workloads/nested_group_callable_replacement_boundary.py` already owns the adjacent broader-range open-ended callable `str` benchmark rows after `RBR-0696`, so a later Python-path benchmark catch-up for this same bytes pair can stay on that existing manifest path instead of inventing another benchmark surface.
+
+## Completion
+- 2026-03-19: Added the missing Rust-backed bytes compile and callable-span path for `rb"a(((bc|b)c){2,})d"` and `rb"a(?P<outer>(?:(?P<inner>bc|b)c){2,})d"` in `crates/rebar-core/src/lib.rs`, exposed it through `crates/rebar-cpython/src/lib.rs`, and taught `python/rebar/__init__.py` to use that native bytes callback path on the shared callable surface.
+- Removed the eight bytes case ids for `nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows` from `tests/python/test_callable_replacement_parity_suite.py`, so the shared suite now treats them as ordinary parity coverage instead of pending `rebar` gaps.
+- Republished `reports/correctness/latest.py`; the tracked report now shows `1382` total / `1382` passed / `0` `unimplemented`, and `collection.replacement.nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy.callable` is `16` total / `16` passed / `0` `unimplemented` with mixed `bytes` / `str` coverage.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_callable_replacement_workflows.py --report .rebar/tmp/rbr-0700-nested-broader-range-open-ended-backtracking-heavy-callable-replacement-bytes-parity.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.

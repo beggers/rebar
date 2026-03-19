@@ -22,6 +22,7 @@ use rebar_core::{
     literal_find_spans as core_literal_find_spans, literal_match as core_literal_match,
     nested_alternation_branch_local_backreference_find_spans_str as core_nested_alternation_branch_local_backreference_find_spans_str,
     nested_alternation_find_spans_str as core_nested_alternation_find_spans_str,
+    nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_find_spans_bytes as core_nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_find_spans_bytes,
     nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_find_spans_str as core_nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_find_spans_str,
     nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_bytes as core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_bytes,
     nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_str as core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_str,
@@ -773,6 +774,37 @@ fn boundary_nested_broader_range_open_ended_quantified_group_alternation_backtra
 ) {
     let outcome =
         core_nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_find_spans_str(
+            pattern, flags, string, pos, endpos,
+        );
+    (
+        workflow_status(outcome.status),
+        outcome.pos,
+        outcome.endpos,
+        outcome.matches.iter().map(|matched| matched.span).collect(),
+        outcome
+            .matches
+            .into_iter()
+            .map(|matched| matched.group_spans)
+            .collect(),
+    )
+}
+
+#[pyfunction(signature = (pattern, flags, string, pos=0, endpos=None))]
+fn boundary_nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_finditer_bytes(
+    pattern: &[u8],
+    flags: i32,
+    string: &[u8],
+    pos: isize,
+    endpos: Option<isize>,
+) -> (
+    &'static str,
+    usize,
+    usize,
+    Vec<(usize, usize)>,
+    Vec<Vec<Option<(usize, usize)>>>,
+) {
+    let outcome =
+        core_nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_find_spans_bytes(
             pattern, flags, string, pos, endpos,
         );
     (
@@ -1629,6 +1661,10 @@ fn _rebar(module: &Bound<'_, PyModule>) -> PyResult<()> {
     )?)?;
     module.add_function(wrap_pyfunction!(
         boundary_nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_finditer,
+        module
+    )?)?;
+    module.add_function(wrap_pyfunction!(
+        boundary_nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_finditer_bytes,
         module
     )?)?;
     module.add_function(wrap_pyfunction!(
