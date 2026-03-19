@@ -12,7 +12,10 @@ import rebar
 
 from rebar_harness.correctness import (
     CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR,
+    CpythonReAdapter,
     FixtureCase,
+    RebarAdapter,
+    evaluate_case,
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
@@ -1657,6 +1660,31 @@ SUPPLEMENTAL_REPEATED_CASE_PARAMS = tuple(
 SUPPLEMENTAL_NEGATIVE_COUNT_CASE_PARAMS = tuple(
     pytest.param(case, id=case.id) for case in SUPPLEMENTAL_NEGATIVE_COUNT_CASES
 )
+PENDING_REBAR_REPLACEMENT_CASE_IDS = frozenset(
+    case.case_id
+    for surface in REPLACEMENT_SURFACES
+    for case in surface.replacement_cases
+    if "rebar" in _replacement_parity_case(case).unsupported_backends
+)
+PENDING_REBAR_REPLACEMENT_MANIFEST_IDS = frozenset(
+    case.manifest_id
+    for surface in REPLACEMENT_SURFACES
+    for case in surface.replacement_cases
+    if "rebar" in _replacement_parity_case(case).unsupported_backends
+)
+
+
+def _live_unimplemented_replacement_cases() -> tuple[FixtureCase, ...]:
+    cpython_adapter = CpythonReAdapter()
+    rebar_adapter = RebarAdapter()
+
+    return tuple(
+        case
+        for surface in REPLACEMENT_SURFACES
+        for case in surface.replacement_cases
+        if evaluate_case(case, cpython_adapter, rebar_adapter)["comparison"]
+        == "unimplemented"
+    )
 
 
 def _is_pending_bytes_follow_on_case(
@@ -1830,6 +1858,17 @@ def test_replacement_direct_test_buckets_cover_selected_frontier(
         selected_case_ids=_expected_selected_replacement_case_ids(surface),
         coverage_label=f"{surface.spec.id} replacement direct-test case-id buckets",
     )
+
+
+def test_pending_rebar_replacement_frontier_matches_live_unimplemented_cases() -> None:
+    live_unimplemented_cases = _live_unimplemented_replacement_cases()
+
+    assert {case.case_id for case in live_unimplemented_cases} == (
+        PENDING_REBAR_REPLACEMENT_CASE_IDS
+    )
+    assert {case.manifest_id for case in live_unimplemented_cases} == (
+        PENDING_REBAR_REPLACEMENT_MANIFEST_IDS
+    ) == {NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID}
 
 
 def test_mixed_replacement_manifest_routes_bytes_rows_through_shared_parity_surface(
