@@ -2053,16 +2053,6 @@ def test_compile_workflows_match_cpython(
     backend_name, backend = regex_backend
     pattern = case_pattern(case)
 
-    if backend_name == "rebar" and case.case_id == VERBOSE_BYTES_COMPILE_CASE_ID:
-        with pytest.raises(NotImplementedError) as missing_verbose:
-            backend.compile(pattern, case.flags or 0)
-
-        _assert_placeholder_message(
-            missing_verbose.value,
-            "rebar.compile() is a scaffold placeholder",
-        )
-        return
-
     compile_with_cpython_parity(
         backend_name,
         backend,
@@ -2652,8 +2642,15 @@ def test_source_package_compile_metadata_matches_pinned_literal_contract() -> No
 def test_source_package_verbose_compile_metadata_and_neighbor_gaps_remain_pinned() -> None:
     pattern = case_pattern(VERBOSE_COMPILE_CASE)
     assert isinstance(pattern, str)
+    bytes_pattern = pattern.encode("ascii")
 
     compiled, expected = _compile_verbose_regression_pattern("rebar", rebar)
+    compiled_bytes, expected_bytes = compile_with_cpython_parity(
+        "rebar",
+        rebar,
+        bytes_pattern,
+        int(VERBOSE_COMPILE_CASE.flags or 0),
+    )
 
     assert type(compiled) is rebar.Pattern
     assert compiled.pattern == expected.pattern == pattern
@@ -2664,19 +2661,23 @@ def test_source_package_verbose_compile_metadata_and_neighbor_gaps_remain_pinned
     assert compiled.groupindex == expected.groupindex == {"key": 1}
     assert rebar.compile(pattern, VERBOSE_COMPILE_CASE.flags or 0) is compiled
 
+    assert type(compiled_bytes) is rebar.Pattern
+    assert compiled_bytes.pattern == expected_bytes.pattern == bytes_pattern
+    assert compiled_bytes.flags == expected_bytes.flags == int(
+        re.MULTILINE | re.VERBOSE
+    )
+    assert compiled_bytes.groups == expected_bytes.groups == 1
+    assert compiled_bytes.groupindex == expected_bytes.groupindex == {"key": 1}
+    assert (
+        rebar.compile(bytes_pattern, int(VERBOSE_COMPILE_CASE.flags or 0))
+        is compiled_bytes
+    )
+
     with pytest.raises(NotImplementedError) as missing_verbose:
         rebar.compile(pattern, rebar.MULTILINE)
 
     _assert_placeholder_message(
         missing_verbose.value,
-        "rebar.compile() is a scaffold placeholder",
-    )
-
-    with pytest.raises(NotImplementedError) as bytes_variant:
-        rebar.compile(pattern.encode("ascii"), int(VERBOSE_COMPILE_CASE.flags or 0))
-
-    _assert_placeholder_message(
-        bytes_variant.value,
         "rebar.compile() is a scaffold placeholder",
     )
 

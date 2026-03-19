@@ -1,6 +1,6 @@
 # RBR-0706: Convert the module-workflow verbose compile bytes follow-on to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -50,3 +50,14 @@ Created: 2026-03-19
   - `tests/python/test_module_workflow_parity_suite.py` still special-cases `VERBOSE_BYTES_COMPILE_CASE_ID` as a `rebar`-only gap in `test_compile_workflows_match_cpython()` and still expects the same bytes verbose call to raise inside `test_source_package_verbose_compile_metadata_and_neighbor_gaps_remain_pinned()`;
   - `reports/correctness/latest.py` currently reports `1383` total / `1382` passed / `1` `unimplemented` across `114` manifests, and `module.workflow` at `13` total / `12` passed / `1` `unimplemented`; and
   - `benchmarks/workloads/regression_matrix.py` already owns the adjacent `regression-module-compile-verbose-purged` regression anchor for this verbose compile family, so later Python-path benchmark catch-up can stay on the existing manifest path instead of inventing another benchmark surface.
+
+## Completion
+- 2026-03-19: Added the exact verbose `bytes` compile classification behind `rebar._rebar` in `crates/rebar-core/src/lib.rs`, reusing the existing shared module-workflow path without widening into bytes verbose execution or any additional compile families.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the shared compile workflow now treats `workflow-compile-bytes-verbose-regression` as ordinary CPython-matching coverage, including cached repeat-compile reuse and the expected `pattern`/`flags`/`groups`/`groupindex` metadata, while keeping the adjacent `rebar.compile(pattern, rebar.MULTILINE)` gap pinned as unsupported.
+- Republished `reports/correctness/latest.py`; the tracked report now shows `1383` total / `1383` passed / `0` unimplemented overall, `module.workflow` at `13` / `13` / `0`, and both `module.workflow.bytes` and `module.workflow.compile` at `5` / `5` / `0`.
+- Verified with:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::test_standard_benchmark_manifest_keeps_expected_workloads_in_scope[compile-proxy:regression_matrix.py] tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::test_standard_benchmark_workloads_stay_anchored_to_published_correctness_cases[compile-proxy:regression_matrix.py] tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::test_standard_benchmark_workloads_stay_pinned_to_exact_case_ids[compile-proxy]`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0706-module-workflow-verbose-bytes-parity.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
