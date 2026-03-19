@@ -68,6 +68,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     fixture_cases_from_bundles,
+    invoke_bounded_pattern_case,
     load_fixture_bundles,
     load_published_fixture_bundles,
     ordered_manifest_cases_from_bundles,
@@ -2572,6 +2573,52 @@ def test_case_argument_helpers_cover_module_and_pattern_replacement_rows() -> No
     assert case_text_argument(module_case) == module_case.args[2]
     assert case_replacement_argument(pattern_case) == pattern_case.args[0]
     assert case_text_argument(pattern_case) == pattern_case.args[1]
+
+
+@pytest.mark.parametrize(
+    ("compiled_pattern", "case", "expected"),
+    (
+        pytest.param(
+            re.compile("abc"),
+            SimpleNamespace(helper="search", string="abcabc", bounds=(3, 6)),
+            ("abc", (3, 6)),
+            id="search-honors-pos-and-endpos",
+        ),
+        pytest.param(
+            re.compile("abc"),
+            SimpleNamespace(helper="match", string="xxabc", bounds=(0, 5)),
+            None,
+            id="match-does-not-search-forward",
+        ),
+        pytest.param(
+            re.compile("abc"),
+            SimpleNamespace(helper="fullmatch", string="abcx", bounds=(0, 4)),
+            None,
+            id="fullmatch-does-not-relax-to-prefix-match",
+        ),
+        pytest.param(
+            re.compile(rb"abc"),
+            SimpleNamespace(helper="search", string=b"zzabczzabc", bounds=(5, 10)),
+            (b"abc", (7, 10)),
+            id="bytes-search-honors-pos-and-endpos",
+        ),
+    ),
+)
+def test_invoke_bounded_pattern_case_preserves_helper_and_bound_semantics(
+    compiled_pattern: re.Pattern[str] | re.Pattern[bytes],
+    case: SimpleNamespace,
+    expected: tuple[str | bytes, tuple[int, int]] | None,
+) -> None:
+    observed = invoke_bounded_pattern_case(compiled_pattern, case)
+
+    if expected is None:
+        assert observed is None
+        return
+
+    expected_group0, expected_span = expected
+    assert observed is not None
+    assert observed.group(0) == expected_group0
+    assert observed.span() == expected_span
 
 
 def test_module_workflow_surface_bundle_contract_covers_verbose_compile_case() -> None:
