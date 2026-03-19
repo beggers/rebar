@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness is 1334/1342 cases across 112 manifests with 8 honest gaps; the benchmark publication is 747/747 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- Seed the next bounded Rust-backed follow-on; `RBR-0668` is landed, the publications are current at 1334/1342 correctness cases and 747/747 measured benchmark workloads, and no ready or in-progress task survives after the latest queue drain.
+- Land ready `RBR-0670` to convert the wider `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement `str` workflows behind `rebar._rebar`; the publications remain at 1334/1342 correctness cases and 747/747 measured benchmark workloads, and no ready feature follow-on survives beyond that parity head.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published correctness slice now covers 1342 cases across 112 manifests, with
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Seed the next bounded Rust-backed follow-on; `RBR-0668` is landed, the publications are current at 1334/1342 correctness cases and 747/747 measured benchmark workloads, and no ready or in-progress task survives after the latest queue drain.
+- Land ready `RBR-0670` to convert the wider `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement `str` workflows behind `rebar._rebar`; the publications remain at 1334/1342 correctness cases and 747/747 measured benchmark workloads, and no ready feature follow-on survives beyond that parity head.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
