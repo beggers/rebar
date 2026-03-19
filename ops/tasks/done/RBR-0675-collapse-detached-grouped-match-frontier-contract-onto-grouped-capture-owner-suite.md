@@ -1,8 +1,9 @@
 # RBR-0675: Collapse the detached grouped-match frontier contract onto the grouped-capture owner suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Move the remaining grouped-match published-frontier and ordered-row contract checks off `tests/python/test_fixture_parity_support_contract.py` and onto `tests/python/test_grouped_capture_parity_suite.py`, so the grouped-capture owner keeps the grouped-match selected-case and uncovered-case contract beside the bundle spec, tracked case ids, and `ordered_manifest_cases_from_bundles(...)` consumers it already owns instead of leaving that slice in the detached helper-contract suite.
@@ -87,3 +88,13 @@ PY`
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py` currently passes (`138 passed in 0.20s`);
   - the inline source probe in Acceptance currently reports `needs-move`, because all eight target test definitions still live only on `tests/python/test_fixture_parity_support_contract.py`; and
   - the final `rg` command in Acceptance currently fails exactly on this cleanup because the detached contract file still contains the grouped-match manifest id, helper, and moved test names.
+
+## Completion Note
+- 2026-03-19: Moved the grouped-match frontier-helper and `ordered_manifest_cases_from_bundles(...)` contract tests onto `tests/python/test_grouped_capture_parity_suite.py`, keeping the grouped-match bundle lookup and case-id split file-local on the owner suite and preserving the existing grouped-match error strings exactly.
+- 2026-03-19: Removed the detached grouped-match selected-bundle helper/spec branch and the grouped-match-dependent ordered-row coverage from `tests/python/test_fixture_parity_support_contract.py`; the detached contract file no longer mentions `grouped-match-workflows`.
+
+## Verification
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_grouped_capture_parity_suite.py` (`426 passed`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py` (`129 passed`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` (`ok`)
+- 2026-03-19: `bash -lc "! rg -n 'grouped-match-workflows|_grouped_match_bundle_and_uncovered_case_ids|test_published_case_frontier_helper_preserves_ordered_uncovered_case_ids|test_published_case_frontier_helper_rejects_duplicate_selected_case_ids|test_published_case_frontier_helper_rejects_duplicate_uncovered_case_ids|test_published_case_frontier_helper_rejects_selected_and_uncovered_overlap|test_published_case_frontier_helper_reports_missing_and_unexpected_case_ids|test_published_case_frontier_helper_reports_uncovered_order_drift|test_ordered_manifest_cases_from_bundles_rejects_duplicate_case_ids|test_ordered_manifest_cases_from_bundles_rejects_missing_case_ids' tests/python/test_fixture_parity_support_contract.py"` (no matches)

@@ -294,6 +294,10 @@ SELECTED_CASE_BUNDLE_SPECS = (
     ),
 )
 FIXTURE_BUNDLES = load_fixture_bundles(SELECTED_CASE_BUNDLE_SPECS)
+GROUPED_MATCH_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
+    FIXTURE_BUNDLES,
+    "grouped-match-workflows",
+)
 GROUPED_SEGMENT_FIXTURE_BUNDLE = published_fixture_bundle_by_manifest_id(
     FIXTURE_BUNDLES,
     "grouped-segment-workflows",
@@ -606,6 +610,24 @@ def _match_for_case(
     return observed, expected
 
 
+def _grouped_match_frontier_contract_case_ids() -> tuple[tuple[str, ...], tuple[str, ...]]:
+    assert tuple(case.case_id for case in GROUPED_MATCH_FIXTURE_BUNDLE.cases) == (
+        GROUPED_MATCH_TRACKED_CASE_IDS
+    )
+
+    selected_case_ids = GROUPED_MATCH_TRACKED_CASE_IDS[-2:]
+    uncovered_case_ids = (
+        *GROUPED_MATCH_TRACKED_CASE_IDS[:-2],
+        *GROUPED_MATCH_UNCOVERED_CASE_IDS,
+    )
+
+    assert tuple(case.case_id for case in GROUPED_MATCH_FIXTURE_BUNDLE.manifest.cases) == (
+        *uncovered_case_ids,
+        *selected_case_ids,
+    )
+    return selected_case_ids, uncovered_case_ids
+
+
 def test_grouped_segment_leading_capture_rows_stay_on_direct_parity_frontier() -> None:
     assert tuple(case.case_id for case in GROUPED_SEGMENT_FIXTURE_BUNDLE.cases) == (
         GROUPED_SEGMENT_CASE_IDS
@@ -642,6 +664,57 @@ def test_pattern_bounds_cases_stay_anchored_to_grouped_capture_patterns() -> Non
 def test_match_group_access_rows_remain_on_grouped_capture_fixture_paths() -> None:
     assert tuple(case.case_id for case in MATCH_GROUP_ACCESS_CASES) == MATCH_GROUP_ACCESS_CASE_IDS
     assert {case.text_model for case in MATCH_GROUP_ACCESS_CASES} == {"str"}
+
+
+def test_ordered_manifest_cases_from_bundles_cover_manifest_order_and_unselected_rows() -> None:
+    selected_case_ids = (
+        "grouped-pattern-search-single-capture-str",
+        GROUPED_SEGMENT_LEADING_CAPTURE_CASE_ID_ORDER[0],
+        "grouped-module-search-single-capture-str",
+    )
+    selected_cases = ordered_manifest_cases_from_bundles(
+        FIXTURE_BUNDLES,
+        selected_case_ids,
+        error_label="fixture parity support contract rows",
+    )
+
+    expected_cases_by_id: dict[str, FixtureCase] = {}
+    for bundle in FIXTURE_BUNDLES:
+        for case in bundle.manifest.cases:
+            if case.case_id in selected_case_ids:
+                expected_cases_by_id[case.case_id] = case
+
+    assert tuple(case.case_id for case in selected_cases) == selected_case_ids
+    for case in selected_cases:
+        expected = expected_cases_by_id[case.case_id]
+        assert case.operation == expected.operation
+        assert case.helper == expected.helper
+        assert case.args == expected.args
+        assert case.kwargs == expected.kwargs
+
+
+def test_ordered_manifest_cases_from_bundles_rejects_duplicate_case_ids() -> None:
+    with pytest.raises(
+        AssertionError,
+        match="fixture parity support contract rows contain duplicate case ids",
+    ):
+        ordered_manifest_cases_from_bundles(
+            (GROUPED_MATCH_FIXTURE_BUNDLE, GROUPED_MATCH_FIXTURE_BUNDLE),
+            ("grouped-module-search-single-capture-str",),
+            error_label="fixture parity support contract rows",
+        )
+
+
+def test_ordered_manifest_cases_from_bundles_rejects_missing_case_ids() -> None:
+    with pytest.raises(
+        AssertionError,
+        match="fixture parity support contract rows are missing case ids",
+    ):
+        ordered_manifest_cases_from_bundles(
+            (GROUPED_MATCH_FIXTURE_BUNDLE,),
+            ("missing-case-id",),
+            error_label="fixture parity support contract rows",
+        )
 
 
 @pytest.mark.parametrize(
@@ -685,6 +758,109 @@ def test_grouped_capture_parity_suite_tracks_published_case_frontier() -> None:
             bundle,
             selected_case_ids=selected_case_ids,
             expected_uncovered_case_ids=expected_uncovered_case_ids,
+        )
+
+
+def test_published_case_frontier_helper_preserves_ordered_uncovered_case_ids() -> None:
+    selected_case_ids, uncovered_case_ids = _grouped_match_frontier_contract_case_ids()
+
+    assert_fixture_bundle_tracks_published_case_frontier(
+        GROUPED_MATCH_FIXTURE_BUNDLE,
+        selected_case_ids=selected_case_ids,
+        expected_uncovered_case_ids=uncovered_case_ids,
+    )
+
+
+def test_published_case_frontier_helper_rejects_duplicate_selected_case_ids() -> None:
+    selected_case_ids, uncovered_case_ids = _grouped_match_frontier_contract_case_ids()
+    duplicated_selected_case_ids = (*selected_case_ids, selected_case_ids[0])
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "grouped-match-workflows selected_case_ids contain duplicate ids: "
+            f"{(selected_case_ids[0],)}"
+        ),
+    ):
+        assert_fixture_bundle_tracks_published_case_frontier(
+            GROUPED_MATCH_FIXTURE_BUNDLE,
+            selected_case_ids=duplicated_selected_case_ids,
+            expected_uncovered_case_ids=uncovered_case_ids,
+        )
+
+
+def test_published_case_frontier_helper_rejects_duplicate_uncovered_case_ids() -> None:
+    selected_case_ids, uncovered_case_ids = _grouped_match_frontier_contract_case_ids()
+    assert uncovered_case_ids
+    duplicated_uncovered_case_ids = (*uncovered_case_ids, uncovered_case_ids[0])
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "grouped-match-workflows expected_uncovered_case_ids contain duplicate "
+            f"ids: {(uncovered_case_ids[0],)}"
+        ),
+    ):
+        assert_fixture_bundle_tracks_published_case_frontier(
+            GROUPED_MATCH_FIXTURE_BUNDLE,
+            selected_case_ids=selected_case_ids,
+            expected_uncovered_case_ids=duplicated_uncovered_case_ids,
+        )
+
+
+def test_published_case_frontier_helper_rejects_selected_and_uncovered_overlap() -> None:
+    selected_case_ids, _ = _grouped_match_frontier_contract_case_ids()
+    overlapping_case_ids = (selected_case_ids[0],)
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "grouped-match-workflows selected and uncovered case ids overlap: "
+            f"{overlapping_case_ids}"
+        ),
+    ):
+        assert_fixture_bundle_tracks_published_case_frontier(
+            GROUPED_MATCH_FIXTURE_BUNDLE,
+            selected_case_ids=selected_case_ids,
+            expected_uncovered_case_ids=overlapping_case_ids,
+        )
+
+
+def test_published_case_frontier_helper_reports_missing_and_unexpected_case_ids() -> None:
+    selected_case_ids, uncovered_case_ids = _grouped_match_frontier_contract_case_ids()
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "grouped-match-workflows published frontier drifted; "
+            "missing published case ids: ('missing-case-id',); "
+            f"unexpected published case ids: {uncovered_case_ids}"
+        ),
+    ):
+        assert_fixture_bundle_tracks_published_case_frontier(
+            GROUPED_MATCH_FIXTURE_BUNDLE,
+            selected_case_ids=selected_case_ids,
+            expected_uncovered_case_ids=("missing-case-id",),
+        )
+
+
+def test_published_case_frontier_helper_reports_uncovered_order_drift() -> None:
+    selected_case_ids, uncovered_case_ids = _grouped_match_frontier_contract_case_ids()
+    reordered_uncovered_case_ids = tuple(reversed(uncovered_case_ids))
+
+    assert reordered_uncovered_case_ids != uncovered_case_ids
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "grouped-match-workflows uncovered published case ids changed; "
+            f"expected {reordered_uncovered_case_ids}, got {uncovered_case_ids}"
+        ),
+    ):
+        assert_fixture_bundle_tracks_published_case_frontier(
+            GROUPED_MATCH_FIXTURE_BUNDLE,
+            selected_case_ids=selected_case_ids,
+            expected_uncovered_case_ids=reordered_uncovered_case_ids,
         )
 
 

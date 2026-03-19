@@ -34,12 +34,10 @@ from rebar_harness.correctness import (
 )
 from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
-    FixtureBundle,
     FixtureBundleSpec,
     RecordingNativeBoundary,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
-    assert_fixture_bundle_tracks_published_case_frontier,
     assert_finditer_parity,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -56,7 +54,6 @@ from tests.python.fixture_parity_support import (
     invoke_bounded_pattern_case,
     load_fixture_bundles,
     load_published_fixture_bundles,
-    ordered_manifest_cases_from_bundles,
     published_fixture_bundle_by_manifest_id,
     str_case_pattern,
 )
@@ -1335,7 +1332,7 @@ def test_fixture_manifest_loader_rejects_duplicate_ids(
         load_fixture_manifests([first_path, second_path])
 
 
-def _selected_case_bundle_specs() -> tuple[FixtureBundleSpec, ...]:
+def _literal_flag_selected_case_bundle_specs() -> tuple[FixtureBundleSpec, ...]:
     return (
         FixtureBundleSpec(
             fixture_name="literal_flag_workflows.py",
@@ -1348,27 +1345,11 @@ def _selected_case_bundle_specs() -> tuple[FixtureBundleSpec, ...]:
             expected_operation_helper_counts=Counter({("module_call", "search"): 2}),
             expected_text_models=frozenset({"bytes", "str"}),
         ),
-        FixtureBundleSpec(
-            fixture_name="grouped_match_workflows.py",
-            expected_manifest_id="grouped-match-workflows",
-            selected_case_ids=(
-                "grouped-module-fullmatch-two-capture-gap-str",
-                "grouped-pattern-fullmatch-two-capture-gap-str",
-            ),
-            expected_patterns=frozenset({r"(ab)(c)"}),
-            expected_operation_helper_counts=Counter(
-                {
-                    ("module_call", "fullmatch"): 1,
-                    ("pattern_call", "fullmatch"): 1,
-                }
-            ),
-            expected_text_models=frozenset({"str"}),
-        ),
     )
 
 
 def test_fixture_bundle_contract_supports_selected_case_path_and_order_validation() -> None:
-    (spec,) = _selected_case_bundle_specs()[:1]
+    (spec,) = _literal_flag_selected_case_bundle_specs()
     (bundle,) = load_fixture_bundles((spec,))
 
     assert bundle.expected_case_ids == frozenset(spec.selected_case_ids)
@@ -1474,7 +1455,7 @@ def test_load_fixture_bundles_rejects_missing_selected_case_ids() -> None:
 
 
 def test_fixture_bundle_contract_rejects_wrong_selected_case_order() -> None:
-    (spec,) = _selected_case_bundle_specs()[:1]
+    (spec,) = _literal_flag_selected_case_bundle_specs()
     (bundle,) = load_fixture_bundles((spec,))
 
     with pytest.raises(AssertionError):
@@ -1487,7 +1468,7 @@ def test_fixture_bundle_contract_rejects_wrong_selected_case_order() -> None:
 
 
 def test_selected_case_bundle_specs_load_in_declared_bundle_order() -> None:
-    specs = tuple(reversed(_selected_case_bundle_specs()))
+    specs = tuple(reversed(_literal_flag_selected_case_bundle_specs()))
 
     bundles = load_fixture_bundles(specs)
 
@@ -1533,159 +1514,6 @@ def test_bundle_pattern_projection_and_case_source_payloads_cover_published_fixt
     assert cases_by_id["module-sub-callable-str"].source_kwargs == {}
     assert cases_by_id["module-sub-grouping-template"].source_args[1] == r"\1x"
     assert cases_by_id["module-sub-grouping-template"].source_kwargs == {}
-
-
-def test_ordered_manifest_cases_from_bundles_cover_manifest_order_and_unselected_rows() -> None:
-    specs = _selected_case_bundle_specs()
-    bundles = load_fixture_bundles(specs)
-
-    for spec, bundle in zip(specs, bundles, strict=True):
-        manifest = load_fixture_manifest(FIXTURES_DIR / spec.fixture_name)
-        assert tuple(case.case_id for case in bundle.manifest.cases) == tuple(
-            case.case_id for case in manifest.cases
-        )
-
-    selected_case_ids = (
-        "grouped-pattern-search-single-capture-str",
-        "flag-unsupported-inline-flag-search",
-        "grouped-module-search-single-capture-str",
-    )
-    selected_cases = ordered_manifest_cases_from_bundles(
-        bundles,
-        selected_case_ids,
-        error_label="fixture parity support contract rows",
-    )
-
-    expected_cases_by_id: dict[str, FixtureCase] = {}
-    for spec in specs:
-        manifest = load_fixture_manifest(FIXTURES_DIR / spec.fixture_name)
-        for case in manifest.cases:
-            if case.case_id in selected_case_ids:
-                expected_cases_by_id[case.case_id] = case
-
-    assert tuple(case.case_id for case in selected_cases) == selected_case_ids
-    for case in selected_cases:
-        expected = expected_cases_by_id[case.case_id]
-        assert case.operation == expected.operation
-        assert case.helper == expected.helper
-        assert case.args == expected.args
-        assert case.kwargs == expected.kwargs
-
-
-def _grouped_match_bundle_and_uncovered_case_ids(
-) -> tuple[FixtureBundleSpec, FixtureBundle, tuple[str, ...]]:
-    (spec,) = _selected_case_bundle_specs()[1:]
-    (bundle,) = load_fixture_bundles((spec,))
-    selected_case_ids = frozenset(spec.selected_case_ids)
-    uncovered_case_ids = tuple(
-        case.case_id
-        for case in bundle.manifest.cases
-        if case.case_id not in selected_case_ids
-    )
-    return spec, bundle, uncovered_case_ids
-
-
-def test_published_case_frontier_helper_preserves_ordered_uncovered_case_ids() -> None:
-    spec, bundle, uncovered_case_ids = _grouped_match_bundle_and_uncovered_case_ids()
-
-    assert_fixture_bundle_tracks_published_case_frontier(
-        bundle,
-        selected_case_ids=spec.selected_case_ids,
-        expected_uncovered_case_ids=uncovered_case_ids,
-    )
-
-
-def test_published_case_frontier_helper_rejects_duplicate_selected_case_ids() -> None:
-    spec, bundle, uncovered_case_ids = _grouped_match_bundle_and_uncovered_case_ids()
-    duplicated_selected_case_ids = (*spec.selected_case_ids, spec.selected_case_ids[0])
-
-    with pytest.raises(
-        AssertionError,
-        match=re.escape(
-            "grouped-match-workflows selected_case_ids contain duplicate ids: "
-            f"{(spec.selected_case_ids[0],)}"
-        ),
-    ):
-        assert_fixture_bundle_tracks_published_case_frontier(
-            bundle,
-            selected_case_ids=duplicated_selected_case_ids,
-            expected_uncovered_case_ids=uncovered_case_ids,
-        )
-
-
-def test_published_case_frontier_helper_rejects_duplicate_uncovered_case_ids() -> None:
-    spec, bundle, uncovered_case_ids = _grouped_match_bundle_and_uncovered_case_ids()
-    assert uncovered_case_ids
-    duplicated_uncovered_case_ids = (*uncovered_case_ids, uncovered_case_ids[0])
-
-    with pytest.raises(
-        AssertionError,
-        match=re.escape(
-            "grouped-match-workflows expected_uncovered_case_ids contain duplicate "
-            f"ids: {(uncovered_case_ids[0],)}"
-        ),
-    ):
-        assert_fixture_bundle_tracks_published_case_frontier(
-            bundle,
-            selected_case_ids=spec.selected_case_ids,
-            expected_uncovered_case_ids=duplicated_uncovered_case_ids,
-        )
-
-
-def test_published_case_frontier_helper_rejects_selected_and_uncovered_overlap() -> None:
-    spec, bundle, _ = _grouped_match_bundle_and_uncovered_case_ids()
-    overlapping_case_ids = (spec.selected_case_ids[0],)
-
-    with pytest.raises(
-        AssertionError,
-        match=re.escape(
-            "grouped-match-workflows selected and uncovered case ids overlap: "
-            f"{overlapping_case_ids}"
-        ),
-    ):
-        assert_fixture_bundle_tracks_published_case_frontier(
-            bundle,
-            selected_case_ids=spec.selected_case_ids,
-            expected_uncovered_case_ids=overlapping_case_ids,
-        )
-
-
-def test_published_case_frontier_helper_reports_missing_and_unexpected_case_ids() -> None:
-    spec, bundle, uncovered_case_ids = _grouped_match_bundle_and_uncovered_case_ids()
-
-    with pytest.raises(
-        AssertionError,
-        match=re.escape(
-            "grouped-match-workflows published frontier drifted; "
-            "missing published case ids: ('missing-case-id',); "
-            f"unexpected published case ids: {uncovered_case_ids}"
-        ),
-    ):
-        assert_fixture_bundle_tracks_published_case_frontier(
-            bundle,
-            selected_case_ids=spec.selected_case_ids,
-            expected_uncovered_case_ids=("missing-case-id",),
-        )
-
-
-def test_published_case_frontier_helper_reports_uncovered_order_drift() -> None:
-    spec, bundle, uncovered_case_ids = _grouped_match_bundle_and_uncovered_case_ids()
-    reordered_uncovered_case_ids = tuple(reversed(uncovered_case_ids))
-
-    assert reordered_uncovered_case_ids != uncovered_case_ids
-
-    with pytest.raises(
-        AssertionError,
-        match=re.escape(
-            "grouped-match-workflows uncovered published case ids changed; "
-            f"expected {reordered_uncovered_case_ids}, got {uncovered_case_ids}"
-        ),
-    ):
-        assert_fixture_bundle_tracks_published_case_frontier(
-            bundle,
-            selected_case_ids=spec.selected_case_ids,
-            expected_uncovered_case_ids=reordered_uncovered_case_ids,
-        )
 
 
 def test_direct_test_case_id_bucket_helper_accepts_exact_selected_frontier_coverage(
@@ -1782,37 +1610,6 @@ def test_direct_test_case_id_bucket_helper_rejects_duplicate_ids_across_position
             selected_case_ids=("grouped-pattern-fullmatch-two-capture-gap-str",),
             coverage_label="fixture parity support contract buckets",
         )
-
-
-def test_ordered_manifest_cases_from_bundles_rejects_duplicate_case_ids() -> None:
-    (spec,) = _selected_case_bundle_specs()[1:]
-    (bundle,) = load_fixture_bundles((spec,))
-
-    with pytest.raises(
-        AssertionError,
-        match="fixture parity support contract rows contain duplicate case ids",
-    ):
-        ordered_manifest_cases_from_bundles(
-            (bundle, bundle),
-            ("grouped-module-search-single-capture-str",),
-            error_label="fixture parity support contract rows",
-        )
-
-
-def test_ordered_manifest_cases_from_bundles_rejects_missing_case_ids() -> None:
-    (spec,) = _selected_case_bundle_specs()[1:]
-    (bundle,) = load_fixture_bundles((spec,))
-
-    with pytest.raises(
-        AssertionError,
-        match="fixture parity support contract rows are missing case ids",
-    ):
-        ordered_manifest_cases_from_bundles(
-            (bundle,),
-            ("missing-case-id",),
-            error_label="fixture parity support contract rows",
-        )
-
 
 def test_case_argument_helpers_cover_module_and_pattern_replacement_rows() -> None:
     module_bundle, pattern_bundle = load_fixture_bundles(
