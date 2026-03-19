@@ -1,6 +1,6 @@
 # RBR-0671: Collapse the detached module-workflow surface bundle contract onto its parity owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -69,5 +69,15 @@ PY`
   - `wc -l tests/python/test_module_workflow_parity_suite.py tests/python/test_fixture_parity_support_contract.py` currently reports `3792` lines for the owner file and `2637` lines for the detached contract file;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` currently passes (`487 passed, 1 skipped in 0.40s`);
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py` currently passes (`145 passed in 0.20s`);
-  - the inline source probe in Acceptance currently fails exactly on this cleanup with `AssertionError: def test_module_workflow_surface_bundle_contract_covers_verbose_compile_case(` because the owner file does not yet carry the moved definitions; and
-  - `bash -lc "! rg -n 'module_workflow_surface\\.py|workflow-compile-str-verbose-regression' tests/python/test_fixture_parity_support_contract.py"` currently fails exactly on this cleanup because the detached contract still owns the module-workflow-specific fixture path and verbose compile row checks.
+- the inline source probe in Acceptance currently fails exactly on this cleanup with `AssertionError: def test_module_workflow_surface_bundle_contract_covers_verbose_compile_case(` because the owner file does not yet carry the moved definitions; and
+- `bash -lc "! rg -n 'module_workflow_surface\\.py|workflow-compile-str-verbose-regression' tests/python/test_fixture_parity_support_contract.py"` currently fails exactly on this cleanup because the detached contract still owns the module-workflow-specific fixture path and verbose compile row checks.
+
+## Completion
+- 2026-03-19: Moved `test_module_workflow_surface_bundle_contract_covers_verbose_compile_case(...)` and `test_module_workflow_surface_compile_case_selection_preserves_row_order(...)` onto `tests/python/test_module_workflow_parity_suite.py`, keeping the compile-only selection constants file-local on the owner suite.
+- 2026-03-19: Removed the detached module-workflow-specific fixture-path and verbose-compile-row contract coverage from `tests/python/test_fixture_parity_support_contract.py`; the detached contract file no longer mentions `module_workflow_surface.py` or `workflow-compile-str-verbose-regression`.
+
+## Verification
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`489 passed, 1 skipped`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py` (`143 passed`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` (`ok`)
+- 2026-03-19: `bash -lc "! rg -n 'module_workflow_surface\\.py|workflow-compile-str-verbose-regression' tests/python/test_fixture_parity_support_contract.py"`

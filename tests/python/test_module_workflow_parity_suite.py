@@ -462,6 +462,20 @@ MODULE_WORKFLOW_DIRECT_TEST_CASE_ID_BUCKETS = {
     "purge": frozenset(case.case_id for case in PURGE_CASES),
     "escape": frozenset(case.case_id for case in ESCAPE_CASES),
 }
+MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS = (
+    "workflow-compile-str-literal",
+    "workflow-compile-str-anchored-literal",
+    VERBOSE_COMPILE_CASE_ID,
+    "workflow-compile-bytes-literal",
+)
+MODULE_WORKFLOW_COMPILE_ONLY_PATTERNS = frozenset(
+    case_pattern(case)
+    for case in COMPILE_CASES
+    if case.case_id in MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS
+)
+MODULE_WORKFLOW_COMPILE_ONLY_OPERATION_HELPER_COUNTS = Counter(
+    {("compile", None): len(MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS)}
+)
 
 
 @dataclass(frozen=True)
@@ -1779,6 +1793,43 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
         selected_case_ids=MODULE_WORKFLOW_EXPECTED_CASE_IDS,
         coverage_label="module workflow direct-test case-id buckets",
     )
+
+
+def test_module_workflow_surface_bundle_contract_covers_verbose_compile_case() -> None:
+    assert MODULE_WORKFLOW_BUNDLE.manifest.path == MODULE_WORKFLOW_FIXTURE_PATH
+    assert_fixture_bundle_contract(
+        MODULE_WORKFLOW_BUNDLE,
+        pattern_extractor=case_pattern,
+        expected_fixture_path=MODULE_WORKFLOW_FIXTURE_PATH,
+        expected_ordered_case_ids=MODULE_WORKFLOW_EXPECTED_CASE_IDS,
+    )
+    assert VERBOSE_COMPILE_CASE.case_id == VERBOSE_COMPILE_CASE_ID
+    assert VERBOSE_COMPILE_CASE_ID in {case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases}
+
+
+def test_module_workflow_surface_compile_case_selection_preserves_row_order() -> None:
+    (bundle,) = load_fixture_bundles(
+        (
+            FixtureBundleSpec(
+                fixture_name=MODULE_WORKFLOW_FIXTURE_PATH.name,
+                expected_manifest_id="module-workflow-surface",
+                selected_case_ids=MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS,
+                expected_patterns=MODULE_WORKFLOW_COMPILE_ONLY_PATTERNS,
+                expected_operation_helper_counts=MODULE_WORKFLOW_COMPILE_ONLY_OPERATION_HELPER_COUNTS,
+                expected_text_models=frozenset({"bytes", "str"}),
+            ),
+        )
+    )
+
+    assert_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=case_pattern,
+        expected_fixture_path=MODULE_WORKFLOW_FIXTURE_PATH,
+        expected_ordered_case_ids=MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS,
+    )
+    assert tuple(
+        case.case_id for case in fixture_cases_for_operation((bundle,), "compile")
+    ) == MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS
 
 
 def test_match_behavior_parity_suite_stays_aligned_with_published_fixture() -> None:
