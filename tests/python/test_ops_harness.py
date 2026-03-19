@@ -41,6 +41,26 @@ LEGACY_BENCHMARK_REPORT_PATH = scorecard_io.retired_published_scorecard_sidecar_
 )
 
 
+def load_structured_scorecard_for_ops_test(
+    path: pathlib.Path,
+    *,
+    default: Any,
+    python_attribute: str = "REPORT",
+    label: str = "report",
+) -> Any:
+    if not path.exists():
+        return default
+    try:
+        return scorecard_io.load_scorecard_report(
+            path,
+            module_name_prefix="_ops_harness_scorecard",
+            report_attribute=python_attribute,
+            scorecard_kind="scorecard",
+        )
+    except ValueError:
+        return default
+
+
 class OpsHarnessTest(unittest.TestCase):
     def test_dispatch_policies_match_the_current_specialist_mix(self) -> None:
         rebar_ops = load_rebar_ops_module()
@@ -999,70 +1019,82 @@ class ReadmeReportingTest(unittest.TestCase):
             summary.get("passed_cases", summary.get("passed")),
         )
 
-        scorecard = rebar_ops.scorecard_from_config(
-            config,
-            "correctness_scorecard",
-            "Correctness Scorecard",
-            "reports/correctness/latest.py",
-        )
+        with mock.patch.object(
+            rebar_ops,
+            "read_structured_dict",
+            side_effect=load_structured_scorecard_for_ops_test,
+        ):
+            scorecard = rebar_ops.scorecard_from_config(
+                config,
+                "correctness_scorecard",
+                "Correctness Scorecard",
+                "reports/correctness/latest.py",
+            )
 
-        self.assertTrue(scorecard["available"])
-        self.assertEqual(scorecard["cases_total"], expected_total)
-        self.assertEqual(scorecard["cases_passed"], expected_passed)
-        self.assertEqual(scorecard["candidate"], payload["baseline"]["target_module"])
+            self.assertTrue(scorecard["available"])
+            self.assertEqual(scorecard["cases_total"], expected_total)
+            self.assertEqual(scorecard["cases_passed"], expected_passed)
+            self.assertEqual(scorecard["candidate"], payload["baseline"]["target_module"])
 
-        rendered = rebar_ops.render_readme_status(config)
-        self.assertIn(f"| Published cases | `{expected_total}` |", rendered)
-        self.assertIn(f"| Passing in published slice | `{expected_passed}` |", rendered)
-        expected_unimplemented = summary.get(
-            "cases_unimplemented",
-            summary.get("unimplemented_cases", summary.get("unimplemented")),
-        )
-        self.assertIn(f"| Honest gaps (`unimplemented`) | `{expected_unimplemented}` |", rendered)
-        self.assertIn("Overall delivery estimate:", rendered)
-        self.assertIn("These correctness counts cover only the published slice.", rendered)
-        self.assertIn("| Timing path | `source-tree-shim` |", rendered)
-        self.assertIn("strict built-native smoke and full-suite modes remain available", rendered)
-        self.assertIn("`--native-smoke`", rendered)
-        self.assertIn("`--native-full`", rendered)
-        self.assertIn("explicit `--report` path", rendered)
-        self.assertNotIn("native_smoke.json", rendered)
-        self.assertNotIn("native_full.json", rendered)
+            rendered = rebar_ops.render_readme_status(config)
+            self.assertIn(f"| Published cases | `{expected_total}` |", rendered)
+            self.assertIn(f"| Passing in published slice | `{expected_passed}` |", rendered)
+            expected_unimplemented = summary.get(
+                "cases_unimplemented",
+                summary.get("unimplemented_cases", summary.get("unimplemented")),
+            )
+            self.assertIn(
+                f"| Honest gaps (`unimplemented`) | `{expected_unimplemented}` |",
+                rendered,
+            )
+            self.assertIn("Overall delivery estimate:", rendered)
+            self.assertIn("These correctness counts cover only the published slice.", rendered)
+            self.assertIn("| Timing path | `source-tree-shim` |", rendered)
+            self.assertIn(
+                "strict built-native smoke and full-suite modes remain available",
+                rendered,
+            )
+            self.assertIn("`--native-smoke`", rendered)
+            self.assertIn("`--native-full`", rendered)
+            self.assertIn("explicit `--report` path", rendered)
+            self.assertNotIn("native_smoke.json", rendered)
+            self.assertNotIn("native_full.json", rendered)
 
     def test_benchmark_scorecard_uses_tracked_summary_shape(self) -> None:
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
-        payload = rebar_ops.read_structured_dict(
-            BENCHMARK_REPORT_PATH,
-            default=None,
-            label="benchmark scorecard",
-        )
+        payload = benchmarks.SCORECARD_REPORT.load(BENCHMARK_REPORT_PATH)
 
         self.assertIsInstance(payload, dict)
         summary = payload["summary"]
         implementation = payload["implementation"]
 
-        scorecard = rebar_ops.scorecard_from_config(
-            config,
-            "benchmark_scorecard",
-            "Benchmark Snapshot",
-            "reports/benchmarks/latest.py",
-        )
+        with mock.patch.object(
+            rebar_ops,
+            "read_structured_dict",
+            side_effect=load_structured_scorecard_for_ops_test,
+        ):
+            scorecard = rebar_ops.scorecard_from_config(
+                config,
+                "benchmark_scorecard",
+                "Benchmark Snapshot",
+                "reports/benchmarks/latest.py",
+            )
 
-        self.assertTrue(scorecard["available"])
-        self.assertEqual(scorecard["workload_count"], summary["total_workloads"])
-        self.assertEqual(scorecard["measured_workloads"], summary["measured_workloads"])
-        self.assertEqual(scorecard["known_gap_count"], summary["known_gap_count"])
-        self.assertEqual(scorecard["candidate"], implementation["module_name"])
+            self.assertTrue(scorecard["available"])
+            self.assertEqual(scorecard["workload_count"], summary["total_workloads"])
+            self.assertEqual(scorecard["measured_workloads"], summary["measured_workloads"])
+            self.assertEqual(scorecard["known_gap_count"], summary["known_gap_count"])
+            self.assertEqual(scorecard["candidate"], implementation["module_name"])
 
-        rendered = rebar_ops.render_readme_status(config)
-        self.assertIn(f"| Published workloads | `{summary['total_workloads']}` |", rendered)
-        self.assertIn(
-            f"| Workloads with real `rebar` timings | `{summary['measured_workloads']}` |",
-            rendered,
-        )
-        self.assertIn("reports/benchmarks/latest.py", rendered)
-        self.assertNotIn("reports/benchmarks/latest.json", rendered)
+            rendered = rebar_ops.render_readme_status(config)
+            self.assertIn(f"| Published workloads | `{summary['total_workloads']}` |", rendered)
+            self.assertIn(
+                f"| Workloads with real `rebar` timings | `{summary['measured_workloads']}` |",
+                rendered,
+            )
+            self.assertIn("reports/benchmarks/latest.py", rendered)
+            self.assertNotIn("reports/benchmarks/latest.json", rendered)
 
     def test_benchmark_harness_loads_tracked_python_scorecard(self) -> None:
         payload = benchmarks.SCORECARD_REPORT.load(BENCHMARK_REPORT_PATH)
