@@ -182,6 +182,46 @@ CALLABLE_MANIFEST_SPECS = (
     ),
     CallableManifestSpec(
         manifest_id=(
+            "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-"
+            "branch-local-backreference-conditional-callable-replacement-workflows"
+        ),
+        expected_case_ids=frozenset(
+            {
+                "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-numbered-lower-bound-b-branch-str",
+                "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-numbered-first-match-only-b-branch-str",
+                "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-numbered-mixed-branches-str",
+                "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-numbered-c-branch-first-match-only-str",
+                "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-named-mixed-branches-str",
+                "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-named-first-match-only-b-branch-str",
+                "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-named-upper-bound-c-branch-str",
+                "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-str",
+            }
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a((b|c){1,4})\2(?(2)d|e)",
+                r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)(?(inner)d|e)",
+            }
+        ),
+        expected_operation_helper_counts=CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS,
+        expected_text_models=STR_ONLY_TEXT_MODELS,
+        expected_near_miss_patterns=frozenset(),
+        has_near_miss_matrix=False,
+        pending_rebar_case_ids=frozenset(
+            {
+                "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-numbered-lower-bound-b-branch-str",
+                "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-numbered-first-match-only-b-branch-str",
+                "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-numbered-mixed-branches-str",
+                "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-numbered-c-branch-first-match-only-str",
+                "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-named-mixed-branches-str",
+                "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-named-first-match-only-b-branch-str",
+                "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-named-upper-bound-c-branch-str",
+                "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-str",
+            }
+        ),
+    ),
+    CallableManifestSpec(
+        manifest_id=(
             "nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-callable-replacement-workflows"
         ),
         expected_case_ids=frozenset(

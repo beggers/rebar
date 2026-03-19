@@ -201,6 +201,7 @@ SELECTOR_EXPECTATIONS = (
             "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
             "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
             "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
+            "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
             "nested_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
             "nested_group_alternation_callable_replacement_workflows.py",
             "nested_group_callable_replacement_workflows.py",
