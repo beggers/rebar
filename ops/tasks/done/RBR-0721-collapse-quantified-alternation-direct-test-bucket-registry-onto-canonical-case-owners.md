@@ -1,6 +1,6 @@
 # RBR-0721: Collapse quantified-alternation direct-test bucket registry onto canonical case owners
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -114,3 +114,8 @@ PY` reported the existing tail through `RBR-0720`, no reserved missing tail ids,
 - This simplification matches the current parity-harness information flow:
   - `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` already owns the canonical bytes-follow-on ordering plus the bundle-to-bucket routing needed to derive the six explicit follow-on buckets; and
   - `RBR-0719` just retired the same kind of detached direct-test bucket owner layer in `tests/python/test_branch_local_backreference_parity_suite.py`, so this quantified-alternation cleanup stays on the same bounded simplification track instead of opening a new architecture lane.
+
+## Completion Notes
+- 2026-03-19: Replaced `QUANTIFIED_ALTERNATION_DIRECT_TEST_CASE_ID_BUCKETS` with the file-local `_quantified_alternation_direct_test_case_id_buckets()` helper, derived directly from `COMPILE_CASES`, `MODULE_CASES`, `PATTERN_CASES`, and `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` so the detached registry is gone while bucket routing stays unchanged.
+- 2026-03-19: Updated `test_quantified_alternation_direct_test_case_id_buckets_cover_selected_frontier` to call the derived helper instead of reading a top-level sidecar map.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py` (`777 passed in 1.06s`), the acceptance derived-bucket probe (`ok`), and `bash -lc "! rg -n 'QUANTIFIED_ALTERNATION_DIRECT_TEST_CASE_ID_BUCKETS' tests/python/test_quantified_alternation_parity_suite.py"`.
