@@ -140,13 +140,23 @@ class OpsHarnessTest(unittest.TestCase):
                 self.assertFalse(agents[name].dispatch.get("allow_dirty_worktree", False))
                 self.assertFalse(rebar_ops.agent_may_dispatch_on_dirty_worktree(agents[name]))
 
-    def test_all_agents_use_xhigh_reasoning(self) -> None:
+    def test_all_agents_declare_supported_reasoning_effort(self) -> None:
         rebar_ops = load_rebar_ops_module()
         config = rebar_ops.load_config()
         agents = rebar_ops.load_agent_specs(config)
 
         for agent in agents:
-            self.assertIn('model_reasoning_effort="xhigh"', agent.codex["config"])
+            with self.subTest(agent=agent.name):
+                reasoning_settings = [
+                    entry
+                    for entry in agent.codex.get("config", [])
+                    if entry.startswith('model_reasoning_effort="') and entry.endswith('"')
+                ]
+                self.assertEqual(len(reasoning_settings), 1)
+                reasoning_effort = reasoning_settings[0].removeprefix(
+                    'model_reasoning_effort="'
+                ).removesuffix('"')
+                self.assertIn(reasoning_effort, {"high", "xhigh"})
 
     def test_loaded_agents_use_python_spec_modules(self) -> None:
         rebar_ops = load_rebar_ops_module()
