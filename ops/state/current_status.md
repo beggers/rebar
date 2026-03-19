@@ -9,17 +9,17 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-Published correctness is 1358/1358 cases across 113 manifests with 0 honest gaps; the benchmark publication is 759/759 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
+Published correctness is 1358/1366 cases across 113 manifests with 8 honest gaps; the benchmark publication is 759/759 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- Ready: `RBR-0686` publishes the `bytes` callable-replacement mirrors for `rb"a(((bc|b)c){1,4})d"` and `rb"a(?P<outer>(?:(?P<inner>bc|b)c){1,4})d"` on the shared correctness surface.
+- No ready or in-progress feature follow-on currently survives after the latest queue drain.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
 - The published benchmark surface is still bounded at 759 workloads, so zero known gaps does not yet imply broad performance coverage.
 
 ## Compatibility Heuristic
-The published correctness slice now covers 1358 cases across 113 manifests, with all 1358 passing and 0 honest gaps, and 759 benchmark workloads are measured through the source-tree shim; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
+The published correctness slice now covers 1366 cases across 113 manifests, with 1358 passing and 8 honest gaps, and 759 benchmark workloads are measured through the source-tree shim; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -310,7 +310,7 @@ The published correctness slice now covers 1358 cases across 113 manifests, with
 - Tracked state and task queue directories under `ops/`.
 
 ## What Does Not Exist Yet
-- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 113 manifests and 1358 cases, with all 1358 passing and 0 honest `unimplemented` outcomes within that published slice, so that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
+- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 113 manifests and 1366 cases, with 1358 passing and 8 honest `unimplemented` outcomes within that published slice, so that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree shim while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
 - Broad benchmark coverage beyond the current published frontier: `reports/benchmarks/latest.py` now covers 759 workloads across 30 manifests with 759 real `rebar` timings and 0 explicit known gaps, so the published benchmark surface remains bounded.
@@ -329,7 +329,7 @@ The published correctness slice now covers 1358 cases across 113 manifests, with
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Ready: `RBR-0686` publishes the `bytes` callable-replacement mirrors for `rb"a(((bc|b)c){1,4})d"` and `rb"a(?P<outer>(?:(?P<inner>bc|b)c){1,4})d"` on the shared correctness surface.
+- No ready or in-progress feature follow-on currently survives after the latest queue drain.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
