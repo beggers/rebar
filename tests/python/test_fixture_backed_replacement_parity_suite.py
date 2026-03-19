@@ -93,15 +93,6 @@ GROUPED_REPLACEMENT_COLLECTION_CASE_IDS = (
     GROUPED_TEMPLATE_CALLABLE_CASE_ID,
     GROUPED_TEMPLATE_SELECTED_CASE_ID,
 )
-GROUPED_REPLACEMENT_BUNDLE_MANIFEST_IDS = (
-    "collection-replacement-workflows",
-    "named-group-replacement-workflows",
-    "grouped-alternation-replacement-workflows",
-    "nested-group-replacement-workflows",
-    "nested-group-alternation-replacement-workflows",
-    "quantified-nested-group-replacement-workflows",
-    NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
-)
 GROUPED_REPLACEMENT_NAMED_CASE_IDS = (
     "module-sub-template-named-group-str",
     "module-subn-template-named-group-str",
@@ -150,17 +141,6 @@ GROUPED_REPLACEMENT_BUNDLE_CONTRACT_MANIFEST_IDS = frozenset(
         "quantified-nested-group-replacement-workflows",
         NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
     }
-)
-GROUPED_REPLACEMENT_MATCH_GROUP_ACCESS_MANIFEST_IDS = (
-    "named-group-replacement-workflows",
-)
-GROUPED_REPLACEMENT_TEMPLATE_EXPAND_MANIFEST_IDS = (
-    "collection-replacement-workflows",
-    "named-group-replacement-workflows",
-    "grouped-alternation-replacement-workflows",
-    "nested-group-replacement-workflows",
-    "nested-group-alternation-replacement-workflows",
-    NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
 )
 GROUPED_REPLACEMENT_COMPILE_PATTERNS = (
     "(?P<word>abc)",
@@ -1216,8 +1196,15 @@ REPLACEMENT_SURFACE_SPECS = (
         ),
         pattern_extractor=case_pattern,
         compile_patterns=GROUPED_REPLACEMENT_COMPILE_PATTERNS,
-        match_group_access_manifest_ids=GROUPED_REPLACEMENT_MATCH_GROUP_ACCESS_MANIFEST_IDS,
-        template_expand_manifest_ids=GROUPED_REPLACEMENT_TEMPLATE_EXPAND_MANIFEST_IDS,
+        match_group_access_manifest_ids=("named-group-replacement-workflows",),
+        template_expand_manifest_ids=(
+            "collection-replacement-workflows",
+            "named-group-replacement-workflows",
+            "grouped-alternation-replacement-workflows",
+            "nested-group-replacement-workflows",
+            "nested-group-alternation-replacement-workflows",
+            NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
+        ),
         supplemental_no_match_cases=GROUPED_REPLACEMENT_SUPPLEMENTAL_NO_MATCH_CASES,
         supplemental_repeated_cases=GROUPED_REPLACEMENT_SUPPLEMENTAL_REPEATED_CASES,
     ),
@@ -1821,8 +1808,8 @@ def test_parity_suite_stays_aligned_with_published_correctness_fixture(
 def test_grouped_replacement_surface_keeps_selected_bundle_ownership_explicit() -> None:
     surface = GROUPED_REPLACEMENT_TEMPLATE_SURFACE
 
-    assert tuple(bundle.expected_manifest_id for bundle in surface.bundles) == (
-        GROUPED_REPLACEMENT_BUNDLE_MANIFEST_IDS
+    assert tuple(bundle.expected_manifest_id for bundle in surface.bundles) == tuple(
+        bundle_spec.expected_manifest_id for bundle_spec in surface.spec.bundle_specs
     )
 
     grouped_template_bundle = surface.bundles[0]

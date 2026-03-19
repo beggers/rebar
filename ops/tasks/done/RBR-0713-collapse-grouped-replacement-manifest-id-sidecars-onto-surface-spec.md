@@ -1,6 +1,6 @@
 # RBR-0713: Collapse grouped-replacement manifest-id sidecars onto the surface spec
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -113,3 +113,7 @@ PY` reported the highest existing tail as `RBR-0693` through `RBR-0712` and no r
 - This simplification matches the current replacement-harness information flow:
   - `ReplacementSurfaceSpec` already owns the grouped-replacement bundle specs, compile pattern expectations, supplemental replacement cases, pending-bytes follow-on behavior, and the match/template-expand manifest-id fields that currently point at the detached constants; and
   - deleting the extra top-level manifest-id tables removes one more parallel owner layer without changing the published replacement parity surface.
+
+## Completion Notes
+- 2026-03-19: Deleted the grouped-replacement bundle, match-group-access, and template-expand manifest-id sidecars from `tests/python/test_fixture_backed_replacement_parity_suite.py`, kept the routing tuples directly on the grouped `ReplacementSurfaceSpec`, and updated the grouped-surface ownership assertion to read from `surface.spec.bundle_specs` instead of a detached manifest-id tuple.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py` (`1149 passed in 0.88s`), the inline source-absence probe (`ok`), the grouped-surface import/routing probe (`ok`), and `bash -lc "! rg -n 'GROUPED_REPLACEMENT_(BUNDLE_MANIFEST_IDS|MATCH_GROUP_ACCESS_MANIFEST_IDS|TEMPLATE_EXPAND_MANIFEST_IDS)' tests/python/test_fixture_backed_replacement_parity_suite.py"`.
