@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness is 1358/1358 cases across 113 manifests with 0 honest gaps; the benchmark publication is 755/755 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- No ready or in-progress feature follow-on survives after the latest queue drain.
+- Ready head: `RBR-0684` catches the broader `{1,4}` nested backtracking-heavy callable-replacement slice up on the existing `nested-group-callable-replacement-boundary` Python-path benchmark surface.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published correctness slice now covers 1358 cases across 113 manifests, with
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- No ready or in-progress feature follow-on survives after the latest queue drain.
+- No ready feature follow-on currently survives.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
