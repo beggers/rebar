@@ -1,8 +1,9 @@
 # RBR-0660: Collapse the detached correctness scorecard expectation module onto the combined owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Delete `tests/conformance/correctness_expectations.py` by moving its remaining correctness scorecard expectation tables, typed records, and registry helpers onto `tests/conformance/test_combined_correctness_scorecards.py`, so the published correctness scorecard path has one owner instead of a detached expectations-only support module beside the existing combined owner.
@@ -80,3 +81,8 @@ PY`
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py` currently passes (`17 passed, 1747 subtests passed in 30.77s`);
   - `rg -n "^class CorrectnessScorecardExpectation|^class CorrectnessScorecardSuiteDefinition|^CORRECTNESS_SCORECARD_SUITE_REGISTRY =|^def tracked_correctness_scorecard_suites\\(|^def correctness_scorecard_target_manifest_ids\\(|^def correctness_scorecard_case\\(|^from tests\\.conformance\\.correctness_expectations import" tests/conformance/test_combined_correctness_scorecards.py tests/conformance/correctness_expectations.py` currently shows the class and registry/helper definitions only in `tests/conformance/correctness_expectations.py` and the import-only forwarding edge only in `tests/conformance/test_combined_correctness_scorecards.py`; and
   - `bash -lc "! rg --files tests/conformance | rg 'correctness_expectations\\.py$'"` currently fails exactly on this cleanup because the detached support file still exists.
+
+## Completion Note
+- 2026-03-19: Moved the correctness scorecard manifest expectation tables, typed records, suite registry, and file-local lookup helpers directly into `tests/conformance/test_combined_correctness_scorecards.py`, preserving the combined owner as the sole source for `EXPECTED_SUITE_TABLES`, `MIXED_TEXT_MIRROR_EXPECTATION_TABLES`, and the nine tracked scorecard suites.
+- 2026-03-19: Deleted `tests/conformance/correctness_expectations.py` outright after the combined owner absorbed the detached `CorrectnessScorecardManifestExpectation`, `CorrectnessLayerExpectation`, `CorrectnessScorecardExpectation`, `CorrectnessScorecardSuiteDefinition`, `CORRECTNESS_SCORECARD_SUITE_REGISTRY`, `tracked_correctness_scorecard_suites(...)`, `correctness_scorecard_target_manifest_ids(...)`, and `correctness_scorecard_case(...)` definitions.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py` (`17 passed, 1747 subtests passed in 30.68s`), the acceptance inline source probe (`ok`), `bash -lc "! rg --files tests/conformance | rg 'correctness_expectations\\.py$'"` (passes), and `git diff --name-status -- tests/conformance/correctness_expectations.py` (`D`).
