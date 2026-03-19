@@ -2060,16 +2060,6 @@ def test_compile_workflows_match_cpython(
     backend_name, backend = regex_backend
     pattern = case_pattern(case)
 
-    if backend_name == "rebar" and case.case_id == MULTILINE_COMPILE_CASE_ID:
-        with pytest.raises(NotImplementedError) as missing_multiline:
-            backend.compile(pattern, case.flags or 0)
-
-        _assert_placeholder_message(
-            missing_multiline.value,
-            "rebar.compile() is a scaffold placeholder",
-        )
-        return
-
     compile_with_cpython_parity(
         backend_name,
         backend,
@@ -2692,15 +2682,22 @@ def test_source_package_verbose_compile_metadata_and_neighbor_gaps_remain_pinned
         is compiled_bytes
     )
 
-    assert int(MULTILINE_COMPILE_CASE.flags or 0) == int(rebar.MULTILINE)
-
-    with pytest.raises(NotImplementedError) as missing_multiline:
-        rebar.compile(multiline_pattern, rebar.MULTILINE)
-
-    _assert_placeholder_message(
-        missing_multiline.value,
-        "rebar.compile() is a scaffold placeholder",
+    compiled_multiline, expected_multiline = compile_with_cpython_parity(
+        "rebar",
+        rebar,
+        multiline_pattern,
+        rebar.MULTILINE,
     )
+
+    assert int(MULTILINE_COMPILE_CASE.flags or 0) == int(rebar.MULTILINE)
+    assert type(compiled_multiline) is rebar.Pattern
+    assert compiled_multiline.pattern == expected_multiline.pattern == multiline_pattern
+    assert compiled_multiline.flags == expected_multiline.flags == int(
+        re.MULTILINE | re.UNICODE
+    )
+    assert compiled_multiline.groups == expected_multiline.groups == 1
+    assert compiled_multiline.groupindex == expected_multiline.groupindex == {"key": 1}
+    assert rebar.compile(multiline_pattern, rebar.MULTILINE) is compiled_multiline
 
 
 def test_source_package_compile_reuses_existing_pattern_without_reprocessing_flags() -> None:

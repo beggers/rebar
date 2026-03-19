@@ -1,6 +1,6 @@
 # RBR-0712: Convert the module-workflow multiline compile follow-on to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -51,3 +51,8 @@ Created: 2026-03-19
   - `tests/python/test_module_workflow_parity_suite.py` still special-cases `MULTILINE_COMPILE_CASE_ID` as a `rebar`-only `NotImplementedError` gap in `test_compile_workflows_match_cpython()` and still expects the same exact call to raise inside `test_source_package_verbose_compile_metadata_and_neighbor_gaps_remain_pinned()`;
   - `reports/correctness/latest.py` currently reports `1384` total / `1383` passed / `1` `unimplemented` across `114` manifests, and the only published gap is `workflow-compile-str-multiline-regression`, with CPython already reporting `flags == 40`, `groups == 1`, and `groupindex == {"key": 1}` for that row; and
   - `benchmarks/workloads/regression_matrix.py` already owns the adjacent verbose module-compile regression rows for this exact pattern family, so any later Python-path benchmark catch-up can stay on the existing regression manifest instead of inventing another benchmark surface.
+
+## Completion
+- 2026-03-19: Landed exact Rust-backed compile classification for `workflow-compile-str-multiline-regression` without widening into bytes multiline support or execution semantics, and updated the shared module-workflow parity test path to assert CPython-matching metadata plus cache reuse instead of a `NotImplementedError` gap.
+- Verification passed with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0712-module-workflow-multiline-parity.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
+- Verified the tracked `reports/correctness/latest.py` diff before closing the task. The published combined scorecard now reads `1384` total / `1384` passed / `0` `unimplemented`, with `module.workflow` at `14` / `14` / `0` and `module.workflow.compile` at `6` / `6` / `0`.

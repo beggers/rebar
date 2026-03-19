@@ -34,6 +34,7 @@ const OPTIONAL_GROUP_CONDITIONAL_NO_BRANCH_LITERAL: &[char] = &['d'];
 const OPTIONAL_GROUP_CONDITIONAL_SUFFIX_LITERAL: &[char] = &['e'];
 const VERBOSE_COMPILE_REGRESSION_PATTERN: &str =
     "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $";
+const MULTILINE_COMPILE_REGRESSION_FLAGS: i32 = FLAG_MULTILINE | FLAG_UNICODE;
 const VERBOSE_COMPILE_REGRESSION_FLAGS: i32 = FLAG_MULTILINE | FLAG_VERBOSE | FLAG_UNICODE;
 const VERBOSE_COMPILE_REGRESSION_BYTES_PATTERN: &[u8] =
     br"^ (?P<key>[A-Z_]+) \s* = \s* (?:[A-Z]{2,4}+|\d{2,3}) $";
@@ -2790,6 +2791,21 @@ fn compile_known_supported_case(
             named_groups: Vec::new(),
             warning: None,
         }),
+        PatternRef::Str(VERBOSE_COMPILE_REGRESSION_PATTERN)
+            if normalized_flags == MULTILINE_COMPILE_REGRESSION_FLAGS =>
+        {
+            Some(CompileOutcome {
+                status: CompileStatus::Compiled,
+                normalized_flags,
+                supports_literal: false,
+                group_count: 1,
+                named_groups: vec![NamedGroup {
+                    name: VERBOSE_COMPILE_REGRESSION_GROUP_NAME.to_string(),
+                    index: 1,
+                }],
+                warning: None,
+            })
+        }
         PatternRef::Str(VERBOSE_COMPILE_REGRESSION_PATTERN)
             if normalized_flags == VERBOSE_COMPILE_REGRESSION_FLAGS =>
         {

@@ -47,7 +47,7 @@ MANIFEST = {
       "flags": 8,
       "categories": ["workflow", "compile", "multiline", "regression", "str"],
       "notes": [
-        "Publishes the exact multiline-only module compile neighbor gap beside the shared verbose regression rows without broadening into execution or cache-state coverage."
+        "Publishes the exact multiline-only module compile neighbor beside the shared verbose regression rows without broadening into execution or cache-state coverage."
       ]
     },
     {
