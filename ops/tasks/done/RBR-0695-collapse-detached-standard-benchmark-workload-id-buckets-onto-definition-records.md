@@ -1,6 +1,6 @@
 # RBR-0695: Collapse detached standard benchmark workload-id buckets onto definition records
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -89,3 +89,8 @@ PY` showed only `RBR-0037A` and `RBR-0042A` as reserved/missing ids and `RBR-069
 - This simplification matches the current benchmark information flow:
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` already treats `STANDARD_BENCHMARK_DEFINITIONS` as the canonical registry for standard anchored benchmark slices; and
   - moving the remaining excluded/legacy/special-unanchored workload-id buckets onto those definition records removes one more internal parallel layer without changing the combined benchmark owner boundary.
+
+## Completion Notes
+- 2026-03-19: Moved the detached nested-group exclusion, grouped-alternation legacy subsets, grouped-alternation-replacement legacy subset, and nested-group-replacement/open-ended special-unanchored workload ids onto the affected `StandardBenchmarkAnchorContractDefinition` records.
+- Added definition-owned `includes_workload(...)` filtering so the standard benchmark include path now reads exclusion and special-unanchored ids from each definition instead of deleted file-global bucket helpers.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, the inline source probe, and the final `rg` absence check from Acceptance.
