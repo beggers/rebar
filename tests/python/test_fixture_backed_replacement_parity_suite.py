@@ -60,6 +60,10 @@ NESTED_BROADER_RANGE_OPEN_ENDED_REPLACEMENT_MANIFEST_ID = (
     "nested-broader-range-open-ended-quantified-group-alternation-"
     "branch-local-backreference-replacement-workflows"
 )
+NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID = (
+    "nested-broader-range-wider-ranged-repeat-quantified-group-alternation-"
+    "branch-local-backreference-replacement-workflows"
+)
 NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_REPLACEMENT_MANIFEST_ID = (
     "nested-broader-range-open-ended-quantified-group-alternation-"
     "branch-local-backreference-conditional-replacement-workflows"
@@ -88,6 +92,7 @@ GROUPED_REPLACEMENT_BUNDLE_MANIFEST_IDS = (
     "nested-group-replacement-workflows",
     "nested-group-alternation-replacement-workflows",
     "quantified-nested-group-replacement-workflows",
+    NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
 )
 GROUPED_REPLACEMENT_NAMED_CASE_IDS = (
     "module-sub-template-named-group-str",
@@ -132,6 +137,7 @@ GROUPED_REPLACEMENT_BUNDLE_CONTRACT_MANIFEST_IDS = frozenset(
         "nested-group-replacement-workflows",
         "nested-group-alternation-replacement-workflows",
         "quantified-nested-group-replacement-workflows",
+        NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
     }
 )
 GROUPED_REPLACEMENT_MATCH_GROUP_ACCESS_MANIFEST_IDS = (
@@ -143,6 +149,7 @@ GROUPED_REPLACEMENT_TEMPLATE_EXPAND_MANIFEST_IDS = (
     "grouped-alternation-replacement-workflows",
     "nested-group-replacement-workflows",
     "nested-group-alternation-replacement-workflows",
+    NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID,
 )
 GROUPED_REPLACEMENT_COMPILE_PATTERNS = (
     "(?P<word>abc)",
@@ -150,8 +157,10 @@ GROUPED_REPLACEMENT_COMPILE_PATTERNS = (
     "a((b))d",
     "a((bc)+)d",
     "a((b|c))d",
+    r"a((b|c){1,4})\2d",
     "a(?P<outer>(?P<inner>b))d",
     "a(?P<outer>(?P<inner>bc)+)d",
+    r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
     "a(?P<outer>(b|c))d",
     "a(?P<word>b|c)d",
     "a(b|c)d",
@@ -192,6 +201,16 @@ class SupplementalReplacementCase:
     string: TextValue
     count: int | None = None
     expected_result: ReplacementOutcome | None = None
+
+
+@dataclass(frozen=True)
+class ReplacementParityCase:
+    fixture_case: FixtureCase
+    unsupported_backends: tuple[str, ...] = ()
+    unsupported_backend_reason: str | None = None
+
+    def __getattr__(self, attribute: str) -> object:
+        return getattr(self.fixture_case, attribute)
 
 
 @dataclass(frozen=True)
@@ -954,6 +973,22 @@ def _run_replacement_case(
     raise ValueError(f"unsupported replacement parity operation {case.operation!r}")
 
 
+def _replacement_parity_case(case: FixtureCase) -> ReplacementParityCase:
+    if (
+        case.manifest_id
+        == NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID
+    ):
+        return ReplacementParityCase(
+            fixture_case=case,
+            unsupported_backends=("rebar",),
+            unsupported_backend_reason=(
+                "rebar replacement-template parity for the bounded `{1,4}` "
+                "nested branch-local-backreference slice remains unimplemented"
+            ),
+        )
+    return ReplacementParityCase(fixture_case=case)
+
+
 def _search_match_for_case(
     surface: LoadedReplacementSurface,
     backend_name: str,
@@ -1114,6 +1149,35 @@ REPLACEMENT_SURFACE_SPECS = (
                     {
                         r"a((bc)+)d",
                         r"a(?P<outer>(?P<inner>bc)+)d",
+                    }
+                ),
+                expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
+            ),
+            FixtureBundleSpec(
+                (
+                    "nested_broader_range_wider_ranged_repeat_quantified_group_"
+                    "alternation_branch_local_backreference_replacement_"
+                    "workflows.py"
+                ),
+                expected_manifest_id=(
+                    NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID
+                ),
+                expected_case_ids=frozenset(
+                    {
+                        "module-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
+                        "module-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
+                        "pattern-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-str",
+                        "pattern-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-str",
+                        "module-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-mixed-branches-str",
+                        "module-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-str",
+                        "pattern-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-upper-bound-c-branch-str",
+                        "pattern-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+                    }
+                ),
+                expected_patterns=frozenset(
+                    {
+                        r"a((b|c){1,4})\2d",
+                        r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
                     }
                 ),
                 expected_operation_helper_counts=EXPECTED_OPERATION_HELPER_COUNTS,
@@ -1551,12 +1615,12 @@ COMPILE_PATTERN_PARAMS = tuple(
     for pattern in surface.spec.compile_patterns
 )
 MODULE_CASE_PARAMS = tuple(
-    pytest.param(case, id=case.case_id)
+    pytest.param(_replacement_parity_case(case), id=case.case_id)
     for surface in REPLACEMENT_SURFACES
     for case in surface.module_cases
 )
 PATTERN_CASE_PARAMS = tuple(
-    pytest.param(case, id=case.case_id)
+    pytest.param(_replacement_parity_case(case), id=case.case_id)
     for surface in REPLACEMENT_SURFACES
     for case in surface.pattern_cases
 )
