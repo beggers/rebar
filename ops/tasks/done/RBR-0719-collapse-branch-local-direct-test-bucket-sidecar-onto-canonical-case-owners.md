@@ -1,6 +1,6 @@
 # RBR-0719: Collapse branch-local direct-test bucket sidecar onto canonical case owners
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -87,3 +87,8 @@ PY` reported the existing tail through `RBR-0718`, no reserved missing tail ids,
 - This simplification matches the current branch-local parity information flow:
   - `COMPILE_CASES`, `MODULE_CASES`, and `PATTERN_CASES` already own the shared direct-test buckets; and
   - `DIRECT_BYTES_FOLLOW_ON_SPECS` already owns the canonical follow-on bundle ordering plus the bytes-case routing needed to derive the five explicit follow-on buckets without a second owner layer.
+
+## Completion Notes
+- 2026-03-19: Replaced `BRANCH_LOCAL_BACKREFERENCE_DIRECT_TEST_CASE_ID_BUCKETS` with the file-local `_branch_local_direct_test_case_id_buckets()` helper, derived directly from `COMPILE_CASES`, `MODULE_CASES`, `PATTERN_CASES`, and `DIRECT_BYTES_FOLLOW_ON_SPECS` so the detached registry is gone while bucket routing stays unchanged.
+- 2026-03-19: Updated the selected-frontier coverage test and the direct bytes follow-on anchor test to call the derived helper instead of indexing a top-level sidecar map.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py` (`561 passed in 0.83s`), the acceptance import-order probe (`ok`), a direct helper probe covering shared-key and bytes-follow-on key order plus bytes-case routing (`ok`), and `bash -lc "! rg -n 'BRANCH_LOCAL_BACKREFERENCE_DIRECT_TEST_CASE_ID_BUCKETS' tests/python/test_branch_local_backreference_parity_suite.py"`.
