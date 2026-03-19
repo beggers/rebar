@@ -329,7 +329,7 @@ The published correctness slice now sits at 1326 of 1334 cases with 8 honest `un
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0663`: convert the just-published broader `{1,4}` nested grouped-alternation plus branch-local-backreference callable-replacement bytes pair to real parity on the shared callable surface, taking `collection.replacement.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference.callable` from `16` total / `8` passed / `8` `unimplemented` with mixed `str`/`bytes` coverage to `16` / `16` / `0` and the published correctness report from `1334` / `1326` / `8` to `1334` / `1334` / `0` across the same `111` manifests.
+- `RBR-0665`: catch the broader `{1,4}` nested grouped-alternation plus branch-local-backreference callable-replacement bytes pair up on the existing `nested-group-callable-replacement-boundary` benchmark surface, moving that manifest from `52` total workloads / `52` measured workloads / `0` known gaps to `56` / `56` / `0` and the combined source-tree benchmark report from `743` / `743` / `0` to `747` / `747` / `0` across the same `30` manifests.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
