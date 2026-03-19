@@ -1,6 +1,6 @@
 # RBR-0690: Catch the nested broader-range wider-ranged-repeat backtracking-heavy callable-replacement bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -48,3 +48,9 @@ Created: 2026-03-19
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently keeps `nested-broader-range-backtracking-heavy-callable-replacement` on `nested-group-callable-replacement-boundary` as those four `str` ids only, while the same owner path already promotes adjacent broader-range callable bytes rows as measured workloads on the same manifest;
   - `reports/benchmarks/latest.py` currently publishes `nested-group-callable-replacement-boundary` at `68` total workloads / `68` measured workloads / `0` known gaps and the combined source-tree report at `759` / `759` / `0`; and
   - direct `rg` probes in this planning run confirmed the planned bytes workload ids are absent from `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, so this ready task is not a stale no-op.
+
+## Completion
+- 2026-03-19: Added the four required broader `{1,4}` nested backtracking-heavy callable-replacement `bytes` mirrors to `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, keeping them on the existing shared manifest with the same public patterns, callback descriptors, haystacks, and module/`Pattern` entrypoints as the adjacent `str` rows.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the existing `nested-broader-range-backtracking-heavy-callable-replacement` slice, manifest-promotion assertion, and combined-scorecard assertion now promote the mixed eight-row `str` plus `bytes` surface instead of the former four-row `str` subset.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_callable_replacement_boundary.py --report .rebar/tmp/rbr-0690-nested-broader-range-wider-ranged-repeat-backtracking-heavy-callable-replacement-bytes-benchmarks.py`.
+- Republished `reports/benchmarks/latest.py`; the tracked publication now records `nested-group-callable-replacement-boundary` at `72` total / `72` measured / `0` known gaps and the combined source-tree benchmark report at `763` total / `763` measured / `0` known gaps.
