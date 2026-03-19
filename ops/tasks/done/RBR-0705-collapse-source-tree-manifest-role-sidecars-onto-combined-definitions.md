@@ -1,6 +1,6 @@
 # RBR-0705: Collapse source-tree manifest-role sidecars onto combined manifest definitions
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -67,3 +67,8 @@ PY`
 - This simplification matches the current benchmark information flow:
   - `SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS` already acts as the canonical registry for combined-manifest known-gap, fully measured, shape, and zero-gap bytes metadata; and
   - folding the remaining base-manifest and zero-gap-promotion role flags onto those definition records removes one more parallel owner layer without changing the published benchmark boundary.
+
+## Completion
+- Folded the remaining base-manifest exclusion and zero-gap promotion role metadata onto `SourceTreeCombinedManifestExpectationDefinition` via definition-owned boolean flags in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Updated `source_tree_combined_target_manifest_ids()` and the zero-gap promotion test to derive manifest ids from those owning records instead of detached sidecar tables, while keeping the same excluded-manifest and promotion-manifest order contracts.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, the inline source probe, and the `rg` absence check from this task.

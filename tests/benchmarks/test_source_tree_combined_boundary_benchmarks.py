@@ -406,16 +406,6 @@ def find_workload_document(
         f"missing workload definition {workload_id!r} in {manifest.manifest_id!r}"
     )
 
-BASE_SOURCE_TREE_MANIFEST_IDS = frozenset({"compile-matrix", "regression-matrix"})
-
-ZERO_GAP_PROMOTION_MANIFEST_IDS = (
-    "grouped-named-boundary",
-    "numbered-backreference-boundary",
-    "nested-group-boundary",
-    "optional-group-boundary",
-)
-
-
 @dataclass(frozen=True, slots=True)
 class SourceTreeBenchmarkCommonCase:
     expected_adapter: str
@@ -506,6 +496,8 @@ class SourceTreeCombinedFullyMeasuredManifestExpectation:
 
 @dataclass(frozen=True, slots=True)
 class SourceTreeCombinedManifestExpectationDefinition:
+    exclude_from_combined_targets: bool = False
+    promote_zero_gap_representatives: bool = False
     known_gap_workload_ids: tuple[str, ...] | None = None
     representative_measured_workload_ids: tuple[str, ...] | None = None
     representative_known_gap_workload_ids: tuple[str, ...] | None = None
@@ -620,6 +612,8 @@ SOURCE_TREE_SCORECARD_EXPECTATIONS = {
 
 def _combined_manifest_definition(
     *,
+    exclude_from_combined_targets: bool = False,
+    promote_zero_gap_representatives: bool = False,
     known_gap_workload_ids: tuple[str, ...] | None = None,
     representative_measured_workload_ids: tuple[str, ...] | None = None,
     representative_known_gap_workload_ids: tuple[str, ...] | None = None,
@@ -642,6 +636,8 @@ def _combined_manifest_definition(
                 "representative rows on the shared definition-owned contract"
             )
     return SourceTreeCombinedManifestExpectationDefinition(
+        exclude_from_combined_targets=exclude_from_combined_targets,
+        promote_zero_gap_representatives=promote_zero_gap_representatives,
         known_gap_workload_ids=known_gap_workload_ids,
         representative_measured_workload_ids=representative_measured_workload_ids,
         representative_known_gap_workload_ids=representative_known_gap_workload_ids,
@@ -706,7 +702,9 @@ def _combined_pattern_group(
 
 
 SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
-    "compile-matrix": _combined_manifest_definition(),
+    "compile-matrix": _combined_manifest_definition(
+        exclude_from_combined_targets=True,
+    ),
     "module-boundary": _combined_manifest_definition(
         representative_measured_workload_ids=(
             "module-compile-literal-cold",
@@ -729,12 +727,14 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
     "collection-replacement-boundary": _combined_manifest_definition(),
     "literal-flag-boundary": _combined_manifest_definition(),
     "grouped-named-boundary": _combined_manifest_definition(
+        promote_zero_gap_representatives=True,
         representative_measured_workload_ids=(
             "module-search-grouped-segment-cold-gap",
             "pattern-search-grouped-segment-warm-gap",
         ),
     ),
     "numbered-backreference-boundary": _combined_manifest_definition(
+        promote_zero_gap_representatives=True,
         representative_measured_workload_ids=(
             "module-search-numbered-backreference-segment-cold-gap",
             "pattern-search-numbered-backreference-prefix-purged-gap",
@@ -759,6 +759,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
     ),
     "grouped-alternation-callable-replacement-boundary": _combined_manifest_definition(),
     "nested-group-boundary": _combined_manifest_definition(
+        promote_zero_gap_representatives=True,
         representative_measured_workload_ids=(
             "module-search-triple-nested-group-cold-gap",
             "pattern-fullmatch-named-quantified-nested-group-purged-gap",
@@ -795,6 +796,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         ),
     ),
     "optional-group-boundary": _combined_manifest_definition(
+        promote_zero_gap_representatives=True,
         representative_measured_workload_ids=(
             "module-search-numbered-optional-group-conditional-cold-gap",
         ),
@@ -1205,6 +1207,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
     "conditional-group-exists-empty-yes-else-boundary": _combined_manifest_definition(),
     "conditional-group-exists-fully-empty-boundary": _combined_manifest_definition(),
     "regression-matrix": _combined_manifest_definition(
+        exclude_from_combined_targets=True,
         representative_measured_workload_ids=(
             "regression-parser-bytes-backreference-purged",
         ),
@@ -2716,19 +2719,25 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
 
 
 def source_tree_combined_target_manifest_ids() -> tuple[str, ...]:
-    target_manifest_ids = tuple(
-        manifest.manifest_id
-        for manifest in published_benchmark_manifests()
-        if manifest.manifest_id not in BASE_SOURCE_TREE_MANIFEST_IDS
-    )
-    target_ids = set(target_manifest_ids)
-    missing_expectations = target_ids - set(SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS)
+    target_manifest_ids: list[str] = []
+    missing_expectations: list[str] = []
+    for manifest in published_benchmark_manifests():
+        manifest_id = manifest.manifest_id
+        manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(
+            manifest_id
+        )
+        if manifest_expectation is None:
+            missing_expectations.append(manifest_id)
+            continue
+        if manifest_expectation.exclude_from_combined_targets:
+            continue
+        target_manifest_ids.append(manifest_id)
     if missing_expectations:
         raise AssertionError(
             "source-tree combined manifest expectations drifted from the published full-suite selector: "
             f"missing {sorted(missing_expectations)}"
         )
-    return target_manifest_ids
+    return tuple(target_manifest_ids)
 
 
 def _selected_source_tree_manifests_for_target_manifest(
@@ -3219,11 +3228,52 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_zero_gap_manifest_representative_promotions_keep_selected_rows_measured(
         self,
     ) -> None:
-        for manifest_id in ZERO_GAP_PROMOTION_MANIFEST_IDS:
+        promotion_manifest_ids = tuple(
+            manifest_id
+            for manifest_id in source_tree_combined_target_manifest_ids()
+            if SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+                manifest_id
+            ].promote_zero_gap_representatives
+        )
+        self.assertEqual(
+            promotion_manifest_ids,
+            (
+                "grouped-named-boundary",
+                "numbered-backreference-boundary",
+                "nested-group-boundary",
+                "optional-group-boundary",
+            ),
+        )
+        for manifest_id in promotion_manifest_ids:
             with self.subTest(manifest_id=manifest_id):
                 self._assert_zero_gap_manifest_representative_promotion(
                     manifest_id
                 )
+
+    def test_combined_target_manifest_ids_exclude_only_definition_owned_base_manifests(
+        self,
+    ) -> None:
+        excluded_manifest_ids = tuple(
+            manifest.manifest_id
+            for manifest in published_benchmark_manifests()
+            if SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+                manifest.manifest_id
+            ].exclude_from_combined_targets
+        )
+        self.assertEqual(
+            excluded_manifest_ids,
+            ("compile-matrix", "regression-matrix"),
+        )
+        self.assertEqual(
+            source_tree_combined_target_manifest_ids(),
+            tuple(
+                manifest.manifest_id
+                for manifest in published_benchmark_manifests()
+                if not SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+                    manifest.manifest_id
+                ].exclude_from_combined_targets
+            ),
+        )
 
     def test_literal_flag_combined_case_preserves_expected_manifest_paths(self) -> None:
         case = source_tree_combined_case("literal-flag-boundary")
