@@ -38,6 +38,9 @@ GROUPED_ALTERNATION_MANIFEST_PATH = (
 GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_replacement_boundary.py"
 )
+NESTED_GROUP_REPLACEMENT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.py"
+)
 OPEN_ENDED_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
 )
@@ -778,6 +781,162 @@ EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_LEGACY_NESTED_ANCHOR_CASE_IDS = {
         "pattern-subn-template-nested-group-alternation-named-outer-first-match-only-str",
     ),
 }
+EXPECTED_NESTED_GROUP_REPLACEMENT_ANCHOR_CASE_IDS = {
+    (
+        "nested_group_replacement_boundary.py",
+        "module-sub-template-nested-group-numbered-warm-str",
+    ): ("module-sub-template-nested-group-numbered-str",),
+    (
+        "nested_group_replacement_boundary.py",
+        "module-subn-template-nested-group-numbered-warm-str",
+    ): ("module-subn-template-nested-group-numbered-str",),
+    (
+        "nested_group_replacement_boundary.py",
+        "pattern-sub-template-nested-group-numbered-purged-str",
+    ): ("pattern-sub-template-nested-group-numbered-str",),
+    (
+        "nested_group_replacement_boundary.py",
+        "pattern-subn-template-nested-group-numbered-purged-str",
+    ): ("pattern-subn-template-nested-group-numbered-str",),
+    (
+        "nested_group_replacement_boundary.py",
+        "module-sub-template-nested-group-named-warm-str",
+    ): ("module-sub-template-nested-group-named-str",),
+    (
+        "nested_group_replacement_boundary.py",
+        "module-subn-template-nested-group-named-warm-str",
+    ): ("module-subn-template-nested-group-named-str",),
+    (
+        "nested_group_replacement_boundary.py",
+        "pattern-sub-template-nested-group-named-purged-str",
+    ): ("pattern-sub-template-nested-group-named-str",),
+    (
+        "nested_group_replacement_boundary.py",
+        "pattern-subn-template-nested-group-named-purged-str",
+    ): ("pattern-subn-template-nested-group-named-str",),
+    (
+        "nested_group_replacement_boundary.py",
+        "module-sub-template-numbered-quantified-nested-group-replacement-lower-bound-warm-str",
+    ): ("module-sub-template-quantified-nested-group-numbered-lower-bound-str",),
+    (
+        "nested_group_replacement_boundary.py",
+        "module-subn-template-numbered-quantified-nested-group-replacement-first-match-only-warm-str",
+    ): ("module-subn-template-quantified-nested-group-numbered-first-match-only-str",),
+    (
+        "nested_group_replacement_boundary.py",
+        "pattern-sub-template-named-quantified-nested-group-replacement-repeated-outer-purged-str",
+    ): ("pattern-sub-template-quantified-nested-group-named-repeated-outer-capture-str",),
+    (
+        "nested_group_replacement_boundary.py",
+        "pattern-subn-template-named-quantified-nested-group-replacement-purged-gap",
+    ): ("pattern-subn-template-quantified-nested-group-named-first-match-only-str",),
+    (
+        "nested_group_replacement_boundary.py",
+        "module-sub-template-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
+    ): (
+        "module-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
+    ),
+    (
+        "nested_group_replacement_boundary.py",
+        "module-subn-template-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
+    ): (
+        "module-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
+    ),
+    (
+        "nested_group_replacement_boundary.py",
+        "pattern-sub-template-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-all-c-purged-str",
+    ): (
+        "pattern-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-upper-bound-c-branch-str",
+    ),
+    (
+        "nested_group_replacement_boundary.py",
+        "pattern-subn-template-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-c-branch-first-match-only-purged-str",
+    ): (
+        "pattern-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+    ),
+    (
+        "nested_group_replacement_boundary.py",
+        "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str",
+    ): (
+        "module-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
+    ),
+    (
+        "nested_group_replacement_boundary.py",
+        "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str",
+    ): (
+        "module-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
+    ),
+    (
+        "nested_group_replacement_boundary.py",
+        "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-c-branch-purged-str",
+    ): (
+        "pattern-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
+    ),
+    (
+        "nested_group_replacement_boundary.py",
+        "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-str",
+    ): (
+        "pattern-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+    ),
+    (
+        "nested_group_replacement_boundary.py",
+        "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-b-branch-warm-str",
+    ): (
+        "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
+    ),
+    (
+        "nested_group_replacement_boundary.py",
+        "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-first-match-only-b-branch-warm-str",
+    ): (
+        "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
+    ),
+    (
+        "nested_group_replacement_boundary.py",
+        "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-c-branch-purged-str",
+    ): (
+        "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
+    ),
+    (
+        "nested_group_replacement_boundary.py",
+        "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-c-branch-first-match-only-purged-str",
+    ): (
+        "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+    ),
+    (
+        "nested_group_replacement_boundary.py",
+        "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-str",
+    ): (
+        "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-lower-bound-b-branch-str",
+    ),
+    (
+        "nested_group_replacement_boundary.py",
+        "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-first-match-only-b-branch-warm-str",
+    ): (
+        "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-first-match-only-b-branch-str",
+    ),
+    (
+        "nested_group_replacement_boundary.py",
+        "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-purged-str",
+    ): (
+        "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-lower-bound-c-branch-str",
+    ),
+    (
+        "nested_group_replacement_boundary.py",
+        "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-c-branch-first-match-only-purged-str",
+    ): (
+        "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-str",
+    ),
+}
+EXPECTED_NESTED_GROUP_REPLACEMENT_SPECIAL_UNANCHORED_WORKLOAD_IDS = (
+    "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-b-branch-warm-bytes",
+    "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-first-match-only-b-branch-warm-bytes",
+    "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-c-branch-purged-bytes",
+    "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-c-branch-first-match-only-purged-bytes",
+    "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-bytes",
+    "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-first-match-only-b-branch-warm-bytes",
+    "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-purged-bytes",
+    "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-c-branch-first-match-only-purged-bytes",
+)
 
 EXPECTED_OPEN_ENDED_SPECIAL_UNANCHORED_WORKLOAD_IDS = (
     "module-search-numbered-open-ended-group-alternation-lower-bound-bc-warm-bytes",
@@ -1256,6 +1415,13 @@ def _is_non_special_open_ended_workload(workload: Any) -> bool:
     return workload.workload_id not in EXPECTED_OPEN_ENDED_SPECIAL_UNANCHORED_WORKLOAD_IDS
 
 
+def _is_non_special_nested_group_replacement_workload(workload: Any) -> bool:
+    return (
+        workload.workload_id
+        not in EXPECTED_NESTED_GROUP_REPLACEMENT_SPECIAL_UNANCHORED_WORKLOAD_IDS
+    )
+
+
 def _grouped_alternation_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
@@ -1585,6 +1751,21 @@ STANDARD_BENCHMARK_DEFINITIONS = (
             EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_LEGACY_NESTED_ANCHOR_CASE_IDS
         ),
         callback_anchor_case_ids=EXPECTED_GROUPED_ALTERNATION_REPLACEMENT_ANCHOR_CASE_IDS,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="nested-group-replacement",
+        manifest_paths=(NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,),
+        expected_anchor_case_ids=EXPECTED_NESTED_GROUP_REPLACEMENT_ANCHOR_CASE_IDS,
+        include_workload=_is_non_special_nested_group_replacement_workload,
+        correctness_case_signature=(
+            _grouped_alternation_replacement_correctness_case_signature
+        ),
+        workload_signature=_grouped_alternation_replacement_workload_signature,
+        run_callback_result_parity=True,
+        expected_special_unanchored_workload_ids=(
+            EXPECTED_NESTED_GROUP_REPLACEMENT_SPECIAL_UNANCHORED_WORKLOAD_IDS
+        ),
+        run_special_unanchored_result_parity=True,
     ),
     StandardBenchmarkAnchorContractDefinition(
         name="open-ended-grouped-alternation",
