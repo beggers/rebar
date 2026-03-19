@@ -288,13 +288,6 @@ class SupplementalCase:
     unsupported_backend_reason: str | None = None
 
 
-@dataclass(frozen=True)
-class DirectBytesFollowOnSpec:
-    id: str
-    manifest_id: str
-    supplemental_cases: tuple[SupplementalCase, ...]
-
-
 OPEN_ENDED_ALTERNATION_BYTES_CASES = (
     SupplementalCase(
         id="open-ended-grouped-alternation-numbered-bytes",
@@ -408,33 +401,6 @@ BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
         fullmatch_misses=(b"abcd",),
     ),
 )
-DIRECT_BYTES_FOLLOW_ON_SPECS = (
-    DirectBytesFollowOnSpec(
-        id="broader-range-alternation",
-        manifest_id="broader-range-open-ended-quantified-group-alternation-workflows",
-        supplemental_cases=BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
-    ),
-    DirectBytesFollowOnSpec(
-        id="open-ended-backtracking-heavy",
-        manifest_id="open-ended-quantified-group-alternation-backtracking-heavy-workflows",
-        supplemental_cases=OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
-    ),
-    DirectBytesFollowOnSpec(
-        id="broader-range-conditional",
-        manifest_id=(
-            "broader-range-open-ended-quantified-group-alternation-conditional-workflows"
-        ),
-        supplemental_cases=BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
-    ),
-    DirectBytesFollowOnSpec(
-        id="broader-range-backtracking-heavy",
-        manifest_id=(
-            "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-workflows"
-        ),
-        supplemental_cases=BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
-    ),
-)
-DIRECT_BYTES_FOLLOW_ON_SPEC_IDS = tuple(spec.id for spec in DIRECT_BYTES_FOLLOW_ON_SPECS)
 
 
 def partition_direct_bytes_follow_on_case_buckets(

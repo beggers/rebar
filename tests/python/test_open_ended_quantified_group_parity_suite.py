@@ -13,8 +13,6 @@ from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
-    DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
-    DIRECT_BYTES_FOLLOW_ON_SPECS,
     FixtureBundle,
     FixtureBundleSpec,
     NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES,
@@ -259,36 +257,9 @@ OPEN_ENDED_TRACE_BUNDLES = (
     NESTED_OPEN_ENDED_ALTERNATION_BUNDLE,
 )
 
-COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_case_buckets(
-    FIXTURE_BUNDLES,
-    tuple(
-        published_fixture_bundle_by_manifest_id(FIXTURE_BUNDLES, spec.manifest_id)
-        for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
-    ),
-)
 OPEN_ENDED_QUANTIFIED_GROUP_SELECTED_CASE_IDS = tuple(
     case.case_id for bundle in FIXTURE_BUNDLES for case in bundle.cases
 )
-OPEN_ENDED_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS = {
-    "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
-    "shared-module-search": frozenset(case.case_id for case in MODULE_CASES),
-    "shared-pattern-fullmatch": frozenset(case.case_id for case in PATTERN_CASES),
-    **{
-        f"{spec_id}-bytes-follow-on": frozenset(
-            case.case_id
-            for case in published_fixture_bundle_by_manifest_id(
-                FIXTURE_BUNDLES,
-                follow_on_spec.manifest_id,
-            ).cases
-            if case.text_model == "bytes"
-        )
-        for spec_id, follow_on_spec in zip(
-            DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
-            DIRECT_BYTES_FOLLOW_ON_SPECS,
-            strict=True,
-        )
-    },
-}
 
 
 @dataclass(frozen=True)
@@ -299,6 +270,7 @@ class BytesCaseSurfaceSpec:
     expected_operation_helper_counts: Counter[tuple[str, str | None]]
     expected_module_search_texts_by_pattern: dict[bytes, frozenset[bytes]]
     expected_pattern_fullmatch_texts_by_pattern: dict[bytes, frozenset[bytes]]
+    follow_on_id: str | None = None
 
 
 OPEN_ENDED_BYTES_CASE_SURFACES = (
@@ -359,6 +331,35 @@ OPEN_ENDED_BYTES_CASE_SURFACES = (
         },
     ),
     BytesCaseSurfaceSpec(
+        bundle=BROADER_RANGE_OPEN_ENDED_ALTERNATION_BUNDLE,
+        cases=BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
+        routes_through_generic_case_buckets=False,
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 4,
+                ("pattern_call", "fullmatch"): 10,
+            }
+        ),
+        expected_module_search_texts_by_pattern={
+            BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES[0].pattern: frozenset(
+                {b"zzabcbcdzz", b"zzadededzz"}
+            ),
+            BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES[1].pattern: frozenset(
+                {b"zzabcbcdzz", b"zzadededzz"}
+            ),
+        },
+        expected_pattern_fullmatch_texts_by_pattern={
+            BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES[0].pattern: frozenset(
+                {b"abcded", b"abcbcded", b"adededed", b"abcd", b"ad"}
+            ),
+            BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES[1].pattern: frozenset(
+                {b"abcded", b"abcbcded", b"adededed", b"abcd", b"ad"}
+            ),
+        },
+        follow_on_id="broader-range-alternation",
+    ),
+    BytesCaseSurfaceSpec(
         bundle=OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
         cases=OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
         routes_through_generic_case_buckets=False,
@@ -390,34 +391,7 @@ OPEN_ENDED_BYTES_CASE_SURFACES = (
                 {b"abcbcbcbcd"}
             ),
         },
-    ),
-    BytesCaseSurfaceSpec(
-        bundle=BROADER_RANGE_OPEN_ENDED_ALTERNATION_BUNDLE,
-        cases=BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
-        routes_through_generic_case_buckets=False,
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 2,
-                ("module_call", "search"): 4,
-                ("pattern_call", "fullmatch"): 10,
-            }
-        ),
-        expected_module_search_texts_by_pattern={
-            BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES[0].pattern: frozenset(
-                {b"zzabcbcdzz", b"zzadededzz"}
-            ),
-            BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES[1].pattern: frozenset(
-                {b"zzabcbcdzz", b"zzadededzz"}
-            ),
-        },
-        expected_pattern_fullmatch_texts_by_pattern={
-            BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES[0].pattern: frozenset(
-                {b"abcded", b"abcbcded", b"adededed", b"abcd", b"ad"}
-            ),
-            BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES[1].pattern: frozenset(
-                {b"abcded", b"abcbcded", b"adededed", b"abcd", b"ad"}
-            ),
-        },
+        follow_on_id="open-ended-backtracking-heavy",
     ),
     BytesCaseSurfaceSpec(
         bundle=BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BUNDLE,
@@ -446,6 +420,7 @@ OPEN_ENDED_BYTES_CASE_SURFACES = (
                 {b"abcbcded", b"ad"}
             ),
         },
+        follow_on_id="broader-range-conditional",
     ),
     BytesCaseSurfaceSpec(
         bundle=BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BUNDLE,
@@ -481,6 +456,7 @@ OPEN_ENDED_BYTES_CASE_SURFACES = (
                 frozenset({b"abcbccd", b"abcd"})
             ),
         },
+        follow_on_id="broader-range-backtracking-heavy",
     ),
     BytesCaseSurfaceSpec(
         bundle=NESTED_OPEN_ENDED_ALTERNATION_BUNDLE,
@@ -514,6 +490,24 @@ OPEN_ENDED_BYTES_CASE_SURFACES = (
 OPEN_ENDED_SUPPLEMENTAL_BYTES_CASES = tuple(
     case for spec in OPEN_ENDED_BYTES_CASE_SURFACES for case in spec.cases
 )
+DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = tuple(
+    spec for spec in OPEN_ENDED_BYTES_CASE_SURFACES if spec.follow_on_id is not None
+)
+COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_case_buckets(
+    FIXTURE_BUNDLES,
+    tuple(spec.bundle for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES),
+)
+OPEN_ENDED_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS = {
+    "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
+    "shared-module-search": frozenset(case.case_id for case in MODULE_CASES),
+    "shared-pattern-fullmatch": frozenset(case.case_id for case in PATTERN_CASES),
+    **{
+        f"{spec.follow_on_id}-bytes-follow-on": frozenset(
+            case.case_id for case in spec.bundle.cases if case.text_model == "bytes"
+        )
+        for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+    },
+}
 OPEN_ENDED_GENERIC_BUCKET_BYTES_CASE_SURFACES = tuple(
     spec
     for spec in OPEN_ENDED_BYTES_CASE_SURFACES
@@ -915,7 +909,8 @@ def test_bytes_cases_stay_explicit_with_expected_bundle_coverage(
         if case.text_model == "bytes"
     )
     direct_manifest_ids = frozenset(
-        follow_on_spec.manifest_id for follow_on_spec in DIRECT_BYTES_FOLLOW_ON_SPECS
+        follow_on_spec.bundle.manifest.manifest_id
+        for follow_on_spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
     )
 
     assert spec.routes_through_generic_case_buckets == (
@@ -1000,28 +995,24 @@ def test_generic_bytes_fixture_rows_run_through_generic_case_buckets(
 
 
 @pytest.mark.parametrize(
-    "follow_on_spec",
-    DIRECT_BYTES_FOLLOW_ON_SPECS,
-    ids=DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
+    "spec",
+    DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
+    ids=lambda spec: spec.follow_on_id,
 )
 def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
-    follow_on_spec: object,
+    spec: BytesCaseSurfaceSpec,
 ) -> None:
-    bundle = published_fixture_bundle_by_manifest_id(
-        FIXTURE_BUNDLES,
-        follow_on_spec.manifest_id,
-    )
     _, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
-        bundle,
+        spec.bundle,
         compile_cases=COMPILE_CASES,
         module_cases=MODULE_CASES,
         pattern_cases=PATTERN_CASES,
     )
 
     assert bundle_bytes_cases
-    assert {case.pattern for case in follow_on_spec.supplemental_cases} == frozenset(
+    assert {case.pattern for case in spec.cases} == frozenset(
         case_pattern(case)
-        for case in fixture_cases_for_operation((bundle,), "compile")
+        for case in fixture_cases_for_operation((spec.bundle,), "compile")
         if case.text_model == "bytes"
     )
 
@@ -1094,15 +1085,18 @@ def test_open_ended_supplemental_bytes_case_tables_keep_case_ids_in_order(
     assert tuple(case.id for case in supplemental_cases) == expected_case_ids
 
 
-def test_open_ended_direct_bytes_follow_on_specs_keep_expected_manifest_pairings(
+def test_open_ended_direct_bytes_follow_on_case_surfaces_keep_expected_manifest_pairings(
 ) -> None:
-    assert DIRECT_BYTES_FOLLOW_ON_SPEC_IDS == (
+    assert tuple(spec.follow_on_id for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES) == (
         "broader-range-alternation",
         "open-ended-backtracking-heavy",
         "broader-range-conditional",
         "broader-range-backtracking-heavy",
     )
-    assert tuple((spec.id, spec.manifest_id) for spec in DIRECT_BYTES_FOLLOW_ON_SPECS) == (
+    assert tuple(
+        (spec.follow_on_id, spec.bundle.manifest.manifest_id)
+        for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+    ) == (
         (
             "broader-range-alternation",
             "broader-range-open-ended-quantified-group-alternation-workflows",
@@ -1121,36 +1115,32 @@ def test_open_ended_direct_bytes_follow_on_specs_keep_expected_manifest_pairings
         ),
     )
     assert (
-        DIRECT_BYTES_FOLLOW_ON_SPECS[0].supplemental_cases
+        DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES[0].cases
         is BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES
     )
     assert (
-        DIRECT_BYTES_FOLLOW_ON_SPECS[1].supplemental_cases
+        DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES[1].cases
         is OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES
     )
     assert (
-        DIRECT_BYTES_FOLLOW_ON_SPECS[2].supplemental_cases
+        DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES[2].cases
         is BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES
     )
     assert (
-        DIRECT_BYTES_FOLLOW_ON_SPECS[3].supplemental_cases
+        DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES[3].cases
         is BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES
     )
 
 
-def test_open_ended_direct_bytes_follow_on_specs_resolve_to_expected_published_mixed_fixtures(
+def test_open_ended_direct_bytes_follow_on_case_surfaces_resolve_to_expected_published_mixed_fixtures(
 ) -> None:
     fixture_paths = tuple(
-        published_fixture_bundle_by_manifest_id(
-            FIXTURE_BUNDLES,
-            spec.manifest_id,
-        ).manifest.path
-        for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
+        spec.bundle.manifest.path for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
     )
     bundles = load_published_fixture_bundles(fixture_paths)
 
     assert tuple(bundle.manifest.manifest_id for bundle in bundles) == tuple(
-        spec.manifest_id for spec in DIRECT_BYTES_FOLLOW_ON_SPECS
+        spec.bundle.manifest.manifest_id for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
     )
     assert tuple(path.name for path in fixture_paths) == (
         "broader_range_open_ended_quantified_group_alternation_workflows.py",
@@ -1166,29 +1156,25 @@ def test_open_ended_direct_bytes_follow_on_specs_resolve_to_expected_published_m
 
 
 @pytest.mark.parametrize(
-    "follow_on_spec",
-    DIRECT_BYTES_FOLLOW_ON_SPECS,
-    ids=DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
+    "spec",
+    DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
+    ids=lambda spec: spec.follow_on_id,
 )
 def test_assert_direct_bytes_follow_on_bundle_routing_accepts_mixed_manifest_buckets(
-    follow_on_spec: object,
+    spec: BytesCaseSurfaceSpec,
 ) -> None:
-    bundle = published_fixture_bundle_by_manifest_id(
-        FIXTURE_BUNDLES,
-        follow_on_spec.manifest_id,
-    )
     compile_cases, module_cases, pattern_cases = (
-        partition_direct_bytes_follow_on_case_buckets((bundle,), (bundle,))
+        partition_direct_bytes_follow_on_case_buckets((spec.bundle,), (spec.bundle,))
     )
 
     bundle_str_cases, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
-        bundle,
+        spec.bundle,
         compile_cases=compile_cases,
         module_cases=module_cases,
         pattern_cases=pattern_cases,
     )
 
-    assert len(bundle_str_cases) == len(bundle_bytes_cases) == len(bundle.cases) // 2
+    assert len(bundle_str_cases) == len(bundle_bytes_cases) == len(spec.bundle.cases) // 2
     assert {case.text_model for case in bundle_str_cases} == {"str"}
     assert {case.text_model for case in bundle_bytes_cases} == {"bytes"}
     assert Counter((case.operation, case.helper) for case in bundle_str_cases) == Counter(
@@ -1436,19 +1422,15 @@ def test_mixed_text_model_manifest_helper_reports_direct_follow_on_order_drift(
 
 
 @pytest.mark.parametrize(
-    "follow_on_spec",
-    DIRECT_BYTES_FOLLOW_ON_SPECS,
-    ids=DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
+    "spec",
+    DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
+    ids=lambda spec: spec.follow_on_id,
 )
 def test_partition_direct_bytes_follow_on_case_buckets_drops_only_follow_on_bytes_rows(
-    follow_on_spec: object,
+    spec: BytesCaseSurfaceSpec,
 ) -> None:
-    bundle = published_fixture_bundle_by_manifest_id(
-        FIXTURE_BUNDLES,
-        follow_on_spec.manifest_id,
-    )
     compile_cases, module_cases, pattern_cases = (
-        partition_direct_bytes_follow_on_case_buckets((bundle,), (bundle,))
+        partition_direct_bytes_follow_on_case_buckets((spec.bundle,), (spec.bundle,))
     )
 
     for operation, bucket_cases in (
@@ -1456,7 +1438,7 @@ def test_partition_direct_bytes_follow_on_case_buckets_drops_only_follow_on_byte
         ("module_call", module_cases),
         ("pattern_call", pattern_cases),
     ):
-        original_cases = fixture_cases_for_operation((bundle,), operation)
+        original_cases = fixture_cases_for_operation((spec.bundle,), operation)
         expected_case_ids = tuple(
             case.case_id for case in original_cases if case.text_model == "str"
         )
