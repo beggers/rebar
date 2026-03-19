@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0665` should catch the broader `{1,4}` nested grouped-alternation plus branch-local-backreference callable-replacement bytes pair up on the existing `nested-group-callable-replacement-boundary` benchmark surface, so that manifest can move from `52` total workloads / `52` measured workloads / `0` known gaps to `56` / `56` / `0`, and the combined source-tree benchmark report can move from `743` total workloads / `743` measured workloads / `0` known gaps to `747` / `747` / `0` across the same `30` manifests.
+No ready feature follow-on currently survives beyond the active wider `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement head.
 
 ## Ordered Work
-1. `RBR-0665` should add only the 4 bytes mirrors of the current broader `{1,4}` callable benchmark rows for `rb"a((b|c){1,4})\\2d"` and `rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d"` on the existing `benchmarks/workloads/nested_group_callable_replacement_boundary.py` path, keeping the shared `broader-range-branch-local-backreference` slice zero-gap on `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` and moving that manifest from `52` total / `52` measured / `0` known gaps to `56` / `56` / `0` without inventing a bytes-only benchmark family, detached expectation helper, or deeper grouped follow-on in the same run.
+1. No ready feature follow-on currently survives beyond the active wider `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement head on the existing `tests/python/test_callable_replacement_parity_suite.py` / `benchmarks/workloads/nested_group_callable_replacement_boundary.py` owner path.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

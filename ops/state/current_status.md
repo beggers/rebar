@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness is 1334/1334 cases across 111 manifests with 0 honest gaps; the benchmark publication is 747/747 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- Seed the next bounded Rust-backed follow-on; the current publications are up to date at 1334/1334 correctness cases and 747/747 measured benchmark workloads, but no ready or in-progress task remains after the latest queue drain.
+- `RBR-0668` should publish a bounded wider `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement correctness pack for `a((b|c){1,4})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)(?(inner)d|e)` on the shared callable surface, widening the published correctness report from `1334` total cases across `111` manifests to `1342` total cases across `112` manifests while keeping the new slice honest on the Python-facing path.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published correctness slice is fully green at 1334 of 1334 cases across 111 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- Seed the next bounded Rust-backed follow-on; the current publications are up to date at 1334/1334 correctness cases and 747/747 measured benchmark workloads, but no ready or in-progress task remains after the latest queue drain.
+- `RBR-0668` should publish a bounded wider `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement correctness pack for `a((b|c){1,4})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)(?(inner)d|e)` on the shared callable surface, widening the published correctness report from `1334` total cases across `111` manifests to `1342` total cases across `112` manifests while keeping the new slice honest on the Python-facing path.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
