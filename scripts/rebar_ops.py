@@ -155,18 +155,18 @@ def read_structured_dict(
 ) -> Any:
     if not path.exists():
         return default
-    try:
-        return load_scorecard_io_module().load_structured_dict(
-            path,
-            module_name_prefix=f"_rebar_{label}".replace("-", "_"),
-            attribute_name=python_attribute,
-            load_error_label=f"{label} module",
-            missing_error_label=f"Python {label} module",
-            type_error_label=label.capitalize(),
-            extension_error_label=label,
-        )
-    except (FileNotFoundError, OSError, ImportError, SyntaxError, ValueError):
-        return default
+    if path.suffix == ".json":
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (FileNotFoundError, OSError, json.JSONDecodeError):
+            return default
+        return payload if isinstance(payload, dict) else default
+    if path.suffix == ".py":
+        try:
+            return load_python_dict_attribute(path, attribute=python_attribute, label=label)
+        except (FileNotFoundError, OSError, ImportError, SyntaxError, RuntimeError):
+            return default
+    return default
 
 
 def resolve_repo_path(raw: str | Path) -> Path:
