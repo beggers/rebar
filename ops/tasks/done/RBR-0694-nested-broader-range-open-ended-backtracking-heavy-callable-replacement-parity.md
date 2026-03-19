@@ -1,6 +1,6 @@
 # RBR-0694: Convert the nested broader-range open-ended backtracking-heavy callable-replacement pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -53,3 +53,9 @@ Created: 2026-03-19
   - `reports/correctness/latest.py` currently reports `1374` total / `1366` passed / `8` `unimplemented` across `114` manifests, and `collection.replacement.nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy.callable` at `8` total / `0` passed / `8` `unimplemented`;
   - direct report probes in this planning run confirmed those eight honest gaps are the only remaining `unimplemented` cases in the current published correctness slice; and
   - `benchmarks/workloads/nested_group_callable_replacement_boundary.py` remains the adjacent Python-path benchmark home for this family, so a later benchmark catch-up can stay on that existing manifest path instead of inventing another benchmark surface.
+
+## Completion
+- 2026-03-19: Added a Rust-backed compile and callable span path for `a(((bc|b)c){2,})d` and `a(?P<outer>(?:(?P<inner>bc|b)c){2,})d`, exposed it through the CPython boundary, and wired the shared Python callable dispatcher to use it for module and compiled-`Pattern` `sub()` / `subn()` parity.
+- Removed the eight case ids for `nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-callable-replacement-workflows` from `pending_rebar_case_ids` and updated the shared callable-suite manifest bookkeeping so those rows now run as ordinary parity coverage.
+- Republished `reports/correctness/latest.py`; the tracked combined report is now `1374` total / `1374` passed / `0` `unimplemented`, and `collection.replacement.nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy.callable` is `8` total / `8` passed / `0` `unimplemented`.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_callable_replacement_workflows.py --report .rebar/tmp/rbr-0694-nested-broader-range-open-ended-backtracking-heavy-callable-replacement-parity.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
