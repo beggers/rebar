@@ -1,6 +1,6 @@
 # RBR-0651: Convert the nested broader-range wider-ranged-repeat branch-local-backreference replacement-template pack to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -47,3 +47,13 @@ Created: 2026-03-19
   - `tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_replacement_workflows.py` does not yet exist in the current checkout, so `RBR-0649` remains the immediate publication head rather than a stale no-op;
   - after `cargo build -p rebar-cpython`, direct public-API probes for all eight target workflows still raise `NotImplementedError` from `rebar.sub()`, `rebar.subn()`, `rebar.Pattern.sub()`, `rebar.Pattern.subn()`, or the compile placeholder path, so Rust-backed parity is not already satisfied in the current checkout; and
   - the later benchmark catch-up can mirror the same module and compiled-`Pattern` owner shapes on `benchmarks/workloads/nested_group_replacement_boundary.py` once this parity slice lands, because the adjacent wider replacement frontier already uses that shared manifest.
+
+## Completion
+- Routed `crates/rebar-cpython/src/lib.rs` template replacement discovery for this family through the existing quantified nested-group alternation plus branch-local-backreference span collector, which already covers the bounded `{1,4}` numbered and named `str` pair behind `rebar._rebar`.
+- Removed the stale pending bookkeeping from `tests/python/test_fixture_backed_replacement_parity_suite.py`, so the shared replacement suite now treats these eight `{1,4}` rows as ordinary live parity coverage and asserts that no replacement-template cases remain `unimplemented`.
+- Regenerated `reports/correctness/latest.py`; the tracked published scorecard now reads `1318` total / `1318` passed / `0` failed / `0` `unimplemented`, and the tracked `nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-replacement-workflows` fixture summary is `8` total / `8` passed / `0` failed / `0` `unimplemented`.
+- Verified with:
+  - `cargo build -p rebar-cpython`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`1122 passed, 1734 subtests passed`)
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_replacement_workflows.py --report .rebar/tmp/rbr-0651-nested-broader-range-wider-ranged-repeat-branch-local-backreference-replacement-parity.py` (`8` total / `8` passed / `0` `unimplemented`)
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1318` total / `1318` passed / `0` `unimplemented`)

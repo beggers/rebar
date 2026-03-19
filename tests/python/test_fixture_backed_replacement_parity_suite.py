@@ -977,18 +977,6 @@ def _run_replacement_case(
 
 
 def _replacement_parity_case(case: FixtureCase) -> ReplacementParityCase:
-    if (
-        case.manifest_id
-        == NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID
-    ):
-        return ReplacementParityCase(
-            fixture_case=case,
-            unsupported_backends=("rebar",),
-            unsupported_backend_reason=(
-                "rebar replacement-template parity for the bounded `{1,4}` "
-                "nested branch-local-backreference slice remains unimplemented"
-            ),
-        )
     return ReplacementParityCase(fixture_case=case)
 
 
@@ -1865,10 +1853,10 @@ def test_pending_rebar_replacement_frontier_matches_live_unimplemented_cases() -
 
     assert {case.case_id for case in live_unimplemented_cases} == (
         PENDING_REBAR_REPLACEMENT_CASE_IDS
-    )
+    ) == frozenset()
     assert {case.manifest_id for case in live_unimplemented_cases} == (
         PENDING_REBAR_REPLACEMENT_MANIFEST_IDS
-    ) == {NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_REPLACEMENT_MANIFEST_ID}
+    ) == frozenset()
 
 
 def test_mixed_replacement_manifest_routes_bytes_rows_through_shared_parity_surface(

@@ -26,7 +26,6 @@ use rebar_core::{
     nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_str as core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_str,
     nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_bytes as core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_bytes,
     nested_capture_find_spans_str as core_nested_capture_find_spans_str,
-    nested_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_str as core_nested_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_str,
     quantified_nested_capture_find_spans_str as core_quantified_nested_capture_find_spans_str,
     quantified_nested_group_alternation_branch_local_backreference_find_spans_str as core_quantified_nested_group_alternation_branch_local_backreference_find_spans_str,
     quantified_nested_group_alternation_find_spans_str as core_quantified_nested_group_alternation_find_spans_str,
@@ -1060,7 +1059,7 @@ fn boundary_literal_template_subn(
                                         )
                                     } else {
                                         let branch_local_outcome =
-                                            core_nested_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_str(
+                                            core_quantified_nested_group_alternation_branch_local_backreference_find_spans_str(
                                                 pattern_value,
                                                 flags,
                                                 string_value,
