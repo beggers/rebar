@@ -459,14 +459,6 @@ class BenchmarkAdapter:
         raise NotImplementedError
 
 
-def load_module(module_name: str) -> Any:
-    return importlib.import_module(module_name)
-
-
-def load_rebar_module() -> Any:
-    return load_module("rebar")
-
-
 def _clear_module(module_name: str) -> None:
     module_prefix = f"{module_name}."
     loaded_names = [
@@ -1230,7 +1222,7 @@ def source_tree_metadata(
     requested_mode: str,
     native_unavailable_reason: str | None,
 ) -> dict[str, Any]:
-    module = load_rebar_module()
+    module = importlib.import_module("rebar")
     probed = probe_loaded_rebar_metadata(module)
     includes_module_boundary = any(workload_family(workload) == "module" for workload in workloads)
     return {
@@ -1425,7 +1417,7 @@ def prepare_benchmark_run(
         requested_mode=requested_mode,
         resolved_mode=SOURCE_TREE_SHIM_MODE,
         baseline_adapter=CpythonReBenchmarkAdapter(),
-        implementation_adapter=RebarBenchmarkAdapter(load_rebar_module()),
+        implementation_adapter=RebarBenchmarkAdapter(importlib.import_module("rebar")),
         implementation_metadata=source_tree_metadata(
             workloads=workloads,
             requested_mode=requested_mode,
@@ -1497,7 +1489,7 @@ def run_internal_workload_probe(
 ) -> dict[str, Any]:
     workload = workload_from_payload(json.loads(workload_payload))
     try:
-        module = cpython_re if import_name == "re" else load_module(import_name)
+        module = cpython_re if import_name == "re" else importlib.import_module(import_name)
         callback = build_callable(module, import_name, workload)
         timing = measure_callable(workload, callback)
     except NotImplementedError as exc:
@@ -1516,7 +1508,7 @@ def run_internal_workload_probe(
 
 
 def run_internal_rebar_metadata_probe() -> dict[str, Any]:
-    module = load_rebar_module()
+    module = importlib.import_module("rebar")
     return {
         "module_name": "rebar",
         **probe_loaded_rebar_metadata(module),
