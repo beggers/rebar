@@ -741,13 +741,55 @@ class Adapter:
         return self._observe_compiled_pattern(case, observe_bound_helper)
 
     def observe_cache_workflow(self, case: FixtureCase) -> dict[str, Any]:
-        raise NotImplementedError
+        def collect_cache_state() -> dict[str, Any]:
+            self._purge_module_cache()
+            first = self._compile_pattern(case)
+            second = self._compile_pattern(case)
+            return {
+                "first": normalize_pattern_metadata(first),
+                "second": normalize_pattern_metadata(second),
+                "same_object": first is second,
+            }
+
+        return self._observe_cache_state(case, collect_cache_state)
 
     def observe_cache_distinct_workflow(self, case: FixtureCase) -> dict[str, Any]:
-        raise NotImplementedError
+        alias_flags = int(case.kwargs.get("alias_flags", case.flags or 0))
+        distinct_flags = int(case.kwargs["distinct_flags"])
+
+        def collect_cache_distinct_state() -> dict[str, Any]:
+            self._purge_module_cache()
+            first = self._compile_pattern(case)
+            alias = self.module.compile(case.pattern_payload(), alias_flags)
+            distinct = self.module.compile(case.pattern_payload(), distinct_flags)
+            return {
+                "first": normalize_pattern_metadata(first),
+                "alias": normalize_pattern_metadata(alias),
+                "distinct": normalize_pattern_metadata(distinct),
+                "same_object_as_alias": first is alias,
+                "same_object_as_distinct": first is distinct,
+            }
+
+        return self._observe_cache_state(case, collect_cache_distinct_state)
 
     def observe_purge_workflow(self, case: FixtureCase) -> dict[str, Any]:
-        raise NotImplementedError
+        def collect_purge_state() -> dict[str, Any]:
+            self._purge_module_cache()
+            first = self._compile_pattern(case)
+            second = self._compile_pattern(case)
+            purge_result = self._purge_module_cache()
+            third = self._compile_pattern(case)
+            fourth = self._compile_pattern(case)
+            return {
+                "before_purge": normalize_pattern_metadata(first),
+                "before_purge_same_object": first is second,
+                "purge_result": _normalize_value(purge_result),
+                "after_purge": normalize_pattern_metadata(third),
+                "after_purge_new_object": third is not first,
+                "after_purge_cache_hit": third is fourth,
+            }
+
+        return self._observe_cache_state(case, collect_purge_state)
 
     def observe_module_has_attr(self, case: FixtureCase) -> dict[str, Any]:
         if case.helper is None:
@@ -828,6 +870,37 @@ class Adapter:
         purge_helper = getattr(self.module, "purge")
         return purge_helper()
 
+    def _compile_pattern(self, case: FixtureCase) -> Any:
+        return self.module.compile(case.pattern_payload(), case.flags or 0)
+
+    def _observe_cache_state(
+        self,
+        case: FixtureCase,
+        observe_cache_state: Callable[[], dict[str, Any]],
+    ) -> dict[str, Any]:
+        # Cache workflow observations differ only by adapter-specific exception mapping.
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            try:
+                result = observe_cache_state()
+            except Exception as exc:  # pragma: no cover - exercised by fixtures
+                return finalize_observation(
+                    adapter=self.adapter_name,
+                    case=case,
+                    outcome=self._observation_outcome_for_exception(exc),
+                    warnings_payload=normalize_warning_records(caught),
+                    exception=normalize_exception(exc),
+                )
+
+        self._purge_module_cache()
+        return finalize_observation(
+            adapter=self.adapter_name,
+            case=case,
+            outcome="success",
+            warnings_payload=normalize_warning_records(caught),
+            result=result,
+        )
+
     def _observe_compiled_pattern(
         self,
         case: FixtureCase,
@@ -863,243 +936,15 @@ class CpythonReAdapter(Adapter):
     adapter_name = "cpython.re"
     module = cpython_re
 
-    def _compile_pattern(self, case: FixtureCase) -> Any:
-        return cpython_re.compile(case.pattern_payload(), case.flags or 0)
-
-    def observe_cache_workflow(self, case: FixtureCase) -> dict[str, Any]:
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            try:
-                self._purge_module_cache()
-                first = self._compile_pattern(case)
-                second = self._compile_pattern(case)
-            except Exception as exc:  # pragma: no cover - exercised by fixtures
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="exception",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-
-        self._purge_module_cache()
-        return finalize_observation(
-            adapter=self.adapter_name,
-            case=case,
-            outcome="success",
-            warnings_payload=normalize_warning_records(caught),
-            result={
-                "first": normalize_pattern_metadata(first),
-                "second": normalize_pattern_metadata(second),
-                "same_object": first is second,
-            },
-        )
-
-    def observe_purge_workflow(self, case: FixtureCase) -> dict[str, Any]:
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            try:
-                self._purge_module_cache()
-                first = self._compile_pattern(case)
-                second = self._compile_pattern(case)
-                purge_result = self._purge_module_cache()
-                third = self._compile_pattern(case)
-                fourth = self._compile_pattern(case)
-            except Exception as exc:  # pragma: no cover - exercised by fixtures
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="exception",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-
-        self._purge_module_cache()
-        return finalize_observation(
-            adapter=self.adapter_name,
-            case=case,
-            outcome="success",
-            warnings_payload=normalize_warning_records(caught),
-            result={
-                "before_purge": normalize_pattern_metadata(first),
-                "before_purge_same_object": first is second,
-                "purge_result": _normalize_value(purge_result),
-                "after_purge": normalize_pattern_metadata(third),
-                "after_purge_new_object": third is not first,
-                "after_purge_cache_hit": third is fourth,
-            },
-        )
-
-    def observe_cache_distinct_workflow(self, case: FixtureCase) -> dict[str, Any]:
-        alias_flags = int(case.kwargs.get("alias_flags", case.flags or 0))
-        distinct_flags = int(case.kwargs["distinct_flags"])
-
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            try:
-                self._purge_module_cache()
-                first = self._compile_pattern(case)
-                alias = cpython_re.compile(case.pattern_payload(), alias_flags)
-                distinct = cpython_re.compile(case.pattern_payload(), distinct_flags)
-            except Exception as exc:  # pragma: no cover - exercised by fixtures
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="exception",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-
-        self._purge_module_cache()
-        return finalize_observation(
-            adapter=self.adapter_name,
-            case=case,
-            outcome="success",
-            warnings_payload=normalize_warning_records(caught),
-            result={
-                "first": normalize_pattern_metadata(first),
-                "alias": normalize_pattern_metadata(alias),
-                "distinct": normalize_pattern_metadata(distinct),
-                "same_object_as_alias": first is alias,
-                "same_object_as_distinct": first is distinct,
-            },
-        )
-
 
 class RebarAdapter(Adapter):
     adapter_name = "rebar"
     module = rebar
 
-    def _compile_pattern(self, case: FixtureCase) -> Any:
-        return rebar.compile(case.pattern_payload(), case.flags or 0)
-
     def _observation_outcome_for_exception(self, exc: BaseException) -> str:
         if isinstance(exc, NotImplementedError):
             return "unimplemented"
         return "exception"
-
-    def observe_cache_workflow(self, case: FixtureCase) -> dict[str, Any]:
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            try:
-                self._purge_module_cache()
-                first = self._compile_pattern(case)
-                second = self._compile_pattern(case)
-            except NotImplementedError as exc:
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="unimplemented",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-            except Exception as exc:
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="exception",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-
-        self._purge_module_cache()
-        return finalize_observation(
-            adapter=self.adapter_name,
-            case=case,
-            outcome="success",
-            warnings_payload=normalize_warning_records(caught),
-            result={
-                "first": normalize_pattern_metadata(first),
-                "second": normalize_pattern_metadata(second),
-                "same_object": first is second,
-            },
-        )
-
-    def observe_purge_workflow(self, case: FixtureCase) -> dict[str, Any]:
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            try:
-                self._purge_module_cache()
-                first = self._compile_pattern(case)
-                second = self._compile_pattern(case)
-                purge_result = self._purge_module_cache()
-                third = self._compile_pattern(case)
-                fourth = self._compile_pattern(case)
-            except NotImplementedError as exc:
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="unimplemented",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-            except Exception as exc:
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="exception",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-
-        self._purge_module_cache()
-        return finalize_observation(
-            adapter=self.adapter_name,
-            case=case,
-            outcome="success",
-            warnings_payload=normalize_warning_records(caught),
-            result={
-                "before_purge": normalize_pattern_metadata(first),
-                "before_purge_same_object": first is second,
-                "purge_result": _normalize_value(purge_result),
-                "after_purge": normalize_pattern_metadata(third),
-                "after_purge_new_object": third is not first,
-                "after_purge_cache_hit": third is fourth,
-            },
-        )
-
-    def observe_cache_distinct_workflow(self, case: FixtureCase) -> dict[str, Any]:
-        alias_flags = int(case.kwargs.get("alias_flags", case.flags or 0))
-        distinct_flags = int(case.kwargs["distinct_flags"])
-
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            try:
-                self._purge_module_cache()
-                first = self._compile_pattern(case)
-                alias = rebar.compile(case.pattern_payload(), alias_flags)
-                distinct = rebar.compile(case.pattern_payload(), distinct_flags)
-            except NotImplementedError as exc:
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="unimplemented",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-            except Exception as exc:
-                return finalize_observation(
-                    adapter=self.adapter_name,
-                    case=case,
-                    outcome="exception",
-                    warnings_payload=normalize_warning_records(caught),
-                    exception=normalize_exception(exc),
-                )
-
-        self._purge_module_cache()
-        return finalize_observation(
-            adapter=self.adapter_name,
-            case=case,
-            outcome="success",
-            warnings_payload=normalize_warning_records(caught),
-            result={
-                "first": normalize_pattern_metadata(first),
-                "alias": normalize_pattern_metadata(alias),
-                "distinct": normalize_pattern_metadata(distinct),
-                "same_object_as_alias": first is alias,
-                "same_object_as_distinct": first is distinct,
-            },
-        )
 
 
 def finalize_observation(
