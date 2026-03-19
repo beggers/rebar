@@ -1,6 +1,6 @@
 # RBR-0689: Decouple the fixture-support helper contracts from published cases
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -66,3 +66,8 @@ PY`
   - the current `rg` absence check in Acceptance fails exactly on that seam;
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py` currently passes (`133 passed in 0.19s`); and
   - `test_case_pattern_helpers_extract_str_and_bytes_patterns_from_published_fixtures(...)` plus `_branch_local_named_backreference_match(...)` are the remaining consumers of that preload path.
+
+## Completion Note
+- Removed `_fixture_cases(...)` plus the three published-case preload tables from `tests/python/test_fixture_parity_support_contract.py`, replacing the pattern-helper contract coverage with file-local synthetic `FixtureCase(...)` values that still yield `r"(?P<word>abc)"` for the two `str` cases and `b"abc"` for the bytes case.
+- Reworked `_branch_local_named_backreference_match(...)` to use file-local pattern/text constants for one successful module-search path and one successful compiled-pattern fullmatch path while still exercising multiple named groups through `assert_match_parity(..., check_regs=True)` and `assert_match_convenience_api_parity(...)`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py`, the inline source probe from this task, and the final `rg` absence check for the removed preload identifiers.

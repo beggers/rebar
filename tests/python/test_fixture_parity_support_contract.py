@@ -230,11 +230,6 @@ def _tracked_fixture_paths() -> tuple[pathlib.Path, ...]:
     )
 
 
-def _fixture_cases(fixture_name: str) -> dict[str, FixtureCase]:
-    manifest = load_fixture_manifest(CORRECTNESS_FIXTURES_ROOT / fixture_name)
-    return {case.case_id: case for case in manifest.cases}
-
-
 def _write_fixture_module(
     tmp_path: pathlib.Path,
     filename: str,
@@ -378,11 +373,57 @@ def _load_fixture_bundles_from_root(
         return load_fixture_bundles(specs)
 
 
-NAMED_GROUP_CASES = _fixture_cases("named_group_workflows.py")
-BRANCH_LOCAL_BACKREFERENCE_CASES = _fixture_cases(
-    "branch_local_backreference_workflows.py"
+SYNTHETIC_CASE_PATTERN = r"(?P<word>abc)"
+SYNTHETIC_PATTERN_HELPER_CASE = FixtureCase(
+    case_id="synthetic-pattern-helper-case",
+    manifest_id="synthetic-pattern-helper-contract",
+    suite_id="synthetic-pattern-helper-contract",
+    layer="pattern_helper_contracts",
+    family="fixture_support_contracts",
+    operation="compile",
+    notes=[],
+    categories=[],
+    pattern=SYNTHETIC_CASE_PATTERN,
+    flags=None,
+    text_model="str",
+    pattern_encoding="latin-1",
+    helper=None,
+    source_args=[],
+    source_kwargs={},
+    args=[],
+    kwargs={},
 )
-COLLECTION_REPLACEMENT_CASES = _fixture_cases("collection_replacement_workflows.py")
+SYNTHETIC_MODULE_PATTERN_CASE = replace(
+    SYNTHETIC_PATTERN_HELPER_CASE,
+    case_id="synthetic-module-pattern-str",
+    operation="module_call",
+    helper="search",
+    source_args=[SYNTHETIC_CASE_PATTERN, "zzabczz"],
+    args=[SYNTHETIC_CASE_PATTERN, "zzabczz"],
+)
+SYNTHETIC_COMPILED_PATTERN_CASE = replace(
+    SYNTHETIC_PATTERN_HELPER_CASE,
+    case_id="synthetic-pattern-pattern-str",
+    operation="pattern_call",
+    helper="search",
+    source_args=["zzabczz"],
+    args=["zzabczz"],
+)
+SYNTHETIC_BYTES_PATTERN_CASE = replace(
+    SYNTHETIC_PATTERN_HELPER_CASE,
+    case_id="synthetic-pattern-bytes",
+    operation="pattern_call",
+    pattern="abc",
+    text_model="bytes",
+    helper="split",
+    source_args=[b"zzabczz", 1],
+    args=[b"zzabczz", 1],
+)
+BRANCH_LOCAL_NAMED_BACKREFERENCE_PATTERN = (
+    r"a(?P<outer>(?P<inner>bc)|de)(?P=inner)d"
+)
+BRANCH_LOCAL_NAMED_BACKREFERENCE_SEARCH_TEXT = "zzabcbcdzz"
+BRANCH_LOCAL_NAMED_BACKREFERENCE_FULLMATCH_TEXT = "abcbcd"
 
 
 def _optional_named_group_match(
@@ -440,30 +481,25 @@ def _branch_local_named_backreference_match(
     use_compiled_pattern: bool,
 ) -> tuple[object, re.Match[str] | None]:
     if use_compiled_pattern:
-        case = BRANCH_LOCAL_BACKREFERENCE_CASES[
-            "branch-local-named-backreference-pattern-fullmatch-str"
-        ]
         observed_pattern, expected_pattern = compile_with_cpython_parity(
             backend_name,
             backend,
-            case.pattern_payload(),
-            case.flags or 0,
+            BRANCH_LOCAL_NAMED_BACKREFERENCE_PATTERN,
         )
         return (
-            observed_pattern.fullmatch(*case.args),
-            expected_pattern.fullmatch(*case.args),
+            observed_pattern.fullmatch(BRANCH_LOCAL_NAMED_BACKREFERENCE_FULLMATCH_TEXT),
+            expected_pattern.fullmatch(BRANCH_LOCAL_NAMED_BACKREFERENCE_FULLMATCH_TEXT),
         )
 
-    case = BRANCH_LOCAL_BACKREFERENCE_CASES[
-        "branch-local-named-backreference-module-search-str"
-    ]
-    pattern = case_pattern(case)
-    text = case.args[1]
-    assert isinstance(pattern, str)
-    assert isinstance(text, str)
     return (
-        backend.search(pattern, text),
-        re.search(pattern, text),
+        backend.search(
+            BRANCH_LOCAL_NAMED_BACKREFERENCE_PATTERN,
+            BRANCH_LOCAL_NAMED_BACKREFERENCE_SEARCH_TEXT,
+        ),
+        re.search(
+            BRANCH_LOCAL_NAMED_BACKREFERENCE_PATTERN,
+            BRANCH_LOCAL_NAMED_BACKREFERENCE_SEARCH_TEXT,
+        ),
     )
 
 
@@ -703,16 +739,12 @@ def test_published_full_suite_fixture_selector_preserves_explicit_manifest_order
     )
 
 
-def test_case_pattern_helpers_extract_str_and_bytes_patterns_from_published_fixtures() -> None:
-    module_case = NAMED_GROUP_CASES["named-group-module-search-metadata-str"]
-    pattern_case = NAMED_GROUP_CASES["named-group-pattern-search-metadata-str"]
-    bytes_case = COLLECTION_REPLACEMENT_CASES["pattern-split-bytes-maxsplit"]
-
-    assert case_pattern(module_case) == r"(?P<word>abc)"
-    assert str_case_pattern(module_case) == r"(?P<word>abc)"
-    assert case_pattern(pattern_case) == r"(?P<word>abc)"
-    assert str_case_pattern(pattern_case) == r"(?P<word>abc)"
-    assert case_pattern(bytes_case) == b"abc"
+def test_case_pattern_helpers_extract_str_and_bytes_patterns_from_synthetic_fixture_cases() -> None:
+    assert case_pattern(SYNTHETIC_MODULE_PATTERN_CASE) == SYNTHETIC_CASE_PATTERN
+    assert str_case_pattern(SYNTHETIC_MODULE_PATTERN_CASE) == SYNTHETIC_CASE_PATTERN
+    assert case_pattern(SYNTHETIC_COMPILED_PATTERN_CASE) == SYNTHETIC_CASE_PATTERN
+    assert str_case_pattern(SYNTHETIC_COMPILED_PATTERN_CASE) == SYNTHETIC_CASE_PATTERN
+    assert case_pattern(SYNTHETIC_BYTES_PATTERN_CASE) == b"abc"
 
 
 def test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids() -> None:
