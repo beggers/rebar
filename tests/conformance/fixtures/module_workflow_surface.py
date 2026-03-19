@@ -86,6 +86,32 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-search-str-verbose-regression",
+      "operation": "pattern_call",
+      "family": "bound_search_workflow",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "flags": 72,
+      "helper": "search",
+      "args": ["prefix\nENV_VAR=ABCD\nsuffix"],
+      "categories": ["workflow", "search", "verbose", "multiline", "regression", "str"],
+      "notes": [
+        "Publishes the bound Pattern.search regression workflow anchored to the shared verbose compile family."
+      ]
+    },
+    {
+      "id": "workflow-pattern-fullmatch-str-verbose-regression",
+      "operation": "pattern_call",
+      "family": "bound_fullmatch_workflow",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "flags": 72,
+      "helper": "fullmatch",
+      "args": ["ENV_VAR = 123"],
+      "categories": ["workflow", "fullmatch", "verbose", "multiline", "regression", "str"],
+      "notes": [
+        "Publishes the bound Pattern.fullmatch regression workflow anchored to the shared verbose compile family."
+      ]
+    },
+    {
       "id": "workflow-pattern-search-str",
       "operation": "pattern_call",
       "family": "bound_search_workflow",

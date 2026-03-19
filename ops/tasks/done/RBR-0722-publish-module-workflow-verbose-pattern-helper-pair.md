@@ -1,6 +1,6 @@
 # RBR-0722: Publish the module-workflow verbose pattern-helper pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -52,3 +52,9 @@ Created: 2026-03-19
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes only the compile/cache/escape/literal pattern workflow rows on `module-workflow-surface`, with no published verbose regression `pattern_call` companions for that same pattern;
   - `tests/conformance/test_combined_correctness_scorecards.py` currently names `workflow-pattern-search-str` and `workflow-pattern-fullmatch-bytes` as the representative published `pattern_call` rows for `module-workflow-surface`, but not the already-exercised verbose regression pair; and
   - `reports/correctness/latest.py` currently reports `1385` total / `1385` passed / `0` `unimplemented` across `114` manifests, with `module.workflow.pattern_call` at `3` total / `3` passed / `0` `unimplemented`, so this slice reopens the tracked frontier through adjacent published-owner coverage rather than a new family.
+
+## Completion
+- 2026-03-19: Added `workflow-pattern-search-str-verbose-regression` and `workflow-pattern-fullmatch-str-verbose-regression` to `tests/conformance/fixtures/module_workflow_surface.py`, keeping the exact shared verbose regression pattern on the existing `module-workflow-surface` manifest with `flags == 72`, `text_model == "str"`, and the bounded compiled-pattern `search()` / `fullmatch()` helper calls requested by this task.
+- Updated `tests/python/test_module_workflow_parity_suite.py` on the existing owner path so the published module-workflow bundle now expects `17` rows instead of `15`, the `pattern_call` helper mix is `2` `search` / `1` `match` / `2` `fullmatch`, the manifest order is pinned directly against the selected case inventory, and the existing `VERBOSE_COMPILE_WORKFLOW_CASES` now exercise the published `fullmatch("ENV_VAR = 123")` regression sample instead of drifting from the manifest.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` and regenerated the tracked `reports/correctness/latest.py` publication. After publication, the tracked artifact reads `1387` total / `1387` passed / `0` `unimplemented` across `114` manifests overall, `module.workflow` is `17` / `17` / `0`, `module.workflow.str` is `11` / `11` / `0`, and `module.workflow.pattern_call` is `5` / `5` / `0`, with both new verbose regression helper rows present in the tracked report.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0722-module-workflow-verbose-patterns.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`, and `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`. The narrow manifest report published `17` total / `17` passed / `0` `unimplemented`.

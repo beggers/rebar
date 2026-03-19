@@ -163,6 +163,8 @@ MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-compile-bytes-verbose-regression",
     "workflow-compile-bytes-multiline-regression",
     "workflow-compile-bytes-literal",
+    "workflow-pattern-search-str-verbose-regression",
+    "workflow-pattern-fullmatch-str-verbose-regression",
     "workflow-pattern-search-str",
     "workflow-pattern-match-str",
     "workflow-pattern-fullmatch-bytes",
@@ -190,9 +192,9 @@ MODULE_WORKFLOW_EXPECTED_PATTERNS = frozenset(
 MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
         ("compile", None): 7,
-        ("pattern_call", "search"): 1,
+        ("pattern_call", "search"): 2,
         ("pattern_call", "match"): 1,
-        ("pattern_call", "fullmatch"): 1,
+        ("pattern_call", "fullmatch"): 2,
         ("cache_workflow", None): 2,
         ("purge_workflow", None): 1,
         ("module_call", "escape"): 2,
@@ -1193,10 +1195,10 @@ VERBOSE_COMPILE_WORKFLOW_CASES = (
     VerboseCompileWorkflowCase(
         case_id="fullmatch-digits-without-literal-spaces",
         helper="fullmatch",
-        text="ENV_VAR=123",
-        expected_group0="ENV_VAR=123",
+        text="ENV_VAR = 123",
+        expected_group0="ENV_VAR = 123",
         expected_key="ENV_VAR",
-        expected_span=(0, 11),
+        expected_span=(0, 13),
     ),
     VerboseCompileWorkflowCase(
         case_id="fullmatch-alpha-with-extra-whitespace",
@@ -1869,6 +1871,10 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
 
 def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases() -> None:
     assert MODULE_WORKFLOW_BUNDLE.manifest.path == MODULE_WORKFLOW_FIXTURE_PATH
+    assert (
+        tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.manifest.cases)
+        == MODULE_WORKFLOW_EXPECTED_CASE_IDS
+    )
     assert_fixture_bundle_contract(
         MODULE_WORKFLOW_BUNDLE,
         pattern_extractor=case_pattern,
@@ -1882,6 +1888,10 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         VERBOSE_BYTES_COMPILE_CASE_ID,
         MULTILINE_BYTES_COMPILE_CASE_ID,
     } <= {case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases}
+    assert {
+        "workflow-pattern-search-str-verbose-regression",
+        "workflow-pattern-fullmatch-str-verbose-regression",
+    } <= {case.case_id for case in PATTERN_CASES}
 
 
 def test_module_workflow_surface_compile_case_selection_preserves_row_order() -> None:

@@ -88,6 +88,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-compile-str-multiline-regression",
             "workflow-compile-bytes-verbose-regression",
             "workflow-compile-bytes-multiline-regression",
+            "workflow-pattern-search-str-verbose-regression",
+            "workflow-pattern-fullmatch-str-verbose-regression",
             "workflow-cache-hit-str",
             "workflow-purge-reset-str",
             "workflow-pattern-search-str",
