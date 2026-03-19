@@ -811,14 +811,6 @@ def assert_direct_test_case_id_buckets_cover_selected_frontier(
         )
 
 
-def bundle_patterns(
-    bundle: FixtureBundle,
-    *,
-    pattern_extractor: Callable[[FixtureCase], str | bytes],
-) -> frozenset[str | bytes]:
-    return frozenset(pattern_extractor(case) for case in bundle.cases)
-
-
 def ordered_manifest_cases_from_bundles(
     bundles: Iterable[FixtureBundle],
     case_ids: Iterable[str],

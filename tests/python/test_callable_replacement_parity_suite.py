@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Callable
 from dataclasses import dataclass
 import re
 import textwrap
@@ -25,7 +26,6 @@ from tests.python.fixture_parity_support import (
     assert_match_convenience_api_parity,
     assert_match_parity,
     assert_valid_match_group_access_parity,
-    bundle_patterns,
     case_pattern,
     case_replacement_argument,
     case_text_argument,
@@ -63,6 +63,15 @@ class CallableNearMissCase:
 
 
 TextValue = str | bytes
+
+
+def _bundle_patterns(
+    bundle: FixtureBundle,
+    *,
+    pattern_extractor: Callable[[FixtureCase], str | bytes],
+) -> frozenset[str | bytes]:
+    return frozenset(pattern_extractor(case) for case in bundle.cases)
+
 
 CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS = Counter(
     {
@@ -1492,7 +1501,7 @@ def test_callable_replacement_fixture_shape_contract(
     bundle: FixtureBundle,
 ) -> None:
     manifest_spec = CALLABLE_MANIFEST_SPECS_BY_ID.get(bundle.manifest.manifest_id)
-    compile_patterns = bundle_patterns(bundle, pattern_extractor=case_pattern)
+    compile_patterns = _bundle_patterns(bundle, pattern_extractor=case_pattern)
     expected_text_models = (
         manifest_spec.expected_text_models
         if manifest_spec is not None
@@ -1963,7 +1972,7 @@ def test_callable_replacement_cases_stay_aligned_with_published_fixture(
     assert bundle.manifest.manifest_id == manifest_spec.manifest_id
     assert len(bundle.cases) == len(manifest_spec.expected_case_ids)
     assert {case.case_id for case in bundle.cases} == manifest_spec.expected_case_ids
-    assert bundle_patterns(bundle, pattern_extractor=case_pattern) == (
+    assert _bundle_patterns(bundle, pattern_extractor=case_pattern) == (
         manifest_spec.expected_compile_patterns
     )
     assert {case.text_model for case in bundle.cases} == manifest_spec.expected_text_models
