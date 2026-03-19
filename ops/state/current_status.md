@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness is 1342/1342 cases across 112 manifests with 0 honest gaps; the benchmark publication is 751/751 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- The publications are current at 1342/1342 correctness cases and 751/751 measured benchmark workloads, no ready or in-progress feature follow-on survives after the latest queue drain, and the next bounded Rust-backed follow-on still needs to be seeded.
+- Ready head `RBR-0674` publishes the wider `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement bytes pair on the shared callable correctness surface, and no ready or in-progress feature follow-on survives behind it.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
@@ -329,7 +329,7 @@ The published correctness slice now covers 1342 cases across 112 manifests, with
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- The publications are current at 1342/1342 correctness cases and 751/751 measured benchmark workloads, no ready or in-progress feature follow-on survives after the latest queue drain, and the next bounded Rust-backed follow-on still needs to be seeded.
+- Ready head `RBR-0674` publishes the wider `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement bytes pair on the shared callable correctness surface, and no ready or in-progress feature follow-on survives behind it.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
