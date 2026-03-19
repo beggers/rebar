@@ -803,6 +803,84 @@ class ReadmeReportingTest(unittest.TestCase):
             summary,
         )
 
+    def test_run_harness_scorecard_loads_json_reports_for_generic_modules(self) -> None:
+        summary_payload = {"suite": "custom", "status": "ok"}
+        scorecard_payload = {
+            "suite": "custom",
+            "summary": summary_payload,
+            "details": {"workloads": 3},
+        }
+        observed_cli_args: tuple[str, ...] | None = None
+
+        def fake_run_harness_cli(
+            module_name: str,
+            cli_args: list[str],
+            *,
+            check: bool = True,
+        ) -> subprocess.CompletedProcess[str]:
+            nonlocal observed_cli_args
+
+            self.assertEqual(module_name, "custom.scorecard.module")
+            self.assertTrue(check)
+            observed_cli_args = tuple(cli_args)
+            report_index = observed_cli_args.index("--report")
+            report_path = pathlib.Path(observed_cli_args[report_index + 1])
+            report_path.write_text(json.dumps(scorecard_payload), encoding="utf-8")
+            return completed_process(
+                module_name,
+                *observed_cli_args,
+                stdout=json.dumps(summary_payload),
+            )
+
+        with mock.patch("tests.conftest.run_harness_cli", side_effect=fake_run_harness_cli):
+            summary, scorecard = run_harness_scorecard(
+                "custom.scorecard.module",
+                ["--selector", "focused"],
+                report_name="custom-scorecard.json",
+            )
+
+        self.assertEqual(summary, summary_payload)
+        self.assertEqual(scorecard, scorecard_payload)
+        assert observed_cli_args is not None
+        self.assertEqual(observed_cli_args[:2], ("--selector", "focused"))
+        self.assertEqual(observed_cli_args[2], "--report")
+        self.assertTrue(observed_cli_args[3].endswith("custom-scorecard.json"))
+
+    def test_run_harness_scorecard_rejects_non_json_reports_for_unknown_modules(
+        self,
+    ) -> None:
+        summary_payload = {"suite": "custom", "status": "ok"}
+
+        def fake_run_harness_cli(
+            module_name: str,
+            cli_args: list[str],
+            *,
+            check: bool = True,
+        ) -> subprocess.CompletedProcess[str]:
+            self.assertEqual(module_name, "custom.scorecard.module")
+            self.assertTrue(check)
+            observed_cli_args = tuple(cli_args)
+            report_index = observed_cli_args.index("--report")
+            report_path = pathlib.Path(observed_cli_args[report_index + 1])
+            report_path.write_text("REPORT = {'suite': 'custom'}\n", encoding="utf-8")
+            return completed_process(
+                module_name,
+                *observed_cli_args,
+                stdout=json.dumps(summary_payload),
+            )
+
+        with mock.patch("tests.conftest.run_harness_cli", side_effect=fake_run_harness_cli):
+            with self.assertRaisesRegex(
+                ValueError,
+                "run_harness_scorecard cannot load a non-JSON report for "
+                "'custom.scorecard.module'",
+            ):
+                run_harness_scorecard(
+                    "custom.scorecard.module",
+                    ["--selector", "focused"],
+                    report_name="custom-scorecard.py",
+                )
+
     def test_scorecard_report_loaders_and_writers_reject_malformed_inputs(
         self,
     ) -> None:
