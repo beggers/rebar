@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives beyond the active broader `{1,4}` nested backtracking-heavy callable-replacement correctness head on the shared callable owner surface.
+No ready feature follow-on currently survives beyond the active broader `{1,4}` nested backtracking-heavy callable-replacement parity head on the shared callable owner surface.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives beyond the active broader `{1,4}` nested backtracking-heavy callable-replacement correctness head on `tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_callable_replacement_workflows.py`, `python/rebar_harness/correctness.py`, and `tests/python/test_callable_replacement_parity_suite.py`.
+1. No ready feature follow-on currently survives beyond the active broader `{1,4}` nested backtracking-heavy callable-replacement parity head on `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_callable_replacement_parity_suite.py`, and `reports/correctness/latest.py`.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
