@@ -42,6 +42,7 @@ from tests.python.fixture_parity_support import (
     assert_bounded_pattern_case_no_match_parity,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
+    assert_fixture_bundle_tracks_published_case_frontier,
     assert_finditer_parity,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
@@ -377,6 +378,15 @@ def _load_fixture_bundles_from_root(
     with pytest.MonkeyPatch.context() as monkeypatch:
         monkeypatch.setattr(fixture_parity_support, "CORRECTNESS_FIXTURES_ROOT", root)
         return load_fixture_bundles(specs)
+
+
+def _load_bundle_loader_contract_str_bundle(tmp_path: pathlib.Path) -> FixtureBundle:
+    _write_bundle_loader_contract_fixture_modules(tmp_path)
+    (bundle,) = _load_fixture_bundles_from_root(
+        tmp_path,
+        (_bundle_loader_contract_str_spec(),),
+    )
+    return bundle
 
 
 SYNTHETIC_CASE_PATTERN = r"(?P<word>abc)"
@@ -1724,6 +1734,121 @@ def test_load_fixture_bundles_full_manifest_defaults_str_text_model_expectation(
         pattern_extractor=str_case_pattern,
         expected_fixture_path=str_path,
     )
+
+
+def test_assert_fixture_bundle_tracks_published_case_frontier_accepts_selected_and_uncovered_rows(
+    tmp_path: pathlib.Path,
+) -> None:
+    bundle = _load_bundle_loader_contract_str_bundle(tmp_path)
+    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
+
+    assert_fixture_bundle_tracks_published_case_frontier(
+        bundle,
+        selected_case_ids=(published_case_ids[0], published_case_ids[2]),
+        expected_uncovered_case_ids=(published_case_ids[1],),
+    )
+
+
+@pytest.mark.parametrize("duplicate_source", ("selected", "uncovered"))
+def test_assert_fixture_bundle_tracks_published_case_frontier_rejects_duplicate_case_ids(
+    tmp_path: pathlib.Path,
+    duplicate_source: str,
+) -> None:
+    bundle = _load_bundle_loader_contract_str_bundle(tmp_path)
+    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
+
+    if duplicate_source == "selected":
+        selected_case_ids = (published_case_ids[0], published_case_ids[0])
+        expected_uncovered_case_ids = (published_case_ids[1], published_case_ids[2])
+        error_message = (
+            f"{bundle.expected_manifest_id} selected_case_ids contain duplicate ids: "
+            f"{(published_case_ids[0],)}"
+        )
+    elif duplicate_source == "uncovered":
+        selected_case_ids = (published_case_ids[0],)
+        expected_uncovered_case_ids = (
+            published_case_ids[1],
+            published_case_ids[1],
+            published_case_ids[2],
+        )
+        error_message = (
+            f"{bundle.expected_manifest_id} expected_uncovered_case_ids contain "
+            f"duplicate ids: {(published_case_ids[1],)}"
+        )
+    else:
+        raise AssertionError(f"unexpected duplicate_source {duplicate_source!r}")
+
+    with pytest.raises(AssertionError, match=re.escape(error_message)):
+        assert_fixture_bundle_tracks_published_case_frontier(
+            bundle,
+            selected_case_ids=selected_case_ids,
+            expected_uncovered_case_ids=expected_uncovered_case_ids,
+        )
+
+
+def test_assert_fixture_bundle_tracks_published_case_frontier_rejects_selected_uncovered_overlap(
+    tmp_path: pathlib.Path,
+) -> None:
+    bundle = _load_bundle_loader_contract_str_bundle(tmp_path)
+    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
+    overlapping_case_id = published_case_ids[1]
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            f"{bundle.expected_manifest_id} selected and uncovered case ids overlap: "
+            f"{(overlapping_case_id,)}"
+        ),
+    ):
+        assert_fixture_bundle_tracks_published_case_frontier(
+            bundle,
+            selected_case_ids=(published_case_ids[0], overlapping_case_id),
+            expected_uncovered_case_ids=(overlapping_case_id, published_case_ids[2]),
+        )
+
+
+def test_assert_fixture_bundle_tracks_published_case_frontier_rejects_missing_and_unexpected_rows(
+    tmp_path: pathlib.Path,
+) -> None:
+    bundle = _load_bundle_loader_contract_str_bundle(tmp_path)
+    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
+    missing_case_id = "missing-case-id"
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            f"{bundle.expected_manifest_id} published frontier drifted; "
+            f"missing published case ids: {(missing_case_id,)}; "
+            f"unexpected published case ids: {published_case_ids[2:]}"
+        ),
+    ):
+        assert_fixture_bundle_tracks_published_case_frontier(
+            bundle,
+            selected_case_ids=(published_case_ids[0],),
+            expected_uncovered_case_ids=(published_case_ids[1], missing_case_id),
+        )
+
+
+def test_assert_fixture_bundle_tracks_published_case_frontier_rejects_uncovered_order_drift(
+    tmp_path: pathlib.Path,
+) -> None:
+    bundle = _load_bundle_loader_contract_str_bundle(tmp_path)
+    published_case_ids = tuple(case.case_id for case in bundle.manifest.cases)
+    expected_uncovered_case_ids = (published_case_ids[2], published_case_ids[1])
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            f"{bundle.expected_manifest_id} uncovered published case ids changed; "
+            f"expected {expected_uncovered_case_ids}, "
+            f"got {published_case_ids[1:]}"
+        ),
+    ):
+        assert_fixture_bundle_tracks_published_case_frontier(
+            bundle,
+            selected_case_ids=(published_case_ids[0],),
+            expected_uncovered_case_ids=expected_uncovered_case_ids,
+        )
 
 
 @pytest.mark.parametrize(
