@@ -1607,6 +1607,98 @@ def test_fixture_bundle_exposes_derived_manifest_id_without_storing_duplicate_fi
     assert bundle.expected_manifest_id == bundle.manifest.manifest_id
 
 
+@pytest.mark.parametrize(
+    "drift_kind",
+    (
+        pytest.param("fixture-path", id="fixture-path"),
+        pytest.param("ordered-case-ids", id="ordered-case-ids"),
+        pytest.param("expected-case-ids", id="expected-case-ids"),
+        pytest.param("patterns", id="patterns"),
+        pytest.param("text-models", id="text-models"),
+        pytest.param("operation-helper-counts", id="operation-helper-counts"),
+    ),
+)
+def test_assert_fixture_bundle_contract_rejects_contract_drift(
+    tmp_path: pathlib.Path,
+    drift_kind: str,
+) -> None:
+    str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    str_bundle, mixed_bundle = _load_fixture_bundles_from_root(
+        tmp_path,
+        (
+            _bundle_loader_contract_str_spec(),
+            _bundle_loader_contract_mixed_spec(),
+        ),
+    )
+
+    bundle: FixtureBundle
+    pattern_extractor = case_pattern
+    expected_fixture_path = mixed_path
+    expected_ordered_case_ids: tuple[str, ...] | None = None
+
+    if drift_kind == "fixture-path":
+        bundle = str_bundle
+        pattern_extractor = str_case_pattern
+        expected_fixture_path = mixed_path
+        expected_ordered_case_ids = tuple(case.case_id for case in str_bundle.cases)
+    elif drift_kind == "ordered-case-ids":
+        bundle = str_bundle
+        pattern_extractor = str_case_pattern
+        expected_fixture_path = str_path
+        expected_ordered_case_ids = tuple(
+            reversed(tuple(case.case_id for case in str_bundle.cases))
+        )
+    elif drift_kind == "expected-case-ids":
+        bundle = replace(
+            str_bundle,
+            expected_case_ids=frozenset(
+                {
+                    "bundle-loader-contract-compile-str",
+                    "bundle-loader-contract-module-search-str",
+                    "unexpected-case-id",
+                }
+            ),
+        )
+        pattern_extractor = str_case_pattern
+        expected_fixture_path = str_path
+        expected_ordered_case_ids = tuple(case.case_id for case in str_bundle.cases)
+    elif drift_kind == "patterns":
+        bundle = replace(
+            str_bundle,
+            expected_patterns=frozenset({r"unexpected-pattern"}),
+        )
+        pattern_extractor = str_case_pattern
+        expected_fixture_path = str_path
+        expected_ordered_case_ids = tuple(case.case_id for case in str_bundle.cases)
+    elif drift_kind == "text-models":
+        bundle = replace(mixed_bundle, expected_text_models=frozenset({"str"}))
+        expected_fixture_path = mixed_path
+        expected_ordered_case_ids = tuple(case.case_id for case in mixed_bundle.cases)
+    elif drift_kind == "operation-helper-counts":
+        bundle = replace(
+            mixed_bundle,
+            expected_operation_helper_counts=Counter(
+                {
+                    ("compile", None): 1,
+                    ("module_call", "search"): 1,
+                    ("pattern_call", "fullmatch"): 2,
+                }
+            ),
+        )
+        expected_fixture_path = mixed_path
+        expected_ordered_case_ids = tuple(case.case_id for case in mixed_bundle.cases)
+    else:
+        raise AssertionError(f"unexpected drift_kind {drift_kind!r}")
+
+    with pytest.raises(AssertionError):
+        assert_fixture_bundle_contract(
+            bundle,
+            pattern_extractor=pattern_extractor,
+            expected_fixture_path=expected_fixture_path,
+            expected_ordered_case_ids=expected_ordered_case_ids,
+        )
+
+
 def test_load_fixture_bundles_rejects_mismatched_expected_manifest_id(
     tmp_path: pathlib.Path,
 ) -> None:
