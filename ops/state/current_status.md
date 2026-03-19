@@ -9,17 +9,17 @@ Phase 3 is focused on expanding a still-bounded Rust-backed `re` subset while ke
 Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it.
 
 ## README Delivery Estimate
-Published correctness is 1334/1334 cases across 111 manifests with 0 honest gaps; the benchmark publication is 747/747 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
+Published correctness is 1334/1342 cases across 112 manifests with 8 honest gaps; the benchmark publication is 747/747 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- `RBR-0668` should publish a bounded wider `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement correctness pack for `a((b|c){1,4})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)(?(inner)d|e)` on the shared callable surface, widening the published correctness report from `1334` total cases across `111` manifests to `1342` total cases across `112` manifests while keeping the new slice honest on the Python-facing path.
+- Seed the next bounded Rust-backed follow-on; `RBR-0668` is landed, the publications are current at 1334/1342 correctness cases and 747/747 measured benchmark workloads, and no ready or in-progress task survives after the latest queue drain.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
 - The published benchmark surface is still bounded at 747 workloads, so zero known gaps does not yet imply broad performance coverage.
 
 ## Compatibility Heuristic
-The published correctness slice is fully green at 1334 of 1334 cases across 111 manifests, and 747 benchmark workloads are measured through the source-tree shim; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
+The published correctness slice now covers 1342 cases across 112 manifests, with 1334 passes and 8 honest gaps, and 747 benchmark workloads are measured through the source-tree shim; broader stdlib `re` parity and native-path speed claims still sit outside that boundary.
 
 ## What Exists
 - A repo-local `AGENTS.md` that now defines a specialist agent model with a harness-only supervisor, an ordered architecture/architecture-implementation/planning/implementation/QA/faithfulness/cleanup/reporting loop, and owner-routed ready-queue task workers for feature and architecture work.
@@ -307,10 +307,10 @@ The published correctness slice is fully green at 1334 of 1334 cases across 111 
 - README status rendering now consumes short tracked phase/milestone summaries and an explicit compatibility heuristic so the landing page stays skimmable and published-slice pass counts are not mistaken for near-full stdlib `re` parity.
 - README status rendering now prefers dedicated `README ...` summary sections from `ops/state/current_status.md` and caps rendered next-step/risk bullets, so richer internal status tracking no longer bloats the landing page into a feature inventory.
 - Supervisor report/cycle refresh now repairs `reports/correctness/latest.py` back to the combined default publication whenever a narrow task run leaves the tracked scorecard in a manifest-local state, so README/dashboard reporting no longer drifts to a task-local subset.
-- Tracked state, task queue directories, and seeded ready tasks under `ops/`.
+- Tracked state and task queue directories under `ops/`.
 
 ## What Does Not Exist Yet
-- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 111 manifests and 1334 cases, with 1334 passing and 0 honest `unimplemented` outcomes inside that published slice, so that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
+- Drop-in `re` compatibility beyond the current published frontier: `reports/correctness/latest.py` now covers 112 manifests and 1342 cases, with 1334 passing and 8 honest `unimplemented` outcomes inside that published slice, so that still represents a narrow tracked frontier rather than near-full stdlib `re` parity.
 - A repo-centered backend-parameterized pytest parity harness across the broader project surface; `RBR-0263` consolidated the adjacent Python-path grouped frontier into one data-driven suite and `RBR-0265` extended it through the nested grouped `{1,}` slice, but earlier parity coverage still lives in many standalone modules.
 - A primary benchmark publication that measures the built-native extension path by default; `reports/benchmarks/latest.py` still reflects the source-tree shim while strict built-native smoke/full modes remain ad hoc runs rather than tracked publications.
 - A primary benchmark publication: `reports/benchmarks/latest.py` now covers 747 workloads across 30 manifests with 747 real `rebar` timings and 0 explicit known gaps, so the published benchmark surface remains bounded.
@@ -329,7 +329,7 @@ The published correctness slice is fully green at 1334 of 1334 cases across 111 
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0668` should publish a bounded wider `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement correctness pack for `a((b|c){1,4})\2(?(2)d|e)` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)(?(inner)d|e)` on the shared callable surface, widening the published correctness report from `1334` total cases across `111` manifests to `1342` total cases across `112` manifests while keeping the new slice honest on the Python-facing path.
+- Seed the next bounded Rust-backed follow-on; `RBR-0668` is landed, the publications are current at 1334/1342 correctness cases and 747/747 measured benchmark workloads, and no ready or in-progress task survives after the latest queue drain.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
