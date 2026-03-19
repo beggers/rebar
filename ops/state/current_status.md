@@ -329,7 +329,7 @@ The reports are clean inside a narrow slice: 1310 correctness cases carry 0 hone
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0649`: publish the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template `str` correctness pack, moving `reports/correctness/latest.py` from `1310` total cases across `110` manifests to `1318` across `111` while keeping the live `rebar` result honest.
+- `RBR-0651`: convert the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template `str` slice to real parity on the shared replacement surface, moving the expanded correctness report from `1318` total / `1310` passed / `8` `unimplemented` across `111` manifests to `1318` / `1318` / `0`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
