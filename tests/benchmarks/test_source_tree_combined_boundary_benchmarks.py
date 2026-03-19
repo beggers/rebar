@@ -10,7 +10,6 @@ import re
 import shutil
 import subprocess
 import sys
-import tempfile
 import textwrap
 from types import SimpleNamespace
 from typing import Any
@@ -41,6 +40,7 @@ from rebar_harness.benchmarks import (
 )
 from rebar_harness.correctness import published_fixture_manifests
 from rebar_harness.scorecard_io import build_cpython_baseline
+from tests.harness_cli_support import REPO_ROOT, run_harness_scorecard
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
@@ -51,47 +51,9 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_pattern_parity,
 )
-
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-PYTHON_SOURCE = REPO_ROOT / "python"
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 
 _KNOWN_GAP_STATUSES = {"known-gap", "unimplemented"}
-
-
-def run_harness_cli(
-    module_name: str,
-    cli_args: Iterable[str],
-    *,
-    check: bool = True,
-) -> subprocess.CompletedProcess[str]:
-    command = [sys.executable, "-m", module_name, *cli_args]
-    return subprocess.run(
-        command,
-        check=check,
-        cwd=REPO_ROOT,
-        env={"PYTHONPATH": str(PYTHON_SOURCE)},
-        capture_output=True,
-        text=True,
-    )
-
-
-def run_harness_scorecard(
-    module_name: str,
-    cli_args: Iterable[str],
-    *,
-    report_name: str,
-) -> tuple[dict[str, Any], dict[str, Any]]:
-    with tempfile.TemporaryDirectory() as temp_dir:
-        report_path = pathlib.Path(temp_dir) / report_name
-        result = run_harness_cli(
-            module_name,
-            [*cli_args, "--report", str(report_path)],
-        )
-        summary = json.loads(result.stdout.strip())
-        scorecard = json.loads(report_path.read_text(encoding="utf-8"))
-
-    return summary, scorecard
 
 
 def _assert_tracked_report_exists(
