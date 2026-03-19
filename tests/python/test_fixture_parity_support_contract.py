@@ -1933,6 +1933,239 @@ def test_invalid_match_group_access_parity_handles_missing_name_collisions() -> 
     assert_invalid_match_group_access_parity(match, match)
 
 
+def test_record_generated_match_failure_skips_match_specific_checks_for_no_match(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    failures: list[str] = []
+    calls: list[tuple[str, object]] = []
+
+    def _record_match_result(
+        backend_name: str,
+        observed: object,
+        expected: object,
+        *,
+        check_regs: bool = False,
+    ) -> None:
+        calls.append(
+            ("result", backend_name, observed, expected, check_regs)
+        )
+
+    def _unexpected_follow_on(*args: object, **kwargs: object) -> None:
+        raise AssertionError("unexpected follow-on helper call")
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_result_parity",
+        _record_match_result,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_convenience_api_parity",
+        _unexpected_follow_on,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_valid_match_group_access_parity",
+        _unexpected_follow_on,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_invalid_match_group_access_parity",
+        _unexpected_follow_on,
+    )
+
+    fixture_parity_support.record_generated_match_failure(
+        failures,
+        label="generated-no-match",
+        backend_name="stdlib",
+        observed=None,
+        expected=None,
+    )
+
+    assert failures == []
+    assert calls == [("result", "stdlib", None, None, True)]
+
+
+def test_record_generated_match_failure_runs_follow_on_checks_for_expected_match(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    failures: list[str] = []
+    calls: list[str] = []
+    observed = object()
+    expected = object()
+
+    def _record_match_result(
+        backend_name: str,
+        match_observed: object,
+        match_expected: object,
+        *,
+        check_regs: bool = False,
+    ) -> None:
+        calls.append("result")
+        assert backend_name == "stdlib"
+        assert match_observed is observed
+        assert match_expected is expected
+        assert check_regs is True
+
+    def _record_convenience(
+        match_observed: object,
+        match_expected: object,
+    ) -> None:
+        calls.append("convenience")
+        assert match_observed is observed
+        assert match_expected is expected
+
+    def _record_valid_group_access(
+        match_observed: object,
+        match_expected: object,
+    ) -> None:
+        calls.append("valid-group-access")
+        assert match_observed is observed
+        assert match_expected is expected
+
+    def _record_invalid_group_access(
+        match_observed: object,
+        match_expected: object,
+    ) -> None:
+        calls.append("invalid-group-access")
+        assert match_observed is observed
+        assert match_expected is expected
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_result_parity",
+        _record_match_result,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_convenience_api_parity",
+        _record_convenience,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_valid_match_group_access_parity",
+        _record_valid_group_access,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_invalid_match_group_access_parity",
+        _record_invalid_group_access,
+    )
+
+    fixture_parity_support.record_generated_match_failure(
+        failures,
+        label="generated-match",
+        backend_name="stdlib",
+        observed=observed,
+        expected=expected,
+    )
+
+    assert failures == []
+    assert calls == [
+        "result",
+        "convenience",
+        "valid-group-access",
+        "invalid-group-access",
+    ]
+
+
+@pytest.mark.parametrize(
+    ("failing_stage", "expected_calls"),
+    (
+        pytest.param("result", ("result",), id="match-result"),
+        pytest.param(
+            "valid-group-access",
+            ("result", "convenience", "valid-group-access"),
+            id="valid-group-access",
+        ),
+    ),
+)
+def test_record_generated_match_failure_appends_labelled_first_helper_failure(
+    monkeypatch: pytest.MonkeyPatch,
+    failing_stage: str,
+    expected_calls: tuple[str, ...],
+) -> None:
+    failures: list[str] = []
+    calls: list[str] = []
+    observed = object()
+    expected = object()
+    failure_message = f"{failing_stage} drift"
+
+    def _maybe_raise(stage: str) -> None:
+        calls.append(stage)
+        if stage == failing_stage:
+            raise AssertionError(failure_message)
+
+    def _record_match_result(
+        backend_name: str,
+        match_observed: object,
+        match_expected: object,
+        *,
+        check_regs: bool = False,
+    ) -> None:
+        assert backend_name == "stdlib"
+        assert match_observed is observed
+        assert match_expected is expected
+        assert check_regs is True
+        _maybe_raise("result")
+
+    def _record_convenience(
+        match_observed: object,
+        match_expected: object,
+    ) -> None:
+        assert match_observed is observed
+        assert match_expected is expected
+        _maybe_raise("convenience")
+
+    def _record_valid_group_access(
+        match_observed: object,
+        match_expected: object,
+    ) -> None:
+        assert match_observed is observed
+        assert match_expected is expected
+        _maybe_raise("valid-group-access")
+
+    def _record_invalid_group_access(
+        match_observed: object,
+        match_expected: object,
+    ) -> None:
+        assert match_observed is observed
+        assert match_expected is expected
+        _maybe_raise("invalid-group-access")
+
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_result_parity",
+        _record_match_result,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_match_convenience_api_parity",
+        _record_convenience,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_valid_match_group_access_parity",
+        _record_valid_group_access,
+    )
+    monkeypatch.setattr(
+        fixture_parity_support,
+        "assert_invalid_match_group_access_parity",
+        _record_invalid_group_access,
+    )
+
+    fixture_parity_support.record_generated_match_failure(
+        failures,
+        label="generated-case",
+        backend_name="stdlib",
+        observed=observed,
+        expected=expected,
+    )
+
+    assert failures == [f"generated-case: {failure_message}"]
+    assert calls == list(expected_calls)
+
+
 @pytest.mark.parametrize(
     ("template", "use_compiled_pattern"),
     (
