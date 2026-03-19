@@ -1,6 +1,6 @@
 # RBR-0715: Collapse conditional manifest-partition sidecars onto bundle groups
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -177,3 +177,7 @@ PY` reported the highest existing tail as `RBR-0705` through `RBR-0714` and no r
 - This simplification matches the current conditional-suite information flow:
   - `FIXTURE_BUNDLE_SPECS` and `FIXTURE_BUNDLES` already keep the canonical base-then-quantified-then-nested/alternation ordering for the full conditional frontier; and
   - the manifest-id sidecars only duplicate that ownership so the compile/module/pattern case buckets can be repartitioned, which makes them a bounded target for deletion without changing the published parity surface.
+
+## Completion Notes
+- 2026-03-19: Deleted the conditional manifest-id partition sidecars from `tests/python/test_conditional_group_exists_parity_suite.py` and replaced them with bundle-driven `BASE_BUNDLES`, `QUANTIFIED_BUNDLES`, and `NESTED_ALTERNATION_BUNDLES` slices rooted directly in `FIXTURE_BUNDLES`, keeping the compile/module/pattern partitions on the existing ordered bundle groups.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_conditional_group_exists_parity_suite.py` (`530 passed in 0.47s`), the inline source-absence probe (`ok`), the import/order/routing probe (`ok`), and `bash -lc "! rg -n 'BASE_MANIFEST_IDS|QUANTIFIED_MANIFEST_IDS|NESTED_ALTERNATION_MANIFEST_IDS|BASE_MANIFEST_ID_SET|QUANTIFIED_MANIFEST_ID_SET|NESTED_ALTERNATION_MANIFEST_ID_SET|CORE_CONDITIONAL_MANIFEST_ID_SET' tests/python/test_conditional_group_exists_parity_suite.py"`.

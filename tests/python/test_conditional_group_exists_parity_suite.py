@@ -165,34 +165,6 @@ FULLY_EMPTY_ALTERNATION_OPERATION_HELPER_COUNTS = Counter(
     }
 )
 
-BASE_MANIFEST_IDS = (
-    "optional-group-conditional-workflows",
-    "conditional-group-exists-workflows",
-    "conditional-group-exists-no-else-workflows",
-    "conditional-group-exists-empty-else-workflows",
-    "conditional-group-exists-empty-yes-else-workflows",
-    "conditional-group-exists-fully-empty-workflows",
-)
-QUANTIFIED_MANIFEST_IDS = (
-    "conditional-group-exists-quantified-workflows",
-    "conditional-group-exists-quantified-alternation-workflows",
-    "conditional-group-exists-no-else-quantified-workflows",
-    "conditional-group-exists-empty-else-quantified-workflows",
-    "conditional-group-exists-empty-yes-else-quantified-workflows",
-    "conditional-group-exists-fully-empty-quantified-workflows",
-)
-NESTED_ALTERNATION_MANIFEST_IDS = (
-    "conditional-group-exists-nested-workflows",
-    "conditional-group-exists-no-else-nested-workflows",
-    "conditional-group-exists-empty-else-nested-workflows",
-    "conditional-group-exists-empty-yes-else-nested-workflows",
-    "conditional-group-exists-fully-empty-nested-workflows",
-    "conditional-group-exists-alternation-workflows",
-    "conditional-group-exists-no-else-alternation-workflows",
-    "conditional-group-exists-empty-else-alternation-workflows",
-    "conditional-group-exists-empty-yes-else-alternation-workflows",
-    "conditional-group-exists-fully-empty-alternation-workflows",
-)
 QUANTIFIED_ALTERNATION_NUMBERED_PATTERN = r"a(b)?c(?(1)(de|df)|(eg|eh)){2}"
 QUANTIFIED_ALTERNATION_NAMED_PATTERN = (
     r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh)){2}"
@@ -722,35 +694,34 @@ QUANTIFIED_CONDITIONAL_ALTERNATION_BUNDLE = published_fixture_bundle_by_manifest
     "conditional-group-exists-quantified-alternation-workflows",
 )
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
-BASE_MANIFEST_ID_SET = frozenset(BASE_MANIFEST_IDS)
-QUANTIFIED_MANIFEST_ID_SET = frozenset(QUANTIFIED_MANIFEST_IDS)
-NESTED_ALTERNATION_MANIFEST_ID_SET = frozenset(NESTED_ALTERNATION_MANIFEST_IDS)
-CORE_CONDITIONAL_MANIFEST_ID_SET = (
-    BASE_MANIFEST_ID_SET | QUANTIFIED_MANIFEST_ID_SET
+BASE_BUNDLES = FIXTURE_BUNDLES[:6]
+QUANTIFIED_BUNDLES = FIXTURE_BUNDLES[6:12]
+NESTED_ALTERNATION_BUNDLES = FIXTURE_BUNDLES[12:]
+CORE_CONDITIONAL_COMPILE_CASES = fixture_cases_for_operation(
+    BASE_BUNDLES + QUANTIFIED_BUNDLES,
+    "compile",
 )
-CORE_CONDITIONAL_COMPILE_CASES = tuple(
-    case for case in COMPILE_CASES if case.manifest_id in CORE_CONDITIONAL_MANIFEST_ID_SET
+NESTED_ALTERNATION_COMPILE_CASES = fixture_cases_for_operation(
+    NESTED_ALTERNATION_BUNDLES,
+    "compile",
 )
-NESTED_ALTERNATION_COMPILE_CASES = tuple(
-    case for case in COMPILE_CASES if case.manifest_id in NESTED_ALTERNATION_MANIFEST_ID_SET
+BASE_MODULE_CASES = fixture_cases_for_operation(BASE_BUNDLES, "module_call")
+QUANTIFIED_MODULE_CASES = fixture_cases_for_operation(
+    QUANTIFIED_BUNDLES,
+    "module_call",
 )
-BASE_MODULE_CASES = tuple(
-    case for case in MODULE_CASES if case.manifest_id in BASE_MANIFEST_ID_SET
+NESTED_ALTERNATION_MODULE_CASES = fixture_cases_for_operation(
+    NESTED_ALTERNATION_BUNDLES,
+    "module_call",
 )
-QUANTIFIED_MODULE_CASES = tuple(
-    case for case in MODULE_CASES if case.manifest_id in QUANTIFIED_MANIFEST_ID_SET
+BASE_PATTERN_CASES = fixture_cases_for_operation(BASE_BUNDLES, "pattern_call")
+QUANTIFIED_PATTERN_CASES = fixture_cases_for_operation(
+    QUANTIFIED_BUNDLES,
+    "pattern_call",
 )
-NESTED_ALTERNATION_MODULE_CASES = tuple(
-    case for case in MODULE_CASES if case.manifest_id in NESTED_ALTERNATION_MANIFEST_ID_SET
-)
-BASE_PATTERN_CASES = tuple(
-    case for case in PATTERN_CASES if case.manifest_id in BASE_MANIFEST_ID_SET
-)
-QUANTIFIED_PATTERN_CASES = tuple(
-    case for case in PATTERN_CASES if case.manifest_id in QUANTIFIED_MANIFEST_ID_SET
-)
-NESTED_ALTERNATION_PATTERN_CASES = tuple(
-    case for case in PATTERN_CASES if case.manifest_id in NESTED_ALTERNATION_MANIFEST_ID_SET
+NESTED_ALTERNATION_PATTERN_CASES = fixture_cases_for_operation(
+    NESTED_ALTERNATION_BUNDLES,
+    "pattern_call",
 )
 GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS = (
     GeneratedQuantifiedConditionalParitySpec(
