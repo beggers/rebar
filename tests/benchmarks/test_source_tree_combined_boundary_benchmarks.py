@@ -4602,10 +4602,6 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 # `test_standard_benchmark_correctness_anchor_contracts.py` lives below so this
 # file is the single benchmark-owner suite.
 
-import pytest
-
-
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
 REGRESSION_MATRIX_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"
@@ -4631,33 +4627,6 @@ NESTED_GROUP_REPLACEMENT_MANIFEST_PATH = (
 )
 OPEN_ENDED_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
-)
-
-from rebar_harness import benchmarks
-from rebar_harness.benchmarks import (
-    BENCHMARK_WORKLOADS_ROOT,
-    BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR,
-    COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR,
-    PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR,
-    build_callable,
-    load_manifest,
-    load_manifests,
-    published_benchmark_manifests,
-    run_internal_workload_probe,
-    select_benchmark_manifest_path,
-    select_benchmark_manifest_paths,
-    workload_to_payload,
-)
-from rebar_harness.correctness import published_fixture_manifests
-from tests.python.fixture_parity_support import (
-    BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
-    BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
-    BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
-    OPEN_ENDED_ALTERNATION_BYTES_CASES,
-    OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
-    OPEN_ENDED_CONDITIONAL_BYTES_CASES,
-    assert_match_result_parity,
-    assert_pattern_parity,
 )
 
 support = sys.modules[__name__]
