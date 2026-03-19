@@ -1,8 +1,9 @@
 # RBR-0664: Collapse the detached report assertion module onto the scorecard owners
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Delete `tests/report_assertions.py` by moving its remaining correctness-report and source-tree benchmark-report assertion helpers onto the only two suites that still consume them, so the tracked scorecard publication paths each own their own assertion surface instead of sharing one detached support module beside those owners.
@@ -110,3 +111,13 @@ PY`
 - The ownership simplification matches the current publication-harness shape:
   - `tests/conformance/test_combined_correctness_scorecards.py` already owns the tracked correctness scorecard expectations and tracked correctness publication checks that consume the correctness-side assertion helpers; and
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` already owns the tracked source-tree benchmark scorecard expectations and tracked source-tree publication checks that consume the benchmark-side assertion helpers.
+
+## Completion Note
+- 2026-03-19: Inlined the remaining correctness report assertion helpers onto `tests/conformance/test_combined_correctness_scorecards.py`, inlined the remaining source-tree benchmark report assertion helpers onto `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and deleted `tests/report_assertions.py` instead of leaving another wrapper or support module behind.
+
+## Verification
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`58 passed, 2924 subtests passed in 54.82s`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` (passed; confirmed the required helper definitions are present on both owner files and both files no longer import `tests.report_assertions`)
+- 2026-03-19: `bash -lc "! rg -n 'from tests\\.report_assertions import' tests -g '*.py'"` (no matches)
+- 2026-03-19: `bash -lc "! rg --files tests | rg 'report_assertions\\.py$'"` (no matches)
+- 2026-03-19: `git diff --name-status -- tests/report_assertions.py` (`D	tests/report_assertions.py`)

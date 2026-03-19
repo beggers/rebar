@@ -6,10 +6,12 @@ from functools import lru_cache, partial
 import pathlib
 import re
 import subprocess
+from typing import Any
 import unittest
 import warnings
 
 from rebar_harness import correctness
+from rebar_harness.scorecard_io import build_cpython_baseline
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 TRACKED_REPORT_PATH = correctness.SCORECARD_REPORT.published_path
@@ -2312,17 +2314,312 @@ def correctness_scorecard_case(
 
 
 from tests.harness_cli_test_support import run_harness_scorecard
-from tests.report_assertions import (
-    assert_correctness_case_record_matches,
-    assert_correctness_fixture_contract,
-    assert_correctness_layer_contract,
-    assert_correctness_report_contract,
-    assert_correctness_suite_case_accounting,
-    assert_correctness_suite_contract,
-    assert_correctness_suites_present,
-    find_correctness_case_record,
-    find_correctness_suite_record,
-)
+
+
+def _correctness_summary(cases: list[dict[str, Any]]) -> dict[str, int]:
+    return {
+        "executed_cases": len(cases),
+        "failed_cases": sum(1 for case in cases if case["comparison"] == "fail"),
+        "passed_cases": sum(1 for case in cases if case["comparison"] == "pass"),
+        "skipped_cases": sum(1 for case in cases if case["comparison"] == "skip"),
+        "total_cases": len(cases),
+        "unimplemented_cases": sum(
+            1 for case in cases if case["comparison"] == "unimplemented"
+        ),
+    }
+
+
+def _correctness_observation_summary(
+    observations: list[dict[str, Any]],
+) -> dict[str, Any]:
+    outcomes: dict[str, int] = {}
+    warning_case_count = 0
+    exception_case_count = 0
+    warning_categories: dict[str, int] = {}
+    exception_types: dict[str, int] = {}
+
+    for observation in observations:
+        outcome = str(observation["outcome"])
+        outcomes[outcome] = outcomes.get(outcome, 0) + 1
+
+        warnings_payload = observation.get("warnings") or []
+        if warnings_payload:
+            warning_case_count += 1
+            for warning_record in warnings_payload:
+                category = str(warning_record["category"])
+                warning_categories[category] = warning_categories.get(category, 0) + 1
+
+        exception = observation.get("exception")
+        if exception is not None:
+            exception_case_count += 1
+            exception_type = str(exception["type"])
+            exception_types[exception_type] = exception_types.get(exception_type, 0) + 1
+
+    return {
+        "outcomes": dict(sorted(outcomes.items())),
+        "warning_case_count": warning_case_count,
+        "exception_case_count": exception_case_count,
+        "warning_categories": dict(sorted(warning_categories.items())),
+        "exception_types": dict(sorted(exception_types.items())),
+    }
+
+
+def _correctness_diagnostics(cases: list[dict[str, Any]]) -> dict[str, Any]:
+    return {
+        "by_adapter": {
+            "cpython": _correctness_observation_summary(
+                [case["observations"]["cpython"] for case in cases]
+            ),
+            "rebar": _correctness_observation_summary(
+                [case["observations"]["rebar"] for case in cases]
+            ),
+        }
+    }
+
+
+def _assert_tracked_report_exists(
+    testcase: Any,
+    tracked_report_path: pathlib.Path | None,
+) -> None:
+    if tracked_report_path is not None:
+        testcase.assertTrue(tracked_report_path.is_file())
+
+
+def _assert_cpython_baseline_contract(
+    testcase: Any,
+    baseline: dict[str, Any],
+    *,
+    expected_re_module: str,
+) -> None:
+    expected_baseline = {
+        **build_cpython_baseline(version_family="3.12.x"),
+        "re_module": expected_re_module,
+    }
+    for key, expected_value in expected_baseline.items():
+        testcase.assertEqual(baseline[key], expected_value)
+
+
+def _correctness_cases_for_suite(
+    scorecard: dict[str, Any],
+    suite: dict[str, Any],
+) -> list[dict[str, Any]]:
+    suite_cases = [
+        case
+        for case in scorecard["cases"]
+        if case["manifest_id"] in suite["manifest_ids"] and case["layer"] == suite["layer"]
+    ]
+    if suite["operations"]:
+        suite_cases = [
+            case for case in suite_cases if case["operation"] in suite["operations"]
+        ]
+    if suite["text_models"]:
+        suite_cases = [
+            case
+            for case in suite_cases
+            if case.get("text_model") in suite["text_models"]
+        ]
+    return suite_cases
+
+
+def _find_record_by_id(
+    records: Iterable[Any],
+    *,
+    record_id: str,
+    get_id: Callable[[Any], str],
+    missing_message: str,
+) -> Any:
+    for record in records:
+        if get_id(record) == record_id:
+            return record
+    raise AssertionError(missing_message)
+
+
+def find_correctness_suite_record(
+    scorecard: dict[str, Any],
+    suite_id: str,
+) -> dict[str, Any]:
+    return _find_record_by_id(
+        scorecard["suites"],
+        record_id=suite_id,
+        get_id=lambda suite: str(suite["id"]),
+        missing_message=f"missing correctness suite record for {suite_id!r}",
+    )
+
+
+def find_correctness_case_record(
+    scorecard: dict[str, Any],
+    case_id: str,
+) -> dict[str, Any]:
+    return _find_record_by_id(
+        scorecard["cases"],
+        record_id=case_id,
+        get_id=lambda case: str(case["id"]),
+        missing_message=f"missing correctness case record for {case_id!r}",
+    )
+
+
+def assert_correctness_case_record_matches(
+    testcase: Any,
+    actual_case: dict[str, Any],
+    expected_case: dict[str, Any],
+) -> None:
+    for key in (
+        "id",
+        "manifest_id",
+        "suite_id",
+        "layer",
+        "family",
+        "operation",
+        "notes",
+        "categories",
+        "comparison",
+        "comparison_notes",
+        "observations",
+    ):
+        testcase.assertEqual(actual_case.get(key), expected_case.get(key))
+
+    for key in ("text_model", "pattern", "flags", "helper", "kwargs"):
+        testcase.assertEqual(actual_case.get(key), expected_case.get(key))
+
+    actual_args = actual_case.get("args")
+    expected_args = expected_case.get("args")
+    testcase.assertEqual(bool(actual_args), bool(expected_args))
+    if not actual_args or not expected_args:
+        return
+
+    testcase.assertEqual(len(actual_args), len(expected_args))
+    for actual_arg, expected_arg in zip(actual_args, expected_args):
+        if (
+            isinstance(actual_arg, dict)
+            and isinstance(expected_arg, dict)
+            and actual_arg.get("type") == "callable"
+            and expected_arg.get("type") == "callable"
+        ):
+            testcase.assertEqual(actual_arg["type"], expected_arg["type"])
+            testcase.assertEqual(actual_arg["qualname"], expected_arg["qualname"])
+            continue
+        testcase.assertEqual(actual_arg, expected_arg)
+
+
+def _assert_correctness_suite_summary_consistent(
+    testcase: Any,
+    scorecard: dict[str, Any],
+    suite_id: str,
+) -> dict[str, Any]:
+    suite = find_correctness_suite_record(scorecard, suite_id)
+    suite_cases = _correctness_cases_for_suite(scorecard, suite)
+    testcase.assertEqual(suite["case_count"], len(suite_cases))
+    testcase.assertEqual(suite["summary"], _correctness_summary(suite_cases))
+    testcase.assertEqual(suite["diagnostics"], _correctness_diagnostics(suite_cases))
+    return suite
+
+
+def assert_correctness_suites_present(
+    testcase: Any,
+    scorecard: dict[str, Any],
+    suite_ids: Iterable[str],
+) -> tuple[dict[str, Any], ...]:
+    return tuple(
+        _assert_correctness_suite_summary_consistent(testcase, scorecard, suite_id)
+        for suite_id in suite_ids
+    )
+
+
+def assert_correctness_report_contract(
+    testcase: Any,
+    scorecard: dict[str, Any],
+    summary: dict[str, Any],
+    *,
+    expected_phase: str,
+    tracked_report_path: pathlib.Path | None = None,
+) -> None:
+    testcase.assertEqual(summary, scorecard["summary"])
+    testcase.assertEqual(scorecard["summary"], _correctness_summary(scorecard["cases"]))
+    testcase.assertEqual(scorecard["schema_version"], "1.0")
+    testcase.assertEqual(scorecard["suite"], "correctness")
+    testcase.assertEqual(scorecard["phase"], expected_phase)
+
+    baseline = scorecard["baseline"]
+    _assert_cpython_baseline_contract(
+        testcase,
+        baseline,
+        expected_re_module="re",
+    )
+    testcase.assertEqual(baseline["oracle"], "cpython-stdlib-re")
+    testcase.assertEqual(baseline["target_module"], "rebar")
+    testcase.assertEqual(scorecard["diagnostics"], _correctness_diagnostics(scorecard["cases"]))
+    _assert_tracked_report_exists(testcase, tracked_report_path)
+
+
+def assert_correctness_fixture_contract(
+    testcase: Any,
+    scorecard: dict[str, Any],
+    *,
+    expected_manifest_ids: tuple[str, ...],
+    expected_paths: tuple[str, ...],
+    expected_case_count: int,
+) -> None:
+    fixtures = scorecard["fixtures"]
+    testcase.assertEqual(fixtures["manifest_count"], len(expected_manifest_ids))
+    testcase.assertEqual(fixtures["manifest_ids"], list(expected_manifest_ids))
+    testcase.assertEqual(fixtures["paths"], list(expected_paths))
+    testcase.assertEqual(fixtures["case_count"], expected_case_count)
+    if len(expected_manifest_ids) == 1:
+        testcase.assertEqual(fixtures["manifest_id"], expected_manifest_ids[0])
+        testcase.assertEqual(fixtures["path"], expected_paths[0])
+
+
+def assert_correctness_layer_contract(
+    testcase: Any,
+    scorecard: dict[str, Any],
+    layer_id: str,
+    *,
+    expected_manifest_ids: tuple[str, ...],
+    expected_operations: tuple[str, ...],
+    expected_text_models: tuple[str, ...],
+) -> dict[str, Any]:
+    layer = scorecard["layers"][layer_id]
+    layer_cases = [case for case in scorecard["cases"] if case["layer"] == layer_id]
+    testcase.assertEqual(layer["case_count"], len(layer_cases))
+    testcase.assertEqual(layer["summary"], _correctness_summary(layer_cases))
+    testcase.assertEqual(layer["diagnostics"], _correctness_diagnostics(layer_cases))
+    testcase.assertEqual(layer["manifest_ids"], list(expected_manifest_ids))
+    testcase.assertEqual(layer["operations"], list(expected_operations))
+    testcase.assertEqual(layer["text_models"], list(expected_text_models))
+    return layer
+
+
+def assert_correctness_suite_contract(
+    testcase: Any,
+    scorecard: dict[str, Any],
+    suite_id: str,
+    *,
+    expected_manifest_ids: tuple[str, ...],
+    expected_families: tuple[str, ...],
+    expected_operations: tuple[str, ...],
+    expected_text_models: tuple[str, ...],
+) -> dict[str, Any]:
+    suite = _assert_correctness_suite_summary_consistent(testcase, scorecard, suite_id)
+    testcase.assertEqual(suite["manifest_ids"], list(expected_manifest_ids))
+    testcase.assertEqual(suite["families"], list(expected_families))
+    testcase.assertEqual(suite["operations"], list(expected_operations))
+    testcase.assertEqual(suite["text_models"], list(expected_text_models))
+    return suite
+
+
+def assert_correctness_suite_case_accounting(
+    testcase: Any,
+    suite: dict[str, Any],
+    *,
+    expected_case_count: int,
+) -> None:
+    testcase.assertEqual(suite["summary"]["total_cases"], expected_case_count)
+    testcase.assertEqual(suite["summary"]["failed_cases"], 0)
+    testcase.assertEqual(suite["summary"]["skipped_cases"], 0)
+    testcase.assertEqual(
+        suite["summary"]["passed_cases"] + suite["summary"]["unimplemented_cases"],
+        expected_case_count,
+    )
 
 EXPECTED_SUITE_TABLES = {
     "combined": COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS,
