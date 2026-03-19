@@ -1,8 +1,9 @@
 # RBR-0672: Catch the nested broader-range wider-ranged-repeat branch-local-backreference conditional callable-replacement pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Extend the published source-tree benchmark surface so the exact broader `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement `str` pair that `RBR-0670` just moved behind `rebar._rebar` produces real `rebar` timings on the existing `nested-group-callable-replacement-boundary` manifest.
@@ -45,3 +46,13 @@ Created: 2026-03-19
   - `benchmarks/workloads/nested_group_callable_replacement_boundary.py` already owns the same callable benchmark family and currently carries the adjacent wider `{1,4}` non-conditional rows plus the broader-range open-ended `{2,}` conditional rows, but no wider `{1,4}` conditional sibling rows yet;
   - `reports/benchmarks/latest.py` currently publishes `nested-group-callable-replacement-boundary` at `56` total workloads / `56` measured workloads / `0` known gaps and the combined source-tree report at `747` / `747` / `0`; and
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` already treats the adjacent broader `{1,4}` callable slice and the broader-range open-ended conditional callable slice as measured shared expectations on the same owner path, so this follow-on can stay on that exact benchmark surface without another synthesis pass.
+
+## Completion
+- 2026-03-19: Added the four wider `{1,4}` numbered and named conditional callable `str` rows to `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, keeping the existing callback descriptors, haystacks, and public Python-path patterns on the shared owner manifest.
+- 2026-03-19: Extended `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with a dedicated shared-slice expectation plus targeted manifest and scorecard promotion checks for the new zero-gap conditional callable rows, and tightened the adjacent non-conditional broader-range slice matcher to exclude `conditionals` so the shared slice inventories stay disjoint.
+- 2026-03-19: Republished `reports/benchmarks/latest.py`; the tracked artifact now publishes `nested-group-callable-replacement-boundary` at `60` total workloads / `60` measured workloads / `0` known gaps and the combined source-tree report at `751` / `751` / `0`, with all four new wider `{1,4}` conditional callable rows marked `status == "measured"` through the source-tree shim path.
+
+## Verification
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`2146 passed, 3 skipped, 1214 subtests passed`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_callable_replacement_boundary.py --report .rebar/tmp/rbr-0672-nested-broader-range-wider-ranged-repeat-branch-local-backreference-conditional-callable-replacement-benchmarks.py` (`{"known_gap_count": 0, "measured_workloads": 60, "module_workloads": 60, "parser_workloads": 0, "regression_workloads": 0, "total_workloads": 60}`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py` (`{"known_gap_count": 0, "measured_workloads": 751, "module_workloads": 743, "parser_workloads": 8, "regression_workloads": 5, "total_workloads": 751}`)
