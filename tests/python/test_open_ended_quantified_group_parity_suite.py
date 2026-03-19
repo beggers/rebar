@@ -32,8 +32,10 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
+    invoke_bounded_pattern_case as _invoke_bounded_pattern_case,
     load_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
+    published_bytes_texts_by_pattern as _published_bytes_texts_by_pattern,
     published_fixture_bundle_by_manifest_id,
 )
 
@@ -877,10 +879,6 @@ PATTERN_BOUNDS_NO_MATCH_CASES = (
 )
 
 
-def _invoke_bounded_pattern_case(compiled_pattern: object, case: BoundedPatternCase) -> object:
-    return getattr(compiled_pattern, case.helper)(case.string, *case.bounds)
-
-
 @pytest.mark.parametrize(
     "bundle",
     FIXTURE_BUNDLES,
@@ -901,36 +899,6 @@ def test_open_ended_quantified_group_direct_test_case_id_buckets_cover_selected_
         OPEN_ENDED_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS,
         selected_case_ids=OPEN_ENDED_QUANTIFIED_GROUP_SELECTED_CASE_IDS,
         coverage_label="open-ended quantified group direct-test case-id buckets",
-    )
-
-
-def _published_bytes_texts_by_pattern(
-    bundle_bytes_cases: tuple[FixtureCase, ...],
-) -> tuple[dict[bytes, frozenset[bytes]], dict[bytes, frozenset[bytes]]]:
-    published_module_texts_by_pattern: dict[bytes, set[bytes]] = {}
-    published_fullmatch_texts_by_pattern: dict[bytes, set[bytes]] = {}
-
-    for case in bundle_bytes_cases:
-        pattern = case_pattern(case)
-        assert isinstance(pattern, bytes)
-        if case.operation == "module_call":
-            text = case.args[1]
-            assert isinstance(text, bytes)
-            published_module_texts_by_pattern.setdefault(pattern, set()).add(text)
-        elif case.operation == "pattern_call":
-            text = case.args[0]
-            assert isinstance(text, bytes)
-            published_fullmatch_texts_by_pattern.setdefault(pattern, set()).add(text)
-
-    return (
-        {
-            pattern: frozenset(texts)
-            for pattern, texts in published_module_texts_by_pattern.items()
-        },
-        {
-            pattern: frozenset(texts)
-            for pattern, texts in published_fullmatch_texts_by_pattern.items()
-        },
     )
 
 

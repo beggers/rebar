@@ -625,6 +625,36 @@ def assert_direct_bytes_follow_on_bundle_routing(
     return bundle_str_cases, bundle_bytes_cases
 
 
+def published_bytes_texts_by_pattern(
+    bundle_bytes_cases: Iterable[FixtureCase],
+) -> tuple[dict[bytes, frozenset[bytes]], dict[bytes, frozenset[bytes]]]:
+    published_module_texts_by_pattern: dict[bytes, set[bytes]] = {}
+    published_fullmatch_texts_by_pattern: dict[bytes, set[bytes]] = {}
+
+    for case in bundle_bytes_cases:
+        pattern = case_pattern(case)
+        assert isinstance(pattern, bytes)
+        if case.operation == "module_call":
+            text = case.args[1]
+            assert isinstance(text, bytes)
+            published_module_texts_by_pattern.setdefault(pattern, set()).add(text)
+        elif case.operation == "pattern_call":
+            text = case.args[0]
+            assert isinstance(text, bytes)
+            published_fullmatch_texts_by_pattern.setdefault(pattern, set()).add(text)
+
+    return (
+        {
+            pattern: frozenset(texts)
+            for pattern, texts in published_module_texts_by_pattern.items()
+        },
+        {
+            pattern: frozenset(texts)
+            for pattern, texts in published_fullmatch_texts_by_pattern.items()
+        },
+    )
+
+
 def assert_mixed_text_model_bundles_have_direct_bytes_follow_on_routing(
     bundles: Iterable[FixtureBundle],
     *,
@@ -876,6 +906,13 @@ def case_text_argument(case: FixtureCase) -> str | bytes:
     text = _case_argument_by_operation(case, module_index=2, pattern_index=1)
     assert isinstance(text, (str, bytes))
     return text
+
+
+def invoke_bounded_pattern_case(compiled_pattern: object, case: object) -> object:
+    return getattr(compiled_pattern, getattr(case, "helper"))(
+        getattr(case, "string"),
+        *getattr(case, "bounds"),
+    )
 
 
 def compile_with_cpython_parity(

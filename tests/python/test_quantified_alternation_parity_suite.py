@@ -24,8 +24,10 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
+    invoke_bounded_pattern_case as _invoke_bounded_pattern_case,
     load_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
+    published_bytes_texts_by_pattern as _published_direct_bytes_follow_on_texts_by_pattern,
     published_fixture_bundle_by_manifest_id,
 )
 BACKTRACKING_BRANCH_TEXT = {
@@ -1254,10 +1256,6 @@ def _bounded_pattern(case: BoundedPatternCase) -> str | bytes:
     return _compile_pattern(case.pattern_case_id)
 
 
-def _invoke_bounded_pattern_case(compiled_pattern: object, case: BoundedPatternCase) -> object:
-    return getattr(compiled_pattern, case.helper)(case.string, *case.bounds)
-
-
 def _build_supplemental_no_match_cases() -> tuple[SupplementalNoMatchCase, ...]:
     cases: list[SupplementalNoMatchCase] = []
     for case in BACKTRACKING_HEAVY_COMPILE_CASES:
@@ -1425,36 +1423,6 @@ def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_c
         case_pattern(case)
         for case in fixture_cases_for_operation((bundle,), "compile")
         if case.text_model == "bytes"
-    )
-
-
-def _published_direct_bytes_follow_on_texts_by_pattern(
-    bundle_bytes_cases: tuple[FixtureCase, ...],
-) -> tuple[dict[bytes, frozenset[bytes]], dict[bytes, frozenset[bytes]]]:
-    published_module_texts_by_pattern: dict[bytes, set[bytes]] = {}
-    published_fullmatch_texts_by_pattern: dict[bytes, set[bytes]] = {}
-
-    for case in bundle_bytes_cases:
-        pattern = case_pattern(case)
-        assert isinstance(pattern, bytes)
-        if case.operation == "module_call":
-            text = case.args[1]
-            assert isinstance(text, bytes)
-            published_module_texts_by_pattern.setdefault(pattern, set()).add(text)
-        elif case.operation == "pattern_call":
-            text = case.args[0]
-            assert isinstance(text, bytes)
-            published_fullmatch_texts_by_pattern.setdefault(pattern, set()).add(text)
-
-    return (
-        {
-            pattern: frozenset(texts)
-            for pattern, texts in published_module_texts_by_pattern.items()
-        },
-        {
-            pattern: frozenset(texts)
-            for pattern, texts in published_fullmatch_texts_by_pattern.items()
-        },
     )
 
 
