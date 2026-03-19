@@ -1,6 +1,6 @@
 # RBR-0720: Catch up the module-workflow multiline bytes compile regression benchmark
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -48,3 +48,9 @@ Created: 2026-03-19
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently anchors `regression-module-compile-multiline-purged` on the shared regression path and still expects the regression manifest to stay at `7` measured workloads;
   - `reports/benchmarks/latest.py` currently reports `773` total / `773` measured / `0` known gaps overall, with `REPORT["summary"]["module_workloads"] == 765`, `REPORT["summary"]["regression_workloads"] == 7`, and `REPORT["manifests"]["regression-matrix"]` at `7` selected / `7` measured / `0` known gaps; and
   - `tests/conformance/fixtures/module_workflow_surface.py` plus `tests/python/test_module_workflow_parity_suite.py` already publish and exercise the exact correctness anchor `workflow-compile-bytes-multiline-regression`, so this benchmark task can stay on the existing shared regression manifest instead of inventing another benchmark family.
+
+## Completion
+- 2026-03-19: Added the missing `regression-module-compile-multiline-purged-bytes` workload to `benchmarks/workloads/regression_matrix.py`, keeping the shared multiline module-workflow compile pattern, `MULTILINE` flags value `8`, `module.compile` operation, `purged` cache mode, and `module-helper-call` timing scope while changing only the row's `text_model` to `bytes`.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` on the existing shared owner path so the regression pack now promotes the new bytes multiline workload as measured, the regression manifest expects `8` measured workloads with `0` known gaps, and the standard compile-proxy anchor mapping pins the new row to `workflow-compile-bytes-multiline-regression`.
+- Regenerated the tracked benchmark publication and verified the tracked `reports/benchmarks/latest.py` artifact after publication: the combined report now reads `774` total / `774` measured / `0` known gaps across `30` manifests, `REPORT["summary"]["module_workloads"] == 766`, `REPORT["summary"]["regression_workloads"] == 8`, `REPORT["manifests"]["regression-matrix"]` is `8` selected / `8` measured / `0` known gaps, and `regression-module-compile-multiline-purged-bytes` is published as `measured`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/regression_matrix.py --report .rebar/tmp/rbr-0720-regression-matrix.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
