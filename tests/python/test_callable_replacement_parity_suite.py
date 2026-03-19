@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import Counter
 from dataclasses import dataclass
 import re
+import textwrap
 
 import pytest
 
@@ -12,6 +13,7 @@ from rebar_harness.correctness import (
     FixtureCase,
     RebarAdapter,
     evaluate_case,
+    load_fixture_manifest,
     normalize_exception,
     published_fixture_manifests,
     select_correctness_fixture_paths,
@@ -1542,6 +1544,404 @@ def test_callable_replacement_fixture_shape_contract(
         assert "callable-replacement" in case.categories
         assert case.text_model in case.categories
         _assert_source_callable_replacement_reference_is_valid(case)
+
+
+def test_fixture_manifest_loader_materializes_callable_replacement_descriptors(
+    tmp_path,
+) -> None:
+    fixture_path = tmp_path / "quantified_nested_group_callable_fixture.py"
+    fixture_path.write_text(
+        textwrap.dedent(
+            """
+            MANIFEST = {
+                "schema_version": 1,
+                "manifest_id": "quantified-nested-group-callable-loader-contract",
+                "layer": "module_workflow",
+                "suite_id": "collection.replacement.quantified_nested_group.callable.contract",
+                "defaults": {
+                    "text_model": "str",
+                },
+                "cases": [
+                    {
+                        "id": "module-sub-callable-numbered-contract-str",
+                        "operation": "module_call",
+                        "family": "quantified_nested_group_numbered_callable_contract",
+                        "helper": "sub",
+                        "args": [
+                            r"a((bc)+)d",
+                            {
+                                "type": "callable_match_group",
+                                "group": 1,
+                                "suffix": "x",
+                            },
+                            "zzabcbcdzz",
+                        ],
+                        "categories": [
+                            "workflow",
+                            "callable-replacement",
+                            "quantified",
+                            "nested-group",
+                            "str",
+                        ],
+                        "notes": [
+                            "Ensures Python-backed fixtures can materialize numbered callable replacement descriptors for quantified nested-group workflows."
+                        ],
+                    },
+                    {
+                        "id": "pattern-subn-callable-named-contract-str",
+                        "operation": "pattern_call",
+                        "family": "quantified_nested_group_named_callable_contract",
+                        "pattern": r"a(?P<outer>(?P<inner>bc)+)d",
+                        "helper": "subn",
+                        "args": [
+                            {
+                                "type": "callable_match_group",
+                                "group": "inner",
+                                "prefix": "<",
+                                "suffix": ">",
+                            },
+                            "zzabcbcdabcbcdzz",
+                            1,
+                        ],
+                        "categories": [
+                            "workflow",
+                            "callable-replacement",
+                            "quantified",
+                            "nested-group",
+                            "str",
+                        ],
+                        "notes": [
+                            "Ensures Python-backed fixtures can materialize named callable replacement descriptors for quantified nested-group workflows."
+                        ],
+                    },
+                    {
+                        "id": "module-sub-callable-constant-contract-str",
+                        "operation": "module_call",
+                        "family": "quantified_nested_group_constant_callable_contract",
+                        "helper": "sub",
+                        "args": [
+                            r"a((bc)+)d",
+                            {
+                                "type": "callable_constant",
+                                "value": "CONST",
+                            },
+                            "zzabcdzz",
+                        ],
+                        "categories": [
+                            "workflow",
+                            "callable-replacement",
+                            "quantified",
+                            "nested-group",
+                            "str",
+                        ],
+                        "notes": [
+                            "Ensures Python-backed fixtures can materialize constant callable descriptors without falling back to raw dict payloads."
+                        ],
+                    },
+                ],
+            }
+            """
+        ).lstrip(),
+        encoding="utf-8",
+    )
+
+    manifest = load_fixture_manifest(fixture_path)
+    numbered_case, named_case, constant_case = manifest.cases
+
+    assert manifest.manifest_id == "quantified-nested-group-callable-loader-contract"
+    assert manifest.layer == "module_workflow"
+    assert (
+        manifest.suite_id
+        == "collection.replacement.quantified_nested_group.callable.contract"
+    )
+    assert [case.case_id for case in manifest.cases] == [
+        "module-sub-callable-numbered-contract-str",
+        "pattern-subn-callable-named-contract-str",
+        "module-sub-callable-constant-contract-str",
+    ]
+
+    assert numbered_case.helper == "sub"
+    assert case_pattern(numbered_case) == r"a((bc)+)d"
+    assert numbered_case.source_args == [
+        r"a((bc)+)d",
+        {
+            "type": "callable_match_group",
+            "group": 1,
+            "suffix": "x",
+        },
+        "zzabcbcdzz",
+    ]
+    assert numbered_case.source_kwargs == {}
+    numbered_replacement = case_replacement_argument(numbered_case)
+    assert callable(numbered_replacement)
+    numbered_match = re.search(
+        case_pattern(numbered_case),
+        case_text_argument(numbered_case),
+    )
+    assert numbered_match is not None
+    assert numbered_replacement(numbered_match) == "bcbcx"
+    assert numbered_case.serialized_args()[1] == {
+        "type": "callable",
+        "module": "rebar_harness.correctness",
+        "qualname": "callable_match_group",
+    }
+    assert numbered_case.serialized_kwargs() == {}
+
+    assert named_case.helper == "subn"
+    assert case_pattern(named_case) == r"a(?P<outer>(?P<inner>bc)+)d"
+    assert named_case.source_args == [
+        {
+            "type": "callable_match_group",
+            "group": "inner",
+            "prefix": "<",
+            "suffix": ">",
+        },
+        "zzabcbcdabcbcdzz",
+        1,
+    ]
+    assert named_case.source_kwargs == {}
+    named_replacement = case_replacement_argument(named_case)
+    assert callable(named_replacement)
+    named_match = re.search(case_pattern(named_case), "zzabcbcdzz")
+    assert named_match is not None
+    assert named_replacement(named_match) == "<bc>"
+    assert named_case.serialized_args()[0] == {
+        "type": "callable",
+        "module": "rebar_harness.correctness",
+        "qualname": "callable_match_group",
+    }
+    assert named_case.serialized_kwargs() == {}
+
+    assert constant_case.helper == "sub"
+    assert constant_case.source_args == [
+        r"a((bc)+)d",
+        {
+            "type": "callable_constant",
+            "value": "CONST",
+        },
+        "zzabcdzz",
+    ]
+    assert constant_case.source_kwargs == {}
+    constant_replacement = case_replacement_argument(constant_case)
+    assert callable(constant_replacement)
+    constant_match = re.search(
+        case_pattern(constant_case),
+        case_text_argument(constant_case),
+    )
+    assert constant_match is not None
+    assert constant_replacement(constant_match) == "CONST"
+    assert constant_case.serialized_args()[1] == {
+        "type": "callable",
+        "module": "rebar_harness.correctness",
+        "qualname": "callable_constant",
+    }
+    assert constant_case.serialized_kwargs() == {}
+
+
+def test_fixture_manifest_loader_materializes_bytes_callables_without_aliasing_defaults(
+    tmp_path,
+) -> None:
+    fixture_path = tmp_path / "bytes_callable_fixture.py"
+    fixture_path.write_text(
+        textwrap.dedent(
+            """
+            MANIFEST = {
+                "schema_version": 1,
+                "manifest_id": "bytes-callable-loader-contract",
+                "layer": "module_workflow",
+                "suite_id": "collection.replacement.bytes.callable.contract",
+                "defaults": {
+                    "operation": "pattern_call",
+                    "helper": "sub",
+                    "text_model": "bytes",
+                    "pattern_encoding": "latin-1",
+                    "args": [
+                        {
+                            "type": "callable_match_group",
+                            "group": 1,
+                            "prefix": {
+                                "type": "bytes",
+                                "value": "<",
+                            },
+                            "suffix": {
+                                "type": "bytes",
+                                "value": ">",
+                            },
+                        },
+                        {
+                            "type": "bytes",
+                            "value": "zzabcbcdzz",
+                        },
+                    ],
+                    "kwargs": {
+                        "count": 1,
+                    },
+                },
+                "cases": [
+                    {
+                        "id": "pattern-sub-callable-match-group-default-a-bytes",
+                        "family": "bytes_callable_match_group_default",
+                        "pattern": r"a((bc)+)d",
+                    },
+                    {
+                        "id": "pattern-sub-callable-match-group-default-b-bytes",
+                        "family": "bytes_callable_match_group_default",
+                        "pattern": r"a((bc)+)d",
+                    },
+                    {
+                        "id": "pattern-sub-callable-constant-override-bytes",
+                        "family": "bytes_callable_constant_override",
+                        "pattern": r"a((bc)+)d",
+                        "args": [
+                            {
+                                "type": "callable_constant",
+                                "value": {
+                                    "type": "bytes",
+                                    "value": "CONST",
+                                },
+                            },
+                            {
+                                "type": "bytes",
+                                "value": "zzabcbcdzz",
+                            },
+                        ],
+                    },
+                ],
+            }
+            """
+        ).lstrip(),
+        encoding="utf-8",
+    )
+
+    manifest = load_fixture_manifest(fixture_path)
+    first_default_case, second_default_case, constant_case = manifest.cases
+
+    assert manifest.manifest_id == "bytes-callable-loader-contract"
+    assert manifest.layer == "module_workflow"
+    assert manifest.suite_id == "collection.replacement.bytes.callable.contract"
+    assert [case.case_id for case in manifest.cases] == [
+        "pattern-sub-callable-match-group-default-a-bytes",
+        "pattern-sub-callable-match-group-default-b-bytes",
+        "pattern-sub-callable-constant-override-bytes",
+    ]
+    assert case_pattern(first_default_case) == rb"a((bc)+)d"
+    assert case_pattern(second_default_case) == rb"a((bc)+)d"
+    assert case_pattern(constant_case) == rb"a((bc)+)d"
+
+    assert first_default_case.args is not second_default_case.args
+    assert first_default_case.kwargs is not second_default_case.kwargs
+    assert first_default_case.source_args is not second_default_case.source_args
+    assert first_default_case.source_kwargs is not second_default_case.source_kwargs
+    assert first_default_case.source_args == [
+        {
+            "type": "callable_match_group",
+            "group": 1,
+            "prefix": {
+                "type": "bytes",
+                "value": "<",
+            },
+            "suffix": {
+                "type": "bytes",
+                "value": ">",
+            },
+        },
+        {
+            "type": "bytes",
+            "value": "zzabcbcdzz",
+        },
+    ]
+    assert first_default_case.source_kwargs == {"count": 1}
+    assert second_default_case.source_args == [
+        {
+            "type": "callable_match_group",
+            "group": 1,
+            "prefix": {
+                "type": "bytes",
+                "value": "<",
+            },
+            "suffix": {
+                "type": "bytes",
+                "value": ">",
+            },
+        },
+        {
+            "type": "bytes",
+            "value": "zzabcbcdzz",
+        },
+    ]
+    assert second_default_case.source_kwargs == {"count": 1}
+
+    first_default_replacement = case_replacement_argument(first_default_case)
+    second_default_replacement = case_replacement_argument(second_default_case)
+    assert callable(first_default_replacement)
+    assert callable(second_default_replacement)
+    assert first_default_replacement is not second_default_replacement
+    assert first_default_case.source_args[0] is not second_default_case.source_args[0]
+    assert case_text_argument(first_default_case) == b"zzabcbcdzz"
+    assert first_default_case.serialized_args() == [
+        {
+            "type": "callable",
+            "module": "rebar_harness.correctness",
+            "qualname": "callable_match_group",
+        },
+        {
+            "encoding": "latin-1",
+            "value": "zzabcbcdzz",
+        },
+    ]
+    assert first_default_case.serialized_kwargs() == {"count": 1}
+
+    default_match = re.search(
+        case_pattern(first_default_case),
+        case_text_argument(first_default_case),
+    )
+    assert default_match is not None
+    assert first_default_replacement(default_match) == b"<bcbc>"
+
+    first_default_case.args[1] = b"mutated"
+    first_default_case.kwargs["count"] = 0
+    first_default_case.source_args[0]["prefix"]["value"] = "["
+    first_default_case.source_args[1]["value"] = "mutated-source"
+    first_default_case.source_kwargs["count"] = 0
+    assert second_default_case.args[1] == b"zzabcbcdzz"
+    assert second_default_case.kwargs["count"] == 1
+    assert second_default_case.source_args[0]["prefix"]["value"] == "<"
+    assert second_default_case.source_args[1]["value"] == "zzabcbcdzz"
+    assert second_default_case.source_kwargs["count"] == 1
+    assert constant_case.kwargs["count"] == 1
+    assert constant_case.source_kwargs["count"] == 1
+
+    constant_replacement = case_replacement_argument(constant_case)
+    assert callable(constant_replacement)
+    assert constant_case.source_args == [
+        {
+            "type": "callable_constant",
+            "value": {
+                "type": "bytes",
+                "value": "CONST",
+            },
+        },
+        {
+            "type": "bytes",
+            "value": "zzabcbcdzz",
+        },
+    ]
+    constant_match = re.search(
+        case_pattern(constant_case),
+        case_text_argument(constant_case),
+    )
+    assert constant_match is not None
+    assert constant_replacement(constant_match) == b"CONST"
+    assert constant_case.serialized_args()[0] == {
+        "type": "callable",
+        "module": "rebar_harness.correctness",
+        "qualname": "callable_constant",
+    }
+    assert constant_case.serialized_args()[1] == {
+        "encoding": "latin-1",
+        "value": "zzabcbcdzz",
+    }
+    assert constant_case.serialized_kwargs() == {"count": 1}
 
 
 def test_literal_callable_case_stays_aligned_with_published_collection_fixture() -> None:
