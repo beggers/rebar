@@ -26,12 +26,13 @@ from tests.python.fixture_parity_support import (
     assert_bounded_pattern_case_match_parity,
     assert_bounded_pattern_case_no_match_parity,
     assert_fixture_bundle_contract,
-    assert_match_group_access_parity,
+    assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
     assert_module_search_case_parity,
     assert_pattern_fullmatch_case_parity,
     assert_match_result_parity,
+    assert_valid_match_group_access_parity,
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
@@ -1928,7 +1929,8 @@ def test_supplemental_bytes_module_search_match_group_access_matches_cpython(
 
         assert observed is not None
         assert expected is not None
-        assert_match_group_access_parity(observed, expected)
+        assert_valid_match_group_access_parity(observed, expected)
+        assert_invalid_match_group_access_parity(observed, expected)
 
 
 @pytest.mark.parametrize(
@@ -2007,7 +2009,8 @@ def test_supplemental_bytes_pattern_fullmatch_match_group_access_matches_cpython
 
         assert observed is not None
         assert expected is not None
-        assert_match_group_access_parity(observed, expected)
+        assert_valid_match_group_access_parity(observed, expected)
+        assert_invalid_match_group_access_parity(observed, expected)
 
 
 @pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)

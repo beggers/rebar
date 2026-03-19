@@ -1122,14 +1122,6 @@ def assert_invalid_match_group_access_parity(
             assert observed_error.args == expected_error.args
 
 
-def assert_match_group_access_parity(
-    observed: object,
-    expected: re.Match[str] | re.Match[bytes],
-) -> None:
-    assert_valid_match_group_access_parity(observed, expected)
-    assert_invalid_match_group_access_parity(observed, expected)
-
-
 def record_generated_match_failure(
     failures: list[str],
     *,
@@ -1188,7 +1180,8 @@ def _assert_optional_match_case_parity(
     if check_convenience_api:
         assert_match_convenience_api_parity(observed, expected)
     if check_group_access:
-        assert_match_group_access_parity(observed, expected)
+        assert_valid_match_group_access_parity(observed, expected)
+        assert_invalid_match_group_access_parity(observed, expected)
 
 
 def _evaluate_fixture_case_optional_match(
@@ -1307,7 +1300,8 @@ def assert_bounded_pattern_case_match_parity(
     if check_convenience_api:
         assert_match_convenience_api_parity(observed, expected)
     if check_group_access:
-        assert_match_group_access_parity(observed, expected)
+        assert_valid_match_group_access_parity(observed, expected)
+        assert_invalid_match_group_access_parity(observed, expected)
 
 
 def assert_bounded_pattern_case_no_match_parity(
