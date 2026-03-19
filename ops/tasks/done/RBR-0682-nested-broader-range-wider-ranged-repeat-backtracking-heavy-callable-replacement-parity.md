@@ -1,6 +1,6 @@
 # RBR-0682: Convert the nested broader-range wider-ranged-repeat backtracking-heavy callable-replacement slice to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -46,3 +46,9 @@ Created: 2026-03-19
   - `reports/correctness/latest.py` currently reports `1358` total / `1350` passed / `8` `unimplemented` across `113` manifests, and `collection.replacement.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy.callable` at `8` total / `0` passed / `8` `unimplemented`;
   - direct public-API probes from this planning run still raise `NotImplementedError` for numbered and named `rebar.sub(...)` calls on `a(((bc|b)c){1,4})d` and `a(?P<outer>(?:(?P<inner>bc|b)c){1,4})d`, so this parity slice is not already satisfied in the current checkout; and
   - a later benchmark follow-on should catch the same slice up on the existing `benchmarks/workloads/nested_group_callable_replacement_boundary.py` path instead of inventing another benchmark surface.
+
+## Completion
+- 2026-03-19: Landed Rust-backed compile and captured-span support for the numbered outer-capture form, the existing named-outer backtracking-heavy match form, and the new named outer-plus-inner callable form behind `rebar._rebar`, then wired the shared callable replacement path through the new native `finditer` boundary.
+- Dropped the manifest’s `pending_rebar_case_ids` from `tests/python/test_callable_replacement_parity_suite.py` and updated the shared pattern return-type-error frontier expectation so the newly landed slice stays inside the existing shared callable suite.
+- Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, the task-local correctness rerun at `.rebar/tmp/rbr-0682-nested-broader-range-wider-ranged-repeat-backtracking-heavy-callable-replacement-parity.py`, and the published combined rerun at `reports/correctness/latest.py`.
+- Republished `reports/correctness/latest.py` at `1358` total / `1358` passed / `0` `unimplemented` across `113` manifests, with `collection.replacement.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy.callable` now at `8` total / `8` passed / `0` `unimplemented` on `str`.
