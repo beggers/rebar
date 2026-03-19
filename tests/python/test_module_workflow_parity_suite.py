@@ -26,6 +26,7 @@ from rebar_harness.correctness import (
     normalize_exported_symbol_value,
     normalize_pattern_object_metadata,
 )
+from tests.conftest import PYTHON_SOURCE
 from tests.python import conftest as python_conftest
 from tests.python.conftest import _unsupported_backend_skip_reason
 from tests.python.fixture_parity_support import (
@@ -46,9 +47,6 @@ from tests.python.fixture_parity_support import (
     published_fixture_bundle_by_manifest_id,
 )
 
-
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-PYTHON_SOURCE = REPO_ROOT / "python"
 MATURIN = shutil.which("maturin")
 _BUILT_WHEEL_SMOKE_PROBE = textwrap.dedent(
     """
