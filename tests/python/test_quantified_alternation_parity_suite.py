@@ -12,6 +12,7 @@ from tests.python.fixture_parity_support import (
     FIXTURES_DIR,
     FixtureBundle,
     FixtureBundleSpec,
+    SupplementalCase,
     assert_direct_bytes_follow_on_bundle_routing,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
@@ -55,17 +56,6 @@ class SupplementalNoMatchCase:
 
 
 @dataclass(frozen=True)
-class QuantifiedAlternationBytesCase:
-    id: str
-    pattern: bytes
-    search_matches: tuple[bytes, ...]
-    fullmatch_matches: tuple[bytes, ...]
-    fullmatch_misses: tuple[bytes, ...]
-    unsupported_backends: tuple[str, ...] = ()
-    unsupported_backend_reason: str | None = None
-
-
-@dataclass(frozen=True)
 class QuantifiedAlternationBytesCaseExpectation:
     search_matches: tuple[bytes, ...]
     fullmatch_matches: tuple[bytes, ...]
@@ -75,7 +65,7 @@ class QuantifiedAlternationBytesCaseExpectation:
 @dataclass(frozen=True)
 class QuantifiedAlternationDirectBytesFollowOnSpec:
     bundle: FixtureBundle
-    cases: tuple[QuantifiedAlternationBytesCase, ...]
+    cases: tuple[SupplementalCase, ...]
     expected_operation_helper_counts: Counter[tuple[str, str | None]]
     expected_module_search_texts_by_pattern: dict[bytes, frozenset[bytes]]
     expected_pattern_fullmatch_texts_by_pattern: dict[bytes, frozenset[bytes]]
@@ -650,14 +640,14 @@ def _record_generated_match_failure(
 
 
 QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES = (
-    QuantifiedAlternationBytesCase(
+    SupplementalCase(
         id="quantified-alternation-numbered-bytes",
         pattern=rb"a(b|c){1,2}d",
         search_matches=(b"zzacdz",),
         fullmatch_matches=(b"abcd",),
         fullmatch_misses=(),
     ),
-    QuantifiedAlternationBytesCase(
+    SupplementalCase(
         id="quantified-alternation-named-bytes",
         pattern=rb"a(?P<word>b|c){1,2}d",
         search_matches=(b"zzacbdzz",),
@@ -666,14 +656,14 @@ QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES = (
     ),
 )
 QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES = (
-    QuantifiedAlternationBytesCase(
+    SupplementalCase(
         id="quantified-alternation-broader-range-numbered-bytes",
         pattern=rb"a(b|c){1,3}d",
         search_matches=(b"zzabdzz", b"zzacdzz"),
         fullmatch_matches=(b"abbbd", b"abccd", b"abcbd"),
         fullmatch_misses=(b"ad", b"abbbcd"),
     ),
-    QuantifiedAlternationBytesCase(
+    SupplementalCase(
         id="quantified-alternation-broader-range-named-bytes",
         pattern=rb"a(?P<word>b|c){1,3}d",
         search_matches=(b"zzabdzz", b"zzacdzz"),
@@ -682,14 +672,14 @@ QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES = (
     ),
 )
 QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES = (
-    QuantifiedAlternationBytesCase(
+    SupplementalCase(
         id="quantified-alternation-conditional-numbered-bytes",
         pattern=rb"a((b|c){1,2})?(?(1)d|e)",
         search_matches=(b"zzaezz", b"zzabdzz"),
         fullmatch_matches=(b"abbd", b"abcd"),
         fullmatch_misses=(b"abe",),
     ),
-    QuantifiedAlternationBytesCase(
+    SupplementalCase(
         id="quantified-alternation-conditional-named-bytes",
         pattern=rb"a(?P<outer>(b|c){1,2})?(?(outer)d|e)",
         search_matches=(b"zzaezz", b"zzacdzz"),
@@ -698,14 +688,14 @@ QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES = (
     ),
 )
 QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES = (
-    QuantifiedAlternationBytesCase(
+    SupplementalCase(
         id="quantified-alternation-open-ended-numbered-bytes",
         pattern=rb"a(b|c){1,}d",
         search_matches=(b"zzabdzz", b"zzacdzz"),
         fullmatch_matches=(b"abcd", b"abccd", b"abcbcd"),
         fullmatch_misses=(b"ad", b"abed"),
     ),
-    QuantifiedAlternationBytesCase(
+    SupplementalCase(
         id="quantified-alternation-open-ended-named-bytes",
         pattern=rb"a(?P<word>b|c){1,}d",
         search_matches=(b"zzabdzz", b"zzacdzz"),
@@ -714,14 +704,14 @@ QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES = (
     ),
 )
 QUANTIFIED_ALTERNATION_NESTED_BRANCH_BYTES_CASES = (
-    QuantifiedAlternationBytesCase(
+    SupplementalCase(
         id="quantified-alternation-nested-branch-numbered-bytes",
         pattern=rb"a((b|c)|de){1,2}d",
         search_matches=(b"zzabdzz",),
         fullmatch_matches=(b"aded", b"abded"),
         fullmatch_misses=(b"abde",),
     ),
-    QuantifiedAlternationBytesCase(
+    SupplementalCase(
         id="quantified-alternation-nested-branch-named-bytes",
         pattern=rb"a(?P<word>(b|c)|de){1,2}d",
         search_matches=(b"zzadedzz",),
@@ -730,14 +720,14 @@ QUANTIFIED_ALTERNATION_NESTED_BRANCH_BYTES_CASES = (
     ),
 )
 QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES = (
-    QuantifiedAlternationBytesCase(
+    SupplementalCase(
         id="quantified-alternation-backtracking-heavy-numbered-bytes",
         pattern=rb"a(b|bc){1,2}d",
         search_matches=(b"zzabdzz",),
         fullmatch_matches=(b"abcd", b"abbcd", b"abcbd", b"abcbcd"),
         fullmatch_misses=(b"abccd",),
     ),
-    QuantifiedAlternationBytesCase(
+    SupplementalCase(
         id="quantified-alternation-backtracking-heavy-named-bytes",
         pattern=rb"a(?P<word>b|bc){1,2}d",
         search_matches=(b"zzabcdzz",),
@@ -1409,7 +1399,7 @@ def test_quantified_alternation_direct_test_case_id_buckets_cover_selected_front
 )
 def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
     bundle: FixtureBundle,
-    supplemental_cases: tuple[QuantifiedAlternationBytesCase, ...],
+    supplemental_cases: tuple[SupplementalCase, ...],
 ) -> None:
     _, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
         bundle,
@@ -1841,7 +1831,7 @@ def test_supplemental_no_match_paths_match_cpython(
 @pytest.mark.parametrize("case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id)
 def test_direct_bytes_follow_on_compile_metadata_matches_cpython(
     regex_backend: tuple[str, object],
-    case: QuantifiedAlternationBytesCase,
+    case: SupplementalCase,
 ) -> None:
     backend_name, backend = regex_backend
     compile_with_cpython_parity(backend_name, backend, case.pattern)
@@ -1850,7 +1840,7 @@ def test_direct_bytes_follow_on_compile_metadata_matches_cpython(
 @pytest.mark.parametrize("case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id)
 def test_direct_bytes_follow_on_module_search_matches_cpython(
     regex_backend: tuple[str, object],
-    case: QuantifiedAlternationBytesCase,
+    case: SupplementalCase,
 ) -> None:
     backend_name, backend = regex_backend
 
@@ -1866,7 +1856,7 @@ def test_direct_bytes_follow_on_module_search_matches_cpython(
 @pytest.mark.parametrize("case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id)
 def test_direct_bytes_follow_on_module_search_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
-    case: QuantifiedAlternationBytesCase,
+    case: SupplementalCase,
 ) -> None:
     _, backend = regex_backend
 
@@ -1882,7 +1872,7 @@ def test_direct_bytes_follow_on_module_search_match_convenience_api_matches_cpyt
 @pytest.mark.parametrize("case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id)
 def test_direct_bytes_follow_on_module_search_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
-    case: QuantifiedAlternationBytesCase,
+    case: SupplementalCase,
 ) -> None:
     _, backend = regex_backend
 
@@ -1899,7 +1889,7 @@ def test_direct_bytes_follow_on_module_search_match_group_access_matches_cpython
 @pytest.mark.parametrize("case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id)
 def test_direct_bytes_follow_on_pattern_fullmatch_matches_cpython(
     regex_backend: tuple[str, object],
-    case: QuantifiedAlternationBytesCase,
+    case: SupplementalCase,
 ) -> None:
     backend_name, backend = regex_backend
     observed_pattern, expected_pattern = compile_with_cpython_parity(
@@ -1928,7 +1918,7 @@ def test_direct_bytes_follow_on_pattern_fullmatch_matches_cpython(
 @pytest.mark.parametrize("case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id)
 def test_direct_bytes_follow_on_pattern_fullmatch_match_convenience_api_matches_cpython(
     regex_backend: tuple[str, object],
-    case: QuantifiedAlternationBytesCase,
+    case: SupplementalCase,
 ) -> None:
     backend_name, backend = regex_backend
     observed_pattern, expected_pattern = compile_with_cpython_parity(
@@ -1949,7 +1939,7 @@ def test_direct_bytes_follow_on_pattern_fullmatch_match_convenience_api_matches_
 @pytest.mark.parametrize("case", DIRECT_BYTES_FOLLOW_ON_CASES, ids=lambda case: case.id)
 def test_direct_bytes_follow_on_pattern_fullmatch_match_group_access_matches_cpython(
     regex_backend: tuple[str, object],
-    case: QuantifiedAlternationBytesCase,
+    case: SupplementalCase,
 ) -> None:
     backend_name, backend = regex_backend
     observed_pattern, expected_pattern = compile_with_cpython_parity(
