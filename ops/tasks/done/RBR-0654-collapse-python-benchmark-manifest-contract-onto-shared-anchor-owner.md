@@ -1,8 +1,9 @@
 # RBR-0654: Collapse the detached Python benchmark manifest contract onto the shared benchmark anchor owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Delete `tests/benchmarks/test_python_benchmark_manifest_contract.py` by moving its remaining direct benchmark-manifest loader and typed-workload serialization coverage onto `tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py`, so the benchmark harness keeps one shared owner for manifest/support contracts instead of a detached manifest-only suite beside the existing anchor owner.
@@ -86,3 +87,8 @@ PY`
   - `bash -lc "! rg --files tests/benchmarks | rg 'test_python_benchmark_manifest_contract\\.py$'"` currently fails exactly on this cleanup because the detached file still exists.
 - The ownership simplification matches the current harness shape:
   - `tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py` already owns shared benchmark selector, inventory, anchored-workload, and typed replacement-payload contracts, so keeping the remaining manifest-loading contract there removes one more detached benchmark-support owner without changing the benchmark publication path.
+
+## Completion Note
+- 2026-03-19: Moved the direct benchmark manifest-loading, workload selection, callable/template replacement serialization, expected-exception probe, invalid-input, and duplicate-id coverage into `tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py` with only file-local temp-manifest helpers.
+- 2026-03-19: Deleted `tests/benchmarks/test_python_benchmark_manifest_contract.py` outright after the shared benchmark anchor owner absorbed its remaining `load_manifest(...)`, `load_manifests(...)`, `selected_workloads()`, `workload_to_payload(...)`, and `run_internal_workload_probe(...)` contract coverage.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py` (`87 passed in 0.21s`), the acceptance inline source probe (`ok`), `bash -lc "! rg --files tests/benchmarks | rg 'test_python_benchmark_manifest_contract\\.py$'"` (passes), and `git diff --name-status -- tests/benchmarks/test_python_benchmark_manifest_contract.py` (`D`).
