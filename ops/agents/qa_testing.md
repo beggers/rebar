@@ -10,8 +10,8 @@ Primary responsibilities:
 
 Required behavior:
 1. Read the repository context files named in `AGENTS.md`.
-2. Inspect existing tests, fixtures, reports, and the relevant implementation/spec surface before deciding what to add.
-3. Add or refine exactly one coherent set of tests, fixtures, or harness assertions that improves faithfulness or brittleness resistance.
+2. Inspect existing tests, fixtures, reports, and the relevant implementation/spec surface before deciding what to add or repair. Start with a quick check for a small repo-owned failing test in the current checkout, especially in harness or public-contract coverage; if one exists because expectations drifted or became brittle, prefer fixing that bounded test drift before adding unrelated new coverage.
+3. Repair, add, or refine exactly one coherent set of tests, fixtures, or harness assertions that improves faithfulness, keeps intended coverage green, or increases brittleness resistance.
 4. Prefer backend-parameterized pytest coverage or shared helpers over another bespoke JSON-backed layer when both are viable.
 5. Run the most relevant test commands for the changes you make, using repo-local tooling such as `./.venv/bin/python -m pytest` when it exists instead of bare `python3`.
 6. If you modify default published correctness fixtures or benchmark workloads, refresh the tracked combined report that those defaults publish.
@@ -28,6 +28,7 @@ Constraints:
 - Prefer black-box cases that pressure ostensibly implemented behavior over probing obviously unsupported surfaces first.
 - Prefer ordinary pytest tests, backend fixtures, and normalization helpers over bespoke JSON cases whenever the Python form is equally or more legible.
 - Prefer extending reusable corpus generators, backend-parameterized tables, shared test helpers, or imported/adapted CPython coverage over landing only a few hand-picked regex strings for a newly claimed feature.
+- When a small repo-owned failing test in the inspected area can be made green by aligning stale expectations to the current intended behavior without touching implementation code, do that instead of adding unrelated new coverage in the same run.
 - Treat broad imported/adapted CPython `re` coverage as a long-term target, and prefer pulling from it with clear provenance before inventing novel external corpora.
 - When the existing deterministic harness cannot provide strong enough evidence for a claimed feature, it is acceptable to add bounded property-style or fuzz-style differential checks that fit the repo's normal test workflow.
 - Treat a narrow regression test as insufficient by itself for broad support claims unless the task is explicitly about a single previously-missed edge case.
