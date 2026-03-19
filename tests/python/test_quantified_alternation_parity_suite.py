@@ -64,6 +64,7 @@ class QuantifiedAlternationBytesCaseExpectation:
 
 @dataclass(frozen=True)
 class QuantifiedAlternationDirectBytesFollowOnSpec:
+    id: str
     bundle: FixtureBundle
     cases: tuple[SupplementalCase, ...]
     expected_operation_helper_counts: Counter[tuple[str, str | None]]
@@ -710,45 +711,9 @@ QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES = (
         fullmatch_misses=(b"abccd",),
     ),
 )
-DIRECT_BYTES_FOLLOW_ON_SPECS = (
-    (
-        QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE,
-        QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES,
-    ),
-    (
-        QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE,
-        QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES,
-    ),
-    (
-        QUANTIFIED_ALTERNATION_CONDITIONAL_BUNDLE,
-        QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES,
-    ),
-    (
-        QUANTIFIED_ALTERNATION_OPEN_ENDED_BUNDLE,
-        QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES,
-    ),
-    (
-        QUANTIFIED_ALTERNATION_NESTED_BRANCH_BUNDLE,
-        QUANTIFIED_ALTERNATION_NESTED_BRANCH_BYTES_CASES,
-    ),
-    (
-        BACKTRACKING_HEAVY_BUNDLE,
-        QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES,
-    ),
-)
-DIRECT_BYTES_FOLLOW_ON_SPEC_IDS = (
-    "bounded",
-    "broader-range",
-    "conditional",
-    "open-ended",
-    "nested-branch",
-    "backtracking-heavy",
-)
-DIRECT_BYTES_FOLLOW_ON_BUNDLES = tuple(
-    bundle for bundle, _ in DIRECT_BYTES_FOLLOW_ON_SPECS
-)
 DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
     QuantifiedAlternationDirectBytesFollowOnSpec(
+        id="bounded",
         bundle=QUANTIFIED_ALTERNATION_BOUNDED_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES,
         expected_operation_helper_counts=Counter(
@@ -788,6 +753,7 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
         },
     ),
     QuantifiedAlternationDirectBytesFollowOnSpec(
+        id="broader-range",
         bundle=QUANTIFIED_ALTERNATION_BROADER_RANGE_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_BROADER_RANGE_BYTES_CASES,
         expected_operation_helper_counts=Counter(
@@ -827,6 +793,7 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
         },
     ),
     QuantifiedAlternationDirectBytesFollowOnSpec(
+        id="conditional",
         bundle=QUANTIFIED_ALTERNATION_CONDITIONAL_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_CONDITIONAL_BYTES_CASES,
         expected_operation_helper_counts=Counter(
@@ -866,6 +833,7 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
         },
     ),
     QuantifiedAlternationDirectBytesFollowOnSpec(
+        id="open-ended",
         bundle=QUANTIFIED_ALTERNATION_OPEN_ENDED_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_OPEN_ENDED_BYTES_CASES,
         expected_operation_helper_counts=Counter(
@@ -905,6 +873,7 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
         },
     ),
     QuantifiedAlternationDirectBytesFollowOnSpec(
+        id="nested-branch",
         bundle=QUANTIFIED_ALTERNATION_NESTED_BRANCH_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_NESTED_BRANCH_BYTES_CASES,
         expected_operation_helper_counts=Counter(
@@ -944,6 +913,7 @@ DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES = (
         },
     ),
     QuantifiedAlternationDirectBytesFollowOnSpec(
+        id="backtracking-heavy",
         bundle=BACKTRACKING_HEAVY_BUNDLE,
         cases=QUANTIFIED_ALTERNATION_BACKTRACKING_HEAVY_BYTES_CASES,
         expected_operation_helper_counts=Counter(
@@ -993,7 +963,7 @@ DIRECT_BYTES_FOLLOW_ON_CASES = tuple(
 # focused on the currently supported `str` cases.
 COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_case_buckets(
     FIXTURE_BUNDLES,
-    DIRECT_BYTES_FOLLOW_ON_BUNDLES,
+    tuple(spec.bundle for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES),
 )
 QUANTIFIED_ALTERNATION_SELECTED_CASE_IDS = tuple(
     case.case_id for bundle in FIXTURE_BUNDLES for case in bundle.cases
@@ -1368,25 +1338,24 @@ def test_quantified_alternation_direct_test_case_id_buckets_cover_selected_front
 
 
 @pytest.mark.parametrize(
-    ("bundle", "supplemental_cases"),
-    DIRECT_BYTES_FOLLOW_ON_SPECS,
-    ids=DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
+    "spec",
+    DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
+    ids=lambda spec: spec.id,
 )
 def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_case_buckets(
-    bundle: FixtureBundle,
-    supplemental_cases: tuple[SupplementalCase, ...],
+    spec: QuantifiedAlternationDirectBytesFollowOnSpec,
 ) -> None:
     _, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
-        bundle,
+        spec.bundle,
         compile_cases=COMPILE_CASES,
         module_cases=MODULE_CASES,
         pattern_cases=PATTERN_CASES,
     )
 
     assert bundle_bytes_cases
-    assert {case.pattern for case in supplemental_cases} == frozenset(
+    assert {case.pattern for case in spec.cases} == frozenset(
         case_pattern(case)
-        for case in fixture_cases_for_operation((bundle,), "compile")
+        for case in fixture_cases_for_operation((spec.bundle,), "compile")
         if case.text_model == "bytes"
     )
 
@@ -1394,7 +1363,7 @@ def test_direct_bytes_follow_on_manifests_exclude_only_bytes_rows_from_generic_c
 @pytest.mark.parametrize(
     "spec",
     DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES,
-    ids=DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
+    ids=lambda spec: spec.id,
 )
 def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_anchor(
     spec: QuantifiedAlternationDirectBytesFollowOnSpec,

@@ -1,6 +1,6 @@
 # RBR-0703: Collapse quantified-alternation direct-bytes follow-on sidecars onto canonical spec records
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -71,3 +71,8 @@ PY`
 - This simplification matches the current parity-harness information flow:
   - `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` already acts as the canonical owner of direct-bytes follow-on case payloads and expectations; and
   - deleting the mirrored `(bundle, cases)`, id, and bundle-only registries removes one more parallel owner layer without changing the published correctness slice or the direct-parity follow-on coverage.
+
+## Completion Notes
+- 2026-03-19: Added the canonical six-id ordering directly onto `QuantifiedAlternationDirectBytesFollowOnSpec` and removed the detached `DIRECT_BYTES_FOLLOW_ON_SPECS`, `DIRECT_BYTES_FOLLOW_ON_SPEC_IDS`, and `DIRECT_BYTES_FOLLOW_ON_BUNDLES` blocks from `tests/python/test_quantified_alternation_parity_suite.py`.
+- 2026-03-19: Repointed the direct-bytes follow-on bucket partitioning and both direct-follow-on contract tests to derive bundle routing, supplemental-case ownership, and pytest ids directly from `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` while preserving the existing surface order and bytes-case pairing.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_quantified_alternation_parity_suite.py`, the inline source probe from Acceptance (`ok`), and `bash -lc "! rg -n 'DIRECT_BYTES_FOLLOW_ON_SPECS|DIRECT_BYTES_FOLLOW_ON_SPEC_IDS|DIRECT_BYTES_FOLLOW_ON_BUNDLES' tests/python/test_quantified_alternation_parity_suite.py"`.
