@@ -53,6 +53,8 @@ from tests.python.fixture_parity_support import (
     assert_pattern_fullmatch_case_parity,
     assert_valid_match_group_access_parity,
     case_pattern,
+    case_replacement_argument,
+    case_text_argument,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     invoke_bounded_pattern_case,
@@ -785,6 +787,91 @@ def test_case_pattern_helpers_extract_str_and_bytes_patterns_from_synthetic_fixt
     assert case_pattern(SYNTHETIC_COMPILED_PATTERN_CASE) == SYNTHETIC_CASE_PATTERN
     assert str_case_pattern(SYNTHETIC_COMPILED_PATTERN_CASE) == SYNTHETIC_CASE_PATTERN
     assert case_pattern(SYNTHETIC_BYTES_PATTERN_CASE) == b"abc"
+
+
+def test_case_pattern_helpers_reject_non_text_payloads_and_str_only_mismatches() -> None:
+    with pytest.raises(AssertionError):
+        case_pattern(
+            replace(
+                SYNTHETIC_MODULE_PATTERN_CASE,
+                pattern=None,
+                args=[123, "zzabczz"],
+            )
+        )
+
+    with pytest.raises(AssertionError):
+        str_case_pattern(SYNTHETIC_BYTES_PATTERN_CASE)
+
+
+@pytest.mark.parametrize(
+    ("case", "expected_replacement", "expected_text"),
+    (
+        pytest.param(
+            replace(
+                SYNTHETIC_MODULE_PATTERN_CASE,
+                operation="module_call",
+                helper="sub",
+                source_args=[SYNTHETIC_CASE_PATTERN, r"<\g<word>>", "abc"],
+                args=[SYNTHETIC_CASE_PATTERN, r"<\g<word>>", "abc"],
+            ),
+            r"<\g<word>>",
+            "abc",
+            id="module-call",
+        ),
+        pytest.param(
+            replace(
+                SYNTHETIC_COMPILED_PATTERN_CASE,
+                operation="pattern_call",
+                helper="sub",
+                source_args=[r"<\g<word>>", "abc"],
+                args=[r"<\g<word>>", "abc"],
+            ),
+            r"<\g<word>>",
+            "abc",
+            id="pattern-call",
+        ),
+    ),
+)
+def test_case_replacement_and_text_helpers_extract_expected_argument_positions(
+    case: FixtureCase,
+    expected_replacement: object,
+    expected_text: str | bytes,
+) -> None:
+    assert case_replacement_argument(case) == expected_replacement
+    assert case_text_argument(case) == expected_text
+
+
+def test_case_replacement_and_text_helpers_reject_unsupported_case_operations() -> None:
+    invalid_case = replace(SYNTHETIC_MODULE_PATTERN_CASE, operation="compile")
+
+    with pytest.raises(AssertionError, match="unsupported case operation 'compile'"):
+        case_replacement_argument(invalid_case)
+
+    with pytest.raises(AssertionError, match="unsupported case operation 'compile'"):
+        case_text_argument(invalid_case)
+
+
+def test_case_text_argument_rejects_non_text_payloads() -> None:
+    module_case = replace(
+        SYNTHETIC_MODULE_PATTERN_CASE,
+        operation="module_call",
+        helper="sub",
+        source_args=[SYNTHETIC_CASE_PATTERN, r"<\g<word>>", object()],
+        args=[SYNTHETIC_CASE_PATTERN, r"<\g<word>>", object()],
+    )
+    pattern_case = replace(
+        SYNTHETIC_COMPILED_PATTERN_CASE,
+        operation="pattern_call",
+        helper="sub",
+        source_args=[r"<\g<word>>", object()],
+        args=[r"<\g<word>>", object()],
+    )
+
+    with pytest.raises(AssertionError):
+        case_text_argument(module_case)
+
+    with pytest.raises(AssertionError):
+        case_text_argument(pattern_case)
 
 
 def test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids() -> None:
