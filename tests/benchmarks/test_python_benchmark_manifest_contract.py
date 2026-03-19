@@ -285,6 +285,143 @@ class PythonBenchmarkManifestContractTest(unittest.TestCase):
         self.assertEqual(implementation_probe["status"], "measured")
         self.assertGreater(implementation_probe["median_ns"], 0)
 
+    def test_python_benchmark_manifest_materializes_bytes_template_replacements_for_nested_group_workloads(
+        self,
+    ) -> None:
+        manifest_source = """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "python-benchmark-bytes-template-contract",
+            "defaults": {
+                "warmup_iterations": 1,
+                "sample_iterations": 1,
+                "timed_samples": 2,
+            },
+            "workloads": [
+                {
+                    "id": "module-sub-template-numbered-conditional-contract-bytes",
+                    "bucket": "module-sub",
+                    "family": "module",
+                    "operation": "module.sub",
+                    "pattern": r"a((b|c){2,})\\2(?(2)d|e)",
+                    "replacement": r"\\1x",
+                    "haystack": "abbbd",
+                    "text_model": "bytes",
+                    "cache_mode": "warm",
+                    "timing_scope": "module-helper-call",
+                    "categories": [
+                        "replacement",
+                        "template",
+                        "numbered-group",
+                        "bytes",
+                    ],
+                    "notes": [
+                        "Ensures bytes benchmark manifests materialize numbered template replacements through the same published nested-group helper path."
+                    ],
+                },
+                {
+                    "id": "pattern-subn-template-named-conditional-contract-bytes",
+                    "bucket": "pattern-subn",
+                    "family": "module",
+                    "operation": "pattern.subn",
+                    "pattern": r"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+                    "replacement": r"\\g<inner>x",
+                    "haystack": "zzacccdabcbccdzz",
+                    "count": 1,
+                    "text_model": "bytes",
+                    "cache_mode": "purged",
+                    "timing_scope": "pattern-helper-call",
+                    "categories": [
+                        "replacement",
+                        "template",
+                        "named-group",
+                        "bytes",
+                    ],
+                    "notes": [
+                        "Ensures bytes benchmark manifests materialize named template replacements through the same published nested-group helper path."
+                    ],
+                },
+            ],
+        }
+        """
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            manifest_path = self._write_manifest(
+                pathlib.Path(temp_dir),
+                "python_benchmark_bytes_template_contract.py",
+                manifest_source,
+            )
+            manifest = load_manifest(manifest_path)
+            workloads = manifest.workloads
+
+        self.assertEqual(
+            manifest.manifest_id,
+            "python-benchmark-bytes-template-contract",
+        )
+        self.assertEqual([workload.workload_id for workload in workloads], [
+            "module-sub-template-numbered-conditional-contract-bytes",
+            "pattern-subn-template-named-conditional-contract-bytes",
+        ])
+
+        expected_payloads = {
+            "module-sub-template-numbered-conditional-contract-bytes": {
+                "pattern": rb"a((b|c){2,})\2(?(2)d|e)",
+                "haystack": b"abbbd",
+                "replacement": b"\\1x",
+                "serialized_replacement": "\\1x",
+                "expected_result": b"bbx",
+            },
+            "pattern-subn-template-named-conditional-contract-bytes": {
+                "pattern": rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)(?(inner)d|e)",
+                "haystack": b"zzacccdabcbccdzz",
+                "replacement": b"\\g<inner>x",
+                "serialized_replacement": "\\g<inner>x",
+                "expected_result": (b"zzcxabcbccdzz", 1),
+            },
+        }
+
+        for workload in workloads:
+            with self.subTest(workload_id=workload.workload_id):
+                expected = expected_payloads[workload.workload_id]
+                self.assertEqual(workload.text_model, "bytes")
+                self.assertEqual(workload.pattern_payload(), expected["pattern"])
+                self.assertEqual(workload.haystack_payload(), expected["haystack"])
+                self.assertEqual(workload.replacement_payload(), expected["replacement"])
+                self.assertEqual(
+                    workload_to_payload(workload)["replacement"],
+                    expected["serialized_replacement"],
+                )
+
+                if workload.operation == "module.sub":
+                    result = re.sub(
+                        workload.pattern_payload(),
+                        workload.replacement_payload(),
+                        workload.haystack_payload(),
+                        workload.count,
+                        workload.flags,
+                    )
+                else:
+                    result = re.compile(
+                        workload.pattern_payload(),
+                        workload.flags,
+                    ).subn(
+                        workload.replacement_payload(),
+                        workload.haystack_payload(),
+                        count=workload.count,
+                    )
+                self.assertEqual(result, expected["expected_result"])
+
+                baseline_probe = run_internal_workload_probe(
+                    workload_payload=json.dumps(
+                        workload_to_payload(workload),
+                        sort_keys=True,
+                    ),
+                    import_name="re",
+                    adapter_name="cpython.re",
+                )
+                self.assertEqual(baseline_probe["status"], "measured")
+                self.assertGreater(baseline_probe["median_ns"], 0)
+
     def test_python_benchmark_manifest_materializes_nested_constant_bytes_without_aliasing(
         self,
     ) -> None:
