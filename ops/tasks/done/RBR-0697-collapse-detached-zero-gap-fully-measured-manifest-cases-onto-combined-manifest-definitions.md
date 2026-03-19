@@ -1,6 +1,6 @@
 # RBR-0697: Collapse detached zero-gap fully measured manifest cases onto combined manifest definitions
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -91,3 +91,8 @@ PY` reported `RBR-0696` as the highest existing numeric task and no reserved mis
 - This simplification matches the current benchmark information flow:
   - `SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS` already acts as the canonical registry for public combined-manifest expectations; and
   - folding the fully-measured counted-repeat / quantified-alternation promotion metadata onto those definition records removes one more parallel owner layer without changing the published benchmark boundary.
+
+## Completion
+- 2026-03-19: Added a file-local `SourceTreeCombinedFullyMeasuredManifestExpectation` contract on `SourceTreeCombinedManifestExpectationDefinition` and moved the exact-repeat, ranged-repeat, and quantified-alternation fully measured representative ids and workload-count expectations onto their owning manifest definitions.
+- Deleted the detached fully measured globals and helper from `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, keeping `ZERO_GAP_PROMOTION_MANIFEST_IDS` and `ZERO_GAP_BYTES_CASES` unchanged while updating the counted-repeat and quantified-alternation tests to derive ids and counts from the definition-owned contract.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, the inline source probe from the task, and `bash -lc "! rg -n 'COUNTED_REPEAT_FULLY_MEASURED_MANIFEST_IDS|ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES|_ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES_BY_ID|zero_gap_fully_measured_manifest_case' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`.

@@ -426,116 +426,6 @@ ZERO_GAP_PROMOTION_MANIFEST_IDS = (
     "optional-group-boundary",
 )
 
-COUNTED_REPEAT_FULLY_MEASURED_MANIFEST_IDS = (
-    "exact-repeat-quantified-group-boundary",
-    "ranged-repeat-quantified-group-boundary",
-)
-
-ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES = (
-    (
-        "exact-repeat-quantified-group-boundary",
-        (
-            "module-search-numbered-broader-ranged-repeat-group-cold-gap",
-        ),
-        13,
-        None,
-    ),
-    (
-        "ranged-repeat-quantified-group-boundary",
-        (
-            "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
-        ),
-        8,
-        None,
-    ),
-    (
-        "quantified-alternation-boundary",
-        (
-            "module-compile-numbered-quantified-alternation-cold-bytes",
-            "module-search-numbered-quantified-alternation-lower-bound-warm-bytes",
-            "pattern-fullmatch-numbered-quantified-alternation-second-repetition-purged-bytes",
-            "module-compile-named-quantified-alternation-warm-bytes",
-            "module-search-named-quantified-alternation-second-repetition-warm-bytes",
-            "pattern-fullmatch-named-quantified-alternation-lower-bound-purged-bytes",
-            "module-compile-numbered-quantified-alternation-nested-branch-cold-bytes",
-            "module-search-numbered-quantified-alternation-nested-branch-lower-bound-inner-branch-warm-bytes",
-            "pattern-fullmatch-numbered-quantified-alternation-nested-branch-lower-bound-literal-branch-purged-bytes",
-            "module-compile-named-quantified-alternation-nested-branch-warm-bytes",
-            "module-search-named-quantified-alternation-nested-branch-lower-bound-literal-branch-warm-bytes",
-            "pattern-fullmatch-named-quantified-alternation-nested-branch-second-repetition-mixed-purged-bytes",
-            "module-search-numbered-quantified-alternation-branch-backref-cold-bytes",
-            "module-compile-numbered-quantified-alternation-branch-backref-cold-bytes",
-            "pattern-fullmatch-numbered-quantified-alternation-branch-backref-second-repetition-purged-bytes",
-            "module-compile-named-quantified-alternation-branch-backref-warm-bytes",
-            "module-search-named-quantified-alternation-branch-backref-lower-bound-c-branch-warm-bytes",
-            "pattern-fullmatch-named-quantified-alternation-branch-backref-second-repetition-purged-bytes",
-            "module-compile-numbered-quantified-alternation-broader-range-cold-bytes",
-            "module-search-numbered-quantified-alternation-broader-range-third-repetition-cold-bytes",
-            "pattern-fullmatch-numbered-quantified-alternation-broader-range-third-repetition-bcb-purged-bytes",
-            "module-compile-named-quantified-alternation-broader-range-warm-bytes",
-            "module-search-named-quantified-alternation-broader-range-third-repetition-bcc-warm-bytes",
-            "pattern-fullmatch-named-quantified-alternation-broader-range-third-repetition-bbb-purged-bytes",
-            "module-compile-numbered-quantified-alternation-open-ended-cold-bytes",
-            "module-search-numbered-quantified-alternation-open-ended-lower-bound-b-warm-bytes",
-            "pattern-fullmatch-numbered-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
-            "module-compile-named-quantified-alternation-open-ended-warm-bytes",
-            "module-search-named-quantified-alternation-open-ended-lower-bound-c-warm-bytes",
-            "pattern-fullmatch-named-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
-            "module-compile-numbered-quantified-alternation-conditional-cold-bytes",
-            "module-search-numbered-quantified-alternation-conditional-lower-bound-b-warm-bytes",
-            "pattern-fullmatch-numbered-quantified-alternation-conditional-second-repetition-mixed-purged-bytes",
-            "module-compile-named-quantified-alternation-conditional-warm-bytes",
-            "module-search-named-quantified-alternation-conditional-absent-warm-bytes",
-            "pattern-fullmatch-named-quantified-alternation-conditional-second-repetition-c-purged-bytes",
-            "module-compile-numbered-quantified-alternation-backtracking-heavy-cold-bytes",
-            "module-search-numbered-quantified-alternation-backtracking-heavy-lower-bound-b-branch-warm-bytes",
-            "pattern-fullmatch-numbered-quantified-alternation-backtracking-heavy-lower-bound-bc-branch-purged-bytes",
-            "module-compile-named-quantified-alternation-backtracking-heavy-warm-bytes",
-            "module-search-named-quantified-alternation-backtracking-heavy-lower-bound-bc-branch-warm-bytes",
-            "pattern-fullmatch-named-quantified-alternation-backtracking-heavy-second-repetition-bc-then-b-purged-bytes",
-        ),
-        84,
-        84,
-    ),
-)
-
-_ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES_BY_ID = {
-    manifest_id: (
-        expected_workload_ids,
-        expected_measured_workload_count,
-        expected_total_workload_count,
-    )
-    for (
-        manifest_id,
-        expected_workload_ids,
-        expected_measured_workload_count,
-        expected_total_workload_count,
-    ) in ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES
-}
-
-
-def zero_gap_fully_measured_manifest_case(
-    manifest_id: str,
-) -> tuple[str, tuple[str, ...], int, int | None]:
-    try:
-        (
-            expected_workload_ids,
-            expected_measured_workload_count,
-            expected_total_workload_count,
-        ) = _ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES_BY_ID[manifest_id]
-    except KeyError as exc:
-        raise AssertionError(
-            f"unknown zero-gap fully measured manifest {manifest_id!r}"
-        ) from exc
-
-    return (
-        manifest_id,
-        expected_workload_ids,
-        expected_measured_workload_count,
-        expected_total_workload_count,
-    )
-
-
 ZERO_GAP_BYTES_CASES = (
     (
         "wider-ranged-repeat-quantified-group-boundary",
@@ -785,10 +675,19 @@ class SourceTreeCombinedManifestShapeExpectation:
 
 
 @dataclass(frozen=True, slots=True)
+class SourceTreeCombinedFullyMeasuredManifestExpectation:
+    coverage_group: str
+    representative_measured_workload_ids: tuple[str, ...]
+    expected_measured_workload_count: int
+    expected_total_workload_count: int | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class SourceTreeCombinedManifestExpectationDefinition:
     known_gap_workload_ids: tuple[str, ...] | None = None
     representative_measured_workload_ids: tuple[str, ...] | None = None
     representative_known_gap_workload_ids: tuple[str, ...] | None = None
+    fully_measured_expectation: SourceTreeCombinedFullyMeasuredManifestExpectation | None = None
     shape_expectation: SourceTreeCombinedManifestShapeExpectation | None = None
 
 
@@ -901,13 +800,46 @@ def _combined_manifest_definition(
     known_gap_workload_ids: tuple[str, ...] | None = None,
     representative_measured_workload_ids: tuple[str, ...] | None = None,
     representative_known_gap_workload_ids: tuple[str, ...] | None = None,
+    fully_measured_expectation: SourceTreeCombinedFullyMeasuredManifestExpectation
+    | None = None,
     shape_expectation: SourceTreeCombinedManifestShapeExpectation | None = None,
 ) -> SourceTreeCombinedManifestExpectationDefinition:
+    if fully_measured_expectation is not None:
+        if representative_measured_workload_ids is None:
+            representative_measured_workload_ids = (
+                fully_measured_expectation.representative_measured_workload_ids
+            )
+        elif (
+            representative_measured_workload_ids
+            != fully_measured_expectation.representative_measured_workload_ids
+        ):
+            raise AssertionError(
+                "fully measured manifest definitions must keep their "
+                "representative rows on the shared definition-owned contract"
+            )
     return SourceTreeCombinedManifestExpectationDefinition(
         known_gap_workload_ids=known_gap_workload_ids,
         representative_measured_workload_ids=representative_measured_workload_ids,
         representative_known_gap_workload_ids=representative_known_gap_workload_ids,
+        fully_measured_expectation=fully_measured_expectation,
         shape_expectation=shape_expectation,
+    )
+
+
+def _combined_fully_measured_manifest_expectation(
+    *,
+    coverage_group: str,
+    representative_measured_workload_ids: tuple[str, ...],
+    expected_measured_workload_count: int,
+    expected_total_workload_count: int | None = None,
+) -> SourceTreeCombinedFullyMeasuredManifestExpectation:
+    return SourceTreeCombinedFullyMeasuredManifestExpectation(
+        coverage_group=coverage_group,
+        representative_measured_workload_ids=tuple(
+            str(workload_id) for workload_id in representative_measured_workload_ids
+        ),
+        expected_measured_workload_count=expected_measured_workload_count,
+        expected_total_workload_count=expected_total_workload_count,
     )
 
 
@@ -1031,15 +963,23 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         representative_known_gap_workload_ids=(),
     ),
     "exact-repeat-quantified-group-boundary": _combined_manifest_definition(
-        representative_measured_workload_ids=_ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES_BY_ID[
-            "exact-repeat-quantified-group-boundary"
-        ][0],
+        fully_measured_expectation=_combined_fully_measured_manifest_expectation(
+            coverage_group="counted-repeat",
+            representative_measured_workload_ids=(
+                "module-search-numbered-broader-ranged-repeat-group-cold-gap",
+            ),
+            expected_measured_workload_count=13,
+        ),
         representative_known_gap_workload_ids=(),
     ),
     "ranged-repeat-quantified-group-boundary": _combined_manifest_definition(
-        representative_measured_workload_ids=_ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES_BY_ID[
-            "ranged-repeat-quantified-group-boundary"
-        ][0],
+        fully_measured_expectation=_combined_fully_measured_manifest_expectation(
+            coverage_group="counted-repeat",
+            representative_measured_workload_ids=(
+                "module-search-numbered-ranged-repeat-group-wider-range-cold-gap",
+            ),
+            expected_measured_workload_count=8,
+        ),
         representative_known_gap_workload_ids=(),
     ),
     "wider-ranged-repeat-quantified-group-boundary": _combined_manifest_definition(
@@ -1270,9 +1210,55 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         ),
     ),
     "quantified-alternation-boundary": _combined_manifest_definition(
-        representative_measured_workload_ids=_ZERO_GAP_FULLY_MEASURED_MANIFEST_CASES_BY_ID[
-            "quantified-alternation-boundary"
-        ][0],
+        fully_measured_expectation=_combined_fully_measured_manifest_expectation(
+            coverage_group="quantified-alternation",
+            representative_measured_workload_ids=(
+                "module-compile-numbered-quantified-alternation-cold-bytes",
+                "module-search-numbered-quantified-alternation-lower-bound-warm-bytes",
+                "pattern-fullmatch-numbered-quantified-alternation-second-repetition-purged-bytes",
+                "module-compile-named-quantified-alternation-warm-bytes",
+                "module-search-named-quantified-alternation-second-repetition-warm-bytes",
+                "pattern-fullmatch-named-quantified-alternation-lower-bound-purged-bytes",
+                "module-compile-numbered-quantified-alternation-nested-branch-cold-bytes",
+                "module-search-numbered-quantified-alternation-nested-branch-lower-bound-inner-branch-warm-bytes",
+                "pattern-fullmatch-numbered-quantified-alternation-nested-branch-lower-bound-literal-branch-purged-bytes",
+                "module-compile-named-quantified-alternation-nested-branch-warm-bytes",
+                "module-search-named-quantified-alternation-nested-branch-lower-bound-literal-branch-warm-bytes",
+                "pattern-fullmatch-named-quantified-alternation-nested-branch-second-repetition-mixed-purged-bytes",
+                "module-search-numbered-quantified-alternation-branch-backref-cold-bytes",
+                "module-compile-numbered-quantified-alternation-branch-backref-cold-bytes",
+                "pattern-fullmatch-numbered-quantified-alternation-branch-backref-second-repetition-purged-bytes",
+                "module-compile-named-quantified-alternation-branch-backref-warm-bytes",
+                "module-search-named-quantified-alternation-branch-backref-lower-bound-c-branch-warm-bytes",
+                "pattern-fullmatch-named-quantified-alternation-branch-backref-second-repetition-purged-bytes",
+                "module-compile-numbered-quantified-alternation-broader-range-cold-bytes",
+                "module-search-numbered-quantified-alternation-broader-range-third-repetition-cold-bytes",
+                "pattern-fullmatch-numbered-quantified-alternation-broader-range-third-repetition-bcb-purged-bytes",
+                "module-compile-named-quantified-alternation-broader-range-warm-bytes",
+                "module-search-named-quantified-alternation-broader-range-third-repetition-bcc-warm-bytes",
+                "pattern-fullmatch-named-quantified-alternation-broader-range-third-repetition-bbb-purged-bytes",
+                "module-compile-numbered-quantified-alternation-open-ended-cold-bytes",
+                "module-search-numbered-quantified-alternation-open-ended-lower-bound-b-warm-bytes",
+                "pattern-fullmatch-numbered-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
+                "module-compile-named-quantified-alternation-open-ended-warm-bytes",
+                "module-search-named-quantified-alternation-open-ended-lower-bound-c-warm-bytes",
+                "pattern-fullmatch-named-quantified-alternation-open-ended-fourth-repetition-bcbc-purged-bytes",
+                "module-compile-numbered-quantified-alternation-conditional-cold-bytes",
+                "module-search-numbered-quantified-alternation-conditional-lower-bound-b-warm-bytes",
+                "pattern-fullmatch-numbered-quantified-alternation-conditional-second-repetition-mixed-purged-bytes",
+                "module-compile-named-quantified-alternation-conditional-warm-bytes",
+                "module-search-named-quantified-alternation-conditional-absent-warm-bytes",
+                "pattern-fullmatch-named-quantified-alternation-conditional-second-repetition-c-purged-bytes",
+                "module-compile-numbered-quantified-alternation-backtracking-heavy-cold-bytes",
+                "module-search-numbered-quantified-alternation-backtracking-heavy-lower-bound-b-branch-warm-bytes",
+                "pattern-fullmatch-numbered-quantified-alternation-backtracking-heavy-lower-bound-bc-branch-purged-bytes",
+                "module-compile-named-quantified-alternation-backtracking-heavy-warm-bytes",
+                "module-search-named-quantified-alternation-backtracking-heavy-lower-bound-bc-branch-warm-bytes",
+                "pattern-fullmatch-named-quantified-alternation-backtracking-heavy-second-repetition-bc-then-b-purged-bytes",
+            ),
+            expected_measured_workload_count=84,
+            expected_total_workload_count=84,
+        ),
     ),
     "optional-group-alternation-boundary": _combined_manifest_definition(),
     "conditional-group-exists-boundary": _combined_manifest_definition(),
@@ -2507,6 +2493,41 @@ def source_tree_combined_manifest_representative_measured_workload_ids(
     return tuple(representative_ids)
 
 
+def source_tree_combined_fully_measured_manifest_expectation(
+    manifest_id: str,
+) -> SourceTreeCombinedFullyMeasuredManifestExpectation:
+    manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
+    if manifest_expectation is None:
+        raise AssertionError(
+            f"unknown source-tree combined manifest expectation {manifest_id!r}"
+        )
+
+    fully_measured_expectation = manifest_expectation.fully_measured_expectation
+    if fully_measured_expectation is None:
+        raise AssertionError(
+            "source-tree combined manifest "
+            f"{manifest_id!r} does not define a fully measured contract"
+        )
+    return fully_measured_expectation
+
+
+def source_tree_combined_fully_measured_manifest_ids(
+    coverage_group: str | None = None,
+) -> tuple[str, ...]:
+    return tuple(
+        manifest_id
+        for manifest_id, manifest_expectation in (
+            SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.items()
+        )
+        if manifest_expectation.fully_measured_expectation is not None
+        and (
+            coverage_group is None
+            or manifest_expectation.fully_measured_expectation.coverage_group
+            == coverage_group
+        )
+    )
+
+
 def _source_tree_manifest_known_gap_count(
     manifest_expectation: SourceTreeCombinedManifestExpectationDefinition,
     *,
@@ -3281,18 +3302,27 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_counted_repeat_manifests_promote_legacy_upper_bound_rows_to_measured(
         self,
     ) -> None:
-        for manifest_id in COUNTED_REPEAT_FULLY_MEASURED_MANIFEST_IDS:
-            (
-                _,
-                expected_workload_ids,
-                expected_measured_workload_count,
-                _,
-            ) = zero_gap_fully_measured_manifest_case(manifest_id)
+        for manifest_id in source_tree_combined_fully_measured_manifest_ids(
+            "counted-repeat"
+        ):
+            fully_measured_expectation = (
+                source_tree_combined_fully_measured_manifest_expectation(manifest_id)
+            )
+            expected_workload_ids = (
+                fully_measured_expectation.representative_measured_workload_ids
+            )
+            expected_measured_workload_count = (
+                fully_measured_expectation.expected_measured_workload_count
+            )
             with self.subTest(manifest_id=manifest_id):
                 manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
                     manifest_id
                 ]
                 self.assertIsNone(manifest_definition.known_gap_workload_ids)
+                self.assertEqual(
+                    manifest_definition.fully_measured_expectation,
+                    fully_measured_expectation,
+                )
                 self.assertEqual(
                     manifest_definition.representative_measured_workload_ids,
                     expected_workload_ids,
@@ -3388,16 +3418,27 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_quantified_alternation_manifest_promotes_bounded_branch_backref_conditional_nested_branch_broader_range_open_ended_and_backtracking_heavy_bytes_rows_to_measured(
         self,
     ) -> None:
-        (
-            manifest_id,
-            expected_workload_ids,
-            expected_measured_workload_count,
-            expected_total_workload_count,
-        ) = zero_gap_fully_measured_manifest_case(
-            "quantified-alternation-boundary"
+        manifest_id = "quantified-alternation-boundary"
+        fully_measured_expectation = (
+            source_tree_combined_fully_measured_manifest_expectation(
+                manifest_id
+            )
+        )
+        expected_workload_ids = (
+            fully_measured_expectation.representative_measured_workload_ids
+        )
+        expected_measured_workload_count = (
+            fully_measured_expectation.expected_measured_workload_count
+        )
+        expected_total_workload_count = (
+            fully_measured_expectation.expected_total_workload_count
         )
         manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
         self.assertIsNone(manifest_definition.known_gap_workload_ids)
+        self.assertEqual(
+            manifest_definition.fully_measured_expectation,
+            fully_measured_expectation,
+        )
         self.assertEqual(
             manifest_definition.representative_measured_workload_ids,
             expected_workload_ids,
@@ -4514,9 +4555,13 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_combined_cases_treat_counted_repeat_manifest_pair_as_fully_measured(
         self,
     ) -> None:
-        for manifest_id in COUNTED_REPEAT_FULLY_MEASURED_MANIFEST_IDS:
-            _, expected_workload_ids, _, _ = zero_gap_fully_measured_manifest_case(
-                manifest_id
+        for manifest_id in source_tree_combined_fully_measured_manifest_ids(
+            "counted-repeat"
+        ):
+            expected_workload_ids = (
+                source_tree_combined_fully_measured_manifest_expectation(
+                    manifest_id
+                ).representative_measured_workload_ids
             )
             with self.subTest(manifest_id=manifest_id):
                 case = source_tree_combined_case(manifest_id)
