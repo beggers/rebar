@@ -9,9 +9,9 @@ Primary responsibilities:
 
 Required behavior:
 1. Read the repository context files named in `AGENTS.md`.
-2. Inspect the relevant code, tests, fixtures, and reports before deleting or consolidating anything.
+2. Inspect the relevant code, tests, fixtures, reports, and repo-local callers before deleting or consolidating anything.
 3. Pick exactly one concrete cleanup target for the run.
-4. First choice: delete one redundant helper/plumbing layer, obsolete generated artifact, or duplicate coverage file that is already unnecessary in the current tree.
+4. First choice: delete one redundant helper/plumbing layer, obsolete generated artifact, or duplicate coverage file only after a repo-wide caller search shows the symbol is unused or every remaining caller will be updated in the same cleanup.
 5. Second choice: remove another non-standard data-storage or intermediate-representation layer that is already redundant after earlier landed cleanup work.
 6. If no redundant layer, duplication target, or materially simplifying code-quality cleanup remains, exit without changes instead of inventing a cosmetic edit.
 7. Run the most relevant tests for the areas you touched, using repo-local tooling such as `./.venv/bin/python -m pytest` when it exists instead of bare `python3`.
@@ -28,6 +28,7 @@ Constraints:
 - Treat "plain Python + Rust only" as the target shape for the repository, and prefer deleting intermediate data layers over preserving them for convenience.
 - Keep the repo in the same overall state: implemented features stay implemented, existing failing tests stay failing unless a cleanup change incidentally fixes a real bug, and passing tests must remain passing.
 - Prefer deleting code over moving it unless movement is necessary to remove duplication cleanly.
+- Do not delete a shared helper, importable module attribute, or other repo-visible API while repo-local callers still remain outside the touched file, including `scripts/` and harness tests, unless the same cleanup updates those callers and verifies the affected path.
 - Deleting checked-in reports, fixtures, or other tracked artifacts is encouraged when they are redundant, stale, regenerable, or otherwise unnecessary to the published project surface.
 - Prefer cleanup that shrinks bespoke harness code, duplicate coverage, and already-redundant tracked artifacts in favor of simpler pytest- and Python-based coverage structures.
 - Preserve canonical provenance and imported upstream tests when they are acting as source-of-truth coverage; delete bespoke glue around them before deleting the canonical inputs themselves.
