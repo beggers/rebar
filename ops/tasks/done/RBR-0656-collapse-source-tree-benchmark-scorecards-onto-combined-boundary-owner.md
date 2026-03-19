@@ -1,8 +1,9 @@
 # RBR-0656: Collapse the detached source-tree benchmark scorecard suite onto the combined boundary owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Delete `tests/benchmarks/test_source_tree_benchmark_scorecards.py` by moving its remaining source-tree scorecard-case and runner coverage onto `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, so the source-tree shim benchmark publication has one owner instead of separate scorecard-versus-combined suites with parallel runner/assertion plumbing.
@@ -84,3 +85,8 @@ PY`
 - The ownership simplification matches the current benchmark harness shape:
   - both files already assert the same `run_source_tree_benchmark_scorecard(...)` / `assert_source_tree_benchmark_contract(...)` / manifest-contract spine against the source-tree shim publication path; and
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` already imports `source_tree_scorecard_case(...)` for adjacent shared-surface assertions, so keeping one source-tree benchmark owner is a direct deletion rather than a new abstraction.
+
+## Completion Note
+- 2026-03-19: Moved the detached source-tree scorecard-case definition, manifest-path, selection-helper, zero-gap representative, and runner-contract assertions into `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, keeping the scorecard-specific helpers file-local on the owner suite.
+- 2026-03-19: Deleted `tests/benchmarks/test_source_tree_benchmark_scorecards.py` outright after the combined owner absorbed the direct `SOURCE_TREE_SCORECARD_EXPECTATIONS`, `source_tree_scorecard_case(...)`, `source_tree_scorecard_case_ids()`, `expected_first_deferred`, and `expected_workload_order` coverage.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`39 passed, 1140 subtests passed in 23.88s`), the acceptance inline source probe (`ok`), `bash -lc "! rg --files tests/benchmarks | rg 'test_source_tree_benchmark_scorecards\\.py$'"` (passes), and `git diff --name-status -- tests/benchmarks/test_source_tree_benchmark_scorecards.py` (`D`).
