@@ -1,6 +1,6 @@
 # RBR-0696: Catch the nested broader-range open-ended backtracking-heavy callable-replacement pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -47,3 +47,9 @@ Created: 2026-03-19
   - `benchmarks/workloads/nested_group_callable_replacement_boundary.py` currently contains the adjacent broader `{1,4}` backtracking-heavy callable rows on this same manifest, but direct `rg` probes found no workload ids or patterns for `a(((bc|b)c){2,})d` or `a(?P<outer>(?:(?P<inner>bc|b)c){2,})d`;
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently promotes the broader `{1,4}` backtracking-heavy callable slice as `nested-broader-range-backtracking-heavy-callable-replacement`, with no separate broader-range open-ended `{2,}` backtracking-heavy callable slice yet tracked on that owner surface; and
   - `reports/benchmarks/latest.py` currently publishes `nested-group-callable-replacement-boundary` at `72` total workloads / `72` measured workloads / `0` known gaps and the combined source-tree report at `763` / `763` / `0`, so this task is not a stale no-op.
+
+## Completion
+- 2026-03-19: Added the four `str` benchmark rows for the broader-range open-ended `{2,}` nested grouped backtracking-heavy callable slice on the existing `nested_group_callable_replacement_boundary.py` manifest and kept them pinned to the published `a(((bc|b)c){2,})d` / `a(?P<outer>(?:(?P<inner>bc|b)c){2,})d` Python-path workflows.
+- Extended `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the combined-slice expectations, manifest-promotion assertions, and scorecard-promotion assertions now treat those four workload ids as measured rows on the existing shared `nested-group-callable-replacement-boundary` surface.
+- Republished `reports/benchmarks/latest.py`; the tracked report now shows `nested-group-callable-replacement-boundary` at `76` total workloads / `76` measured workloads / `0` known gaps and the combined source-tree report at `767` / `767` / `0`, with the four new callable rows published at `implementation_timing.status == "measured"`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_callable_replacement_boundary.py --report .rebar/tmp/rbr-0696-nested-broader-range-open-ended-backtracking-heavy-callable-replacement-benchmarks.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
