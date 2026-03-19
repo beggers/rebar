@@ -2253,6 +2253,9 @@ def update_loop_state_progress(config: dict[str, Any], results: list[RunResult])
         }
     )
     write_json(paths["loop_state"], state)
+    # Keep the dashboard aligned with partial progress so interrupted cycles do not
+    # leave `.rebar/runtime/dashboard.*` stale relative to `loop_state.json`.
+    refresh_reports(config)
     return state
 
 
