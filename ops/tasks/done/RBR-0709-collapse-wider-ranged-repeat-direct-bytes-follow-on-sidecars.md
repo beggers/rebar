@@ -1,6 +1,6 @@
 # RBR-0709: Collapse wider-ranged-repeat direct-bytes follow-on sidecars onto canonical spec records
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -151,3 +151,8 @@ PY` reported the highest existing tail as `RBR-0689` through `RBR-0708` and no r
 - This simplification matches the current parity-harness information flow:
   - `ops/tasks/done/RBR-0703-collapse-quantified-alternation-direct-bytes-follow-on-sidecars.md` and `ops/tasks/done/RBR-0707-collapse-branch-local-direct-bytes-follow-on-bundle-sidecar.md` already removed the same style of mirrored direct-bytes owner layers from adjacent parity owners; and
   - `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` already acts as the canonical owner of the wider-ranged-repeat direct-bytes bundle/case pairing, so deleting the remaining id and bundle sidecars removes one more parallel owner layer without changing published correctness coverage.
+
+## Completion Notes
+- 2026-03-19: Removed `DIRECT_BYTES_FOLLOW_ON_SPECS`, `DIRECT_BYTES_FOLLOW_ON_SPEC_IDS`, and `DIRECT_BYTES_FOLLOW_ON_BUNDLES` from `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`.
+- 2026-03-19: Added the short follow-on id directly to each `DirectBytesFollowOnSpec`, then derived bundle routing, direct-test bucket keys, and pytest parametrization ids from `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` to preserve the existing ordering and naming without a mirrored sidecar registry.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`, the inline source-absence probe (`ok`), the pytest collection-order probe (`ok`), the bucket-key/manifest-order import probe (`ok`), and `bash -lc "! rg -n 'DIRECT_BYTES_FOLLOW_ON_SPECS|DIRECT_BYTES_FOLLOW_ON_SPEC_IDS|DIRECT_BYTES_FOLLOW_ON_BUNDLES' tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py"`.
