@@ -22,9 +22,9 @@ use rebar_core::{
     literal_find_spans as core_literal_find_spans, literal_match as core_literal_match,
     nested_alternation_branch_local_backreference_find_spans_str as core_nested_alternation_branch_local_backreference_find_spans_str,
     nested_alternation_find_spans_str as core_nested_alternation_find_spans_str,
-    nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_bytes as core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_bytes,
     nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_bytes as core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_bytes,
     nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_str as core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_str,
+    nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_bytes as core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_bytes,
     nested_capture_find_spans_str as core_nested_capture_find_spans_str,
     nested_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_str as core_nested_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_str,
     quantified_nested_capture_find_spans_str as core_quantified_nested_capture_find_spans_str,
@@ -34,6 +34,9 @@ use rebar_core::{
 };
 
 const SCAFFOLD_STATUS: &str = "scaffold-only";
+const NESTED_BROADER_RANGE_OPEN_ENDED_NUMBERED_BYTES_TEMPLATE_PATTERN: &[u8] = br"a((b|c){2,})\2d";
+const NESTED_BROADER_RANGE_OPEN_ENDED_NAMED_BYTES_TEMPLATE_PATTERN: &[u8] =
+    br"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d";
 const NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NUMBERED_BYTES_TEMPLATE_PATTERN: &[u8] =
     br"a((b|c){2,})\2(?(2)d|e)";
 const NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NAMED_BYTES_TEMPLATE_PATTERN: &[u8] =
@@ -119,62 +122,45 @@ fn replacement_limit(count: isize, total_matches: usize) -> usize {
     }
 }
 
-fn supports_bounded_literal_template_bytes_pattern(pattern: &[u8]) -> bool {
-    pattern == NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NUMBERED_BYTES_TEMPLATE_PATTERN
+fn supports_capture_sensitive_template_bytes_pattern(pattern: &[u8]) -> bool {
+    pattern == NESTED_BROADER_RANGE_OPEN_ENDED_NUMBERED_BYTES_TEMPLATE_PATTERN
+        || pattern == NESTED_BROADER_RANGE_OPEN_ENDED_NAMED_BYTES_TEMPLATE_PATTERN
+        || pattern == NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NUMBERED_BYTES_TEMPLATE_PATTERN
         || pattern == NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NAMED_BYTES_TEMPLATE_PATTERN
 }
 
-fn collect_bounded_literal_template_matches_bytes(
+fn collect_capture_sensitive_template_matches_bytes(
     pattern: &[u8],
     flags: i32,
     string: &[u8],
 ) -> PyResult<(MatchStatus, Vec<CapturedMatchSpan>)> {
-    if !supports_bounded_literal_template_bytes_pattern(pattern) {
-        return Ok((MatchStatus::Unsupported, Vec::new()));
+    if pattern == NESTED_BROADER_RANGE_OPEN_ENDED_NUMBERED_BYTES_TEMPLATE_PATTERN
+        || pattern == NESTED_BROADER_RANGE_OPEN_ENDED_NAMED_BYTES_TEMPLATE_PATTERN
+    {
+        let outcome =
+            core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_bytes(
+                pattern,
+                flags,
+                string,
+                0,
+                None,
+            );
+        return Ok((outcome.status, outcome.matches));
     }
-
-    let mut matches = Vec::new();
-    let mut search_start = 0usize;
-    loop {
-        let outcome = core_literal_match(
-            PatternRef::Bytes(pattern),
-            flags,
-            MatchMode::Search,
-            PatternRef::Bytes(string),
-            search_start as isize,
-            None,
-        )
-        .map_err(|error| PyTypeError::new_err(error.message()))?;
-
-        match outcome.status {
-            MatchStatus::Unsupported => return Ok((MatchStatus::Unsupported, Vec::new())),
-            MatchStatus::NoMatch => break,
-            MatchStatus::Matched => {
-                let Some(span) = outcome.span else {
-                    break;
-                };
-                matches.push(CapturedMatchSpan {
-                    span,
-                    group_spans: outcome.group_spans,
-                });
-                search_start = if span.1 > span.0 {
-                    span.1
-                } else {
-                    span.0.saturating_add(1)
-                };
-                if search_start > string.len() {
-                    break;
-                }
-            }
-        }
+    if pattern == NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NUMBERED_BYTES_TEMPLATE_PATTERN
+        || pattern == NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NAMED_BYTES_TEMPLATE_PATTERN
+    {
+        let outcome =
+            core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_bytes(
+                pattern,
+                flags,
+                string,
+                0,
+                None,
+            );
+        return Ok((outcome.status, outcome.matches));
     }
-
-    let status = if matches.is_empty() {
-        MatchStatus::NoMatch
-    } else {
-        MatchStatus::Matched
-    };
-    Ok((status, matches))
+    Ok((MatchStatus::Unsupported, Vec::new()))
 }
 
 fn raise_re_error<T>(
@@ -1230,7 +1216,7 @@ fn boundary_literal_template_subn_bytes(
     string: &[u8],
     count: isize,
 ) -> PyResult<(&'static str, PyObject, usize)> {
-    if !supports_bounded_literal_template_bytes_pattern(pattern) {
+    if !supports_capture_sensitive_template_bytes_pattern(pattern) {
         return Ok(("unsupported", py.None(), 0));
     }
 
@@ -1260,7 +1246,8 @@ fn boundary_literal_template_subn_bytes(
         return Ok(("unsupported", py.None(), 0));
     }
 
-    let (status, matches) = collect_bounded_literal_template_matches_bytes(pattern, flags, string)?;
+    let (status, matches) =
+        collect_capture_sensitive_template_matches_bytes(pattern, flags, string)?;
     if status == MatchStatus::Unsupported {
         return Ok(("unsupported", py.None(), 0));
     }

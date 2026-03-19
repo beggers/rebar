@@ -1,8 +1,9 @@
 # RBR-0645: Convert the nested broader-range open-ended branch-local-backreference replacement-template bytes pair to real parity
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-18
+Completed: 2026-03-19
 
 ## Goal
 - Convert the exact broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference replacement-template bytes pair that `RBR-0643` publishes from honest `unimplemented` outcomes into Rust-backed behavior on the existing shared replacement parity surface, without widening into benchmark catch-up, callable replacement, or another bytes frontier.
@@ -49,3 +50,11 @@ Created: 2026-03-18
   - direct `PYTHONPATH=python ./.venv/bin/python` public-API probes from this planning run still raise `NotImplementedError` for the target bytes workflows at `rebar.sub(...)`, `rebar.subn(...)`, `rebar.Pattern.sub(...)`, and `rebar.Pattern.subn(...)`, so the Rust-backed bytes parity work is not already satisfied in the current checkout; and
   - `tests/benchmarks/benchmark_expectations.py` already treats `broader-range-open-ended-branch-local-backreference` on `nested-group-replacement-boundary` as the four adjacent `str` workload ids only, so a later benchmark follow-on can stay on the existing shared zero-gap expectation surface.
 - A later benchmark follow-on should catch the same bytes pair up on the existing `benchmarks/workloads/nested_group_replacement_boundary.py` surface before deeper grouped execution broadens that family.
+
+## Completion Note
+- 2026-03-19: Wired the exact broader-range open-ended `{2,}` non-conditional bytes replacement-template pair through the existing native replacement path by allowing those bytes templates to pass through `python/rebar/__init__.py` and teaching the Rust CPython boundary to reuse the already-landed bytes span collector for `rb"a((b|c){2,})\\2d"` and `rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d"`.
+- 2026-03-19: Removed the temporary pending-bytes filter from the shared replacement parity suite so `nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows` now routes all 16 mixed `str`/`bytes` rows through the existing direct parity owner.
+- 2026-03-19: Verified with `cargo build -p rebar-cpython`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_backed_replacement_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`1074 passed, 1718 subtests passed in 26.91s`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_replacement_workflows.py --report .rebar/tmp/rbr-0645-nested-broader-range-open-ended-branch-local-backreference-replacement-bytes-parity.py` (`16` total / `16` passed / `0` `unimplemented`), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1310` total / `1310` passed / `0` `unimplemented`).
+- 2026-03-19: Ran the nearest existing benchmark-anchor expectation guard with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py -k 'single_manifest_scorecards_keep_slice_backed_representatives'` (`1 passed, 4 subtests passed`), keeping the shared `nested-group-replacement-boundary` scorecard contract checked even though the exact non-conditional bytes workload mirrors remain queued for `RBR-0647`.
+- 2026-03-19: The tracked published scorecard now contains `1310` total / `1310` passed / `0` `unimplemented` overall, and `nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-replacement-workflows` now reads `16` total / `16` passed / `0` `unimplemented`.
+- 2026-03-19: No direct benchmark expectation exists yet for the exact four non-conditional bytes workload mirrors on `nested-group-replacement-boundary`; the queued benchmark catch-up remains `RBR-0647`.
