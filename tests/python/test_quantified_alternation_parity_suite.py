@@ -24,10 +24,10 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
-    invoke_bounded_pattern_case as _invoke_bounded_pattern_case,
+    invoke_bounded_pattern_case,
     load_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
-    published_bytes_texts_by_pattern as _published_direct_bytes_follow_on_texts_by_pattern,
+    published_bytes_texts_by_pattern,
     published_fixture_bundle_by_manifest_id,
     record_generated_match_failure,
 )
@@ -1391,7 +1391,7 @@ def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_an
     (
         published_module_texts_by_pattern,
         published_fullmatch_texts_by_pattern,
-    ) = _published_direct_bytes_follow_on_texts_by_pattern(bundle_bytes_cases)
+    ) = published_bytes_texts_by_pattern(bundle_bytes_cases)
     assert (
         published_module_texts_by_pattern
         == spec.expected_module_search_texts_by_pattern
@@ -1660,8 +1660,8 @@ def test_pattern_bounds_matches_cpython(
         _bounded_pattern(case),
     )
 
-    observed = _invoke_bounded_pattern_case(observed_pattern, case)
-    expected = _invoke_bounded_pattern_case(expected_pattern, case)
+    observed = invoke_bounded_pattern_case(observed_pattern, case)
+    expected = invoke_bounded_pattern_case(expected_pattern, case)
 
     assert observed is not None
     assert expected is not None
@@ -1684,8 +1684,8 @@ def test_pattern_bounds_misses_match_cpython(
         _bounded_pattern(case),
     )
 
-    observed = _invoke_bounded_pattern_case(observed_pattern, case)
-    expected = _invoke_bounded_pattern_case(expected_pattern, case)
+    observed = invoke_bounded_pattern_case(observed_pattern, case)
+    expected = invoke_bounded_pattern_case(expected_pattern, case)
 
     assert observed is None
     assert expected is None

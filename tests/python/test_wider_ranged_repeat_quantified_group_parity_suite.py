@@ -28,7 +28,7 @@ from tests.python.fixture_parity_support import (
     fixture_cases_for_operation,
     load_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
-    published_bytes_texts_by_pattern as _published_direct_bytes_follow_on_texts_by_pattern,
+    published_bytes_texts_by_pattern,
     published_fixture_bundle_by_manifest_id,
 )
 BACKTRACKING_BRANCH_TEXT = {
@@ -985,7 +985,7 @@ def test_direct_bytes_follow_on_cases_stay_explicit_with_one_direct_follow_on_an
     (
         published_module_texts_by_pattern,
         published_fullmatch_texts_by_pattern,
-    ) = _published_direct_bytes_follow_on_texts_by_pattern(bundle_bytes_cases)
+    ) = published_bytes_texts_by_pattern(bundle_bytes_cases)
     assert (
         published_module_texts_by_pattern
         == spec.expected_module_search_texts_by_pattern

@@ -38,7 +38,7 @@ from tests.python.fixture_parity_support import (
     load_fixture_bundles,
     load_published_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
-    published_bytes_texts_by_pattern as _published_bytes_texts_by_pattern,
+    published_bytes_texts_by_pattern,
     published_fixture_bundle_by_manifest_id,
 )
 
@@ -946,7 +946,7 @@ def test_bytes_cases_stay_explicit_with_expected_bundle_coverage(
     (
         published_module_texts_by_pattern,
         published_fullmatch_texts_by_pattern,
-    ) = _published_bytes_texts_by_pattern(bundle_bytes_cases)
+    ) = published_bytes_texts_by_pattern(bundle_bytes_cases)
     assert (
         published_module_texts_by_pattern
         == spec.expected_module_search_texts_by_pattern
@@ -1511,7 +1511,7 @@ def test_published_bytes_texts_by_pattern_separates_search_and_fullmatch_rows(
         pattern_cases=pattern_cases,
     )
 
-    assert _published_bytes_texts_by_pattern(bundle_bytes_cases) == (
+    assert published_bytes_texts_by_pattern(bundle_bytes_cases) == (
         {
             rb"a(b|c){1,}d": frozenset({b"zzabdzz", b"zzacdzz"}),
             rb"a(?P<word>b|c){1,}d": frozenset({b"zzabdzz", b"zzacdzz"}),
@@ -1548,7 +1548,7 @@ def test_published_bytes_texts_by_pattern_deduplicates_texts_and_ignores_compile
         pattern_payload=lambda: b"shared-pattern",
     )
 
-    assert _published_bytes_texts_by_pattern(
+    assert published_bytes_texts_by_pattern(
         (
             compile_case,
             module_case,
