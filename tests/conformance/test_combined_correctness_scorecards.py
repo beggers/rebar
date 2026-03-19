@@ -3,19 +3,16 @@ from __future__ import annotations
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from functools import lru_cache, partial
-import json
 import pathlib
 import re
 import subprocess
-import sys
-import tempfile
 from typing import Any
 import unittest
 import warnings
 
 from rebar_harness import correctness
 from rebar_harness.scorecard_io import build_cpython_baseline
-from tests.conftest import REPO_ROOT
+from tests.conftest import REPO_ROOT, run_harness_scorecard
 
 from rebar_harness.correctness import (
     CpythonReAdapter,
@@ -29,37 +26,6 @@ from rebar_harness.correctness import (
 )
 
 TRACKED_REPORT_PATH = correctness.SCORECARD_REPORT.published_path
-PYTHON_SOURCE = REPO_ROOT / "python"
-
-
-def run_harness_scorecard(
-    module_name: str,
-    cli_args: Iterable[str],
-    *,
-    report_name: str,
-) -> tuple[dict[str, Any], dict[str, Any]]:
-    with tempfile.TemporaryDirectory() as temp_dir:
-        report_path = pathlib.Path(temp_dir) / report_name
-        result = subprocess.run(
-            [sys.executable, "-m", module_name, *cli_args, "--report", str(report_path)],
-            check=True,
-            cwd=REPO_ROOT,
-            env={"PYTHONPATH": str(PYTHON_SOURCE)},
-            capture_output=True,
-            text=True,
-        )
-        summary = json.loads(result.stdout.strip())
-        if report_path.suffix == ".json":
-            scorecard = json.loads(report_path.read_text(encoding="utf-8"))
-        elif module_name == "rebar_harness.correctness":
-            scorecard = correctness.SCORECARD_REPORT.load(report_path)
-        else:
-            raise ValueError(
-                f"run_harness_scorecard cannot load a non-JSON report for {module_name!r}"
-            )
-
-    return summary, scorecard
-
 
 @dataclass(frozen=True)
 class CorrectnessScorecardManifestExpectation:

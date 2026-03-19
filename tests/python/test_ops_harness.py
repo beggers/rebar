@@ -10,59 +10,15 @@ import unittest
 from unittest import mock
 
 from rebar_harness import benchmarks, correctness, scorecard_io
-from tests.conftest import REPO_ROOT
+import tests.conftest as test_support
+from tests.conftest import REPO_ROOT, run_harness_cli, run_harness_scorecard
 
 
 def completed_process(*args: str, returncode: int = 0, stdout: str = "", stderr: str = ""):
     return subprocess.CompletedProcess(args=args, returncode=returncode, stdout=stdout, stderr=stderr)
 
 
-PYTHON_SOURCE = REPO_ROOT / "python"
 REBAR_OPS_MODULE_PATH = REPO_ROOT / "scripts" / "rebar_ops.py"
-
-
-def run_harness_cli(
-    module_name: str,
-    cli_args: list[str],
-    *,
-    check: bool = True,
-) -> subprocess.CompletedProcess[str]:
-    command = [sys.executable, "-m", module_name, *cli_args]
-    return subprocess.run(
-        command,
-        check=check,
-        cwd=REPO_ROOT,
-        env={"PYTHONPATH": str(PYTHON_SOURCE)},
-        capture_output=True,
-        text=True,
-    )
-
-
-def run_harness_scorecard(
-    module_name: str,
-    cli_args: list[str],
-    *,
-    report_name: str,
-) -> tuple[dict[str, object], dict[str, object]]:
-    with tempfile.TemporaryDirectory() as temp_dir:
-        report_path = pathlib.Path(temp_dir) / report_name
-        result = run_harness_cli(
-            module_name,
-            [*cli_args, "--report", str(report_path)],
-        )
-        summary = json.loads(result.stdout.strip())
-        if report_path.suffix == ".json":
-            scorecard = json.loads(report_path.read_text(encoding="utf-8"))
-        elif module_name == "rebar_harness.correctness":
-            scorecard = correctness.SCORECARD_REPORT.load(report_path)
-        elif module_name == "rebar_harness.benchmarks":
-            scorecard = benchmarks.SCORECARD_REPORT.load(report_path)
-        else:
-            raise ValueError(
-                f"run_harness_scorecard cannot load a non-JSON report for {module_name!r}"
-            )
-
-    return summary, scorecard
 
 
 def load_rebar_ops_module(module_name: str = "rebar_ops_for_tests") -> object:
@@ -878,7 +834,7 @@ class ReadmeReportingTest(unittest.TestCase):
             )
 
         with mock.patch.object(
-            sys.modules[__name__],
+            test_support,
             "run_harness_cli",
             side_effect=fake_run_harness_cli,
         ):
@@ -919,7 +875,7 @@ class ReadmeReportingTest(unittest.TestCase):
             )
 
         with mock.patch.object(
-            sys.modules[__name__],
+            test_support,
             "run_harness_cli",
             side_effect=fake_run_harness_cli,
         ):

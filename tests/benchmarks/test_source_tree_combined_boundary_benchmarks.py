@@ -8,9 +8,7 @@ import json
 import pathlib
 import re
 import shutil
-import subprocess
 import sys
-import tempfile
 import textwrap
 from types import SimpleNamespace
 from typing import Any
@@ -39,7 +37,7 @@ from rebar_harness.benchmarks import (
 )
 from rebar_harness.correctness import published_fixture_manifests
 from rebar_harness.scorecard_io import build_cpython_baseline
-from tests.conftest import REPO_ROOT
+from tests.conftest import REPO_ROOT, run_harness_scorecard
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
@@ -51,7 +49,6 @@ from tests.python.fixture_parity_support import (
     assert_pattern_parity,
 )
 TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
-PYTHON_SOURCE = REPO_ROOT / "python"
 
 _KNOWN_GAP_STATUSES = {"known-gap", "unimplemented"}
 BENCHMARK_SELECTOR_EXPECTATION_TABLE = (
@@ -77,37 +74,6 @@ def _declared_benchmark_manifest_selectors() -> dict[str, str]:
         for name, value in vars(benchmarks).items()
         if name.endswith("_MANIFEST_SELECTOR") and isinstance(value, str)
     }
-
-
-def run_harness_scorecard(
-    module_name: str,
-    cli_args: Iterable[str],
-    *,
-    report_name: str,
-) -> tuple[dict[str, Any], dict[str, Any]]:
-    with tempfile.TemporaryDirectory() as temp_dir:
-        report_path = pathlib.Path(temp_dir) / report_name
-        result = subprocess.run(
-            [sys.executable, "-m", module_name, *cli_args, "--report", str(report_path)],
-            check=True,
-            cwd=REPO_ROOT,
-            env={"PYTHONPATH": str(PYTHON_SOURCE)},
-            capture_output=True,
-            text=True,
-        )
-        summary = json.loads(result.stdout.strip())
-        if report_path.suffix == ".json":
-            scorecard = json.loads(report_path.read_text(encoding="utf-8"))
-        elif module_name == "rebar_harness.benchmarks":
-            scorecard = benchmarks.SCORECARD_REPORT.load(report_path)
-        else:
-            raise ValueError(
-                f"run_harness_scorecard cannot load a non-JSON report for {module_name!r}"
-            )
-
-    return summary, scorecard
-
-
 def _assert_benchmark_summary_consistent(
     testcase: Any,
     scorecard: dict[str, Any],
