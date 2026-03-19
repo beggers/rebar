@@ -1,8 +1,9 @@
 # RBR-0648: Collapse the detached built-native benchmark provenance suite onto the built-native mode owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Delete `tests/benchmarks/test_benchmark_adapter_provenance.py` by moving its remaining direct `run_benchmarks()` built-native fallback/provenance coverage onto `tests/benchmarks/test_built_native_benchmark_modes.py`, so the built-native benchmark path has one owner instead of a small detached provenance-only suite beside the stricter smoke/full wrapper owner.
@@ -79,3 +80,8 @@ PY`
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_built_native_benchmark_modes.py tests/benchmarks/test_benchmark_adapter_provenance.py` currently passes (`7 passed, 3 skipped in 0.08s`);
   - the inline source probe in Acceptance currently fails exactly on this cleanup because `tests/benchmarks/test_built_native_benchmark_modes.py` does not yet mention `COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR`; and
   - `bash -lc "! rg --files tests/benchmarks | rg 'test_benchmark_adapter_provenance\\.py$'"` currently fails exactly on this cleanup because the detached file still exists.
+
+## Completion Note
+- 2026-03-19: Moved the direct single-manifest built-native fallback/provenance checks onto `tests/benchmarks/test_built_native_benchmark_modes.py`, keeping the manifest selector and path file-local on the built-native mode owner and preserving the existing strict `allow_fallback=False` wrapper coverage.
+- 2026-03-19: Deleted `tests/benchmarks/test_benchmark_adapter_provenance.py` outright after the built-native mode owner absorbed its remaining direct `run_benchmarks(..., adapter_mode=benchmarks.BUILT_NATIVE_MODE)` provenance coverage.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_built_native_benchmark_modes.py` (`7 passed, 3 skipped in 0.08s`), the acceptance inline source probe (`ok`), `bash -lc "! rg --files tests/benchmarks | rg 'test_benchmark_adapter_provenance\\.py$'"` (passes), and `git diff --name-status -- tests/benchmarks/test_benchmark_adapter_provenance.py` (`D`).

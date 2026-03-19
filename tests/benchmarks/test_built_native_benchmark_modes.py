@@ -11,6 +11,12 @@ from rebar_harness import benchmarks
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 MATURIN = shutil.which("maturin")
+COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR = (
+    benchmarks.COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR
+)
+COMPILE_SMOKE_PROVENANCE_MANIFEST_PATH = benchmarks.select_benchmark_manifest_path(
+    COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR
+)
 _MISSING_MATURIN_REASON = (
     "built-native mode unavailable because no `maturin` executable was found on PATH"
 )
@@ -228,6 +234,64 @@ class BuiltNativeBenchmarkSmokeTest(unittest.TestCase):
                 "module-search-inline-flag-warm-str-hit",
                 "pattern-fullmatch-ignorecase-purged-bytes-hit",
             ],
+        )
+
+
+class BuiltNativeBenchmarkDirectProvenanceTest(unittest.TestCase):
+    def test_run_benchmarks_falls_back_to_source_shim_when_build_tooling_is_unavailable(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            report_path = pathlib.Path(temp_dir) / "benchmarks.json"
+            with mock.patch.object(
+                benchmarks,
+                "provision_built_native_runtime",
+                return_value=(None, None, _MISSING_MATURIN_REASON),
+            ):
+                scorecard = benchmarks.run_benchmarks(
+                    manifest_paths=[COMPILE_SMOKE_PROVENANCE_MANIFEST_PATH],
+                    report_path=report_path,
+                    adapter_mode=benchmarks.BUILT_NATIVE_MODE,
+                )
+
+        implementation = scorecard["implementation"]
+        self.assertEqual(implementation["adapter_mode_requested"], "built-native")
+        self.assertEqual(implementation["adapter_mode_resolved"], "source-tree-shim")
+        self.assertEqual(implementation["build_mode"], "source-tree-shim")
+        self.assertEqual(implementation["timing_path"], "source-tree-shim")
+        self.assertIsInstance(implementation["native_module_loaded"], bool)
+        self.assertIn("maturin", implementation["native_unavailable_reason"])
+        self.assertIsNone(implementation["native_build_tool"])
+        self.assertIsNone(implementation["native_wheel"])
+
+    @unittest.skipUnless(
+        MATURIN is not None,
+        "built-native benchmark provenance smoke requires a maturin executable on PATH",
+    )
+    def test_run_benchmarks_reports_built_native_provenance_when_available(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            report_path = pathlib.Path(temp_dir) / "benchmarks-native.json"
+            scorecard = benchmarks.run_benchmarks(
+                manifest_paths=[COMPILE_SMOKE_PROVENANCE_MANIFEST_PATH],
+                report_path=report_path,
+                adapter_mode=benchmarks.BUILT_NATIVE_MODE,
+            )
+
+        implementation = scorecard["implementation"]
+        self.assertEqual(implementation["adapter_mode_requested"], "built-native")
+        self.assertEqual(implementation["adapter_mode_resolved"], "built-native")
+        self.assertEqual(implementation["build_mode"], "built-native")
+        self.assertEqual(implementation["timing_path"], "built-native")
+        self.assertTrue(implementation["native_module_loaded"])
+        self.assertEqual(implementation["native_module_name"], "rebar._rebar")
+        self.assertEqual(implementation["native_scaffold_status"], "scaffold-only")
+        self.assertEqual(implementation["native_target_cpython_series"], "3.12.x")
+        self.assertIsNone(implementation["native_unavailable_reason"])
+        self.assertEqual(implementation["native_build_tool"], "maturin")
+        self.assertTrue(str(implementation["native_wheel"]).startswith("rebar-"))
+        self.assertEqual(
+            scorecard["environment"]["execution_model"],
+            "single-interpreter subprocess workload probes against a built native wheel",
         )
 
 
