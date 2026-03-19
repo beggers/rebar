@@ -1,6 +1,6 @@
 # RBR-0687: Decouple the fixture-support bundle contracts from published manifests
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -67,3 +67,7 @@ PY`
 - This simplification matches the current information flow:
   - `tests/python/test_fixture_parity_support_contract.py` already owns the generic manifest-loader and fixture-shape contract surface, including `_write_fixture_module(...)`-backed synthetic fixtures; and
   - once `load_fixture_bundles(...)` coverage is centralized there, that generic contract should stop depending on branch-local or open-ended published manifests just to prove helper behavior.
+
+## Completion Note
+- Replaced the remaining `_named_backreference_bundle_spec(...)` coverage with file-local `bundle_loader_contract_str.py` and `bundle_loader_contract_mixed.py` temp fixtures, patched `tests.python.fixture_parity_support.CORRECTNESS_FIXTURES_ROOT` only while `load_fixture_bundles(...)` runs, and kept the full-manifest, selected-id, derived-manifest-id, and invalid-selection contract checks local to `tests/python/test_fixture_parity_support_contract.py`.
+- Verified with `./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py`, the inline source probe from this task, and the `rg` absence check for the removed named-backreference/open-ended coupling.

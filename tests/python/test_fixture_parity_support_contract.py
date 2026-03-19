@@ -33,6 +33,7 @@ from rebar_harness.correctness import (
     published_fixture_manifests,
     select_correctness_fixture_paths,
 )
+import tests.python.fixture_parity_support as fixture_parity_support
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     FixtureBundleSpec,
@@ -242,6 +243,139 @@ def _write_fixture_module(
     path = tmp_path / filename
     path.write_text(textwrap.dedent(source), encoding="utf-8")
     return path
+
+
+BUNDLE_LOADER_CONTRACT_STR_FILENAME = "bundle_loader_contract_str.py"
+BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID = "bundle-loader-contract-str"
+BUNDLE_LOADER_CONTRACT_MIXED_FILENAME = "bundle_loader_contract_mixed.py"
+BUNDLE_LOADER_CONTRACT_MIXED_MANIFEST_ID = "bundle-loader-contract-mixed"
+
+
+def _write_bundle_loader_contract_fixture_modules(
+    tmp_path: pathlib.Path,
+) -> tuple[pathlib.Path, pathlib.Path]:
+    str_path = _write_fixture_module(
+        tmp_path,
+        BUNDLE_LOADER_CONTRACT_STR_FILENAME,
+        f"""
+        MANIFEST = {{
+            "schema_version": 1,
+            "manifest_id": "{BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID}",
+            "layer": "module_workflow",
+            "suite_id": "bundle.loader.contract.str",
+            "cases": [
+                {{
+                    "id": "bundle-loader-contract-compile-str",
+                    "operation": "compile",
+                    "pattern": r"(?P<word>ab)(?P=word)",
+                    "text_model": "str",
+                }},
+                {{
+                    "id": "bundle-loader-contract-module-search-str",
+                    "operation": "module_call",
+                    "helper": "search",
+                    "pattern": r"(?P<word>ab)(?P=word)",
+                    "text_model": "str",
+                }},
+                {{
+                    "id": "bundle-loader-contract-pattern-search-str",
+                    "operation": "pattern_call",
+                    "helper": "search",
+                    "pattern": r"(?P<word>ab)(?P=word)",
+                    "text_model": "str",
+                }},
+            ],
+        }}
+        """,
+    )
+    mixed_path = _write_fixture_module(
+        tmp_path,
+        BUNDLE_LOADER_CONTRACT_MIXED_FILENAME,
+        f"""
+        MANIFEST = {{
+            "schema_version": 1,
+            "manifest_id": "{BUNDLE_LOADER_CONTRACT_MIXED_MANIFEST_ID}",
+            "layer": "module_workflow",
+            "suite_id": "bundle.loader.contract.mixed",
+            "cases": [
+                {{
+                    "id": "bundle-loader-contract-mixed-compile-str",
+                    "operation": "compile",
+                    "pattern": r"a(bc|de){{1,}}d",
+                    "text_model": "str",
+                }},
+                {{
+                    "id": "bundle-loader-contract-mixed-module-search-str",
+                    "operation": "module_call",
+                    "helper": "search",
+                    "pattern": r"a(bc|de){{1,}}d",
+                    "text_model": "str",
+                }},
+                {{
+                    "id": "bundle-loader-contract-mixed-compile-bytes",
+                    "operation": "compile",
+                    "pattern": r"a(bc|de){{1,}}d",
+                    "text_model": "bytes",
+                }},
+                {{
+                    "id": "bundle-loader-contract-mixed-pattern-fullmatch-bytes",
+                    "operation": "pattern_call",
+                    "helper": "fullmatch",
+                    "pattern": r"a(bc|de){{1,}}d",
+                    "text_model": "bytes",
+                }},
+            ],
+        }}
+        """,
+    )
+    return str_path, mixed_path
+
+
+def _bundle_loader_contract_str_spec() -> FixtureBundleSpec:
+    return FixtureBundleSpec(
+        BUNDLE_LOADER_CONTRACT_STR_FILENAME,
+        expected_manifest_id=BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID,
+        expected_case_ids=frozenset(
+            {
+                "bundle-loader-contract-compile-str",
+                "bundle-loader-contract-module-search-str",
+                "bundle-loader-contract-pattern-search-str",
+            }
+        ),
+        expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 1,
+                ("module_call", "search"): 1,
+                ("pattern_call", "search"): 1,
+            }
+        ),
+    )
+
+
+def _bundle_loader_contract_mixed_spec() -> FixtureBundleSpec:
+    return FixtureBundleSpec(
+        BUNDLE_LOADER_CONTRACT_MIXED_FILENAME,
+        expected_manifest_id=BUNDLE_LOADER_CONTRACT_MIXED_MANIFEST_ID,
+        expected_patterns=frozenset({r"a(bc|de){1,}d", rb"a(bc|de){1,}d"}),
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 1,
+                ("pattern_call", "fullmatch"): 1,
+            }
+        ),
+        expected_text_models=frozenset({"bytes", "str"}),
+    )
+
+
+def _load_fixture_bundles_from_root(
+    root: pathlib.Path,
+    specs: tuple[FixtureBundleSpec, ...],
+) -> tuple[FixtureBundle, ...]:
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(fixture_parity_support, "CORRECTNESS_FIXTURES_ROOT", root)
+        return load_fixture_bundles(specs)
 
 
 NAMED_GROUP_CASES = _fixture_cases("named_group_workflows.py")
@@ -1413,129 +1547,101 @@ def test_invoke_bounded_pattern_case_preserves_helper_and_bound_semantics(
     assert observed.span() == expected_span
 
 
-NAMED_BACKREFERENCE_SELECTED_CASE_IDS = (
-    "named-backreference-pattern-search-str",
-    "named-backreference-compile-metadata-str",
-)
-
-
-def _named_backreference_bundle_spec() -> FixtureBundleSpec:
-    return FixtureBundleSpec(
-        "named_backreference_workflows.py",
-        expected_manifest_id="named-backreference-workflows",
-        expected_case_ids=frozenset(
-            {
-                "named-backreference-compile-metadata-str",
-                "named-backreference-module-search-str",
-                "named-backreference-pattern-search-str",
-            }
-        ),
-        expected_patterns=frozenset({r"(?P<word>ab)(?P=word)"}),
-        expected_operation_helper_counts=Counter(
-            {
-                ("compile", None): 1,
-                ("module_call", "search"): 1,
-                ("pattern_call", "search"): 1,
-            }
-        ),
-    )
-
-
-def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_case_ids() -> None:
-    named_bundle, open_ended_bundle = load_fixture_bundles(
+def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_case_ids(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    str_bundle, mixed_bundle = _load_fixture_bundles_from_root(
+        tmp_path,
         (
-            _named_backreference_bundle_spec(),
-            FixtureBundleSpec(
-                "open_ended_quantified_group_alternation_workflows.py",
-                expected_manifest_id="open-ended-quantified-group-alternation-workflows",
-                expected_patterns=frozenset(
-                    {
-                        r"a(bc|de){1,}d",
-                        r"a(?P<word>bc|de){1,}d",
-                        rb"a(bc|de){1,}d",
-                        rb"a(?P<word>bc|de){1,}d",
-                    }
-                ),
-                expected_operation_helper_counts=Counter(
-                    {
-                        ("compile", None): 4,
-                        ("module_call", "search"): 8,
-                        ("pattern_call", "fullmatch"): 20,
-                    }
-                ),
-                expected_text_models=frozenset({"bytes", "str"}),
-            ),
-        )
-    )
-
-    assert open_ended_bundle.expected_case_ids is None
-    assert_fixture_bundle_contract(
-        open_ended_bundle,
-        pattern_extractor=case_pattern,
-        expected_fixture_path=(
-            CORRECTNESS_FIXTURES_ROOT
-            / "open_ended_quantified_group_alternation_workflows.py"
+            _bundle_loader_contract_str_spec(),
+            _bundle_loader_contract_mixed_spec(),
         ),
     )
-    assert tuple(
-        path.name
-        for path in sorted(
-            (open_ended_bundle.manifest.path, named_bundle.manifest.path),
-            key=lambda path: path.name,
-        )
-    ) == (
-        "named_backreference_workflows.py",
-        "open_ended_quantified_group_alternation_workflows.py",
+
+    assert tuple(bundle.manifest.path.name for bundle in (str_bundle, mixed_bundle)) == (
+        BUNDLE_LOADER_CONTRACT_STR_FILENAME,
+        BUNDLE_LOADER_CONTRACT_MIXED_FILENAME,
+    )
+    assert_fixture_bundle_contract(
+        str_bundle,
+        pattern_extractor=str_case_pattern,
+        expected_fixture_path=str_path,
+    )
+    assert mixed_bundle.expected_case_ids is None
+    assert_fixture_bundle_contract(
+        mixed_bundle,
+        pattern_extractor=case_pattern,
+        expected_fixture_path=mixed_path,
     )
 
 
 def test_whole_manifest_bundle_contract_supports_expected_case_ids_and_fixture_path_validation(
+    tmp_path: pathlib.Path,
 ) -> None:
-    spec = _named_backreference_bundle_spec()
-    (bundle,) = load_fixture_bundles((spec,))
+    str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    spec = _bundle_loader_contract_str_spec()
+    (bundle,) = _load_fixture_bundles_from_root(tmp_path, (spec,))
 
-    assert bundle.manifest.path == CORRECTNESS_FIXTURES_ROOT / spec.fixture_name
+    assert bundle.manifest.path == str_path
     assert bundle.expected_case_ids is not None
     assert_fixture_bundle_contract(
         bundle,
         pattern_extractor=str_case_pattern,
-        expected_fixture_path=CORRECTNESS_FIXTURES_ROOT / spec.fixture_name,
+        expected_fixture_path=str_path,
     )
 
 
 def test_fixture_bundle_exposes_derived_manifest_id_without_storing_duplicate_field(
+    tmp_path: pathlib.Path,
 ) -> None:
     field_names = {field.name for field in fields(FixtureBundle)}
-    (bundle,) = load_fixture_bundles((_named_backreference_bundle_spec(),))
+    _write_bundle_loader_contract_fixture_modules(tmp_path)
+    (bundle,) = _load_fixture_bundles_from_root(
+        tmp_path,
+        (_bundle_loader_contract_str_spec(),),
+    )
 
     assert "expected_manifest_id" not in field_names
-    assert bundle.expected_manifest_id == "named-backreference-workflows"
+    assert bundle.expected_manifest_id == BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID
     assert bundle.expected_manifest_id == bundle.manifest.manifest_id
 
 
-def test_load_fixture_bundles_rejects_mismatched_expected_manifest_id() -> None:
-    spec = _named_backreference_bundle_spec()
+def test_load_fixture_bundles_rejects_mismatched_expected_manifest_id(
+    tmp_path: pathlib.Path,
+) -> None:
+    _write_bundle_loader_contract_fixture_modules(tmp_path)
+    spec = _bundle_loader_contract_str_spec()
 
     with pytest.raises(
         ValueError,
         match=re.escape(
-            "named_backreference_workflows.py expected_manifest_id "
+            f"{BUNDLE_LOADER_CONTRACT_STR_FILENAME} expected_manifest_id "
             "'wrong-manifest-id' does not match loaded manifest_id "
-            "'named-backreference-workflows'"
+            f"'{BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID}'"
         ),
     ):
-        load_fixture_bundles(
-            (replace(spec, expected_manifest_id="wrong-manifest-id"),)
+        _load_fixture_bundles_from_root(
+            tmp_path,
+            (replace(spec, expected_manifest_id="wrong-manifest-id"),),
         )
 
 
-def test_load_fixture_bundles_selected_case_ids_preserve_requested_order() -> None:
-    spec = _named_backreference_bundle_spec()
-    (bundle,) = load_fixture_bundles(
+def test_load_fixture_bundles_selected_case_ids_preserve_requested_order(
+    tmp_path: pathlib.Path,
+) -> None:
+    selected_case_ids = (
+        "bundle-loader-contract-compile-str",
+        "bundle-loader-contract-pattern-search-str",
+    )
+    str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    spec = _bundle_loader_contract_str_spec()
+    (bundle,) = _load_fixture_bundles_from_root(
+        tmp_path,
         (
             replace(
                 spec,
-                selected_case_ids=NAMED_BACKREFERENCE_SELECTED_CASE_IDS,
+                selected_case_ids=selected_case_ids,
                 expected_case_ids=None,
                 expected_operation_helper_counts=Counter(
                     {
@@ -1544,40 +1650,44 @@ def test_load_fixture_bundles_selected_case_ids_preserve_requested_order() -> No
                     }
                 ),
             ),
-        )
+        ),
     )
     compile_cases = fixture_cases_for_operation((bundle,), "compile")
     pattern_cases = fixture_cases_for_operation((bundle,), "pattern_call")
 
-    assert bundle.expected_case_ids == frozenset(
-        NAMED_BACKREFERENCE_SELECTED_CASE_IDS
-    )
+    assert bundle.expected_case_ids == frozenset(selected_case_ids)
     assert bundle.expected_text_models is None
     assert tuple(case.case_id for case in compile_cases) == (
-        "named-backreference-compile-metadata-str",
+        "bundle-loader-contract-compile-str",
     )
     assert tuple(case.case_id for case in pattern_cases) == (
-        "named-backreference-pattern-search-str",
+        "bundle-loader-contract-pattern-search-str",
     )
     assert fixture_cases_for_operation((bundle,), "module_call") == ()
     assert_fixture_bundle_contract(
         bundle,
         pattern_extractor=str_case_pattern,
-        expected_fixture_path=CORRECTNESS_FIXTURES_ROOT / spec.fixture_name,
-        expected_ordered_case_ids=NAMED_BACKREFERENCE_SELECTED_CASE_IDS,
+        expected_fixture_path=str_path,
+        expected_ordered_case_ids=selected_case_ids,
     )
 
 
-def test_load_fixture_bundles_full_manifest_defaults_str_text_model_expectation() -> None:
-    spec = _named_backreference_bundle_spec()
-    (bundle,) = load_fixture_bundles((replace(spec, expected_case_ids=None),))
+def test_load_fixture_bundles_full_manifest_defaults_str_text_model_expectation(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    spec = _bundle_loader_contract_str_spec()
+    (bundle,) = _load_fixture_bundles_from_root(
+        tmp_path,
+        (replace(spec, expected_case_ids=None),),
+    )
 
     assert bundle.expected_case_ids is None
     assert bundle.expected_text_models == frozenset({"str"})
     assert_fixture_bundle_contract(
         bundle,
         pattern_extractor=str_case_pattern,
-        expected_fixture_path=CORRECTNESS_FIXTURES_ROOT / spec.fixture_name,
+        expected_fixture_path=str_path,
     )
 
 
@@ -1586,42 +1696,46 @@ def test_load_fixture_bundles_full_manifest_defaults_str_text_model_expectation(
     (
         pytest.param(
             (),
-            "named_backreference_workflows.py selected_case_ids must not be empty",
+            f"{BUNDLE_LOADER_CONTRACT_STR_FILENAME} selected_case_ids must not be empty",
             id="empty",
         ),
         pytest.param(
             (
-                "named-backreference-compile-metadata-str",
-                "named-backreference-compile-metadata-str",
+                "bundle-loader-contract-compile-str",
+                "bundle-loader-contract-compile-str",
             ),
-            "named_backreference_workflows.py selected_case_ids contains duplicate ids: "
-            "('named-backreference-compile-metadata-str',)",
+            f"{BUNDLE_LOADER_CONTRACT_STR_FILENAME} selected_case_ids contains duplicate ids: "
+            "('bundle-loader-contract-compile-str',)",
             id="duplicate",
         ),
         pytest.param(
             ("missing-case-id",),
-            "named_backreference_workflows.py is missing expected fixture rows: "
+            f"{BUNDLE_LOADER_CONTRACT_STR_FILENAME} is missing expected fixture rows: "
             "('missing-case-id',)",
             id="missing",
         ),
     ),
 )
 def test_load_fixture_bundles_rejects_invalid_selected_case_ids(
+    tmp_path: pathlib.Path,
     selected_case_ids: tuple[str, ...],
     error_message: str,
 ) -> None:
-    spec = _named_backreference_bundle_spec()
+    _write_bundle_loader_contract_fixture_modules(tmp_path)
+    spec = _bundle_loader_contract_str_spec()
 
     with pytest.raises(ValueError, match=re.escape(error_message)):
-        load_fixture_bundles(
+        _load_fixture_bundles_from_root(
+            tmp_path,
             (
                 replace(
                     spec,
                     selected_case_ids=selected_case_ids,
                     expected_case_ids=None,
                 ),
-            )
+            ),
         )
+
 
 @pytest.mark.parametrize(
     "pattern",
