@@ -1622,6 +1622,26 @@ SUPPLEMENTAL_BYTES_CASES = (
         matches=False,
     ),
 )
+MATCH_REFERENCE_IDENTITY_CASES = (
+    pytest.param(
+        "search",
+        ("ab", "c"),
+        ("z", "ab", "c", "zz"),
+        id="search-str",
+    ),
+    pytest.param(
+        "match",
+        ("ab",),
+        ("ab", "zz"),
+        id="match-str",
+    ),
+    pytest.param(
+        "fullmatch",
+        (b"12", b"3"),
+        (b"12", b"3"),
+        id="fullmatch-bytes",
+    ),
+)
 
 # CPython accepts multiple zero-valued flag spellings for compiled-pattern entry
 # points; keep those variants covered in one place so helper wrappers do not
@@ -1632,6 +1652,13 @@ COMPILED_PATTERN_ZERO_FLAG_MODES = (
     pytest.param("int-zero", id="explicit-int-zero"),
     pytest.param("bool-false", id="explicit-bool-false"),
 )
+
+
+def _join_runtime_text(parts: tuple[str, ...] | tuple[bytes, ...]) -> str | bytes:
+    first_part = parts[0]
+    if isinstance(first_part, bytes):
+        return b"".join(parts)
+    return "".join(parts)
 
 
 def _compile_verbose_regression_pattern(
@@ -1738,6 +1765,40 @@ def _match_behavior_case_string(case: FixtureCase) -> str | bytes:
     string = case.args[1]
     assert isinstance(string, (str, bytes))
     return string
+
+
+def _assert_match_input_identity(
+    observed: object,
+    expected: re.Match[str] | re.Match[bytes],
+    *,
+    pattern: str | bytes,
+    string: str | bytes,
+) -> None:
+    assert observed.string is string
+    assert expected.string is string
+    assert observed.re.pattern is pattern
+    assert expected.re.pattern is pattern
+
+
+def _assert_compiled_match_identity(
+    observed: object,
+    expected: re.Match[str] | re.Match[bytes],
+    *,
+    pattern: str | bytes,
+    string: str | bytes,
+    observed_pattern: object,
+    expected_pattern: re.Pattern[str] | re.Pattern[bytes],
+) -> None:
+    _assert_match_input_identity(
+        observed,
+        expected,
+        pattern=pattern,
+        string=string,
+    )
+    assert observed.re is observed_pattern
+    assert expected.re is expected_pattern
+    assert getattr(observed_pattern, "pattern") is pattern
+    assert expected_pattern.pattern is pattern
 
 
 def _assert_verbose_compile_case_matches_cpython(
@@ -2056,6 +2117,34 @@ def test_match_behavior_supplemental_bytes_module_calls_match_cpython(
     assert observed.string == expected.string == case.string
 
 
+@pytest.mark.parametrize(
+    ("helper", "pattern_parts", "string_parts"),
+    MATCH_REFERENCE_IDENTITY_CASES,
+)
+def test_module_match_objects_preserve_pattern_and_string_identity_like_cpython(
+    regex_backend: tuple[str, object],
+    helper: str,
+    pattern_parts: tuple[str, ...] | tuple[bytes, ...],
+    string_parts: tuple[str, ...] | tuple[bytes, ...],
+) -> None:
+    backend_name, backend = regex_backend
+    pattern = _join_runtime_text(pattern_parts)
+    string = _join_runtime_text(string_parts)
+
+    observed = getattr(backend, helper)(pattern, string)
+    expected = getattr(re, helper)(pattern, string)
+
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+    assert observed is not None
+    assert expected is not None
+    _assert_match_input_identity(
+        observed,
+        expected,
+        pattern=pattern,
+        string=string,
+    )
+
+
 @pytest.mark.parametrize("case", COMPILE_CASES, ids=lambda case: case.case_id)
 def test_compile_workflows_match_cpython(
     regex_backend: tuple[str, object],
@@ -2231,6 +2320,41 @@ def test_compiled_pattern_workflows_match_cpython(
 
 
 @pytest.mark.parametrize(
+    ("helper", "pattern_parts", "string_parts"),
+    MATCH_REFERENCE_IDENTITY_CASES,
+)
+def test_bound_pattern_match_objects_preserve_compiled_pattern_identity_like_cpython(
+    regex_backend: tuple[str, object],
+    helper: str,
+    pattern_parts: tuple[str, ...] | tuple[bytes, ...],
+    string_parts: tuple[str, ...] | tuple[bytes, ...],
+) -> None:
+    backend_name, backend = regex_backend
+    pattern = _join_runtime_text(pattern_parts)
+    string = _join_runtime_text(string_parts)
+    observed_pattern, expected_pattern = compile_with_cpython_parity(
+        backend_name,
+        backend,
+        pattern,
+    )
+
+    observed = getattr(observed_pattern, helper)(string)
+    expected = getattr(expected_pattern, helper)(string)
+
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+    assert observed is not None
+    assert expected is not None
+    _assert_compiled_match_identity(
+        observed,
+        expected,
+        pattern=pattern,
+        string=string,
+        observed_pattern=observed_pattern,
+        expected_pattern=expected_pattern,
+    )
+
+
+@pytest.mark.parametrize(
     "flag_mode",
     COMPILED_PATTERN_ZERO_FLAG_MODES,
 )
@@ -2274,6 +2398,38 @@ def test_module_helpers_accept_compiled_patterns_with_cpython_parity(
         return
 
     assert observed == expected
+
+
+@pytest.mark.parametrize(
+    ("helper", "pattern_parts", "string_parts"),
+    MATCH_REFERENCE_IDENTITY_CASES,
+)
+def test_module_helpers_with_compiled_patterns_preserve_match_identity_like_cpython(
+    regex_backend: tuple[str, object],
+    helper: str,
+    pattern_parts: tuple[str, ...] | tuple[bytes, ...],
+    string_parts: tuple[str, ...] | tuple[bytes, ...],
+) -> None:
+    backend_name, backend = regex_backend
+    pattern = _join_runtime_text(pattern_parts)
+    string = _join_runtime_text(string_parts)
+    observed_pattern = _compile_compiled_pattern_case(backend, pattern)
+    expected_pattern = _compile_compiled_pattern_case(re, pattern)
+
+    observed = getattr(backend, helper)(observed_pattern, string)
+    expected = getattr(re, helper)(expected_pattern, string)
+
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+    assert observed is not None
+    assert expected is not None
+    _assert_compiled_match_identity(
+        observed,
+        expected,
+        pattern=pattern,
+        string=string,
+        observed_pattern=observed_pattern,
+        expected_pattern=expected_pattern,
+    )
 
 
 @pytest.mark.parametrize(
