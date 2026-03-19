@@ -1,8 +1,9 @@
 # RBR-0647: Catch the nested broader-range open-ended branch-local-backreference replacement-template bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Extend the published source-tree benchmark surface so the exact broader-range open-ended `{2,}` nested grouped-alternation plus branch-local-backreference replacement-template bytes pair produces real `rebar` timings on the existing nested-group replacement manifest once `RBR-0645` lands.
@@ -49,3 +50,10 @@ Created: 2026-03-19
   - `tests/benchmarks/benchmark_expectations.py` currently treats `broader-range-open-ended-branch-local-backreference` on `nested-group-replacement-boundary` as the four `str` rows only, so the bytes follow-on can stay on the existing shared zero-gap expectation surface;
   - `reports/benchmarks/latest.py` currently publishes `nested-group-replacement-boundary` at `28` total workloads / `28` measured workloads / `0` known gaps and the combined source-tree report at `731` / `731` / `0`; and
   - `ops/tasks/done/RBR-0643-nested-broader-range-open-ended-branch-local-backreference-replacement-bytes-pack.md` and the ready `RBR-0645` task already pin the exact patterns, replacement templates, haystacks, and owner paths for this bytes pair, so the benchmark catch-up can stay on the existing manifest without another synthesis pass.
+
+## Completion Note
+- 2026-03-19: Added the four required `-bytes` workload mirrors to `benchmarks/workloads/nested_group_replacement_boundary.py` for `rb"a((b|c){2,})\\2d"` with `rb"\\1x"` / `rb"\\2x"` and `rb"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d"` with `rb"\\g<outer>x"` / `rb"\\g<inner>x"`, keeping them on the existing `broader-range-open-ended-branch-local-backreference` replacement-template slice.
+- 2026-03-19: Extended the shared source-tree benchmark expectation surface in `tests/benchmarks/benchmark_expectations.py` and added direct scorecard/combined-manifest guards in `tests/benchmarks/test_source_tree_benchmark_scorecards.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the new rows are treated as measured with zero known gaps on `nested-group-replacement-boundary`.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` (`37 passed, 1114 subtests passed in 23.47s`).
+- 2026-03-19: Verified the focused manifest publication with `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_replacement_boundary.py --report .rebar/tmp/rbr-0647-nested-broader-range-open-ended-branch-local-backreference-replacement-bytes-benchmarks.py`, which produced `32` total workloads / `32` measured workloads / `0` known gaps.
+- 2026-03-19: Regenerated `reports/benchmarks/latest.py` with `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`; the tracked publication now contains `nested-group-replacement-boundary` at `32` total workloads / `32` measured workloads / `0` known gaps and the combined source-tree report at `735` total workloads / `735` measured workloads / `0` known gaps, with the four new bytes rows published as `implementation_timing.status == "measured"`.

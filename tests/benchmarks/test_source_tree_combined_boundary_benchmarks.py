@@ -571,6 +571,54 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             expected_total_workload_count=expected_workload_count,
         )
 
+    def test_nested_group_replacement_manifest_promotes_broader_range_open_ended_branch_local_backreference_bytes_rows_to_measured(
+        self,
+    ) -> None:
+        manifest_id = "nested-group-replacement-boundary"
+        expected_workload_ids = (
+            "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-b-branch-warm-bytes",
+            "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-first-match-only-b-branch-warm-bytes",
+            "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-c-branch-purged-bytes",
+            "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-c-branch-first-match-only-purged-bytes",
+        )
+        expected_workload_count = len(
+            source_tree_combined_case(manifest_id).selected_workload_ids_for_manifest(
+                manifest_id
+            )
+        )
+        manifest_definition = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
+        self.assertIsNone(manifest_definition.known_gap_workload_ids)
+        self.assertIsNone(manifest_definition.representative_measured_workload_ids)
+        self.assertIsNone(
+            manifest_definition.representative_known_gap_workload_ids
+        )
+        for workload_id in expected_workload_ids:
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(
+                    workload_id,
+                    source_tree_combined_manifest_representative_measured_workload_ids(
+                        manifest_id
+                    ),
+                )
+
+        case = source_tree_combined_case(manifest_id)
+        self.assertEqual(case.manifest_expectation.known_gap_count, 0)
+        self.assertEqual(
+            case.manifest_expectation.representative_measured_workload_ids,
+            (),
+        )
+        self.assertEqual(
+            case.manifest_expectation.representative_known_gap_workload_ids,
+            (),
+        )
+        self._assert_zero_gap_manifest_workloads_measured(
+            case,
+            manifest_id,
+            expected_workload_ids,
+            expected_workload_count,
+            expected_total_workload_count=expected_workload_count,
+        )
+
     def test_nested_group_callable_replacement_manifest_promotes_broader_range_open_ended_branch_local_backreference_bytes_rows_to_measured(
         self,
     ) -> None:

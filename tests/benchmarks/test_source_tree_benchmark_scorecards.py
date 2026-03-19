@@ -315,6 +315,32 @@ class SourceTreeBenchmarkScorecardTest(unittest.TestCase):
                 self.assertIn(workload_id, case.representative_measured_workload_ids)
                 self.assertNotIn(workload_id, case.representative_known_gap_workload_ids)
 
+    def test_nested_group_replacement_scorecard_promotes_broader_range_open_ended_branch_local_backreference_bytes_rows_to_measured(
+        self,
+    ) -> None:
+        case = source_tree_scorecard_case("nested-group-replacement-boundary")
+        expected_workload_ids = (
+            "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-b-branch-warm-bytes",
+            "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-first-match-only-b-branch-warm-bytes",
+            "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-c-branch-purged-bytes",
+            "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-c-branch-first-match-only-purged-bytes",
+        )
+
+        self.assertEqual(
+            case.representative_measured_workload_ids,
+            source_tree_combined_manifest_representative_measured_workload_ids(
+                "nested-group-replacement-boundary"
+            ),
+        )
+        self.assertEqual(
+            case.representative_known_gap_workload_ids,
+            (),
+        )
+        for workload_id in expected_workload_ids:
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(workload_id, case.representative_measured_workload_ids)
+                self.assertNotIn(workload_id, case.representative_known_gap_workload_ids)
+
     def test_runner_regenerates_source_tree_scorecards(self) -> None:
         for case_id in source_tree_scorecard_case_ids():
             with self.subTest(case_id=case_id):
