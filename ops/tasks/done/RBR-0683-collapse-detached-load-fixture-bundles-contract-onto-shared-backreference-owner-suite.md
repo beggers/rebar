@@ -1,6 +1,6 @@
 # RBR-0683: Collapse the detached `load_fixture_bundles(...)` contract onto the shared backreference owner suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -87,3 +87,8 @@ PY`
 - This simplification matches the current information flow:
   - the named-backreference bundle spec data already lives on the shared backreference owner path; and
   - the support-contract file is only keeping a second named-backreference bundle-loading seam alive beside that owner.
+
+## Completion Notes
+- Moved the six named-backreference `load_fixture_bundles(...)` contract tests onto `tests/python/test_branch_local_backreference_parity_suite.py`, deriving each setup from the existing named whole-manifest backreference bundle spec via `_whole_manifest_backreference_bundle_specs()`.
+- Removed the detached copies and the unused `NAMED_BACKREFERENCE_PATTERN` constant from `tests/python/test_fixture_parity_support_contract.py`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py`, `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py`, the inline source probe from the task, and the final `rg` absence check.

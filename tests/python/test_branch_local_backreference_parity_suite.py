@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, fields, replace
 from itertools import product
 import re
 
@@ -1653,6 +1653,132 @@ def test_whole_manifest_bundle_contract_supports_exact_case_id_validation() -> N
     )
     assert bundle.expected_case_ids is not None
     assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
+
+
+def test_load_fixture_bundles_rejects_mismatched_expected_manifest_id() -> None:
+    named_bundle_spec = _whole_manifest_backreference_bundle_specs()[0]
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "named_backreference_workflows.py expected_manifest_id "
+            "'wrong-manifest-id' does not match loaded manifest_id "
+            "'named-backreference-workflows'"
+        ),
+    ):
+        load_fixture_bundles(
+            (replace(named_bundle_spec, expected_manifest_id="wrong-manifest-id"),)
+        )
+
+
+def test_load_fixture_bundles_selected_case_ids_preserve_requested_order() -> None:
+    named_bundle_spec = _whole_manifest_backreference_bundle_specs()[0]
+    selected_case_ids = (
+        "named-backreference-pattern-search-str",
+        "named-backreference-compile-metadata-str",
+    )
+
+    (bundle,) = load_fixture_bundles(
+        (
+            replace(
+                named_bundle_spec,
+                selected_case_ids=selected_case_ids,
+                expected_case_ids=None,
+                expected_operation_helper_counts=Counter(
+                    {
+                        ("compile", None): 1,
+                        ("pattern_call", "search"): 1,
+                    }
+                ),
+            ),
+        )
+    )
+    compile_cases = fixture_cases_for_operation((bundle,), "compile")
+    pattern_cases = fixture_cases_for_operation((bundle,), "pattern_call")
+
+    assert bundle.expected_case_ids == frozenset(selected_case_ids)
+    assert bundle.expected_text_models is None
+    assert tuple(case.case_id for case in compile_cases) == (
+        "named-backreference-compile-metadata-str",
+    )
+    assert tuple(case.case_id for case in pattern_cases) == (
+        "named-backreference-pattern-search-str",
+    )
+    assert fixture_cases_for_operation((bundle,), "module_call") == ()
+    assert_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=str_case_pattern,
+        expected_fixture_path=CORRECTNESS_FIXTURES_ROOT / named_bundle_spec.fixture_name,
+        expected_ordered_case_ids=selected_case_ids,
+    )
+
+
+def test_load_fixture_bundles_full_manifest_defaults_str_text_model_expectation() -> None:
+    named_bundle_spec = _whole_manifest_backreference_bundle_specs()[0]
+    (bundle,) = load_fixture_bundles((replace(named_bundle_spec, expected_case_ids=None),))
+
+    assert bundle.expected_case_ids is None
+    assert bundle.expected_text_models == frozenset({"str"})
+    assert_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=str_case_pattern,
+        expected_fixture_path=CORRECTNESS_FIXTURES_ROOT / named_bundle_spec.fixture_name,
+    )
+
+
+def test_load_fixture_bundles_rejects_empty_selected_case_ids() -> None:
+    named_bundle_spec = _whole_manifest_backreference_bundle_specs()[0]
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "named_backreference_workflows.py selected_case_ids must not be empty"
+        ),
+    ):
+        load_fixture_bundles((replace(named_bundle_spec, selected_case_ids=()),))
+
+
+def test_load_fixture_bundles_rejects_duplicate_selected_case_ids() -> None:
+    named_bundle_spec = _whole_manifest_backreference_bundle_specs()[0]
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "named_backreference_workflows.py selected_case_ids contains duplicate ids: "
+            "('named-backreference-compile-metadata-str',)"
+        ),
+    ):
+        load_fixture_bundles(
+            (
+                replace(
+                    named_bundle_spec,
+                    selected_case_ids=(
+                        "named-backreference-compile-metadata-str",
+                        "named-backreference-compile-metadata-str",
+                    ),
+                ),
+            )
+        )
+
+
+def test_load_fixture_bundles_rejects_missing_selected_case_ids() -> None:
+    named_bundle_spec = _whole_manifest_backreference_bundle_specs()[0]
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "named_backreference_workflows.py is missing expected fixture rows: "
+            "('missing-case-id',)"
+        ),
+    ):
+        load_fixture_bundles(
+            (
+                replace(
+                    named_bundle_spec,
+                    selected_case_ids=("missing-case-id",),
+                ),
+            )
+        )
 
 
 def test_expected_fixture_bundle_contract_supports_exact_case_id_validation() -> None:
