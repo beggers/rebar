@@ -152,6 +152,46 @@ CALLABLE_MANIFEST_SPECS = (
         has_near_miss_matrix=False,
     ),
     CallableManifestSpec(
+        manifest_id=(
+            "nested-broader-range-open-ended-quantified-group-alternation-"
+            "backtracking-heavy-callable-replacement-workflows"
+        ),
+        expected_case_ids=frozenset(
+            {
+                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-lower-bound-short-branch-str",
+                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-first-match-only-long-branch-str",
+                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-mixed-branches-str",
+                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-fourth-repetition-b-branch-first-match-only-str",
+                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-mixed-branches-str",
+                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-first-match-only-long-branch-str",
+                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-fourth-repetition-short-only-str",
+                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-b-branch-first-match-only-str",
+            }
+        ),
+        expected_compile_patterns=frozenset(
+            {
+                r"a(((bc|b)c){2,})d",
+                r"a(?P<outer>(?:(?P<inner>bc|b)c){2,})d",
+            }
+        ),
+        expected_operation_helper_counts=CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS,
+        expected_text_models=STR_ONLY_TEXT_MODELS,
+        expected_near_miss_patterns=frozenset(),
+        has_near_miss_matrix=False,
+        pending_rebar_case_ids=frozenset(
+            {
+                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-lower-bound-short-branch-str",
+                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-first-match-only-long-branch-str",
+                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-mixed-branches-str",
+                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-fourth-repetition-b-branch-first-match-only-str",
+                "module-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-mixed-branches-str",
+                "module-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-first-match-only-long-branch-str",
+                "pattern-sub-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-fourth-repetition-short-only-str",
+                "pattern-subn-callable-nested-broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-b-branch-first-match-only-str",
+            }
+        ),
+    ),
+    CallableManifestSpec(
         manifest_id="conditional-group-exists-callable-replacement-workflows",
         expected_case_ids=frozenset(
             {

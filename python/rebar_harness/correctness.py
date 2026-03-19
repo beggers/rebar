@@ -99,6 +99,7 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR = {
         "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py",
         "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_workflows.py",
         "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_callable_replacement_workflows.py",
+        "nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_callable_replacement_workflows.py",
         "open_ended_quantified_group_alternation_workflows.py",
         "nested_open_ended_quantified_group_alternation_workflows.py",
         "broader_range_open_ended_quantified_group_alternation_workflows.py",
@@ -274,6 +275,7 @@ _CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR.update(
         CALLABLE_REPLACEMENT_FIXTURE_SELECTOR: _sorted_published_fixture_subset(
             "conditional_group_exists_callable_replacement_workflows.py",
             "grouped_alternation_callable_replacement_workflows.py",
+            "nested_broader_range_open_ended_quantified_group_alternation_backtracking_heavy_callable_replacement_workflows.py",
             "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py",
             "nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_callable_replacement_workflows.py",
             "nested_broader_range_wider_ranged_repeat_quantified_group_alternation_backtracking_heavy_callable_replacement_workflows.py",
