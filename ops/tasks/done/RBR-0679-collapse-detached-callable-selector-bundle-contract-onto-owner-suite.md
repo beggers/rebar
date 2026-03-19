@@ -1,8 +1,9 @@
 # RBR-0679: Collapse the detached callable selector bundle contract onto the callable replacement owner suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Move the remaining callable-selector and published-bundle contract checks off `tests/python/test_fixture_parity_support_contract.py` and onto `tests/python/test_callable_replacement_parity_suite.py`, so the callable replacement owner keeps selector membership, caller-selected bundle load order, and manifest-id lookup semantics beside `CALLABLE_FIXTURE_PATHS`, `FIXTURE_BUNDLES`, and `published_fixture_bundle_by_manifest_id(...)` instead of leaving that slice in a detached support-contract suite.
@@ -79,3 +80,13 @@ PY`
 - This simplification matches the current information flow:
   - the callable replacement owner already defines the selector-derived path list and published bundle load path that the detached tests exercise; and
   - the support-contract file is only keeping a second callable-selector contract seam alive beside that owner.
+
+## Completion
+- 2026-03-19: Moved the callable-selector membership, caller-selected bundle-order, and manifest-id lookup contract tests onto `tests/python/test_callable_replacement_parity_suite.py`, deriving the moved coverage from the owner suite's existing `CALLABLE_FIXTURE_PATHS`, `FIXTURE_BUNDLES`, `load_published_fixture_bundles(...)`, and `published_fixture_bundle_by_manifest_id(...)`.
+- 2026-03-19: Removed the detached callable-specific coverage and the now-unused `CALLABLE_REPLACEMENT_FIXTURE_SELECTOR` / `published_fixture_bundle_by_manifest_id` imports from `tests/python/test_fixture_parity_support_contract.py`, leaving the remaining generic selector, bundle-shape, and manifest-loader coverage in place.
+
+## Verification
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py` (`2154 passed`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py` (`120 passed`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` (`ok`)
+- 2026-03-19: `bash -lc "! rg -n 'CALLABLE_REPLACEMENT_FIXTURE_SELECTOR|published_fixture_bundle_by_manifest_id|test_callable_replacement_selector_tracks_published_callable_manifests|test_published_fixture_bundle_loading_preserves_selector_path_order|test_published_fixture_bundle_lookup_by_manifest_id_supports_success_and_clear_failures' tests/python/test_fixture_parity_support_contract.py"` (no matches)

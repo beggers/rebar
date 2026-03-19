@@ -13,6 +13,7 @@ from rebar_harness.correctness import (
     RebarAdapter,
     evaluate_case,
     normalize_exception,
+    published_fixture_manifests,
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
@@ -1352,6 +1353,63 @@ def test_pending_rebar_callable_frontier_matches_live_unimplemented_cases() -> N
     assert {case.manifest_id for case in live_unimplemented_cases} == (
         PENDING_REBAR_MANIFEST_IDS
     )
+
+
+def test_callable_replacement_selector_tracks_published_callable_manifests() -> None:
+    published_callable_paths = tuple(
+        manifest.path
+        for manifest in published_fixture_manifests()
+        if manifest.manifest_id.endswith("-callable-replacement-workflows")
+    )
+    expected_paths = tuple(sorted(published_callable_paths, key=lambda path: path.name))
+
+    assert expected_paths
+    assert CALLABLE_FIXTURE_PATHS == expected_paths
+    assert tuple(bundle.manifest.path for bundle in FIXTURE_BUNDLES) == expected_paths
+    assert tuple(path.name for path in CALLABLE_FIXTURE_PATHS) == tuple(
+        path.name for path in expected_paths
+    )
+
+
+def test_published_fixture_bundle_loading_preserves_selector_path_order() -> None:
+    fixture_paths = tuple(reversed(CALLABLE_FIXTURE_PATHS[:2]))
+
+    bundles = load_published_fixture_bundles(fixture_paths)
+
+    assert tuple(bundle.manifest.path for bundle in bundles) == fixture_paths
+    for bundle in bundles:
+        assert bundle.expected_case_ids is None
+        assert bundle.manifest.manifest_id == bundle.expected_manifest_id
+        assert len(bundle.cases) == sum(bundle.expected_operation_helper_counts.values())
+        assert {str_case_pattern(case) for case in bundle.cases} == bundle.expected_patterns
+        assert {case.text_model for case in bundle.cases} == bundle.expected_text_models
+        assert Counter((case.operation, case.helper) for case in bundle.cases) == (
+            bundle.expected_operation_helper_counts
+        )
+
+
+def test_published_fixture_bundle_lookup_by_manifest_id_supports_success_and_clear_failures(
+) -> None:
+    bundles = load_published_fixture_bundles(CALLABLE_FIXTURE_PATHS[:2])
+    manifest_id = bundles[0].manifest.manifest_id
+
+    assert published_fixture_bundle_by_manifest_id(bundles, manifest_id) is bundles[0]
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "published fixture bundles do not contain manifest_id 'missing-manifest-id'"
+        ),
+    ):
+        published_fixture_bundle_by_manifest_id(bundles, "missing-manifest-id")
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            f"published fixture bundles contain duplicate manifest_id {manifest_id!r}"
+        ),
+    ):
+        published_fixture_bundle_by_manifest_id((bundles[0], bundles[0]), manifest_id)
 
 
 @pytest.mark.parametrize(

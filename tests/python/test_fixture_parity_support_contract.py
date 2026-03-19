@@ -13,7 +13,6 @@ import rebar
 from rebar_harness.correctness import (
     BRANCH_LOCAL_BACKREFERENCE_FIXTURE_SELECTOR,
     BOUNDED_WILDCARD_FIXTURE_SELECTOR,
-    CALLABLE_REPLACEMENT_FIXTURE_SELECTOR,
     CONDITIONAL_GROUP_EXISTS_REPLACEMENT_FIXTURE_SELECTOR,
     COUNTED_REPEAT_QUANTIFIED_GROUP_FIXTURE_SELECTOR,
     CORRECTNESS_FIXTURES_ROOT,
@@ -54,7 +53,6 @@ from tests.python.fixture_parity_support import (
     invoke_bounded_pattern_case,
     load_fixture_bundles,
     load_published_fixture_bundles,
-    published_fixture_bundle_by_manifest_id,
     str_case_pattern,
 )
 OPTIONAL_NAMED_GROUP_PATTERN = r"a(?P<word>b)?d"
@@ -484,22 +482,6 @@ def test_shared_correctness_fixture_selectors_resolve_expected_published_paths(
     assert all(path.is_relative_to(CORRECTNESS_FIXTURES_ROOT) for path in selected_paths)
 
 
-def test_callable_replacement_selector_tracks_published_callable_manifests() -> None:
-    selected_paths = select_correctness_fixture_paths(CALLABLE_REPLACEMENT_FIXTURE_SELECTOR)
-    published_callable_paths = tuple(
-        manifest.path
-        for manifest in published_fixture_manifests()
-        if manifest.manifest_id.endswith("-callable-replacement-workflows")
-    )
-    expected_paths = tuple(sorted(published_callable_paths, key=lambda path: path.name))
-
-    assert expected_paths
-    assert selected_paths == expected_paths
-    assert tuple(path.name for path in selected_paths) == tuple(
-        path.name for path in expected_paths
-    )
-
-
 def test_unknown_correctness_fixture_selector_raises_clear_error() -> None:
     with pytest.raises(ValueError, match="unknown correctness fixture selector"):
         select_correctness_fixture_paths("missing-selector")
@@ -541,19 +523,6 @@ def test_case_pattern_helpers_extract_str_and_bytes_patterns_from_published_fixt
     assert case_pattern(pattern_case) == r"(?P<word>abc)"
     assert str_case_pattern(pattern_case) == r"(?P<word>abc)"
     assert case_pattern(bytes_case) == b"abc"
-
-
-def test_published_fixture_bundle_loading_preserves_selector_path_order() -> None:
-    fixture_paths = tuple(
-        reversed(select_correctness_fixture_paths(CALLABLE_REPLACEMENT_FIXTURE_SELECTOR)[:2])
-    )
-
-    bundles = load_published_fixture_bundles(fixture_paths)
-
-    assert tuple(bundle.manifest.path for bundle in bundles) == fixture_paths
-    for bundle in bundles:
-        assert bundle.expected_case_ids is None
-        assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
 
 
 def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract() -> None:
@@ -615,31 +584,6 @@ def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract() 
         pattern_extractor=case_pattern,
         expected_fixture_path=fixture_path,
     )
-
-def test_published_fixture_bundle_lookup_by_manifest_id_supports_success_and_clear_failures(
-) -> None:
-    bundles = load_published_fixture_bundles(
-        select_correctness_fixture_paths(CALLABLE_REPLACEMENT_FIXTURE_SELECTOR)[:2]
-    )
-    manifest_id = bundles[0].manifest.manifest_id
-
-    assert published_fixture_bundle_by_manifest_id(bundles, manifest_id) is bundles[0]
-
-    with pytest.raises(
-        ValueError,
-        match=re.escape(
-            "published fixture bundles do not contain manifest_id 'missing-manifest-id'"
-        ),
-    ):
-        published_fixture_bundle_by_manifest_id(bundles, "missing-manifest-id")
-
-    with pytest.raises(
-        ValueError,
-        match=re.escape(
-            f"published fixture bundles contain duplicate manifest_id {manifest_id!r}"
-        ),
-    ):
-        published_fixture_bundle_by_manifest_id((bundles[0], bundles[0]), manifest_id)
 
 
 def test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids() -> None:
