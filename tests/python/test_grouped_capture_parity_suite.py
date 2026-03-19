@@ -674,6 +674,24 @@ def test_ordered_manifest_cases_from_bundles_rejects_duplicate_case_ids() -> Non
         )
 
 
+def test_ordered_manifest_cases_from_bundles_rejects_duplicate_requested_case_ids(
+) -> None:
+    with pytest.raises(
+        AssertionError,
+        match=(
+            "fixture parity support contract rows contain duplicate requested case ids"
+        ),
+    ):
+        ordered_manifest_cases_from_bundles(
+            (GROUPED_MATCH_FIXTURE_BUNDLE,),
+            (
+                "grouped-module-search-single-capture-str",
+                "grouped-module-search-single-capture-str",
+            ),
+            error_label="fixture parity support contract rows",
+        )
+
+
 def test_ordered_manifest_cases_from_bundles_rejects_missing_case_ids() -> None:
     with pytest.raises(
         AssertionError,

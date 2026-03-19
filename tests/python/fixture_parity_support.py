@@ -818,6 +818,12 @@ def ordered_manifest_cases_from_bundles(
     error_label: str,
 ) -> tuple[FixtureCase, ...]:
     ordered_case_ids = tuple(case_ids)
+    duplicate_requested_case_ids = _duplicate_string_ids(ordered_case_ids)
+    if duplicate_requested_case_ids:
+        raise AssertionError(
+            f"{error_label} contain duplicate requested case ids: "
+            f"{duplicate_requested_case_ids}"
+        )
     selected_case_ids = frozenset(ordered_case_ids)
     case_by_id: dict[str, FixtureCase] = {}
     duplicate_case_ids: set[str] = set()
