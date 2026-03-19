@@ -72,6 +72,7 @@ from tests.python.fixture_parity_support import (
     load_published_fixture_bundles,
     ordered_manifest_cases_from_bundles,
     partition_direct_bytes_follow_on_case_buckets,
+    published_bytes_texts_by_pattern,
     published_fixture_bundle_by_manifest_id,
     str_case_pattern,
 )
@@ -1164,6 +1165,71 @@ def test_partition_direct_bytes_follow_on_case_buckets_preserves_unrelated_bytes
             for case in follow_on_bundle.cases
             if case.operation == operation and case.text_model == "bytes"
         }.isdisjoint(bucket_case_ids)
+
+
+def test_published_bytes_texts_by_pattern_separates_search_and_fullmatch_rows(
+) -> None:
+    fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
+    (bundle,) = load_published_fixture_bundles((fixture_path,))
+    compile_cases, module_cases, pattern_cases = (
+        partition_direct_bytes_follow_on_case_buckets((bundle,), (bundle,))
+    )
+    _, bundle_bytes_cases = assert_direct_bytes_follow_on_bundle_routing(
+        bundle,
+        compile_cases=compile_cases,
+        module_cases=module_cases,
+        pattern_cases=pattern_cases,
+    )
+
+    assert published_bytes_texts_by_pattern(bundle_bytes_cases) == (
+        {
+            rb"a(b|c){1,}d": frozenset({b"zzabdzz", b"zzacdzz"}),
+            rb"a(?P<word>b|c){1,}d": frozenset({b"zzabdzz", b"zzacdzz"}),
+        },
+        {
+            rb"a(b|c){1,}d": frozenset(
+                {b"abcd", b"abccd", b"abcbcd", b"ad", b"abed"}
+            ),
+            rb"a(?P<word>b|c){1,}d": frozenset(
+                {b"abcd", b"abccd", b"abcbcd", b"ad", b"abed"}
+            ),
+        },
+    )
+
+
+def test_published_bytes_texts_by_pattern_deduplicates_texts_and_ignores_compile_rows(
+) -> None:
+    compile_case = SimpleNamespace(
+        operation="compile",
+        pattern="placeholder",
+        args=(),
+        pattern_payload=lambda: b"ignored-by-compile",
+    )
+    module_case = SimpleNamespace(
+        operation="module_call",
+        pattern="placeholder",
+        args=(b"shared-pattern", b"shared-text"),
+        pattern_payload=lambda: b"shared-pattern",
+    )
+    pattern_case = SimpleNamespace(
+        operation="pattern_call",
+        pattern="placeholder",
+        args=(b"fullmatch-text",),
+        pattern_payload=lambda: b"shared-pattern",
+    )
+
+    assert published_bytes_texts_by_pattern(
+        (
+            compile_case,
+            module_case,
+            module_case,
+            pattern_case,
+            pattern_case,
+        )
+    ) == (
+        {b"shared-pattern": frozenset({b"shared-text"})},
+        {b"shared-pattern": frozenset({b"fullmatch-text"})},
+    )
 
 
 def test_published_fixture_bundle_lookup_by_manifest_id_supports_success_and_clear_failures(
