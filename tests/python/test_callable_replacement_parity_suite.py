@@ -157,18 +157,40 @@ CALLABLE_MANIFEST_SPECS = (
                 "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-str",
                 "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-upper-bound-c-branch-str",
                 "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+                "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-bytes",
+                "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-bytes",
+                "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-bytes",
+                "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-bytes",
+                "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-mixed-branches-bytes",
+                "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-bytes",
+                "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-upper-bound-c-branch-bytes",
+                "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-bytes",
             }
         ),
         expected_compile_patterns=frozenset(
             {
                 r"a((b|c){1,4})\2d",
                 r"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
+                rb"a((b|c){1,4})\2d",
+                rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d",
             }
         ),
-        expected_operation_helper_counts=CALLABLE_STR_ONLY_OPERATION_HELPER_COUNTS,
-        expected_text_models=STR_ONLY_TEXT_MODELS,
+        expected_operation_helper_counts=CALLABLE_MIXED_OPERATION_HELPER_COUNTS,
+        expected_text_models=MIXED_TEXT_MODELS,
         expected_near_miss_patterns=frozenset(),
         has_near_miss_matrix=False,
+        pending_rebar_case_ids=frozenset(
+            {
+                "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-bytes",
+                "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-bytes",
+                "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-mixed-branches-bytes",
+                "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-c-branch-first-match-only-bytes",
+                "module-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-mixed-branches-bytes",
+                "module-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-first-match-only-b-branch-bytes",
+                "pattern-sub-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-upper-bound-c-branch-bytes",
+                "pattern-subn-callable-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-bytes",
+            }
+        ),
     ),
     CallableManifestSpec(
         manifest_id=(
@@ -1266,8 +1288,17 @@ def _assert_source_callable_replacement_reference_is_valid(case: FixtureCase) ->
 
     prefix = replacement.get("prefix", "")
     suffix = replacement.get("suffix", "")
-    assert isinstance(prefix, str)
-    assert isinstance(suffix, str)
+
+    def assert_text_fragment_is_valid(fragment: object) -> None:
+        if isinstance(fragment, str):
+            return
+        assert isinstance(fragment, dict)
+        assert fragment.get("type") == "bytes"
+        assert isinstance(fragment.get("value"), str)
+        assert isinstance(fragment.get("encoding", "latin-1"), str)
+
+    assert_text_fragment_is_valid(prefix)
+    assert_text_fragment_is_valid(suffix)
 
     compiled = re.compile(case_pattern(case), case.flags or 0)
     group_reference = replacement.get("group", 0)
