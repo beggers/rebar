@@ -7,9 +7,8 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import FixtureCase
+from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
     FixtureBundle,
     FixtureBundleSpec,
     assert_fixture_bundle_contract,
@@ -1225,7 +1224,7 @@ def test_generated_quantified_conditional_compile_cases_stay_anchored_to_publish
 ) -> None:
     compile_cases = fixture_cases_for_operation((spec.bundle,), "compile")
 
-    assert spec.bundle.manifest.path == FIXTURES_DIR / spec.fixture_name
+    assert spec.bundle.manifest.path == CORRECTNESS_FIXTURES_ROOT / spec.fixture_name
     assert tuple(case.case_id for case in compile_cases) == spec.expected_compile_case_ids
     assert {str_case_pattern(case) for case in compile_cases} == spec.expected_patterns
     assert {case.text_model for case in compile_cases} == {"str"}

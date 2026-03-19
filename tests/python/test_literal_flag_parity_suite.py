@@ -7,9 +7,8 @@ import re
 import pytest
 
 import rebar
-from rebar_harness.correctness import FixtureCase
+from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
     FixtureBundleSpec,
     RecordingNativeBoundary,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
@@ -496,7 +495,7 @@ def test_fixture_bundle_contract_supports_selected_case_path_and_order_validatio
     assert_fixture_bundle_contract(
         bundle,
         pattern_extractor=case_pattern,
-        expected_fixture_path=FIXTURES_DIR / spec.fixture_name,
+        expected_fixture_path=CORRECTNESS_FIXTURES_ROOT / spec.fixture_name,
         expected_ordered_case_ids=spec.selected_case_ids,
     )
 
@@ -575,7 +574,7 @@ def test_fixture_bundle_contract_rejects_wrong_selected_case_order() -> None:
         assert_fixture_bundle_contract(
             bundle,
             pattern_extractor=case_pattern,
-            expected_fixture_path=FIXTURES_DIR / spec.fixture_name,
+            expected_fixture_path=CORRECTNESS_FIXTURES_ROOT / spec.fixture_name,
             expected_ordered_case_ids=tuple(reversed(spec.selected_case_ids)),
         )
 

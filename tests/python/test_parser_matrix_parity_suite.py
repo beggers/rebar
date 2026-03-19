@@ -8,9 +8,8 @@ import warnings
 import pytest
 
 import rebar
-from rebar_harness.correctness import FixtureCase
+from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
     FixtureBundleSpec,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
@@ -22,7 +21,7 @@ from tests.python.fixture_parity_support import (
 )
 
 
-PARSER_MATRIX_FIXTURE_PATH = FIXTURES_DIR / "parser_matrix.py"
+PARSER_MATRIX_FIXTURE_PATH = CORRECTNESS_FIXTURES_ROOT / "parser_matrix.py"
 EXPECTED_CASE_IDS = (
     "str-character-class-ignorecase-success",
     "str-possessive-quantifier-success",
@@ -69,7 +68,7 @@ EXPECTED_PARSER_MATRIX_OPERATION_HELPER_COUNTS = Counter(
     {("compile", None): len(EXPECTED_CASE_IDS)}
 )
 CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_PATH = (
-    FIXTURES_DIR / "conditional_group_exists_assertion_diagnostics.py"
+    CORRECTNESS_FIXTURES_ROOT / "conditional_group_exists_assertion_diagnostics.py"
 )
 EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS = (
     "conditional-group-exists-assertion-positive-lookahead-error-str",

@@ -33,7 +33,6 @@ from rebar_harness.correctness import (
     select_correctness_fixture_paths,
 )
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
     FixtureBundleSpec,
     RecordingNativeBoundary,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
@@ -213,11 +212,13 @@ def _duplicate_items(counter: Counter[str]) -> list[str]:
 
 
 def _tracked_fixture_paths() -> tuple[pathlib.Path, ...]:
-    return tuple(sorted(FIXTURES_DIR.glob("*.py"), key=lambda path: path.name))
+    return tuple(
+        sorted(CORRECTNESS_FIXTURES_ROOT.glob("*.py"), key=lambda path: path.name)
+    )
 
 
 def _fixture_cases(fixture_name: str) -> dict[str, FixtureCase]:
-    manifest = load_fixture_manifest(FIXTURES_DIR / fixture_name)
+    manifest = load_fixture_manifest(CORRECTNESS_FIXTURES_ROOT / fixture_name)
     return {case.case_id: case for case in manifest.cases}
 
 
@@ -519,7 +520,7 @@ def test_published_full_suite_fixture_selector_matches_tracked_fixture_inventory
     assert len(published_fixture_paths) == len(set(published_fixture_paths))
 
     for path in published_fixture_paths:
-        assert path.is_relative_to(FIXTURES_DIR)
+        assert path.is_relative_to(CORRECTNESS_FIXTURES_ROOT)
         assert path.is_file()
         assert path.suffix == ".py"
 
@@ -548,7 +549,7 @@ def test_case_pattern_helpers_extract_str_and_bytes_patterns_from_published_fixt
 
 def test_published_fixture_bundle_loading_preserves_mixed_text_model_contract() -> None:
     fixture_path = (
-        FIXTURES_DIR
+        CORRECTNESS_FIXTURES_ROOT
         / "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py"
     )
 
@@ -1586,7 +1587,8 @@ def test_whole_manifest_bundle_contract_supports_full_manifest_counts_without_ca
         open_ended_bundle,
         pattern_extractor=case_pattern,
         expected_fixture_path=(
-            FIXTURES_DIR / "open_ended_quantified_group_alternation_workflows.py"
+            CORRECTNESS_FIXTURES_ROOT
+            / "open_ended_quantified_group_alternation_workflows.py"
         ),
     )
     assert tuple(

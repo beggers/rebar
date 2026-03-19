@@ -8,14 +8,13 @@ from types import SimpleNamespace
 
 import pytest
 
-from rebar_harness.correctness import FixtureCase
+from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
     DIRECT_BYTES_FOLLOW_ON_SPEC_IDS,
     DIRECT_BYTES_FOLLOW_ON_SPECS,
-    FIXTURES_DIR,
     FixtureBundle,
     FixtureBundleSpec,
     NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES,
@@ -1192,7 +1191,9 @@ def test_assert_direct_bytes_follow_on_bundle_routing_accepts_mixed_manifest_buc
 
 def test_assert_direct_bytes_follow_on_bundle_routing_rejects_bytes_left_in_generic_bucket(
 ) -> None:
-    fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
+    fixture_path = (
+        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
+    )
     (bundle,) = load_published_fixture_bundles((fixture_path,))
     compile_cases = fixture_cases_for_operation((bundle,), "compile")
     module_cases = tuple(
@@ -1222,7 +1223,9 @@ def test_assert_direct_bytes_follow_on_bundle_routing_rejects_bytes_left_in_gene
 
 
 def test_assert_direct_bytes_follow_on_bundle_routing_rejects_missing_str_rows() -> None:
-    fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
+    fixture_path = (
+        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
+    )
     (bundle,) = load_published_fixture_bundles((fixture_path,))
     compile_cases = tuple(
         case
@@ -1257,7 +1260,7 @@ def test_assert_direct_bytes_follow_on_bundle_routing_rejects_missing_str_rows()
 
 def test_assert_direct_bytes_follow_on_bundle_routing_rejects_str_only_manifest_bundle(
 ) -> None:
-    fixture_path = FIXTURES_DIR / "grouped_match_workflows.py"
+    fixture_path = CORRECTNESS_FIXTURES_ROOT / "grouped_match_workflows.py"
     (bundle,) = load_published_fixture_bundles((fixture_path,))
 
     with pytest.raises(
@@ -1277,8 +1280,10 @@ def test_assert_direct_bytes_follow_on_bundle_routing_rejects_str_only_manifest_
 
 def test_mixed_text_model_manifest_helper_accepts_exact_direct_follow_on_coverage(
 ) -> None:
-    mixed_fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
-    str_only_fixture_path = FIXTURES_DIR / "grouped_match_workflows.py"
+    mixed_fixture_path = (
+        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
+    )
+    str_only_fixture_path = CORRECTNESS_FIXTURES_ROOT / "grouped_match_workflows.py"
     mixed_bundle, str_only_bundle = load_published_fixture_bundles(
         (mixed_fixture_path, str_only_fixture_path)
     )
@@ -1292,8 +1297,10 @@ def test_mixed_text_model_manifest_helper_accepts_exact_direct_follow_on_coverag
 
 def test_mixed_text_model_manifest_helper_reports_missing_direct_follow_on_bundle(
 ) -> None:
-    mixed_fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
-    str_only_fixture_path = FIXTURES_DIR / "grouped_match_workflows.py"
+    mixed_fixture_path = (
+        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
+    )
+    str_only_fixture_path = CORRECTNESS_FIXTURES_ROOT / "grouped_match_workflows.py"
     mixed_bundle, str_only_bundle = load_published_fixture_bundles(
         (mixed_fixture_path, str_only_fixture_path)
     )
@@ -1316,8 +1323,10 @@ def test_mixed_text_model_manifest_helper_reports_missing_direct_follow_on_bundl
 
 def test_mixed_text_model_manifest_helper_reports_unexpected_direct_follow_on_bundle(
 ) -> None:
-    mixed_fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
-    str_only_fixture_path = FIXTURES_DIR / "grouped_match_workflows.py"
+    mixed_fixture_path = (
+        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
+    )
+    str_only_fixture_path = CORRECTNESS_FIXTURES_ROOT / "grouped_match_workflows.py"
     mixed_bundle, str_only_bundle = load_published_fixture_bundles(
         (mixed_fixture_path, str_only_fixture_path)
     )
@@ -1340,9 +1349,12 @@ def test_mixed_text_model_manifest_helper_reports_unexpected_direct_follow_on_bu
 
 def test_mixed_text_model_manifest_helper_reports_direct_follow_on_order_drift(
 ) -> None:
-    first_mixed_fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
+    first_mixed_fixture_path = (
+        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
+    )
     second_mixed_fixture_path = (
-        FIXTURES_DIR / "broader_range_open_ended_quantified_group_alternation_workflows.py"
+        CORRECTNESS_FIXTURES_ROOT
+        / "broader_range_open_ended_quantified_group_alternation_workflows.py"
     )
     first_bundle, second_bundle = load_published_fixture_bundles(
         (first_mixed_fixture_path, second_mixed_fixture_path)
@@ -1394,9 +1406,11 @@ def test_partition_direct_bytes_follow_on_case_buckets_drops_only_follow_on_byte
 
 def test_partition_direct_bytes_follow_on_case_buckets_preserves_unrelated_bytes_rows(
 ) -> None:
-    follow_on_fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
+    follow_on_fixture_path = (
+        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
+    )
     preserved_fixture_path = (
-        FIXTURES_DIR
+        CORRECTNESS_FIXTURES_ROOT
         / "broader_range_wider_ranged_repeat_quantified_group_alternation_conditional_workflows.py"
     )
     follow_on_bundle, preserved_bundle = load_published_fixture_bundles(
@@ -1440,7 +1454,9 @@ def test_partition_direct_bytes_follow_on_case_buckets_preserves_unrelated_bytes
 
 def test_published_bytes_texts_by_pattern_separates_search_and_fullmatch_rows(
 ) -> None:
-    fixture_path = FIXTURES_DIR / "quantified_alternation_open_ended_workflows.py"
+    fixture_path = (
+        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
+    )
     (bundle,) = load_published_fixture_bundles((fixture_path,))
     compile_cases, module_cases, pattern_cases = (
         partition_direct_bytes_follow_on_case_buckets((bundle,), (bundle,))

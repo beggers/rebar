@@ -20,6 +20,7 @@ import pytest
 import rebar
 from rebar_harness import benchmarks
 from rebar_harness.correctness import (
+    CORRECTNESS_FIXTURES_ROOT,
     FixtureCase,
     normalize_exported_symbol_metadata,
     normalize_exported_symbol_value,
@@ -28,7 +29,6 @@ from rebar_harness.correctness import (
 from tests.python import conftest as python_conftest
 from tests.python.conftest import _unsupported_backend_skip_reason
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
     FixtureBundle,
     FixtureBundleSpec,
     RecordingNativeBoundary,
@@ -154,8 +154,8 @@ _BUILT_WHEEL_SMOKE_PROBE = textwrap.dedent(
 )
 
 
-MODULE_WORKFLOW_FIXTURE_PATH = FIXTURES_DIR / "module_workflow_surface.py"
-MATCH_BEHAVIOR_FIXTURE_PATH = FIXTURES_DIR / "match_behavior_smoke.py"
+MODULE_WORKFLOW_FIXTURE_PATH = CORRECTNESS_FIXTURES_ROOT / "module_workflow_surface.py"
+MATCH_BEHAVIOR_FIXTURE_PATH = CORRECTNESS_FIXTURES_ROOT / "match_behavior_smoke.py"
 MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-compile-str-literal",
     "workflow-compile-str-anchored-literal",

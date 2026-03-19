@@ -7,9 +7,8 @@ import re
 
 import pytest
 
-from rebar_harness.correctness import FixtureCase
+from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
 from tests.python.fixture_parity_support import (
-    FIXTURES_DIR,
     FixtureBundle,
     FixtureBundleSpec,
     assert_direct_bytes_follow_on_bundle_routing,
@@ -1648,7 +1647,10 @@ def test_whole_manifest_bundle_contract_supports_exact_case_id_validation() -> N
     named_bundle_spec = _whole_manifest_backreference_bundle_specs()[0]
     (bundle,) = load_fixture_bundles((named_bundle_spec,))
 
-    assert bundle.manifest.path == FIXTURES_DIR / "named_backreference_workflows.py"
+    assert (
+        bundle.manifest.path
+        == CORRECTNESS_FIXTURES_ROOT / "named_backreference_workflows.py"
+    )
     assert bundle.expected_case_ids is not None
     assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
 
@@ -1660,10 +1662,12 @@ def test_expected_fixture_bundle_contract_supports_exact_case_id_validation() ->
     assert_fixture_bundle_contract(
         bundle,
         pattern_extractor=str_case_pattern,
-        expected_fixture_path=FIXTURES_DIR / "named_backreference_workflows.py",
+        expected_fixture_path=(
+            CORRECTNESS_FIXTURES_ROOT / "named_backreference_workflows.py"
+        ),
     )
     assert (bundle.manifest.path,) == (
-        FIXTURES_DIR / "named_backreference_workflows.py",
+        CORRECTNESS_FIXTURES_ROOT / "named_backreference_workflows.py",
     )
 
 
@@ -1695,7 +1699,7 @@ def test_generated_quantified_branch_local_compile_cases_stay_anchored_to_publis
 ) -> None:
     compile_cases = fixture_cases_for_operation((spec.bundle,), "compile")
 
-    assert spec.bundle.manifest.path == FIXTURES_DIR / spec.fixture_name
+    assert spec.bundle.manifest.path == CORRECTNESS_FIXTURES_ROOT / spec.fixture_name
     assert tuple(case.case_id for case in compile_cases) == spec.expected_compile_case_ids
     assert {case_pattern(case) for case in compile_cases} == spec.expected_patterns
     assert {case.text_model for case in compile_cases} == spec.expected_text_models

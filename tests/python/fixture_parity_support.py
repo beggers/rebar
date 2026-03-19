@@ -14,9 +14,6 @@ from rebar_harness.correctness import (
     load_fixture_manifest,
 )
 
-
-FIXTURES_DIR = CORRECTNESS_FIXTURES_ROOT
-
 _MISSING_GROUP_DEFAULT = object()
 _MATCH_ACCESSOR_NAMES = ("group", "span", "start", "end", "getitem")
 
@@ -218,7 +215,9 @@ def load_fixture_bundles(
 ) -> tuple[FixtureBundle, ...]:
     bundles: list[FixtureBundle] = []
     for spec in specs:
-        manifest = load_fixture_manifest(FIXTURES_DIR / spec.fixture_name)
+        manifest = load_fixture_manifest(
+            CORRECTNESS_FIXTURES_ROOT / spec.fixture_name
+        )
         loaded_cases = tuple(manifest.cases)
         if spec.selected_case_ids is None:
             bundle_cases = loaded_cases
