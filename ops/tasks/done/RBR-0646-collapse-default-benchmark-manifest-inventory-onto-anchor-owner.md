@@ -1,8 +1,9 @@
 # RBR-0646: Collapse the detached default benchmark manifest inventory contract onto the shared anchor owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Delete `tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py` by moving its remaining selector and published-inventory assertions onto `tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py`, so the benchmark harness keeps one support owner for published-manifest shape instead of a detached inventory-only contract beside the higher-level anchor suite.
@@ -71,3 +72,8 @@ PY`
   - `bash -lc "! rg --files tests/benchmarks | rg 'test_default_benchmark_manifest_inventory_contract\\.py$'"` currently fails exactly on this cleanup because the detached file still exists.
 - The ownership simplification matches the correctness side of the repo:
   - `tests/python/test_fixture_parity_support_contract.py` already owns the published correctness selector, ordering, and uniqueness contracts in one support module, while the benchmark side still splits comparable selector/inventory coverage into a detached file.
+
+## Completion Note
+- 2026-03-19: Moved the detached selector-error, shared-selector inventory-shape, published-manifest cache/order, and published manifest/workload uniqueness coverage into `tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py`, keeping the tiny inventory helpers file-local on the existing owner suite.
+- 2026-03-19: Deleted `tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py` outright after the shared anchor owner absorbed its remaining default benchmark inventory contract coverage.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_standard_benchmark_correctness_anchor_contracts.py` (`79 passed in 0.18s`), `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_built_native_benchmark_modes.py` (`6 passed, 2 skipped in 0.07s`), the acceptance inline source probe (`ok`), `bash -lc "! rg --files tests/benchmarks | rg 'test_default_benchmark_manifest_inventory_contract\\.py$'"` (passes), and `git diff --name-status -- tests/benchmarks/test_default_benchmark_manifest_inventory_contract.py` (`D`).

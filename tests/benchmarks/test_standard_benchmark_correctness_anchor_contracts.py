@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import Counter
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from functools import cache
@@ -37,7 +38,17 @@ OPEN_ENDED_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
 )
 
-from rebar_harness.benchmarks import build_callable, load_manifest
+from rebar_harness.benchmarks import (
+    BENCHMARK_WORKLOADS_ROOT,
+    BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR,
+    COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR,
+    PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR,
+    build_callable,
+    load_manifest,
+    published_benchmark_manifests,
+    select_benchmark_manifest_path,
+    select_benchmark_manifest_paths,
+)
 from rebar_harness.correctness import published_fixture_manifests
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
@@ -93,6 +104,14 @@ def _synthetic_workload(
     include: bool = True,
 ) -> SimpleNamespace:
     return SimpleNamespace(workload_id=workload_id, signature=signature, include=include)
+
+
+def _duplicate_items(counter: Counter[str]) -> list[str]:
+    return sorted(item for item, count in counter.items() if count > 1)
+
+
+def _tracked_benchmark_manifest_paths() -> tuple[pathlib.Path, ...]:
+    return tuple(sorted(BENCHMARK_WORKLOADS_ROOT.glob("*.py"), key=lambda path: path.name))
 
 
 # Local anchor helpers stay in this file because this test module is their only consumer.
@@ -1578,6 +1597,91 @@ def _expected_anchored_pairs(
             )
         )
     return tuple(anchored_pairs)
+
+
+def test_default_benchmark_manifest_selector_rejects_unknown_selector() -> None:
+    with pytest.raises(ValueError, match="unknown benchmark manifest selector"):
+        select_benchmark_manifest_paths("missing-selector")
+
+
+def test_default_benchmark_single_manifest_selector_helper_rejects_full_suite_selector() -> None:
+    with pytest.raises(
+        ValueError,
+        match=(
+            "benchmark manifest selector 'published-full-suite' "
+            "does not resolve to exactly one path"
+        ),
+    ):
+        select_benchmark_manifest_path(PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR)
+
+
+def test_default_benchmark_published_full_suite_selector_covers_tracked_manifests_except_compile_smoke() -> None:
+    published_manifest_paths = select_benchmark_manifest_paths(
+        PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
+    )
+    tracked_manifest_paths = _tracked_benchmark_manifest_paths()
+    compile_smoke_manifest_path = select_benchmark_manifest_path(
+        COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR
+    )
+
+    assert set(published_manifest_paths) == set(tracked_manifest_paths) - {
+        compile_smoke_manifest_path
+    }
+    assert len(published_manifest_paths) == len(set(published_manifest_paths))
+
+    for path in published_manifest_paths:
+        assert path.is_relative_to(BENCHMARK_WORKLOADS_ROOT)
+        assert path.is_file()
+        assert path.suffix == ".py"
+
+
+def test_default_benchmark_shared_selectors_keep_expected_inventory_shapes() -> None:
+    published_manifest_paths = select_benchmark_manifest_paths(
+        PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
+    )
+    native_smoke_manifest_paths = select_benchmark_manifest_paths(
+        BUILT_NATIVE_SMOKE_MANIFEST_SELECTOR
+    )
+    compile_smoke_manifest_path = select_benchmark_manifest_path(
+        COMPILE_SMOKE_PROVENANCE_MANIFEST_SELECTOR
+    )
+
+    assert tuple(path.name for path in native_smoke_manifest_paths) == (
+        "pattern_boundary.py",
+        "collection_replacement_boundary.py",
+        "literal_flag_boundary.py",
+    )
+    assert set(native_smoke_manifest_paths).issubset(set(published_manifest_paths))
+    assert compile_smoke_manifest_path.name == "compile_smoke.py"
+    assert compile_smoke_manifest_path.is_relative_to(BENCHMARK_WORKLOADS_ROOT)
+    assert compile_smoke_manifest_path not in published_manifest_paths
+
+
+def test_default_benchmark_published_manifest_helper_is_cached_and_preserves_selector_order() -> None:
+    manifests = published_benchmark_manifests()
+    published_manifest_paths = select_benchmark_manifest_paths(
+        PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
+    )
+
+    assert published_benchmark_manifests() is manifests
+    assert tuple(manifest.path for manifest in manifests) == published_manifest_paths
+
+
+def test_default_benchmark_published_manifest_inventory_has_unique_manifest_and_workload_ids() -> None:
+    manifests = published_benchmark_manifests()
+    manifest_ids = [manifest.manifest_id for manifest in manifests]
+    workloads = [workload for manifest in manifests for workload in manifest.workloads]
+
+    assert _duplicate_items(Counter(manifest_ids)) == []
+    assert _duplicate_items(Counter(workload.workload_id for workload in workloads)) == []
+
+    workloads_by_manifest = Counter(workload.manifest_id for workload in workloads)
+    published_manifest_ids = set(manifest_ids)
+    for manifest_id in published_manifest_ids:
+        assert workloads_by_manifest[manifest_id] > 0
+
+    for workload in workloads:
+        assert workload.manifest_id in published_manifest_ids
 
 
 @pytest.mark.parametrize(
