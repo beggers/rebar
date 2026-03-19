@@ -1,6 +1,6 @@
 # RBR-0716: Publish the module-workflow multiline bytes compile follow-on
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -49,3 +49,9 @@ Created: 2026-03-19
   - `tests/python/test_module_workflow_parity_suite.py` currently tracks six compile rows on `module-workflow-surface`, with the regression-neighbor coverage anchored around the existing str multiline and bytes verbose cases but no published bytes multiline row;
   - `reports/correctness/latest.py` currently reports `1384` total / `1384` passed / `0` `unimplemented` across `114` manifests, so reopening the frontier now has to come from an adjacent unpublished row rather than an already-published honest gap; and
   - `benchmarks/workloads/regression_matrix.py` does not yet publish any `regression-module-compile-multiline-purged-bytes` row, so any later Python-path benchmark catch-up can stay on the shared regression manifest after this correctness-publication slice and its parity follow-on land.
+
+## Completion
+- 2026-03-19: Added the single `workflow-compile-bytes-multiline-regression` row to the existing `module_workflow_surface.py` manifest and updated the shared module-workflow parity and scorecard-contract tests without creating a new fixture or bytes-only suite.
+- Kept the exact source-package call `rebar.compile(bytes_pattern, rebar.MULTILINE)` pinned honestly on the shared owner path: the parity suite now publishes the new row in the compile inventory while asserting the current `NotImplementedError` placeholder gap unless live support lands later.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0716-module-workflow-multiline-bytes.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`.
+- Verified the tracked `reports/correctness/latest.py` diff before closing the task. The published combined correctness scorecard now reads `1385` total / `1384` passed / `1` unimplemented across `114` manifests; `module.workflow` is `15` total / `14` passed / `1` unimplemented; `module.workflow.compile` is `7` total / `6` passed / `1` unimplemented; and `workflow-compile-bytes-multiline-regression` is published as `unimplemented`.

@@ -161,6 +161,7 @@ MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-compile-str-verbose-regression",
     "workflow-compile-str-multiline-regression",
     "workflow-compile-bytes-verbose-regression",
+    "workflow-compile-bytes-multiline-regression",
     "workflow-compile-bytes-literal",
     "workflow-pattern-search-str",
     "workflow-pattern-match-str",
@@ -188,7 +189,7 @@ MODULE_WORKFLOW_EXPECTED_PATTERNS = frozenset(
 )
 MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
-        ("compile", None): 6,
+        ("compile", None): 7,
         ("pattern_call", "search"): 1,
         ("pattern_call", "match"): 1,
         ("pattern_call", "fullmatch"): 1,
@@ -242,11 +243,15 @@ NOFLAG_COMPILE_CASES = tuple(
 VERBOSE_COMPILE_CASE_ID = "workflow-compile-str-verbose-regression"
 MULTILINE_COMPILE_CASE_ID = "workflow-compile-str-multiline-regression"
 VERBOSE_BYTES_COMPILE_CASE_ID = "workflow-compile-bytes-verbose-regression"
+MULTILINE_BYTES_COMPILE_CASE_ID = "workflow-compile-bytes-multiline-regression"
 (VERBOSE_COMPILE_CASE,) = tuple(
     case for case in COMPILE_CASES if case.case_id == VERBOSE_COMPILE_CASE_ID
 )
 (MULTILINE_COMPILE_CASE,) = tuple(
     case for case in COMPILE_CASES if case.case_id == MULTILINE_COMPILE_CASE_ID
+)
+(MULTILINE_BYTES_COMPILE_CASE,) = tuple(
+    case for case in COMPILE_CASES if case.case_id == MULTILINE_BYTES_COMPILE_CASE_ID
 )
 PATTERN_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "pattern_call")
 CACHE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "cache_workflow")
@@ -475,6 +480,7 @@ MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS = (
     VERBOSE_COMPILE_CASE_ID,
     MULTILINE_COMPILE_CASE_ID,
     VERBOSE_BYTES_COMPILE_CASE_ID,
+    MULTILINE_BYTES_COMPILE_CASE_ID,
     "workflow-compile-bytes-literal",
 )
 MODULE_WORKFLOW_COMPILE_ONLY_PATTERNS = frozenset(
@@ -1647,6 +1653,17 @@ def _compile_verbose_regression_pattern(
     return observed_pattern, expected_pattern
 
 
+def _rebar_bytes_multiline_compile_supported() -> bool:
+    try:
+        rebar.compile(
+            case_pattern(MULTILINE_BYTES_COMPILE_CASE),
+            int(MULTILINE_BYTES_COMPILE_CASE.flags or 0),
+        )
+    except NotImplementedError:
+        return False
+    return True
+
+
 def _compile_compiled_pattern_case(
     regex_api: object,
     pattern: str | bytes,
@@ -1813,6 +1830,7 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         VERBOSE_COMPILE_CASE_ID,
         MULTILINE_COMPILE_CASE_ID,
         VERBOSE_BYTES_COMPILE_CASE_ID,
+        MULTILINE_BYTES_COMPILE_CASE_ID,
     } <= {case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases}
 
 
@@ -2056,6 +2074,20 @@ def test_compile_workflows_match_cpython(
 ) -> None:
     backend_name, backend = regex_backend
     pattern = case_pattern(case)
+
+    if (
+        backend_name == "rebar"
+        and case.case_id == MULTILINE_BYTES_COMPILE_CASE_ID
+        and not _rebar_bytes_multiline_compile_supported()
+    ):
+        with pytest.raises(NotImplementedError) as raised:
+            backend.compile(pattern, case.flags or 0)
+
+        assert_placeholder_message_contains(
+            raised.value,
+            "rebar.compile() is a scaffold placeholder",
+        )
+        return
 
     compile_with_cpython_parity(
         backend_name,
@@ -2648,7 +2680,9 @@ def test_source_package_verbose_compile_metadata_and_neighbor_gaps_remain_pinned
     assert isinstance(pattern, str)
     multiline_pattern = case_pattern(MULTILINE_COMPILE_CASE)
     assert multiline_pattern == pattern
-    bytes_pattern = pattern.encode("ascii")
+    bytes_pattern = case_pattern(MULTILINE_BYTES_COMPILE_CASE)
+    assert isinstance(bytes_pattern, bytes)
+    assert bytes_pattern == pattern.encode("ascii")
 
     compiled, expected = _compile_verbose_regression_pattern("rebar", rebar)
     compiled_bytes, expected_bytes = compile_with_cpython_parity(
@@ -2695,6 +2729,40 @@ def test_source_package_verbose_compile_metadata_and_neighbor_gaps_remain_pinned
     assert compiled_multiline.groups == expected_multiline.groups == 1
     assert compiled_multiline.groupindex == expected_multiline.groupindex == {"key": 1}
     assert rebar.compile(multiline_pattern, rebar.MULTILINE) is compiled_multiline
+
+    assert int(MULTILINE_BYTES_COMPILE_CASE.flags or 0) == int(rebar.MULTILINE)
+    if _rebar_bytes_multiline_compile_supported():
+        compiled_bytes_multiline, expected_bytes_multiline = compile_with_cpython_parity(
+            "rebar",
+            rebar,
+            bytes_pattern,
+            int(MULTILINE_BYTES_COMPILE_CASE.flags or 0),
+        )
+
+        assert type(compiled_bytes_multiline) is rebar.Pattern
+        assert compiled_bytes_multiline.pattern == expected_bytes_multiline.pattern == bytes_pattern
+        assert compiled_bytes_multiline.flags == expected_bytes_multiline.flags == int(
+            re.MULTILINE
+        )
+        assert compiled_bytes_multiline.groups == expected_bytes_multiline.groups == 1
+        assert (
+            compiled_bytes_multiline.groupindex
+            == expected_bytes_multiline.groupindex
+            == {"key": 1}
+        )
+        assert (
+            rebar.compile(bytes_pattern, int(MULTILINE_BYTES_COMPILE_CASE.flags or 0))
+            is compiled_bytes_multiline
+        )
+        return
+
+    with pytest.raises(NotImplementedError) as bytes_multiline_gap:
+        rebar.compile(bytes_pattern, int(MULTILINE_BYTES_COMPILE_CASE.flags or 0))
+
+    assert_placeholder_message_contains(
+        bytes_multiline_gap.value,
+        "rebar.compile() is a scaffold placeholder",
+    )
 
 
 def test_source_package_compile_reuses_existing_pattern_without_reprocessing_flags() -> None:

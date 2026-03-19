@@ -63,6 +63,18 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-compile-bytes-multiline-regression",
+      "operation": "compile",
+      "family": "compile_workflow",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "flags": 8,
+      "text_model": "bytes",
+      "categories": ["workflow", "compile", "multiline", "regression", "bytes"],
+      "notes": [
+        "Publishes the bytes multiline-only compile neighbor beside the shared regression rows without broadening into execution or cache-state coverage."
+      ]
+    },
+    {
       "id": "workflow-compile-bytes-literal",
       "operation": "compile",
       "family": "compile_workflow",
