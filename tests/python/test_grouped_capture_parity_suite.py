@@ -18,7 +18,6 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
-    fixture_cases_from_bundles,
     load_fixture_bundles,
     ordered_manifest_cases_from_bundles,
     published_fixture_bundle_by_manifest_id,
@@ -319,7 +318,7 @@ def _compile_cases(cases: tuple[FixtureCase, ...]) -> tuple[CompileCase, ...]:
     return tuple(compile_cases)
 
 
-PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
+PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
 DIRECT_PARITY_CASES = PUBLISHED_CASES
 COMPILE_CASES = _compile_cases(DIRECT_PARITY_CASES)
 MODULE_CASES = tuple(

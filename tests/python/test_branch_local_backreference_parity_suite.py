@@ -25,7 +25,6 @@ from tests.python.fixture_parity_support import (
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
-    fixture_cases_from_bundles,
     load_fixture_bundles,
     partition_direct_bytes_follow_on_case_buckets,
     published_fixture_bundle_by_manifest_id,
@@ -964,7 +963,7 @@ DIRECT_BYTES_FOLLOW_ON_CASES = tuple(
 SUPPORTED_DIRECT_BYTES_PATTERNS = frozenset(
     case.pattern for case in DIRECT_BYTES_FOLLOW_ON_CASES if not case.unsupported_backends
 )
-PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
+PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
 CASES_BY_ID = {case.case_id: case for case in PUBLISHED_CASES}
 COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_case_buckets(
     FIXTURE_BUNDLES,

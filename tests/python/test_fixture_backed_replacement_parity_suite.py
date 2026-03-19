@@ -33,7 +33,6 @@ from tests.python.fixture_parity_support import (
     case_text_argument,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
-    fixture_cases_from_bundles,
     load_fixture_bundles,
     published_fixture_bundle_by_manifest_id,
     published_fixture_paths_from_bundles,
@@ -895,7 +894,9 @@ def _cases_for_manifest_ids(
 
 def _load_surface(spec: ReplacementSurfaceSpec) -> LoadedReplacementSurface:
     bundles = load_fixture_bundles(spec.bundle_specs)
-    published_replacement_cases = fixture_cases_from_bundles(bundles)
+    published_replacement_cases = tuple(
+        case for bundle in bundles for case in bundle.cases
+    )
     replacement_cases = tuple(
         case
         for case in published_replacement_cases

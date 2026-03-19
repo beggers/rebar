@@ -67,7 +67,6 @@ from tests.python.fixture_parity_support import (
     case_text_argument,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
-    fixture_cases_from_bundles,
     invoke_bounded_pattern_case,
     load_fixture_bundles,
     load_published_fixture_bundles,
@@ -1973,23 +1972,6 @@ def test_whole_manifest_bundle_specs_load_in_declared_order_with_bundle_validati
     )
     for bundle in bundles:
         assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
-
-
-def test_fixture_case_fanout_from_bundles_preserves_bundle_then_case_order() -> None:
-    bundles = load_fixture_bundles(
-        _whole_manifest_backreference_bundle_specs()
-    )
-
-    assert tuple(case.case_id for case in fixture_cases_from_bundles(bundles)) == (
-        "named-backreference-compile-metadata-str",
-        "named-backreference-module-search-str",
-        "named-backreference-pattern-search-str",
-        "numbered-backreference-compile-metadata-str",
-        "numbered-backreference-module-search-str",
-        "numbered-backreference-pattern-search-str",
-        "numbered-backreference-segment-module-search-str",
-        "numbered-backreference-prefix-pattern-search-str",
-    )
 
 
 def test_fixture_case_operation_selection_preserves_published_row_order() -> None:

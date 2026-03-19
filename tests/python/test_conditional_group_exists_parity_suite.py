@@ -20,7 +20,6 @@ from tests.python.fixture_parity_support import (
     assert_valid_match_group_access_parity,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
-    fixture_cases_from_bundles,
     load_fixture_bundles,
     published_fixture_bundle_by_manifest_id,
     str_case_pattern,
@@ -708,7 +707,7 @@ FIXTURE_BUNDLE_SPECS = (
     ),
 )
 FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
-PUBLISHED_CASES = fixture_cases_from_bundles(FIXTURE_BUNDLES)
+PUBLISHED_CASES = tuple(case for bundle in FIXTURE_BUNDLES for case in bundle.cases)
 COMPILE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "compile")
 MODULE_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "module_call")
 PATTERN_CASES = fixture_cases_for_operation(FIXTURE_BUNDLES, "pattern_call")

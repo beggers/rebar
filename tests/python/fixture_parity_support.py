@@ -265,18 +265,15 @@ def load_fixture_bundles(
     return tuple(bundles)
 
 
-def fixture_cases_from_bundles(
-    bundles: Iterable[FixtureBundle],
-) -> tuple[FixtureCase, ...]:
-    return tuple(case for bundle in bundles for case in bundle.cases)
-
-
 def fixture_cases_for_operation(
     bundles: Iterable[FixtureBundle],
     operation: str,
 ) -> tuple[FixtureCase, ...]:
     return tuple(
-        case for case in fixture_cases_from_bundles(bundles) if case.operation == operation
+        case
+        for bundle in bundles
+        for case in bundle.cases
+        if case.operation == operation
     )
 
 
