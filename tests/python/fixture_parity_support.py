@@ -1155,6 +1155,13 @@ def record_generated_match_failure(
         failures.append(f"{label}: {exc}")
 
 
+def assert_placeholder_message_contains(
+    error: BaseException,
+    expected_fragment: str,
+) -> None:
+    assert expected_fragment in str(error)
+
+
 def _assert_optional_match_case_parity(
     backend_name: str,
     observed: object,

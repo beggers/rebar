@@ -27,6 +27,7 @@ from tests.python.fixture_parity_support import (
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
+    assert_placeholder_message_contains,
     assert_valid_match_group_access_parity,
     case_pattern,
     case_replacement_argument,
@@ -2581,12 +2582,6 @@ def test_no_match_text_filters_candidates_by_case_text_model() -> None:
 
     assert _no_match_text(surface, str_case) == "zzzz"
     assert _no_match_text(surface, bytes_case) == b"zzzz"
-
-
-def _assert_placeholder_message(error: BaseException, expected_prefix: str) -> None:
-    assert expected_prefix in str(error)
-
-
 def _assert_module_replacement_parity(
     pattern: TextValue,
     replacement: TextValue,
@@ -2718,7 +2713,7 @@ def test_source_package_module_literal_replacement_helpers_stay_loud_without_cac
     with pytest.raises(NotImplementedError) as module_template:
         rebar.sub("abc", r"\1", "abc")
 
-    _assert_placeholder_message(
+    assert_placeholder_message_contains(
         module_template.value,
         "rebar.sub() is a scaffold placeholder",
     )
@@ -2727,7 +2722,7 @@ def test_source_package_module_literal_replacement_helpers_stay_loud_without_cac
     with pytest.raises(NotImplementedError) as module_flags:
         rebar.subn("abc", "x", "abc", flags=rebar.IGNORECASE)
 
-    _assert_placeholder_message(
+    assert_placeholder_message_contains(
         module_flags.value,
         "rebar.subn() is a scaffold placeholder",
     )
@@ -2736,7 +2731,7 @@ def test_source_package_module_literal_replacement_helpers_stay_loud_without_cac
     with pytest.raises(NotImplementedError) as module_meta:
         rebar.sub("[ab]c", "x", "abc")
 
-    _assert_placeholder_message(
+    assert_placeholder_message_contains(
         module_meta.value,
         "rebar.compile() is a scaffold placeholder",
     )
@@ -2745,7 +2740,7 @@ def test_source_package_module_literal_replacement_helpers_stay_loud_without_cac
     with pytest.raises(NotImplementedError) as module_empty:
         rebar.sub("", "x", "abc")
 
-    _assert_placeholder_message(
+    assert_placeholder_message_contains(
         module_empty.value,
         "rebar.sub() is a scaffold placeholder",
     )
@@ -2758,7 +2753,7 @@ def test_source_package_pattern_literal_replacement_helpers_stay_loud_for_unsupp
     with pytest.raises(NotImplementedError) as bound_flags:
         flagged_pattern.sub("x", "abc")
 
-    _assert_placeholder_message(
+    assert_placeholder_message_contains(
         bound_flags.value,
         "rebar.Pattern.sub() is a scaffold placeholder",
     )
@@ -2767,7 +2762,7 @@ def test_source_package_pattern_literal_replacement_helpers_stay_loud_for_unsupp
     with pytest.raises(NotImplementedError) as bound_empty:
         empty_pattern.subn("x", "abc")
 
-    _assert_placeholder_message(
+    assert_placeholder_message_contains(
         bound_empty.value,
         "rebar.Pattern.subn() is a scaffold placeholder",
     )
@@ -2775,7 +2770,7 @@ def test_source_package_pattern_literal_replacement_helpers_stay_loud_for_unsupp
     with pytest.raises(NotImplementedError) as bound_template:
         rebar.compile("abc").sub(r"\1", "abc")
 
-    _assert_placeholder_message(
+    assert_placeholder_message_contains(
         bound_template.value,
         "rebar.Pattern.sub() is a scaffold placeholder",
     )

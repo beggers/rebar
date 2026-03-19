@@ -40,6 +40,7 @@ from tests.python.fixture_parity_support import (
     assert_match_convenience_api_parity,
     assert_match_result_parity,
     assert_pattern_parity,
+    assert_placeholder_message_contains,
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
@@ -1705,10 +1706,6 @@ def _capture_error(callback) -> BaseException:
     raise AssertionError("expected call to raise")
 
 
-def _assert_placeholder_message(error: BaseException, expected_prefix: str) -> None:
-    assert expected_prefix in str(error)
-
-
 def _assert_literal_match_contract(
     match: rebar.Match,
     expected_group0: str | bytes,
@@ -2877,7 +2874,7 @@ def test_source_package_unsupported_match_surface_stays_loud() -> None:
     with pytest.raises(NotImplementedError) as module_flags:
         rebar.search("abc", "abc", rebar.IGNORECASE | rebar.VERBOSE)
 
-    _assert_placeholder_message(
+    assert_placeholder_message_contains(
         module_flags.value,
         "rebar.search() is a scaffold placeholder",
     )
@@ -2885,7 +2882,7 @@ def test_source_package_unsupported_match_surface_stays_loud() -> None:
     with pytest.raises(NotImplementedError) as module_meta:
         rebar.search("[ab]c", "abc")
 
-    _assert_placeholder_message(
+    assert_placeholder_message_contains(
         module_meta.value,
         "rebar.compile() is a scaffold placeholder",
     )
@@ -2895,7 +2892,7 @@ def test_source_package_unsupported_match_surface_stays_loud() -> None:
         with pytest.raises(NotImplementedError) as bound_flags:
             getattr(pattern, method_name)("abc")
 
-        _assert_placeholder_message(
+        assert_placeholder_message_contains(
             bound_flags.value,
             f"rebar.Pattern.{method_name}() is a scaffold placeholder",
         )
@@ -2933,7 +2930,7 @@ def test_source_package_unsupported_compile_requests_do_not_mutate_cache() -> No
     with pytest.raises(NotImplementedError) as placeholder:
         rebar.compile("[ab]c")
 
-    _assert_placeholder_message(
+    assert_placeholder_message_contains(
         placeholder.value,
         "rebar.compile() is a scaffold placeholder",
     )
