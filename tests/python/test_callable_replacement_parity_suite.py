@@ -935,20 +935,21 @@ def assert_pattern_callable_replacement_return_type_error_parity(
     backend_name: str,
     backend: object,
     helper: str,
-    pattern: str,
-    string: str,
+    pattern: TextValue,
+    string: TextValue,
     count: int,
 ) -> None:
     observed_matches: list[object] = []
-    expected_matches: list[re.Match[str]] = []
+    expected_matches: list[re.Match[str] | re.Match[bytes]] = []
+    wrong_type_replacement = "X" if isinstance(string, bytes) else b"X"
 
-    def observed_replacement(match: object) -> bytes:
+    def observed_replacement(match: object) -> str | bytes:
         observed_matches.append(match)
-        return b"X"
+        return wrong_type_replacement
 
-    def expected_replacement(match: re.Match[str]) -> bytes:
+    def expected_replacement(match: re.Match[str] | re.Match[bytes]) -> str | bytes:
         expected_matches.append(match)
-        return b"X"
+        return wrong_type_replacement
 
     expected_target = re.compile(pattern)
     with pytest.raises(TypeError) as expected_error:
@@ -966,6 +967,7 @@ def assert_pattern_callable_replacement_return_type_error_parity(
             count=count,
         )
 
+    assert type(observed_error.value) is type(expected_error.value)
     assert observed_error.value.args == expected_error.value.args
     _assert_callback_match_sequence_parity(
         backend_name=backend_name,
@@ -1114,7 +1116,6 @@ PATTERN_RETURN_TYPE_ERROR_EXPECTED_MANIFEST_IDS = frozenset(
 PATTERN_RETURN_TYPE_ERROR_CASES = tuple(
     case
     for case in PATTERN_CASES
-    if case.text_model == "str"
     if any(
         keyword in case.manifest_id
         for keyword in CALLABLE_RETURN_TYPE_ERROR_MANIFEST_KEYWORDS
@@ -1633,6 +1634,10 @@ def test_mixed_text_callable_manifest_partitions_track_pending_or_landed_bytes_c
 def test_pattern_callable_replacement_return_type_error_cases_cover_quantified_callable_fixture_frontier(
 ) -> None:
     assert PATTERN_RETURN_TYPE_ERROR_CASES
+    assert {case.text_model for case in PATTERN_RETURN_TYPE_ERROR_CASES} == {
+        "bytes",
+        "str",
+    }
     assert {
         case.manifest_id for case in PATTERN_RETURN_TYPE_ERROR_CASES
     } == PATTERN_RETURN_TYPE_ERROR_EXPECTED_MANIFEST_IDS
