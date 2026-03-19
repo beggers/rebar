@@ -6563,45 +6563,67 @@ STANDARD_BENCHMARK_DEFINITIONS = (
     ),
 )
 
-STANDARD_BENCHMARK_MANIFEST_DEFINITIONS = tuple(
-    (definition, manifest_path)
-    for definition in STANDARD_BENCHMARK_DEFINITIONS
-    for manifest_path in definition.manifest_paths
-)
-STANDARD_BENCHMARK_MANIFEST_IDS = [
-    f"{definition.name}:{manifest_path.name}"
-    for definition, manifest_path in STANDARD_BENCHMARK_MANIFEST_DEFINITIONS
-]
-STANDARD_BENCHMARK_LEGACY_DEFINITIONS = tuple(
-    definition
-    for definition in STANDARD_BENCHMARK_DEFINITIONS
-    if definition.expected_legacy_workload_ids
-)
-STANDARD_BENCHMARK_CALLBACK_PARITY_DEFINITIONS = tuple(
-    definition
-    for definition in STANDARD_BENCHMARK_DEFINITIONS
-    if definition.run_callback_result_parity
-)
-STANDARD_BENCHMARK_SPECIAL_UNANCHORED_DEFINITIONS = tuple(
-    definition
-    for definition in STANDARD_BENCHMARK_DEFINITIONS
-    if definition.expected_special_unanchored_workload_ids
-)
-STANDARD_BENCHMARK_SPECIAL_UNANCHORED_DIRECT_PARITY_DEFINITIONS = tuple(
-    definition
-    for definition in STANDARD_BENCHMARK_SPECIAL_UNANCHORED_DEFINITIONS
-    if definition.direct_parity_supplemental_cases
-)
-STANDARD_BENCHMARK_SPECIAL_UNANCHORED_RESULT_PARITY_CASES = tuple(
-    (definition, workload_id)
-    for definition in STANDARD_BENCHMARK_DEFINITIONS
-    if definition.run_special_unanchored_result_parity
-    for workload_id in definition.expected_special_unanchored_workload_ids
-)
-STANDARD_BENCHMARK_SPECIAL_UNANCHORED_RESULT_PARITY_IDS = [
-    f"{definition.name}:{workload_id}"
-    for definition, workload_id in STANDARD_BENCHMARK_SPECIAL_UNANCHORED_RESULT_PARITY_CASES
-]
+def _has_standard_benchmark_legacy_workloads(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> bool:
+    return bool(definition.expected_legacy_workload_ids)
+
+
+def _runs_standard_benchmark_callback_result_parity(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> bool:
+    return definition.run_callback_result_parity
+
+
+def _has_standard_benchmark_special_unanchored_workloads(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> bool:
+    return bool(definition.expected_special_unanchored_workload_ids)
+
+
+def _has_standard_benchmark_special_unanchored_direct_parity_cases(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> bool:
+    return bool(
+        definition.expected_special_unanchored_workload_ids
+        and definition.direct_parity_supplemental_cases
+    )
+
+
+def _standard_benchmark_manifest_params() -> tuple[Any, ...]:
+    return tuple(
+        pytest.param(
+            definition,
+            manifest_path,
+            id=f"{definition.name}:{manifest_path.name}",
+        )
+        for definition in STANDARD_BENCHMARK_DEFINITIONS
+        for manifest_path in definition.manifest_paths
+    )
+
+
+def _standard_benchmark_definition_params(
+    *,
+    include_definition: Callable[[StandardBenchmarkAnchorContractDefinition], bool],
+) -> tuple[Any, ...]:
+    return tuple(
+        pytest.param(definition, id=definition.name)
+        for definition in STANDARD_BENCHMARK_DEFINITIONS
+        if include_definition(definition)
+    )
+
+
+def _standard_benchmark_special_unanchored_result_parity_params() -> tuple[Any, ...]:
+    return tuple(
+        pytest.param(
+            definition,
+            workload_id,
+            id=f"{definition.name}:{workload_id}",
+        )
+        for definition in STANDARD_BENCHMARK_DEFINITIONS
+        if definition.run_special_unanchored_result_parity
+        for workload_id in definition.expected_special_unanchored_workload_ids
+    )
 
 
 def _expected_workload_ids(
@@ -7433,8 +7455,7 @@ def test_standard_benchmark_manifest_loader_rejects_duplicate_ids(
 
 @pytest.mark.parametrize(
     ("definition", "manifest_path"),
-    STANDARD_BENCHMARK_MANIFEST_DEFINITIONS,
-    ids=STANDARD_BENCHMARK_MANIFEST_IDS,
+    _standard_benchmark_manifest_params(),
 )
 def test_standard_benchmark_manifest_keeps_expected_workloads_in_scope(
     definition: StandardBenchmarkAnchorContractDefinition,
@@ -7460,8 +7481,7 @@ def test_standard_benchmark_manifest_keeps_expected_workloads_in_scope(
 
 @pytest.mark.parametrize(
     ("definition", "manifest_path"),
-    STANDARD_BENCHMARK_MANIFEST_DEFINITIONS,
-    ids=STANDARD_BENCHMARK_MANIFEST_IDS,
+    _standard_benchmark_manifest_params(),
 )
 def test_standard_benchmark_workloads_stay_anchored_to_published_correctness_cases(
     definition: StandardBenchmarkAnchorContractDefinition,
@@ -7483,8 +7503,9 @@ def test_standard_benchmark_workloads_stay_pinned_to_exact_case_ids(
 
 @pytest.mark.parametrize(
     "definition",
-    STANDARD_BENCHMARK_SPECIAL_UNANCHORED_DEFINITIONS,
-    ids=lambda definition: definition.name,
+    _standard_benchmark_definition_params(
+        include_definition=_has_standard_benchmark_special_unanchored_workloads
+    ),
 )
 def test_standard_benchmark_special_unanchored_workloads_stay_explicit(
     definition: StandardBenchmarkAnchorContractDefinition,
@@ -7498,8 +7519,9 @@ def test_standard_benchmark_special_unanchored_workloads_stay_explicit(
 
 @pytest.mark.parametrize(
     "definition",
-    STANDARD_BENCHMARK_SPECIAL_UNANCHORED_DIRECT_PARITY_DEFINITIONS,
-    ids=lambda definition: definition.name,
+    _standard_benchmark_definition_params(
+        include_definition=_has_standard_benchmark_special_unanchored_direct_parity_cases
+    ),
 )
 def test_standard_benchmark_special_unanchored_bytes_workloads_stay_covered_by_direct_parity_cases(
     definition: StandardBenchmarkAnchorContractDefinition,
@@ -7537,8 +7559,9 @@ def test_standard_benchmark_special_unanchored_bytes_workloads_stay_covered_by_d
 
 @pytest.mark.parametrize(
     "definition",
-    STANDARD_BENCHMARK_LEGACY_DEFINITIONS,
-    ids=lambda definition: definition.name,
+    _standard_benchmark_definition_params(
+        include_definition=_has_standard_benchmark_legacy_workloads
+    ),
 )
 def test_standard_benchmark_legacy_workloads_stay_pinned_to_expected_case_ids(
     definition: StandardBenchmarkAnchorContractDefinition,
@@ -7552,8 +7575,9 @@ def test_standard_benchmark_legacy_workloads_stay_pinned_to_expected_case_ids(
 
 @pytest.mark.parametrize(
     "definition",
-    STANDARD_BENCHMARK_CALLBACK_PARITY_DEFINITIONS,
-    ids=lambda definition: definition.name,
+    _standard_benchmark_definition_params(
+        include_definition=_runs_standard_benchmark_callback_result_parity
+    ),
 )
 def test_standard_benchmark_workload_callbacks_match_anchor_case_results(
     definition: StandardBenchmarkAnchorContractDefinition,
@@ -7568,8 +7592,7 @@ def test_standard_benchmark_workload_callbacks_match_anchor_case_results(
 
 @pytest.mark.parametrize(
     ("definition", "workload_id"),
-    STANDARD_BENCHMARK_SPECIAL_UNANCHORED_RESULT_PARITY_CASES,
-    ids=STANDARD_BENCHMARK_SPECIAL_UNANCHORED_RESULT_PARITY_IDS,
+    _standard_benchmark_special_unanchored_result_parity_params(),
 )
 def test_standard_benchmark_special_unanchored_workloads_match_manual_cpython_dispatch(
     definition: StandardBenchmarkAnchorContractDefinition,

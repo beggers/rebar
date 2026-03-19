@@ -1,6 +1,6 @@
 # RBR-0701: Collapse derived standard benchmark param registries onto definition-driven queries
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
 
@@ -96,3 +96,8 @@ PY` reported `RBR-0700` as the highest existing numeric task and no reserved mis
 - This simplification matches the current benchmark information flow:
   - `STANDARD_BENCHMARK_DEFINITIONS` already acts as the canonical registry for standard benchmark anchor contracts; and
   - deleting the mirrored filtered/pair/id registries removes one more parallel owner layer without changing the published benchmark surface.
+
+## Completion Notes
+- 2026-03-19: Replaced the detached standard benchmark manifest-pair, filtered-definition, and `(definition, workload_id)` parity registries with small file-local parameter builders that derive directly from `STANDARD_BENCHMARK_DEFINITIONS`.
+- 2026-03-19: Repointed the affected `@pytest.mark.parametrize` decorators in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to those builders while preserving the existing subset membership, expansion order, and id strings.
+- 2026-03-19: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, the inline source probe from Acceptance, and `bash -lc "! rg -n 'STANDARD_BENCHMARK_MANIFEST_DEFINITIONS|STANDARD_BENCHMARK_MANIFEST_IDS|STANDARD_BENCHMARK_LEGACY_DEFINITIONS|STANDARD_BENCHMARK_CALLBACK_PARITY_DEFINITIONS|STANDARD_BENCHMARK_SPECIAL_UNANCHORED_DEFINITIONS|STANDARD_BENCHMARK_SPECIAL_UNANCHORED_DIRECT_PARITY_DEFINITIONS|STANDARD_BENCHMARK_SPECIAL_UNANCHORED_RESULT_PARITY_CASES|STANDARD_BENCHMARK_SPECIAL_UNANCHORED_RESULT_PARITY_IDS' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`.
