@@ -835,25 +835,21 @@ def str_case_pattern(case: FixtureCase) -> str:
     return pattern
 
 
-def _case_argument_by_operation(
-    case: FixtureCase,
-    *,
-    module_index: int,
-    pattern_index: int,
-) -> object:
+def case_replacement_argument(case: FixtureCase) -> object:
     if case.operation == "module_call":
-        return case.args[module_index]
+        return case.args[1]
     if case.operation == "pattern_call":
-        return case.args[pattern_index]
+        return case.args[0]
     raise AssertionError(f"unsupported case operation {case.operation!r}")
 
 
-def case_replacement_argument(case: FixtureCase) -> object:
-    return _case_argument_by_operation(case, module_index=1, pattern_index=0)
-
-
 def case_text_argument(case: FixtureCase) -> str | bytes:
-    text = _case_argument_by_operation(case, module_index=2, pattern_index=1)
+    if case.operation == "module_call":
+        text = case.args[2]
+    elif case.operation == "pattern_call":
+        text = case.args[1]
+    else:
+        raise AssertionError(f"unsupported case operation {case.operation!r}")
     assert isinstance(text, (str, bytes))
     return text
 
