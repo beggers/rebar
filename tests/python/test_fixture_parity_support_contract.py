@@ -1875,6 +1875,63 @@ def test_load_fixture_bundles_selected_case_ids_preserve_requested_order(
     )
 
 
+def test_fixture_cases_for_operation_preserves_bundle_order_and_selected_rows(
+    tmp_path: pathlib.Path,
+) -> None:
+    _write_bundle_loader_contract_fixture_modules(tmp_path)
+    mixed_spec = replace(
+        _bundle_loader_contract_mixed_spec(),
+        selected_case_ids=(
+            "bundle-loader-contract-mixed-compile-bytes",
+            "bundle-loader-contract-mixed-module-search-str",
+            "bundle-loader-contract-mixed-compile-str",
+        ),
+        expected_case_ids=None,
+        expected_operation_helper_counts=Counter(
+            {
+                ("compile", None): 2,
+                ("module_call", "search"): 1,
+            }
+        ),
+    )
+    str_spec = replace(
+        _bundle_loader_contract_str_spec(),
+        selected_case_ids=(
+            "bundle-loader-contract-pattern-search-str",
+            "bundle-loader-contract-compile-str",
+        ),
+        expected_case_ids=None,
+        expected_operation_helper_counts=Counter(
+            {
+                ("pattern_call", "search"): 1,
+                ("compile", None): 1,
+            }
+        ),
+    )
+    mixed_bundle, str_bundle = _load_fixture_bundles_from_root(
+        tmp_path,
+        (mixed_spec, str_spec),
+    )
+
+    assert tuple(
+        case.case_id
+        for case in fixture_cases_for_operation((mixed_bundle, str_bundle), "compile")
+    ) == (
+        "bundle-loader-contract-mixed-compile-bytes",
+        "bundle-loader-contract-mixed-compile-str",
+        "bundle-loader-contract-compile-str",
+    )
+    assert tuple(
+        case.case_id
+        for case in fixture_cases_for_operation((mixed_bundle, str_bundle), "module_call")
+    ) == ("bundle-loader-contract-mixed-module-search-str",)
+    assert tuple(
+        case.case_id
+        for case in fixture_cases_for_operation((mixed_bundle, str_bundle), "pattern_call")
+    ) == ("bundle-loader-contract-pattern-search-str",)
+    assert fixture_cases_for_operation((mixed_bundle, str_bundle), "cache_workflow") == ()
+
+
 def test_load_fixture_bundles_full_manifest_defaults_str_text_model_expectation(
     tmp_path: pathlib.Path,
 ) -> None:
