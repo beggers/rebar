@@ -56,41 +56,6 @@ TRACKED_REPORT_PATH = REPO_ROOT / "reports" / "benchmarks" / "latest.py"
 _KNOWN_GAP_STATUSES = {"known-gap", "unimplemented"}
 
 
-def _assert_tracked_report_exists(
-    testcase: Any,
-    tracked_report_path: pathlib.Path | None,
-) -> None:
-    if tracked_report_path is not None:
-        testcase.assertTrue(tracked_report_path.is_file())
-
-
-def _assert_cpython_baseline_contract(
-    testcase: Any,
-    baseline: dict[str, Any],
-    *,
-    expected_re_module: str,
-) -> None:
-    expected_baseline = {
-        **build_cpython_baseline(version_family="3.12.x"),
-        "re_module": expected_re_module,
-    }
-    for key, expected_value in expected_baseline.items():
-        testcase.assertEqual(baseline[key], expected_value)
-
-
-def _find_record_by_id(
-    records: Iterable[Any],
-    *,
-    record_id: str,
-    get_id: Callable[[Any], str],
-    missing_message: str,
-) -> Any:
-    for record in records:
-        if get_id(record) == record_id:
-            return record
-    raise AssertionError(missing_message)
-
-
 def _assert_benchmark_summary_consistent(
     testcase: Any,
     scorecard: dict[str, Any],
@@ -214,11 +179,12 @@ def assert_source_tree_benchmark_contract(
     testcase.assertEqual(scorecard["schema_version"], "1.0")
     testcase.assertEqual(scorecard["suite"], "benchmarks")
     testcase.assertEqual(scorecard["phase"], expected_phase)
-    _assert_cpython_baseline_contract(
-        testcase,
-        scorecard["baseline"],
-        expected_re_module="re",
-    )
+    expected_baseline = {
+        **build_cpython_baseline(version_family="3.12.x"),
+        "re_module": "re",
+    }
+    for key, expected_value in expected_baseline.items():
+        testcase.assertEqual(scorecard["baseline"][key], expected_value)
     testcase.assertEqual(scorecard["implementation"]["module_name"], "rebar")
     testcase.assertEqual(scorecard["implementation"]["adapter"], expected_adapter)
     testcase.assertEqual(
@@ -287,7 +253,8 @@ def assert_source_tree_benchmark_contract(
         testcase.assertEqual(scorecard["artifacts"]["manifest"], None)
         testcase.assertEqual(scorecard["artifacts"]["manifest_id"], "combined-benchmark-suite")
         testcase.assertEqual(scorecard["artifacts"]["manifest_schema_version"], 1)
-    _assert_tracked_report_exists(testcase, tracked_report_path)
+    if tracked_report_path is not None:
+        testcase.assertTrue(tracked_report_path.is_file())
 
 
 def assert_benchmark_manifest_contract(
@@ -397,34 +364,28 @@ def assert_benchmark_workload_contract(
 
 
 def find_manifest_record(scorecard: dict[str, Any], manifest_id: str) -> dict[str, Any]:
-    return _find_record_by_id(
-        scorecard["artifacts"]["manifests"],
-        record_id=manifest_id,
-        get_id=lambda manifest_record: str(manifest_record["manifest_id"]),
-        missing_message=f"missing manifest record for {manifest_id!r}",
-    )
+    for manifest_record in scorecard["artifacts"]["manifests"]:
+        if str(manifest_record["manifest_id"]) == manifest_id:
+            return manifest_record
+    raise AssertionError(f"missing manifest record for {manifest_id!r}")
 
 
 def find_workload_record(scorecard: dict[str, Any], workload_id: str) -> dict[str, Any]:
-    return _find_record_by_id(
-        scorecard["workloads"],
-        record_id=workload_id,
-        get_id=lambda workload: str(workload["id"]),
-        missing_message=f"missing workload record for {workload_id!r}",
-    )
+    for workload in scorecard["workloads"]:
+        if str(workload["id"]) == workload_id:
+            return workload
+    raise AssertionError(f"missing workload record for {workload_id!r}")
 
 
 def find_workload_document(
     manifest: BenchmarkManifest,
     workload_id: str,
 ) -> Workload:
-    return _find_record_by_id(
-        manifest.workloads,
-        record_id=workload_id,
-        get_id=lambda workload: workload.workload_id,
-        missing_message=(
-            f"missing workload definition {workload_id!r} in {manifest.manifest_id!r}"
-        ),
+    for workload in manifest.workloads:
+        if workload.workload_id == workload_id:
+            return workload
+    raise AssertionError(
+        f"missing workload definition {workload_id!r} in {manifest.manifest_id!r}"
     )
 
 BASE_SOURCE_TREE_MANIFEST_IDS = frozenset({"compile-matrix", "regression-matrix"})

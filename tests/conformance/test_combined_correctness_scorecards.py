@@ -2416,28 +2416,6 @@ def _correctness_diagnostics(cases: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def _assert_tracked_report_exists(
-    testcase: Any,
-    tracked_report_path: pathlib.Path | None,
-) -> None:
-    if tracked_report_path is not None:
-        testcase.assertTrue(tracked_report_path.is_file())
-
-
-def _assert_cpython_baseline_contract(
-    testcase: Any,
-    baseline: dict[str, Any],
-    *,
-    expected_re_module: str,
-) -> None:
-    expected_baseline = {
-        **build_cpython_baseline(version_family="3.12.x"),
-        "re_module": expected_re_module,
-    }
-    for key, expected_value in expected_baseline.items():
-        testcase.assertEqual(baseline[key], expected_value)
-
-
 def _correctness_cases_for_suite(
     scorecard: dict[str, Any],
     suite: dict[str, Any],
@@ -2460,41 +2438,24 @@ def _correctness_cases_for_suite(
     return suite_cases
 
 
-def _find_record_by_id(
-    records: Iterable[Any],
-    *,
-    record_id: str,
-    get_id: Callable[[Any], str],
-    missing_message: str,
-) -> Any:
-    for record in records:
-        if get_id(record) == record_id:
-            return record
-    raise AssertionError(missing_message)
-
-
 def find_correctness_suite_record(
     scorecard: dict[str, Any],
     suite_id: str,
 ) -> dict[str, Any]:
-    return _find_record_by_id(
-        scorecard["suites"],
-        record_id=suite_id,
-        get_id=lambda suite: str(suite["id"]),
-        missing_message=f"missing correctness suite record for {suite_id!r}",
-    )
+    for suite in scorecard["suites"]:
+        if str(suite["id"]) == suite_id:
+            return suite
+    raise AssertionError(f"missing correctness suite record for {suite_id!r}")
 
 
 def find_correctness_case_record(
     scorecard: dict[str, Any],
     case_id: str,
 ) -> dict[str, Any]:
-    return _find_record_by_id(
-        scorecard["cases"],
-        record_id=case_id,
-        get_id=lambda case: str(case["id"]),
-        missing_message=f"missing correctness case record for {case_id!r}",
-    )
+    for case in scorecard["cases"]:
+        if str(case["id"]) == case_id:
+            return case
+    raise AssertionError(f"missing correctness case record for {case_id!r}")
 
 
 def assert_correctness_case_record_matches(
@@ -2579,15 +2540,17 @@ def assert_correctness_report_contract(
     testcase.assertEqual(scorecard["phase"], expected_phase)
 
     baseline = scorecard["baseline"]
-    _assert_cpython_baseline_contract(
-        testcase,
-        baseline,
-        expected_re_module="re",
-    )
+    expected_baseline = {
+        **build_cpython_baseline(version_family="3.12.x"),
+        "re_module": "re",
+    }
+    for key, expected_value in expected_baseline.items():
+        testcase.assertEqual(baseline[key], expected_value)
     testcase.assertEqual(baseline["oracle"], "cpython-stdlib-re")
     testcase.assertEqual(baseline["target_module"], "rebar")
     testcase.assertEqual(scorecard["diagnostics"], _correctness_diagnostics(scorecard["cases"]))
-    _assert_tracked_report_exists(testcase, tracked_report_path)
+    if tracked_report_path is not None:
+        testcase.assertTrue(tracked_report_path.is_file())
 
 
 def assert_correctness_fixture_contract(
