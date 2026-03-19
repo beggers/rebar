@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from itertools import product
 import re
 from types import SimpleNamespace
@@ -1219,6 +1219,53 @@ def test_assert_direct_bytes_follow_on_bundle_routing_rejects_bytes_left_in_gene
             compile_cases=compile_cases,
             module_cases=module_cases,
             pattern_cases=pattern_cases,
+        )
+
+
+@pytest.mark.parametrize(
+    "operation",
+    (
+        pytest.param("compile", id="compile"),
+        pytest.param("module_call", id="module-call"),
+        pytest.param("pattern_call", id="pattern-call"),
+    ),
+)
+def test_assert_direct_bytes_follow_on_bundle_routing_rejects_unexpected_str_rows(
+    operation: str,
+) -> None:
+    fixture_path = (
+        CORRECTNESS_FIXTURES_ROOT / "quantified_alternation_open_ended_workflows.py"
+    )
+    (bundle,) = load_published_fixture_bundles((fixture_path,))
+    cases_by_operation = {
+        bucket_operation: tuple(
+            case
+            for case in fixture_cases_for_operation((bundle,), bucket_operation)
+            if case.text_model == "str"
+        )
+        for bucket_operation in ("compile", "module_call", "pattern_call")
+    }
+    assert cases_by_operation[operation]
+
+    unexpected_case_id = f"unexpected-{operation}-str-case-id"
+    cases_by_operation[operation] = (
+        *cases_by_operation[operation],
+        replace(cases_by_operation[operation][0], case_id=unexpected_case_id),
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(
+            "quantified-alternation-open-ended-workflows direct bytes follow-on routing "
+            f"drifted; {operation} bucket str case ids drifted; missing case ids: (); "
+            f"unexpected case ids: ('{unexpected_case_id}',)"
+        ),
+    ):
+        assert_direct_bytes_follow_on_bundle_routing(
+            bundle,
+            compile_cases=cases_by_operation["compile"],
+            module_cases=cases_by_operation["module_call"],
+            pattern_cases=cases_by_operation["pattern_call"],
         )
 
 
