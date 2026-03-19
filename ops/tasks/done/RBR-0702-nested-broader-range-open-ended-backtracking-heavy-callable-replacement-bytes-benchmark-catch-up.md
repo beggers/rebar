@@ -1,6 +1,6 @@
 # RBR-0702: Catch the nested broader-range open-ended backtracking-heavy callable-replacement bytes pair up on the benchmark surface
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -48,3 +48,9 @@ Created: 2026-03-19
   - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` currently keeps the broader-range open-ended backtracking-heavy callable slice on `nested-group-callable-replacement-boundary` as those four `str` ids only, while the same owner path already promotes adjacent callable bytes rows as measured workloads on the same manifest;
   - `reports/benchmarks/latest.py` currently publishes `nested-group-callable-replacement-boundary` at `76` total workloads / `76` measured workloads / `0` known gaps and the combined source-tree report at `767` / `767` / `0`; and
   - direct `rg` probes in this planning run confirmed the planned bytes workload ids are absent from `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, so this ready task is not a stale no-op.
+
+## Completion
+- 2026-03-19: Added the four broader-range open-ended `{2,}` nested backtracking-heavy callable-replacement bytes mirrors to `benchmarks/workloads/nested_group_callable_replacement_boundary.py`, keeping the existing patterns, callback descriptors, haystacks, and source-tree timing path intact on the shared manifest.
+- Updated `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` so the `nested-broader-range-open-ended-backtracking-heavy-callable-replacement` slice now promotes the mixed eight-row `str` plus `bytes` set, and added explicit manifest-promotion and combined-scorecard assertions for the four new bytes ids.
+- Republished `reports/benchmarks/latest.py`; the tracked report now shows `nested-group-callable-replacement-boundary` at `80` total / `80` measured / `0` known gaps and the combined benchmark publication at `771` total / `771` measured / `0` known gaps, with all four new bytes rows recorded as `implementation_timing.status == "measured"`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_callable_replacement_parity_suite.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --manifest benchmarks/workloads/nested_group_callable_replacement_boundary.py --report .rebar/tmp/rbr-0702-nested-broader-range-open-ended-backtracking-heavy-callable-replacement-bytes-benchmarks.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.benchmarks --report reports/benchmarks/latest.py`.
