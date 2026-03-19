@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from itertools import product
 import re
 
@@ -535,6 +535,25 @@ FIXTURE_BUNDLE_SPECS = (
         expected_text_models=frozenset({"bytes", "str"}),
     ),
 )
+
+WHOLE_MANIFEST_BACKREFERENCE_FIXTURE_NAMES = (
+    "named_backreference_workflows.py",
+    "numbered_backreference_workflows.py",
+)
+
+
+def _whole_manifest_backreference_bundle_specs() -> tuple[FixtureBundleSpec, ...]:
+    specs = tuple(
+        spec
+        for spec in FIXTURE_BUNDLE_SPECS
+        if spec.fixture_name in WHOLE_MANIFEST_BACKREFERENCE_FIXTURE_NAMES
+    )
+    assert tuple(spec.fixture_name for spec in specs) == (
+        WHOLE_MANIFEST_BACKREFERENCE_FIXTURE_NAMES
+    )
+    return specs
+
+
 FIXTURE_BUNDLES = load_fixture_bundles(FIXTURE_BUNDLE_SPECS)
 QUANTIFIED_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE = (
     published_fixture_bundle_by_manifest_id(
@@ -1600,6 +1619,63 @@ def test_direct_bytes_pattern_bounds_cases_stay_anchored_to_supported_bytes_patt
             *DIRECT_BYTES_PATTERN_BOUNDS_NO_MATCH_CASES,
         )
     } == SUPPORTED_DIRECT_BYTES_PATTERNS
+
+
+def test_whole_manifest_bundle_specs_load_in_declared_order_with_bundle_validation() -> None:
+    bundles = load_fixture_bundles(_whole_manifest_backreference_bundle_specs())
+
+    assert tuple(bundle.manifest.path.name for bundle in bundles) == (
+        "named_backreference_workflows.py",
+        "numbered_backreference_workflows.py",
+    )
+    for bundle in bundles:
+        assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
+
+
+def test_fixture_case_operation_selection_preserves_published_row_order() -> None:
+    bundles = load_fixture_bundles(_whole_manifest_backreference_bundle_specs())
+
+    assert tuple(
+        case.case_id for case in fixture_cases_for_operation(bundles, "pattern_call")
+    ) == (
+        "named-backreference-pattern-search-str",
+        "numbered-backreference-pattern-search-str",
+        "numbered-backreference-prefix-pattern-search-str",
+    )
+
+
+def test_whole_manifest_bundle_contract_supports_exact_case_id_validation() -> None:
+    named_bundle_spec = _whole_manifest_backreference_bundle_specs()[0]
+    (bundle,) = load_fixture_bundles((named_bundle_spec,))
+
+    assert bundle.manifest.path == FIXTURES_DIR / "named_backreference_workflows.py"
+    assert bundle.expected_case_ids is not None
+    assert_fixture_bundle_contract(bundle, pattern_extractor=str_case_pattern)
+
+
+def test_expected_fixture_bundle_contract_supports_exact_case_id_validation() -> None:
+    named_bundle_spec = _whole_manifest_backreference_bundle_specs()[0]
+    (bundle,) = load_fixture_bundles((named_bundle_spec,))
+
+    assert_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=str_case_pattern,
+        expected_fixture_path=FIXTURES_DIR / "named_backreference_workflows.py",
+    )
+    assert (bundle.manifest.path,) == (
+        FIXTURES_DIR / "named_backreference_workflows.py",
+    )
+
+
+def test_fixture_bundle_exposes_derived_manifest_id_without_storing_duplicate_field(
+) -> None:
+    field_names = {field.name for field in fields(FixtureBundle)}
+    named_bundle_spec = _whole_manifest_backreference_bundle_specs()[0]
+    (bundle,) = load_fixture_bundles((named_bundle_spec,))
+
+    assert "expected_manifest_id" not in field_names
+    assert bundle.expected_manifest_id == "named-backreference-workflows"
+    assert bundle.expected_manifest_id == bundle.manifest.manifest_id
 
 
 @pytest.mark.parametrize("bundle", FIXTURE_BUNDLES, ids=lambda bundle: bundle.expected_manifest_id)

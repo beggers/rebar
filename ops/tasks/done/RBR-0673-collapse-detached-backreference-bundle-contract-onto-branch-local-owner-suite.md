@@ -1,8 +1,9 @@
 # RBR-0673: Collapse the detached backreference bundle contract onto the branch-local owner suite
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-19
+Completed: 2026-03-19
 
 ## Goal
 - Move the remaining named/numbered whole-manifest backreference bundle-contract checks off `tests/python/test_fixture_parity_support_contract.py` and onto `tests/python/test_branch_local_backreference_parity_suite.py`, so the branch-local/backreference owner keeps its bundle-order, manifest-path, and derived-manifest-id contract beside the exact fixture bundles it already loads instead of leaving that slice in a detached helper-contract suite.
@@ -82,3 +83,13 @@ PY`
 - This simplification matches the current information flow:
   - `tests/python/test_branch_local_backreference_parity_suite.py` already owns the named/numbered/branch-local backreference bundle specs, the loaded `FIXTURE_BUNDLES`, frontier coverage, and direct-test bucket contracts; and
   - the detached support file is only keeping an extra branch-local/named-numbered bundle-contract seam alive beside that owner.
+
+## Completion Note
+- 2026-03-19: Moved the named/numbered whole-manifest backreference bundle-contract slice onto `tests/python/test_branch_local_backreference_parity_suite.py`, using a file-local helper derived from its existing `FIXTURE_BUNDLE_SPECS` declarations and keeping the exact bundle order, case ids, patterns, fixture paths, and derived `FixtureBundle.expected_manifest_id` checks intact.
+- 2026-03-19: Removed the detached helper and five owner-specific contract tests from `tests/python/test_fixture_parity_support_contract.py`, along with the now-unused `fields` import there.
+
+## Verification
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_branch_local_backreference_parity_suite.py` (`564 passed`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_fixture_parity_support_contract.py` (`138 passed`)
+- 2026-03-19: `PYTHONPATH=python ./.venv/bin/python - <<'PY' ... PY` (`ok`)
+- 2026-03-19: `bash -lc "! rg -n '_whole_manifest_backreference_bundle_specs|test_whole_manifest_bundle_specs_load_in_declared_order_with_bundle_validation|test_fixture_case_operation_selection_preserves_published_row_order|test_whole_manifest_bundle_contract_supports_exact_case_id_validation|test_expected_fixture_bundle_contract_supports_exact_case_id_validation|test_fixture_bundle_exposes_derived_manifest_id_without_storing_duplicate_field' tests/python/test_fixture_parity_support_contract.py"` (no matches)
