@@ -25,6 +25,7 @@ use rebar_core::{
     nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_bytes as core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_bytes,
     nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_str as core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_conditional_find_spans_str,
     nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_bytes as core_nested_broader_range_open_ended_quantified_group_alternation_branch_local_backreference_find_spans_bytes,
+    nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_find_spans_bytes as core_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_find_spans_bytes,
     nested_capture_find_spans_str as core_nested_capture_find_spans_str,
     quantified_nested_capture_find_spans_str as core_quantified_nested_capture_find_spans_str,
     quantified_nested_group_alternation_branch_local_backreference_find_spans_str as core_quantified_nested_group_alternation_branch_local_backreference_find_spans_str,
@@ -33,6 +34,10 @@ use rebar_core::{
 };
 
 const SCAFFOLD_STATUS: &str = "scaffold-only";
+const NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NUMBERED_BYTES_TEMPLATE_PATTERN: &[u8] =
+    br"a((b|c){1,4})\2d";
+const NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NAMED_BYTES_TEMPLATE_PATTERN: &[u8] =
+    br"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d";
 const NESTED_BROADER_RANGE_OPEN_ENDED_NUMBERED_BYTES_TEMPLATE_PATTERN: &[u8] = br"a((b|c){2,})\2d";
 const NESTED_BROADER_RANGE_OPEN_ENDED_NAMED_BYTES_TEMPLATE_PATTERN: &[u8] =
     br"a(?P<outer>(?P<inner>b|c){2,})(?P=inner)d";
@@ -122,7 +127,9 @@ fn replacement_limit(count: isize, total_matches: usize) -> usize {
 }
 
 fn supports_capture_sensitive_template_bytes_pattern(pattern: &[u8]) -> bool {
-    pattern == NESTED_BROADER_RANGE_OPEN_ENDED_NUMBERED_BYTES_TEMPLATE_PATTERN
+    pattern == NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NUMBERED_BYTES_TEMPLATE_PATTERN
+        || pattern == NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NAMED_BYTES_TEMPLATE_PATTERN
+        || pattern == NESTED_BROADER_RANGE_OPEN_ENDED_NUMBERED_BYTES_TEMPLATE_PATTERN
         || pattern == NESTED_BROADER_RANGE_OPEN_ENDED_NAMED_BYTES_TEMPLATE_PATTERN
         || pattern == NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NUMBERED_BYTES_TEMPLATE_PATTERN
         || pattern == NESTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_NAMED_BYTES_TEMPLATE_PATTERN
@@ -133,6 +140,19 @@ fn collect_capture_sensitive_template_matches_bytes(
     flags: i32,
     string: &[u8],
 ) -> PyResult<(MatchStatus, Vec<CapturedMatchSpan>)> {
+    if pattern == NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NUMBERED_BYTES_TEMPLATE_PATTERN
+        || pattern == NESTED_BROADER_RANGE_WIDER_RANGED_REPEAT_NAMED_BYTES_TEMPLATE_PATTERN
+    {
+        let outcome =
+            core_nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_find_spans_bytes(
+                pattern,
+                flags,
+                string,
+                0,
+                None,
+            );
+        return Ok((outcome.status, outcome.matches));
+    }
     if pattern == NESTED_BROADER_RANGE_OPEN_ENDED_NUMBERED_BYTES_TEMPLATE_PATTERN
         || pattern == NESTED_BROADER_RANGE_OPEN_ENDED_NAMED_BYTES_TEMPLATE_PATTERN
     {

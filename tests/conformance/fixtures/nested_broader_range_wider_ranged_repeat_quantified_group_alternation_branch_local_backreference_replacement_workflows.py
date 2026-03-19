@@ -432,7 +432,7 @@ MANIFEST = {
                 "gap",
             ],
             "notes": [
-                "Publishes the broader `{1,4}` numbered module-level nested grouped-alternation plus same-branch backreference replacement-template lower-bound path on `abbd` with bytes payloads, so the outer capture stays visible through `\\1x` while bytes parity remains queued behind RBR-0657.",
+                "Publishes the broader `{1,4}` numbered module-level nested grouped-alternation plus same-branch backreference replacement-template lower-bound path on `abbd` with bytes payloads, so the outer capture stays visible through `\\1x` on the shared mixed-text parity surface.",
             ],
         },
         {
@@ -493,7 +493,7 @@ MANIFEST = {
                 "gap",
             ],
             "notes": [
-                "Publishes the broader `{1,4}` numbered module-level replacement-template first-match-only path on `abbbdaccd` with bytes payloads, so the leading repeated-branch match exposes the final inner `b` branch through `\\2x` while the bytes replacement follow-on stays explicit.",
+                "Publishes the broader `{1,4}` numbered module-level replacement-template first-match-only path on `abbbdaccd` with bytes payloads, so the leading repeated-branch match exposes the final inner `b` branch through `\\2x` while the trailing `c`-branch replay stays untouched.",
             ],
         },
         {
@@ -545,7 +545,7 @@ MANIFEST = {
                 "gap",
             ],
             "notes": [
-                "Publishes the broader `{1,4}` Pattern.sub numbered replacement-template mixed-branch path on `abcbccd` with bytes payloads, so the outer capture stays explicit on the shared bytes publication surface while runtime parity remains a follow-on.",
+                "Publishes the broader `{1,4}` Pattern.sub numbered replacement-template mixed-branch path on `abcbccd` with bytes payloads, so the outer capture stays explicit on the shared mixed-text parity surface.",
             ],
         },
         {
@@ -601,7 +601,7 @@ MANIFEST = {
                 "gap",
             ],
             "notes": [
-                "Publishes the broader `{1,4}` Pattern.subn numbered replacement-template first-match-only path on a leading `accd` match with bytes payloads, keeping the final inner `c` branch observable while the bytes follow-on stays honest.",
+                "Publishes the broader `{1,4}` Pattern.subn numbered replacement-template first-match-only path on a leading `accd` match with bytes payloads, keeping the final inner `c` branch observable while the later mixed-branch replay remains unchanged.",
             ],
         },
         {
@@ -657,7 +657,7 @@ MANIFEST = {
                 "gap",
             ],
             "notes": [
-                "Publishes the broader `{1,4}` named module-level replacement-template mixed-branch path on `abcbccd` with bytes payloads, so the visible `outer` capture stays observable through `\\g<outer>x` while bytes parity remains queued behind RBR-0657.",
+                "Publishes the broader `{1,4}` named module-level replacement-template mixed-branch path on `abcbccd` with bytes payloads, so the visible `outer` capture stays observable through `\\g<outer>x` on the shared mixed-text parity surface.",
             ],
         },
         {
@@ -718,7 +718,7 @@ MANIFEST = {
                 "gap",
             ],
             "notes": [
-                "Publishes the broader `{1,4}` named module-level replacement-template first-match-only path on `abbbdaccd` with bytes payloads, so the leading repeated-branch match keeps the final `inner` value observable while the bytes replacement follow-on stays explicit.",
+                "Publishes the broader `{1,4}` named module-level replacement-template first-match-only path on `abbbdaccd` with bytes payloads, so the leading repeated-branch match keeps the final `inner` value observable while the trailing `c`-branch replay stays untouched.",
             ],
         },
         {
@@ -771,7 +771,7 @@ MANIFEST = {
                 "gap",
             ],
             "notes": [
-                "Publishes the broader `{1,4}` Pattern.sub named replacement-template upper-bound path on `acccccd` with bytes payloads, so the visible `outer` capture remains explicit across four `c`-branch repetitions while the bytes parity follow-on stays queued.",
+                "Publishes the broader `{1,4}` Pattern.sub named replacement-template upper-bound path on `acccccd` with bytes payloads, so the visible `outer` capture remains explicit across four `c`-branch repetitions before the final replay.",
             ],
         },
         {
@@ -827,7 +827,7 @@ MANIFEST = {
                 "gap",
             ],
             "notes": [
-                "Publishes the broader `{1,4}` Pattern.subn named replacement-template first-match-only path on a leading `acccccd` match with bytes payloads, keeping the final `inner` `c` branch observable while the later `b`-branch replay remains queued for parity.",
+                "Publishes the broader `{1,4}` Pattern.subn named replacement-template first-match-only path on a leading `acccccd` match with bytes payloads, keeping the final `inner` `c` branch observable while the later `b`-branch replay remains unchanged.",
             ],
         },
     ],

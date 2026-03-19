@@ -12,9 +12,9 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness is 1318/1326 cases across 111 manifests with 8 honest gaps; the benchmark publication is 739/739 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
-| Current milestone | `RBR-0657` should convert the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template bytes pair behind `rebar._rebar` on `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_fixture_backed_replacement_parity_suite.py`, and `reports/correctness/latest.py`, so the mixed-text replacement manifest moves from `16` total / `8` passed / `8` `unimplemented` to `16` / `16` / `0` and the published correctness surface can reach `1326` total / `1326` passed / `0` `unimplemented` across the same `111` manifests. |
-| Work queue | `1` ready, `0` in progress, `656` done, `0` blocked |
+| Delivery estimate | Published correctness is 1326/1326 cases across 111 manifests with 0 honest gaps; the benchmark publication is 739/739 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
+| Current milestone | `RBR-0659` should catch the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template bytes pair up on the existing `benchmarks/workloads/nested_group_replacement_boundary.py` surface, so the shared replacement benchmark owner grows from `36` total / `36` measured / `0` known-gap workloads to `40` / `40` / `0` and the published source-tree benchmark report can move from `739` total / `739` measured / `0` known gaps to `743` / `743` / `0` across the same `30` manifests. |
+| Work queue | `1` ready, `0` in progress, `658` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
@@ -22,13 +22,13 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Metric | Value |
 | --- | --- |
 | Published cases | `1326` |
-| Passing in published slice | `1318` |
+| Passing in published slice | `1326` |
 | Explicit failures | `0` |
-| Honest gaps (`unimplemented`) | `8` |
+| Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `111` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness is 1318/1326 cases across 111 manifests with 8 honest gaps; the benchmark publication is 739/739 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness is 1326/1326 cases across 111 manifests with 0 honest gaps; the benchmark publication is 739/739 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
 
 ### Benchmark Snapshot
 
@@ -45,7 +45,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ### Immediate Next Steps
 
-- `RBR-0657`: convert the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template bytes pair behind `rebar._rebar`, moving the mixed-text manifest from `16` total / `8` passed / `8` `unimplemented` to `16` / `16` / `0` and the published correctness surface from `1326` total / `1318` passed / `8` `unimplemented` to `1326` / `1326` / `0`.
+- `RBR-0659`: catch the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template bytes pair up on `benchmarks/workloads/nested_group_replacement_boundary.py`, moving that shared benchmark owner from `36` total / `36` measured / `0` known-gap workloads to `40` / `40` / `0` and the published source-tree benchmark surface from `739` / `739` / `0` to `743` / `743` / `0`.
 
 ### Current Risks
 
