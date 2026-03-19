@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0651` should turn the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template `str` rows on the shared replacement path in `crates/rebar-core/src/lib.rs`, `crates/rebar-cpython/src/lib.rs`, `python/rebar/__init__.py`, `tests/python/test_fixture_backed_replacement_parity_suite.py`, and `reports/correctness/latest.py` into real Rust-backed parity, so the expanded combined report moves from `1318` total / `1310` passed / `8` `unimplemented` across `111` manifests to `1318` / `1318` / `0` while keeping that slice on the ordinary replacement surface before later Python-path benchmark catch-up reopens the family.
+`RBR-0653` should catch the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template `str` slice up on `benchmarks/workloads/nested_group_replacement_boundary.py`, `tests/benchmarks/benchmark_expectations.py`, `tests/benchmarks/test_source_tree_benchmark_scorecards.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, and `reports/benchmarks/latest.py`, so the published benchmark report moves from `735` total / `735` measured / `0` known gaps across `30` manifests to `739` / `739` / `0` once that same slice is live behind `rebar._rebar`.
 
 ## Ordered Work
-1. `RBR-0651` should convert the 8 `str` replacement-template rows for `a((b|c){1,4})\\2d` with `\\1x` / `\\2x` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d` with `\\g<outer>x` / `\\g<inner>x` into real module and compiled-`Pattern` `sub()` / `subn()` parity on the shared replacement suite, reusing the lower-bound, first-match-only, mixed-branch, and upper-bound owner shapes already pinned on the publication path so later benchmark catch-up can mirror the same slice on `benchmarks/workloads/nested_group_replacement_boundary.py` without another synthesis pass.
+1. `RBR-0653` should add the 4 representative `str` benchmark rows for `a((b|c){1,4})\\2d` with `\\1x` / `\\2x` and `a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d` with `\\g<outer>x` / `\\g<inner>x` to `benchmarks/workloads/nested_group_replacement_boundary.py`, reusing the lower-bound, first-match-only, and upper-bound owner shapes already pinned on the shared replacement path so the same slice reaches the existing Python-path benchmark surface without another synthesis pass.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

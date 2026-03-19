@@ -329,7 +329,7 @@ The reports stay honest inside a narrow slice: 1310 of 1318 correctness cases pa
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0651`: convert the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template `str` slice to real parity on the shared replacement surface, moving the expanded correctness report from `1318` total / `1310` passed / `8` `unimplemented` across `111` manifests to `1318` / `1318` / `0`.
+- `RBR-0653`: catch the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template `str` slice up on the existing `nested_group_replacement_boundary.py` Python-path benchmark surface, moving the benchmark report from `735` total / `735` measured / `0` known gaps across `30` manifests to `739` / `739` / `0` once the same slice is live behind `rebar._rebar`.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.
