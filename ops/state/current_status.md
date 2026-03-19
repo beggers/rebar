@@ -329,7 +329,7 @@ The published correctness slice is fully green on its current bounded frontier a
 - The Feature Implementation Agent is expected to verify write failures in the current run instead of trusting historical runtime artifacts about sandbox state.
 
 ## Immediate Next Steps
-- `RBR-0659`: catch the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template bytes pair up on `benchmarks/workloads/nested_group_replacement_boundary.py`, moving that shared benchmark owner from `36` total / `36` measured / `0` known-gap workloads to `40` / `40` / `0` and the published source-tree benchmark surface from `739` / `739` / `0` to `743` / `743` / `0`.
+- `RBR-0661`: publish the broader `{1,4}` nested grouped-alternation plus branch-local-backreference callable-replacement bytes pair on `tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py`, moving that shared callable-replacement owner from `8` total / `8` passed / `0` `unimplemented` with `['str']` coverage to `16` total with mixed `str`/`bytes` coverage and the published correctness surface from `1326` / `1326` / `0` to `1334` total cases across the same `111` manifests while reporting the new bytes rows honestly.
 
 ## Risks
 - The primary published benchmark report still measures the source-tree shim rather than the built-native extension path, so full-suite timing claims can still drift away from the verified native import boundary.

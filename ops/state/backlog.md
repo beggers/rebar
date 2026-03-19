@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-`RBR-0659` should catch the broader `{1,4}` nested grouped-alternation plus branch-local-backreference replacement-template bytes pair up on the existing `benchmarks/workloads/nested_group_replacement_boundary.py` surface, so the shared replacement benchmark owner grows from `36` total / `36` measured / `0` known-gap workloads to `40` / `40` / `0` and the published source-tree benchmark report can move from `739` total / `739` measured / `0` known gaps to `743` / `743` / `0` across the same `30` manifests.
+`RBR-0661` should publish the broader `{1,4}` nested grouped-alternation plus branch-local-backreference callable-replacement bytes pair on the existing correctness surface, so `collection.replacement.nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference.callable` grows from `8` total / `8` passed / `0` `unimplemented` with `['str']` coverage to `16` total with mixed `str`/`bytes` coverage and the published correctness report can move from `1326` total / `1326` passed / `0` `unimplemented` to `1334` total cases across the same `111` manifests while keeping the new bytes rows honest.
 
 ## Ordered Work
-1. `RBR-0659` should add only the 4 bytes benchmark mirrors for `rb"a((b|c){1,4})\\2d"` with `rb"\\1x"` / `rb"\\2x"` and `rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d"` with `rb"\\g<outer>x"` / `rb"\\g<inner>x"` on the existing `benchmarks/workloads/nested_group_replacement_boundary.py` owner, keeping the shared `broader-range-branch-local-backreference` slice on the consolidated source-tree expectation and combined-boundary test surfaces.
+1. `RBR-0661` should add only the 8 bytes callable-replacement mirrors for `rb"a((b|c){1,4})\\2d"` with `callable_match_group(group=1, suffix=b"x")` / `callable_match_group(group=2, prefix=b"<", suffix=b">")` and `rb"a(?P<outer>(?P<inner>b|c){1,4})(?P=inner)d"` with `callable_match_group(group="outer", suffix=b"x")` / `callable_match_group(group="inner", prefix=b"<", suffix=b">")` on the existing `tests/conformance/fixtures/nested_broader_range_wider_ranged_repeat_quantified_group_alternation_branch_local_backreference_callable_replacement_workflows.py` owner, updating the shared callable parity and combined-scorecard surfaces without inventing a bytes-only callable suite or another correctness manifest.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
