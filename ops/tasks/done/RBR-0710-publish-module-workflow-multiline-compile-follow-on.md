@@ -1,6 +1,6 @@
 # RBR-0710: Publish the module-workflow multiline compile follow-on
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-19
 
@@ -48,3 +48,12 @@ Created: 2026-03-19
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes the shared verbose `str` and `bytes` compile rows but no multiline-only sibling on the same pattern family;
   - `reports/correctness/latest.py` currently reports `1383` total / `1383` passed / `0` `unimplemented` across `114` manifests, so reopening the frontier now has to come from an adjacent pinned gap rather than an already-published `unimplemented` row; and
   - `benchmarks/workloads/regression_matrix.py` already owns the adjacent verbose module-compile regression rows for this exact pattern family, so any later benchmark catch-up can stay on the shared regression manifest instead of inventing another compile surface.
+
+## Completion
+- 2026-03-19: Added the exact `workflow-compile-str-multiline-regression` row to `tests/conformance/fixtures/module_workflow_surface.py` on the existing shared module-workflow manifest, reusing the same `str` regression pattern as the adjacent verbose compile rows with `flags == 8` and no new bytes sibling or execution coverage.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the shared compile owner path now publishes six compile rows, keeps the multiline row in the ordered compile inventory, and treats the live `rebar.compile(pattern, rebar.MULTILINE)` call as an explicit pinned `NotImplementedError` gap instead of pretending parity already exists.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` and republished `reports/correctness/latest.py`; the tracked combined report now shows `1384` total / `1383` passed / `1` unimplemented across `114` manifests, with `module.workflow` at `14` / `13` / `1` and `module.workflow.compile` at `6` / `5` / `1`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0710-module-workflow-multiline.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

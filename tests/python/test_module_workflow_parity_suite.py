@@ -158,6 +158,7 @@ MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-compile-str-literal",
     "workflow-compile-str-anchored-literal",
     "workflow-compile-str-verbose-regression",
+    "workflow-compile-str-multiline-regression",
     "workflow-compile-bytes-verbose-regression",
     "workflow-compile-bytes-literal",
     "workflow-pattern-search-str",
@@ -186,7 +187,7 @@ MODULE_WORKFLOW_EXPECTED_PATTERNS = frozenset(
 )
 MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
-        ("compile", None): 5,
+        ("compile", None): 6,
         ("pattern_call", "search"): 1,
         ("pattern_call", "match"): 1,
         ("pattern_call", "fullmatch"): 1,
@@ -238,9 +239,13 @@ NOFLAG_COMPILE_CASES = tuple(
     case for case in COMPILE_CASES if (case.flags or 0) == 0
 )
 VERBOSE_COMPILE_CASE_ID = "workflow-compile-str-verbose-regression"
+MULTILINE_COMPILE_CASE_ID = "workflow-compile-str-multiline-regression"
 VERBOSE_BYTES_COMPILE_CASE_ID = "workflow-compile-bytes-verbose-regression"
 (VERBOSE_COMPILE_CASE,) = tuple(
     case for case in COMPILE_CASES if case.case_id == VERBOSE_COMPILE_CASE_ID
+)
+(MULTILINE_COMPILE_CASE,) = tuple(
+    case for case in COMPILE_CASES if case.case_id == MULTILINE_COMPILE_CASE_ID
 )
 PATTERN_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "pattern_call")
 CACHE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "cache_workflow")
@@ -467,6 +472,7 @@ MODULE_WORKFLOW_COMPILE_ONLY_CASE_IDS = (
     "workflow-compile-str-literal",
     "workflow-compile-str-anchored-literal",
     VERBOSE_COMPILE_CASE_ID,
+    MULTILINE_COMPILE_CASE_ID,
     VERBOSE_BYTES_COMPILE_CASE_ID,
     "workflow-compile-bytes-literal",
 )
@@ -1797,7 +1803,7 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
     )
 
 
-def test_module_workflow_surface_bundle_contract_covers_verbose_compile_cases() -> None:
+def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases() -> None:
     assert MODULE_WORKFLOW_BUNDLE.manifest.path == MODULE_WORKFLOW_FIXTURE_PATH
     assert_fixture_bundle_contract(
         MODULE_WORKFLOW_BUNDLE,
@@ -1808,6 +1814,7 @@ def test_module_workflow_surface_bundle_contract_covers_verbose_compile_cases() 
     assert VERBOSE_COMPILE_CASE.case_id == VERBOSE_COMPILE_CASE_ID
     assert {
         VERBOSE_COMPILE_CASE_ID,
+        MULTILINE_COMPILE_CASE_ID,
         VERBOSE_BYTES_COMPILE_CASE_ID,
     } <= {case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases}
 
@@ -2052,6 +2059,16 @@ def test_compile_workflows_match_cpython(
 ) -> None:
     backend_name, backend = regex_backend
     pattern = case_pattern(case)
+
+    if backend_name == "rebar" and case.case_id == MULTILINE_COMPILE_CASE_ID:
+        with pytest.raises(NotImplementedError) as missing_multiline:
+            backend.compile(pattern, case.flags or 0)
+
+        _assert_placeholder_message(
+            missing_multiline.value,
+            "rebar.compile() is a scaffold placeholder",
+        )
+        return
 
     compile_with_cpython_parity(
         backend_name,
@@ -2642,6 +2659,8 @@ def test_source_package_compile_metadata_matches_pinned_literal_contract() -> No
 def test_source_package_verbose_compile_metadata_and_neighbor_gaps_remain_pinned() -> None:
     pattern = case_pattern(VERBOSE_COMPILE_CASE)
     assert isinstance(pattern, str)
+    multiline_pattern = case_pattern(MULTILINE_COMPILE_CASE)
+    assert multiline_pattern == pattern
     bytes_pattern = pattern.encode("ascii")
 
     compiled, expected = _compile_verbose_regression_pattern("rebar", rebar)
@@ -2673,11 +2692,13 @@ def test_source_package_verbose_compile_metadata_and_neighbor_gaps_remain_pinned
         is compiled_bytes
     )
 
-    with pytest.raises(NotImplementedError) as missing_verbose:
-        rebar.compile(pattern, rebar.MULTILINE)
+    assert int(MULTILINE_COMPILE_CASE.flags or 0) == int(rebar.MULTILINE)
+
+    with pytest.raises(NotImplementedError) as missing_multiline:
+        rebar.compile(multiline_pattern, rebar.MULTILINE)
 
     _assert_placeholder_message(
-        missing_verbose.value,
+        missing_multiline.value,
         "rebar.compile() is a scaffold placeholder",
     )
 

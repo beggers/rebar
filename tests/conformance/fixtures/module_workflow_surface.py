@@ -40,6 +40,17 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-compile-str-multiline-regression",
+      "operation": "compile",
+      "family": "compile_workflow",
+      "pattern": "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+      "flags": 8,
+      "categories": ["workflow", "compile", "multiline", "regression", "str"],
+      "notes": [
+        "Publishes the exact multiline-only module compile neighbor gap beside the shared verbose regression rows without broadening into execution or cache-state coverage."
+      ]
+    },
+    {
       "id": "workflow-compile-bytes-verbose-regression",
       "operation": "compile",
       "family": "compile_workflow",
