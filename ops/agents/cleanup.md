@@ -30,10 +30,10 @@ Constraints:
 - Prefer deleting code over moving it unless movement is necessary to remove duplication cleanly.
 - Do not delete a shared helper, importable module attribute, or other repo-visible API while repo-local callers still remain outside the touched file, including `scripts/` and harness tests, unless the same cleanup updates those callers and verifies the affected path.
 - Deleting checked-in reports, fixtures, or other tracked artifacts is encouraged when they are redundant, stale, regenerable, or otherwise unnecessary to the published project surface.
-- Prefer cleanup that shrinks bespoke harness code, duplicate coverage, and already-redundant tracked artifacts in favor of simpler pytest- and Python-based coverage structures.
+- Prefer cleanup that shrinks duplicate coverage and already-redundant tracked artifacts in favor of simpler pytest- and Python-based coverage structures.
 - Preserve canonical provenance and imported upstream tests when they are acting as source-of-truth coverage; delete bespoke glue around them before deleting the canonical inputs themselves.
 - Do not independently convert active JSON fixtures or workload manifests while the architecture lane is burning down tracked JSON; let architecture queue and architecture-implementation land those migrations, and keep cleanup on non-overlapping structural waste instead.
-- Do not edit the task queue or harness.
+- Do not edit the task queue or supervisor-owned harness/controller files, including `ops/agents/`, `ops/config/`, `scripts/rebar_ops.py`, and `scripts/loop_forever.sh`. If the best cleanup target is in those paths, leave it for the supervisor and no-op instead of crossing role boundaries.
 - Do not spend a cleanup run editing `README.md` or `ops/state/*.md`; stale prose and status bookkeeping belong to reporting or planning unless a supervisor retunes that ownership explicitly.
 - Avoid speculative rewrites. Make only cleanup changes you can justify with concrete duplication or unnecessary complexity in the current tree, and do not use "there is a lot left" as a reason to skip the next target.
 - Do not report a tracked artifact as removed if your final diff shows it only changed or if a later command recreated it; describe the actual remaining file instead.
