@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives beyond the active wider `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement parity head.
+No ready feature follow-on currently survives beyond the active wider `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement benchmark catch-up head.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives beyond the active wider `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement parity head on the existing `tests/python/test_callable_replacement_parity_suite.py` / `benchmarks/workloads/nested_group_callable_replacement_boundary.py` owner path.
+1. No ready feature follow-on currently survives beyond the active wider `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement benchmark catch-up head on the existing `benchmarks/workloads/nested_group_callable_replacement_boundary.py` owner path.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.

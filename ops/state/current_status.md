@@ -12,7 +12,7 @@ Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing
 Published correctness is 1342/1342 cases across 112 manifests with 0 honest gaps; the benchmark publication is 747/747 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice.
 
 ## README Next Steps
-- `RBR-0670` is landed, the publications are current at 1342/1342 correctness cases and 747/747 measured benchmark workloads, no ready or in-progress feature follow-on survives after the latest queue drain, and the next bounded Rust-backed follow-on still needs to be seeded.
+- `RBR-0672` is ready to catch the wider `{1,4}` nested grouped-alternation plus branch-local-backreference conditional callable-replacement `str` pair up on the existing `nested_group_callable_replacement_boundary.py` benchmark path, which would move the published benchmark surface from 747/747 to 751/751 measured workloads while correctness stays at 1342/1342.
 
 ## README Risks
 - The main published benchmark report still measures the source-tree shim rather than the built-native extension path.
