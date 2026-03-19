@@ -29,6 +29,7 @@ from tests.python.fixture_parity_support import (
     partition_direct_bytes_follow_on_case_buckets,
     published_bytes_texts_by_pattern as _published_direct_bytes_follow_on_texts_by_pattern,
     published_fixture_bundle_by_manifest_id,
+    record_generated_match_failure,
 )
 BACKTRACKING_BRANCH_TEXT = {
     "short": "b",
@@ -611,31 +612,6 @@ def _generated_candidate_texts(
             spec.bundle.expected_manifest_id
         ]
     return GENERATED_STR_CANDIDATE_TEXTS_BY_MANIFEST_ID[spec.bundle.expected_manifest_id]
-
-
-def _record_generated_match_failure(
-    failures: list[str],
-    *,
-    label: str,
-    backend_name: str,
-    observed: object,
-    expected: re.Match[str] | re.Match[bytes] | None,
-) -> None:
-    try:
-        assert_match_result_parity(
-            backend_name,
-            observed,
-            expected,
-            check_regs=True,
-        )
-        if expected is None:
-            return
-
-        assert_match_convenience_api_parity(observed, expected)
-        assert_valid_match_group_access_parity(observed, expected)
-        assert_invalid_match_group_access_parity(observed, expected)
-    except AssertionError as exc:
-        failures.append(f"{label}: {exc}")
 
 
 QUANTIFIED_ALTERNATION_BOUNDED_BYTES_CASES = (
@@ -1510,14 +1486,14 @@ def test_generated_quantified_alternation_text_matrix_matches_cpython(
     failures: list[str] = []
     for text in _generated_candidate_texts(spec, case):
         for helper in HELPERS:
-            _record_generated_match_failure(
+            record_generated_match_failure(
                 failures,
                 label=f"module.{helper}({pattern!r}, {text!r})",
                 backend_name=backend_name,
                 observed=getattr(backend, helper)(pattern, text),
                 expected=getattr(re, helper)(pattern, text),
             )
-            _record_generated_match_failure(
+            record_generated_match_failure(
                 failures,
                 label=f"pattern.{helper}({pattern!r}, {text!r})",
                 backend_name=backend_name,

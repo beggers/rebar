@@ -1135,6 +1135,31 @@ def assert_match_group_access_parity(
     assert_invalid_match_group_access_parity(observed, expected)
 
 
+def record_generated_match_failure(
+    failures: list[str],
+    *,
+    label: str,
+    backend_name: str,
+    observed: object,
+    expected: re.Match[str] | re.Match[bytes] | None,
+) -> None:
+    try:
+        assert_match_result_parity(
+            backend_name,
+            observed,
+            expected,
+            check_regs=True,
+        )
+        if expected is None:
+            return
+
+        assert_match_convenience_api_parity(observed, expected)
+        assert_valid_match_group_access_parity(observed, expected)
+        assert_invalid_match_group_access_parity(observed, expected)
+    except AssertionError as exc:
+        failures.append(f"{label}: {exc}")
+
+
 def _assert_optional_match_case_parity(
     backend_name: str,
     observed: object,

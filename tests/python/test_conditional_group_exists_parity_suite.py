@@ -21,6 +21,7 @@ from tests.python.fixture_parity_support import (
     fixture_cases_for_operation,
     load_fixture_bundles,
     published_fixture_bundle_by_manifest_id,
+    record_generated_match_failure,
     str_case_pattern,
 )
 
@@ -819,31 +820,6 @@ GENERATED_QUANTIFIED_CONDITIONAL_COMPILE_CASES = tuple(
 )
 
 
-def _record_generated_match_failure(
-    failures: list[str],
-    *,
-    label: str,
-    backend_name: str,
-    observed: object,
-    expected: re.Match[str] | re.Match[bytes] | None,
-) -> None:
-    try:
-        assert_match_result_parity(
-            backend_name,
-            observed,
-            expected,
-            check_regs=True,
-        )
-        if expected is None:
-            return
-
-        assert_match_convenience_api_parity(observed, expected)
-        assert_valid_match_group_access_parity(observed, expected)
-        assert_invalid_match_group_access_parity(observed, expected)
-    except AssertionError as exc:
-        failures.append(f"{label}: {exc}")
-
-
 PATTERN_BOUNDS_MATCH_CASES = (
     BoundedPatternCase(
         id="optional-group-conditional-search-normalizes-negative-and-oversized-bounds",
@@ -1333,14 +1309,14 @@ def test_generated_quantified_conditional_text_matrix_matches_cpython(
         spec.bundle.expected_manifest_id
     ]:
         for helper in HELPERS:
-            _record_generated_match_failure(
+            record_generated_match_failure(
                 failures,
                 label=f"module.{helper}({pattern!r}, {text!r})",
                 backend_name=backend_name,
                 observed=getattr(backend, helper)(pattern, text),
                 expected=getattr(re, helper)(pattern, text),
             )
-            _record_generated_match_failure(
+            record_generated_match_failure(
                 failures,
                 label=f"pattern.{helper}({pattern!r}, {text!r})",
                 backend_name=backend_name,
