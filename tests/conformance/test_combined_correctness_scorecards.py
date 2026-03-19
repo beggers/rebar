@@ -2411,7 +2411,9 @@ def _correctness_summary(cases: list[dict[str, Any]]) -> dict[str, int]:
         "executed_cases": len(cases),
         "failed_cases": sum(1 for case in cases if case["comparison"] == "fail"),
         "passed_cases": sum(1 for case in cases if case["comparison"] == "pass"),
-        "skipped_cases": sum(1 for case in cases if case["comparison"] == "skip"),
+        "skipped_cases": sum(
+            1 for case in cases if case["comparison"] == "skipped"
+        ),
         "total_cases": len(cases),
         "unimplemented_cases": sum(
             1 for case in cases if case["comparison"] == "unimplemented"
@@ -3198,6 +3200,31 @@ class CorrectnessBuilderContractTest(unittest.TestCase):
                     "error": 1,
                 },
             },
+        )
+
+    def test_build_summary_counts_each_supported_comparison_bucket(self) -> None:
+        case_results = [
+            {"comparison": "pass"},
+            {"comparison": "pass"},
+            {"comparison": "fail"},
+            {"comparison": "unimplemented"},
+            {"comparison": "skipped"},
+        ]
+
+        self.assertEqual(
+            correctness.build_summary(case_results),
+            {
+                "total_cases": 5,
+                "executed_cases": 5,
+                "passed_cases": 2,
+                "failed_cases": 1,
+                "unimplemented_cases": 1,
+                "skipped_cases": 1,
+            },
+        )
+        self.assertEqual(
+            correctness.build_summary(case_results),
+            _correctness_summary(case_results),
         )
 
     def test_build_scorecard_aggregates_correctness_summaries_and_suite_fanout(
