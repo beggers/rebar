@@ -5659,15 +5659,6 @@ OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
     "module-search-numbered-optional-group-conditional-cold-gap"
 )
 
-OPEN_ENDED_DIRECT_PARITY_BYTES_CASES = (
-    *OPEN_ENDED_ALTERNATION_BYTES_CASES,
-    *OPEN_ENDED_CONDITIONAL_BYTES_CASES,
-    *OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
-    *BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
-    *BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
-    *BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
-)
-
 
 def _compile_proxy_signature(
     pattern: str | bytes,
@@ -6711,7 +6702,14 @@ STANDARD_BENCHMARK_DEFINITIONS = (
             "module-search-named-open-ended-group-backtracking-heavy-third-repetition-mixed-warm-bytes",
             "pattern-fullmatch-named-open-ended-group-backtracking-heavy-purged-bytes",
         ),
-        direct_parity_supplemental_cases=OPEN_ENDED_DIRECT_PARITY_BYTES_CASES,
+        direct_parity_supplemental_cases=(
+            *OPEN_ENDED_ALTERNATION_BYTES_CASES,
+            *OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+            *OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+            *BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
+            *BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+            *BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+        ),
         run_special_unanchored_result_parity=True,
     ),
 )
