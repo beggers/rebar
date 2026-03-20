@@ -769,6 +769,7 @@ def _invoke_collection_helper(
 
 
 _LITERAL_COLLECTION_MATRIX_ALPHABET = "ab"
+_LITERAL_MATCH_HELPERS = ("search", "match", "fullmatch")
 _LITERAL_COLLECTION_SPLIT_COUNTS = (0, 1, -1)
 
 
@@ -810,7 +811,7 @@ def _literal_collection_window_cases(
     return tuple(windows)
 
 
-def _call_pattern_collection_helper_with_window(
+def _call_pattern_helper_with_window(
     pattern: object,
     helper: str,
     string: str | bytes,
@@ -821,6 +822,37 @@ def _call_pattern_collection_helper_with_window(
     if endpos is None:
         return method(string, pos)
     return method(string, pos, endpos)
+
+
+def _assert_literal_match_helper_result_matches_cpython(
+    *,
+    backend_name: str,
+    context: str,
+    helper: str,
+    pattern: str | bytes,
+    string: str | bytes,
+    observed: object,
+    expected: re.Match[str] | re.Match[bytes] | None,
+    pos: int | None = None,
+    endpos: int | None = None,
+) -> None:
+    try:
+        assert_match_result_parity(
+            backend_name,
+            observed,
+            expected,
+            check_regs=True,
+        )
+        if expected is not None:
+            assert_match_convenience_api_parity(observed, expected)
+    except AssertionError as exc:
+        window_suffix = ""
+        if pos is not None or endpos is not None:
+            window_suffix = f", pos={pos}, endpos={endpos}"
+        raise AssertionError(
+            f"{backend_name} {context} {helper} mismatch for "
+            f"pattern={pattern!r}, string={string!r}{window_suffix}"
+        ) from exc
 
 
 def _call_bounded_wildcard_pattern_helper(
@@ -4124,14 +4156,14 @@ def test_literal_collection_matrix_findall_and_finditer_match_cpython(
                 ) from exc
 
             for pos, endpos in _literal_collection_window_cases(len(string)):
-                observed_bound_findall = _call_pattern_collection_helper_with_window(
+                observed_bound_findall = _call_pattern_helper_with_window(
                     observed_pattern,
                     "findall",
                     string,
                     pos,
                     endpos,
                 )
-                expected_bound_findall = _call_pattern_collection_helper_with_window(
+                expected_bound_findall = _call_pattern_helper_with_window(
                     expected_pattern,
                     "findall",
                     string,
@@ -4146,14 +4178,14 @@ def test_literal_collection_matrix_findall_and_finditer_match_cpython(
                 try:
                     assert_finditer_parity(
                         backend_name,
-                        _call_pattern_collection_helper_with_window(
+                        _call_pattern_helper_with_window(
                             observed_pattern,
                             "finditer",
                             string,
                             pos,
                             endpos,
                         ),
-                        _call_pattern_collection_helper_with_window(
+                        _call_pattern_helper_with_window(
                             expected_pattern,
                             "finditer",
                             string,
@@ -4209,6 +4241,115 @@ def test_literal_collection_matrix_module_find_helpers_accept_compiled_patterns(
                     f"{backend_name} compiled-pattern module finditer mismatch for "
                     f"pattern={pattern!r}, string={string!r}"
                 ) from exc
+
+
+@pytest.mark.parametrize(
+    "text_model",
+    (
+        pytest.param("str", id="str"),
+        pytest.param("bytes", id="bytes"),
+    ),
+)
+def test_literal_match_matrix_module_helpers_match_cpython(
+    regex_backend: tuple[str, object],
+    text_model: str,
+) -> None:
+    backend_name, backend = regex_backend
+    patterns, strings = _literal_collection_matrix_payloads(text_model)
+
+    for pattern in patterns:
+        for string in strings:
+            for helper in _LITERAL_MATCH_HELPERS:
+                _assert_literal_match_helper_result_matches_cpython(
+                    backend_name=backend_name,
+                    context="module",
+                    helper=helper,
+                    pattern=pattern,
+                    string=string,
+                    observed=getattr(backend, helper)(pattern, string),
+                    expected=getattr(re, helper)(pattern, string),
+                )
+
+
+@pytest.mark.parametrize(
+    "text_model",
+    (
+        pytest.param("str", id="str"),
+        pytest.param("bytes", id="bytes"),
+    ),
+)
+def test_literal_match_matrix_module_helpers_accept_compiled_patterns(
+    regex_backend: tuple[str, object],
+    text_model: str,
+) -> None:
+    backend_name, backend = regex_backend
+    patterns, strings = _literal_collection_matrix_payloads(text_model)
+
+    for pattern in patterns:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+        )
+        for string in strings:
+            for helper in _LITERAL_MATCH_HELPERS:
+                _assert_literal_match_helper_result_matches_cpython(
+                    backend_name=backend_name,
+                    context="compiled-pattern module",
+                    helper=helper,
+                    pattern=pattern,
+                    string=string,
+                    observed=getattr(backend, helper)(observed_pattern, string),
+                    expected=getattr(re, helper)(expected_pattern, string),
+                )
+
+
+@pytest.mark.parametrize(
+    "text_model",
+    (
+        pytest.param("str", id="str"),
+        pytest.param("bytes", id="bytes"),
+    ),
+)
+def test_literal_match_matrix_pattern_helpers_match_cpython_with_windows(
+    regex_backend: tuple[str, object],
+    text_model: str,
+) -> None:
+    backend_name, backend = regex_backend
+    patterns, strings = _literal_collection_matrix_payloads(text_model)
+
+    for pattern in patterns:
+        observed_pattern, expected_pattern = compile_with_cpython_parity(
+            backend_name,
+            backend,
+            pattern,
+        )
+        for string in strings:
+            for pos, endpos in _literal_collection_window_cases(len(string)):
+                for helper in _LITERAL_MATCH_HELPERS:
+                    _assert_literal_match_helper_result_matches_cpython(
+                        backend_name=backend_name,
+                        context="pattern",
+                        helper=helper,
+                        pattern=pattern,
+                        string=string,
+                        observed=_call_pattern_helper_with_window(
+                            observed_pattern,
+                            helper,
+                            string,
+                            pos,
+                            endpos,
+                        ),
+                        expected=_call_pattern_helper_with_window(
+                            expected_pattern,
+                            helper,
+                            string,
+                            pos,
+                            endpos,
+                        ),
+                        pos=pos,
+                        endpos=endpos,
+                    )
 
 
 @pytest.mark.parametrize(
