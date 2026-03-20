@@ -1,6 +1,6 @@
 # RBR-0723: Collapse wider-ranged-repeat direct-test bucket registry onto canonical case owners
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
 
@@ -112,3 +112,8 @@ PY` reported the existing tail through `RBR-0722`, no reserved missing tail ids,
 - This simplification stays on the same bounded post-JSON parity-harness cleanup track as the most recent architecture work:
   - `ops/tasks/done/RBR-0709-collapse-wider-ranged-repeat-direct-bytes-follow-on-sidecars.md` already retired the mirrored direct-bytes sidecars from this same owner file; and
   - `ops/tasks/done/RBR-0719-collapse-branch-local-direct-test-bucket-sidecar-onto-canonical-case-owners.md` plus `ops/tasks/done/RBR-0721-collapse-quantified-alternation-direct-test-bucket-registry-onto-canonical-case-owners.md` already removed the same style of detached direct-test bucket owner layer from adjacent parity suites.
+
+## Completion Notes
+- 2026-03-20: Replaced `WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS` with the file-local `_wider_ranged_repeat_direct_test_case_id_buckets()` helper, derived directly from `COMPILE_CASES`, `MODULE_CASES`, `PATTERN_CASES`, and `DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES` so the detached registry is gone while bucket ordering and bytes-follow-on routing stay unchanged.
+- 2026-03-20: Updated `test_wider_ranged_repeat_quantified_group_direct_test_case_id_buckets_cover_selected_frontier` to call the derived helper instead of reading a top-level mirrored bucket map.
+- 2026-03-20: Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py` (`1341 passed in 0.98s`), the acceptance derived-bucket probe (`ok`), and `bash -lc "! rg -n 'WIDER_RANGED_REPEAT_QUANTIFIED_GROUP_DIRECT_TEST_CASE_ID_BUCKETS' tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py"`.
