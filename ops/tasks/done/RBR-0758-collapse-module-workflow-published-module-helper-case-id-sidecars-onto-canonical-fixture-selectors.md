@@ -1,8 +1,9 @@
 # RBR-0758: Collapse module-workflow published module-helper case-id sidecars onto canonical fixture selectors
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the remaining published module-helper case-id sidecars from `tests/python/test_module_workflow_parity_suite.py`; `PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASE_IDS` and `PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS` currently just restate rows that are already derivable from the canonical fixture-backed `MODULE_CALL_CASES`.
@@ -131,3 +132,9 @@ PY` reported the existing tail through `RBR-0757`, no reserved missing tail ids,
 - Baseline verification is green in the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` passed (`657 passed, 1 skipped in 0.51s`);
   - the structural-selector probe from Acceptance passed (`ok`).
+
+## Completion
+- 2026-03-20: Removed `PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASE_IDS` and `PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS` from `tests/python/test_module_workflow_parity_suite.py`.
+- Re-derived `PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES` directly from `MODULE_CALL_CASES` with the existing fixture-backed selector fields (`use_compiled_pattern`, `case_pattern(...)`, and `helper`), and re-derived `PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES` directly from the canonical `MODULE_CALL_CASES` rows that already carry `use_compiled_pattern=True`.
+- Reworked the two published-surface alignment tests to keep the same exact published order and direct-case alignment checks while asserting against inline expected case-id tuples instead of the deleted sidecars.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`657 passed, 1 skipped in 0.71s`), the task-local structural selector probe from Acceptance (`ok`), and `bash -lc "! rg -n '^PUBLISHED_(BOUNDED_WILDCARD_RAW|COMPILED_PATTERN)_MODULE_HELPER_CASE_IDS =' tests/python/test_module_workflow_parity_suite.py"` (passes with no matches).

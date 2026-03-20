@@ -318,34 +318,17 @@ MATCH_HELPER_PATTERN_CASES = tuple(
 CACHE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "cache_workflow")
 PURGE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "purge_workflow")
 MODULE_CALL_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "module_call")
-PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASE_IDS = (
-    "workflow-module-search-str-bounded-wildcard-ignorecase",
-    "workflow-module-match-str-bounded-wildcard-miss",
-    "workflow-module-fullmatch-str-bounded-wildcard",
-)
 PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES = tuple(
     case
     for case in MODULE_CALL_CASES
-    if case.case_id in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASE_IDS
-)
-PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS = (
-    "workflow-module-search-str-compiled-pattern",
-    "workflow-module-match-str-compiled-pattern",
-    "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
-    "workflow-module-match-str-bounded-wildcard-compiled-pattern",
-    "workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern",
-    "workflow-module-search-bytes-verbose-regression-compiled-pattern",
-    "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
-    "workflow-module-split-str-compiled-pattern",
-    "workflow-module-findall-bytes-compiled-pattern",
-    "workflow-module-finditer-str-compiled-pattern",
-    "workflow-module-sub-str-compiled-pattern",
-    "workflow-module-subn-bytes-compiled-pattern",
+    if not case.use_compiled_pattern
+    and case_pattern(case) == "a.c"
+    and case.helper in {"search", "match", "fullmatch"}
 )
 PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
     case
     for case in MODULE_CALL_CASES
-    if case.case_id in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
+    if case.use_compiled_pattern
 )
 
 
@@ -2438,7 +2421,11 @@ def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_f
 
     assert tuple(
         case.case_id for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES
-    ) == PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASE_IDS
+    ) == (
+        "workflow-module-search-str-bounded-wildcard-ignorecase",
+        "workflow-module-match-str-bounded-wildcard-miss",
+        "workflow-module-fullmatch-str-bounded-wildcard",
+    )
     assert len(selected_direct_cases) == len(
         PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES
     )
@@ -2517,7 +2504,20 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
     )
     assert tuple(
         case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
-    ) == PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
+    ) == (
+        "workflow-module-search-str-compiled-pattern",
+        "workflow-module-match-str-compiled-pattern",
+        "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
+        "workflow-module-match-str-bounded-wildcard-compiled-pattern",
+        "workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern",
+        "workflow-module-search-bytes-verbose-regression-compiled-pattern",
+        "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
+        "workflow-module-split-str-compiled-pattern",
+        "workflow-module-findall-bytes-compiled-pattern",
+        "workflow-module-finditer-str-compiled-pattern",
+        "workflow-module-sub-str-compiled-pattern",
+        "workflow-module-subn-bytes-compiled-pattern",
+    )
     assert tuple(
         case.case_id for case in selected_direct_cases
     ) == (
