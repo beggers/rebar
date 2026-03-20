@@ -1,10 +1,10 @@
 # Backlog
 
 ## Current Milestone
-No ready feature follow-on currently survives. Feature work is still extending the existing `module-workflow-surface` compiled-pattern helper owner path.
+No ready feature follow-on currently survives. The active milestone stays on the existing `module-workflow-surface` owner path, but it should keep publishing Rust-backed bounded-wildcard behavior instead of returning to shim-only compiled-pattern helper catch-up.
 
 ## Ordered Work
-1. No ready feature follow-on currently survives. Keep the active feature slice on `tests/conformance/fixtures/module_workflow_surface.py` and `tests/python/test_module_workflow_parity_suite.py`, continuing adjacent compiled-pattern module-helper publication on that existing owner path.
+1. No ready feature follow-on currently survives. Keep the active owner path on `tests/conformance/fixtures/module_workflow_surface.py` and `tests/python/test_module_workflow_parity_suite.py`, prioritizing Rust-backed bounded-wildcard publication over more shim-only compiled-pattern helper rows.
 
 ## Supervisor Notes
 - Keep the backlog milestone-oriented.
