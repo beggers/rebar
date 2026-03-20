@@ -46,6 +46,7 @@ from tests.python.fixture_parity_support import (
     compile_with_cpython_parity,
     fixture_cases_for_operation,
     load_fixture_bundles,
+    load_published_fixture_bundles,
     published_fixture_bundle_by_manifest_id,
 )
 
@@ -168,130 +169,27 @@ MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS = (
     "workflow-pattern-finditer-str-bounded-wildcard",
     "workflow-pattern-search-str-bounded-wildcard-endpos-miss",
 )
-MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
-    "workflow-compile-str-literal",
-    "workflow-compile-str-anchored-literal",
-    *MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS,
-    "workflow-compile-str-verbose-regression",
-    "workflow-compile-str-multiline-regression",
-    "workflow-compile-bytes-verbose-regression",
-    "workflow-compile-bytes-multiline-regression",
-    "workflow-compile-bytes-literal",
-    *MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS,
-    "workflow-pattern-search-str-verbose-regression",
-    "workflow-pattern-search-str-verbose-regression-digits",
-    "workflow-pattern-search-str-verbose-regression-too-many-digits",
-    "workflow-pattern-search-bytes-verbose-regression",
-    "workflow-pattern-search-bytes-verbose-regression-digits",
-    "workflow-pattern-search-bytes-verbose-regression-too-many-digits",
-    "workflow-pattern-fullmatch-str-verbose-regression",
-    "workflow-pattern-fullmatch-str-verbose-regression-alpha",
-    "workflow-pattern-fullmatch-str-verbose-regression-lowercase-key",
-    "workflow-pattern-fullmatch-bytes-verbose-regression",
-    "workflow-pattern-fullmatch-bytes-verbose-regression-alpha",
-    "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key",
-    "workflow-pattern-search-str",
-    "workflow-pattern-match-str",
-    "workflow-pattern-fullmatch-bytes",
-    "workflow-cache-hit-str",
-    "workflow-cache-hit-bytes",
-    "workflow-purge-reset-str",
-    "workflow-module-search-str-bounded-wildcard-ignorecase",
-    "workflow-module-match-str-bounded-wildcard-miss",
-    "workflow-module-fullmatch-str-bounded-wildcard",
-    "workflow-module-search-flags-keyword-str",
-    "workflow-module-match-flags-keyword-bytes",
-    "workflow-module-search-str-compiled-pattern",
-    "workflow-module-match-str-compiled-pattern",
-    "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
-    "workflow-module-match-str-bounded-wildcard-compiled-pattern",
-    "workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern",
-    "workflow-module-search-bytes-verbose-regression-compiled-pattern",
-    "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
-    "workflow-module-split-str-compiled-pattern",
-    "workflow-module-findall-bytes-compiled-pattern",
-    "workflow-module-finditer-str-compiled-pattern",
-    "workflow-module-sub-str-compiled-pattern",
-    "workflow-module-sub-str-compiled-pattern-on-bytes-string",
-    "workflow-module-subn-bytes-compiled-pattern",
-    "workflow-module-subn-bytes-compiled-pattern-on-str-string",
-    "workflow-escape-str",
-    "workflow-escape-bytes",
-)
-MODULE_WORKFLOW_EXPECTED_PATTERNS = frozenset(
-    {
-        "abc",
-        "^abc$",
-        "a.c",
-        "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
-        b"^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
-        b"abc",
-        b"123",
-        "cache-me",
-        b"cache-me",
-        "purge-me",
-        "a-b.c",
-        b"a-b.c",
-    }
-)
-MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
-    {
-        ("compile", None): 9,
-        ("pattern_call", "search"): 9,
-        ("pattern_call", "match"): 2,
-        ("pattern_call", "fullmatch"): 8,
-        ("pattern_call", "findall"): 1,
-        ("pattern_call", "finditer"): 1,
-        ("cache_workflow", None): 2,
-        ("purge_workflow", None): 1,
-        ("module_call", "search"): 5,
-        ("module_call", "match"): 4,
-        ("module_call", "fullmatch"): 3,
-        ("module_call", "split"): 1,
-        ("module_call", "findall"): 1,
-        ("module_call", "finditer"): 1,
-        ("module_call", "sub"): 2,
-        ("module_call", "subn"): 2,
-        ("module_call", "escape"): 2,
-    }
-)
-MATCH_BEHAVIOR_EXPECTED_CASE_IDS = (
-    "search-str-success-literal",
-    "search-str-no-match",
-    "match-str-success-literal",
-    "match-str-no-match",
-    "fullmatch-str-success-literal",
-    "fullmatch-bytes-success-literal",
-)
-MATCH_BEHAVIOR_EXPECTED_PATTERNS = frozenset({"abc", "ab", "123", b"123"})
-MATCH_BEHAVIOR_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
-    {
-        ("module_call", "search"): 2,
-        ("module_call", "match"): 2,
-        ("module_call", "fullmatch"): 2,
-    }
-)
-SELECTED_CASE_BUNDLE_SPECS = (
-    FixtureBundleSpec(
-        fixture_name="module_workflow_surface.py",
-        expected_manifest_id="module-workflow-surface",
-        selected_case_ids=MODULE_WORKFLOW_EXPECTED_CASE_IDS,
-        expected_patterns=MODULE_WORKFLOW_EXPECTED_PATTERNS,
-        expected_operation_helper_counts=MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS,
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-    FixtureBundleSpec(
-        fixture_name="match_behavior_smoke.py",
-        expected_manifest_id="match-behavior-smoke",
-        selected_case_ids=MATCH_BEHAVIOR_EXPECTED_CASE_IDS,
-        expected_patterns=MATCH_BEHAVIOR_EXPECTED_PATTERNS,
-        expected_operation_helper_counts=MATCH_BEHAVIOR_EXPECTED_OPERATION_HELPER_COUNTS,
-        expected_text_models=frozenset({"bytes", "str"}),
-    ),
-)
-(MODULE_WORKFLOW_BUNDLE, MATCH_BEHAVIOR_BUNDLE) = load_fixture_bundles(
-    SELECTED_CASE_BUNDLE_SPECS
-)
+
+
+def _published_case_ids(bundle: FixtureBundle) -> tuple[str, ...]:
+    return tuple(case.case_id for case in bundle.manifest.cases)
+
+
+def _load_module_workflow_owner_bundles() -> tuple[FixtureBundle, FixtureBundle]:
+    bundles = load_published_fixture_bundles(
+        (MODULE_WORKFLOW_FIXTURE_PATH, MATCH_BEHAVIOR_FIXTURE_PATH)
+    )
+    loaded_manifest_ids = tuple(bundle.manifest.manifest_id for bundle in bundles)
+    expected_manifest_ids = ("module-workflow-surface", "match-behavior-smoke")
+    if loaded_manifest_ids != expected_manifest_ids:
+        raise ValueError(
+            "module workflow owner bundle manifest ids drifted: "
+            f"expected {expected_manifest_ids}, got {loaded_manifest_ids}"
+        )
+    return bundles
+
+
+(MODULE_WORKFLOW_BUNDLE, MATCH_BEHAVIOR_BUNDLE) = _load_module_workflow_owner_bundles()
 
 COMPILE_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "compile")
 COMPILE_CASES_BY_ID = {case.case_id: case for case in COMPILE_CASES}
@@ -2118,14 +2016,14 @@ def test_module_workflow_parity_suite_stays_aligned_with_published_fixture() -> 
         MODULE_WORKFLOW_BUNDLE,
         pattern_extractor=case_pattern,
         expected_fixture_path=MODULE_WORKFLOW_FIXTURE_PATH,
-        expected_ordered_case_ids=MODULE_WORKFLOW_EXPECTED_CASE_IDS,
+        expected_ordered_case_ids=_published_case_ids(MODULE_WORKFLOW_BUNDLE),
     )
 
 
 def test_module_workflow_parity_suite_tracks_published_case_frontier() -> None:
     assert_fixture_bundle_tracks_published_case_frontier(
         MODULE_WORKFLOW_BUNDLE,
-        selected_case_ids=MODULE_WORKFLOW_EXPECTED_CASE_IDS,
+        selected_case_ids=_published_case_ids(MODULE_WORKFLOW_BUNDLE),
     )
 
 
@@ -2147,7 +2045,7 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
             ),
             "escape": frozenset(case.case_id for case in ESCAPE_CASES),
         },
-        selected_case_ids=MODULE_WORKFLOW_EXPECTED_CASE_IDS,
+        selected_case_ids=_published_case_ids(MODULE_WORKFLOW_BUNDLE),
         coverage_label="module workflow direct-test case-id buckets",
     )
 
@@ -2155,14 +2053,14 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
 def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases() -> None:
     assert MODULE_WORKFLOW_BUNDLE.manifest.path == MODULE_WORKFLOW_FIXTURE_PATH
     assert (
-        tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.manifest.cases)
-        == MODULE_WORKFLOW_EXPECTED_CASE_IDS
+        tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
+        == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
     assert_fixture_bundle_contract(
         MODULE_WORKFLOW_BUNDLE,
         pattern_extractor=case_pattern,
         expected_fixture_path=MODULE_WORKFLOW_FIXTURE_PATH,
-        expected_ordered_case_ids=MODULE_WORKFLOW_EXPECTED_CASE_IDS,
+        expected_ordered_case_ids=_published_case_ids(MODULE_WORKFLOW_BUNDLE),
     )
     assert VERBOSE_COMPILE_CASE.case_id == VERBOSE_COMPILE_CASE_ID
     assert {
@@ -2654,14 +2552,14 @@ def test_match_behavior_parity_suite_stays_aligned_with_published_fixture() -> N
         MATCH_BEHAVIOR_BUNDLE,
         pattern_extractor=case_pattern,
         expected_fixture_path=MATCH_BEHAVIOR_FIXTURE_PATH,
-        expected_ordered_case_ids=MATCH_BEHAVIOR_EXPECTED_CASE_IDS,
+        expected_ordered_case_ids=_published_case_ids(MATCH_BEHAVIOR_BUNDLE),
     )
 
 
 def test_match_behavior_parity_suite_tracks_published_case_frontier() -> None:
     assert_fixture_bundle_tracks_published_case_frontier(
         MATCH_BEHAVIOR_BUNDLE,
-        selected_case_ids=MATCH_BEHAVIOR_EXPECTED_CASE_IDS,
+        selected_case_ids=_published_case_ids(MATCH_BEHAVIOR_BUNDLE),
     )
 
 
@@ -2672,7 +2570,7 @@ def test_match_behavior_direct_test_bucket_covers_selected_frontier() -> None:
                 case.case_id for case in MATCH_BEHAVIOR_BUNDLE.cases
             )
         },
-        selected_case_ids=MATCH_BEHAVIOR_EXPECTED_CASE_IDS,
+        selected_case_ids=_published_case_ids(MATCH_BEHAVIOR_BUNDLE),
         coverage_label="match behavior direct-test case-id bucket",
     )
 

@@ -1,8 +1,9 @@
 # RBR-0762: Collapse module-workflow full-manifest bundle-spec sidecars onto canonical owner bundles
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the remaining handwritten bundle-spec sidecars for the two module-workflow parity-suite owners that now already map 1:1 to their full manifests: `module_workflow_surface.py` and `match_behavior_smoke.py`.
@@ -127,3 +128,10 @@ PY` reported the existing tail through `RBR-0761`, no reserved missing tail ids,
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` passed (`658 passed, 1 skipped in 0.51s`);
   - the task-local full-manifest bundle probe from Acceptance passed (`ok`);
   - `bash -lc "! rg -n '^(MODULE_WORKFLOW_EXPECTED_CASE_IDS|MODULE_WORKFLOW_EXPECTED_PATTERNS|MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS|MATCH_BEHAVIOR_EXPECTED_CASE_IDS|MATCH_BEHAVIOR_EXPECTED_PATTERNS|MATCH_BEHAVIOR_EXPECTED_OPERATION_HELPER_COUNTS|SELECTED_CASE_BUNDLE_SPECS) =' tests/python/test_module_workflow_parity_suite.py"` currently fails exactly on this cleanup because those seven sidecars still exist.
+
+## Completion
+- 2026-03-20: Removed `MODULE_WORKFLOW_EXPECTED_CASE_IDS`, `MODULE_WORKFLOW_EXPECTED_PATTERNS`, `MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS`, `MATCH_BEHAVIOR_EXPECTED_CASE_IDS`, `MATCH_BEHAVIOR_EXPECTED_PATTERNS`, `MATCH_BEHAVIOR_EXPECTED_OPERATION_HELPER_COUNTS`, and `SELECTED_CASE_BUNDLE_SPECS` from `tests/python/test_module_workflow_parity_suite.py`.
+- Replaced the handwritten `FixtureBundleSpec(...)` mirrors for `module_workflow_surface.py` and `match_behavior_smoke.py` with a direct full-manifest load through `load_published_fixture_bundles(...)`, keeping the owner load order fixed as `module_workflow_surface.py` then `match_behavior_smoke.py` and validating the resolved manifest ids at import time.
+- Added one tiny file-local `_published_case_ids(...)` helper and updated the affected parity/frontier assertions to derive ordered case ids directly from the loaded bundles instead of from detached mirrored tuples.
+- Kept the compile-only and collection/replacement subset selectors unchanged; only the two redundant full-manifest owner bundles moved to the canonical full-manifest load path.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`658 passed, 1 skipped in 0.74s`), the task-local full-manifest bundle probe from Acceptance (`ok`), and `bash -lc "! rg -n '^(MODULE_WORKFLOW_EXPECTED_CASE_IDS|MODULE_WORKFLOW_EXPECTED_PATTERNS|MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS|MATCH_BEHAVIOR_EXPECTED_CASE_IDS|MATCH_BEHAVIOR_EXPECTED_PATTERNS|MATCH_BEHAVIOR_EXPECTED_OPERATION_HELPER_COUNTS|SELECTED_CASE_BUNDLE_SPECS) =' tests/python/test_module_workflow_parity_suite.py"` (passes with no matches).
