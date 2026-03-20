@@ -209,7 +209,9 @@ MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-module-findall-bytes-compiled-pattern",
     "workflow-module-finditer-str-compiled-pattern",
     "workflow-module-sub-str-compiled-pattern",
+    "workflow-module-sub-str-compiled-pattern-on-bytes-string",
     "workflow-module-subn-bytes-compiled-pattern",
+    "workflow-module-subn-bytes-compiled-pattern-on-str-string",
     "workflow-escape-str",
     "workflow-escape-bytes",
 )
@@ -245,8 +247,8 @@ MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("module_call", "split"): 1,
         ("module_call", "findall"): 1,
         ("module_call", "finditer"): 1,
-        ("module_call", "sub"): 1,
-        ("module_call", "subn"): 1,
+        ("module_call", "sub"): 2,
+        ("module_call", "subn"): 2,
         ("module_call", "escape"): 2,
     }
 )
@@ -2453,19 +2455,27 @@ def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_f
 def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases(
 ) -> None:
     def direct_signature(
-        case: CompiledPatternModuleHelperCase | BoundedWildcardModuleCase,
+        case: (
+            CompiledPatternModuleHelperCase
+            | CompiledPatternModuleHelperErrorCase
+            | BoundedWildcardModuleCase
+        ),
     ) -> tuple[str, str | bytes, tuple[object, ...], int, bool]:
         return (
             case.helper,
             case.pattern,
             tuple(case.args) if hasattr(case, "args") else (case.string,),
-            case.flags,
+            getattr(case, "flags", 0),
             getattr(case, "compiled", True),
         )
 
     direct_cases_by_signature = {
         direct_signature(case): case
-        for case in (*COMPILED_PATTERN_MODULE_HELPER_CASES, *BOUNDED_WILDCARD_MODULE_MATCH_CASES)
+        for case in (
+            *COMPILED_PATTERN_MODULE_HELPER_CASES,
+            *COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES,
+            *BOUNDED_WILDCARD_MODULE_MATCH_CASES,
+        )
     }
     selected_direct_cases = tuple(
         direct_cases_by_signature[
@@ -2492,6 +2502,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-split-str-compiled-pattern",
         "workflow-module-finditer-str-compiled-pattern",
         "workflow-module-sub-str-compiled-pattern",
+        "workflow-module-sub-str-compiled-pattern-on-bytes-string",
     )
     assert tuple(
         case.case_id
@@ -2501,6 +2512,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
         "workflow-module-findall-bytes-compiled-pattern",
         "workflow-module-subn-bytes-compiled-pattern",
+        "workflow-module-subn-bytes-compiled-pattern-on-str-string",
     )
     assert tuple(
         case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
@@ -2516,7 +2528,9 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-findall-bytes-compiled-pattern",
         "workflow-module-finditer-str-compiled-pattern",
         "workflow-module-sub-str-compiled-pattern",
+        "workflow-module-sub-str-compiled-pattern-on-bytes-string",
         "workflow-module-subn-bytes-compiled-pattern",
+        "workflow-module-subn-bytes-compiled-pattern-on-str-string",
     )
     assert tuple(
         case.case_id for case in selected_direct_cases
@@ -2532,7 +2546,12 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "compiled-pattern-findall-bytes",
         "compiled-pattern-finditer-str",
         "compiled-pattern-sub-str-count",
+        "compiled-pattern-sub-str-on-bytes-string",
         "compiled-pattern-subn-bytes-count",
+        "compiled-pattern-subn-bytes-on-str-string",
+    )
+    assert len(selected_direct_cases) == len(
+        PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
     )
     assert tuple(
         case.helper for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
@@ -2552,7 +2571,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         )
         assert case_pattern(fixture_case) == direct_case.pattern
         assert tuple(fixture_case.args) == direct_args
-        assert fixture_case.flags == direct_case.flags
+        assert fixture_case.flags == getattr(direct_case, "flags", 0)
 
 
 def test_module_workflow_surface_compile_case_selection_preserves_row_order() -> None:

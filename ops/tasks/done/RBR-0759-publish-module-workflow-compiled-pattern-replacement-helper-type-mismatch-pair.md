@@ -1,6 +1,6 @@
 # RBR-0759: Publish the module-workflow compiled-pattern replacement-helper type-mismatch pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -55,3 +55,9 @@ Created: 2026-03-20
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'compiled_pattern and (type_mismatch or error or wrong_type or keyword)'` passed in this run (`16 passed, 642 deselected`);
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes the compiled-pattern success-path module helpers through `sub()` / `subn()` but not the adjacent wrong-text-model replacement-helper rows, leaving this pair as the next bounded publication on the same owner path; and
   - no blocked feature task exists to reopen first.
+
+## Completion
+- Completed 2026-03-20 by publishing `workflow-module-sub-str-compiled-pattern-on-bytes-string` and `workflow-module-subn-bytes-compiled-pattern-on-str-string` on the existing `module-workflow-surface` manifest, keeping both rows pinned to the existing `COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES` anchors on the shared parity owner path.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the canonical fixture inventory now carries `52` module-workflow rows, the `module_call` helper breakdown now expects `2` `sub` rows and `2` `subn` rows, and the compiled-pattern owner-path alignment check maps the published mismatch rows back to `compiled-pattern-sub-str-on-bytes-string` and `compiled-pattern-subn-bytes-on-str-string`.
+- Updated the representative `module-workflow-surface` sample set in `tests/conformance/test_combined_correctness_scorecards.py` and republished `reports/correctness/latest.py`; the tracked combined scorecard now reports `1422` total / `1422` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `52`/`52`/`0`, `module.workflow.str` at `35`/`35`/`0`, `module.workflow.bytes` at `17`/`17`/`0`, and `module.workflow.module_call` at `19`/`19`/`0`.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`679 passed, 1 skipped, 1923 subtests passed`), `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0759-module-workflow-compiled-pattern-replacement-helper-type-mismatch-pair.py` (`52` executed / `52` passed), and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1422` executed / `1422` passed).
