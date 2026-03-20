@@ -162,6 +162,8 @@ MODULE_WORKFLOW_BOUNDED_WILDCARD_COMPILE_CASE_IDS = (
 MODULE_WORKFLOW_BOUNDED_WILDCARD_PATTERN_CASE_IDS = (
     "workflow-pattern-search-str-bounded-wildcard-ignorecase",
     "workflow-pattern-match-str-bounded-wildcard",
+    "workflow-pattern-fullmatch-str-bounded-wildcard",
+    "workflow-pattern-search-str-bounded-wildcard-endpos-miss",
 )
 MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-compile-str-literal",
@@ -219,9 +221,9 @@ MODULE_WORKFLOW_EXPECTED_PATTERNS = frozenset(
 MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
     {
         ("compile", None): 9,
-        ("pattern_call", "search"): 8,
+        ("pattern_call", "search"): 9,
         ("pattern_call", "match"): 2,
-        ("pattern_call", "fullmatch"): 7,
+        ("pattern_call", "fullmatch"): 8,
         ("cache_workflow", None): 2,
         ("purge_workflow", None): 1,
         ("module_call", "search"): 2,

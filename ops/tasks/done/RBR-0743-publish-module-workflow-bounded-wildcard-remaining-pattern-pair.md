@@ -1,8 +1,9 @@
 # RBR-0743: Publish the module-workflow bounded wildcard remaining pattern pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Reopen the `module-workflow-surface` correctness frontier with the remaining bounded-wildcard bound-`Pattern` helper pair, so the existing owner path keeps publishing already-landed Rust-backed `a.c` behavior instead of drifting back into shim-only compiled-pattern helper catch-up or jumping ahead to collection helpers.
@@ -52,3 +53,9 @@ Created: 2026-03-20
   - direct runtime probes in this run confirmed that `rebar.compile("a.c").fullmatch("zaxcz", 1, 4)` and `rebar.compile("a.c").search("zabc", 1, 3)` already match CPython on match presence, span, and group `0`;
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes the bounded-wildcard compile pair plus the first bounded-wildcard bound-helper pair, but no remaining bounded-wildcard `fullmatch()` hit or bounded search-miss rows, leaving this pair as the next bounded adjacent publication on the same owner path; and
   - no blocked feature task exists to reopen first.
+
+## Completion
+- 2026-03-20: Added `workflow-pattern-fullmatch-str-bounded-wildcard` and `workflow-pattern-search-str-bounded-wildcard-endpos-miss` to `tests/conformance/fixtures/module_workflow_surface.py`, pinned to the existing `pattern-fullmatch-bounded-hit` and `pattern-search-bounded-endpos-miss` anchors on the shared `BOUNDED_WILDCARD_PATTERN_MATCH_CASES` owner path.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the shared `module-workflow-surface` expectations now publish `39` rows total, with `pattern_call` helper counts of `search == 9`, `match == 2`, and `fullmatch == 8`, while keeping the same compile, cache, purge, module-call, and escape buckets.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` and regenerated `reports/correctness/latest.py`. Reading the tracked report artifact shows `1409` total / `1409` passed / `0` `unimplemented` across `114` manifests, with `module.workflow` at `39` / `39` / `0`, `module.workflow.str` at `24` / `24` / `0`, and `module.workflow.pattern_call` at `19` / `19` / `0`; both new bounded-wildcard rows are present in the tracked scorecard with `comparison == "pass"`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0743-module-workflow-bounded-wildcard-remaining-pattern-pair.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`. The task-local module-workflow report published `39` total / `39` passed / `0` `unimplemented`.

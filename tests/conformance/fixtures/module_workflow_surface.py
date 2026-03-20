@@ -132,6 +132,30 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-pattern-fullmatch-str-bounded-wildcard",
+      "operation": "pattern_call",
+      "family": "bound_fullmatch_workflow",
+      "pattern": "a.c",
+      "helper": "fullmatch",
+      "args": ["zaxcz", 1, 4],
+      "categories": ["workflow", "fullmatch", "wildcard", "bounded", "str"],
+      "notes": [
+        "Publishes the exact bound Pattern.fullmatch workflow already anchored on the shared bounded wildcard owner path."
+      ]
+    },
+    {
+      "id": "workflow-pattern-search-str-bounded-wildcard-endpos-miss",
+      "operation": "pattern_call",
+      "family": "bound_search_workflow",
+      "pattern": "a.c",
+      "helper": "search",
+      "args": ["zabc", 1, 3],
+      "categories": ["workflow", "search", "wildcard", "bounded", "str", "miss"],
+      "notes": [
+        "Publishes the exact bounded endpos miss Pattern.search workflow already anchored on the shared bounded wildcard owner path."
+      ]
+    },
+    {
       "id": "workflow-pattern-search-str-verbose-regression",
       "operation": "pattern_call",
       "family": "bound_search_workflow",
