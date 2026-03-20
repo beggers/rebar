@@ -272,6 +272,13 @@ ESCAPE_CASES = tuple(
     for case in fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "module_call")
     if case.helper == "escape"
 )
+PATTERN_CASES_BY_ID = {case.case_id: case for case in PATTERN_CASES}
+VERBOSE_BYTES_SEARCH_PATTERN_CASE = PATTERN_CASES_BY_ID[
+    "workflow-pattern-search-bytes-verbose-regression"
+]
+VERBOSE_BYTES_FULLMATCH_PATTERN_CASE = PATTERN_CASES_BY_ID[
+    "workflow-pattern-fullmatch-bytes-verbose-regression"
+]
 MATCH_BEHAVIOR_CASES = tuple(MATCH_BEHAVIOR_BUNDLE.cases)
 MATCH_BEHAVIOR_DIRECT_TEST_CASE_IDS = frozenset(
     case.case_id for case in MATCH_BEHAVIOR_CASES
@@ -521,6 +528,7 @@ class CompiledPatternModuleHelperCase:
     pattern: str | bytes
     args: tuple[object, ...]
     result_kind: str
+    flags: int = 0
 
 
 @dataclass(frozen=True)
@@ -1250,6 +1258,24 @@ VERBOSE_COMPILE_WORKFLOW_CASES = (
         expected_span=None,
     ),
 )
+VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES = (
+    CompiledPatternModuleHelperCase(
+        case_id="compiled-pattern-search-bytes-verbose-regression",
+        helper="search",
+        pattern=case_pattern(VERBOSE_BYTES_SEARCH_PATTERN_CASE),
+        args=tuple(VERBOSE_BYTES_SEARCH_PATTERN_CASE.args),
+        result_kind="match",
+        flags=VERBOSE_BYTES_SEARCH_PATTERN_CASE.flags or 0,
+    ),
+    CompiledPatternModuleHelperCase(
+        case_id="compiled-pattern-fullmatch-bytes-verbose-regression",
+        helper="fullmatch",
+        pattern=case_pattern(VERBOSE_BYTES_FULLMATCH_PATTERN_CASE),
+        args=tuple(VERBOSE_BYTES_FULLMATCH_PATTERN_CASE.args),
+        result_kind="match",
+        flags=VERBOSE_BYTES_FULLMATCH_PATTERN_CASE.flags or 0,
+    ),
+)
 COMPILED_PATTERN_MODULE_HELPER_CASES = (
     CompiledPatternModuleHelperCase(
         case_id="compiled-pattern-search-str",
@@ -1272,6 +1298,7 @@ COMPILED_PATTERN_MODULE_HELPER_CASES = (
         args=(b"abc",),
         result_kind="match",
     ),
+    *VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES,
     CompiledPatternModuleHelperCase(
         case_id="compiled-pattern-split-str-maxsplit",
         helper="split",
@@ -1713,8 +1740,9 @@ def _compile_verbose_regression_bytes_pattern(
 def _compile_compiled_pattern_case(
     regex_api: object,
     pattern: str | bytes,
+    flags: int = 0,
 ) -> object:
-    compiled = regex_api.compile(pattern)
+    compiled = regex_api.compile(pattern, flags)
     assert regex_api.compile(compiled) is compiled
     return compiled
 
@@ -2522,8 +2550,16 @@ def test_module_helpers_accept_compiled_patterns_with_cpython_parity(
     flag_mode: str,
 ) -> None:
     backend_name, backend = regex_backend
-    observed_pattern = _compile_compiled_pattern_case(backend, case.pattern)
-    expected_pattern = _compile_compiled_pattern_case(re, case.pattern)
+    observed_pattern = _compile_compiled_pattern_case(
+        backend,
+        case.pattern,
+        case.flags,
+    )
+    expected_pattern = _compile_compiled_pattern_case(
+        re,
+        case.pattern,
+        case.flags,
+    )
 
     assert_pattern_parity(backend_name, observed_pattern, expected_pattern)
 
@@ -2586,6 +2622,60 @@ def test_module_helpers_with_compiled_patterns_preserve_match_identity_like_cpyt
 
 
 @pytest.mark.parametrize(
+    "flag_mode",
+    COMPILED_PATTERN_ZERO_FLAG_MODES,
+)
+@pytest.mark.parametrize(
+    "case",
+    VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES,
+    ids=lambda case: case.case_id,
+)
+def test_module_helpers_preserve_verbose_bytes_compiled_pattern_identity_like_cpython(
+    regex_backend: tuple[str, object],
+    case: CompiledPatternModuleHelperCase,
+    flag_mode: str,
+) -> None:
+    backend_name, backend = regex_backend
+    observed_pattern = _compile_compiled_pattern_case(
+        backend,
+        case.pattern,
+        case.flags,
+    )
+    expected_pattern = _compile_compiled_pattern_case(
+        re,
+        case.pattern,
+        case.flags,
+    )
+    string = case.args[0]
+    assert isinstance(string, bytes)
+
+    observed = _call_module_helper_with_flag_mode(
+        backend,
+        observed_pattern,
+        case,
+        flag_mode,
+    )
+    expected = _call_module_helper_with_flag_mode(
+        re,
+        expected_pattern,
+        case,
+        flag_mode,
+    )
+
+    assert_match_result_parity(backend_name, observed, expected, check_regs=True)
+    assert observed is not None
+    assert expected is not None
+    _assert_compiled_match_identity(
+        observed,
+        expected,
+        pattern=case.pattern,
+        string=string,
+        observed_pattern=observed_pattern,
+        expected_pattern=expected_pattern,
+    )
+
+
+@pytest.mark.parametrize(
     "case",
     COMPILED_PATTERN_MODULE_HELPER_CASES,
     ids=lambda case: case.case_id,
@@ -2595,8 +2685,16 @@ def test_module_helpers_reject_flags_for_compiled_patterns_like_cpython(
     case: CompiledPatternModuleHelperCase,
 ) -> None:
     _, backend = regex_backend
-    observed_pattern = _compile_compiled_pattern_case(backend, case.pattern)
-    expected_pattern = _compile_compiled_pattern_case(re, case.pattern)
+    observed_pattern = _compile_compiled_pattern_case(
+        backend,
+        case.pattern,
+        case.flags,
+    )
+    expected_pattern = _compile_compiled_pattern_case(
+        re,
+        case.pattern,
+        case.flags,
+    )
 
     with pytest.raises(ValueError) as expected_error:
         getattr(re, case.helper)(
