@@ -1516,7 +1516,7 @@ def test_published_bytes_texts_by_pattern_separates_search_and_fullmatch_rows(
     )
 
 
-def test_published_bytes_texts_by_pattern_deduplicates_texts_and_ignores_compile_rows(
+def test_published_bytes_texts_by_pattern_deduplicates_texts_and_handles_compiled_module_rows(
 ) -> None:
     compile_case = SimpleNamespace(
         operation="compile",
@@ -1529,6 +1529,14 @@ def test_published_bytes_texts_by_pattern_deduplicates_texts_and_ignores_compile
         pattern="placeholder",
         args=(b"shared-pattern", b"shared-text"),
         pattern_payload=lambda: b"shared-pattern",
+        use_compiled_pattern=False,
+    )
+    compiled_module_case = SimpleNamespace(
+        operation="module_call",
+        pattern="placeholder",
+        args=(b"compiled-text",),
+        pattern_payload=lambda: b"shared-pattern",
+        use_compiled_pattern=True,
     )
     pattern_case = SimpleNamespace(
         operation="pattern_call",
@@ -1542,11 +1550,13 @@ def test_published_bytes_texts_by_pattern_deduplicates_texts_and_ignores_compile
             compile_case,
             module_case,
             module_case,
+            compiled_module_case,
+            compiled_module_case,
             pattern_case,
             pattern_case,
         )
     ) == (
-        {b"shared-pattern": frozenset({b"shared-text"})},
+        {b"shared-pattern": frozenset({b"shared-text", b"compiled-text"})},
         {b"shared-pattern": frozenset({b"fullmatch-text"})},
     )
 
