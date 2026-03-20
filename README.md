@@ -12,23 +12,23 @@ _This block reports the implemented slice and measurement coverage, not estimate
 | Signal | Value |
 | --- | --- |
 | Phase | Phase 3 is still widening one bounded Rust-backed regex slice at a time, landing correctness first and Python-path benchmark catch-up immediately behind it. |
-| Delivery estimate | Published correctness covers 1414 cases across 114 manifests, with all 1414 passing in the current slice; the benchmark publication covers 774/774 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
+| Delivery estimate | Published correctness covers 1416 cases across 114 manifests, with all 1416 passing in the current slice; the benchmark publication covers 774/774 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice. |
 | Current milestone | No ready feature follow-on currently survives. |
-| Work queue | `0` ready, `0` in progress, `752` done, `0` blocked |
+| Work queue | `0` ready, `0` in progress, `754` done, `0` blocked |
 | Foundation tracks | `10/10` landed (`[##################] 100%`) |
 
 ### Correctness Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Published cases | `1414` |
-| Passing in published slice | `1414` |
+| Published cases | `1416` |
+| Passing in published slice | `1416` |
 | Explicit failures | `0` |
 | Honest gaps (`unimplemented`) | `0` |
 | Covered manifests | `114` |
 | Source | [`reports/correctness/latest.py`](reports/correctness/latest.py) |
 
-_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1414 cases across 114 manifests, with all 1414 passing in the current slice; the benchmark publication covers 774/774 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
+_These correctness counts cover only the published slice. Overall delivery estimate: Published correctness covers 1416 cases across 114 manifests, with all 1416 passing in the current slice; the benchmark publication covers 774/774 measured workloads across 30 manifests with 0 known gaps, but it still runs through the source-tree shim on a bounded slice._
 
 ### Benchmark Snapshot
 
@@ -55,7 +55,7 @@ _Full-suite benchmark publication still runs through the source-tree shim; stric
 
 ## What Exists Today
 
-`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The current published correctness slice covers 1414 cases across 114 manifests, all passing inside a still-bounded frontier; the benchmark publication is caught up on the same source-tree-shim surface, and the queue is drained with no ready feature follow-on currently surviving.
+`rebar` already has the pieces that matter for the next phase: a Rust regex core, a CPython-facing extension boundary, and published correctness and benchmark scorecards. The current published correctness slice covers 1416 cases across 114 manifests, all passing inside a still-bounded frontier; the benchmark publication is caught up on the same source-tree-shim surface, and the queue is drained with no ready feature follow-on currently surviving.
 
 The clearest benchmark signal worth trusting is still the tiny parser compile-proxy slice, where the 8 parser workloads are 2.7992x faster on median than CPython. The broader 766-workload module-facing publication still runs through the source-tree shim and sits at 0.0792x median, so today it is methodology and coverage signal rather than a general speed claim.
 
