@@ -258,32 +258,13 @@ PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
 )
 
 
-def _published_compiled_pattern_module_helper_cases_for_text_model(
+def _fixture_cases_for_text_model(
+    cases: tuple[FixtureCase, ...],
     text_model: str,
 ) -> tuple[FixtureCase, ...]:
     return tuple(
         case
-        for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
-        if case.text_model == text_model
-    )
-
-
-def _published_module_keyword_module_helper_cases_for_text_model(
-    text_model: str,
-) -> tuple[FixtureCase, ...]:
-    return tuple(
-        case
-        for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES
-        if case.text_model == text_model
-    )
-
-
-def _published_pattern_keyword_pattern_cases_for_text_model(
-    text_model: str,
-) -> tuple[FixtureCase, ...]:
-    return tuple(
-        case
-        for case in PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES
+        for case in cases
         if case.text_model == text_model
     )
 
@@ -2413,14 +2394,20 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
 
     assert tuple(
         case.case_id
-        for case in _published_module_keyword_module_helper_cases_for_text_model("str")
+        for case in _fixture_cases_for_text_model(
+            PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES,
+            "str",
+        )
     ) == (
         "workflow-module-search-flags-keyword-str",
         "workflow-module-fullmatch-flags-keyword-str",
     )
     assert tuple(
         case.case_id
-        for case in _published_module_keyword_module_helper_cases_for_text_model("bytes")
+        for case in _fixture_cases_for_text_model(
+            PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES,
+            "bytes",
+        )
     ) == (
         "workflow-module-match-flags-keyword-bytes",
         "workflow-module-split-maxsplit-keyword-bytes",
@@ -2503,7 +2490,10 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
 
     assert tuple(
         case.case_id
-        for case in _published_pattern_keyword_pattern_cases_for_text_model("str")
+        for case in _fixture_cases_for_text_model(
+            PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES,
+            "str",
+        )
     ) == (
         "workflow-pattern-search-str-pos-keyword",
         "workflow-pattern-match-str-pos-keyword",
@@ -2511,7 +2501,10 @@ def test_module_workflow_surface_publishes_pattern_keyword_helpers_from_direct_c
     )
     assert tuple(
         case.case_id
-        for case in _published_pattern_keyword_pattern_cases_for_text_model("bytes")
+        for case in _fixture_cases_for_text_model(
+            PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES,
+            "bytes",
+        )
     ) == (
         "workflow-pattern-fullmatch-bytes-window-keyword",
         "workflow-pattern-finditer-bytes-window-keyword",
@@ -2603,7 +2596,10 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
 
     assert tuple(
         case.case_id
-        for case in _published_compiled_pattern_module_helper_cases_for_text_model("str")
+        for case in _fixture_cases_for_text_model(
+            PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES,
+            "str",
+        )
     ) == (
         "workflow-module-search-str-compiled-pattern",
         "workflow-module-match-str-compiled-pattern",
@@ -2617,7 +2613,10 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
     )
     assert tuple(
         case.case_id
-        for case in _published_compiled_pattern_module_helper_cases_for_text_model("bytes")
+        for case in _fixture_cases_for_text_model(
+            PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES,
+            "bytes",
+        )
     ) == (
         "workflow-module-search-bytes-verbose-regression-compiled-pattern",
         "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
