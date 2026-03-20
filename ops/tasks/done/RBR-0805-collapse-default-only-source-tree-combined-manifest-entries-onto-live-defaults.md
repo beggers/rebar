@@ -1,6 +1,6 @@
 # RBR-0805: Collapse default-only source-tree combined manifest entries onto live defaults
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
 
@@ -101,3 +101,9 @@ print([
 PY` currently reports those exact 14 manifest ids as pure default rows; and
   - the public fallback they currently restate is already zero-gap and empty-representative for all 14 ids, as confirmed by the acceptance probe above (`ok`).
 - This is the next step after the earlier default-field cleanups (`RBR-0469` and `RBR-0470`): those tasks deleted default-valued fields inside manifest definitions, while this task deletes entire manifest entries that no longer carry any nondefault metadata at all.
+
+## Completion Notes
+- Completed 2026-03-20.
+- Replaced the raw combined-manifest expectation registry with a fallback-backed mapping so published manifests without explicit override metadata still resolve to the shared `_combined_manifest_definition()` defaults on access.
+- Deleted the 14 explicit default-only manifest rows listed in the task from `SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS` while preserving zero known-gap and empty representative ids through the fallback path.
+- Verified with the targeted pytest selection from the task, the direct `source_tree_combined_case()` fallback probe, the `rg` deletion check, and one full-file pytest run for `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.

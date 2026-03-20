@@ -689,7 +689,49 @@ def _combined_pattern_group(
     )
 
 
-SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
+@cache
+def _published_benchmark_manifest_ids() -> frozenset[str]:
+    return frozenset(
+        manifest.manifest_id for manifest in published_benchmark_manifests()
+    )
+
+
+_SOURCE_TREE_DEFAULT_COMBINED_MANIFEST_EXPECTATION = _combined_manifest_definition()
+
+
+class _SourceTreeCombinedManifestExpectations(
+    dict[str, SourceTreeCombinedManifestExpectationDefinition]
+):
+    def _supports_fallback(self, manifest_id: object) -> bool:
+        return (
+            isinstance(manifest_id, str)
+            and manifest_id in _published_benchmark_manifest_ids()
+        )
+
+    def __missing__(
+        self,
+        manifest_id: str,
+    ) -> SourceTreeCombinedManifestExpectationDefinition:
+        if self._supports_fallback(manifest_id):
+            return _SOURCE_TREE_DEFAULT_COMBINED_MANIFEST_EXPECTATION
+        raise KeyError(manifest_id)
+
+    def get(
+        self,
+        manifest_id: str,
+        default: SourceTreeCombinedManifestExpectationDefinition | None = None,
+    ) -> SourceTreeCombinedManifestExpectationDefinition | None:
+        if self._supports_fallback(manifest_id):
+            return self[manifest_id]
+        return default
+
+    def __contains__(self, manifest_id: object) -> bool:
+        return super().__contains__(manifest_id) or self._supports_fallback(
+            manifest_id
+        )
+
+
+SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectations({
     "compile-matrix": _combined_manifest_definition(
         exclude_from_combined_targets=True,
     ),
@@ -712,8 +754,6 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
             ),
         ),
     ),
-    "collection-replacement-boundary": _combined_manifest_definition(),
-    "literal-flag-boundary": _combined_manifest_definition(),
     "grouped-named-boundary": _combined_manifest_definition(
         promote_zero_gap_representatives=True,
         representative_measured_workload_ids=(
@@ -729,8 +769,6 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         ),
         representative_known_gap_workload_ids=(),
     ),
-    "grouped-segment-boundary": _combined_manifest_definition(),
-    "literal-alternation-boundary": _combined_manifest_definition(),
     "grouped-alternation-boundary": _combined_manifest_definition(
         representative_measured_workload_ids=(
             "module-sub-template-nested-grouped-alternation-warm-gap",
@@ -745,7 +783,6 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         ),
         representative_known_gap_workload_ids=(),
     ),
-    "grouped-alternation-callable-replacement-boundary": _combined_manifest_definition(),
     "nested-group-boundary": _combined_manifest_definition(
         promote_zero_gap_representatives=True,
         representative_measured_workload_ids=(
@@ -754,9 +791,6 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
         ),
         representative_known_gap_workload_ids=(),
     ),
-    "nested-group-alternation-boundary": _combined_manifest_definition(),
-    "nested-group-replacement-boundary": _combined_manifest_definition(),
-    "nested-group-callable-replacement-boundary": _combined_manifest_definition(),
     "branch-local-backreference-boundary": _combined_manifest_definition(
         representative_measured_workload_ids=(
             "module-compile-numbered-open-ended-quantified-nested-group-branch-local-backreference-broader-range-conditional-cold-str",
@@ -1188,19 +1222,13 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = {
             expected_total_workload_count=84,
         ),
     ),
-    "optional-group-alternation-boundary": _combined_manifest_definition(),
-    "conditional-group-exists-boundary": _combined_manifest_definition(),
-    "conditional-group-exists-no-else-boundary": _combined_manifest_definition(),
-    "conditional-group-exists-empty-else-boundary": _combined_manifest_definition(),
-    "conditional-group-exists-empty-yes-else-boundary": _combined_manifest_definition(),
-    "conditional-group-exists-fully-empty-boundary": _combined_manifest_definition(),
     "regression-matrix": _combined_manifest_definition(
         exclude_from_combined_targets=True,
         representative_measured_workload_ids=(
             "regression-parser-bytes-backreference-purged",
         ),
     ),
-}
+})
 
 
 def _combined_slice_expectation(
