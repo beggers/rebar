@@ -3357,6 +3357,132 @@ class CorrectnessBuilderContractTest(unittest.TestCase):
                     },
                 )
 
+    def test_adapter_exported_symbol_observations_require_helper_names(self) -> None:
+        for operation in (
+            "module_has_attr",
+            "module_attr_value",
+            "module_attr_metadata",
+        ):
+            case = _adapter_contract_case(
+                case_id=f"adapter-{operation}-missing-helper-contract",
+                operation=operation,
+            )
+
+            for adapter_cls in (CpythonReAdapter, RebarAdapter):
+                with self.subTest(
+                    operation=operation,
+                    adapter=adapter_cls.adapter_name,
+                ):
+                    adapter = adapter_cls()
+
+                    with self.assertRaisesRegex(
+                        ValueError,
+                        re.escape(f"case {case.case_id!r} requires a helper name"),
+                    ):
+                        adapter.observe(case)
+
+    def test_adapter_module_has_attr_observation_tracks_present_and_missing_helpers(
+        self,
+    ) -> None:
+        cases = (
+            ("search", {"present": True, "callable": True}),
+            ("definitely_missing_helper", {"present": False, "callable": None}),
+        )
+
+        for helper, expected_result in cases:
+            case = _adapter_contract_case(
+                case_id=f"adapter-module-has-attr-{helper}-contract",
+                operation="module_has_attr",
+                helper=helper,
+            )
+
+            for adapter_cls in (CpythonReAdapter, RebarAdapter):
+                with self.subTest(helper=helper, adapter=adapter_cls.adapter_name):
+                    adapter = adapter_cls()
+                    adapter.module = re
+
+                    observation = adapter.observe(case)
+
+                    self.assertEqual(observation["adapter"], adapter_cls.adapter_name)
+                    self.assertEqual(observation["operation"], "module_has_attr")
+                    self.assertEqual(observation["outcome"], "success")
+                    self.assertEqual(observation["warnings"], [])
+                    self.assertEqual(observation["result"], expected_result)
+                    self.assertIsNone(observation["exception"])
+
+    def test_adapter_module_attr_value_observation_normalizes_exported_symbols(
+        self,
+    ) -> None:
+        cases = (
+            ("IGNORECASE", correctness.normalize_exported_symbol_value(re.IGNORECASE)),
+            (
+                "definitely_missing_symbol",
+                {
+                    "present": False,
+                    "type_name": None,
+                    "value": None,
+                },
+            ),
+        )
+
+        for helper, expected_result in cases:
+            case = _adapter_contract_case(
+                case_id=f"adapter-module-attr-value-{helper}-contract",
+                operation="module_attr_value",
+                helper=helper,
+            )
+
+            for adapter_cls in (CpythonReAdapter, RebarAdapter):
+                with self.subTest(helper=helper, adapter=adapter_cls.adapter_name):
+                    adapter = adapter_cls()
+                    adapter.module = re
+
+                    observation = adapter.observe(case)
+
+                    self.assertEqual(observation["adapter"], adapter_cls.adapter_name)
+                    self.assertEqual(observation["operation"], "module_attr_value")
+                    self.assertEqual(observation["outcome"], "success")
+                    self.assertEqual(observation["warnings"], [])
+                    self.assertEqual(observation["result"], expected_result)
+                    self.assertIsNone(observation["exception"])
+
+    def test_adapter_module_attr_metadata_observation_normalizes_exported_types(
+        self,
+    ) -> None:
+        cases = (
+            ("RegexFlag", correctness.normalize_exported_symbol_metadata(re.RegexFlag)),
+            (
+                "definitely_missing_type",
+                {
+                    "present": False,
+                    "callable": False,
+                    "is_type": False,
+                    "type_name": None,
+                },
+            ),
+        )
+
+        for helper, expected_result in cases:
+            case = _adapter_contract_case(
+                case_id=f"adapter-module-attr-metadata-{helper}-contract",
+                operation="module_attr_metadata",
+                helper=helper,
+            )
+
+            for adapter_cls in (CpythonReAdapter, RebarAdapter):
+                with self.subTest(helper=helper, adapter=adapter_cls.adapter_name):
+                    adapter = adapter_cls()
+                    adapter.module = re
+
+                    observation = adapter.observe(case)
+
+                    self.assertEqual(observation["adapter"], adapter_cls.adapter_name)
+                    self.assertEqual(observation["operation"], "module_attr_metadata")
+                    self.assertEqual(observation["outcome"], "success")
+                    self.assertEqual(observation["warnings"], [])
+                    self.assertEqual(observation["result"], expected_result)
+                    self.assertIsNone(observation["exception"])
+
     def test_normalize_match_metadata_preserves_bytes_named_capture_shape(self) -> None:
         match = re.search(rb"(?P<outer>(ab)?)(?P<inner>c)", b"zabc")
 
