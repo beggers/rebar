@@ -153,6 +153,8 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-module-search-bytes-verbose-regression-compiled-pattern",
             "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
             "workflow-module-split-str-compiled-pattern",
+            "workflow-module-split-maxsplit-keyword-str-compiled-pattern",
+            "workflow-module-split-maxsplit-indexlike-bytes-compiled-pattern",
             "workflow-module-findall-bytes-compiled-pattern",
             "workflow-module-finditer-str-compiled-pattern",
             "workflow-module-sub-str-compiled-pattern",

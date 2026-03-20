@@ -1285,6 +1285,45 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-split-maxsplit-keyword-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "use_compiled_pattern": True,
+      "args": ["zabczabc"],
+      "kwargs": {
+        "maxsplit": 1
+      },
+      "categories": ["workflow", "split", "literal", "keyword", "maxsplit", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern module-level split() maxsplit= keyword workflow on str payloads without widening into compiled-pattern replacement keyword rows."
+      ]
+    },
+    {
+      "id": "workflow-module-split-maxsplit-indexlike-bytes-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabcabcabc"
+        }
+      ],
+      "kwargs": {
+        "maxsplit": _INDEX_TWO
+      },
+      "categories": ["workflow", "split", "literal", "keyword", "maxsplit", "indexlike", "bytes", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent compiled-pattern module-level split() maxsplit=__index__ keyword workflow on bytes payloads without widening into compiled-pattern replacement keyword rows."
+      ]
+    },
+    {
       "id": "workflow-module-findall-bytes-compiled-pattern",
       "operation": "module_call",
       "family": "module_findall_workflow",

@@ -1,8 +1,9 @@
 # RBR-0784: Publish the module-workflow compiled-pattern `split` keyword pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier with the next adjacent compiled-pattern module keyword pair, publishing the exact `rebar.split(compiled_pattern, ..., maxsplit=1)` and `rebar.split(compiled_pattern, ..., maxsplit=__index__)` workflows for the existing `"abc"` and `b"abc"` anchors before compiled-pattern module `sub` / `subn` keyword rows, compiled-pattern keyword-error rows, benchmark catch-up, or another owner family reopens the queue.
@@ -60,3 +61,13 @@ Created: 2026-03-20
   - direct publication probes in this run confirmed both `workflow-module-split-maxsplit-keyword-str-compiled-pattern` and `workflow-module-split-maxsplit-indexlike-bytes-compiled-pattern` are still absent from `tests/conformance/fixtures/module_workflow_surface.py`, `tests/conformance/test_combined_correctness_scorecards.py`, and `reports/correctness/latest.py`;
   - the current owner path already publishes the adjacent non-keyword compiled-pattern row `workflow-module-split-str-compiled-pattern`, leaving this compiled-pattern `split(maxsplit=...)` keyword pair as the smallest unpublished neighbor on the same owner file; and
   - `ops/state/backlog.md` and the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on survives after the likely same-cycle drain, so this one-task refill does not need a backlog-frontier prose change.
+
+## Completion
+- Added the two adjacent compiled-pattern module-call rows on the existing `module-workflow-surface` owner path: `workflow-module-split-maxsplit-keyword-str-compiled-pattern` and `workflow-module-split-maxsplit-indexlike-bytes-compiled-pattern`.
+- Updated the shared parity-suite publication contract to `89` owner-path rows with a `57`/`32` `str`/`bytes` split, `35` published `module_call` rows, a `6`-row `split` helper count, and a `16`-row compiled-pattern module publication sequence while keeping `pattern_call` at `42`.
+- Extended the shared compiled-pattern publication alignment to include the two direct anchors `compiled-pattern-split-maxsplit-keyword-str` and `compiled-pattern-split-maxsplit-indexlike-bytes`, and matched them through the existing normalized keyword-signature helper instead of adding a detached publication path.
+- Regenerated the tracked published correctness scorecard at `reports/correctness/latest.py`; the tracked artifact now reports `1459` total / `1459` passed / `0` unimplemented across `114` manifests, with `module.workflow` at `89/89/0`, `module.workflow.str` at `57/57/0`, `module.workflow.bytes` at `32/32/0`, `module.workflow.module_call` at `35/35/0`, and `module.workflow.pattern_call` unchanged at `42/42/0`. The tracked report includes both new `workflow-module-split-maxsplit-*compiled-pattern` rows.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0784-module-workflow-compiled-pattern-split-keyword-pair.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`

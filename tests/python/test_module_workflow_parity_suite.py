@@ -2307,9 +2307,9 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 87
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 89
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 56, "bytes": 31}
+        {"str": 57, "bytes": 32}
     )
     assert len(PATTERN_CASES) == 42
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
@@ -2324,13 +2324,13 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
             "subn": 2,
         }
     )
-    assert len(MODULE_CALL_CASES) == 33
+    assert len(MODULE_CALL_CASES) == 35
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
         {
             "search": 6,
             "match": 4,
             "fullmatch": 5,
-            "split": 4,
+            "split": 6,
             "findall": 1,
             "finditer": 1,
             "sub": 6,
@@ -2982,22 +2982,32 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
     def direct_signature(
         case: (
             CompiledPatternModuleHelperCase
+            | CompiledPatternModuleKeywordCallCase
             | CompiledPatternModuleHelperErrorCase
             | BoundedWildcardModuleCase
         ),
-    ) -> tuple[str, str | bytes, tuple[object, ...], int, bool]:
+    ) -> tuple[
+        str,
+        str | bytes,
+        tuple[object, ...],
+        int,
+        bool,
+        tuple[tuple[str, str, object], ...],
+    ]:
         return (
             case.helper,
             case.pattern,
             tuple(case.args) if hasattr(case, "args") else (case.string,),
             getattr(case, "flags", 0),
             getattr(case, "compiled", True),
+            _workflow_keyword_kwargs_signature(getattr(case, "kwargs", {})),
         )
 
     direct_cases_by_signature = {
         direct_signature(case): case
         for case in (
             *COMPILED_PATTERN_MODULE_HELPER_CASES,
+            *COMPILED_PATTERN_MODULE_KEYWORD_CALL_CASES,
             *COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES,
             *BOUNDED_WILDCARD_MODULE_MATCH_CASES,
         )
@@ -3010,6 +3020,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
                 tuple(case.args),
                 case.flags,
                 case.use_compiled_pattern,
+                _workflow_keyword_kwargs_signature(case.kwargs),
             )
         ]
         for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
@@ -3028,6 +3039,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-match-str-bounded-wildcard-compiled-pattern",
         "workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern",
         "workflow-module-split-str-compiled-pattern",
+        "workflow-module-split-maxsplit-keyword-str-compiled-pattern",
         "workflow-module-finditer-str-compiled-pattern",
         "workflow-module-sub-str-compiled-pattern",
         "workflow-module-sub-str-compiled-pattern-on-bytes-string",
@@ -3041,6 +3053,7 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
     ) == (
         "workflow-module-search-bytes-verbose-regression-compiled-pattern",
         "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
+        "workflow-module-split-maxsplit-indexlike-bytes-compiled-pattern",
         "workflow-module-findall-bytes-compiled-pattern",
         "workflow-module-subn-bytes-compiled-pattern",
         "workflow-module-subn-bytes-compiled-pattern-on-str-string",
@@ -3056,6 +3069,8 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "workflow-module-search-bytes-verbose-regression-compiled-pattern",
         "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
         "workflow-module-split-str-compiled-pattern",
+        "workflow-module-split-maxsplit-keyword-str-compiled-pattern",
+        "workflow-module-split-maxsplit-indexlike-bytes-compiled-pattern",
         "workflow-module-findall-bytes-compiled-pattern",
         "workflow-module-finditer-str-compiled-pattern",
         "workflow-module-sub-str-compiled-pattern",
@@ -3074,6 +3089,8 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         "compiled-pattern-search-bytes-verbose-regression",
         "compiled-pattern-fullmatch-bytes-verbose-regression",
         "compiled-pattern-split-str-maxsplit",
+        "compiled-pattern-split-maxsplit-keyword-str",
+        "compiled-pattern-split-maxsplit-indexlike-bytes",
         "compiled-pattern-findall-bytes",
         "compiled-pattern-finditer-str",
         "compiled-pattern-sub-str-count",
@@ -3102,6 +3119,9 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         )
         assert case_pattern(fixture_case) == direct_case.pattern
         assert tuple(fixture_case.args) == direct_args
+        assert _workflow_keyword_kwargs_signature(
+            fixture_case.kwargs
+        ) == _workflow_keyword_kwargs_signature(getattr(direct_case, "kwargs", {}))
         assert fixture_case.flags == getattr(direct_case, "flags", 0)
 
 
