@@ -530,44 +530,38 @@ def compile_callable(module: Any, workload: Workload) -> Any:
     raise ValueError(f"unsupported cache mode {workload.cache_mode!r}")
 
 
-def module_helper_invoke(module: Any, workload: Workload) -> object:
+def helper_callable(module: Any, workload: Workload) -> Any:
     pattern = workload.pattern_payload()
     haystack = workload.haystack_payload()
 
-    if workload.operation == "module.search":
-        return module.search(pattern, haystack, workload.flags)
-    if workload.operation == "module.match":
-        return module.match(pattern, haystack, workload.flags)
-    if workload.operation == "module.fullmatch":
-        return module.fullmatch(pattern, haystack, workload.flags)
-    if workload.operation == "module.split":
-        return module.split(pattern, haystack, workload.maxsplit, workload.flags)
-    if workload.operation == "module.findall":
-        return module.findall(pattern, haystack, workload.flags)
-    if workload.operation == "module.sub":
-        return module.sub(
-            pattern,
-            workload.replacement_payload(),
-            haystack,
-            workload.count,
-            workload.flags,
-        )
-    if workload.operation == "module.subn":
-        return module.subn(
-            pattern,
-            workload.replacement_payload(),
-            haystack,
-            workload.count,
-            workload.flags,
-        )
-    raise ValueError(f"unsupported module helper operation {workload.operation!r}")
-
-
-def helper_callable(module: Any, workload: Workload) -> Any:
-    pattern = workload.pattern_payload()
-
     def invoke() -> object:
-        return module_helper_invoke(module, workload)
+        if workload.operation == "module.search":
+            return module.search(pattern, haystack, workload.flags)
+        if workload.operation == "module.match":
+            return module.match(pattern, haystack, workload.flags)
+        if workload.operation == "module.fullmatch":
+            return module.fullmatch(pattern, haystack, workload.flags)
+        if workload.operation == "module.split":
+            return module.split(pattern, haystack, workload.maxsplit, workload.flags)
+        if workload.operation == "module.findall":
+            return module.findall(pattern, haystack, workload.flags)
+        if workload.operation == "module.sub":
+            return module.sub(
+                pattern,
+                workload.replacement_payload(),
+                haystack,
+                workload.count,
+                workload.flags,
+            )
+        if workload.operation == "module.subn":
+            return module.subn(
+                pattern,
+                workload.replacement_payload(),
+                haystack,
+                workload.count,
+                workload.flags,
+            )
+        raise ValueError(f"unsupported module helper operation {workload.operation!r}")
 
     if workload.cache_mode == "cold":
 
@@ -604,29 +598,35 @@ def helper_callable(module: Any, workload: Workload) -> Any:
     raise ValueError(f"unsupported cache mode {workload.cache_mode!r}")
 
 
-def pattern_helper_invoke(compiled: Any, workload: Workload) -> object:
-    haystack = workload.haystack_payload()
-
-    if workload.operation == "pattern.search":
-        return compiled.search(haystack)
-    if workload.operation == "pattern.match":
-        return compiled.match(haystack)
-    if workload.operation == "pattern.fullmatch":
-        return compiled.fullmatch(haystack)
-    if workload.operation == "pattern.finditer":
-        return list(compiled.finditer(haystack))
-    if workload.operation == "pattern.sub":
-        return compiled.sub(workload.replacement_payload(), haystack, count=workload.count)
-    if workload.operation == "pattern.subn":
-        return compiled.subn(workload.replacement_payload(), haystack, count=workload.count)
-    raise ValueError(f"unsupported pattern helper operation {workload.operation!r}")
-
-
 def pattern_helper_callable(module: Any, workload: Workload) -> Any:
     pattern = workload.pattern_payload()
+    haystack = workload.haystack_payload()
 
     def compile_pattern() -> Any:
         return module.compile(pattern, workload.flags)
+
+    def invoke(compiled: Any) -> object:
+        if workload.operation == "pattern.search":
+            return compiled.search(haystack)
+        if workload.operation == "pattern.match":
+            return compiled.match(haystack)
+        if workload.operation == "pattern.fullmatch":
+            return compiled.fullmatch(haystack)
+        if workload.operation == "pattern.finditer":
+            return list(compiled.finditer(haystack))
+        if workload.operation == "pattern.sub":
+            return compiled.sub(
+                workload.replacement_payload(),
+                haystack,
+                count=workload.count,
+            )
+        if workload.operation == "pattern.subn":
+            return compiled.subn(
+                workload.replacement_payload(),
+                haystack,
+                count=workload.count,
+            )
+        raise ValueError(f"unsupported pattern helper operation {workload.operation!r}")
 
     if workload.cache_mode == "cold":
 
@@ -634,7 +634,7 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
             if hasattr(module, "purge"):
                 module.purge()
             compiled = compile_pattern()
-            return pattern_helper_invoke(compiled, workload)
+            return invoke(compiled)
 
         return run_once
 
@@ -642,7 +642,7 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
         compiled = compile_pattern()
 
         def run_once() -> object:
-            return pattern_helper_invoke(compiled, workload)
+            return invoke(compiled)
 
         return run_once
 
@@ -652,7 +652,7 @@ def pattern_helper_callable(module: Any, workload: Workload) -> Any:
             module.purge()
 
         def run_once() -> object:
-            return pattern_helper_invoke(compiled, workload)
+            return invoke(compiled)
 
         return run_once
 
