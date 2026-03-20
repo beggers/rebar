@@ -200,6 +200,8 @@ MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-module-fullmatch-str-bounded-wildcard",
     "workflow-module-search-str-compiled-pattern",
     "workflow-module-match-str-compiled-pattern",
+    "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
+    "workflow-module-match-str-bounded-wildcard-compiled-pattern",
     "workflow-module-search-bytes-verbose-regression-compiled-pattern",
     "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
     "workflow-module-split-str-compiled-pattern",
@@ -233,8 +235,8 @@ MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("pattern_call", "finditer"): 1,
         ("cache_workflow", None): 2,
         ("purge_workflow", None): 1,
-        ("module_call", "search"): 3,
-        ("module_call", "match"): 2,
+        ("module_call", "search"): 4,
+        ("module_call", "match"): 3,
         ("module_call", "fullmatch"): 2,
         ("module_call", "split"): 1,
         ("module_call", "findall"): 1,
@@ -342,6 +344,8 @@ PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
 PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS = (
     "workflow-module-search-str-compiled-pattern",
     "workflow-module-match-str-compiled-pattern",
+    "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
+    "workflow-module-match-str-bounded-wildcard-compiled-pattern",
     "workflow-module-search-bytes-verbose-regression-compiled-pattern",
     "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
     "workflow-module-split-str-compiled-pattern",
@@ -1487,15 +1491,20 @@ PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES = tuple(
 PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS = (
     "compiled-pattern-search-str",
     "compiled-pattern-match-str",
+    "compiled-module-search-ignorecase-bounded-hit",
+    "compiled-module-match-bounded-hit",
     "compiled-pattern-search-bytes-verbose-regression",
     "compiled-pattern-fullmatch-bytes-verbose-regression",
     "compiled-pattern-split-str-maxsplit",
     "compiled-pattern-findall-bytes",
 )
+_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES_BY_ID = {
+    case.case_id: case
+    for case in (*COMPILED_PATTERN_MODULE_HELPER_CASES, *BOUNDED_WILDCARD_MODULE_MATCH_CASES)
+}
 PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES = tuple(
-    case
-    for case in COMPILED_PATTERN_MODULE_HELPER_CASES
-    if case.case_id in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS
+    _COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES_BY_ID[case_id]
+    for case_id in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS
 )
 COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES = (
     CompiledPatternModuleHelperErrorCase(
@@ -2522,11 +2531,15 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES,
     ):
         assert fixture_case.use_compiled_pattern is True
-        assert fixture_case.text_model == (
-            "bytes" if isinstance(direct_case.pattern, bytes) else "str"
+        direct_pattern = direct_case.pattern
+        direct_args = (
+            direct_case.args
+            if isinstance(direct_case, CompiledPatternModuleHelperCase)
+            else (direct_case.string,)
         )
+        assert fixture_case.text_model == ("bytes" if isinstance(direct_pattern, bytes) else "str")
         assert case_pattern(fixture_case) == direct_case.pattern
-        assert tuple(fixture_case.args) == direct_case.args
+        assert tuple(fixture_case.args) == direct_args
         assert fixture_case.flags == direct_case.flags
 
 

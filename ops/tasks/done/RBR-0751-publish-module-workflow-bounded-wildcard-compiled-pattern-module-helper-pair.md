@@ -1,8 +1,9 @@
 # RBR-0751: Publish the module-workflow bounded wildcard compiled-pattern module-helper pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Reopen the `module-workflow-surface` correctness frontier with the first bounded-wildcard compiled-pattern module-helper pair, so the existing owner path starts publishing adjacent compiled-pattern `search()` / `match()` behavior for already-landed `a.c` support before the remaining compiled-pattern `fullmatch()` row or compiled-pattern collection-helper catch-up reopen the queue.
@@ -54,3 +55,12 @@ Created: 2026-03-20
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes the bounded-wildcard raw module-level `search()` / `match()` / `fullmatch()` rows but no compiled-pattern bounded-wildcard module-helper rows, leaving this pair as the next bounded adjacent publication on the same owner path; and
   - no blocked feature task exists to reopen first.
 - `ops/state/backlog.md` and the frontier prose in `ops/state/current_status.md` already honestly say that no ready feature follow-on currently survives after the likely same-cycle drain, so this one-task refill does not need a tracked state-prose change.
+
+## Completion
+- Added the two bounded-wildcard compiled-pattern `module_call` rows to `tests/conformance/fixtures/module_workflow_surface.py` without widening the manifest beyond the requested `search()` and `match()` pair.
+- Kept the shared owner-path parity wiring on `tests/python/test_module_workflow_parity_suite.py`, extending the existing compiled-pattern module-helper ownership to reuse the direct bounded-wildcard anchors `compiled-module-search-ignorecase-bounded-hit` and `compiled-module-match-bounded-hit` from `BOUNDED_WILDCARD_MODULE_MATCH_CASES`.
+- Regenerated `reports/correctness/latest.py`; the tracked published scorecard now reports `1416` total / `1416` passed / `0` unimplemented cases across `114` manifests, with `module.workflow` at `46/46/0`, `module.workflow.str` at `31/31/0`, and `module.workflow.module_call` at `13/13/0`.
+- Verified with:
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0751-module-workflow-bounded-wildcard-compiled-module-helpers.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`

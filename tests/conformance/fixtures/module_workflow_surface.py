@@ -515,6 +515,33 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_search_workflow",
+      "pattern": "a.c",
+      "flags": 2,
+      "helper": "search",
+      "use_compiled_pattern": True,
+      "args": ["ABC"],
+      "categories": ["workflow", "search", "wildcard", "bounded", "ignorecase", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the exact compiled-pattern module-level search() IGNORECASE workflow already anchored on the shared bounded wildcard owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-match-str-bounded-wildcard-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_match_workflow",
+      "pattern": "a.c",
+      "helper": "match",
+      "use_compiled_pattern": True,
+      "args": ["abc"],
+      "categories": ["workflow", "match", "wildcard", "bounded", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the exact compiled-pattern module-level match() workflow already anchored on the shared bounded wildcard owner path."
+      ]
+    },
+    {
       "id": "workflow-module-search-bytes-verbose-regression-compiled-pattern",
       "operation": "module_call",
       "family": "module_search_workflow",
