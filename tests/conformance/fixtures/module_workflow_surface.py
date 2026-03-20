@@ -777,6 +777,54 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-search-duplicate-flags-keyword",
+      "operation": "module_call",
+      "family": "module_search_workflow",
+      "pattern": "abc",
+      "helper": "search",
+      "include_pattern_arg": True,
+      "args": ["abc", 0],
+      "kwargs": {
+        "flags": 0
+      },
+      "categories": ["workflow", "search", "literal", "str", "flags", "duplicate-keyword"],
+      "notes": [
+        "Publishes the first raw module-level search() duplicate flags= keyword rejection already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-split-duplicate-maxsplit-keyword",
+      "operation": "module_call",
+      "family": "module_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "include_pattern_arg": True,
+      "args": ["abc", 1],
+      "kwargs": {
+        "maxsplit": 1
+      },
+      "categories": ["workflow", "split", "literal", "str", "maxsplit", "duplicate-keyword"],
+      "notes": [
+        "Publishes the first raw module-level split() duplicate maxsplit= keyword rejection already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-sub-duplicate-count-keyword",
+      "operation": "module_call",
+      "family": "module_sub_workflow",
+      "pattern": "abc",
+      "helper": "sub",
+      "include_pattern_arg": True,
+      "args": ["x", "abc", 1],
+      "kwargs": {
+        "count": 1
+      },
+      "categories": ["workflow", "sub", "literal", "str", "count", "duplicate-keyword"],
+      "notes": [
+        "Publishes the first raw module-level sub() duplicate count= keyword rejection already anchored on the shared module-workflow owner path."
+      ]
+    },
+    {
       "id": "workflow-module-search-str-compiled-pattern",
       "operation": "module_call",
       "family": "module_search_workflow",

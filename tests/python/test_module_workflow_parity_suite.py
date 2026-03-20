@@ -266,6 +266,16 @@ PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES = tuple(
         "workflow-module-subn-count-indexlike-bytes",
     }
 )
+PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES = tuple(
+    case
+    for case in MODULE_CALL_CASES
+    if case.case_id
+    in {
+        "workflow-module-search-duplicate-flags-keyword",
+        "workflow-module-split-duplicate-maxsplit-keyword",
+        "workflow-module-sub-duplicate-count-keyword",
+    }
+)
 PUBLISHED_PATTERN_KEYWORD_PATTERN_CASES = tuple(
     case
     for case in PATTERN_CASES
@@ -2113,6 +2123,10 @@ def test_module_workflow_direct_test_buckets_cover_selected_frontier() -> None:
             "module-keyword-helper": frozenset(
                 case.case_id for case in PUBLISHED_MODULE_KEYWORD_MODULE_HELPER_CASES
             ),
+            "module-keyword-error": frozenset(
+                case.case_id
+                for case in PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES
+            ),
             "compiled-module-helper": frozenset(
                 case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
             ),
@@ -2129,24 +2143,24 @@ def test_module_workflow_surface_bundle_contract_covers_regression_compile_cases
         tuple(case.case_id for case in MODULE_WORKFLOW_BUNDLE.cases)
         == _published_case_ids(MODULE_WORKFLOW_BUNDLE)
     )
-    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 66
+    assert len(MODULE_WORKFLOW_BUNDLE.cases) == 69
     assert Counter(case.text_model for case in MODULE_WORKFLOW_BUNDLE.cases) == Counter(
-        {"str": 42, "bytes": 24}
+        {"str": 45, "bytes": 24}
     )
     assert len(PATTERN_CASES) == 26
     assert Counter(case.helper for case in PATTERN_CASES) == Counter(
         {"search": 10, "match": 3, "fullmatch": 9, "findall": 2, "finditer": 2}
     )
-    assert len(MODULE_CALL_CASES) == 28
+    assert len(MODULE_CALL_CASES) == 31
     assert Counter(case.helper for case in MODULE_CALL_CASES) == Counter(
         {
-            "search": 5,
+            "search": 6,
             "match": 4,
             "fullmatch": 4,
-            "split": 3,
+            "split": 4,
             "findall": 1,
             "finditer": 1,
-            "sub": 4,
+            "sub": 5,
             "subn": 4,
             "escape": 2,
         }
@@ -2537,6 +2551,86 @@ def test_module_workflow_surface_publishes_module_keyword_helpers_from_direct_ca
         assert fixture_case.text_model == (
             "bytes" if isinstance(direct_pattern, bytes) else "str"
         )
+        assert case_pattern(fixture_case) == direct_pattern
+        assert tuple(fixture_case.args) == tuple(direct_args)
+        assert _module_keyword_kwargs_signature(
+            fixture_case.kwargs
+        ) == _module_keyword_kwargs_signature(direct_case.kwargs)
+        assert fixture_case.flags == 0
+
+
+def test_module_workflow_surface_publishes_module_keyword_error_slice_from_direct_cases(
+) -> None:
+    def direct_signature(
+        case: ModuleKeywordErrorCase,
+    ) -> tuple[str, str | bytes, tuple[object, ...], tuple[tuple[str, str, object], ...], str]:
+        pattern, *args = case.args
+        return (
+            case.helper,
+            pattern,
+            tuple(args),
+            _module_keyword_kwargs_signature(case.kwargs),
+            "bytes" if isinstance(pattern, bytes) else "str",
+        )
+
+    direct_cases_by_signature = {
+        direct_signature(case): case for case in MODULE_KEYWORD_ERROR_CASES
+    }
+    selected_direct_cases = tuple(
+        direct_cases_by_signature[
+            (
+                case.helper,
+                case_pattern(case),
+                tuple(case.args),
+                _module_keyword_kwargs_signature(case.kwargs),
+                case.text_model,
+            )
+        ]
+        for case in PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES
+    )
+
+    assert tuple(
+        case.case_id for case in PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES
+    ) == (
+        "workflow-module-search-duplicate-flags-keyword",
+        "workflow-module-split-duplicate-maxsplit-keyword",
+        "workflow-module-sub-duplicate-count-keyword",
+    )
+    assert tuple(
+        case.case_id for case in _fixture_cases_for_text_model(
+            PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES,
+            "str",
+        )
+    ) == tuple(
+        case.case_id for case in PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES
+    )
+    assert tuple(case.case_id for case in selected_direct_cases) == (
+        "module-search-duplicate-flags-keyword",
+        "module-split-duplicate-maxsplit-keyword",
+        "module-sub-duplicate-count-keyword",
+    )
+    assert len(selected_direct_cases) == len(PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES)
+    assert Counter(
+        case.helper for case in PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES
+    ) == Counter(
+        {
+            "search": 1,
+            "split": 1,
+            "sub": 1,
+        }
+    )
+    assert tuple(
+        case.helper for case in PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES
+    ) == tuple(case.helper for case in selected_direct_cases)
+
+    for fixture_case, direct_case in zip(
+        PUBLISHED_MODULE_KEYWORD_ERROR_MODULE_HELPER_CASES,
+        selected_direct_cases,
+    ):
+        direct_pattern, *direct_args = direct_case.args
+        assert fixture_case.include_pattern_arg is True
+        assert fixture_case.use_compiled_pattern is False
+        assert fixture_case.text_model == "str"
         assert case_pattern(fixture_case) == direct_pattern
         assert tuple(fixture_case.args) == tuple(direct_args)
         assert _module_keyword_kwargs_signature(

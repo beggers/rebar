@@ -364,6 +364,7 @@ class FixtureCase:
     args: list[Any]
     kwargs: dict[str, Any]
     use_compiled_pattern: bool = False
+    include_pattern_arg: bool = False
 
     @classmethod
     def from_dict(cls, manifest: FixtureManifest, raw_case: dict[str, Any]) -> "FixtureCase":
@@ -413,6 +414,12 @@ class FixtureCase:
                     defaults.get("use_compiled_pattern", False),
                 )
             ),
+            include_pattern_arg=bool(
+                raw_case.get(
+                    "include_pattern_arg",
+                    defaults.get("include_pattern_arg", False),
+                )
+            ),
         )
 
     def pattern_payload(self) -> str | bytes:
@@ -432,6 +439,8 @@ class FixtureCase:
 
     def module_call_args(self, compiled_pattern: Any | None = None) -> list[Any]:
         if not self.use_compiled_pattern:
+            if self.include_pattern_arg:
+                return [self.pattern_payload(), *self.args]
             return list(self.args)
         if compiled_pattern is None:
             raise ValueError(

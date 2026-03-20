@@ -1,8 +1,9 @@
 # RBR-0771: Publish the module-workflow module duplicate-keyword error trio
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Reopen the existing `module-workflow-surface` correctness frontier with the first raw module keyword-argument error slice, publishing the duplicate positional-plus-keyword rejection trio for the exact `search(flags=)`, `split(maxsplit=)`, and `sub(count=)` anchors already carried by the shared owner path before unexpected-keyword rows, pattern keyword bool/indexlike rows, or another owner family reopens the queue.
@@ -63,3 +64,9 @@ Created: 2026-03-20
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'module_keyword_argument_errors_match_cpython'` passed in this run (`10 passed, 668 deselected`);
   - the current owner path already publishes the adjacent nine successful module keyword rows, leaving duplicate-keyword rejection as the smallest unpublished slice on the same owner file; and
   - no blocked feature task exists to reopen first.
+
+## Completion
+- 2026-03-20: Added the three `workflow-module-*duplicate-*keyword` `module_call` rows to `tests/conformance/fixtures/module_workflow_surface.py`, kept them on the shared `module-workflow-surface` owner manifest as `str` cases, and wired them through the existing correctness path with a bounded `include_pattern_arg` fixture flag in `python/rebar_harness/correctness.py` so the published harness can exercise the raw module duplicate-keyword call shape without disturbing older module-call rows.
+- Updated `tests/python/test_module_workflow_parity_suite.py` to keep the existing nine-row `module-keyword-helper` success slice intact, add a separate three-row `module-keyword-error` slice derived from `MODULE_KEYWORD_ERROR_CASES`, and raise the owner-path expectations to `69` total rows with a `45`/`24` `str`/`bytes` split and `31` published `module_call` rows.
+- Extended `tests/conformance/test_combined_correctness_scorecards.py` so `module-workflow-surface` representative cases now include the duplicate-keyword slice, and republished `reports/correctness/latest.py` to `1439` total / `1439` passed / `0` unimplemented across `114` manifests; `module.workflow` is now `69/69/0`, `module.workflow.str` `45/45/0`, `module.workflow.bytes` `24/24/0`, and `module.workflow.module_call` `31/31/0`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0771-module-workflow-module-duplicate-keyword-error-trio.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`, and `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`.
