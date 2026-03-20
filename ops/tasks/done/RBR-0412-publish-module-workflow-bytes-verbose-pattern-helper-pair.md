@@ -1,6 +1,6 @@
 # RBR-0412: Publish the module-workflow bytes verbose pattern-helper pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
 
@@ -68,8 +68,9 @@ Created: 2026-03-20
 
 ## Queue Update
 - 2026-03-20 feature-planning: `ops/tasks/done/RBR-0417-land-module-workflow-bytes-verbose-pattern-execution.md` landed the only documented prerequisite for this slice, and the target publication work is still missing on the current checkout.
-- Fresh verification on the reopened frontier stayed green on the pre-publication surface:
-  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`558 passed, 1 skipped`);
-  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0412-module-workflow-bytes-verbose-helpers.py` (`21` executed / `21` passed); and
-  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1391` executed / `1391` passed / `0` `unimplemented`).
-- `rg -n "workflow-pattern-search-bytes-verbose-regression|workflow-pattern-fullmatch-bytes-verbose-regression" tests/conformance/fixtures/module_workflow_surface.py tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py reports/correctness/latest.py` still finds no published bytes verbose helper rows, so this exact task returns to `ready` without scope changes.
+- 2026-03-20 feature-implementation: published `workflow-pattern-search-bytes-verbose-regression` and `workflow-pattern-fullmatch-bytes-verbose-regression` on the existing `module_workflow_surface.py` owner path, updated the shared parity/scorecard expectations, and republished `reports/correctness/latest.py`.
+- Verification on the completed frontier:
+  - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py` (`562 passed, 1 skipped, 1876 subtests passed`);
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0412-module-workflow-bytes-verbose-helpers.py` (`23` executed / `23` passed); and
+  - `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py` (`1393` executed / `1393` passed / `0` `unimplemented`).
+- The tracked publication now reports `1393` total / `1393` passed / `0` `unimplemented` across `114` manifests, with `module.workflow` at `23` / `23` / `0`, `module.workflow.bytes` at `8` / `8` / `0`, and `module.workflow.pattern_call` at `11` / `11` / `0`, and both new bytes verbose helper rows are present in the tracked report. This task moves to `done`.
