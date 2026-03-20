@@ -741,53 +741,6 @@ def assert_direct_test_case_id_buckets_cover_selected_frontier(
             f"{coverage_label} drifted; " + "; ".join(message_parts)
         )
 
-
-def ordered_manifest_cases_from_bundles(
-    bundles: Iterable[FixtureBundle],
-    case_ids: Iterable[str],
-    *,
-    error_label: str,
-) -> tuple[FixtureCase, ...]:
-    ordered_case_ids = tuple(case_ids)
-    duplicate_requested_case_ids = _duplicate_string_ids(ordered_case_ids)
-    if duplicate_requested_case_ids:
-        raise AssertionError(
-            f"{error_label} contain duplicate requested case ids: "
-            f"{duplicate_requested_case_ids}"
-        )
-    selected_case_ids = frozenset(ordered_case_ids)
-    case_by_id: dict[str, FixtureCase] = {}
-    duplicate_case_ids: set[str] = set()
-
-    for bundle in bundles:
-        for case in bundle.manifest.cases:
-            case_id = case.case_id
-            if case_id not in selected_case_ids:
-                continue
-            if case_id in case_by_id:
-                duplicate_case_ids.add(case_id)
-                continue
-            case_by_id[case_id] = case
-
-    ordered_duplicate_case_ids = tuple(
-        case_id for case_id in ordered_case_ids if case_id in duplicate_case_ids
-    )
-    if ordered_duplicate_case_ids:
-        raise AssertionError(
-            f"{error_label} contain duplicate case ids: {ordered_duplicate_case_ids}"
-        )
-
-    missing_case_ids = tuple(
-        case_id for case_id in ordered_case_ids if case_id not in case_by_id
-    )
-    if missing_case_ids:
-        raise AssertionError(
-            f"{error_label} are missing case ids: {missing_case_ids}"
-        )
-
-    return tuple(case_by_id[case_id] for case_id in ordered_case_ids)
-
-
 def case_pattern(case: FixtureCase) -> str | bytes:
     pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
     assert isinstance(pattern, (str, bytes))
