@@ -1,8 +1,9 @@
 # RBR-0729: Collapse parser-matrix direct-test bucket registry onto canonical case owners
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the detached `PARSER_MATRIX_DIRECT_TEST_CASE_ID_BUCKETS` registry from `tests/python/test_parser_matrix_parity_suite.py` so the parser-matrix parity owner derives direct-test bucket coverage from its canonical case owners instead of maintaining a mirrored top-level map.
@@ -98,3 +99,7 @@ PY` reported the existing tail through `RBR-0728`, no reserved missing tail ids,
 - This simplification stays on the same bounded post-JSON parity-harness cleanup track as the recent architecture work:
   - `ops/tasks/done/RBR-0721-collapse-quantified-alternation-direct-test-bucket-registry-onto-canonical-case-owners.md`, `ops/tasks/done/RBR-0723-collapse-wider-ranged-repeat-direct-test-bucket-registry-onto-canonical-case-owners.md`, `ops/tasks/done/RBR-0727-collapse-open-ended-direct-test-bucket-sidecar-onto-canonical-case-owners.md`, and `ops/tasks/done/RBR-0728-collapse-grouped-capture-direct-test-bucket-registry-onto-canonical-case-owners.md` already removed the same style of detached direct-test bucket owner layer from adjacent parity suites; and
   - `PARSER_MATRIX_DIRECT_TEST_CASE_ID_BUCKETS` is the same style of mirrored owner data, but here the canonical sources are the parser-matrix warning, cache, and diagnostic case owners that already live in this file.
+- 2026-03-20 completion:
+  - Removed `PARSER_MATRIX_DIRECT_TEST_CASE_ID_BUCKETS` from `tests/python/test_parser_matrix_parity_suite.py`.
+  - Added a tiny file-local helper that derives the direct-test bucket map from `NESTED_SET_WARNING_CASE`, `CHARACTER_CLASS_CASE`, `REPEATED_COMPILE_CACHE_CASES`, and `DIAGNOSTIC_CASES`, preserving the existing bucket ordering and membership.
+  - Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_parser_matrix_parity_suite.py` (`61 passed, 29 skipped in 0.13s`), the derived-bucket probe from the task (`ok`), and the `rg` absence check for `PARSER_MATRIX_DIRECT_TEST_CASE_ID_BUCKETS` (no matches).

@@ -207,14 +207,19 @@ PLACEHOLDER_SEARCH_SUBJECTS = {
     "bytes-inline-locale-flag-success": b"a",
     "str-nested-set-warning": "[[a]",
 }
-# Keep the frontier coverage buckets disjoint even though several parser rows
-# are exercised by additional focused tests in this module.
-PARSER_MATRIX_DIRECT_TEST_CASE_ID_BUCKETS = {
-    "warning-cache": frozenset({NESTED_SET_WARNING_CASE.case_id}),
-    "ignorecase-cache-normalization": frozenset({CHARACTER_CLASS_CASE.case_id}),
-    "compile-cache": _case_ids(REPEATED_COMPILE_CACHE_CASES),
-    "compile-diagnostics": _case_ids(DIAGNOSTIC_CASES),
-}
+
+
+def _parser_matrix_direct_test_case_id_buckets() -> dict[str, frozenset[str]]:
+    # Keep the frontier coverage buckets disjoint even though several parser rows
+    # are exercised by additional focused tests in this module.
+    return {
+        "warning-cache": frozenset({NESTED_SET_WARNING_CASE.case_id}),
+        "ignorecase-cache-normalization": frozenset(
+            {CHARACTER_CLASS_CASE.case_id}
+        ),
+        "compile-cache": _case_ids(REPEATED_COMPILE_CACHE_CASES),
+        "compile-diagnostics": _case_ids(DIAGNOSTIC_CASES),
+    }
 
 
 @pytest.fixture
@@ -284,7 +289,7 @@ def test_parser_matrix_parity_suite_tracks_published_case_frontier() -> None:
 
 def test_parser_matrix_direct_test_buckets_cover_selected_frontier() -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        PARSER_MATRIX_DIRECT_TEST_CASE_ID_BUCKETS,
+        _parser_matrix_direct_test_case_id_buckets(),
         selected_case_ids=EXPECTED_CASE_IDS,
         coverage_label="parser matrix direct-test case-id buckets",
     )
