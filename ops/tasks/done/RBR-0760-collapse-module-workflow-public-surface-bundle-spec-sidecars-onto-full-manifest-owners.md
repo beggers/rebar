@@ -1,8 +1,9 @@
 # RBR-0760: Collapse module-workflow public-surface bundle-spec sidecars onto full-manifest owners
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the remaining public-surface bundle-spec sidecars from `tests/python/test_module_workflow_parity_suite.py`; the suite currently repeats the same three full public-surface manifests as detached case-id tuples, a detached `PUBLIC_SURFACE_BUNDLE_SPECS` table, and one aggregate `PUBLIC_SURFACE_SELECTED_CASE_IDS` tuple even though each public-surface owner already maps 1:1 to its full fixture manifest.
@@ -217,3 +218,10 @@ PY` reported the existing tail through `RBR-0759`, no reserved missing tail ids,
 - Baseline verification is green in the current checkout:
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` passed (`657 passed, 1 skipped in 0.52s`);
   - the task-local public-surface bundle probe from Acceptance passed (`ok`).
+
+## Completion
+- 2026-03-20: Removed `PUBLIC_API_CASE_IDS`, `EXPORTED_SYMBOL_CASE_IDS`, `PATTERN_OBJECT_CASE_IDS`, `PUBLIC_SURFACE_BUNDLE_SPECS`, and `PUBLIC_SURFACE_SELECTED_CASE_IDS` from `tests/python/test_module_workflow_parity_suite.py`.
+- Replaced the detached public-surface sidecar table with full-manifest bundle loading via one file-local helper that derives each bundle's `expected_case_ids`, case-id-token `expected_patterns`, and `expected_operation_helper_counts` from the loaded rows; `PATTERN_OBJECT_BUNDLE` now also carries the explicit mixed `{"bytes", "str"}` text-model contract.
+- Kept the public-surface owner order and manifest-id lookups unchanged: `PUBLIC_SURFACE_BUNDLES` still resolves in `public_api_surface.py`, `exported_symbol_surface.py`, then `pattern_object_surface.py`, and each bundle preserves the same ordered case frontier from its fixture.
+- Updated `test_public_surface_direct_test_buckets_cover_selected_frontier` to flatten selected case ids directly from `PUBLIC_SURFACE_BUNDLES` instead of reading the deleted aggregate tuple sidecar.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` (`657 passed, 1 skipped in 0.72s`), the task-local public-surface bundle probe from Acceptance (`ok`), and `bash -lc "! rg -n '^(PUBLIC_API_CASE_IDS|EXPORTED_SYMBOL_CASE_IDS|PATTERN_OBJECT_CASE_IDS|PUBLIC_SURFACE_BUNDLE_SPECS|PUBLIC_SURFACE_SELECTED_CASE_IDS) =' tests/python/test_module_workflow_parity_suite.py"` (passes with no matches).

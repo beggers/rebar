@@ -22,6 +22,7 @@ from rebar_harness import benchmarks
 from rebar_harness.correctness import (
     CORRECTNESS_FIXTURES_ROOT,
     FixtureCase,
+    load_fixture_manifest,
     normalize_exported_symbol_metadata,
     normalize_exported_symbol_value,
     normalize_pattern_object_metadata,
@@ -387,36 +388,35 @@ def _published_bounded_wildcard_pattern_collection_cases() -> tuple[FixtureCase,
         if case.helper in {"findall", "finditer"}
     )
 
+
+def _load_public_surface_bundle(
+    fixture_name: str,
+    expected_manifest_id: str,
+    *,
+    expected_text_models: frozenset[str] | None = None,
+) -> FixtureBundle:
+    manifest = load_fixture_manifest(CORRECTNESS_FIXTURES_ROOT / fixture_name)
+    if manifest.manifest_id != expected_manifest_id:
+        raise ValueError(
+            f"{fixture_name} expected_manifest_id {expected_manifest_id!r} "
+            f"does not match loaded manifest_id {manifest.manifest_id!r}"
+        )
+
+    cases = tuple(manifest.cases)
+    expected_case_ids = frozenset(case.case_id for case in cases)
+    return FixtureBundle(
+        manifest=manifest,
+        cases=cases,
+        expected_patterns=frozenset(case.case_id for case in cases),
+        expected_operation_helper_counts=Counter(
+            (case.operation, case.helper) for case in cases
+        ),
+        expected_case_ids=expected_case_ids,
+        expected_text_models=expected_text_models,
+    )
+
+
 # Keep the public-surface coverage on the module workflow owner file.
-PUBLIC_API_CASE_IDS = (
-    "helper-compile-present",
-    "helper-search-present",
-    "helper-purge-present",
-    "purge-noop-success",
-    "compile-pattern-scaffold-success",
-    "search-literal-success",
-    "escape-success",
-)
-EXPORTED_SYMBOL_CASE_IDS = (
-    "regexflag-type-metadata",
-    "error-type-metadata",
-    "pattern-type-metadata",
-    "match-type-metadata",
-    "ascii-constant-value",
-    "ignorecase-constant-value",
-    "noflag-constant-value",
-    "debug-constant-value",
-    "pattern-constructor-guard",
-    "match-constructor-guard",
-)
-PATTERN_OBJECT_CASE_IDS = (
-    "pattern-object-str-metadata",
-    "pattern-object-str-ignorecase-metadata",
-    "pattern-object-bytes-ignorecase-metadata",
-    "pattern-search-literal-success",
-    "pattern-match-literal-success",
-    "pattern-fullmatch-literal-success",
-)
 ADDITIONAL_PUBLIC_HELPER_NAMES = (
     pytest.param("match", id="match"),
     pytest.param("fullmatch", id="fullmatch"),
@@ -470,60 +470,21 @@ NON_INSTANTIABLE_EXPORTS = (
         id="Match",
     ),
 )
-PUBLIC_SURFACE_BUNDLE_SPECS = (
-    FixtureBundleSpec(
-        fixture_name="public_api_surface.py",
-        expected_manifest_id="public-api-surface",
-        selected_case_ids=PUBLIC_API_CASE_IDS,
-        expected_patterns=frozenset(PUBLIC_API_CASE_IDS),
-        expected_operation_helper_counts=Counter(
-            {
-                ("module_has_attr", "compile"): 1,
-                ("module_has_attr", "search"): 1,
-                ("module_has_attr", "purge"): 1,
-                ("module_call", "purge"): 1,
-                ("module_call", "compile"): 1,
-                ("module_call", "search"): 1,
-                ("module_call", "escape"): 1,
-            }
-        ),
+PUBLIC_SURFACE_BUNDLES = (
+    _load_public_surface_bundle(
+        "public_api_surface.py",
+        "public-api-surface",
     ),
-    FixtureBundleSpec(
-        fixture_name="exported_symbol_surface.py",
-        expected_manifest_id="exported-symbol-surface",
-        selected_case_ids=EXPORTED_SYMBOL_CASE_IDS,
-        expected_patterns=frozenset(EXPORTED_SYMBOL_CASE_IDS),
-        expected_operation_helper_counts=Counter(
-            {
-                ("module_attr_metadata", "RegexFlag"): 1,
-                ("module_attr_metadata", "error"): 1,
-                ("module_attr_metadata", "Pattern"): 1,
-                ("module_attr_metadata", "Match"): 1,
-                ("module_attr_value", "ASCII"): 1,
-                ("module_attr_value", "IGNORECASE"): 1,
-                ("module_attr_value", "NOFLAG"): 1,
-                ("module_attr_value", "DEBUG"): 1,
-                ("module_call", "Pattern"): 1,
-                ("module_call", "Match"): 1,
-            }
-        ),
+    _load_public_surface_bundle(
+        "exported_symbol_surface.py",
+        "exported-symbol-surface",
     ),
-    FixtureBundleSpec(
-        fixture_name="pattern_object_surface.py",
-        expected_manifest_id="pattern-object-surface",
-        selected_case_ids=PATTERN_OBJECT_CASE_IDS,
-        expected_patterns=frozenset(PATTERN_OBJECT_CASE_IDS),
-        expected_operation_helper_counts=Counter(
-            {
-                ("pattern_metadata", None): 3,
-                ("pattern_call", "search"): 1,
-                ("pattern_call", "match"): 1,
-                ("pattern_call", "fullmatch"): 1,
-            }
-        ),
+    _load_public_surface_bundle(
+        "pattern_object_surface.py",
+        "pattern-object-surface",
+        expected_text_models=frozenset({"bytes", "str"}),
     ),
 )
-PUBLIC_SURFACE_BUNDLES = load_fixture_bundles(PUBLIC_SURFACE_BUNDLE_SPECS)
 PUBLIC_API_BUNDLE = published_fixture_bundle_by_manifest_id(
     PUBLIC_SURFACE_BUNDLES,
     "public-api-surface",
@@ -555,11 +516,6 @@ PATTERN_METADATA_CASES = fixture_cases_for_operation(
     "pattern_metadata",
 )
 PATTERN_CALL_CASES = fixture_cases_for_operation((PATTERN_OBJECT_BUNDLE,), "pattern_call")
-PUBLIC_SURFACE_SELECTED_CASE_IDS = (
-    *PUBLIC_API_CASE_IDS,
-    *EXPORTED_SYMBOL_CASE_IDS,
-    *PATTERN_OBJECT_CASE_IDS,
-)
 
 
 EXPLICIT_ESCAPE_STR_CASES = (
@@ -4932,7 +4888,11 @@ def test_public_surface_direct_test_buckets_cover_selected_frontier() -> None:
                 case.case_id for case in PATTERN_CALL_CASES
             ),
         },
-        selected_case_ids=PUBLIC_SURFACE_SELECTED_CASE_IDS,
+        selected_case_ids=tuple(
+            case.case_id
+            for bundle in PUBLIC_SURFACE_BUNDLES
+            for case in bundle.cases
+        ),
         coverage_label="public surface direct-test case-id buckets",
     )
 
