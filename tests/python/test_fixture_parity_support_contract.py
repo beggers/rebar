@@ -1543,6 +1543,26 @@ def test_module_search_case_parity_helper_accepts_representative_cases(
 @pytest.mark.parametrize(
     "case",
     (
+        pytest.param(SYNTHETIC_COMPILED_MODULE_PATTERN_CASE, id="str-match"),
+        pytest.param(SYNTHETIC_COMPILED_MODULE_BYTES_SEARCH_CASE, id="bytes-match"),
+    ),
+)
+def test_module_search_case_parity_helper_accepts_compiled_pattern_cases(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    assert_module_search_case_parity(
+        regex_backend,
+        case,
+        check_regs=True,
+        check_convenience_api=True,
+        check_group_access=True,
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         pytest.param(
             replace(
                 SYNTHETIC_MODULE_PATTERN_CASE,
@@ -1564,6 +1584,42 @@ def test_module_search_case_parity_helper_accepts_representative_cases(
     ),
 )
 def test_module_search_case_parity_helper_accepts_shared_no_match_cases(
+    regex_backend: tuple[str, object],
+    case: FixtureCase,
+) -> None:
+    assert_module_search_case_parity(
+        regex_backend,
+        case,
+        check_regs=True,
+        check_convenience_api=True,
+        check_group_access=True,
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        pytest.param(
+            replace(
+                SYNTHETIC_COMPILED_MODULE_PATTERN_CASE,
+                case_id="synthetic-module-compiled-pattern-str-no-match",
+                source_args=["zzzzz"],
+                args=["zzzzz"],
+            ),
+            id="str-no-match",
+        ),
+        pytest.param(
+            replace(
+                SYNTHETIC_COMPILED_MODULE_BYTES_SEARCH_CASE,
+                case_id="synthetic-module-compiled-pattern-bytes-no-match",
+                source_args=[b"zzzzz"],
+                args=[b"zzzzz"],
+            ),
+            id="bytes-no-match",
+        ),
+    ),
+)
+def test_module_search_case_parity_helper_accepts_compiled_pattern_no_match_cases(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
