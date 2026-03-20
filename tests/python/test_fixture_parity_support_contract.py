@@ -3729,6 +3729,52 @@ def test_finditer_parity_helper_rejects_exhausted_non_self_iterables() -> None:
         )
 
 
+def test_finditer_parity_helper_rejects_non_self_cpython_iterators() -> None:
+    class _AlreadyExhaustedNonSelfIterator:
+        def __iter__(self) -> object:
+            return iter(())
+
+        def __next__(self) -> object:
+            raise StopIteration
+
+    with pytest.raises(
+        AssertionError,
+        match="CPython finditer result must be its own iterator",
+    ):
+        assert_finditer_parity(
+            "stub-backend",
+            iter(()),
+            _AlreadyExhaustedNonSelfIterator(),
+        )
+
+
+def test_finditer_parity_helper_rejects_match_count_drift() -> None:
+    with pytest.raises(
+        AssertionError,
+        match="stub-backend finditer yielded a different number of matches than CPython",
+    ):
+        assert_finditer_parity(
+            "stub-backend",
+            iter(()),
+            re.finditer("abc", "abc"),
+        )
+
+
+def test_placeholder_message_contains_accepts_substring_match() -> None:
+    fixture_parity_support.assert_placeholder_message_contains(
+        NotImplementedError("native helper placeholder search"),
+        "placeholder search",
+    )
+
+
+def test_placeholder_message_contains_rejects_missing_substring() -> None:
+    with pytest.raises(AssertionError):
+        fixture_parity_support.assert_placeholder_message_contains(
+            NotImplementedError("native helper placeholder search"),
+            "placeholder compile",
+        )
+
+
 @pytest.mark.parametrize(
     "use_compiled_pattern",
     (
