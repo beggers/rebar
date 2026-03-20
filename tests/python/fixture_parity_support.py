@@ -175,41 +175,6 @@ class FixtureBundleSpec:
     expected_text_models: frozenset[str] | None = None
 
 
-def _build_fixture_bundle(
-    manifest: FixtureManifest,
-    cases: tuple[FixtureCase, ...],
-    *,
-    expected_manifest_id: str | None = None,
-    expected_patterns: frozenset[str | bytes],
-    expected_operation_helper_counts: Counter[tuple[str, str | None]],
-    selected_case_ids: tuple[str, ...] | None = None,
-    expected_case_ids: frozenset[str] | None = None,
-    expected_text_models: frozenset[str] | None = None,
-) -> FixtureBundle:
-    if expected_manifest_id is not None and manifest.manifest_id != expected_manifest_id:
-        raise ValueError(
-            f"{manifest.path.name} expected_manifest_id {expected_manifest_id!r} "
-            f"does not match loaded manifest_id {manifest.manifest_id!r}"
-        )
-
-    bundle_text_models = expected_text_models
-    if bundle_text_models is None and selected_case_ids is None:
-        bundle_text_models = frozenset({"str"})
-
-    bundle_case_ids = expected_case_ids
-    if bundle_case_ids is None and selected_case_ids is not None:
-        bundle_case_ids = frozenset(selected_case_ids)
-
-    return FixtureBundle(
-        manifest=manifest,
-        cases=cases,
-        expected_patterns=expected_patterns,
-        expected_operation_helper_counts=expected_operation_helper_counts,
-        expected_case_ids=bundle_case_ids,
-        expected_text_models=bundle_text_models,
-    )
-
-
 def load_fixture_bundles(
     specs: Iterable[FixtureBundleSpec],
 ) -> tuple[FixtureBundle, ...]:
@@ -249,16 +214,30 @@ def load_fixture_bundles(
             bundle_cases = tuple(
                 case_by_id[case_id] for case_id in spec.selected_case_ids
             )
+
+        if manifest.manifest_id != spec.expected_manifest_id:
+            raise ValueError(
+                f"{manifest.path.name} expected_manifest_id "
+                f"{spec.expected_manifest_id!r} does not match loaded manifest_id "
+                f"{manifest.manifest_id!r}"
+            )
+
+        bundle_text_models = spec.expected_text_models
+        if bundle_text_models is None and spec.selected_case_ids is None:
+            bundle_text_models = frozenset({"str"})
+
+        bundle_case_ids = spec.expected_case_ids
+        if bundle_case_ids is None and spec.selected_case_ids is not None:
+            bundle_case_ids = frozenset(spec.selected_case_ids)
+
         bundles.append(
-            _build_fixture_bundle(
-                manifest,
-                bundle_cases,
-                expected_manifest_id=spec.expected_manifest_id,
+            FixtureBundle(
+                manifest=manifest,
+                cases=bundle_cases,
                 expected_patterns=spec.expected_patterns,
                 expected_operation_helper_counts=spec.expected_operation_helper_counts,
-                selected_case_ids=spec.selected_case_ids,
-                expected_case_ids=spec.expected_case_ids,
-                expected_text_models=spec.expected_text_models,
+                expected_case_ids=bundle_case_ids,
+                expected_text_models=bundle_text_models,
             )
         )
     return tuple(bundles)
@@ -436,9 +415,9 @@ def load_published_fixture_bundles(
         manifest = load_fixture_manifest(path)
         loaded_cases = tuple(manifest.cases)
         bundles.append(
-            _build_fixture_bundle(
-                manifest,
-                loaded_cases,
+            FixtureBundle(
+                manifest=manifest,
+                cases=loaded_cases,
                 expected_patterns=frozenset(
                     case_pattern(case) for case in loaded_cases
                 ),
@@ -498,22 +477,6 @@ def assert_fixture_bundle_contract(
     )
 
 
-def _manifest_bucket_case_ids(
-    cases: Iterable[FixtureCase],
-    *,
-    manifest_id: str,
-    text_model: str,
-    operation: str,
-) -> frozenset[str]:
-    return frozenset(
-        case.case_id
-        for case in cases
-        if case.manifest_id == manifest_id
-        and case.text_model == text_model
-        and case.operation == operation
-    )
-
-
 def assert_direct_bytes_follow_on_bundle_routing(
     bundle: FixtureBundle,
     *,
@@ -538,11 +501,12 @@ def assert_direct_bytes_follow_on_bundle_routing(
     drift_messages: list[str] = []
 
     for operation, bucket_cases in bucket_inputs:
-        bucket_bytes_case_ids = _manifest_bucket_case_ids(
-            bucket_cases,
-            manifest_id=manifest_id,
-            text_model="bytes",
-            operation=operation,
+        bucket_bytes_case_ids = frozenset(
+            case.case_id
+            for case in bucket_cases
+            if case.manifest_id == manifest_id
+            and case.text_model == "bytes"
+            and case.operation == operation
         )
         if bucket_bytes_case_ids:
             drift_messages.append(
@@ -553,11 +517,12 @@ def assert_direct_bytes_follow_on_bundle_routing(
         expected_str_case_ids = frozenset(
             case.case_id for case in bundle_str_cases if case.operation == operation
         )
-        bucket_str_case_ids = _manifest_bucket_case_ids(
-            bucket_cases,
-            manifest_id=manifest_id,
-            text_model="str",
-            operation=operation,
+        bucket_str_case_ids = frozenset(
+            case.case_id
+            for case in bucket_cases
+            if case.manifest_id == manifest_id
+            and case.text_model == "str"
+            and case.operation == operation
         )
         missing_str_case_ids = tuple(sorted(expected_str_case_ids - bucket_str_case_ids))
         unexpected_str_case_ids = tuple(sorted(bucket_str_case_ids - expected_str_case_ids))
