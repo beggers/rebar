@@ -1368,6 +1368,73 @@ class ReadmeReportingTest(unittest.TestCase):
                     nested_scratch_path.resolve(),
                 )
 
+    def test_scorecard_report_descriptor_honors_custom_attribute_and_module_prefix(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = pathlib.Path(temp_dir)
+            reports_root = temp_path / "reports" / "benchmarks"
+            reports_root.mkdir(parents=True)
+            published_path = reports_root / "latest.py"
+            descriptor = scorecard_io.build_scorecard_report_descriptor(
+                published_path=published_path,
+                scorecard_kind="benchmark",
+                report_attribute="BENCHMARK_REPORT",
+                module_name_prefix="_custom_benchmark_scorecard",
+            )
+            scorecard = {
+                "schema_version": "1.0",
+                "summary": {"workloads": 3},
+            }
+
+            descriptor.write(scorecard, published_path.resolve())
+
+            self.assertEqual(descriptor.report_attribute, "BENCHMARK_REPORT")
+            self.assertEqual(
+                descriptor.module_name_prefix,
+                "_custom_benchmark_scorecard",
+            )
+            self.assertTrue(
+                published_path.read_text(encoding="utf-8").startswith(
+                    "BENCHMARK_REPORT = "
+                )
+            )
+            self.assertEqual(descriptor.load(published_path), scorecard)
+
+    def test_scorecard_report_descriptor_normalizes_string_and_user_paths(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = pathlib.Path(temp_dir)
+            reports_root = temp_path / "reports" / "benchmarks"
+            reports_root.mkdir(parents=True)
+            published_path = reports_root / "latest.py"
+            descriptor = scorecard_io.build_scorecard_report_descriptor(
+                published_path=published_path,
+                scorecard_kind="benchmark",
+            )
+
+            with mock.patch.object(pathlib.Path, "cwd", return_value=temp_path):
+                with mock.patch.dict("os.environ", {"HOME": str(temp_path)}):
+                    self.assertEqual(
+                        descriptor.validate_path("reports/benchmarks/latest.py"),
+                        published_path.resolve(),
+                    )
+                    self.assertEqual(
+                        descriptor.validate_path("~/scratch/run.json"),
+                        (temp_path / "scratch" / "run.json").resolve(),
+                    )
+                    with self.assertRaises(ValueError) as retired_path_raised:
+                        descriptor.validate_path("~/reports/benchmarks/latest.json")
+
+            self.assertEqual(
+                str(retired_path_raised.exception),
+                "reports/benchmarks/latest.json is a retired legacy published "
+                "scorecard path; use reports/benchmarks/latest.py for the tracked "
+                "published scorecard or a non-tracked temporary .json path for "
+                "scratch output.",
+            )
+
     def test_scorecard_report_descriptor_writes_reports_without_touching_legacy_json_sibling(
         self,
     ) -> None:
