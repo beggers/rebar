@@ -85,14 +85,12 @@ class BranchLocalBytesFollowOnSpec:
 @dataclass(frozen=True)
 class GeneratedQuantifiedBranchLocalParitySpec:
     bundle: FixtureBundle
-    fixture_name: str
     expected_compile_case_ids: tuple[str, ...]
     expected_patterns: frozenset[str | bytes]
     expected_text_models: frozenset[str]
     candidate_body_atoms: tuple[str, ...]
     candidate_suffixes: tuple[str, ...]
     candidate_lengths: range
-    expected_candidate_count: int
     failure_prefix: str
 
 
@@ -186,10 +184,6 @@ NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BUNDLE = 
 GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS = (
     GeneratedQuantifiedBranchLocalParitySpec(
         bundle=QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE,
-        fixture_name=(
-            "quantified_nested_group_alternation_branch_local_backreference_"
-            "workflows.py"
-        ),
         expected_compile_case_ids=(
             "quantified-nested-group-alternation-branch-local-numbered-"
             "backreference-compile-metadata-str",
@@ -212,7 +206,6 @@ GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS = (
         candidate_body_atoms=BODY_ATOMS,
         candidate_suffixes=("d",),
         candidate_lengths=range(5),
-        expected_candidate_count=484,
         failure_prefix=(
             "quantified nested-group alternation branch-local-backreference "
             "generated parity drifted"
@@ -221,10 +214,6 @@ GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS = (
     GeneratedQuantifiedBranchLocalParitySpec(
         bundle=(
             NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BUNDLE
-        ),
-        fixture_name=(
-            "nested_broader_range_open_ended_quantified_group_alternation_"
-            "branch_local_backreference_conditional_workflows.py"
         ),
         expected_compile_case_ids=(
             "nested-broader-range-open-ended-quantified-group-alternation-"
@@ -248,7 +237,6 @@ GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS = (
         candidate_body_atoms=("b", "c"),
         candidate_suffixes=("", "d", "e"),
         candidate_lengths=range(5),
-        expected_candidate_count=372,
         failure_prefix=(
             "broader-range open-ended conditional branch-local-backreference "
             "generated parity drifted"
@@ -1164,18 +1152,34 @@ def test_generated_quantified_branch_local_compile_cases_stay_anchored_to_publis
     spec: GeneratedQuantifiedBranchLocalParitySpec,
 ) -> None:
     compile_cases = fixture_cases_for_operation((spec.bundle,), "compile")
+    candidate_texts = GENERATED_STR_BRANCH_LOCAL_CANDIDATE_TEXTS_BY_MANIFEST_ID[
+        spec.bundle.expected_manifest_id
+    ]
 
-    assert spec.bundle.manifest.path == CORRECTNESS_FIXTURES_ROOT / spec.fixture_name
+    assert tuple(
+        generated_spec.bundle.manifest.path
+        for generated_spec in GENERATED_QUANTIFIED_BRANCH_LOCAL_PARITY_SPECS
+    ) == (
+        (
+            QUANTIFIED_NESTED_GROUP_ALTERNATION_BRANCH_LOCAL_BACKREFERENCE_BUNDLE.manifest.path
+        ),
+        (
+            NESTED_BROADER_RANGE_OPEN_ENDED_BRANCH_LOCAL_BACKREFERENCE_CONDITIONAL_BUNDLE.manifest.path
+        ),
+    )
+    assert spec.bundle.manifest.path == published_fixture_bundle_by_manifest_id(
+        FIXTURE_BUNDLES,
+        spec.bundle.expected_manifest_id,
+    ).manifest.path
     assert tuple(case.case_id for case in compile_cases) == spec.expected_compile_case_ids
     assert {case_pattern(case) for case in compile_cases} == spec.expected_patterns
     assert {case.text_model for case in compile_cases} == spec.expected_text_models
-    assert (
-        len(
-            GENERATED_STR_BRANCH_LOCAL_CANDIDATE_TEXTS_BY_MANIFEST_ID[
-                spec.bundle.expected_manifest_id
-            ]
+    assert len(candidate_texts) == len(
+        _build_generated_quantified_branch_local_candidate_texts(
+            spec.candidate_body_atoms,
+            spec.candidate_suffixes,
+            spec.candidate_lengths,
         )
-        == spec.expected_candidate_count
     )
 
 
