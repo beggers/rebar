@@ -146,6 +146,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-module-fullmatch-unexpected-keyword",
             "workflow-module-sub-unexpected-keyword",
             "workflow-module-compile-str-compiled-pattern",
+            "workflow-module-compile-str-compiled-pattern-named-group",
             "workflow-module-search-str-compiled-pattern",
             "workflow-module-search-str-compiled-pattern-on-bytes-string",
             "workflow-module-match-str-compiled-pattern",

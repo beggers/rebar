@@ -1176,6 +1176,18 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-compile-str-compiled-pattern-named-group",
+      "operation": "module_call",
+      "family": "compile_workflow",
+      "pattern": "(?P<word>abc)",
+      "helper": "compile",
+      "use_compiled_pattern": True,
+      "categories": ["workflow", "compile", "named-group", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the adjacent named-group str module-level compile() helper workflow that accepts a compiled pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
       "id": "workflow-module-search-str-compiled-pattern",
       "operation": "module_call",
       "family": "module_search_workflow",
