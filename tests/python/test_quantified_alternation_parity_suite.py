@@ -973,17 +973,20 @@ COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_ca
 QUANTIFIED_ALTERNATION_SELECTED_CASE_IDS = tuple(
     case.case_id for bundle in FIXTURE_BUNDLES for case in bundle.cases
 )
-QUANTIFIED_ALTERNATION_DIRECT_TEST_CASE_ID_BUCKETS = {
-    "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
-    "shared-module-search": frozenset(case.case_id for case in MODULE_CASES),
-    "shared-pattern-fullmatch": frozenset(case.case_id for case in PATTERN_CASES),
-    **{
-        f"{_direct_bytes_follow_on_surface_id(spec.bundle)}-bytes-follow-on": frozenset(
-            case.case_id for case in spec.bundle.cases if case.text_model == "bytes"
-        )
-        for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
-    },
-}
+
+
+def _quantified_alternation_direct_test_case_id_buckets() -> dict[str, frozenset[str]]:
+    return {
+        "shared-compile": frozenset(case.case_id for case in COMPILE_CASES),
+        "shared-module-search": frozenset(case.case_id for case in MODULE_CASES),
+        "shared-pattern-fullmatch": frozenset(case.case_id for case in PATTERN_CASES),
+        **{
+            f"{_direct_bytes_follow_on_surface_id(spec.bundle)}-bytes-follow-on": frozenset(
+                case.case_id for case in spec.bundle.cases if case.text_model == "bytes"
+            )
+            for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES
+        },
+    }
 
 
 MATCH_GROUP_ACCESS_CASES = tuple(
@@ -1316,7 +1319,7 @@ def test_quantified_alternation_parity_suite_tracks_published_case_frontier() ->
 def test_quantified_alternation_direct_test_case_id_buckets_cover_selected_frontier(
 ) -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
-        QUANTIFIED_ALTERNATION_DIRECT_TEST_CASE_ID_BUCKETS,
+        _quantified_alternation_direct_test_case_id_buckets(),
         selected_case_ids=QUANTIFIED_ALTERNATION_SELECTED_CASE_IDS,
         coverage_label="quantified alternation direct-test case-id buckets",
     )
