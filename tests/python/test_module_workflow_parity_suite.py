@@ -1468,44 +1468,6 @@ COMPILED_PATTERN_MODULE_HELPER_CASES = (
         result_kind="value",
     ),
 )
-PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS = (
-    "compiled-pattern-search-str",
-    "compiled-pattern-match-str",
-    "compiled-pattern-split-str-maxsplit",
-)
-PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES = tuple(
-    case
-    for case in COMPILED_PATTERN_MODULE_HELPER_CASES
-    if case.case_id in PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS
-)
-PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS = (
-    "compiled-pattern-search-bytes-verbose-regression",
-    "compiled-pattern-fullmatch-bytes-verbose-regression",
-    "compiled-pattern-findall-bytes",
-)
-PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES = tuple(
-    case
-    for case in COMPILED_PATTERN_MODULE_HELPER_CASES
-    if case.case_id in PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS
-)
-PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS = (
-    "compiled-pattern-search-str",
-    "compiled-pattern-match-str",
-    "compiled-module-search-ignorecase-bounded-hit",
-    "compiled-module-match-bounded-hit",
-    "compiled-pattern-search-bytes-verbose-regression",
-    "compiled-pattern-fullmatch-bytes-verbose-regression",
-    "compiled-pattern-split-str-maxsplit",
-    "compiled-pattern-findall-bytes",
-)
-_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES_BY_ID = {
-    case.case_id: case
-    for case in (*COMPILED_PATTERN_MODULE_HELPER_CASES, *BOUNDED_WILDCARD_MODULE_MATCH_CASES)
-}
-PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES = tuple(
-    _COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES_BY_ID[case_id]
-    for case_id in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS
-)
 COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES = (
     CompiledPatternModuleHelperErrorCase(
         case_id="compiled-pattern-search-str-on-bytes-string",
@@ -2500,6 +2462,34 @@ def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_f
 
 def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases(
 ) -> None:
+    def direct_signature(
+        case: CompiledPatternModuleHelperCase | BoundedWildcardModuleCase,
+    ) -> tuple[str, str | bytes, tuple[object, ...], int, bool]:
+        return (
+            case.helper,
+            case.pattern,
+            tuple(case.args) if hasattr(case, "args") else (case.string,),
+            case.flags,
+            getattr(case, "compiled", True),
+        )
+
+    direct_cases_by_signature = {
+        direct_signature(case): case
+        for case in (*COMPILED_PATTERN_MODULE_HELPER_CASES, *BOUNDED_WILDCARD_MODULE_MATCH_CASES)
+    }
+    selected_direct_cases = tuple(
+        direct_cases_by_signature[
+            (
+                case.helper,
+                case_pattern(case),
+                tuple(case.args),
+                case.flags,
+                case.use_compiled_pattern,
+            )
+        ]
+        for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
+    )
+
     assert tuple(
         case.case_id for case in PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASES
     ) == PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
@@ -2507,37 +2497,36 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         case.case_id for case in PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES
     ) == PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
     assert tuple(
-        case.case_id
-        for case in PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES
-    ) == PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS
-    assert tuple(
-        case.case_id
-        for case in PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES
-    ) == PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS
-    assert tuple(
         case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
     ) == PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
     assert tuple(
-        case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES
-    ) == PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS
+        case.case_id for case in selected_direct_cases
+    ) == (
+        "compiled-pattern-search-str",
+        "compiled-pattern-match-str",
+        "compiled-module-search-ignorecase-bounded-hit",
+        "compiled-module-match-bounded-hit",
+        "compiled-pattern-search-bytes-verbose-regression",
+        "compiled-pattern-fullmatch-bytes-verbose-regression",
+        "compiled-pattern-split-str-maxsplit",
+        "compiled-pattern-findall-bytes",
+    )
     assert tuple(
         case.helper for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
-    ) == tuple(
-        case.helper for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES
-    )
+    ) == tuple(case.helper for case in selected_direct_cases)
 
     for fixture_case, direct_case in zip(
         PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES,
-        PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES,
+        selected_direct_cases,
     ):
         assert fixture_case.use_compiled_pattern is True
         direct_pattern = direct_case.pattern
-        direct_args = (
-            direct_case.args
-            if isinstance(direct_case, CompiledPatternModuleHelperCase)
-            else (direct_case.string,)
+        direct_args = tuple(direct_case.args) if hasattr(direct_case, "args") else (
+            direct_case.string,
         )
-        assert fixture_case.text_model == ("bytes" if isinstance(direct_pattern, bytes) else "str")
+        assert fixture_case.text_model == (
+            "bytes" if isinstance(direct_pattern, bytes) else "str"
+        )
         assert case_pattern(fixture_case) == direct_case.pattern
         assert tuple(fixture_case.args) == direct_args
         assert fixture_case.flags == direct_case.flags

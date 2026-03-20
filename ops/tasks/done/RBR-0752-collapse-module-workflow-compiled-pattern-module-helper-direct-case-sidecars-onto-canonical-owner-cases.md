@@ -1,8 +1,9 @@
 # RBR-0752: Collapse module-workflow compiled-pattern module-helper direct-case sidecars onto canonical owner cases
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the detached compiled-pattern direct-case registries from `tests/python/test_module_workflow_parity_suite.py` now that the exact same eight-row compiled-pattern module-helper slice is already published in `tests/conformance/fixtures/module_workflow_surface.py`.
@@ -158,3 +159,9 @@ PY` reported the existing tail through `RBR-0751`, no reserved missing tail ids,
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py` passed (`654 passed, 1 skipped in 0.50s`);
   - the direct-vs-fixture probe in Acceptance already passed in the current checkout (`ok`); and
   - the final `rg` absence check in Acceptance currently fails exactly on this cleanup because the direct-case sidecars still exist.
+
+## Completion
+- 2026-03-20: Removed the compiled-pattern direct-case sidecar registries from `tests/python/test_module_workflow_parity_suite.py`, including the detached `*_DIRECT_CASE_IDS`, `*_DIRECT_CASES`, and `_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES_BY_ID` mirror block.
+- Reworked `test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_direct_cases` to rebuild the aligned direct owner cases from `COMPILED_PATTERN_MODULE_HELPER_CASES` plus `BOUNDED_WILDCARD_MODULE_MATCH_CASES`, keyed by the published fixture-row signature order from `PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES`.
+- Preserved the existing eight-row alignment and payloads between the published fixture rows and the direct owner cases without changing the canonical owner tables or unrelated module-workflow coverage.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py`, the task-local direct-vs-fixture probe from Acceptance (`ok`), and `bash -lc "! rg -n 'PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS|PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES|PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS|PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES|PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS|_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES_BY_ID|PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES' tests/python/test_module_workflow_parity_suite.py"`.
