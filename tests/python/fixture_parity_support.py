@@ -184,7 +184,7 @@ class FixtureBundleSpec:
     expected_text_models: frozenset[str] | None = None
 
 
-def _build_fixture_bundle(
+def build_fixture_bundle(
     manifest: FixtureManifest,
     cases: tuple[FixtureCase, ...],
     *,
@@ -278,7 +278,7 @@ def load_fixture_bundles(
             bundle_case_ids = frozenset(spec.selected_case_ids)
 
         bundles.append(
-            _build_fixture_bundle(
+            build_fixture_bundle(
                 manifest,
                 bundle_cases,
                 expected_patterns=spec.expected_patterns,
@@ -476,7 +476,7 @@ def load_published_fixture_bundles(
         manifest = load_fixture_manifest(path)
         loaded_cases = tuple(manifest.cases)
         bundles.append(
-            _build_fixture_bundle(
+            build_fixture_bundle(
                 manifest,
                 loaded_cases,
                 pattern_extractor=pattern_extractor,

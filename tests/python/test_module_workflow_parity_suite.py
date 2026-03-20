@@ -41,6 +41,7 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_pattern_parity,
     assert_placeholder_message_contains,
+    build_fixture_bundle,
     case_pattern,
     compile_with_cpython_parity,
     fixture_cases_for_operation,
@@ -361,24 +362,6 @@ def _published_bounded_wildcard_pattern_collection_cases() -> tuple[FixtureCase,
     )
 
 
-def _public_surface_contract_bundle(
-    bundle: FixtureBundle,
-    *,
-    expected_text_models: frozenset[str] | None = None,
-) -> FixtureBundle:
-    cases = bundle.cases
-    return FixtureBundle(
-        manifest=bundle.manifest,
-        cases=cases,
-        expected_patterns=frozenset(case.case_id for case in cases),
-        expected_operation_helper_counts=Counter(
-            (case.operation, case.helper) for case in cases
-        ),
-        expected_case_ids=frozenset(case.case_id for case in cases),
-        expected_text_models=expected_text_models,
-    )
-
-
 def _public_surface_loader_token(case: FixtureCase) -> str | bytes:
     if case.pattern is None and not case.args:
         return case.case_id
@@ -446,8 +429,11 @@ NON_INSTANTIABLE_EXPORTS = (
 # Reuse the shared full-manifest loader even for owner rows without pattern
 # payloads, then reapply this file's case-id-based contract on the returned bundles.
 PUBLIC_SURFACE_BUNDLES = tuple(
-    _public_surface_contract_bundle(
-        bundle,
+    build_fixture_bundle(
+        bundle.manifest,
+        bundle.cases,
+        expected_patterns=frozenset(case.case_id for case in bundle.cases),
+        expected_case_ids=frozenset(case.case_id for case in bundle.cases),
         expected_text_models=PUBLIC_SURFACE_EXPECTED_TEXT_MODELS_BY_MANIFEST_ID.get(
             bundle.manifest.manifest_id
         ),

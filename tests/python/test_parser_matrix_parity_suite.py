@@ -15,6 +15,7 @@ from tests.python.fixture_parity_support import (
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
     assert_pattern_parity,
+    build_fixture_bundle,
     case_pattern,
     compile_with_cpython_parity,
     load_published_fixture_bundles,
@@ -96,24 +97,6 @@ def _ordered_cases_from_owner_bundle(
     return tuple(case_by_id[case_id] for case_id in ordered_case_ids)
 
 
-def _selected_fixture_bundle(
-    owner_bundle: FixtureBundle,
-    selected_cases: tuple[FixtureCase, ...],
-) -> FixtureBundle:
-    return FixtureBundle(
-        manifest=owner_bundle.manifest,
-        cases=selected_cases,
-        expected_patterns=frozenset(case_pattern(case) for case in selected_cases),
-        expected_operation_helper_counts=Counter(
-            (case.operation, case.helper) for case in selected_cases
-        ),
-        expected_case_ids=frozenset(case.case_id for case in selected_cases),
-        expected_text_models=frozenset(
-            case.text_model or "str" for case in selected_cases
-        ),
-    )
-
-
 OWNER_FIXTURE_BUNDLES = load_published_fixture_bundles(
     (
         PARSER_MATRIX_FIXTURE_PATH,
@@ -140,13 +123,24 @@ CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES = _ordered_cases_from_owner_bundle(
     EXPECTED_CONDITIONAL_ASSERTION_DIAGNOSTIC_CASE_IDS,
     error_label="conditional assertion diagnostic selected case ids",
 )
-PARSER_MATRIX_FIXTURE_BUNDLE = _selected_fixture_bundle(
-    PARSER_MATRIX_OWNER_BUNDLE,
+PARSER_MATRIX_FIXTURE_BUNDLE = build_fixture_bundle(
+    PARSER_MATRIX_OWNER_BUNDLE.manifest,
     TARGET_CASES,
+    pattern_extractor=case_pattern,
+    expected_case_ids=frozenset(case.case_id for case in TARGET_CASES),
+    expected_text_models=frozenset(case.text_model or "str" for case in TARGET_CASES),
 )
-CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_BUNDLE = _selected_fixture_bundle(
-    CONDITIONAL_ASSERTION_DIAGNOSTIC_OWNER_BUNDLE,
+CONDITIONAL_ASSERTION_DIAGNOSTIC_FIXTURE_BUNDLE = build_fixture_bundle(
+    CONDITIONAL_ASSERTION_DIAGNOSTIC_OWNER_BUNDLE.manifest,
     CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES,
+    pattern_extractor=case_pattern,
+    expected_case_ids=frozenset(
+        case.case_id for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES
+    ),
+    expected_text_models=frozenset(
+        case.text_model or "str"
+        for case in CONDITIONAL_ASSERTION_DIAGNOSTIC_CASES
+    ),
 )
 PARSER_MATRIX_CASES_BY_ID = {
     case.case_id: case for case in PARSER_MATRIX_FIXTURE_BUNDLE.cases
