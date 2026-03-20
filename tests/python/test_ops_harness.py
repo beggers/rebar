@@ -1204,6 +1204,35 @@ class ReadmeReportingTest(unittest.TestCase):
                 )
             self.assertEqual(retired_sidecar_path, reports_root / "latest.json")
 
+    def test_scorecard_report_descriptor_accepts_non_retired_json_scratch_paths(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = pathlib.Path(temp_dir)
+            reports_root = temp_path / "reports" / "correctness"
+            reports_root.mkdir(parents=True)
+            published_path = reports_root / "latest.py"
+            descriptor = scorecard_io.build_scorecard_report_descriptor(
+                published_path=published_path,
+                scorecard_kind="correctness",
+            )
+            sibling_scratch_path = reports_root / "latest.scratch.json"
+            nested_scratch_path = reports_root / "scratch" / "run.json"
+
+            with mock.patch.object(pathlib.Path, "cwd", return_value=temp_path):
+                self.assertEqual(
+                    descriptor.resolve_optional_path(
+                        pathlib.Path("reports/correctness/latest.scratch.json")
+                    ),
+                    sibling_scratch_path.resolve(),
+                )
+                self.assertEqual(
+                    descriptor.resolve_optional_path(
+                        pathlib.Path("reports/correctness/scratch/run.json")
+                    ),
+                    nested_scratch_path.resolve(),
+                )
+
     def test_scorecard_report_descriptor_writes_reports_and_only_cleans_up_published_sidecar(
         self,
     ) -> None:
@@ -1236,6 +1265,43 @@ class ReadmeReportingTest(unittest.TestCase):
 
             self.assertEqual(descriptor.load(published_path), scorecard)
             self.assertFalse(retired_sidecar_path.exists())
+
+    def test_scorecard_report_descriptor_preserves_non_retired_json_siblings_when_publishing(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = pathlib.Path(temp_dir)
+            reports_root = temp_path / "reports" / "correctness"
+            reports_root.mkdir(parents=True)
+            published_path = reports_root / "latest.py"
+            retired_sidecar_path = scorecard_io.retired_published_scorecard_sidecar_path(
+                published_path
+            )
+            scratch_sibling_path = reports_root / "latest.scratch.json"
+            descriptor = scorecard_io.build_scorecard_report_descriptor(
+                published_path=published_path,
+                scorecard_kind="correctness",
+            )
+            scorecard = {
+                "schema_version": "1.0",
+                "totals": {"cases": 2, "passed": 2},
+            }
+
+            retired_sidecar_path.write_text("{}\n", encoding="utf-8")
+            scratch_sibling_path.write_text(
+                json.dumps({"scratch": True}, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+
+            descriptor.write(scorecard, published_path.resolve())
+
+            self.assertEqual(descriptor.load(published_path), scorecard)
+            self.assertFalse(retired_sidecar_path.exists())
+            self.assertTrue(scratch_sibling_path.is_file())
+            self.assertEqual(
+                json.loads(scratch_sibling_path.read_text(encoding="utf-8")),
+                {"scratch": True},
+            )
 
     def test_refresh_published_correctness_scorecard_deletes_legacy_json_sidecar(self) -> None:
         rebar_ops = load_rebar_ops_module()
