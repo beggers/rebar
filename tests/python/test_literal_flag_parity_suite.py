@@ -1,15 +1,13 @@
 from __future__ import annotations
 
-from collections import Counter
 from dataclasses import dataclass
 import re
 
 import pytest
 
 import rebar
-from rebar_harness.correctness import FixtureCase
+from rebar_harness.correctness import CORRECTNESS_FIXTURES_ROOT, FixtureCase
 from tests.python.fixture_parity_support import (
-    FixtureBundleSpec,
     RecordingNativeBoundary,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
@@ -19,7 +17,7 @@ from tests.python.fixture_parity_support import (
     assert_pattern_parity,
     case_pattern,
     compile_with_cpython_parity,
-    load_fixture_bundles,
+    load_published_fixture_bundles,
 )
 
 
@@ -152,48 +150,17 @@ class _FakeNativeBoundary(RecordingNativeBoundary):
         return ("unsupported", 0, len(string), None)
 
 
-TARGET_FIXTURE_CASE_IDS = (
-    "flag-module-search-ignorecase-str-hit",
-    "flag-module-search-ignorecase-str-miss",
-    "flag-module-search-ignorecase-ascii-str-hit",
-    "flag-module-fullmatch-ignorecase-bytes-hit",
-    "flag-pattern-search-ignorecase-str-hit",
-    "flag-pattern-search-ignorecase-ascii-str-hit",
-    "flag-pattern-match-ignorecase-bytes-hit",
-    "flag-pattern-fullmatch-ignorecase-str-miss",
-    "flag-cache-hit-bytes-ignorecase",
-    "flag-cache-distinct-str-normalized",
-    "flag-unsupported-inline-flag-search",
-    "flag-unsupported-locale-bytes-search",
-    "flag-unsupported-nonliteral-ignorecase-search",
-)
-SELECTED_CASE_BUNDLE_SPECS = (
-    FixtureBundleSpec(
-        "literal_flag_workflows.py",
-        expected_manifest_id="literal-flag-workflows",
-        selected_case_ids=TARGET_FIXTURE_CASE_IDS,
-        expected_patterns=frozenset(
-            {"abc", "AbC", "(?i)abc", "a.c", b"abc", b"AbC"}
-        ),
-        expected_operation_helper_counts=Counter(
-            {
-                ("module_call", "search"): 6,
-                ("module_call", "fullmatch"): 1,
-                ("pattern_call", "search"): 2,
-                ("pattern_call", "match"): 1,
-                ("pattern_call", "fullmatch"): 1,
-                ("cache_workflow", None): 1,
-                ("cache_distinct_workflow", None): 1,
-            }
-        ),
-    ),
-)
-LITERAL_FLAG_FIXTURE_BUNDLE, = load_fixture_bundles(
-    SELECTED_CASE_BUNDLE_SPECS
+LITERAL_FLAG_FIXTURE_BUNDLE, = load_published_fixture_bundles(
+    (CORRECTNESS_FIXTURES_ROOT / "literal_flag_workflows.py",)
 )
 LITERAL_FLAG_CASES_BY_ID = {
     case.case_id: case for case in LITERAL_FLAG_FIXTURE_BUNDLE.cases
 }
+
+
+def _literal_flag_frontier_case_ids() -> tuple[str, ...]:
+    return tuple(case.case_id for case in LITERAL_FLAG_FIXTURE_BUNDLE.cases)
+
 
 MODULE_IGNORECASE_CASES = (
     _module_case_from_fixture(
@@ -374,7 +341,7 @@ CACHE_DISTINCT_STR_NORMALIZED_CASE = LITERAL_FLAG_CASES_BY_ID[
 
 
 def _literal_flag_direct_test_case_id_buckets() -> dict[str, frozenset[str]]:
-    selected_case_ids = frozenset(TARGET_FIXTURE_CASE_IDS)
+    selected_case_ids = frozenset(_literal_flag_frontier_case_ids())
     return {
         "module-ignorecase": frozenset(
             case.id for case in MODULE_IGNORECASE_CASES if case.id in selected_case_ids
@@ -431,20 +398,27 @@ FAKE_BOUNDARY_CASES = (
 def test_literal_flag_suite_stays_aligned_with_published_correctness_fixture() -> None:
     bundle = LITERAL_FLAG_FIXTURE_BUNDLE
 
-    assert_fixture_bundle_contract(bundle, pattern_extractor=case_pattern)
+    assert_fixture_bundle_contract(
+        bundle,
+        pattern_extractor=case_pattern,
+        expected_fixture_path=CORRECTNESS_FIXTURES_ROOT / "literal_flag_workflows.py",
+        expected_ordered_case_ids=tuple(
+            case.case_id for case in bundle.manifest.cases
+        ),
+    )
 
 
 def test_literal_flag_parity_suite_tracks_published_case_frontier() -> None:
     assert_fixture_bundle_tracks_published_case_frontier(
         LITERAL_FLAG_FIXTURE_BUNDLE,
-        selected_case_ids=TARGET_FIXTURE_CASE_IDS,
+        selected_case_ids=_literal_flag_frontier_case_ids(),
     )
 
 
 def test_literal_flag_direct_test_buckets_cover_selected_frontier() -> None:
     assert_direct_test_case_id_buckets_cover_selected_frontier(
         _literal_flag_direct_test_case_id_buckets(),
-        selected_case_ids=TARGET_FIXTURE_CASE_IDS,
+        selected_case_ids=_literal_flag_frontier_case_ids(),
         coverage_label="literal flag direct-test case-id buckets",
     )
 

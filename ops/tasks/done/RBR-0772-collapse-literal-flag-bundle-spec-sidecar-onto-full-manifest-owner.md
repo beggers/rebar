@@ -1,8 +1,9 @@
 # RBR-0772: Collapse literal-flag bundle-spec sidecar onto full-manifest owner
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Remove the remaining full-manifest sidecar from `tests/python/test_literal_flag_parity_suite.py`; `TARGET_FIXTURE_CASE_IDS` and `SELECTED_CASE_BUNDLE_SPECS = (FixtureBundleSpec(...))` currently mirror the exact 13-row manifest order from `tests/conformance/fixtures/literal_flag_workflows.py` even though the suite already owns that full published manifest after `RBR-0640`.
@@ -89,6 +90,11 @@ PY`
 ## Constraints
 - Keep this cleanup limited to `tests/python/test_literal_flag_parity_suite.py`.
 - Do not turn this into another literal-flag behavior expansion, a fixture-support rewrite, or a multi-suite parity refactor.
+
+## Completion
+- Replaced the literal-flag suite's detached `FixtureBundleSpec` / `load_fixture_bundles(...)` sidecar with the canonical full-manifest owner load via `load_published_fixture_bundles((CORRECTNESS_FIXTURES_ROOT / "literal_flag_workflows.py",))`.
+- Switched the published-frontier assertions and direct-test bucket coverage check to a file-local owner-derived case-id helper built from `LITERAL_FLAG_FIXTURE_BUNDLE.cases`, while keeping the existing behavior buckets untouched.
+- Verified with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_literal_flag_parity_suite.py` (`36 passed in 0.08s`), the acceptance owner-bundle probe (`ok`), and the grep absence check for `TARGET_FIXTURE_CASE_IDS`, `SELECTED_CASE_BUNDLE_SPECS`, `FixtureBundleSpec(`, and `load_fixture_bundles(`.
 
 ## Notes
 - `RBR-0772` is the next available task id in the current checkout:
