@@ -197,6 +197,7 @@ MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-purge-reset-str",
     "workflow-module-search-str-bounded-wildcard-ignorecase",
     "workflow-module-match-str-bounded-wildcard-miss",
+    "workflow-module-fullmatch-str-bounded-wildcard",
     "workflow-module-search-str-compiled-pattern",
     "workflow-module-match-str-compiled-pattern",
     "workflow-module-search-bytes-verbose-regression-compiled-pattern",
@@ -234,7 +235,7 @@ MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("purge_workflow", None): 1,
         ("module_call", "search"): 3,
         ("module_call", "match"): 2,
-        ("module_call", "fullmatch"): 1,
+        ("module_call", "fullmatch"): 2,
         ("module_call", "split"): 1,
         ("module_call", "findall"): 1,
         ("module_call", "escape"): 2,
@@ -311,6 +312,7 @@ MODULE_CALL_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "modu
 PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASE_IDS = (
     "workflow-module-search-str-bounded-wildcard-ignorecase",
     "workflow-module-match-str-bounded-wildcard-miss",
+    "workflow-module-fullmatch-str-bounded-wildcard",
 )
 PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES = tuple(
     case
@@ -2465,6 +2467,11 @@ def test_module_workflow_surface_publishes_bounded_wildcard_raw_module_helpers_f
     ) == PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASE_IDS
     assert len(selected_direct_cases) == len(
         PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES
+    )
+    assert tuple(case.case_id for case in selected_direct_cases) == (
+        "module-search-ignorecase-bounded-hit",
+        "module-match-bounded-miss",
+        "module-fullmatch-bounded-hit",
     )
     assert tuple(
         case.helper for case in PUBLISHED_BOUNDED_WILDCARD_RAW_MODULE_HELPER_CASES

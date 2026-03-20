@@ -110,6 +110,7 @@ COMBINED_CORRECTNESS_MANIFEST_EXPECTATIONS = {
             "workflow-pattern-fullmatch-bytes-verbose-regression-lowercase-key",
             "workflow-module-search-str-bounded-wildcard-ignorecase",
             "workflow-module-match-str-bounded-wildcard-miss",
+            "workflow-module-fullmatch-str-bounded-wildcard",
             "workflow-module-search-str-compiled-pattern",
             "workflow-module-match-str-compiled-pattern",
             "workflow-module-search-bytes-verbose-regression-compiled-pattern",

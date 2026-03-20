@@ -1,8 +1,9 @@
 # RBR-0749: Publish the module-workflow bounded wildcard remaining raw fullmatch row
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Reopen the `module-workflow-surface` correctness frontier with the remaining bounded-wildcard raw module-level `fullmatch()` workflow, so the existing owner path finishes the direct raw module-helper bounded-wildcard slice before wildcard collection helpers or broader compiled-pattern helper catch-up reopen the queue.
@@ -89,3 +90,9 @@ PY`
   - `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py -k 'bounded_wildcard and module and not placeholder'` passed in this run;
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes the bounded-wildcard raw module-level `search()` and `match()` rows but no raw `fullmatch()` row, leaving this as the next bounded adjacent publication on the same owner path; and
   - no blocked feature task exists to reopen first.
+
+## Completion
+- 2026-03-20: Added `workflow-module-fullmatch-str-bounded-wildcard` to `tests/conformance/fixtures/module_workflow_surface.py`, pinned to the existing `module-fullmatch-bounded-hit` anchor on the shared `BOUNDED_WILDCARD_MODULE_MATCH_CASES` owner path.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the shared `module-workflow-surface` expectations now publish `44` rows total, with `module_call` helper counts of `search == 3`, `match == 2`, `fullmatch == 2`, `split == 1`, `findall == 1`, and `escape == 2`. The parity suite now keeps the bounded-wildcard raw module-helper alignment on the exact `module-search-ignorecase-bounded-hit`, `module-match-bounded-miss`, and `module-fullmatch-bounded-hit` direct anchors.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` and regenerated `reports/correctness/latest.py`. Reading the tracked report artifact after regeneration shows `1414` total / `1414` passed / `0` `unimplemented` across `114` manifests, with `module.workflow` at `44` / `44` / `0`, `module.workflow.str` at `29` / `29` / `0`, and `module.workflow.module_call` at `11` / `11` / `0`; the new bounded-wildcard raw `fullmatch()` row is present in the tracked scorecard as `workflow-module-fullmatch-str-bounded-wildcard`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0749-module-workflow-bounded-wildcard-remaining-raw-fullmatch.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`, and the direct alignment probe from the acceptance criteria. The task-local module-workflow report published `44` total / `44` passed / `0` `unimplemented`.

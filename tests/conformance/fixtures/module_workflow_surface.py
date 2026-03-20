@@ -477,6 +477,18 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-fullmatch-str-bounded-wildcard",
+      "operation": "module_call",
+      "family": "module_fullmatch_workflow",
+      "pattern": "a.c",
+      "helper": "fullmatch",
+      "args": ["abc"],
+      "categories": ["workflow", "fullmatch", "wildcard", "bounded", "str"],
+      "notes": [
+        "Publishes the exact raw module-level fullmatch() workflow already anchored on the shared bounded wildcard owner path."
+      ]
+    },
+    {
       "id": "workflow-module-search-str-compiled-pattern",
       "operation": "module_call",
       "family": "module_search_workflow",
