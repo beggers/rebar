@@ -1718,6 +1718,113 @@ def test_fixture_bundle_exposes_derived_manifest_id_without_storing_duplicate_fi
     assert bundle.expected_manifest_id == bundle.manifest.manifest_id
 
 
+def test_load_published_fixture_bundles_derives_full_manifest_contracts_in_input_order(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    bundles = fixture_parity_support.load_published_fixture_bundles(
+        (mixed_path, str_path)
+    )
+    mixed_bundle, str_bundle = bundles
+
+    assert tuple(bundle.expected_manifest_id for bundle in bundles) == (
+        BUNDLE_LOADER_CONTRACT_MIXED_MANIFEST_ID,
+        BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID,
+    )
+    assert mixed_bundle.expected_case_ids is None
+    assert mixed_bundle.expected_patterns == frozenset(
+        {r"a(bc|de){1,}d", rb"a(bc|de){1,}d"}
+    )
+    assert mixed_bundle.expected_operation_helper_counts == Counter(
+        {
+            ("compile", None): 2,
+            ("module_call", "search"): 1,
+            ("pattern_call", "fullmatch"): 1,
+        }
+    )
+    assert mixed_bundle.expected_text_models == frozenset({"bytes", "str"})
+    assert_fixture_bundle_contract(
+        mixed_bundle,
+        pattern_extractor=case_pattern,
+        expected_fixture_path=mixed_path,
+    )
+
+    assert str_bundle.expected_case_ids is None
+    assert str_bundle.expected_patterns == frozenset({r"(?P<word>ab)(?P=word)"})
+    assert str_bundle.expected_operation_helper_counts == Counter(
+        {
+            ("compile", None): 1,
+            ("module_call", "search"): 1,
+            ("pattern_call", "search"): 1,
+        }
+    )
+    assert str_bundle.expected_text_models == frozenset({"str"})
+    assert_fixture_bundle_contract(
+        str_bundle,
+        pattern_extractor=str_case_pattern,
+        expected_fixture_path=str_path,
+    )
+
+
+def test_published_fixture_bundle_by_manifest_id_returns_requested_bundle(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    bundles = fixture_parity_support.load_published_fixture_bundles(
+        (str_path, mixed_path)
+    )
+    mixed_bundle = fixture_parity_support.published_fixture_bundle_by_manifest_id(
+        bundles,
+        BUNDLE_LOADER_CONTRACT_MIXED_MANIFEST_ID,
+    )
+    str_bundle = fixture_parity_support.published_fixture_bundle_by_manifest_id(
+        bundles,
+        BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID,
+    )
+
+    assert mixed_bundle is bundles[1]
+    assert str_bundle is bundles[0]
+
+
+def test_published_fixture_bundle_by_manifest_id_rejects_missing_manifest_id(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    bundles = fixture_parity_support.load_published_fixture_bundles(
+        (str_path, mixed_path)
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "published fixture bundles do not contain manifest_id 'missing-manifest-id'"
+        ),
+    ):
+        fixture_parity_support.published_fixture_bundle_by_manifest_id(
+            bundles,
+            "missing-manifest-id",
+        )
+
+
+def test_published_fixture_bundle_by_manifest_id_rejects_duplicate_manifest_ids(
+    tmp_path: pathlib.Path,
+) -> None:
+    str_path, _ = _write_bundle_loader_contract_fixture_modules(tmp_path)
+    (bundle,) = fixture_parity_support.load_published_fixture_bundles((str_path,))
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "published fixture bundles contain duplicate manifest_id "
+            f"'{BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID}'"
+        ),
+    ):
+        fixture_parity_support.published_fixture_bundle_by_manifest_id(
+            (bundle, bundle),
+            BUNDLE_LOADER_CONTRACT_STR_MANIFEST_ID,
+        )
+
+
 @pytest.mark.parametrize(
     "drift_kind",
     (
