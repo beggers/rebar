@@ -1,8 +1,9 @@
 # RBR-0738: Publish the module-workflow compiled-pattern collection helper pair
 
-Status: ready
+Status: done
 Owner: feature-implementation
 Created: 2026-03-20
+Completed: 2026-03-20
 
 ## Goal
 - Reopen the `module-workflow-surface` correctness frontier with the first bounded compiled-pattern collection helper pair, so the existing owner path starts publishing adjacent `split()` / `findall()` module-helper behavior without forking another manifest, jumping into replacement helpers, or broadening into benchmark catch-up.
@@ -51,3 +52,9 @@ Created: 2026-03-20
   - a direct runtime probe in this run confirmed that `rebar.split(rebar.compile("abc"), "zzabczzabc", 1)` returns `["zz", "zzabc"]` and `rebar.findall(rebar.compile(b"abc"), b"zabcabc")` returns `[b"abc", b"abc"]`, matching CPython on the same helper calls;
   - `tests/conformance/fixtures/module_workflow_surface.py` currently publishes compiled-pattern `module_call` rows for search/match/fullmatch plus `escape()`, but no compiled-pattern collection-helper rows, leaving this pair as the next bounded adjacent publication on the same owner path; and
   - no blocked feature task exists to reopen first.
+
+## Completion
+- 2026-03-20: Added only the requested `module_call` rows to `tests/conformance/fixtures/module_workflow_surface.py`: `workflow-module-split-str-compiled-pattern` and `workflow-module-findall-bytes-compiled-pattern`, pinned to the existing direct anchors `compiled-pattern-split-str-maxsplit` and `compiled-pattern-findall-bytes` with the task’s exact args, text models, zero-flag path, and `use_compiled_pattern == True` contract.
+- Updated `tests/python/test_module_workflow_parity_suite.py` so the existing `module-workflow-surface` owner path now expects `33` published rows, a `module_call` helper breakdown of `search == 2`, `match == 1`, `fullmatch == 1`, `split == 1`, `findall == 1`, and `escape == 2`, and compiled-module-helper ownership that now includes the published collection-helper pair alongside the previously published search/match/fullmatch rows.
+- Updated `tests/conformance/test_combined_correctness_scorecards.py` and regenerated `reports/correctness/latest.py`. Reading the tracked report artifact shows `1403` total / `1403` passed / `0` `unimplemented` across `114` manifests, with `module.workflow` at `33` / `33` / `0`, `module.workflow.str` at `18` / `18` / `0`, `module.workflow.bytes` at `15` / `15` / `0`, and `module.workflow.module_call` at `8` / `8` / `0`; both new compiled-pattern collection-helper rows are present in the tracked scorecard with `comparison == "pass"`.
+- Verification passed with `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_module_workflow_parity_suite.py tests/conformance/test_combined_correctness_scorecards.py`, `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --fixtures tests/conformance/fixtures/module_workflow_surface.py --report .rebar/tmp/rbr-0738-module-workflow-compiled-pattern-collection-helpers.py`, and `PYTHONPATH=python ./.venv/bin/python -m rebar_harness.correctness --report reports/correctness/latest.py`. The task-local module-workflow report published `33` total / `33` passed / `0` `unimplemented`.

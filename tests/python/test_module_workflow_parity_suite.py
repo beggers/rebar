@@ -185,6 +185,8 @@ MODULE_WORKFLOW_EXPECTED_CASE_IDS = (
     "workflow-module-match-str-compiled-pattern",
     "workflow-module-search-bytes-verbose-regression-compiled-pattern",
     "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
+    "workflow-module-split-str-compiled-pattern",
+    "workflow-module-findall-bytes-compiled-pattern",
     "workflow-escape-str",
     "workflow-escape-bytes",
 )
@@ -214,6 +216,8 @@ MODULE_WORKFLOW_EXPECTED_OPERATION_HELPER_COUNTS = Counter(
         ("module_call", "search"): 2,
         ("module_call", "match"): 1,
         ("module_call", "fullmatch"): 1,
+        ("module_call", "split"): 1,
+        ("module_call", "findall"): 1,
         ("module_call", "escape"): 2,
     }
 )
@@ -282,24 +286,30 @@ MODULE_CALL_CASES = fixture_cases_for_operation((MODULE_WORKFLOW_BUNDLE,), "modu
 PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS = (
     "workflow-module-search-str-compiled-pattern",
     "workflow-module-match-str-compiled-pattern",
+    "workflow-module-split-str-compiled-pattern",
 )
 PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
     case
     for case in MODULE_CALL_CASES
     if case.case_id in PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
 )
-PUBLISHED_VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS = (
+PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS = (
     "workflow-module-search-bytes-verbose-regression-compiled-pattern",
     "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
+    "workflow-module-findall-bytes-compiled-pattern",
 )
-PUBLISHED_VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
+PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
     case
     for case in MODULE_CALL_CASES
-    if case.case_id in PUBLISHED_VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
+    if case.case_id in PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
 )
 PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS = (
-    *PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS,
-    *PUBLISHED_VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS,
+    "workflow-module-search-str-compiled-pattern",
+    "workflow-module-match-str-compiled-pattern",
+    "workflow-module-search-bytes-verbose-regression-compiled-pattern",
+    "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
+    "workflow-module-split-str-compiled-pattern",
+    "workflow-module-findall-bytes-compiled-pattern",
 )
 PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES = tuple(
     case
@@ -1391,15 +1401,35 @@ COMPILED_PATTERN_MODULE_HELPER_CASES = (
 PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS = (
     "compiled-pattern-search-str",
     "compiled-pattern-match-str",
+    "compiled-pattern-split-str-maxsplit",
 )
 PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES = tuple(
     case
     for case in COMPILED_PATTERN_MODULE_HELPER_CASES
     if case.case_id in PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS
 )
-PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES = (
-    *PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES,
-    *VERBOSE_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES,
+PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS = (
+    "compiled-pattern-search-bytes-verbose-regression",
+    "compiled-pattern-fullmatch-bytes-verbose-regression",
+    "compiled-pattern-findall-bytes",
+)
+PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES = tuple(
+    case
+    for case in COMPILED_PATTERN_MODULE_HELPER_CASES
+    if case.case_id in PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS
+)
+PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS = (
+    "compiled-pattern-search-str",
+    "compiled-pattern-match-str",
+    "compiled-pattern-search-bytes-verbose-regression",
+    "compiled-pattern-fullmatch-bytes-verbose-regression",
+    "compiled-pattern-split-str-maxsplit",
+    "compiled-pattern-findall-bytes",
+)
+PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES = tuple(
+    case
+    for case in COMPILED_PATTERN_MODULE_HELPER_CASES
+    if case.case_id in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS
 )
 COMPILED_PATTERN_MODULE_HELPER_ERROR_CASES = (
     CompiledPatternModuleHelperErrorCase(
@@ -2184,12 +2214,22 @@ def test_module_workflow_surface_publishes_compiled_pattern_module_helpers_from_
         case.case_id for case in PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASES
     ) == PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
     assert tuple(
+        case.case_id for case in PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASES
+    ) == PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
+    assert tuple(
         case.case_id
         for case in PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES
     ) == PUBLISHED_LITERAL_STR_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS
     assert tuple(
+        case.case_id
+        for case in PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES
+    ) == PUBLISHED_BYTES_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS
+    assert tuple(
         case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
     ) == PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASE_IDS
+    assert tuple(
+        case.case_id for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASES
+    ) == PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_DIRECT_CASE_IDS
     assert tuple(
         case.helper for case in PUBLISHED_COMPILED_PATTERN_MODULE_HELPER_CASES
     ) == tuple(

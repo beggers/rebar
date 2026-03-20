@@ -426,6 +426,39 @@ MANIFEST = {
       ]
     },
     {
+      "id": "workflow-module-split-str-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_split_workflow",
+      "pattern": "abc",
+      "helper": "split",
+      "use_compiled_pattern": True,
+      "args": ["zzabczzabc", 1],
+      "categories": ["workflow", "split", "literal", "str", "compiled-pattern"],
+      "notes": [
+        "Publishes the first literal str module-level split() helper workflow that accepts a compiled pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
+      "id": "workflow-module-findall-bytes-compiled-pattern",
+      "operation": "module_call",
+      "family": "module_findall_workflow",
+      "pattern": "abc",
+      "helper": "findall",
+      "text_model": "bytes",
+      "use_compiled_pattern": True,
+      "args": [
+        {
+          "type": "bytes",
+          "encoding": "latin-1",
+          "value": "zabcabc"
+        }
+      ],
+      "categories": ["workflow", "findall", "literal", "bytes", "compiled-pattern"],
+      "notes": [
+        "Publishes the first bytes module-level findall() helper workflow that accepts a compiled literal pattern on the shared module-workflow owner path."
+      ]
+    },
+    {
       "id": "workflow-escape-str",
       "operation": "module_call",
       "family": "escape_workflow",
