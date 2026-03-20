@@ -368,13 +368,16 @@ class FixtureCase:
     @classmethod
     def from_dict(cls, manifest: FixtureManifest, raw_case: dict[str, Any]) -> "FixtureCase":
         defaults = manifest.defaults
-        source_args = _copied_case_payload(raw_case, defaults, key="args", fallback=[])
-        source_kwargs = _copied_case_payload(
-            raw_case,
-            defaults,
-            key="kwargs",
-            fallback={},
+        source_args = copy.deepcopy(
+            raw_case["args"] if "args" in raw_case else defaults.get("args", [])
         )
+        source_kwargs = copy.deepcopy(
+            raw_case["kwargs"] if "kwargs" in raw_case else defaults.get("kwargs", {})
+        )
+        raw_pattern = raw_case.get("pattern")
+        raw_flags = raw_case.get("flags", defaults.get("flags"))
+        raw_text_model = raw_case.get("text_model", defaults.get("text_model"))
+        raw_helper = raw_case.get("helper")
         return cls(
             case_id=str(raw_case["id"]),
             manifest_id=manifest.manifest_id,
@@ -384,16 +387,16 @@ class FixtureCase:
             operation=str(raw_case.get("operation", defaults.get("operation", "compile"))),
             notes=[str(note) for note in raw_case.get("notes", [])],
             categories=[str(category) for category in raw_case.get("categories", [])],
-            pattern=_optional_string(raw_case.get("pattern")),
-            flags=_optional_int(raw_case.get("flags", defaults.get("flags"))),
-            text_model=_optional_string(raw_case.get("text_model", defaults.get("text_model"))),
+            pattern=None if raw_pattern is None else str(raw_pattern),
+            flags=None if raw_flags is None else int(raw_flags),
+            text_model=None if raw_text_model is None else str(raw_text_model),
             pattern_encoding=str(
                 raw_case.get(
                     "pattern_encoding",
                     defaults.get("pattern_encoding", "latin-1"),
                 )
             ),
-            helper=_optional_string(raw_case.get("helper")),
+            helper=None if raw_helper is None else str(raw_helper),
             source_args=source_args,
             source_kwargs=source_kwargs,
             args=materialize_descriptor_value(
@@ -435,34 +438,6 @@ class FixtureCase:
                 f"case {self.case_id!r} requires a compiled pattern helper argument"
             )
         return [compiled_pattern, *self.args]
-
-
-def _optional_string(value: Any) -> str | None:
-    if value is None:
-        return None
-    return str(value)
-
-
-def _optional_int(value: Any) -> int | None:
-    if value is None:
-        return None
-    return int(value)
-
-
-_MISSING = object()
-
-
-def _copied_case_payload(
-    raw_case: dict[str, Any],
-    defaults: dict[str, Any],
-    *,
-    key: str,
-    fallback: Any,
-) -> Any:
-    value = raw_case.get(key, _MISSING)
-    if value is _MISSING:
-        value = defaults.get(key, fallback)
-    return copy.deepcopy(value)
 
 
 def load_fixture_manifest(path: pathlib.Path) -> FixtureManifest:
